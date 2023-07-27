@@ -2,6 +2,8 @@ import * as React from "react";
 import { useState, useEffect } from 'react';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { ImPriceTags } from 'react-icons/im';
+import { SlPencil } from 'react-icons/sl';
+
 import Tooltip from "../Tooltip";
 import { Web } from "sp-pnp-js";
 
@@ -780,7 +782,8 @@ const SiteCompositionComponent = (Props: any) => {
                     Portfolio
                 </label>
                 </span>
-               <span> <img className="mt-0 siteColor mx-1" onClick={() => alert("We are working on it. This feature will be live soon..")} title="Click here to edit tagged portfolio site composition." src="/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" /></span>
+               <span> <SlPencil onClick={() => alert("We are working on it. This feature will be live soon..")} title="Click here to edit tagged portfolio site composition."></SlPencil> 
+               {/* <img className="mt-0 siteColor mx-1" onClick={() => alert("We are working on it. This feature will be live soon..")} title="Click here to edit tagged portfolio site composition." src="/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" />*/} </span> 
                 <span className="pull-right">
                     <input
                         type="checkbox"
@@ -857,7 +860,7 @@ const SiteCompositionComponent = (Props: any) => {
                                             <td className="m-0 p-1 align-middle" style={{ width: "36%" }}>
                                                 {siteData.Title == "EI" ?
                                                     <>
-                                                        <div className="input-group block justify-content-between">
+                                                        <div className="input-group block justify-content-between  Compositionfild">
                                                             {EIClientCategory != undefined && EIClientCategory.length > 0 ?
                                                                 <> {EIClientCategory?.map((dataItem: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
@@ -879,7 +882,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                 </> : <input type="text" value={SearchedKeyForEI} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EI", 340)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />}
                                                             {
                                                                 siteData.BtnStatus ?
-                                                                    <a className="bg-white border border-secondary"
+                                                                    <a className="bg-white border border-secondary pancilicons"
                                                                         onClick={() => openClientCategoryModel(340, 'EI')}
                                                                     >
                                                                      <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>

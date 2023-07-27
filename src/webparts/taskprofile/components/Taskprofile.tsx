@@ -1589,7 +1589,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
                             <span className="pe-1">{item.AuthorName}</span>
                             <span className="pe-1" >{moment(item?.Created).format("DD/MM/YY")}</span>
-                            <div style={{ paddingLeft: "30px" }} className=" mb-4 text-break"><span dangerouslySetInnerHTML={{ __html: item?.Body }}></span>
+                            <div style={{ paddingLeft: "30px" }} className=" mb-1 text-break"><span dangerouslySetInnerHTML={{ __html: item?.Body }}></span>
                             </div>
 
 
