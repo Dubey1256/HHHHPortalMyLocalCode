@@ -309,8 +309,9 @@ const TimeReport = (props:any) => {
                     // var TodayDate:any = new Date()
                     // TodayDate =  Moment(TodayDate).format("DD/MM/YYYY")
                    //var TodayDate =  selectDate.split("/")
+                   var a = val.EndDate.substring(0, 10)
                    var TodayDate =  selectDate[2] + selectDate[1] + selectDate[0]
-                    var endDate = Moment(val.EndDate).format("DD/MM/YYYY")
+                    var endDate = Moment(a).format("DD/MM/YYYY")
                     var eventDate = Moment(val.EventDate).format("DD/MM/YYYY")
 
                     var NewEndDate = endDate.split("/")
@@ -1128,7 +1129,7 @@ var ReportDate = new Date()
                 </div>
             </div>
             <div className='row'>
-                <div className='col-7 mt-4'>
+                <div className='col-7 mt-4 showDate'>
 
                     <input type='date' value={Moment(selectdate!= undefined?selectdate:defaultDate).format("YYYY-MM-DD")} max="9999-12-31 mx-3" onChange={(e) => setSelectDate(e.target.value)} />
                     <label className='mx-2'>
@@ -1145,7 +1146,7 @@ var ReportDate = new Date()
 
                 </div>
                 <div className='col-sm-5'>
-                    <table className='table table-hover'>
+                    <table className='table table-hover showTime'>
                         <thead>
                             <tr>
                                 <th className='border bg-light'><strong>Team</strong></th>

@@ -2,6 +2,8 @@ import * as React from "react";
 import { useState, useEffect } from 'react';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { ImPriceTags } from 'react-icons/im';
+import { SlPencil } from 'react-icons/sl';
+
 import Tooltip from "../Tooltip";
 import { Web } from "sp-pnp-js";
 
@@ -780,7 +782,7 @@ const SiteCompositionComponent = (Props: any) => {
                         Portfolio
                     </label>
                 </span>
-                <span> <img className="mt-0 siteColor mx-1" onClick={() => alert("We are working on it. This feature will be live soon..")} title="Click here to edit tagged portfolio site composition." src="/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" /></span>
+                <span><span  className="svg__iconbox svg__icon--editBox"  onClick={() => alert("We are working on it. This feature will be live soon..")} title="Click here to edit tagged portfolio site composition."></span></span>
                 <span className="d-flex justify-content-center pull-right overrid">
                     <input
                         type="checkbox"
@@ -790,7 +792,7 @@ const SiteCompositionComponent = (Props: any) => {
                     />
                     <label data-toggle="tooltip" data-placement="bottom" className="d-flex">
                         Overridden
-                        <span className="svg__iconbox svg__icon--info " title="If this is checked then it should consider site allocations in Time Entry from Task otherwise from tagged component."></span>
+                        <span className="svg__iconbox svg__icon--info" title="If this is checked then it should consider site allocations in Time Entry from Task otherwise from tagged component."></span>
                     </label>
                 </span>
             </div>
@@ -880,7 +882,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                 </> : <input type="text" value={SearchedKeyForEI} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EI", 340)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />}
                                                             {
                                                                 siteData.BtnStatus ?
-                                                                    <a className="bg-white border border-secondary"
+                                                                    <a className="bg-white border border-secondary pancilicons"
                                                                         onClick={() => openClientCategoryModel(340, 'EI')}
                                                                     >
                                                                         <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink"></span>
@@ -930,7 +932,8 @@ const SiteCompositionComponent = (Props: any) => {
                                                                     <a className="bg-white border border-secondary"
                                                                         onClick={() => openClientCategoryModel(341, "EPS")}
                                                                     >
-                                                                        <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
+                                                                         <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink"></span>
+                                                                        {/* <img src={require('../../Assets/ICON/edit_page.svg')} width="25" /> */}
                                                                     </a>
                                                                     : null
                                                             }
@@ -978,7 +981,8 @@ const SiteCompositionComponent = (Props: any) => {
                                                                     <a className="bg-white border border-secondary"
                                                                         onClick={() => openClientCategoryModel(344, "Education")}
                                                                     >
-                                                                        <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
+                                                                         <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink"></span>
+                                                                        {/* <img src={require('../../Assets/ICON/edit_page.svg')} width="25" /> */}
                                                                     </a>
                                                                     : null
                                                             }
@@ -1026,7 +1030,8 @@ const SiteCompositionComponent = (Props: any) => {
                                                                     <a className="bg-white border border-secondary"
                                                                         onClick={() => openClientCategoryModel(569, 'Migration')}
                                                                     >
-                                                                        <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
+                                                                         <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink"></span>
+                                                                        {/* <img src={require('../../Assets/ICON/edit_page.svg')} width="25" /> */}
                                                                     </a>
                                                                     : null
                                                             }
@@ -1054,7 +1059,7 @@ const SiteCompositionComponent = (Props: any) => {
                         </tbody>
                         : null}
                 </table>
-                <div className="bg-secondary d-flex justify-content-between p-1 shadow-lg">
+                <div className="bg-e9 d-flex justify-content-between p-1 shadow-lg">
                     <div>
                         <button className="btn btn-primary px-4 ms-2" onClick={UpdateSiteTaggingAndClientCategory} style={usedFor == 'Task-Profile' ? { display: 'block' } : { display: 'none' }}>
                             Save
