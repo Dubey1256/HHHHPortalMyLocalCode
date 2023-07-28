@@ -1003,7 +1003,7 @@ const TimeReport = (props:any) => {
 var pageurl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TimeReportSpfx.aspx";
 var ReportDate = new Date()
  var ReportDatetime =Moment(ReportDate).format('DD/MM/YYYY')
-    var body =
+    var body:any =
                 '<p style="text-align: center;margin-bottom: 1px;">' + 'TimeSheet of  date' + '&nbsp;' + '<strong>' + ReportDatetime + '</strong>' + '</p>' +
                 '<p style="text-align: center;margin: 0 auto;">' + '<a  href=' + pageurl + ' >' + 'Online version of timesheet' + '</a >' + '</p>' +
                 '<br>'
@@ -1040,7 +1040,7 @@ var ReportDate = new Date()
               var ReplyTo:any = "" 
             var from:any= undefined
             var subject = 'TimeSheet :' + ' ' + ReportDatetime;
-            body = body.replace('>,<', '><');
+            body = body.replaceAll(',', '');
            sendEmailToUser(from, To, body, subject, ReplyTo, cc);
             alert('Email sent sucessfully');
 
