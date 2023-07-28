@@ -55,7 +55,7 @@ import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-toolt
 import SmartFilterSearchGlobal from "../../../globalComponents/SmartFilterGolobalBomponents/SmartFilterGlobalComponents";
 import { concat } from "lodash";
 import saveAs from "file-saver";
-import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
+import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 // import Excel from 'exceljs';
 var filt: any = "";
 var ContextValue: any = {};
@@ -72,111 +72,6 @@ let filterCount: any = 0;
 let FinalFilterData: any = [];
 let portfolioColor: any = '';
 // ReactTable Part/////
-declare module "@tanstack/table-core" {
-    interface FilterFns {
-        fuzzy: FilterFn<unknown>;
-    }
-    interface FilterMeta {
-        itemRank: RankingInfo;
-    }
-}
-const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-    // Rank the item
-    const itemRank = rankItem(row.getValue(columnId), value);
-
-    // Store the itemRank info
-    addMeta({
-        itemRank
-    });
-
-    // Return if the item should be filtered in/out
-    return itemRank.passed;
-};
-
-///Global Filter Parts//////
-// A debounced input react component
-function DebouncedInput({
-    value: initialValue,
-    onChange,
-    debounce = 500,
-    ...props
-}: {
-    value: string | number;
-    onChange: (value: string | number) => void;
-    debounce?: number;
-} & Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange">) {
-    const [value, setValue] = React.useState(initialValue);
-
-    React.useEffect(() => {
-        setValue(initialValue);
-    }, [initialValue]);
-
-    React.useEffect(() => {
-        const timeout = setTimeout(() => {
-            onChange(value);
-        }, debounce);
-
-        return () => clearTimeout(timeout);
-    }, [value]);
-
-    return (
-        <>
-            <div className="container-2 mx-1">
-                <span className="icon"><FaSearch /></span>
-                <input type="search" id="search" {...props}
-                    value={value}
-                    onChange={(e) => setValue(e.target.value)} />
-            </div>
-        </>
-    );
-}
-
-
-function Filter({
-    column,
-    table,
-    placeholder,
-}: {
-    column: Column<any, any>;
-    table: Table<any>;
-    placeholder: any;
-}): any {
-    const columnFilterValue = column.getFilterValue();
-    // style={{ width: placeholder?.size }}
-    return (
-        <input
-            className="me-1 mb-1 on-search-cross form-control "
-            // type="text"
-            title={placeholder?.placeholder}
-            type="search"
-            value={(columnFilterValue ?? "") as string}
-            onChange={(e) => column.setFilterValue(e.target.value)}
-            placeholder={`${placeholder?.placeholder}`}
-        // className="w-36 border shadow rounded"
-        />
-    );
-}
-
-function IndeterminateCheckbox({
-    indeterminate,
-    className = "",
-    ...rest
-}: { indeterminate?: boolean } & HTMLProps<HTMLInputElement>) {
-    const ref = React.useRef<HTMLInputElement>(null!);
-    React.useEffect(() => {
-        if (typeof indeterminate === "boolean") {
-            ref.current.indeterminate = !rest.checked && indeterminate;
-        }
-    }, [ref, indeterminate]);
-    return (
-        <input
-            type="checkbox"
-            ref={ref}
-            className={className + "  cursor-pointer form-check-input rounded-0"}
-            {...rest}
-        />
-    );
-}
 
 // ReactTable Part end/////
 

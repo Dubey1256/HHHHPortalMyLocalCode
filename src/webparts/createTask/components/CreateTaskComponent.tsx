@@ -1281,6 +1281,8 @@ function CreateTaskComponent(props: any) {
         if (items) {
             window.open(base_Url + "/SitePages/Task-Profile.aspx?taskId=" + createdTask?.Id + "&Site=" + createdTask?.siteType, "_self")
               createdTask = {};
+        }else{
+            location.reload();
         }
 
     }, [])

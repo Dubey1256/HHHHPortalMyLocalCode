@@ -1329,10 +1329,8 @@ const [Item,setItem]=React.useState("")
                                               data-interception="off"
                                               href={SelectedProp.siteUrl+"/SitePages/Component-Portfolio.aspx?ComponentID="+item.Parent.Id}
                                             >
-                                              <span className="svg__iconbox svg__icon--editBox border"></span>
-                                              {/* <img src={require('../../../Assets/ICON/edit_page.svg')}
-                                width="30" height="25" /> */}
-                                {" "}
+                                              <img src={require('../../../Assets/ICON/edit_page.svg')}
+                                width="30" height="25" />{" "}
                                             </a>
                                           </>
                                         )}

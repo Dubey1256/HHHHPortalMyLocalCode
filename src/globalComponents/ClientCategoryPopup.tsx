@@ -78,8 +78,8 @@ const ClientCategoryPupup=(props:any)=>{
     const customHeader = () => {
         return (
             <div className={props.props.Services.length>0?"d-flex full-width pb-1 serviepannelgreena":"d-flex full-width pb-1"} >
-                <div    style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-              <h2 className="heading">Select -Client Category</h2>
+                <div className="subheading">
+                   <span>Select -Client Category</span> 
                  </div>
                 <Tooltip ComponentId="1626" />
             </div>

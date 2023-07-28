@@ -4472,10 +4472,10 @@ function ComponentTable(SelectedProp: any) {
                                             </label>}
                                         <label className="ms-1 me-1"> | </label>
                                         {FilterShowhideShwingData === true ? <label>
-                                            {FeatureCopy}  of {AllCountItems.AllFeaturesItems.length} Features
+                                            {FeatureCopy}  of  {AllCountItems.AllFeaturesItems.length} Features
                                         </label> :
                                             <label>
-                                                {AllCountItems.AllFeaturesItems.length}  of {AllCountItems.AllFeaturesItems.length} Features
+                                                {AllCountItems.AllFeaturesItems.length} of {AllCountItems.AllFeaturesItems.length} Features
                                             </label>}
 
                                         {/* <label className="ms-1 me-1"> | </label>
@@ -4507,43 +4507,43 @@ function ComponentTable(SelectedProp: any) {
                                             <FaInfoCircle />
 
                                             <span className="popover__content mt-3 m-3 mx-3" style={{ zIndex: 100 }}>
-                                                <label>
+                                                <label title='Components'>
                                                     Showing {ComponentCopy}  of {AllCountItems.AllComponentItems.length} Components
                                                 </label>
                                                 <label className="ms-1 me-1"> | </label>
-                                                {FilterShowhideShwingData === true ? <label>
+                                                {FilterShowhideShwingData === true ? <label title='SubComponents'>
                                                     {SubComponentCopy} of {AllCountItems.AllSubComponentItems.length} SubComponents
                                                 </label> :
-                                                    <label>
+                                                    <label title='SubComponents'>
                                                         {AllCountItems.AllSubComponentItems.length} of {AllCountItems.AllSubComponentItems.length} SubComponents
                                                     </label>}
                                                 <label className="ms-1 me-1"> | </label>
-                                                {FilterShowhideShwingData === true ? <label>
+                                                {FilterShowhideShwingData === true ? <label title='Features'>
                                                     {FeatureCopy}  of {AllCountItems.AllFeaturesItems.length} Features
                                                 </label> :
-                                                    <label>
+                                                    <label title='Features'>
                                                         {AllCountItems.AllFeaturesItems.length}  of {AllCountItems.AllFeaturesItems.length} Features
                                                     </label>}
 
                                                 <label className="ms-1 me-1"> | </label>
-                                                {FilterShowhideShwingData === true ? <label>
+                                                {FilterShowhideShwingData === true ? <label title='Activities'>
                                                     {activityCopy}  of {activity} Activities
                                                 </label> :
-                                                    <label>
+                                                    <label title='Activities'>
                                                         {activity}  of {activity} Activities
                                                     </label>}
                                                 <label className="ms-1 me-1"> | </label>
-                                                {FilterShowhideShwingData === true ? <label>
+                                                {FilterShowhideShwingData === true ? <label title='Workstreams'>
                                                     {workstrimCopy}  of {workstrim} Workstreams
                                                 </label> :
-                                                    <label>
+                                                    <label title='Workstreams'>
                                                         {workstrim}  of {workstrim} Workstreams
                                                     </label>}
                                                 <label className="ms-1 me-1"> | </label>
-                                                {FilterShowhideShwingData === true ? <label>
+                                                {FilterShowhideShwingData === true ? <label title='Tasks'>
                                                     {taskCopy}  of {task} Tasks
                                                 </label> :
-                                                    <label>
+                                                    <label title='Tasks'>
                                                         {task}  of {task} Tasks
                                                     </label>}
                                             </span>
@@ -4572,7 +4572,7 @@ function ComponentTable(SelectedProp: any) {
                                                 Add Structure
                                             </button>}
 
-                                        <button type="button"
+                                        <button title='Add Activity-Task' type="button"
                                             className="btn btn-primary"
                                             onClick={() => openActivity()}
                                             disabled={ActivityDisable}>
@@ -4581,7 +4581,7 @@ function ComponentTable(SelectedProp: any) {
                                             Add Activity-Task
                                         </button>
 
-                                        <button type="button"
+                                        <button title='Restructure' type="button"
                                             className="btn btn-primary"
                                             onClick={buttonRestructuring}
                                         >
@@ -4593,18 +4593,18 @@ function ComponentTable(SelectedProp: any) {
 
 
 
-                                        <a className="brush" onClick={clearSearch}>
+                                        <a title="Clear All"  className="brush" onClick={clearSearch}>
                                             <FaPaintBrush />
                                         </a>
 
-                                        <a onClick={Prints} className='Prints'>
+                                        <a title="Print" onClick={Prints} className='Prints'>
                                             <FaPrint />
                                         </a>
 
-                                        <CSVLink className="excal" data={getCsvData()} >
+                                        <CSVLink className="excal" data={getCsvData()} title='Export To Excel' >
                                             <FaFileExcel />
                                         </CSVLink>
-                                        <a className='expand'>
+                                        <a className='expand' title='Expand'>
                                             <ExpndTable prop={expndpopup} prop1={tablecontiner} />
                                         </a>
                                     </span>
@@ -4627,9 +4627,9 @@ function ComponentTable(SelectedProp: any) {
                                                                                     header.getContext()
                                                                                 )}
                                                                                 {header.column.getCanFilter() ? (
-                                                                                    // <span>
+                                                                                
                                                                                     <Filter column={header.column} table={table} placeholder={header.column.columnDef} />
-                                                                                    // </span>
+                                                                               
                                                                                 ) : null}
                                                                                 {header.column.getCanSort() ? <div
                                                                                     {...{

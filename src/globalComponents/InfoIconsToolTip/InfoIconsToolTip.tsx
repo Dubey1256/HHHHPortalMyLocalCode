@@ -42,7 +42,7 @@ export default function InfoIconsToolTip({ Discription, row }: any) {
 
     const tooltiphierarchy = React.useMemo(() => {
         if (action === "click") {
-            return Discription.split('<p><br></p>').join('');
+            return Discription;
         }
         return '';
     }, [action]);

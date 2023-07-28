@@ -267,6 +267,14 @@
         }
       ]
     },
+    "user-time-entry-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/userTimeEntry/UserTimeEntryWebPart.js",
+          "manifest": "./src/webparts/userTimeEntry/UserTimeEntryWebPart.manifest.json"
+        }
+      ]
+    },
     "team-portfolio-web-part": {
       "components": [
         {
@@ -329,6 +337,7 @@
     "TeamleaderDashboardWebPartStrings": "lib/webparts/teamleaderDashboard/loc/{locale}.js",
     "TestWebPartWebPartStrings": "lib/webparts/testWebPart/loc/{locale}.js",
     "RootDashboardWebPartStrings": "lib/webparts/rootDashboard/loc/{locale}.js",
+    "UserTimeEntryWebPartStrings": "lib/webparts/userTimeEntry/loc/{locale}.js",
     "TeamPortfolioWebPartStrings": "lib/webparts/teamPortfolio/loc/{locale}.js"
   }
 }

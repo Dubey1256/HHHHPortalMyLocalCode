@@ -24,6 +24,7 @@ import * as XLSX from "xlsx";
 import saveAs from "file-saver";
 import { RiFileExcel2Fill } from 'react-icons/ri';
 import ShowTeamMembers from '../ShowTeamMember';
+import Tooltip from '../Tooltip';
 
 // ReactTable Part/////
 declare module "@tanstack/table-core" {
@@ -129,7 +130,7 @@ export function IndeterminateCheckbox(
         <input
             type="checkbox"
             ref={ref}
-            className={className + " cursor-pointer"}
+            className={className + " cursor-pointer form-check-input "}
             {...rest}
         />
     );
@@ -146,6 +147,7 @@ const GlobalCommanTable = (items: any) => {
     let pageName = items?.pageName;
     let siteUrl: any = '';
     let showHeader = items?.showHeader;
+    let showDateTime = items?.showDateTime;
     let showPagination: any = items?.showPagination;
     let usedFor: any = items?.usedFor;
     let portfolioColor = items?.portfolioColor;
@@ -399,7 +401,9 @@ const GlobalCommanTable = (items: any) => {
                     <a className='Prints' onClick={() => downloadPdf()}>
                         <i className="fa fa-print" aria-hidden="true" style={{ color: `${portfolioColor}` }} title="Print"></i>
                     </a>
-
+                    <a>
+              <Tooltip ComponentId="5756" />
+            </a>
                 </span>
             </div>}
 

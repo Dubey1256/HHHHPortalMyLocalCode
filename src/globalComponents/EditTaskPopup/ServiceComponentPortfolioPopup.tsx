@@ -100,7 +100,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     ) => {
         return (
             <div className="d-flex full-width pb-1" >
-                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                <div className="subheading">
                     <span>
                         {`Select ${ComponentType}`}
                     </span>

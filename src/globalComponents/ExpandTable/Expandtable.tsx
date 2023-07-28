@@ -12,7 +12,7 @@ const ExpndTable = (props: any) => {
 
   const showExpended = function (prope: any) {
     $('#spPageCanvasContent').removeClass();
-    $('#spPageCanvasContent').addClass(prope)
+    $('#spPageCanvasContent').addClass(prope)       
     props.prop(prope)
   }
 

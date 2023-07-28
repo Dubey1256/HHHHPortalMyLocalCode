@@ -1,733 +1,717 @@
-import * as React from 'react';
-import { Web } from "sp-pnp-js";
-import pnp from "sp-pnp-js";
-import { Modal } from 'office-ui-fabric-react';
-import 'setimmediate';
-import { Editor } from "react-draft-wysiwyg";
-//import { EditorState, ContentState, convertFromHTML, convertToRaw } from 'draft-js'
-import { EditorState, convertToRaw, Modifier, ContentState, convertFromHTML } from 'draft-js';
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import draftToHtml from 'draftjs-to-html';
-import { MentionsInput, Mention } from 'react-mentions';
-import mentionClass from './mention.module.scss';
+import React from 'react'
+import DefaultFolderContent from './DefaultFolderContent'
+import axios from 'axios';
+import PageLoader from '../pageLoader';
+// import {
+//     Document,
+//     Packer,
+//     Paragraph
+// } from "docx";
 import Tooltip from '../Tooltip';
-import "@pnp/sp/sputilities";
-import { spfi } from '@pnp/sp/presets/all';
-
-export interface IAncToolProps {
-    siteUrl?: any;
-    Task?: string;
-    userDisplayName?: string;
-    listName?: string;
-    ParentComponentId?: number;
-    Context?: any;
-    PageType?:any
-
-
-}
-const sp = spfi();
-
-export interface IAncToolState {
-    Result: any;
-    listName: string;
-    ParentComponentId: number;
-    CommenttoPost: string;
-    updateComment: boolean;
-    isModalOpen: boolean;
-    AllCommentModal: boolean;
-    mentionValue: string;
-    editorState: EditorState;
-    htmlContent: any;
-    updateCommentPost: any;
-}
-
-export class AncTool extends React.Component<IAncToolProps, IAncToolState> {
-    private taskUsers: any = [];
-    private currentUser: any;
-    private mentionUsers: any = [];
-    private topCommenters: any = [];
-
-    private params1: any;
-    constructor(props: IAncToolProps) {
-        super(props);
-        this.params1 = new URLSearchParams(window.location.search);
-
-        this.state = {
-            Result: {},
-            listName: (this.params1.get('Site') != undefined ? this.params1.get('Site') : props.listName),
-            ParentComponentId: (this.params1.get('taskId') != undefined ? Number(this.params1.get('taskId')) : props.ParentComponentId),
-
-            CommenttoPost: '',
-            updateComment: false,
-            isModalOpen: false,
-            AllCommentModal: false,
-            mentionValue: '',
-            /*editorState:EditorState.createWithContent(
-              ContentState.createFromBlockArray(
-                convertFromHTML('').contentBlocks
-              )
-            ),*/
-            editorState: EditorState.createEmpty(),
-            htmlContent: '',
-            updateCommentPost: null
+import { sp } from 'sp-pnp-js'
+import { Web } from "@pnp/sp/webs";
+import { IList } from "@pnp/sp/lists";
+import pptxgen from 'pptxgenjs';
+import { Button, Modal } from "react-bootstrap";
+import * as GlobalFunction from '../globalCommon';
+// import { Document, Paragraph, Packer, IRunPropertiesOptions } from 'docx';
+// import officegen from 'officegen';
+import ExcelJS from 'exceljs';
+import { IFileAddResult } from "@pnp/sp/files";
+import { Panel, PanelType } from 'office-ui-fabric-react';
+import ConnectExistingDoc from './ConnectExistingDoc';
+let backupExistingFiles: any = [];
+let backupCurrentFolder: any = [];
+let AllFilesAndFolderBackup: any = [];
+let createNewDocType: any = '';
+let siteName: any = '';
+const itemRanks: any[] = [
+    { rankTitle: 'Select Item Rank', rank: null },
+    { rankTitle: '(8) Top Highlights', rank: 8 },
+    { rankTitle: '(7) Featured Item', rank: 7 },
+    { rankTitle: '(6) Key Item', rank: 6 },
+    { rankTitle: '(5) Relevant Item', rank: 5 },
+    { rankTitle: '(4) Background Item', rank: 4 },
+    { rankTitle: '(2) to be verified', rank: 2 },
+    { rankTitle: '(1) Archive', rank: 1 },
+    { rankTitle: '(0) No Show', rank: 0 }
+]
+const AncTool = (props: any) => {
+    let siteUrl = '';
+    const [pageLoaderActive, setPageLoader] = React.useState(false)
+    const [modalIsOpen, setModalIsOpen] = React.useState(false);
+    const [FileNamePopup, setFileNamePopup] = React.useState(false);
+    const [ServicesTaskCheck, setServicesTaskCheck] = React.useState(false);
+    const [folderExist, setFolderExist] = React.useState(false);
+    const [Item, setItem]: any = React.useState({});
+    const [renamedFileName, setRenamedFileName]: any = React.useState('');
+    const [selectedFile, setSelectedFile] = React.useState(null);
+    const [newlyCreatedFile, setNewlyCreatedFile]: any = React.useState(null);
+    const [itemRank, setItemRank] = React.useState(5);
+    const [selectedPath, setSelectedPath] = React.useState({
+        displayPath: '',
+        completePath: '',
+    });
+    const [AllFilesAndFolder, setAllFilesAndFolder]: any = React.useState([]);
+    const [currentFolderFiles, setCurrentFolderFiles]: any = React.useState([]);
+    const [ExistingFiles, setExistingFiles]: any = React.useState([]);
+    const [DocsToTag, setDocsToTag]: any = React.useState([]);
+    React.useEffect(() => {
+        siteUrl = props?.Context?.pageContext?.web?.absoluteUrl;
+        if (props?.item != undefined) {
+            setItem(props?.item)
+            if (props?.item?.Services?.length > 0) {
+                setServicesTaskCheck(true)
+            }
         }
-        this.GetResult();
-        console.log(this.props.Context);
-        pnp.setup({
-            spfxContext: this.props.Context
-        });
-    }
-
-    private async init(){
-        
-    }
-
-    private async GetResult() {
-        let web = new Web(this.props.siteUrl);
-        let taskDetails = [];
-        taskDetails = await web.lists
-            .getByTitle(this.state.listName)
-            .items
-            .getById(this.state.ParentComponentId)
-            .select("ID", "Title", "Status", "Team_x0020_Members/Title", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "Editor/Title", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "SharewebTaskType/Title", "Comments", "Modified")
-            .expand("Team_x0020_Members", "Author", "Editor", "Responsible_x0020_Team", "SharewebTaskType")
-            .get()
-
-        await this.GetTaskUsers();
-
-        //this.currentUser = this.GetUserObject(this.props.Context.pageContext.user.displayName);
-
-        let tempTask = {
-            ID: 'T' + taskDetails["ID"],
-            Title: taskDetails["Title"],
-            Status: taskDetails["Status"],
-            TeamLeader: taskDetails["Responsible_x0020_Team"] != null ? this.GetUserObjectFromCollection(taskDetails["Responsible_x0020_Team"]) : null,
-            TeamMembers: taskDetails["Team_x0020_Members"] != null ? this.GetUserObjectFromCollection(taskDetails["Team_x0020_Members"]) : null,
-            PercentComplete: taskDetails["PercentComplete"],
-            Priority: taskDetails["Priority"],
-            Created: taskDetails["Created"] != null ? (new Date(taskDetails["Created"])).toLocaleDateString() : '',
-            Modified: taskDetails["Modified"] != null ? (new Date(taskDetails["Modified"])).toLocaleDateString() : '',
-            ModifiedBy: this.GetUserObjectArr(taskDetails["Editor"]),
-            Author: this.GetUserObjectArr(taskDetails["Author"]),
-            component_url: taskDetails["component_x0020_link"],
-            Comments: JSON.parse(taskDetails["Comments"]),
-            FeedBack: JSON.parse(taskDetails["FeedBack"]),
-            SharewebTaskType: taskDetails["SharewebTaskType"] != null ? taskDetails["SharewebTaskType"].Title : ''
-        };
-
-        if (tempTask["Comments"] != undefined && tempTask["Comments"].length > 0) {
-            tempTask["Comments"].sort(function (a: any, b: any) {
-                let keyA = a.ID,
-                    keyB = b.ID;
-                // Compare the 2 dates
-                if (keyA < keyB) return 1;
-                if (keyA > keyB) return -1;
-                return 0;
-            });
+        pathGenerator();
+    }, [])
+    const pathGenerator = async () => {
+        const params = new URLSearchParams(window.location.search);
+        var query = window.location.search.substring(1);
+        console.log(query)
+        //Test = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx'
+        var vars = query.split("&");
+        let Href = window.location.href.toLowerCase().split('?')[0]
+        Href = Href.toLowerCase().split('?')[0]
+        Href = Href.split('#')[0];
+        siteName = params.get("Site");
+        let path = '';
+        if (siteName?.length > 0) {
+            if (props?.item?.Services?.length > 0) {
+                path = `/documents/tasks/Service-tasks/${siteName}/${props?.item?.Title}`
+            } else {
+                path = `/documents/tasks/Component-tasks/${siteName}/${props?.item?.Title}`
+            }
+        } else {
+            if (ServicesTaskCheck) {
+                path = `/documents/Service-Portfolio/${props?.item?.Title}`
+            } else {
+                path = `/documents/Component-Portfolio/${props?.item?.Title}`
+            }
         }
-
-        this.setState({
-            Result: tempTask
-        });
+        let displayUrl = props?.Context?.pageContext?.web?.serverRelativeUrl + path
+        let internalPath = siteUrl + path
+        setSelectedPath({
+            ...selectedPath,
+            displayPath: displayUrl,
+            completePath: internalPath
+        })
+        fetchFilesByPath(displayUrl)
+        let allFiles: any = await getExistingUploadedDocuments()
+        setAllFilesAndFolder(allFiles);
+        AllFilesAndFolderBackup = allFiles;
+        checkFolderExistence(props?.item?.Title);
+    }
+    const checkFolderExistence = (title: any) => {
+        AllFilesAndFolderBackup?.map((File: any) => {
+            if (File?.FileLeafRef == title && File?.FileSystemObjectType == 1) {
+                setFolderExist(true)
+            }
+        })
     }
 
-    private GetUserObjectFromCollection(UsersValues: any) {
-        let userDeatails = [];
-        for (let index = 0; index < UsersValues.length; index++) {
-            let senderObject = this.taskUsers.filter(function (user: any, i: any) {
-                if (user.AssingedToUser != undefined) {
-                    return user.AssingedToUser['Title'] == UsersValues[index].Title
+    async function getExistingUploadedDocuments(): Promise<any[]> {
+        try {
+            let alreadyTaggedFiles: any = [];
+            let selectQuery = 'Id,SharewebId,Title,Url,FileSystemObjectType,ItemRank,Author/Id,Author/Title,Editor/Id,Editor/Title,FileDirRef,FileLeafRef,File_x0020_Type,Year,EncodedAbsUrl,Created,Modified&$expand=Author,Editor'
+
+            if (siteName?.length > 0) {
+                selectQuery = `Id,SharewebId,Title,Url,FileSystemObjectType,ItemRank,Author/Id,Author/Title,${siteName}/Id,${siteName}/Title,Editor/Id,Editor/Title,FileDirRef,FileLeafRef,File_x0020_Type,Year,EncodedAbsUrl,Created,Modified&$expand=Author,Editor,${siteName}`
+            }
+            // const files = await folder.files.get();
+            const files = await sp.web.lists.getByTitle('Documents').items.select(selectQuery).getAll();
+            let newFilesArr: any = [];
+            files?.map((file: any) => {
+                if (file?.Title != undefined && file?.File_x0020_Type != undefined) {
+                    file.docType = getFileType(file?.Name);
+                    newFilesArr.push(file)
                 }
-            });
-            if (senderObject.length > 0) {
-                userDeatails.push({
-                    'Id': senderObject[0].Id,
-                    'Name': senderObject[0].Email,
-                    'Suffix': senderObject[0].Suffix,
-                    'Title': senderObject[0].Title,
-                    'userImage': senderObject[0].Item_x0020_Cover.Url
-                })
-            }
+                if (file[siteName] != undefined && file[siteName].length > 0 && file[siteName].some((task: any) => task.Id == props?.item?.Id)) {
+                    alreadyTaggedFiles.push(file);
+                }
+            })
+            backupExistingFiles = newFilesArr;
+            setExistingFiles(newFilesArr)
+            setDocsToTag(alreadyTaggedFiles);
+
+            return files
+        } catch (error) {
+            console.log('An error occurred while fetching files:', error);
+            return [];
         }
-        return userDeatails;
     }
-
-
-    private async GetTaskUsers() {
-        let web = new Web(this.props.siteUrl);
-        let currentUser = await web.currentUser.get();
-        //.then((r: any) => {  
-        // console.log("Cuurent User Name - " + r['Title']);  
-        //}); 
-        let taskUsers = [];
-        taskUsers = await web.lists
-            .getByTitle('Task Users')
-            .items
-            .select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'AssingedToUser/Title', 'AssingedToUser/EMail')
-            .filter("ItemType eq 'User'")
-            .expand('AssingedToUser')
-            .get();
-        this.taskUsers = taskUsers;
-
-        for (let index = 0; index < this.taskUsers.length; index++) {
-            this.mentionUsers.push({
-                id: this.taskUsers[index].Title + "{" + this.taskUsers[index].Email + "}",
-                display: this.taskUsers[index].Title
-            });
-
-            if (this.taskUsers[index].Title == "Deepak Trivedi" || this.taskUsers[index].Title == "Stefan Hochhuth" || this.taskUsers[index].Title == "Robert Ungethuem" || this.taskUsers[index].Title == "Mattis Hahn") {
-                this.topCommenters.push({
-                    id: this.taskUsers[index].Title + "{" + this.taskUsers[index].Email + "}",
-                    display: this.taskUsers[index].Title,
-                    Title: this.taskUsers[index].Title,
-                    ItemCoverURL: (this.taskUsers[index].Item_x0020_Cover != undefined) ?
-                        this.taskUsers[index].Item_x0020_Cover.Url :
-                        "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"
-                })
-            }
-
-            if (this.taskUsers[index].AssingedToUser != null && this.taskUsers[index].AssingedToUser.Title == currentUser['Title'])
-                this.currentUser = this.taskUsers[index];
-        }
-        console.log(this.topCommenters);
-        console.log(this.mentionUsers);
-    }
-
-    private handleInputChange(e: any) {
-        this.setState({ CommenttoPost: e.target.value });
-    }
-
-    private async PostComment(txtCommentControlId: any) {
-        let txtComment = this.state.CommenttoPost;
-        if (txtComment != '') {
-            let temp = {
-                AuthorImage: this.currentUser['Item_x0020_Cover'] != null ? this.currentUser['Item_x0020_Cover']['Url'] : '',
-                AuthorName: this.currentUser['Title'] != null ? this.currentUser['Title'] : '',
-                Created: (new Date().toLocaleString('default', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })).replace(',', ''),
-                Description: txtComment,
-                Header: this.GetMentionValues(),
-                ID: this.state.Result["Comments"] != undefined ? this.state.Result["Comments"].length + 1 : 1,
-                Title: txtComment,
-                editable: false
-            };
-            //Add object in feedback
-
-            if (this.state.Result["Comments"] != undefined) {
-                this.state.Result["Comments"].push(temp);
-            }
-            else {
-                this.state.Result["Comments"] = [temp];
-            }
-            this.state.Result["Comments"].sort(function (a: any, b: any) {
-                let keyA = a.ID,
-                    keyB = b.ID;
-                // Compare the 2 dates
-                if (keyA < keyB) return 1;
-                if (keyA > keyB) return -1;
-                return 0;
-            });
-
-            console.log(this.state.Result);
-            (document.getElementById(txtCommentControlId) as HTMLTextAreaElement).value = '';
-            let web = new Web(this.props.siteUrl);
-            const i = await web.lists.getByTitle(this.state.listName)
-                .items
-                .getById(this.state.ParentComponentId).update({
-                    Comments: JSON.stringify(this.state.Result["Comments"])
-                });
-            this.setState({
-                updateComment: true
-            }, () => this.GetEmailObjects());
-
-            this.setState({
-                updateComment: true,
-                CommenttoPost: '',
-                mentionValue: ''
+    const searchExistingFile = (value: any) => {
+        if (value?.length > 0) {
+            setExistingFiles((prevFile: any) => {
+                backupExistingFiles
             });
         } else {
-            alert('Please input some text.')
+            setExistingFiles(backupExistingFiles);
         }
     }
 
-    private async updateComment() {
-        let updateCommentPost = this.state.updateCommentPost;
-        let txtComment = draftToHtml(convertToRaw(this.state.editorState.getCurrentContent()));
-
-        if (txtComment != '') {
-            let temp = {
-                AuthorImage: this.currentUser['Item_x0020_Cover'] != null ? this.currentUser['Item_x0020_Cover']['Url'] : '',
-                AuthorName: this.currentUser['Title'] != null ? this.currentUser['Title'] : '',
-                Created: (new Date().toLocaleString('default', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })).replace(',', ''),
-                Description: txtComment,
-                Header: updateCommentPost.Header,
-                ID: updateCommentPost.ID,
-                Title: txtComment,
-                editable: false
-            };
-            //Add object in feedback
-
-            //delete the value before add new value
-            let elementPosition = 0;
-            for (let index = 0; index < this.state.Result["Comments"].length; index++) {
-                let elementId = this.state.Result["Comments"][index].ID;
-                if (elementId == temp.ID) {
-                    elementPosition = index;
-                    break;
+    const tagSelectedDoc = async (file: any) => {
+        setPageLoader(true)
+        let resultArray: any = [];
+        if (file[siteName] != undefined && file[siteName].length > 0) {
+            file[siteName].map((task: any) => {
+                if (task?.Id != undefined) {
+                    resultArray.push(task.Id)
                 }
-            }
-            //delete this.state.Result["Comments"][elementPosition];
-            this.state.Result["Comments"].splice(elementPosition, 1);
-            //Add new value in 
-
-            if (this.state.Result["Comments"] != undefined) {
-                this.state.Result["Comments"].push(temp);
-            }
-            else {
-                this.state.Result["Comments"] = [temp];
-            }
-            this.state.Result["Comments"].sort(function (a: any, b: any) {
-                let keyA = a.ID,
-                    keyB = b.ID;
-                // Compare the 2 dates
-                if (keyA < keyB) return 1;
-                if (keyA > keyB) return -1;
-                return 0;
-            });
-
-            console.log(this.state.Result);
-
-            let web = new Web(this.props.siteUrl);
-            const i = await web.lists.getByTitle(this.state.listName)
-                .items
-                .getById(this.state.ParentComponentId).update({
-                    Comments: JSON.stringify(this.state.Result["Comments"])
-                });
-            this.setState({
-                updateComment: true,
-                updateCommentPost: null,
-                isModalOpen: false
-            });
-        } else {
-            alert('Please input some text.')
-        }
-
-    }
-
-    private GetMentionValues() {
-        let mention_str = '';
-        if (this.state.mentionValue != '') {
-            let regExpStr = this.state.mentionValue;
-            let regExpLiteral = /\[(.*?)\]/gi;
-            let allMention = regExpStr.match(regExpLiteral);
-            if (allMention.length > 0) {
-                for (let index = 0; index < allMention.length; index++) {
-                    mention_str += allMention[index].replace('[', '@').replace(']', '').trim() + ' ';
-                }
-            }
-        }
-        return mention_str.trim();
-    }
-
-    private GetUserObjectArr(username: any) {
-        let userDeatails = [];
-        let senderObject = this.taskUsers.filter(function (user: any, i: any) {
-            if (user.AssingedToUser != undefined) {
-                return user.AssingedToUser['Title'] == username.Title //|| user.AssingedToUser['Title'] == "SPFx Developer1"
-            }
-            else {
-                return user.Title == username.Title
-            }
-        });
-        if (senderObject.length > 0) {
-            userDeatails.push({
-                'Id': senderObject[0].Id,
-                'Name': senderObject[0].Email,
-                'Suffix': senderObject[0].Suffix,
-                'Title': senderObject[0].Title,
-                'userImage': senderObject[0].Item_x0020_Cover.Url
             })
         }
-        return userDeatails;
-    }
+        if (!DocsToTag?.some((doc: any) => file.Id == doc.Id) && !resultArray.some((taskID: any) => taskID == props?.item?.Id)) {
+            resultArray.push(props?.item?.Id)
+            let siteColName = `${siteName}Id`
+            // Update the document file here
+            await sp.web.lists.getByTitle('Documents').items.getById(file.Id)
+                .update({ [siteColName]: { "results": resultArray } }).then((updatedFile: any) => {
+                    file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
+                    setDocsToTag([...DocsToTag, ...[file]])
+                    alert(`The file '${file?.Title}' has been successfully tagged to the task '${props?.item?.TaskId}'. Please refresh the page to get the changes.`);
+                    setPageLoader(false)
+                    return file;
+                })
 
-    private GetUserObject(username: any) {
-        let userDeatails = {};
-        let senderObject = this.taskUsers.filter(function (user: any, i: any) {
-            if (user.AssingedToUser != undefined) {
-                return user.AssingedToUser['Title'] == username
-            }
 
-        });
-        if (senderObject.length > 0) {
-            userDeatails = {
-                'Id': senderObject[0].Id,
-                'Name': senderObject[0].Email,
-                'Suffix': senderObject[0].Suffix,
-                'Title': senderObject[0].Title,
-                'userImage': senderObject[0].Item_x0020_Cover.Url
-            }
+        } else if (DocsToTag?.some((doc: any) => file.Id == doc.Id) && resultArray.some((taskID: any) => taskID == props?.item?.Id)) {
+            resultArray = resultArray.filter((taskID: any) => taskID != props?.item?.Id)
+            let siteColName = `${siteName}Id`
+            // Update the document file here
+            await sp.web.lists.getByTitle('Documents').items.getById(file.Id)
+                .update({ [siteColName]: { "results": resultArray } }).then((updatedFile: any) => {
+                    file[siteName] = file[siteName].filter((task: any) => task.Id != props?.item?.Id);
+                    setDocsToTag((prevFile: any) => {
+                        return prevFile.filter((item: any) => {
+                            return item.Id != file.Id
+                        });
+                    });
+                    setPageLoader(false)
+                    alert(`The file '${file?.Title}' has been successfully untagged from the task '${props?.item?.TaskId}'. Please refresh the page to get the changes.`);
+                    return file;
+                })
+
+
         }
-        return userDeatails;
+
     }
-
-    private async clearComment(indexOfDeleteElement: any) {
-        if (confirm('Are you sure, you want to delete this?')) {
-            this.state.Result["Comments"].splice(indexOfDeleteElement, 1);
-            let web = new Web(this.props.siteUrl);
-            const i = await web.lists.getByTitle(this.state.listName)
-                .items
-                .getById(this.state.ParentComponentId).update({
-                    Comments: JSON.stringify(this.state.Result["Comments"])
-                });
-
-            this.setState({
-                updateComment: true
+    const fetchFilesByPath = async (folderPath: any) => {
+        fetchFilesFromFolder(folderPath)
+            .then((files) => {
+                files?.map((file: any) => {
+                    file.docType = getFileType(file?.Name)
+                })
+                backupCurrentFolder = files;
+                setCurrentFolderFiles(files)
+            })
+            .catch((error) => {
+                console.log('An error occurred:', error);
             });
+
+    }
+
+    function getFileType(fileName: any) {
+        const regex = /(?:\.([^.]+))?$/;
+        const match = regex.exec(fileName);
+        if (match === null) {
+            return null;
+        }
+        return match[1];
+    }
+    async function fetchFilesFromFolder(folderPath: string): Promise<any[]> {
+        try {
+            const folder = sp.web.getFolderByServerRelativeUrl(folderPath);
+            const files = await folder.files.get();
+
+            return files;
+        } catch (error) {
+            console.log('An error occurred while fetching files:', error);
+            return [];
         }
     }
-    private openEditModal(cmdData: any, indexOfDeleteElement: any) {
-        this.setState({
-            isModalOpen: true,
-            editorState: EditorState.createWithContent(
-                ContentState.createFromBlockArray(
-                    convertFromHTML('<p>' + cmdData.Description + '</p>').contentBlocks
-                )
-            ),
-            updateCommentPost: cmdData
-        })
-    }
-
-    private openAllCommentModal() {
-        this.setState({
-            AllCommentModal: true
-        })
-    }
-
-    private closeAllCommentModal(e: any) {
-        e.preventDefault();
-        this.setState({
-            AllCommentModal: false
-        })
-    }
-
-    //close the model
-    private CloseModal(e: any) {
-        e.preventDefault();
-        this.setState({
-            isModalOpen: false,
-            /*editorState : EditorState.createWithContent(
-              ContentState.createFromBlockArray(
-                convertFromHTML('').contentBlocks
-              )
-            )*/
-            editorState: EditorState.createEmpty()
-        });
-    }
-
-    private topCommentersClick(e: any) {
-        console.log(e.currentTarget.className);
-        if (e.currentTarget.className.indexOf('active') < 0) {
-            e.currentTarget.classList.add('active');
-            this.setState({
-                mentionValue: this.state.mentionValue + '@[' + e.currentTarget.title + '](' + e.currentTarget.id + ') '
-            }, () => { console.log(this.state.mentionValue) })
+    const searchCurrentFolder = (value: any) => {
+        if (value?.length > 0) {
+            setCurrentFolderFiles((prevFile: any) => {
+                return backupCurrentFolder.filter((file: any) => {
+                    return file?.Title?.toLowerCase()?.includes(value?.toLowerCase());
+                });
+            });
+        } else {
+            setCurrentFolderFiles(backupCurrentFolder);
         }
 
     }
-
-    private setMentionValue(e: any) {
-        this.setState({
-            mentionValue: e.target.value
-        }, () => { console.log(this.state.mentionValue) })
+    const setModalIsOpenToFalse = () => {
+        setSelectedFile(null);
+        setModalIsOpen(false);
+    }
+    const onRenderCustomHeaderMain = () => {
+        return (
+            <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
+                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                    <img className="imgWid29 pe-1 mb-1 " src={Item?.SiteIcon} />
+                    <span className="siteColor">
+                        {`Add & Connect Tool - ${Item.TaskId != undefined || Item.TaskId != null ? Item.TaskId : ""} ${Item.Title != undefined || Item.Title != null ? Item.Title : ""}`}
+                    </span>
+                </div>
+                <Tooltip ComponentId="528" />
+            </div>
+        );
+    };
+    const onRenderCustomFooterMain = () => {
+        return (
+            <footer className={ServicesTaskCheck ? "serviepannelgreena bg-f4 fixed-bottom" : "bg-f4 fixed-bottom"}>
+                <div className="align-items-center d-flex justify-content-between me-3 px-4 py-2">
+                    <span >
+                        <button className="btn btn-primary px-3">
+                            OK
+                        </button>
+                    </span>
+                </div>
+            </footer>
+        )
     }
 
-    private GetEmailObjects() {
 
-        if (this.state.mentionValue != '') {
-            //Get All To's
-            let mention_To: any = [];
-            let regExpStr = this.state.mentionValue;
-            let regExpLiteral = /\{(.*?)\}/gi;
-            let allMention = regExpStr.match(regExpLiteral);
-            if (allMention.length > 0) {
-                for (let index = 0; index < allMention.length; index++) {
-                    /*For Prod when mail is open for all
-                    if (allMention[index].indexOf(null)<0){
-                      mention_To.push(allMention[index].replace('{','').replace('}','').trim());   
-                    } 
-                    */
-                    /*testing*/
-                    if (allMention[index].indexOf('mitesh.jha@hochhuth-consulting.de') > 0 || allMention[index].indexOf('ranu.trivedi@hochhuth-consulting.de') > 0) {
-                        mention_To.push(allMention[index].replace('{', '').replace('}', '').trim());
-                    }
+    const handleFileDrop = (event: any) => {
+        event.preventDefault();
+        const file = event.dataTransfer.files[0];
+        setSelectedFile(file);
+    };
+
+    const handleFileInputChange = (event: any) => {
+        const file = event.target.files[0];
+        setSelectedFile(file);
+    };
+
+    const handleRankChange = (event: any) => {
+        const rank = parseInt(event.target.value);
+        setItemRank(rank);
+    };
+    const CreateFolder = async (path: any, folderName: any): Promise<any> => {
+        try {
+            const library = sp.web.lists.getByTitle('Documents');
+            const parentFolder = sp.web.getFolderByServerRelativeUrl(path);
+            await parentFolder.folders.add(folderName).then((data: any) => {
+                console.log('Folder created successfully.');
+                return Promise.resolve(data)
+            });
+        } catch (error) {
+            return Promise.reject(error)
+        }
+    }
+    const handleUpload = async () => {
+        let isFolderAvailable = folderExist;
+        setPageLoader(true)
+        if (isFolderAvailable == false) {
+            try {
+                await CreateFolder(selectedPath?.displayPath?.split(props?.item?.Title)[0], props?.item?.Title).then((data: any) => {
+                    isFolderAvailable = true
+                    setFolderExist(true)
+                })
+
+            } catch (error) {
+                setPageLoader(false)
+                console.log('An error occurred while creating the folder:', error);
+            }
+        }
+        if (isFolderAvailable == true) {
+            try {
+                // Read the file content
+                const reader = new FileReader();
+                reader.onloadend = async () => {
+                    const fileContent = reader.result as ArrayBuffer;
+
+                    // Upload the file
+                    await sp.web
+                        .getFolderByServerRelativeUrl(selectedPath.displayPath)
+                        .files.add(selectedFile?.name, fileContent, true).then(async (uploadedFile: any) => {
+                            setTimeout(async () => {
+                                const fileItems = await getExistingUploadedDocuments()
+                                fileItems?.map(async (file: any) => {
+                                    if (file?.FileDirRef != undefined && file?.FileDirRef?.toLowerCase() == selectedPath?.displayPath?.toLowerCase() && file?.FileSystemObjectType == 0 && file?.FileLeafRef == selectedFile?.name) {
+                                        let resultArray: any = [];
+                                        resultArray.push(props?.item?.Id)
+                                        let siteColName = `${siteName}Id`
+                                        // Update the document file here
+                                        let postData = {
+                                            [siteColName]: { "results": resultArray },
+                                            ItemRank: itemRank,
+                                            Title: renamedFileName?.length > 0 ? renamedFileName : selectedFile?.name?.split(`.${file.docType}`)[0]
+                                        }
+                                        await sp.web.lists.getByTitle('Documents').items.getById(file.Id)
+                                            .update(postData).then((updatedFile: any) => {
+                                                file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
+                                                setDocsToTag([...DocsToTag, ...[file]])
+                                                setPageLoader(false)
+                                                alert(`The file '${renamedFileName?.length > 0 ? renamedFileName : selectedFile?.name}' has been successfully tagged to the task '${props?.item?.TaskId}'.Please refresh the page to get the changes.`);
+                                                pathGenerator()
+                                                setRenamedFileName('')
+                                                return file;
+                                            })
+                                        console.log("File uploaded successfully.", file);
+                                    }
+                                })
+                            }, 2000);
+
+                        });
+
+
+                };
+
+                reader.readAsArrayBuffer(selectedFile);
+            } catch (error) {
+                console.log("File upload failed:", error);
+                setPageLoader(false)
+            }
+        }
+        setSelectedFile(null);
+        setItemRank(5);
+    };
+    // Create Files direct From Code And Tag
+    async function createBlankWordDocx() {
+        createNewDocType = 'docx'
+       let jsonResult= await GlobalFunction.docxUint8Array();
+       setNewlyCreatedFile(jsonResult)
+       setFileNamePopup(true)
+    }
+
+    async function createBlankExcelXlsx() {
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Sheet1');
+        worksheet.addRow([]);
+        const buffer = await workbook.xlsx.writeBuffer();
+        createNewDocType = 'xlsx'
+        setNewlyCreatedFile(buffer)
+        setFileNamePopup(true)
+    }
+
+    async function createBlankPowerPointPptx() {
+        createNewDocType = 'pptx'
+        const pptx = new pptxgen();
+        pptx.addSlide();
+
+        await pptx.stream().then((file: any) => {
+            setNewlyCreatedFile(file)
+            setFileNamePopup(true);
+        })
+    }
+    const CreateNewAndTag = async () => {
+        setPageLoader(true)
+        let isFolderAvailable = folderExist;
+        let fileName = ''
+        if (isFolderAvailable == false) {
+            try {
+                await CreateFolder(selectedPath?.displayPath?.split(props?.item?.Title)[0], props?.item?.Title).then((data: any) => {
+                    isFolderAvailable = true
+                    setFolderExist(true)
+                })
+
+            } catch (error) {
+                setPageLoader(false)
+                console.log('An error occurred while creating the folder:', error);
+            }
+        }
+        if (isFolderAvailable == true) {
+            try {
+                if (renamedFileName?.length > 0) {
+                    fileName = `${renamedFileName}.${createNewDocType}`
+                } else {
+                    fileName = `${props?.item?.Title}.${createNewDocType}`
                 }
+                await sp.web
+                    .getFolderByServerRelativeUrl(selectedPath.displayPath)
+                    .files.add(fileName, newlyCreatedFile, true).then(async (uploadedFile: any) => {
+                        setTimeout(async () => {
+                            const fileItems = await getExistingUploadedDocuments()
+                            fileItems?.map(async (file: any) => {
+                                if (file?.FileDirRef != undefined && file?.FileDirRef?.toLowerCase() == selectedPath?.displayPath?.toLowerCase() && file?.FileSystemObjectType == 0 && file?.FileLeafRef == fileName) {
+                                    let resultArray: any = [];
+                                    resultArray.push(props?.item?.Id)
+                                    let siteColName = `${siteName}Id`
+                                    // Update the document file here
+                                    let postData = {
+                                        [siteColName]: { "results": resultArray },
+                                        ItemRank: itemRank,
+                                        Title: fileName
+                                    }
+                                    await sp.web.lists.getByTitle('Documents').items.getById(file.Id)
+                                        .update(postData).then((updatedFile: any) => {
+                                            file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
+                                            setDocsToTag([...DocsToTag, ...[file]])
+                                            setPageLoader(false)
+                                            alert(`The file '${fileName}' has been successfully tagged to the task '${props?.item?.TaskId}'. Please refresh the page to get the changes.`);
+                                            pathGenerator()
+                                            cancelNewCreateFile()
+                                            return file;
+                                        })
+                                    console.log("File uploaded successfully.", file);
+                                }
+                            })
+                        }, 2000);
 
-                console.log(mention_To);
-                if (mention_To.length > 0) {
-                    let emailprops = {
-                        To: mention_To,
-                        Subject: "[" + this.params1.get('Site') + " - Comment by " + this.props.Context.pageContext.user.displayName + "] " + this.state.Result["Title"],
-                        Body: this.state.Result["Title"]
-                    }
-                    console.log(emailprops);
-
-                    this.SendEmail(emailprops);
-
-                }
+                    });
+            } catch (error) {
+                setPageLoader(false)
+                console.log("File upload failed:", error);
             }
         }
     }
-
-    private BindHtmlBody() {
-        let body = document.getElementById('htmlMailBody')
-        console.log(body.innerHTML);
-        return body.innerHTML;
+    //File Name Popup
+    const cancelNewCreateFile = () => {
+        setFileNamePopup(false);
+        setNewlyCreatedFile(null);
+        setRenamedFileName('');
+        createNewDocType = '';
     }
 
-    private SendEmail(emailprops: any) {
-        sp.utility.sendEmail({
-            //Body of Email  
-            Body: this.BindHtmlBody(),
-            //Subject of Email  
-            Subject: emailprops.Subject,
-            //Array of string for To of Email  
-            To: emailprops.To,
-            AdditionalHeaders: {
-                "content-type": "text/html"
-            },
-        }).then(() => {
-            console.log("Email Sent!");
-        });
-    }
 
-    private onEditorStateChange = (editorState: EditorState): void => {
-        console.log('set as HTML:', draftToHtml(convertToRaw(editorState.getCurrentContent())));
-        this.setState({
-            editorState,
-        });
-    }
 
-    public render(): React.ReactElement<IAncToolProps> {
-        const { editorState } = this.state;
-        return (
-            <div>
-                <div className='mb-3 card commentsection'>
-                    <div className='card-header'>
-                        {/* <div className='card-actions float-end'>  <Tooltip /></div> */}
-                        <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Add and Connect<span><Tooltip /></span></div>
+    return (
+        <>
+            <div className={ServicesTaskCheck ? "serviepannelgreena mb-3 card commentsection" : "mb-3 card commentsection"}>
+                <div className='card-header'>
 
-                    </div>
-                    <div className='card-body'>
-                      
-                    <a href="#" onClick={()=>this.setState({isModalOpen: true})}>Click here to add more content</a> 
-                    </div>
+                    <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Add & Connect Tool<span><Tooltip ComponentId='324' /></span></div>
+
                 </div>
+                <div className='card-body'>
+                    <div className="row">
+                        <div className="comment-box hreflink mb-2 col-sm-12">
+                            <span onClick={() => { setModalIsOpen(true) }}> Click here to add more content</span>
+                        </div>
+                        <div className="col-sm-4">
+                            <span onClick={() => createBlankWordDocx()} >
+                                <span className='svg__iconbox svg__icon--docx hreflink' title='Word'></span>
 
+                            </span>
+                        </div>
+                        <div className="col-sm-4">
+                            <span onClick={() => createBlankExcelXlsx()} >
+                                <span className='svg__iconbox svg__icon--xlsx hreflink' title='Excel'></span>
 
-                <Modal isOpen={this.state.isModalOpen} isBlocking={false}>
-                    <div className='modal-dialog modal-help' style={{ width: '890px' }}>
-                        <div className='modal-content'>
-                            <div className='modal-header'>
-                                <h3 className='modal-title'>Add and Connect Tool-</h3>
-                                <button type="button" className='close' style={{ minWidth: "10px" }} onClick={(e) => this.CloseModal(e)}>x</button>
-                            </div>
-                            <div className='modal-body'>
-                              
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-primary" onClick={(e) => this.updateComment()} >Save</button>
-                                <button type="button" className="btn btn-default" onClick={(e) => this.CloseModal(e)}>Cancel</button>
-                            </div>
+                            </span>
+                        </div>
+                        <div className="col-sm-4">
+                            <span onClick={() => createBlankPowerPointPptx()}>
+                                <span className='svg__iconbox svg__icon--ppt hreflink' title='Presentation'></span>
+                            </span>
                         </div>
                     </div>
-                </Modal>
+                </div>
+            </div>
+            <Panel
+                type={PanelType.large}
+                isOpen={modalIsOpen}
+                onDismiss={setModalIsOpenToFalse}
+                onRenderHeader={onRenderCustomHeaderMain}
+                isBlocking={false}
+                onRenderFooter={onRenderCustomFooterMain}>
+                <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
 
-                <Modal isOpen={this.state.AllCommentModal} isBlocking={false}>
-                    <div className='modal-dialog modal-help'>
-                        <div id='ShowAllCommentsId'>
-                            <div className='modal-content'>
-                                <div className='modal-header'>
-                                    {this.state.Result["Comments"] != undefined && this.state.Result["Comments"].length > 0 &&
-                                        <h3 className='modal-title'>Comment: {this.state.Result["Title"] + ' (' + this.state.Result["Comments"].length + ')'}</h3>
-                                    }
-                                    <button type="button" className='close' style={{ minWidth: "10px" }} onClick={(e) => this.closeAllCommentModal(e)}>x</button>
-                                </div>
-                                <div className='modal-body bg-f5f5 clearfix'>
-                                    <div className="col-sm-12  pl-10 boxbackcolor" id="ShowAllComments">
-                                        <div className="col-sm-12 mt-10 mb-10 padL-0 PadR0">
-                                            <div className="col-sm-12 mb-10 pl-7 PadR0">
-                                                <div className="col-sm-11 padL-0">
-                                                    <textarea id="txtCommentModal" onChange={(e) => this.handleInputChange(e)} className="form-control ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required ui-autocomplete-input" rows={2} ng-required="true" placeholder="Enter your comments here" ng-model="Feedback.comment"></textarea>
-                                                    <span role="status" aria-live="polite" className="ui-helper-hidden-accessible"></span>
+                    <div className="modal-body mb-5">
+                        <ul className="fixed-Header nav nav-tabs" id="myTab" role="tablist">
+                            <button className="nav-link active" id="Documnets-Tab" data-bs-toggle="tab" data-bs-target="#Documents" type="button" role="tab" aria-controls="Documents" aria-selected="true">
+                                Documents
+                            </button>
+                            <button className="nav-link" id="Images-Tab" data-bs-toggle="tab" data-bs-target="#Images" type="button" role="tab" aria-controls="Images" aria-selected="false" >
+                                Images
+                            </button>
+
+                        </ul>
+                        <div className="border border-top-0 clearfix p-3 tab-content " id="myTabContent">
+                            <div className="tab-pane  show active" id="Documents" role="tabpanel" aria-labelledby="Documents">
+                                <div className="row">
+                                    <div className="col-sm-6">
+                                        {selectedPath?.displayPath?.length > 0 ?
+                                            // <DefaultFolderContent Context={props.Context} AllListId={props?.AllListId} item={Item} folderPath={selectedPath?.displayPath} /> 
+                                            <div className="">
+                                                <details>
+                                                    <summary>1. Default Folder Content </summary>
+                                                    <div className='AccordionContent mx-height'>
+                                                        <div className="col-sm-12 panel-body">
+                                                            <input id="searchinput" type="search" onChange={(e) => { searchCurrentFolder(e.target.value) }} placeholder="Search..." className="form-control" />
+                                                            <span className="searchclear-project ng-hide" style={{ right: '12px', top: '10px' }}>X</span>
+                                                            <div className="Alltable mt-10">
+                                                                <div className="col-sm-12 pad0 ">
+                                                                    {currentFolderFiles?.length > 0 ?
+                                                                        <div className='smart'>
+                                                                            <table className='table'>
+                                                                                <tr>
+                                                                                    <th>DocType</th>
+                                                                                    <th>Title</th>
+                                                                                </tr>
+                                                                                {currentFolderFiles?.map((file: any) => {
+                                                                                    return (
+                                                                                        <tr>
+                                                                                            <td><span className={`svg__iconbox svg__icon--${file?.docType}`} title={file?.docType}></span></td>
+                                                                                            <td><a href={file?.docType == 'pdf' ? file?.ServerRelativeUrl : file?.LinkingUri} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
+                                                                                        </tr>
+                                                                                    )
+                                                                                })}
+                                                                            </table>
+                                                                        </div>
+                                                                        :
+                                                                        <div className="current_commnet ">
+                                                                            No Documents Available
+                                                                        </div>
+                                                                    }
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </details>
+                                            </div>
+                                            : ''
+                                        }
+                                    </div>
+                                    <div className="col-sm-6">
+                                        <div>
+                                            <label className="full_width ">Default Folder</label>
+                                            {folderExist == true ? <span>{selectedPath?.displayPath}</span> : <span>{selectedPath?.displayPath?.split(props?.item?.Title)}<span className='highlighted'>{props?.item?.Title}
+                                                <div className="popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                    <span className="svg__iconbox svg__icon--info " ></span>
+                                                    <div className="popover__content">
+                                                        <span>
+                                                            Highlighted folder does not exist. It will be created at the time of document upload.
+                                                        </span>
+                                                    </div>
                                                 </div>
-                                                <div className="col-sm-1 padL-0">
-                                                    <div className="icon_post">
-                                                        <a onClick={() => this.PostComment('txtCommentModal')} ><img title="Save changes & exit" className="ng-binding" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/Post.png" /></a>
+                                            </span></span>}
+
+                                            {/* <span>
+                                                <a title="Click for Associated Folder" >Change</a>
+                                            </span> */}
+
+                                            <div className="clearfix"></div>
+                                        </div>
+                                    </div>
+
+                                </div><div className="row form-group clearfix">
+                                    <div className="col-sm-6 padL-0">
+                                        {/* <ConnectExistingDoc Context={props.Context} AllListId={props?.AllListId} item={Item} folderPath={selectedPath?.completePath} /> */}
+                                        <div className="panel panel-default">
+                                            <div className="panel-heading">
+                                                <h3 className="panel-title">
+                                                    2. Connect Existing Documents
+                                                </h3>
+                                            </div>
+                                            <div className="panel-body h309">
+                                                <input id="searchinputCED" type="search" onChange={(e) => { searchExistingFile(e.target.value) }} placeholder="Search..." className="form-control " />
+                                                <div className="Alltable mt-10 mx-height">
+                                                    <div className="container-new b-none h212">
+                                                        {/* <GlobalCommanTable headerOptions={headerOptions} paginatedTable={true} columns={columns} data={ExistingFiles} callBackData={callBackData} showHeader={true} /> */}
+                                                        {ExistingFiles?.length > 0 ?
+                                                            <div className='smart SearchTableCategoryComponent'>
+                                                                <table className='table '>
+                                                                    <tr>
+                                                                        <th>&nbsp;</th>
+                                                                        <th>Type</th>
+                                                                        <th>Title</th>
+                                                                        <th>Item Rank</th>
+                                                                    </tr>
+                                                                    {ExistingFiles?.map((file: any) => {
+                                                                        return (
+                                                                            <tr>
+                                                                                <td><input type="checkbox" checked={DocsToTag?.some((doc: any) => file.Id == doc.Id)} onClick={() => { tagSelectedDoc(file) }} /></td>
+                                                                                <td><span className={`svg__iconbox svg__icon--${file?.File_x0020_Type}`} title={file?.File_x0020_Type}></span></td>
+                                                                                <td><a href={file?.EncodedAbsUrl} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
+                                                                                <td>{file?.ItemRank}</td>
+                                                                            </tr>
+                                                                        )
+                                                                    })}
+                                                                </table>
+                                                            </div>
+                                                            :
+                                                            <div className="current_commnet ">
+                                                                No Documents Available
+                                                            </div>
+                                                        }
                                                     </div>
                                                 </div>
                                             </div>
-                                            {this.state.Result["Comments"] != null && this.state.Result["Comments"].length > 0 && this.state.Result["Comments"].map((cmtData: any, i: any) => {
-                                                return <div className="DashboardpublicationItem ng-scope">
-                                                    <div className="col-sm-12 pad7">
-                                                        <div className="col-sm-1 padL-0 PadR0">
-                                                            <img style={{ height: '35px', width: '35px' }} title={cmtData.AuthorName}
-                                                                src={cmtData.AuthorImage != undefined && cmtData.AuthorImage != '' ?
-                                                                    cmtData.AuthorImage :
-                                                                    "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
-                                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-sm-6 pad0">
+                                        <div className="panel panel-default add-connect">
+                                            <div className="panel-heading ">
+                                                <h3 className="panel-title">
+                                                    3. Upload a New Document
+                                                </h3>
+                                            </div>
+                                            <div className="panel-body">
+                                                <div>
+                                                    <div
+                                                        className="nontag text-center drophere "
+                                                        onDragOver={(event) => event.preventDefault()}
+                                                        onDrop={handleFileDrop} >
+                                                        {selectedFile ? <p>Selected file: {selectedFile.name}</p> : <p>Drag and drop file here</p>}
+                                                    </div>
+                                                    <div className="row">
+                                                        <div className="col-sm-6">
+                                                            <select value={itemRank} onChange={handleRankChange} className='full-width'>
+                                                                {itemRanks.map((rank) => (
+                                                                    <option key={rank?.rank} value={rank?.rank}>{rank?.rankTitle}</option>
+                                                                ))}
+                                                            </select>
                                                         </div>
-                                                        <div className="col-sm-11 padL-0 PadR0">
-                                                            <div className="" style={{ color: '#069' }}>
-                                                                <span className="footerUsercolor ng-binding" style={{ fontSize: 'smaller' }}>{cmtData.Created}</span>
-                                                                <a className="hreflink" onClick={() => this.openEditModal(cmtData, i)}>
-                                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" />
-                                                                </a>
-                                                                <a className="hreflink" title="Delete" onClick={() => this.clearComment(i)}>
-                                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/delete.gif" />
-                                                                </a>
-                                                            </div>
-                                                            {cmtData.Header != '' && <b className="ng-binding">{cmtData.Header}</b>}
+                                                        <div className="col-sm-6">
+                                                            <input type="file" onChange={handleFileInputChange} className='full-width' />
                                                         </div>
-                                                        <div className="col-sm-1"></div>
-                                                        <div className="col-sm-11 padL-0">
-                                                            <span id="pageContent" className="ng-binding"><span dangerouslySetInnerHTML={{ __html: cmtData.Description }}></span></span>
+                                                        <div className="col-sm-12">
+                                                            <input type="text" onChange={(e) => { setRenamedFileName(e.target.value) }} value={renamedFileName} placeholder='Rename File' className='full-width' />
                                                         </div>
                                                     </div>
+
+
+
+                                                    <button onClick={handleUpload} className="btn btn-primary mt-2 my-1  float-end px-3">Upload</button>
                                                 </div>
-                                            })}
-
+                                            </div>
                                         </div>
-
                                     </div>
                                 </div>
-                                <div className="modal-footer">
+                                <div className="tab-pane " id="Images" role="tabpanel" aria-labelledby="Images">
+                                    <div className="d-flex justify-content-between">
 
-                                    <button type="button" className="btn btn-default" onClick={(e) => this.closeAllCommentModal(e)}>Cancel</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </Modal>
-
-                {this.state.Result != null && this.state.Result["Comments"] != null && this.state.Result["Comments"].length > 0 &&
-                    <div id='htmlMailBody' style={{ display: 'none' }}>
-                        <p><a><span>{this.state.Result["Title"]}</span></a></p>
-                        <table>
-                            <tr>
-                                <td>
-                                    {/* table for Comments */}
-                                    <table style={{ border: '1px solid black' }}>
-                                        <tr>
-                                            <td colSpan={2}>Comments ({this.state.Result["Comments"].length})</td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        {this.state.Result["Comments"].map((cmtData: any, i: any) => {
-                                            return <tr>
-                                                <td><span>{cmtData.Description}</span></td>
-                                                <td><span>{cmtData.Created}</span></td>
-                                            </tr>
-                                        })}
-
-                                    </table>
-                                </td>
-                                <td>
-                                    {/* table for Basid info */}
-                                    <table style={{ border: '1px solid black' }}>
-                                        <tr>
-                                            <td>
-                                                <table>
-                                                    <tr>
-                                                        <td colSpan={5}>
-                                                            Task Details
-                                                        </td>
-                                                    </tr>
-                                                    <tr><td colSpan={5}></td></tr>
-                                                    <tr>
-                                                        <td>Task URL:</td>
-                                                        <td colSpan={4}>{this.state.Result["component_url"] != null ? this.state.Result["component_url"].Url : ''}</td>
-                                                    </tr>
-                                                    <tr><td colSpan={5}></td></tr>
-                                                    <tr>
-                                                        <td>Component:</td>
-                                                        <td></td>
-                                                        <td></td>
-                                                        <td>Team:</td>
-                                                        <td></td>
-                                                    </tr>
-                                                    <tr><td colSpan={5}></td></tr>
-                                                </table>
-                                                <table>
-                                                    <tr>
-                                                        <td>Status:</td>
-                                                        <td></td>
-                                                        <td>Priority:</td>
-                                                        <td></td>
-                                                        <td>Created By:</td>
-                                                        <td></td>
-                                                        <td>Modified By:</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>{this.state.Result["CompletedDate"]} {this.state.Result["Status"]}</td>
-                                                        <td></td>
-                                                        <td>{this.state.Result["Priority"]}</td>
-                                                        <td></td>
-                                                        <td>{this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 && this.state.Result["Author"][0].Title}</td>
-                                                        <td></td>
-                                                        <td>{this.state.Result["ModifiedBy"] != null && this.state.Result["ModifiedBy"].length > 0 && this.state.Result["ModifiedBy"][0].Title}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td colSpan={7}></td>
-                                                    </tr>
-                                                </table>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </td>
-                            </tr>
-                        </table>
-                        <table style={{ border: '1px solid black' }}>
-                            <tr>
-                                <td>
-                                    <table>
-                                        <tr>
-                                            <td colSpan={3}>Task Description : </td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                        </tr>
-                                        {this.state.Result["SharewebTaskType"] != null && (this.state.Result["SharewebTaskType"] != '' ||
-                                            this.state.Result["SharewebTaskType"] == 'Task') && this.state.Result["FeedBack"] != null &&
-                                            this.state.Result["FeedBack"][0].FeedBackDescriptions.length > 0 &&
-                                            this.state.Result["FeedBack"][0].FeedBackDescriptions[0].Title != '' &&
-                                            this.state.Result["FeedBack"][0].FeedBackDescriptions.map((fbData: any, i: any) => {
-                                                return <table>
-                                                    <tr>
-                                                        <td>{i + 1}.</td>
-                                                        <td>{fbData['Title'].replace(/<[^>]*>/g, '')}</td>
-                                                    </tr>
-                                                    {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext'].map((fbSubData: any, j: any) => {
-                                                        return <tr>
-                                                            <td>{i + 1}.{j + 1}</td>
-                                                            <td>{fbSubData['Title'].replace(/<[^>]*>/g, '')}</td>
-                                                        </tr>
-                                                    })}
-                                                </table>
-                                            })}
-
-                                    </table>
-                                </td>
-                            </tr>
-                        </table>
+                </div>
+            </Panel>
+            <Modal
+                show={FileNamePopup}
+                size="sm"
+                // onHide={() => {setShow(false);item?.callBack()}}
+                backdrop="static"
+                keyboard={false}
+                className='rounded-0'
+            >
+                <Modal.Header >
+                    <Modal.Title>Create New File</Modal.Title>
+                    <span onClick={() => cancelNewCreateFile()}><i className="svg__iconbox svg__icon--cross crossBtn"></i></span>
+                </Modal.Header>
+                <Modal.Body className='pb-3'>
+                    <div className="col-sm-12">
+                        <input type="text" onChange={(e) => { setRenamedFileName(e.target.value) }} value={renamedFileName} placeholder='Enter File Name' className='full-width' />
                     </div>
-                }
-
-
-            </div>
-        );
-    }
+                </Modal.Body>
+                <Modal.Footer className="border-0 pb-1 pt-0">
+                    <Button disabled={renamedFileName?.length > 0 ? false : true} onClick={() => { CreateNewAndTag() }} className="btn btn-primary">
+                        Save
+                    </Button>
+                    <Button className="btn btn-default" onClick={() => cancelNewCreateFile()}>
+                        Cancel
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+            {pageLoaderActive ? <PageLoader /> : ''}
+        </>
+    )
 }
 
 export default AncTool;

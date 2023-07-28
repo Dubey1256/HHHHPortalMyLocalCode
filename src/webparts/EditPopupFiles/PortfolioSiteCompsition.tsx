@@ -571,16 +571,19 @@ const SiteCompositionComponent = (Props: any) => {
         // setSelectedClieantCategoryGlobal(selectedCategory);
         SelectedClieantCategoryGlobal = selectedCategory;
         if (Type == "Main") {
-            saveSelectedClientCategoryData();
+            saveSelectedClientCategoryData("Main");
         }
-        if (ComponentTableVisibiltyStatus) {
-            setComponentChildrenPopupStatus(true)
-        } else {
-            setComponentChildrenPopupStatus(false)
+        if (Type == "Popup") {
+            if (ComponentTableVisibiltyStatus) {
+                setComponentChildrenPopupStatus(true)
+            } else {
+                setComponentChildrenPopupStatus(false)
+            }
         }
+
     }
 
-    const saveSelectedClientCategoryData = () => {
+    const saveSelectedClientCategoryData = (usedFor:any) => {
         let TempArray: any = [];
         if (EPSClientCategory != undefined && EPSClientCategory.length > 0) {
             EPSClientCategory?.map((EPSData: any) => {
@@ -610,6 +613,13 @@ const SiteCompositionComponent = (Props: any) => {
         AutoCompleteItemsArray = [];
         SelectedClientCategoryBackupArray = [];
         closeClientCategoryPopup();
+        if (usedFor == "Popup") {
+            if (ComponentTableVisibiltyStatus) {
+                setComponentChildrenPopupStatus(true)
+            } else {
+                setComponentChildrenPopupStatus(false)
+            }
+        }
     }
 
     const UpdateSiteTaggingAndClientCategory = async () => {
@@ -676,12 +686,12 @@ const SiteCompositionComponent = (Props: any) => {
             })
         }
 
-        if (TotalPercentageCount > 100) {
+        if (TotalPercentageCount > 101) {
             TaskShuoldBeUpdate = false;
             TotalPercentageCount = 0
             alert("site composition allocation should not be more than 100%");
         }
-        if (TotalPercentageCount.toFixed(0) < 100 && TotalPercentageCount > 0) {
+        if (TotalPercentageCount.toFixed(0) < 99 && TotalPercentageCount > 0) {
             TotalPercentageCount = 0
             let conformationSTatus = confirm("Site composition should not be less than 100% if you still want to do it click on OK")
             if (conformationSTatus) {
@@ -725,7 +735,7 @@ const SiteCompositionComponent = (Props: any) => {
             setMigrationClientCategory([])
             MigrationClientCategory.pop();
         }
-        saveSelectedClientCategoryData();
+        saveSelectedClientCategoryData("Main");
     }
 
     const closeClientCategoryPopup = () => {
@@ -1168,7 +1178,7 @@ const SiteCompositionComponent = (Props: any) => {
                         Manage Smart Taxonomy
                     </a>
                 </span>
-                <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveSelectedClientCategoryData} >
+                <button type="button" className="btn btn-primary px-3 mx-1" onClick={()=>saveSelectedClientCategoryData("Popup")} >
                     Save
                 </button>
             </footer>
@@ -1527,7 +1537,7 @@ const SiteCompositionComponent = (Props: any) => {
 
                                 </div>
                                 <div className="d-end">
-                                    <button type="button" className="btn btn-primary" onClick={saveSelectedClientCategoryData}>
+                                    <button type="button" className="btn btn-primary" onClick={()=>saveSelectedClientCategoryData("Popup")}>
                                         OK
                                     </button>
                                 </div>

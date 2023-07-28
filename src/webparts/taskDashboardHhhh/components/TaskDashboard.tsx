@@ -6,6 +6,7 @@ import {
 import '../../projectmanagementOverviewTool/components/styles.css'
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import axios from 'axios';
+import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import "@pnp/sp/sputilities";
@@ -814,19 +815,7 @@ const TaskDashboard = (props: any) => {
                         >
                             {row?.values?.Title}
                         </a>
-
-                        {row?.original?.Body !== null && <span className="me-1">
-                            <div className="popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
-                                <span className="svg__iconbox svg__icon--info " ></span>
-                                <div className="popover__content">
-                                    <span>
-                                        <p
-                                            dangerouslySetInnerHTML={{ __html: row?.original?.bodys }}
-                                        ></p>
-                                    </span>
-                                </div>
-                            </div>
-                        </span>
+                        {row?.original?.Body !== null && <InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} />
                         }
                     </span>
                 ),
@@ -1003,19 +992,7 @@ const TaskDashboard = (props: any) => {
                         >
                             {row?.values?.Title}
                         </a>
-                        {
-                            row?.original?.Body !== null && <span className="me-1">
-                                <div className="popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
-                                    <span className="svg__iconbox svg__icon--info " ></span>
-                                    <div className="popover__content">
-                                        <span>
-                                            <p
-                                                dangerouslySetInnerHTML={{ __html: row?.original?.bodys }}
-                                            ></p>
-                                        </span>
-                                    </div>
-                                </div>
-                            </span>
+                        {row?.original?.Body !== null && <InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} />
                         }
 
                     </span>
@@ -1872,7 +1849,7 @@ const TaskDashboard = (props: any) => {
 
 
             }
-            body = body.replaceAll('>,<', '><')
+            body = body.replaceAll('>,<', '><').replaceAll(',', '')
         }
         if (input == 'today time entries') {
             var subject = currentLoginUser + `- ${selectedTimeReport} Time Entries`;
@@ -1944,7 +1921,7 @@ const TaskDashboard = (props: any) => {
                 + '</table>'
                 + '<p>' + '<a href =' + `${AllListId?.siteUrl}/SitePages/UserTimeEntry.aspx?userId=${currentUserId}` + '>Click here to open the Complete time entry' + '</a>' + '</p>'
                 + '<p>' + '<a href =' + `${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=` + currentUserId + '>' + 'Click here to open Task Dashboard of ' + currentLoginUser + '</a>' + '</p>'
-            body = body.replaceAll('>,<', '><')
+            body = body.replaceAll('>,<', '><').replaceAll(',', '')
         }
 
 
@@ -1984,7 +1961,7 @@ const TaskDashboard = (props: any) => {
     }
     const sendAllWorkingTodayTasks = () => {
         let text = '';
-        let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "jyoti.prasad@hochhuth-consulting.de"];
+        let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "abhishek.tiwari@hochhuth-consulting.de"];
         let finalBody: any = [];
         let userApprover = '';
         let taskUsersGroup = groupedUsers;
@@ -2044,9 +2021,9 @@ const TaskDashboard = (props: any) => {
                                 body1.push(text);
                             })
                             body =
-                                '<h3>'
-                                + teamMember?.Title + ` (${teamMember?.Group})`
-                                + '</h3>'
+                                '<h3><strong>'
+                                + teamMember?.Title + ` (${teamMember?.Group!=null?teamMember?.Group:''})`
+                                + '</strong></h3>'
                                 + '<table style="border: 1px solid #ccc;" border="1" cellspacing="0" cellpadding="0" width="100%">'
                                 + '<thead>'
                                 + '<tr>'
@@ -2065,11 +2042,11 @@ const TaskDashboard = (props: any) => {
                                 + body1
                                 + '</tbody>'
                                 + '</table>'
-                            body = body.replaceAll('>,<', '><')
+                            body = body.replaceAll('>,<', '><').replaceAll(',', '')
                         } else {
-                            body = '<h3>'
-                                + teamMember?.Title + ` (${teamMember?.Group})`
-                                + '</h3>'
+                            body = '<h3><strong>'
+                                + teamMember?.Title + ` (${teamMember?.Group!=null?teamMember?.Group:''})`
+                                + '</strong></h3>'
                                 + '<h4>'
                                 + 'No Working Today Tasks Available '
                                 + '</h4>'
@@ -2081,20 +2058,22 @@ const TaskDashboard = (props: any) => {
 
                         teamsTaskBody.push(body);
                     })
-                    let TeamTitle = '<h2>'
+                    let TeamTitle = '<h2><strong>'
                         + userGroup.Title
-                        + '</h2>'
+                        + '</strong></h2>'
                         + teamsTaskBody
                     finalBody.push(TeamTitle)
                 }
             })
             let sendAllTasks =
-                '<h3>'
-                + 'Please Find the Working Today Tasks of all the Team members mentioned Below.'
-                + '</h3>'
+                '<span style="font-size: 18px;margin-bottom: 10px;">'
+                + 'Hi there, <br><br>'
+                + "Below is the today's working task of all the team members :"
+                + '<p>' + '<a href =' + `${AllListId?.siteUrl}/SitePages/Project-Management-Overview.aspx` + ">Click here for flat overview of the today's tasks: " + '</a>' + '</p>'
+                + '</span>'
                 + finalBody
                 + '<h3>'
-                + 'Thanks And regards'
+                + 'Thanks.'
                 + '</h3>'
                 + '<h3>'
                 + currentUserData?.Title
@@ -2709,12 +2688,12 @@ const TaskDashboard = (props: any) => {
                                         </div>
                                         <details>
                                             {timeEntryTotal > 1 ?
-                                                <summary>{selectedTimeReport}'s Time Entry {'(' + timeEntryTotal + ' Hours)'}
+                                                <summary>{selectedTimeReport}'s Time Entry {'(' + timeEntryTotal.toFixed(2) + ' Hours)'}
                                                     {
                                                         currentUserId == currentUserData?.AssingedToUserId && selectedTimeReport == "Today" ? <span className="align-autoplay d-flex float-end" onClick={() => shareTaskInEmail('today time entries')}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Share {selectedTimeReport}'s Time Entry</span> : ""
                                                     }
                                                 </summary> :
-                                                <summary>{selectedTimeReport}'s Time Entry {'(' + timeEntryTotal + ' Hour)'}
+                                                <summary>{selectedTimeReport}'s Time Entry {'(' + timeEntryTotal.toFixed(2) + ' Hour)'}
                                                     {
                                                         currentUserId == currentUserData?.AssingedToUserId && selectedTimeReport == "Today" ? <span className="align-autoplay d-flex float-end" onClick={() => shareTaskInEmail('today time entries')}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Share {selectedTimeReport}'s Time Entry</span> : ""
                                                     }

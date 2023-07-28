@@ -156,9 +156,9 @@ export default function FroalaCommnetBoxes(textItems: any) {
                     let Index = Number(id) + 1;
                     let NewTitle: any = "";
                     if (UpdatedFeedBackParentArray[id].Title != undefined && UpdatedFeedBackParentArray[id].Title.length > 0) {
-                        NewTitle = UpdatedFeedBackParentArray[id].Title + " (See " + Index + ")";
+                        NewTitle = UpdatedFeedBackParentArray[id].Title + " (See " +Index +")";
                     } else {
-                        NewTitle = "( See " + Index + ")"
+                        NewTitle = " (See " +Index +")"
                     }
                     UpdatedFeedBackParentArray[id].Title = NewTitle;
                     const copy = [...State];
@@ -322,8 +322,8 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                             <span className="mx-1">
                                                 <input className="form-check-input m-0 rounded-0 commentSectionLabel"
                                                     type="checkbox"
-                                                    checked={obj.SeeAbove}
-                                                    value={obj.SeeAbove}
+                                                    checked={obj.SeeAbove != undefined && obj.SeeAbove == true? true : false}
+                                                    value={obj.SeeAbove != undefined && obj.SeeAbove == true ? "true" : "false"}
                                                     name='SeeAbove'
                                                 />
                                                 <label className="commentSectionLabel ms-1">See Above</label>
