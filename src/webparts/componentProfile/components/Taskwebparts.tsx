@@ -820,15 +820,13 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                 // }
                 SmartTimeData(result)
                   .then((returnresult) => {
-                    result.smartTime = String(returnresult)
+                    result.smartTime = returnresult.toFixed(1);
                     // console.log("Final Total Time:", returnresult);
                   })
                   .catch((error) => {
                     console.error("Error:", error);
                   });
-                result.PercentComplete = (result.PercentComplete * 100).toFixed(
-                  0
-                );
+                result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
 
                 if (result.Short_x0020_Description_x0020_On != undefined) {
                   result.Short_x0020_Description_x0020_On =
