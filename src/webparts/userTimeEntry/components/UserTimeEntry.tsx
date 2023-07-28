@@ -1909,10 +1909,7 @@ callBackData = (elem: any, ShowingData: any) =>{
     console.log('Checked Sites === ', this.state.checkedSites);
     return (
       <div>
-        <div className="col-sm-12 padL-0">
-          <h1 className="blue-clr">Timesheet</h1>
-        </div>
-
+<div className="p-0" style={{verticalAlign: "top"}}><h2 className="heading d-flex justify-content-between align-items-center"><span> <a>Timesheet</a> </span><span className="text-end fs-6"><a target="_blank" data-interception="off" href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/UserTimeEntry-Old.aspx`}>Old UserTimeEntry</a></span></h2></div>
         <div className="col-sm-12 togglebox  tab-content bdrbox">
           <div className="col-sm-12 pull-left mt-10 report-taskuser">
             <span className="pull-right" style={{display:'none'}}>

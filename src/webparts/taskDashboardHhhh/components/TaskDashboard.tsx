@@ -6,6 +6,7 @@ import {
 import '../../projectmanagementOverviewTool/components/styles.css'
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import axios from 'axios';
+import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import "@pnp/sp/sputilities";
@@ -814,19 +815,7 @@ const TaskDashboard = (props: any) => {
                         >
                             {row?.values?.Title}
                         </a>
-
-                        {row?.original?.Body !== null && <span className="me-1">
-                            <div className="popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
-                                <span className="svg__iconbox svg__icon--info " ></span>
-                                <div className="popover__content">
-                                    <span>
-                                        <p
-                                            dangerouslySetInnerHTML={{ __html: row?.original?.bodys }}
-                                        ></p>
-                                    </span>
-                                </div>
-                            </div>
-                        </span>
+                        {row?.original?.Body !== null && <InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} />
                         }
                     </span>
                 ),
@@ -1003,19 +992,7 @@ const TaskDashboard = (props: any) => {
                         >
                             {row?.values?.Title}
                         </a>
-                        {
-                            row?.original?.Body !== null && <span className="me-1">
-                                <div className="popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
-                                    <span className="svg__iconbox svg__icon--info " ></span>
-                                    <div className="popover__content">
-                                        <span>
-                                            <p
-                                                dangerouslySetInnerHTML={{ __html: row?.original?.bodys }}
-                                            ></p>
-                                        </span>
-                                    </div>
-                                </div>
-                            </span>
+                        {row?.original?.Body !== null && <InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} />
                         }
 
                     </span>

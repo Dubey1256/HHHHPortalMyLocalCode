@@ -909,7 +909,7 @@ class TasksViewApp extends React.Component<ITasksViewAppProps, ITasksViewAppStat
 
         const elemProgressIndicator: JSX.Element = <ProgressIndicator label="Please wait..." description="Loading the Tasks list..." />;
 
-        const elemSectionTitle: JSX.Element = <Label styles={{root:{color:"#0000BC",fontSize:"25px"}}}>Tasks View</Label>;
+        const elemSectionTitle: JSX.Element = <Label styles={{root:{color:"#000066",fontSize:"25px"}}}>Tasks View</Label>;
         
         const elemListPendingTasks: JSX.Element = (
             <div className={styles.gridContainer}>
