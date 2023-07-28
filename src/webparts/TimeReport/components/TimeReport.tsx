@@ -955,7 +955,7 @@ const TimeReport = (props:any) => {
             + '<td width="10%" style="border: 1px solid #aeabab;padding: 4px">' + item?.Components + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.SubComponents + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Features + '</td>'
-            + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<a href=' + item.siteUrl + '>' + '<span style="font-size:11px; font-weight:600">' + item.Task + '</span>' + '</a >' + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<a href=' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId='+ item.TaskId +'>' + '<span style="font-size:11px; font-weight:600">' + item.Task + '</span>' + '</a >' + '</td>'
             + '<td align="left" style="border: 1px solid #aeabab;padding: 4px">' + item?.Comments + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Priority_x0020_Rank + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Effort + '</td>'
@@ -974,23 +974,23 @@ const TimeReport = (props:any) => {
         + '</tr>'
         + '<tr>'
         + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Design' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DesignTime + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DesignTime.toFixed(2) + '</td>'
         + '</tr>'
         + '<tr>'
         + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Development' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevloperTime + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevloperTime.toFixed(2) + '</td>'
         + '</tr>'
         + '<tr>'
         + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'QA' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + QATime + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + QATime.toFixed(2) + '</td>'
         + '</tr>'
         + '<tr>'
         + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Users on leave' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + leaveUsers + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + leaveUsers.toFixed(2) + '</td>'
         + '</tr>'
         + '<tr>'
         + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + '<strong>' + 'Total' + '</strong>' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotlaTime + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotlaTime.toFixed(2) + '</strong>' + '</td>'
         + '</tr>';
     body2.push(text2);
 
@@ -999,7 +999,7 @@ const TimeReport = (props:any) => {
     + '<tbody align="center">' +
     body2 +
     '</tbody>' +
-    '</table>';
+    '</table>'
 var pageurl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TimeReportSpfx.aspx";
 var ReportDate = new Date()
  var ReportDatetime =Moment(ReportDate).format('DD/MM/YYYY')
