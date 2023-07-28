@@ -29,6 +29,7 @@ import Accordion from 'react-bootstrap/Accordion';
 //import { useAccordionButton } from 'react-bootstrap/AccordionButton';
 import Card from 'react-bootstrap/Card';
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
+import { reject } from "lodash";
 var QueryId: any = "";
 let linkedComponentData: any = [];
 let smartComponentData: any = [];
@@ -39,6 +40,7 @@ let headerOptions: any = {
   openTab: true,
   teamsIcon: true
 }
+var allSmartInfo:any=[];
 var DynamicData: any = {}
 var AllSitesAllTasks: any = [];
 var ChildData: any = []
@@ -74,6 +76,10 @@ const ProjectManagementMain = (props: any) => {
   const [starIcon, setStarIcon]: any = React.useState(false);
   const [createTaskId, setCreateTaskId] = React.useState({});
   const [isSmartInfoAvailable, setIsSmartInfoAvailable]: any = React.useState(false);
+  // const[allSmartInfo,setAllSmartInfo]=React.useState([])
+  const[remark,setRemark]=React.useState(false)
+  const[remarkData,setRemarkData]=React.useState(null)
+  const[editSmartInfo,setEditSmartInfo]=React.useState(false)
   const StatusArray = [
     { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
     { value: 2, status: "02% Follow Up", taskStatusComment: "Follow Up" },
@@ -139,10 +145,16 @@ const ProjectManagementMain = (props: any) => {
       setIsSmartInfoAvailable(true)
     }
     getQueryVariable((e: any) => e);
-
-    GetMetaData();
-    LoadAllSiteAllTasks()
-    GetMasterData();
+    loadAllSmartInformation().then((Data:any)=>{
+      GetMetaData();
+      LoadAllSiteAllTasks()
+      GetMasterData();
+    }).catch((error:any)=>{
+      GetMetaData();
+      LoadAllSiteAllTasks()
+      GetMasterData();
+    })
+  
     try {
       $("#spPageCanvasContent").removeClass();
       $("#spPageCanvasContent").addClass("hundred");
@@ -158,7 +170,26 @@ const ProjectManagementMain = (props: any) => {
   var showProgressHide = () => {
     $(" #SpfxProgressbar").hide();
   };
-
+  const loadAllSmartInformation = async () => {
+  return new Promise((resolve, reject)=>{
+    const web = new Web(props?.siteUrl);
+    // var Data = await web.lists.getByTitle("SmartInformation")
+     web.lists.getById(AllListId?.SmartInformationListID)
+      .items.select('Id,Title,Description,SelectedFolder,URL,Acronym,InfoType/Id,InfoType/Title,Created,Modified,Author/Name,Author/Title,Author/Title,Author/Id,Editor/Name,Editor/Title,Editor/Id')
+      .expand("InfoType,Author,Editor").filter("(InfoType/Title eq 'Remarks')")
+      .get().then((Data:any)=>{
+        console.log(Data)
+        allSmartInfo=[];
+        allSmartInfo=Data
+        resolve(Data)
+      }).catch((error:any)=>{
+        reject(error)
+      })
+  
+  })
+   
+   
+    }
   const getQueryVariable = async (variable: any) => {
     const params = new URLSearchParams(window.location.search);
     let query = params.get("ProjectId");
@@ -456,7 +487,7 @@ const ProjectManagementMain = (props: any) => {
           .get();
         if (smartmeta.length > 0) {
           smartmeta?.map((site: any) => {
-            if (site?.Title != "Master Tasks" && site?.Title != "SDC Sites") {
+            if (site?.Title != "Master Tasks" && site?.Title != "SDC Sites"&&site?.IsVisible==true) {
               siteConfig.push(site)
             }
           })
@@ -544,15 +575,24 @@ const ProjectManagementMain = (props: any) => {
           smartmeta = await web.lists
             .getById(config.listId)
             .items
-            .select("Id,Title,Priority_x0020_Rank,Remark,Project/Priority_x0020_Rank,Project/Id,Project/Title,Events/Id,EventsId,workingThisWeek,EstimatedTime,SharewebTaskLevel1No,SharewebTaskLevel2No,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Component/Id,Component/Title,Services/Id,Services/Title,PercentComplete,ComponentId,Categories,ServicesId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
-            .expand('AssignedTo,Events,Project,Author,Editor,Component,Services,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory')
+            .select("Id,Title,Priority_x0020_Rank,Remark,Project/Priority_x0020_Rank,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,Events/Id,EventsId,workingThisWeek,EstimatedTime,SharewebTaskLevel1No,SharewebTaskLevel2No,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Component/Id,Component/Title,Services/Id,Services/Title,PercentComplete,ComponentId,Categories,ServicesId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+            .expand('AssignedTo,Events,Project,SmartInformation,Author,Component,Services,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory')
             .top(4999)
             .filter("ProjectId eq " + QueryId)
             .orderBy("Priority_x0020_Rank", false)
             .get();
           arraycount++;
           smartmeta.map((items: any) => {
-
+             if(items?.SmartInformation?.length>0){
+              allSmartInfo?.map((smart:any)=>{
+                if(smart?.Id==items?.SmartInformation[0]?.Id){
+                  // var smartdata=[]
+                  // smartdata.push(smart)
+                  items.SmartInformation=[smart]
+                }
+                
+              })
+             }
             items.AllTeamMember = [];
             items.HierarchyData = [];
             items.siteType = config.Title;
@@ -840,6 +880,15 @@ const ProjectManagementMain = (props: any) => {
   const createOpenTask = (items: any) => {
     setCreateTaskId({ portfolioData: items, portfolioType: 'Component' });
     setisOpenCreateTask(true)
+  }
+  const openRemark=(items:any)=>{
+    setRemarkData(items)
+    if(items.SmartInformation.length>0){
+      setEditSmartInfo(true);
+    }else{
+      setEditSmartInfo(false);  
+    }
+   setRemark(true);
   }
   const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
     if (functionType == 'close') {
@@ -1179,35 +1228,47 @@ const ProjectManagementMain = (props: any) => {
           </span>
         ),
         id: 'TeamMembers',
-        canSort: false,
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "TeamMembers",
         header: "",
         size: 110
       },
-      {
-        accessorFn: (row) => row?.Remark,
+      {   accessorFn: (row) => row?.SmartInformation[0]?.Title,
         cell: ({ row }) => (
-          <span>
-            <InlineEditingcolumns
-              AllListId={AllListId}
-              callBack={inlineCallBack}
-              columnName='Remark'
-              item={row?.original}
-              TaskUsers={AllUser}
-              pageName={'ProjectManagment'}
-            />
+          <span  style={{ display: "flex", width: "100%", height: "100%" }} className='d-flex'  onClick={() => openRemark(row?.original)}>
+           &nbsp; {row?.original?.SmartInformation[0]?.Title}
           </span>
         ),
-        id: 'Remarks',
-        canSort: false,
-        resetColumnFilters: false,
+        id: 'SmartInformation',
         resetSorting: false,
+        resetColumnFilters: false,
         placeholder: "Remarks",
-        header: "",
+        header:'',
         size: 125
       },
+      // {
+      //   accessorFn: (row) => row?.Remark,
+      //   cell: ({ row }) => (
+      //     <div   className='svg__iconbox svg__icon--edit hreflink' onClick={()=>openRemark(row?.original)}>
+      //       {/* <InlineEditingcolumns
+      //         AllListId={AllListId}
+      //         callBack={inlineCallBack}
+      //         columnName='Remark'
+      //         item={row?.original}
+      //         TaskUsers={AllUser}
+      //         pageName={'ProjectManagment'}
+      //       /> */}
+      //     </div>
+      //   ),
+      //   id: 'Remarks',
+      //   canSort: false,
+      //   resetColumnFilters: false,
+      //   resetSorting: false,
+      //   placeholder: "Remarks",
+      //   header: "",
+      //   size: 125
+      // },
       {
         accessorFn: (row) => row?.Created,
         cell: ({ row }) => (
@@ -1339,7 +1400,6 @@ const ProjectManagementMain = (props: any) => {
       ""
     );
   };
-
 
   return (
     <div>
@@ -1811,6 +1871,16 @@ const ProjectManagementMain = (props: any) => {
               selectionType={"Multi"}
             ></ServiceComponentPortfolioPopup>
           )}
+          {remark&&<SmartInformation Id={remarkData?.Id}
+           AllListId={AllListId}
+            Context={props?.Context}
+             taskTitle={remarkData?.Title}
+              listName={remarkData?.siteType}
+              showHide={"projectManagement"}
+              setRemark={setRemark}
+            editSmartInfo={editSmartInfo}
+              RemarkData={remarkData}
+              />}
         </>
       ) : (
         <div>Project not found</div>

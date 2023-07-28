@@ -54,13 +54,17 @@ const SmartInformation = (props: any) => {
   const [folderCreated, setFolderCreated] = useState(true)
   // const [taskUser,setTaskUser]=useState([]);
   const handleClose = () => {
+ 
     setpopupEdit(false);
     setshowAdddocument(false);
     setSelectedTilesTitle("")
     setShow(false);
     seteditvalue(null);
     setallSetValue({ ...allValue, Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [] });
-
+    if(props.showHide==="projectManagement"){
+      console.log(props.remarkData)
+      props.setRemark(false)
+     }
   }
   const handleClosedoc = () => {
     setEditdocpanel(false)
@@ -78,13 +82,18 @@ const SmartInformation = (props: any) => {
       setShow(true);
     } else {
       setallSetValue({ ...allValue, Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [] });
-
+      setallSetValue({...allValue,InfoType:"Remarks"})
       setShow(true);
     }
 
   }
 
   useEffect(() => {
+    if(props?.showHide=="projectManagement"&&props.editSmartInfo){
+      handleShow(props.RemarkData.SmartInformation[0],"edit")
+    }if(props?.showHide=="projectManagement"&&props.editSmartInfo==false){
+      handleShow(null,"add")
+    }
     GetTaskUsers()
     GetResult();
     LoadMasterTaskList();
@@ -414,7 +423,7 @@ const SmartInformation = (props: any) => {
 
   const saveSharewebItem = async () => {
     var movefolderurl = `${props?.Context?._pageContext?._web.serverRelativeUrl}/Lists/SmartInformation`
-
+     let infotypeSelectedData:any
     console.log(movefolderurl);
     console.log(allValue);
     if ((allValue?.Title == "" && allValue?.Description != "") || (allValue?.Title != "" && allValue?.Description == "") || (allValue?.Title != "" && allValue?.Description != "")) {
@@ -423,6 +432,7 @@ const SmartInformation = (props: any) => {
         SmartMetaData?.map((item: any) => {
           if (item?.Title == allValue?.InfoType) {
             metaDataId = item?.Id;
+            infotypeSelectedData=item
           }
         })
       }
@@ -451,6 +461,29 @@ const SmartInformation = (props: any) => {
           .items.getById(editvalue?.Id).update(postdata)
           .then(async (editData: any) => {
             console.log(editData)
+            if(props.showHide==="projectManagement"){
+              console.log(props.RemarkData)
+              let restdata=editData
+              let urlcallback:any={
+                Url: postdata?.URL?.Url,
+                Description:postdata?.URL?.Description
+              }
+              // urlcallback.
+              let backupremarkdata=props.RemarkData
+              restdata.Created=postdata.Created;
+              restdata.Description=postdata.Description;
+              restdata.URL=urlcallback;
+              restdata.Id=editvalue?.Id
+              restdata.ID=editvalue?.Id
+              restdata.InfoType=infotypeSelectedData;
+              restdata.SelectedFolder=postdata.SelectedFolder;
+              restdata.Title=postdata.Title;
+              restdata.Acronym=postdata.Acronym;
+              // backupremarkdata?.SmartInformation[0]?.push(res?.data)
+              backupremarkdata?.SmartInformation.splice(0, 1,restdata);
+              props.setRemark(false)
+   
+             }
             // if ((MovefolderItemUrl == "/Memberarea" || MovefolderItemUrl == "/EDA Only" || MovefolderItemUrl == "/Only For Me") && editvalue.SelectedFolder == "Public") {
             //   if (folderCreated) {
             //     var folderName = MovefolderItemUrl.split('/')[1];
@@ -494,6 +527,7 @@ const SmartInformation = (props: any) => {
           .items.add(postdata)
           .then(async (res: any) => {
             console.log(res);
+            
             setPostSmartInfo(res)
             // if (MovefolderItemUrl == "/Memberarea" || MovefolderItemUrl == "/EDA Only" || MovefolderItemUrl == "/Only For Me") {
 
@@ -546,7 +580,14 @@ const SmartInformation = (props: any) => {
                 }
               ).then(async (data: any) => {
                 console.log(data);
-
+               if(props.showHide==="projectManagement"){
+                console.log(props.RemarkData)
+                let backupremarkdata=props?.RemarkData
+               res.data.InfoType={}
+               res.data.InfoType=infotypeSelectedData;
+                backupremarkdata?.SmartInformation?.push(res?.data)
+                props.setRemark(false)
+               }
                 GetResult();
                 handleClose();
 
@@ -593,6 +634,12 @@ const SmartInformation = (props: any) => {
       .items.getById(DeletItemId).recycle()
       .then((res: any) => {
         console.log(res);
+        if(props.showHide==="projectManagement"){
+          console.log(props.RemarkData)
+          let backupremarkdata=props?.RemarkData
+           backupremarkdata.SmartInformation=[];
+          props.setRemark(false)
+         }
         handleClose();
 
       })
@@ -1012,7 +1059,7 @@ const SmartInformation = (props: any) => {
   return (
     <div>
       {console.log(masterTaskdetails)}
-      <div className='mb-3 card commentsection'>
+     { props.showHide!="projectManagement"&&<div className='mb-3 card commentsection'>
         <div className='card-header'>
           <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">SmartInformation<span><Tooltip ComponentId='993' /></span></div>
         </div>
@@ -1103,7 +1150,7 @@ const SmartInformation = (props: any) => {
         </div>
 
 
-      </div>
+      </div>}
       {/* ================= smartInformation add and edit panel=========== */}
 
       <Panel onRenderHeader={onRenderCustomHeadersmartinfo}
