@@ -1,8 +1,7 @@
 import React from 'react'
 import DefaultFolderContent from './DefaultFolderContent'
 import axios from 'axios';
-import { usePopperTooltip } from "react-popper-tooltip";
-import "react-popper-tooltip/dist/styles.css";
+import PageLoader from '../pageLoader';
 // import {
 //     Document,
 //     Packer,
@@ -24,7 +23,6 @@ import ConnectExistingDoc from './ConnectExistingDoc';
 let backupExistingFiles: any = [];
 let backupCurrentFolder: any = [];
 let AllFilesAndFolderBackup: any = [];
-let folders: any = [];
 let createNewDocType: any = '';
 let siteName: any = '';
 const itemRanks: any[] = [
@@ -40,6 +38,7 @@ const itemRanks: any[] = [
 ]
 const AncTool = (props: any) => {
     let siteUrl = '';
+    const [pageLoaderActive, setPageLoader] = React.useState(false)
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [FileNamePopup, setFileNamePopup] = React.useState(false);
     const [ServicesTaskCheck, setServicesTaskCheck] = React.useState(false);
@@ -79,9 +78,6 @@ const AncTool = (props: any) => {
         siteName = params.get("Site");
         let path = '';
         if (siteName?.length > 0) {
-            if (siteName === "Offshore Tasks") {
-                siteName = "OffShoreTask";
-            }
             if (props?.item?.Services?.length > 0) {
                 path = `/documents/tasks/Service-tasks/${siteName}/${props?.item?.Title}`
             } else {
@@ -103,7 +99,6 @@ const AncTool = (props: any) => {
         })
         fetchFilesByPath(displayUrl)
         let allFiles: any = await getExistingUploadedDocuments()
-        let groupedFolders = createGrouping();
         setAllFilesAndFolder(allFiles);
         AllFilesAndFolderBackup = allFiles;
         checkFolderExistence(props?.item?.Title);
@@ -116,39 +111,6 @@ const AncTool = (props: any) => {
         })
     }
 
-    const createGrouping = (): any[] => {
-        const groupedFolder: any[] = [];
-    
-        const findChildren = (parent: any): void => {
-            const children = folders.filter((item:any) => item.parentFolderUrl === parent.EncodedAbsUrl);
-            if (children.length > 0) {
-                for (const child of children) {
-                    if (!child.subRows) {
-                        child.subRows = [];
-                    }
-                    parent.subRows.push(child);
-                    folders.splice(folders.indexOf(child), 1);
-                    findChildren(child);
-                }
-            }
-        };
-    
-        while (folders.length > 0) {
-            const folder = folders[0];
-            if (!folders.some((item:any) => item.EncodedAbsUrl === folder.parentFolderUrl)) {
-                folder.subRows = []; 
-                folders.splice(0, 1);
-                groupedFolder.push(folder);
-                findChildren(folder);
-            } else {
-                folders.splice(0, 1); // Skip folders that have parents for now
-            }
-        }
-    
-        return groupedFolder;
-    };
-    
-    
     async function getExistingUploadedDocuments(): Promise<any[]> {
         try {
             let alreadyTaggedFiles: any = [];
@@ -167,10 +129,6 @@ const AncTool = (props: any) => {
                 }
                 if (file[siteName] != undefined && file[siteName].length > 0 && file[siteName].some((task: any) => task.Id == props?.item?.Id)) {
                     alreadyTaggedFiles.push(file);
-                }
-                if (file.FileSystemObjectType == 1) {
-                    file.parentFolderUrl = props.Context.pageContext.site.absoluteUrl.split(props.Context.pageContext.site.serverRelativeUrl)[0] + file.FileDirRef;
-                    folders.push(file);
                 }
             })
             backupExistingFiles = newFilesArr;
@@ -194,6 +152,7 @@ const AncTool = (props: any) => {
     }
 
     const tagSelectedDoc = async (file: any) => {
+        setPageLoader(true)
         let resultArray: any = [];
         if (file[siteName] != undefined && file[siteName].length > 0) {
             file[siteName].map((task: any) => {
@@ -211,6 +170,7 @@ const AncTool = (props: any) => {
                     file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
                     setDocsToTag([...DocsToTag, ...[file]])
                     alert(`The file '${file?.Title}' has been successfully tagged to the task '${props?.item?.TaskId}'. Please refresh the page to get the changes.`);
+                    setPageLoader(false)
                     return file;
                 })
 
@@ -227,6 +187,7 @@ const AncTool = (props: any) => {
                             return item.Id != file.Id
                         });
                     });
+                    setPageLoader(false)
                     alert(`The file '${file?.Title}' has been successfully untagged from the task '${props?.item?.TaskId}'. Please refresh the page to get the changes.`);
                     return file;
                 })
@@ -342,6 +303,7 @@ const AncTool = (props: any) => {
     }
     const handleUpload = async () => {
         let isFolderAvailable = folderExist;
+        setPageLoader(true)
         if (isFolderAvailable == false) {
             try {
                 await CreateFolder(selectedPath?.displayPath?.split(props?.item?.Title)[0], props?.item?.Title).then((data: any) => {
@@ -350,6 +312,7 @@ const AncTool = (props: any) => {
                 })
 
             } catch (error) {
+                setPageLoader(false)
                 console.log('An error occurred while creating the folder:', error);
             }
         }
@@ -381,6 +344,7 @@ const AncTool = (props: any) => {
                                             .update(postData).then((updatedFile: any) => {
                                                 file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
                                                 setDocsToTag([...DocsToTag, ...[file]])
+                                                setPageLoader(false)
                                                 alert(`The file '${renamedFileName?.length > 0 ? renamedFileName : selectedFile?.name}' has been successfully tagged to the task '${props?.item?.TaskId}'.Please refresh the page to get the changes.`);
                                                 pathGenerator()
                                                 setRenamedFileName('')
@@ -399,6 +363,7 @@ const AncTool = (props: any) => {
                 reader.readAsArrayBuffer(selectedFile);
             } catch (error) {
                 console.log("File upload failed:", error);
+                setPageLoader(false)
             }
         }
         setSelectedFile(null);
@@ -407,9 +372,9 @@ const AncTool = (props: any) => {
     // Create Files direct From Code And Tag
     async function createBlankWordDocx() {
         createNewDocType = 'docx'
-        let jsonResult = await GlobalFunction.docxUint8Array();
-        setNewlyCreatedFile(jsonResult)
-        setFileNamePopup(true)
+       let jsonResult= await GlobalFunction.docxUint8Array();
+       setNewlyCreatedFile(jsonResult)
+       setFileNamePopup(true)
     }
 
     async function createBlankExcelXlsx() {
@@ -433,6 +398,7 @@ const AncTool = (props: any) => {
         })
     }
     const CreateNewAndTag = async () => {
+        setPageLoader(true)
         let isFolderAvailable = folderExist;
         let fileName = ''
         if (isFolderAvailable == false) {
@@ -443,6 +409,7 @@ const AncTool = (props: any) => {
                 })
 
             } catch (error) {
+                setPageLoader(false)
                 console.log('An error occurred while creating the folder:', error);
             }
         }
@@ -473,6 +440,7 @@ const AncTool = (props: any) => {
                                         .update(postData).then((updatedFile: any) => {
                                             file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
                                             setDocsToTag([...DocsToTag, ...[file]])
+                                            setPageLoader(false)
                                             alert(`The file '${fileName}' has been successfully tagged to the task '${props?.item?.TaskId}'. Please refresh the page to get the changes.`);
                                             pathGenerator()
                                             cancelNewCreateFile()
@@ -485,6 +453,7 @@ const AncTool = (props: any) => {
 
                     });
             } catch (error) {
+                setPageLoader(false)
                 console.log("File upload failed:", error);
             }
         }
@@ -740,6 +709,7 @@ const AncTool = (props: any) => {
                     </Button>
                 </Modal.Footer>
             </Modal>
+            {pageLoaderActive ? <PageLoader /> : ''}
         </>
     )
 }
