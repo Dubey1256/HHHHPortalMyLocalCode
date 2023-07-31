@@ -774,7 +774,7 @@ const CreateActivity = (props: any) => {
         if(save?.IsShowSelectedSite ===false)
         alert("Please select the site")
         else{
-        FeedBackItemArray.push(FeedBackItem)
+       FeedBackItemArray.push(FeedBackItem?.FeedBackDescriptions!=undefined?FeedBackItem:"")
         var TaskprofileId: any = ''
         if (NewArray != undefined && NewArray.length > 0) {
             NewArray.map((NeitemA: any) => {
@@ -903,7 +903,7 @@ const CreateActivity = (props: any) => {
                         ServicesId: { "results": RelevantPortfolioIds },
                         SharewebTaskTypeId: 1,
                         Body: AllItems.Body,
-                        FeedBack: JSON.stringify(FeedBackItemArray),
+                        FeedBack:FeedBackItemArray[0]!=""? JSON.stringify(FeedBackItemArray):null,
                         Shareweb_x0020_ID: value.SharewebID,
                         SharewebTaskLevel1No: value.LatestTaskNumber,
                         AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
@@ -1080,7 +1080,7 @@ const CreateActivity = (props: any) => {
                         ClientCategoryId: { "results": ClientCategory },
                         SharewebTaskTypeId: SharewebTasknewTypeId,
                         Body: AllItems?.Description,
-                        FeedBack: JSON.stringify(FeedBackItemArray),
+                        FeedBack:FeedBackItemArray[0]!=""? JSON.stringify(FeedBackItemArray):null,
                         Shareweb_x0020_ID: SharewebID,
                         Priority: AllItems.Priority,
                         SharewebTaskLevel2No: WorstreamLatestId,
@@ -1198,6 +1198,9 @@ const CreateActivity = (props: any) => {
             })
             setTaskAssignedTo(tempArray);
             console.log("Team Config  assigadf=====", tempArray)
+        }else{
+            setTaskAssignedTo([]);
+
         }
         if (dt?.TeamMemberUsers?.length > 0) {
             let tempArray: any = [];
@@ -1211,6 +1214,8 @@ const CreateActivity = (props: any) => {
             setTaskTeamMembers(tempArray);
             console.log("Team Config member=====", tempArray)
 
+        }else{
+            setTaskTeamMembers([]); 
         }
         if (dt.ResponsibleTeam != undefined && dt.ResponsibleTeam.length > 0) {
             let tempArray: any = [];
@@ -1229,6 +1234,7 @@ const CreateActivity = (props: any) => {
             setTaskResponsibleTeam([])
         }
     }
+   
    
     const handleDatedue = (date: any) => {
         AllItems.DueDate = date;
@@ -1433,7 +1439,13 @@ const CreateActivity = (props: any) => {
 
         setIsComponentPicker(false);
         let data: any = CategoriesData
+        CategoriesData?.map((items:any)=>{
+            if(items.Id!=selectCategoryData[0].Id){
         data = data.concat(selectCategoryData)
+            }
+        })
+      
+       
         setCategoriesData(CategoriesData => [...data])
 
 
@@ -1955,7 +1967,7 @@ const deleteLinkedComponentData=()=>{
                 </div>
 
             </Panel>
-            {IsComponent && ((AllItems?.Services.length > 0) ||(AllItems?.Services.length == 0 && AllItems?.Component.length == 0 && AllItems?.Portfolio_x0020_Type == 'Service')) &&
+            {IsComponent && ((AllItems?.Services?.length > 0||AllItems?.Services?.results?.length>0 ) ||((AllItems?.Services?.length == 0||AllItems?.Services?.results?.length==0)&& (AllItems?.Component.length == 0||AllItems?.Component?.results?.length==0) && AllItems?.Portfolio_x0020_Type == 'Service')) &&
                 <ServiceComponentPortfolioPopup
                     props={SharewebComponent}
                     Dynamic={dynamicList}
@@ -1963,7 +1975,7 @@ const deleteLinkedComponentData=()=>{
                     ComponentType={"Service"}
                 />
             }
-            {IsComponent &&  ((AllItems?.Component.length > 0) ||(AllItems?.Component.length == 0 && AllItems?.Services.length == 0 && AllItems?.Portfolio_x0020_Type == 'Component')) &&
+           {IsComponent &&  ((AllItems?.Component.length > 0||AllItems?.Component?.results?.length>0) ||((AllItems?.Component.length == 0 ||AllItems?.Component?.results?.length==0)&& (AllItems?.Services.length == 0||AllItems?.Component?.results?.length==0) && AllItems?.Portfolio_x0020_Type == 'Component')) &&
                 <ServiceComponentPortfolioPopup
                     props={SharewebComponent}
                     Dynamic={dynamicList}

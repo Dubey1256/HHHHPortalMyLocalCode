@@ -54,11 +54,13 @@ function DebouncedInput({
     value: initialValue,
     onChange,
     debounce = 500,
+    portfolioColor,
     ...props
 }: {
     value: string | number;
     onChange: (value: string | number) => void;
     debounce?: number;
+    portfolioColor: any
 } & Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange">) {
     const [value, setValue] = React.useState(initialValue);
 
@@ -77,7 +79,7 @@ function DebouncedInput({
     return (
         <>
             <div className="container-2 mx-1">
-                <span className="icon"><FaSearch /></span>
+                <span className="icon"><FaSearch style={{ color: `${portfolioColor}` }} /></span>
                 <input type="search" id="search" {...props}
                     value={value}
                     onChange={(e) => setValue(e.target.value)} />
@@ -148,6 +150,7 @@ const GlobalCommanTable = (items: any) => {
     let showDateTime = items?.showDateTime;
     let showPagination: any = items?.showPagination;
     let usedFor: any = items?.usedFor;
+    let portfolioColor = items?.portfolioColor;
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
         []
     );
@@ -156,7 +159,8 @@ const GlobalCommanTable = (items: any) => {
     const [rowSelection, setRowSelection] = React.useState({});
     const [globalFilter, setGlobalFilter] = React.useState("");
     const [ShowTeamPopup, setShowTeamPopup] = React.useState(false);
-    const [showTeamMemberOnCheck, setShowTeamMemberOnCheck] = React.useState(false)
+    // const [showTeamMemberOnCheck, setShowTeamMemberOnCheck] = React.useState(false)
+
     const table: any = useReactTable({
         data,
         columns,
@@ -187,7 +191,7 @@ const GlobalCommanTable = (items: any) => {
         enableSubRowSelection: false,
         // filterFns: undefined
     });
-    
+
 
     React.useEffect(() => {
         CheckDataPrepre()
@@ -375,29 +379,27 @@ const GlobalCommanTable = (items: any) => {
         <>
             {showHeader === true && <div className='tbl-headings justify-content-between mb-1'>
                 <span className='leftsec'>
-                    <span className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} out of ${data?.length}`}</span>
-                    { showDateTime &&
-                        <span className='Header-Showing-Items'>{ showDateTime}</span>
-                    }
-                    
+                    <span style={{ color: `${portfolioColor}` }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} out of ${data?.length}`}</span>
                     <DebouncedInput
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}
-                        placeholder="Search All..." />
+                        placeholder="Search All..."
+                        portfolioColor={portfolioColor}
+                    />
                 </span>
                 <span className="toolbox">
-                    {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a>
+                    {table?.getSelectedRowModel()?.flatRows?.length > 0 ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--team teamIcon"></span></a>
                     </span> : <span><a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team teamIcon"></span></a></span>}
-                    {table?.getSelectedRowModel()?.rows?.length > 0 ? <span>
-                        <a  onClick={() => openTaskAndPortfolioMulti()} className="openWebIcon" title='Web Page'><span className="svg__iconbox svg__icon--openWeb"></span></a>
+                    {table?.getSelectedRowModel()?.flatRows?.length > 0 ? <span>
+                        <a onClick={() => openTaskAndPortfolioMulti()} className="openWebIcon"><span style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--openWeb"></span></a>
                     </span> : <span><a className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a></span>}
-                    <a className='excal' title='Export To Excel' onClick={() => exportToExcel()}><RiFileExcel2Fill/></a>
+                    <a className='excal' onClick={() => exportToExcel()}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a>
 
-                    <a className='brush' title="Clear All"><i className="fa fa-paint-brush hreflink" aria-hidden="true" title="Clear All" onClick={() => { setGlobalFilter(''); setColumnFilters([]); }}></i></a>
+                    <a className='brush'><i className="fa fa-paint-brush hreflink" style={{ color: `${portfolioColor}` }} aria-hidden="true" title="Clear All" onClick={() => { setGlobalFilter(''); setColumnFilters([]); }}></i></a>
 
 
-                    <a  className='Prints' title="Print" onClick={() => downloadPdf()}>
-                        <i className="fa fa-print" aria-hidden="true" title="Print"></i>
+                    <a className='Prints' onClick={() => downloadPdf()}>
+                        <i className="fa fa-print" aria-hidden="true" style={{ color: `${portfolioColor}` }} title="Print"></i>
                     </a>
                     <a>
               <Tooltip ComponentId="5756" />
@@ -408,7 +410,7 @@ const GlobalCommanTable = (items: any) => {
             <table className="SortingTable table table-hover mb-0" id='my-table' style={{ width: "100%" }}>
                 <thead className='fixed-Header top-0'>
                     {table.getHeaderGroups().map((headerGroup: any) => (
-                        <tr key={headerGroup.id}>
+                        <tr key={headerGroup.id} >
                             {headerGroup.headers.map((header: any) => {
                                 return (
                                     <th key={header.id} colSpan={header.colSpan} style={header.column.columnDef.size != undefined && header.column.columnDef.size != 150 ? { width: header.column.columnDef.size + "px" } : {}}>
@@ -432,10 +434,10 @@ const GlobalCommanTable = (items: any) => {
                                                     }}
                                                 >
                                                     {header.column.getIsSorted()
-                                                        ? { asc: <FaSortDown />, desc: <FaSortUp /> }[
+                                                        ? { asc: <FaSortDown style={{ color: `${portfolioColor}` }} />, desc: <FaSortUp style={{ color: `${portfolioColor}` }} /> }[
                                                         header.column.getIsSorted() as string
                                                         ] ?? null
-                                                        : <FaSort />}
+                                                        : <FaSort style={{ color: `${portfolioColor}` }} />}
                                                 </div> : ""}
                                             </div>
                                         )}
@@ -452,7 +454,7 @@ const GlobalCommanTable = (items: any) => {
                                 key={row.id}>
                                 {row.getVisibleCells().map((cell: any) => {
                                     return (
-                                        <td key={cell.id}
+                                        <td key={cell.id} style={{ color: `${row?.original?.PortfolioType?.Color}` }}
 
                                         >
                                             {flexRender(

@@ -1451,13 +1451,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                         </div>
                       </div>
                     }
+          </dl>}
 
-
-                  </dl>}
-
-
-
-                </div>
+          </div>
               </div>
               <div className='row url'>
                 <div className="d-flex p-0">

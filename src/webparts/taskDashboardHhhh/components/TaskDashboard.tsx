@@ -141,7 +141,12 @@ const TaskDashboard = (props: any) => {
         }
 
     }, []);
-    
+    React.useEffect(() => {
+        if (AllListId?.isShowTimeEntry == true) {
+            loadAllTimeEntry()
+        }
+
+    }, [timesheetListConfig]);
     React.useEffect(() => {
         let CONTENT = !updateContent;
         setUpdateContent(CONTENT);
@@ -192,7 +197,7 @@ const TaskDashboard = (props: any) => {
             const lastMonth = new Date(startingDate.getFullYear(), startingDate.getMonth() - 1);
             const startingDateOfLastMonth = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
             var change = (Moment(startingDateOfLastMonth).add(2, 'days').format())
-           var b = new Date(change)
+            var b = new Date(change)
             formattedDate = b;
         } else if (startDateOf == 'Last Week') {
             const lastWeek = new Date(startingDate.getFullYear(), startingDate.getMonth(), startingDate.getDate() - 7);
@@ -233,43 +238,44 @@ const TaskDashboard = (props: any) => {
     //End
 
     //Load This Week Time Entry 
-    // const loadMigrationTimeEntry = async () => {
-    //     if (timesheetListConfig?.length > 0) {
-    //         let timesheetLists: any = [];
-    //         let taskLists: any = [];
-    //         let startDate = new Date(getStartingDate('Last Month').getTime()).toISOString();
-    //         timesheetLists = JSON.parse(timesheetListConfig[0]?.Configurations)
-    //         taskLists = JSON.parse(timesheetListConfig[0]?.Description)
-    //         if (timesheetLists?.length > 0) {
-    //             timesheetLists?.map(async (list: any) => {
-    //                 let web = new Web(list?.siteUrl);
-    //                 if (timesheetLists?.listName == 'TasksTimesheet2') {
-    //                     await web.lists
-    //                         .getById(list?.listId)
-    //                         .items.select(list?.query)
-    //                         .filter("Modified ge '" + startDate + "'")
-    //                         .getAll().then((data: any) => {
-    //                             data?.map((item: any) => {
-    //                                 item.taskDetails = checkTimeEntrySite(item, taskLists)
-    //                                 AllTaskTimeEntries.push(item)
-    //                             })
-    //                             currentUserTimeEntry('This Week')
-    //                         });
-    //                 }
-    //             })
-    //         }
-    //     }
-    // }
+    const loadMigrationTimeEntry = async () => {
+        if (timesheetListConfig?.length > 0) {
+            let timesheetLists: any = [];
+            let taskLists: any = [];
+            let startDate = getStartingDate('Last Month').toISOString();
+            timesheetLists = JSON.parse(timesheetListConfig[0]?.Configurations)
+            taskLists = JSON.parse(timesheetListConfig[0]?.Description)
+            if (timesheetLists?.length > 0) {
+                timesheetLists?.map(async (list: any) => {
+                    let web = new Web(list?.siteUrl);
+                    if (timesheetLists?.listName == 'TasksTimesheet2') {
+                        await web.lists
+                            .getById(list?.listId)
+                            .items.select(list?.query)
+                            .filter("Modified gt '" + startDate + "'")
+                            .getAll().then((data: any) => {
+                                data?.map((item: any) => {
+                                    item.taskDetails = checkTimeEntrySite(item, taskLists)
+                                    AllTaskTimeEntries.push(item)
+                                })
+                                currentUserTimeEntry('This Week')
+                            });
+                    }
+                })
+            }
+        }
+    }
     const loadAllTimeEntry = async () => {
         if (timesheetListConfig?.length > 0) {
             let timesheetLists: any = [];
-            let startDate =  new Date(getStartingDate('Last Month').getTime()).toISOString();
+            let startDate = getStartingDate('Last Month').toISOString();
             let taskLists: any = [];
             timesheetLists = JSON.parse(timesheetListConfig[0]?.Configurations)
             taskLists = JSON.parse(timesheetListConfig[0]?.Description)
             if (timesheetLists?.length > 0) {
                 timesheetLists?.map(async (list: any) => {
                     let web = new Web(list?.siteUrl);
+                    if (timesheetLists?.listName != 'TasksTimesheet2') {
                         await web.lists
                             .getById(list?.listId)
                             .items.select("Id,Title,TaskDate,TaskTime,TimesheetTitle/Id,AdditionalTimeEntry,Modified,Description,TaskOffshoreTasks/Id,TaskOffshoreTasks/Title,TaskKathaBeck/Id,TaskKathaBeck/Title,TaskDE/Title,TaskDE/Id,TaskEI/Title,TaskEI/Id,TaskEPS/Title,TaskEPS/Id,TaskEducation/Title,TaskEducation/Id,TaskHHHH/Title,TaskHHHH/Id,TaskQA/Title,TaskQA/Id,TaskGender/Title,TaskGender/Id,TaskShareweb/Title,TaskShareweb/Id,TaskGruene/Title,TaskGruene/Id")
@@ -282,7 +288,9 @@ const TaskDashboard = (props: any) => {
                                 })
                                 currentUserTimeEntry('This Week')
                             });
+                    }
                 })
+                loadMigrationTimeEntry();
             }
         }
     }
@@ -553,13 +561,9 @@ const TaskDashboard = (props: any) => {
                                         filterCurrentUserTask()
                                     }
                                 }
-                                
                             } else {
                                 filterCurrentUserTask();
                             }
-                            if (AllListId?.isShowTimeEntry == true) {
-                                await loadAllTimeEntry()
-                             }
                             backupTaskArray.allTasks = AllSiteTasks;
                             setPageLoader(false);
                         }
@@ -2021,7 +2025,7 @@ const TaskDashboard = (props: any) => {
                             })
                             body =
                                 '<h3><strong>'
-                                + teamMember?.Title + ` (${teamMember?.Group!=null?teamMember?.Group:''})`
+                                + teamMember?.Title + ` (${teamMember?.Group != null ? teamMember?.Group : ''})`
                                 + '</strong></h3>'
                                 + '<table style="border: 1px solid #ccc;" border="1" cellspacing="0" cellpadding="0" width="100%">'
                                 + '<thead>'
@@ -2044,7 +2048,7 @@ const TaskDashboard = (props: any) => {
                             body = body.replaceAll('>,<', '><').replaceAll(',', '')
                         } else {
                             body = '<h3><strong>'
-                                + teamMember?.Title + ` (${teamMember?.Group!=null?teamMember?.Group:''})`
+                                + teamMember?.Title + ` (${teamMember?.Group != null ? teamMember?.Group : ''})`
                                 + '</strong></h3>'
                                 + '<h4>'
                                 + 'No Working Today Tasks Available '

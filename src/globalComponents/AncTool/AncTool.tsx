@@ -21,10 +21,12 @@ import ExcelJS from 'exceljs';
 import { IFileAddResult } from "@pnp/sp/files";
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import ConnectExistingDoc from './ConnectExistingDoc';
+import { FaChevronDown, FaChevronRight } from 'react-icons/fa';
 let backupExistingFiles: any = [];
 let backupCurrentFolder: any = [];
 let AllFilesAndFolderBackup: any = [];
 let folders: any = [];
+let rootSiteName = '';
 let createNewDocType: any = '';
 let siteName: any = '';
 const itemRanks: any[] = [
@@ -41,11 +43,14 @@ const itemRanks: any[] = [
 const AncTool = (props: any) => {
     let siteUrl = '';
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
+    const [choosePathPopup, setChoosePathPopup] = React.useState(false);
     const [FileNamePopup, setFileNamePopup] = React.useState(false);
     const [ServicesTaskCheck, setServicesTaskCheck] = React.useState(false);
     const [folderExist, setFolderExist] = React.useState(false);
     const [Item, setItem]: any = React.useState({});
     const [renamedFileName, setRenamedFileName]: any = React.useState('');
+    const [newSubFolderName, setNewSubFolderName]: any = React.useState('');
+    const [selectPathFromPopup, setSelectPathFromPopup]: any = React.useState('');
     const [selectedFile, setSelectedFile] = React.useState(null);
     const [newlyCreatedFile, setNewlyCreatedFile]: any = React.useState(null);
     const [itemRank, setItemRank] = React.useState(5);
@@ -53,7 +58,9 @@ const AncTool = (props: any) => {
         displayPath: '',
         completePath: '',
     });
+    const [CreateFolderLocation, showCreateFolderLocation] = React.useState(false);
     const [AllFilesAndFolder, setAllFilesAndFolder]: any = React.useState([]);
+    const [AllFoldersGrouped, setAllFoldersGrouped]: any = React.useState([]);
     const [currentFolderFiles, setCurrentFolderFiles]: any = React.useState([]);
     const [ExistingFiles, setExistingFiles]: any = React.useState([]);
     const [DocsToTag, setDocsToTag]: any = React.useState([]);
@@ -66,7 +73,9 @@ const AncTool = (props: any) => {
             }
         }
         pathGenerator();
+        rootSiteName = props.Context.pageContext.site.absoluteUrl.split(props.Context.pageContext.site.serverRelativeUrl)[0];
     }, [])
+
     const pathGenerator = async () => {
         const params = new URLSearchParams(window.location.search);
         var query = window.location.search.substring(1);
@@ -104,6 +113,7 @@ const AncTool = (props: any) => {
         fetchFilesByPath(displayUrl)
         let allFiles: any = await getExistingUploadedDocuments()
         let groupedFolders = createGrouping();
+        setAllFoldersGrouped(groupedFolders);
         setAllFilesAndFolder(allFiles);
         AllFilesAndFolderBackup = allFiles;
         checkFolderExistence(props?.item?.Title);
@@ -118,37 +128,37 @@ const AncTool = (props: any) => {
 
     const createGrouping = (): any[] => {
         const groupedFolder: any[] = [];
-    
+        let copyFolders = JSON.parse(JSON.stringify(folders));
         const findChildren = (parent: any): void => {
-            const children = folders.filter((item:any) => item.parentFolderUrl === parent.EncodedAbsUrl);
+            const children = copyFolders.filter((item: any) => item.parentFolderUrl === parent.EncodedAbsUrl);
             if (children.length > 0) {
                 for (const child of children) {
                     if (!child.subRows) {
                         child.subRows = [];
                     }
                     parent.subRows.push(child);
-                    folders.splice(folders.indexOf(child), 1);
+                    copyFolders.splice(copyFolders.indexOf(child), 1);
                     findChildren(child);
                 }
             }
         };
-    
-        while (folders.length > 0) {
-            const folder = folders[0];
-            if (!folders.some((item:any) => item.EncodedAbsUrl === folder.parentFolderUrl)) {
-                folder.subRows = []; 
-                folders.splice(0, 1);
+
+        while (copyFolders.length > 0) {
+            const folder = copyFolders[0];
+            if (!copyFolders.some((item: any) => item.EncodedAbsUrl === folder.parentFolderUrl)) {
+                folder.subRows = [];
+                copyFolders.splice(0, 1);
                 groupedFolder.push(folder);
                 findChildren(folder);
             } else {
-                folders.splice(0, 1); // Skip folders that have parents for now
+                copyFolders.splice(0, 1); // Skip folders that have parents for now
             }
         }
-    
+
         return groupedFolder;
     };
-    
-    
+
+
     async function getExistingUploadedDocuments(): Promise<any[]> {
         try {
             let alreadyTaggedFiles: any = [];
@@ -169,7 +179,8 @@ const AncTool = (props: any) => {
                     alreadyTaggedFiles.push(file);
                 }
                 if (file.FileSystemObjectType == 1) {
-                    file.parentFolderUrl = props.Context.pageContext.site.absoluteUrl.split(props.Context.pageContext.site.serverRelativeUrl)[0] + file.FileDirRef;
+                    file.isExpanded = false;
+                    file.parentFolderUrl = rootSiteName + file.FileDirRef;
                     folders.push(file);
                 }
             })
@@ -298,19 +309,6 @@ const AncTool = (props: any) => {
             </div>
         );
     };
-    const onRenderCustomFooterMain = () => {
-        return (
-            <footer className={ServicesTaskCheck ? "serviepannelgreena bg-f4 fixed-bottom" : "bg-f4 fixed-bottom"}>
-                <div className="align-items-center d-flex justify-content-between me-3 px-4 py-2">
-                    <span >
-                        <button className="btn btn-primary px-3">
-                            OK
-                        </button>
-                    </span>
-                </div>
-            </footer>
-        )
-    }
 
 
     const handleFileDrop = (event: any) => {
@@ -334,14 +332,36 @@ const AncTool = (props: any) => {
             const parentFolder = sp.web.getFolderByServerRelativeUrl(path);
             await parentFolder.folders.add(folderName).then((data: any) => {
                 console.log('Folder created successfully.');
-                return Promise.resolve(data)
+                let folder = {
+                    parentFolderUrl: rootSiteName + path,
+                    FileLeafRef: folderName,
+                    FileDirRef: path,
+                    isExpanded: false,
+                    EncodedAbsUrl: rootSiteName + data.data.ServerRelativeUrl,
+                    FileSystemObjectType: 1
+                }
+                folders.push(folder);
+                let groupedFolders = createGrouping();
+                setAllFoldersGrouped(groupedFolders);
+                AllFilesAndFolderBackup.push(folder);
+                setAllFilesAndFolder(AllFilesAndFolderBackup);
+                return folder;
             });
         } catch (error) {
             return Promise.reject(error)
         }
     }
     const handleUpload = async () => {
-        let isFolderAvailable = folderExist;
+        let isFolderAvailable = false;
+        let uploadPath=';'
+        if(selectPathFromPopup?.length>0){
+            isFolderAvailable = true;
+            uploadPath=selectPathFromPopup;
+        }else{
+             isFolderAvailable = folderExist;
+             uploadPath=selectedPath.displayPath;
+        }
+       
         if (isFolderAvailable == false) {
             try {
                 await CreateFolder(selectedPath?.displayPath?.split(props?.item?.Title)[0], props?.item?.Title).then((data: any) => {
@@ -362,12 +382,12 @@ const AncTool = (props: any) => {
 
                     // Upload the file
                     await sp.web
-                        .getFolderByServerRelativeUrl(selectedPath.displayPath)
+                        .getFolderByServerRelativeUrl(uploadPath)
                         .files.add(selectedFile?.name, fileContent, true).then(async (uploadedFile: any) => {
                             setTimeout(async () => {
                                 const fileItems = await getExistingUploadedDocuments()
                                 fileItems?.map(async (file: any) => {
-                                    if (file?.FileDirRef != undefined && file?.FileDirRef?.toLowerCase() == selectedPath?.displayPath?.toLowerCase() && file?.FileSystemObjectType == 0 && file?.FileLeafRef == selectedFile?.name) {
+                                    if (file?.FileDirRef != undefined && file?.FileDirRef?.toLowerCase() == uploadPath?.toLowerCase() && file?.FileSystemObjectType == 0 && file?.FileLeafRef == selectedFile?.name) {
                                         let resultArray: any = [];
                                         resultArray.push(props?.item?.Id)
                                         let siteColName = `${siteName}Id`
@@ -497,7 +517,86 @@ const AncTool = (props: any) => {
         createNewDocType = '';
     }
 
+    // Choose Path Folder
+    const cancelPathFolder = () => {
+        setChoosePathPopup(false);
+        setSelectPathFromPopup('');
+        setNewSubFolderName('')
+        showCreateFolderLocation(false);
+    }
+    const selectFolderToUpload = () => {
+        setChoosePathPopup(false);
+    }
+    const handleToggle = (clickedFolder:any) => {
+        const toggleFolderRecursively = (folder:any) => {
+          if (folder.EncodedAbsUrl === clickedFolder.EncodedAbsUrl) {
+            return { ...folder, isExpanded: !folder.isExpanded };
+          }
+          if (folder.subRows && folder.subRows.length > 0) {
+            return {
+              ...folder,
+              subRows: folder.subRows.map(toggleFolderRecursively)
+            };
+          }
+          return folder;
+        };
+      
+        setAllFoldersGrouped((prevFolders:any) => {
+          const updatedFolders = prevFolders.map(toggleFolderRecursively);
+          return updatedFolders;
+        });
+      };
+      
+    const Folder = ({ folder, onToggle }: any) => {
+        const hasChildren = folder.subRows && folder.subRows.length > 0;
 
+        const toggleExpand = () => {
+            onToggle(folder);
+        };
+
+        return (
+            <li style={{ listStyle: 'none' }}>
+                <span onClick={toggleExpand}>
+                    {hasChildren ? (
+                        folder.isExpanded ? <FaChevronDown /> : <FaChevronRight />
+                    ) : (
+                        <FaChevronDown style={{ color: 'white' }} />
+                    )}
+                    <span className='svg__iconbox svg__icon--folder me-1'></span>
+                </span>
+                <span className={`${rootSiteName}${selectPathFromPopup}` === folder.EncodedAbsUrl ? "highlighted hreflink" : "hreflink"} onClick={() => setFolderPathFromPopup(folder.EncodedAbsUrl)}>{folder.FileLeafRef}</span>
+                {hasChildren && folder.isExpanded && (
+                    <ul>
+                        {folder.subRows.map((subFolder: any) => (
+                            <Folder key={subFolder.name} folder={subFolder} onToggle={onToggle} />
+                        ))}
+                    </ul>
+                )}
+            </li>
+        );
+    };
+    const onRenderCustomFooterMain = () => {
+        return (
+            <footer className='text-end p-2'>
+                <button className="btn btnPrimary " disabled={selectPathFromPopup?.length > 0 ? false : true} onClick={() => { selectFolderToUpload() }}>Select</button>
+                <button className='btn btn-default ms-1' onClick={() => cancelPathFolder()}>Cancel</button>
+            </footer>
+
+        );
+    };
+
+    const CreateSubFolder = async () => {
+        await CreateFolder(selectPathFromPopup, newSubFolderName).then((folder: any) => {
+            setSelectPathFromPopup(`${selectPathFromPopup}${folder?.FileLeafRef}`)
+            showCreateFolderLocation(false);
+            setNewSubFolderName('')
+            console.log(folder);
+        })
+    }
+    const setFolderPathFromPopup = (folderName: any) => {
+        let selectedfolderName = folderName.split(rootSiteName)[1];
+        setSelectPathFromPopup(selectedfolderName === selectPathFromPopup ? '' : selectedfolderName);
+    };
 
     return (
         <>
@@ -537,8 +636,7 @@ const AncTool = (props: any) => {
                 isOpen={modalIsOpen}
                 onDismiss={setModalIsOpenToFalse}
                 onRenderHeader={onRenderCustomHeaderMain}
-                isBlocking={false}
-                onRenderFooter={onRenderCustomFooterMain}>
+                isBlocking={false}>
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
 
                     <div className="modal-body mb-5">
@@ -563,7 +661,6 @@ const AncTool = (props: any) => {
                                                     <div className='AccordionContent mx-height'>
                                                         <div className="col-sm-12 panel-body">
                                                             <input id="searchinput" type="search" onChange={(e) => { searchCurrentFolder(e.target.value) }} placeholder="Search..." className="form-control" />
-                                                            <span className="searchclear-project ng-hide" style={{ right: '12px', top: '10px' }}>X</span>
                                                             <div className="Alltable mt-10">
                                                                 <div className="col-sm-12 pad0 ">
                                                                     {currentFolderFiles?.length > 0 ?
@@ -599,25 +696,33 @@ const AncTool = (props: any) => {
                                         }
                                     </div>
                                     <div className="col-sm-6">
-                                        <div>
-                                            <label className="full_width ">Default Folder</label>
-                                            {folderExist == true ? <span>{selectedPath?.displayPath}</span> : <span>{selectedPath?.displayPath?.split(props?.item?.Title)}<span className='highlighted'>{props?.item?.Title}
-                                                <div className="popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                    <span className="svg__iconbox svg__icon--info " ></span>
-                                                    <div className="popover__content">
-                                                        <span>
-                                                            Highlighted folder does not exist. It will be created at the time of document upload.
-                                                        </span>
-                                                    </div>
+
+                                        <>
+                                            {selectPathFromPopup?.length > 0 ?
+                                                <div>
+                                                    <label className="full_width ">Selected Folder</label>
+                                                    <span>{selectPathFromPopup}</span>
                                                 </div>
-                                            </span></span>}
+                                                : <div>
+                                                    <label className="full_width ">Default Folder</label>
+                                                    <span>{folderExist == true ? <span>{selectedPath?.displayPath}</span> : <span>{selectedPath?.displayPath?.split(props?.item?.Title)}<span className='highlighted'>{props?.item?.Title}
+                                                        <div className="popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                            <span className="svg__iconbox svg__icon--info " ></span>
+                                                            <div className="popover__content">
+                                                                <span>
+                                                                    Highlighted folder does not exist. It will be created at the time of document upload.
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </span></span>}</span> </div>
+                                            }
+                                        </>
+                                        <span>
+                                            <a title="Click for Associated Folder" className='hreflink pull-right' onClick={() => setChoosePathPopup(true)} >Change Path</a>
+                                        </span>
 
-                                            {/* <span>
-                                                <a title="Click for Associated Folder" >Change</a>
-                                            </span> */}
+                                        <div className="clearfix"></div>
 
-                                            <div className="clearfix"></div>
-                                        </div>
                                     </div>
 
                                 </div><div className="row form-group clearfix">
@@ -714,32 +819,56 @@ const AncTool = (props: any) => {
                     </div>
                 </div>
             </Panel>
-            <Modal
-                show={FileNamePopup}
-                size="sm"
-                // onHide={() => {setShow(false);item?.callBack()}}
-                backdrop="static"
-                keyboard={false}
-                className='rounded-0'
-            >
-                <Modal.Header >
-                    <Modal.Title>Create New File</Modal.Title>
-                    <span onClick={() => cancelNewCreateFile()}><i className="svg__iconbox svg__icon--cross crossBtn"></i></span>
-                </Modal.Header>
-                <Modal.Body className='pb-3'>
-                    <div className="col-sm-12">
-                        <input type="text" onChange={(e) => { setRenamedFileName(e.target.value) }} value={renamedFileName} placeholder='Enter File Name' className='full-width' />
+            <Panel
+                type={PanelType.medium}
+                isOpen={choosePathPopup}
+                onDismiss={cancelPathFolder}
+                headerText='Choose Path'
+                onRenderFooter={onRenderCustomFooterMain}
+                isBlocking={choosePathPopup}>
+                <div id="folderHierarchy">
+                    <ul id="groupedFolders">
+                        {AllFoldersGrouped.map((folder: any) => (
+                            <Folder folder={folder} onToggle={handleToggle} />
+                        ))}
+                    </ul>
+
+                </div>
+                <div>
+                    <span>{selectPathFromPopup?.length > 0 ? `${selectPathFromPopup}/` : ''}</span>
+                    {CreateFolderLocation ?
+                        <><input type="text" placeholder='Folder Name' value={newSubFolderName} onChange={(e) => setNewSubFolderName(e.target.value)} />
+                            <button className="btn btnPrimary pull-right" disabled={newSubFolderName?.length > 0 ? false : true} onClick={() => { CreateSubFolder() }}>Create Folder</button>
+                        </> : ''}
+                </div>
+                {selectPathFromPopup?.length > 0 && CreateFolderLocation != true ?
+                    <div className="text-end">
+                        <a className='hreflink' onClick={() => showCreateFolderLocation(true)}>
+                            Create Sub Folder
+                        </a>
+                    </div> : ''}
+
+            </Panel>
+
+
+            <Modal show={FileNamePopup} isOpen={FileNamePopup} size='sm' isBlocking={FileNamePopup} containerClassName="custommodalpopup p-2">
+                <div className="modal-content rounded-0">
+                    <div className="modal-header">
+                        <h5 className="modal-title">Create New File</h5>
+                        <span onClick={() => cancelNewCreateFile()}><i className="svg__iconbox svg__icon--cross crossBtn"></i></span>
                     </div>
-                </Modal.Body>
-                <Modal.Footer className="border-0 pb-1 pt-0">
-                    <Button disabled={renamedFileName?.length > 0 ? false : true} onClick={() => { CreateNewAndTag() }} className="btn btn-primary">
-                        Save
-                    </Button>
-                    <Button className="btn btn-default" onClick={() => cancelNewCreateFile()}>
-                        Cancel
-                    </Button>
-                </Modal.Footer>
+                    <div className="modal-body p-2">
+                        <div className="col-sm-12">
+                            <input type="text" onChange={(e) => { setRenamedFileName(e.target.value) }} value={renamedFileName} placeholder='Enter File Name' className='full-width' />
+                        </div>
+                    </div>
+                    <footer className='text-end p-2'>
+                        <button className="btn btnPrimary" disabled={renamedFileName?.length > 0 ? false : true} onClick={() => { CreateNewAndTag() }}>Create</button>
+                        <button className='btn btn-default ms-1' onClick={() => cancelNewCreateFile()}>Cancel</button>
+                    </footer>
+                </div>
             </Modal>
+
         </>
     )
 }
