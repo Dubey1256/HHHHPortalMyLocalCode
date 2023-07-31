@@ -1439,7 +1439,13 @@ const CreateActivity = (props: any) => {
 
         setIsComponentPicker(false);
         let data: any = CategoriesData
+        CategoriesData?.map((items:any)=>{
+            if(items.Id!=selectCategoryData[0].Id){
         data = data.concat(selectCategoryData)
+            }
+        })
+      
+       
         setCategoriesData(CategoriesData => [...data])
 
 

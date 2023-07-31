@@ -476,7 +476,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                 onDrop={(e) => this.onDropTeam(e, this.state.ResponsibleTeam, 'Team Leaders', this.state.taskUsers, 'ResponsibleTeam')}
                                                 onDragOver={(e) => e.preventDefault()}>
                                                 <div className="p-1">
-                                                    <div className='d-flex flex-wrap' style={{ minHeight: "30px", height: 'auto' }}>
+                                                    <div className='d-flex flex-wrap'data-placeholder="Task Leaders" style={{ minHeight: "30px", height: 'auto' }}>
                                                         {this.state.ResponsibleTeam != null && this.state.ResponsibleTeam.length > 0 && this.state.ResponsibleTeam.map((image: any, index: number) => {
                                                             return <img
                                                                 className="ProirityAssignedUserPhoto"
@@ -497,7 +497,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                 onDrop={(e) => this.onDropTeam(e, this.state.TeamMemberUsers, 'Team Members', this.state.taskUsers, 'TeamMemberUsers')}
                                                 onDragOver={(e) => e.preventDefault()}>
                                                 <div className="p-1">
-                                                    <div className='d-flex flex-wrap' style={{ minHeight: "30px", height: 'auto' }}>
+                                                    <div className='d-flex flex-wrap'data-placeholder="Responsible Team" style={{ minHeight: "30px", height: 'auto' }}>
                                                         {this.state.TeamMemberUsers != null && this.state.TeamMemberUsers.length > 0 && this.state.TeamMemberUsers.map((image: any, index: number) => {
                                                             return <img
                                                                 className="ProirityAssignedUserPhoto"
@@ -522,7 +522,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                         onDrop={(e) => this.onDropTeam1(e, this.state.AssignedToUsers, 'Assigned User', this.state.taskUsers, 'Assigned User')}
                                         onDragOver={(e) => e.preventDefault()}>
                                         <div className="working-box p-1" >
-                                            <div className='d-flex flex-wrap' style={{ minHeight: "30px", height: 'auto' }}>
+                                            <div className='d-flex flex-wrap'data-placeholder="Working Members" style={{ minHeight: "30px", height: 'auto' }}>
                                                 {this.state.AssignedToUsers && this.state.AssignedToUsers.map((image: any, index: number) => {
                                                     return <img
                                                         className="ProirityAssignedUserPhoto"
