@@ -125,7 +125,7 @@ const EditSiteComposition = (Props: any) => {
         return (
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"} >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <span className="ms-3">
+                    <span className="ms-3 siteColor">
                         Edit Site Composition
                     </span>
                 </div>

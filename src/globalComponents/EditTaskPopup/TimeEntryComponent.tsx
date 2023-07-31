@@ -142,8 +142,10 @@ function TimeEntryPopup(item: any) {
                 if(CurntUserId == '133'){
                     UserName = 'Mayank Pal'
                 }
+              
                 else{
-                    UserName = CurrentUserTitle;
+                  
+                    UserName = taskUser.Title;
                 }
                 
             }

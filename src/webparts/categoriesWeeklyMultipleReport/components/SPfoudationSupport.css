@@ -41,7 +41,7 @@ h5.TxtSize {
   font-size: 15px;
   font-weight: 500;
   padding-bottom: 5px;
-  color: #0000BC;
+  color: #000066;
 }
 
 .arrow_up {
@@ -106,7 +106,7 @@ h5.TxtSize {
 }
 
 .table-expandsize .news_upload .content_wrap {
-  background: #0000BC;
+  background: #000066;
   padding: 10px 1px;
   box-shadow: 0px 3px 6px 0px #ccc;
   height: 153px;
@@ -126,7 +126,7 @@ h5.TxtSize {
 
 .table-expandsize .news_upload .content_wrap.active {
   border: 4px solid #cccccc !important;
-  box-shadow: 4px 6px 15px 0px #0000BC;
+  box-shadow: 4px 6px 15px 0px #000066;
 }
 
 /*table expand*/
@@ -136,8 +136,8 @@ h5.TxtSize {
 }
 
 table.indicator_search td fieldset legend span:first-child, .smartSearch-Filter-Section .td-manage fieldset legend span:first-child {
-  border-bottom: 1.5px solid #0000BC !important;
-  color: #0000BC !important;
+  border-bottom: 1.5px solid #000066 !important;
+  color: #000066 !important;
 }
 
 table.indicator_search td fieldset legend span, .smartSearch-Filter-Section .td-manage fieldset legend span {
@@ -541,7 +541,7 @@ table.indicator_search td fieldset .add_box, .smartSearch-Filter-Section .td-man
 .componentsdashboard .wrapper .glyphicon_active {
   position: absolute;
   right: 9px;
-  color: #0000BC !important;
+  color: #000066 !important;
 }
 
 .componentsdashboard .for_input {
@@ -591,7 +591,7 @@ table.indicator_search td fieldset .add_box, .smartSearch-Filter-Section .td-man
 }
 
 .Feedback #li-brdr .glyphicon-comment, .Feedback #li-brdr .glyphicon-question-sign, .Feedback #li-brdr .fa {
-  color: #0000BC !important;
+  color: #000066 !important;
   font-size: 12px;
 }
 
@@ -674,7 +674,7 @@ table.indicator_search td fieldset .add_box, .smartSearch-Filter-Section .td-man
   position: absolute;
   top: 11px;
   right: 15px;
-  color: #0000BC;
+  color: #000066;
 }
 
 .taskuserpopuptemplate #tabs .nav-pills > li.active > span,
@@ -698,7 +698,7 @@ table.indicator_search td fieldset .add_box, .smartSearch-Filter-Section .td-man
   border: 1px solid #ccc;
   background: #ececec;
   border-radius: 2px;
-  color: #0000BC;
+  color: #000066;
   font-size: 17px;
   font-weight: 500;
   padding: 8px 0px 8px 5px;
@@ -747,12 +747,12 @@ table.indicator_search td fieldset .add_box, .smartSearch-Filter-Section .td-man
 }
 
 .Teamleaderdashboardpage .dashboard-head {
-  background: #0000BC;
+  background: #000066;
   color: #ffffff;
 }
 
 .Teamleaderdashboardpage li.active {
-  background: #0000BC;
+  background: #000066;
   border-right: none;
 }
 
@@ -807,7 +807,7 @@ table.indicator_search td fieldset .add_box, .smartSearch-Filter-Section .td-man
   margin-top: 7px;
   font-size: 13px;
   font-weight: 600;
-  color: #0000BC !important;
+  color: #000066 !important;
 }
 
 .SmartMetaSearchpage .expandtableicon {
@@ -961,7 +961,7 @@ table.indicator_search td fieldset .add_box, .smartSearch-Filter-Section .td-man
 }
 
 .herfbtn a:link {
-  background: #0000BC;
+  background: #000066;
   padding: 10px 10px;
   color: #fff !important;
   text-decoration: none;
@@ -1308,7 +1308,7 @@ table.indicator_search td fieldset .add_box, .smartSearch-Filter-Section .td-man
 }
 
 .listdropdown h3 {
-  border-bottom: 1px solid #0000BC;
+  border-bottom: 1px solid #000066;
   margin-bottom: 10px;
   font-weight: 600;
   padding-bottom: 5px;
@@ -1358,5 +1358,5 @@ button i.fa.fa-expand {
 }
 
 .table-head .active {
-  color: #0000BC !important;
+  color: #000066 !important;
 }/*# sourceMappingURL=SPfoudationSupport.css.map */
