@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as moment from 'moment';
 import { ITaskprofileProps } from './ITaskprofileProps';
+import AncTool from "../../../globalComponents/AncTool/AncTool"
 import TaskFeedbackCard from './TaskFeedbackCard';
 import { Web } from "sp-pnp-js";
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
@@ -1630,7 +1631,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
             </div>
             <div className="col-3">
               <div>
-                {this.state.Result != undefined && AllListId != undefined && <CommentCard siteUrl={this.props.siteUrl} AllListId={AllListId} Context={this.props.Context}></CommentCard>}
+                {this.state.Result?.Id != undefined && AllListId != undefined && <>
+                  <CommentCard siteUrl={this.props.siteUrl} AllListId={AllListId} Context={this.props.Context}></CommentCard> 
+                  <AncTool item={this?.state?.Result}  AllListId={AllListId} Context={this.props.Context}/>
+                </>}
               </div>
               <div>{this.state.Result.Id && <SmartInformation Id={this.state.Result.Id} AllListId={AllListId} Context={this.props?.Context} taskTitle={this.state.Result?.Title} listName={this.state.Result?.listName} />}</div>
               <div> {this.state.Result != undefined && <RelevantDocuments siteUrl={this.props.siteUrl} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments>}</div>
