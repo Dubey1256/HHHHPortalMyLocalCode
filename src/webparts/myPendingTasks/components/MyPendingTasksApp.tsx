@@ -934,7 +934,7 @@ class MyPendingTasksApp extends React.Component<IMyPendingTasksAppProps, IMyPend
                     </table>
                     <table style="width:99%;margin-top: 10px;">
                         <tbody>
-                            <tr>​</tr>
+                            <tr> </tr>
                         </tbody>
                     </table>
                 </td>
@@ -968,7 +968,7 @@ class MyPendingTasksApp extends React.Component<IMyPendingTasksAppProps, IMyPend
     }
     
     render(): JSX.Element {
-        const elemSectionTitle = <Label styles={{root:{color:"#0000BC",fontSize:"25px"}}}>My Pending Tasks - {this.state.currentUserInfo.Title}</Label>;
+        const elemSectionTitle = <Label styles={{root:{color:"#000066",fontSize:"25px"}}}>My Pending Tasks - {this.state.currentUserInfo.Title}</Label>;
         const elemListPendingTasks: JSX.Element = (<DetailsList 
             items = { this.state.displayedPendingTasks } 
             columns = { this.state.columns }

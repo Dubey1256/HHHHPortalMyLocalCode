@@ -885,7 +885,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                     <a className="bg-white border border-secondary pancilicons"
                                                                         onClick={() => openClientCategoryModel(340, 'EI')}
                                                                     >
-                                                                        <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink"></span>
+                                                                        <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
                                                                     </a>
                                                                     : null
                                                             }
@@ -932,7 +932,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                     <a className="bg-white border border-secondary"
                                                                         onClick={() => openClientCategoryModel(341, "EPS")}
                                                                     >
-                                                                        <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink"></span>
+                                                                        <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
                                                                         {/* <img src={require('../../Assets/ICON/edit_page.svg')} width="25" /> */}
                                                                     </a>
                                                                     : null
@@ -981,7 +981,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                     <a className="bg-white border border-secondary"
                                                                         onClick={() => openClientCategoryModel(344, "Education")}
                                                                     >
-                                                                        <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink"></span>
+                                                                        <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
                                                                         {/* <img src={require('../../Assets/ICON/edit_page.svg')} width="25" /> */}
                                                                     </a>
                                                                     : null
@@ -1030,7 +1030,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                     <a className="bg-white border border-secondary"
                                                                         onClick={() => openClientCategoryModel(569, 'Migration')}
                                                                     >
-                                                                        <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink"></span>
+                                                                        <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
                                                                         {/* <img src={require('../../Assets/ICON/edit_page.svg')} width="25" /> */}
                                                                     </a>
                                                                     : null

@@ -96,7 +96,7 @@ const CreateActivity = (props: any) => {
     const [site, setSite] = React.useState('');
     const [count, setCount] = React.useState(0);
     var [isActive, setIsActive] = React.useState({ siteType: false, });
-    const [save, setSave] = React.useState({ Title: '', siteType: [], linkedServices: [], recentClick: undefined, DueDate: undefined, taskCategory: '' })
+    const [save, setSave] = React.useState({ Title: '', siteType: [], linkedServices: [], recentClick: undefined, DueDate: undefined, taskCategory: '' ,IsShowSelectedSite :false })
     const [post, setPost] = React.useState({ Title: '' })
 
 
@@ -372,18 +372,21 @@ const CreateActivity = (props: any) => {
         let saveItem = save;
 
         let tempArray: any = [];
+        let flag =false;
         SiteTypeBackupArray.forEach((val: any) => {
             if (val.Id == value.Id) {
                 if (val.IscreateTask) {
                     val.IscreateTask = false;
                 } else {
                     val.IscreateTask = true;
+                    flag =true;
 
                 }
                 if (val.isSiteSelect) {
                     val.isSiteSelect = false;
                 } else {
                     val.isSiteSelect = true;
+                    flag =true;
                 }
                 tempArray.push(val);
             } else {
@@ -391,10 +394,10 @@ const CreateActivity = (props: any) => {
             }
         })
         setSiteType(tempArray);
-
+       //  setIsShowSelectedSite(flag);
         getActivitiesDetails(value)
 
-        setSave({ ...save, recentClick: isActiveItem })
+        setSave({ ...save, recentClick: isActiveItem ,IsShowSelectedSite:flag})
     };
     const Call = React.useCallback((item1: any, type: any) => {
         setIsComponentPicker(false);
@@ -768,6 +771,9 @@ const CreateActivity = (props: any) => {
 
     }, [])
     const saveNoteCall = () => {
+        if(save?.IsShowSelectedSite ===false)
+        alert("Please select the site")
+        else{
         FeedBackItemArray.push(FeedBackItem)
         var TaskprofileId: any = ''
         if (NewArray != undefined && NewArray.length > 0) {
@@ -1022,7 +1028,7 @@ const CreateActivity = (props: any) => {
 
                     })
                 }
-                if (AllItems?.NoteCall == 'Task') {
+                if (AllItems?.NoteCall !== 'Activities') {
                     let web = new Web(dynamicList.siteUrl);
                     let componentDetails: any = [];
                     componentDetails = await web.lists
@@ -1146,6 +1152,7 @@ const CreateActivity = (props: any) => {
                 }
             }
         })
+    }
 
     }
     const UpdateBasicImageInfoJSON = async (tempArray: any, item: any) => {
@@ -1938,7 +1945,7 @@ const deleteLinkedComponentData=()=>{
                             }
                         })
                     }
-                    <button type="button" disabled={post.Title ===undefined || post.Title ===""} className="btn btn-primary m-2" onClick={() => saveNoteCall()}>
+                    <button type="button"  className="btn btn-primary m-2" onClick={() => saveNoteCall()}>
                         Submit
                     </button>
                     <button type="button" className="btn btn-default m-2" onClick={() => closeTaskStatusUpdatePoup('item')}>

@@ -15,7 +15,7 @@ export default class Feedback extends React.Component<IFeedbackProps, {}> {
       TaskUsertListID,
       SmartMetadataListID,
     } = this.props;
-        
+
     return (
      <>
 <TimeReport ContextData={this.props}/>
