@@ -17,6 +17,7 @@ import { Panel, PanelType } from 'office-ui-fabric-react';
 import { Modal } from '@fluentui/react';
 import { FaExpandAlt } from 'react-icons/fa'
 import { RiDeleteBin6Line, RiH6 } from 'react-icons/ri'
+import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
 import { TbReplace } from 'react-icons/tb'
 import { BiInfoCircle } from 'react-icons/bi'
 import NewTameSheetComponent from "./NewTimeSheet";
@@ -876,7 +877,7 @@ const EditTaskPopup = (Items: any) => {
                 setSearchedServiceCompnentKey("");
             }
         } else {
-            alert("Please Choose Component / Service For Searching!!!")
+            alert("Please Choose Component / Service For Searching!")
         }
     }
 
@@ -3463,7 +3464,7 @@ const EditTaskPopup = (Items: any) => {
                         </div>
                     </div>
                     <div>
-                        <div>
+                        <div className="footer-right">
                             <span>
                                 <a className="mx-2 siteColor" target="_blank" data-interception="off"
                                     href={`${siteUrls}/SitePages/Task-Profile.aspx?taskId=${EditData.ID}&Site=${Items.Items.siteType}`}>
@@ -3476,9 +3477,8 @@ const EditTaskPopup = (Items: any) => {
                                 </a>
                             </span> ||
 
-                            <span className="hreflink siteColor" onClick={() => shareThisTaskFunction(EditData)} >
-                                <img className="mail-width mx-2"
-                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_maill.png" />
+                            <span className="hreflink siteColor f-mailicons" onClick={() => shareThisTaskFunction(EditData)} >
+                            <span title="Edit Task" className="svg__iconbox svg__icon--mail"></span>
                                 Share This Task
                             </span> ||
 
@@ -3542,7 +3542,7 @@ const EditTaskPopup = (Items: any) => {
                         </div>
                     </div>
                     <div>
-                        <div>
+                        <div className="footer-right">
                             <span>
                                 <a className="mx-2" target="_blank" data-interception="off"
                                     href={`${Items.Items.siteType}/SitePages/Task-Profile.aspx?taskId=${EditData.ID}&Site=${Items.Items.siteType}`}>
@@ -3555,9 +3555,8 @@ const EditTaskPopup = (Items: any) => {
                                 </a>
                             </span> ||
 
-                            <span className="hreflink siteColor" onClick={() => shareThisTaskFunction(EditData)} >
-                                <img className="mail-width mx-2"
-                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_maill.png" />
+                            <span className="hreflink siteColor f-mailicons" onClick={() => shareThisTaskFunction(EditData)} >
+                            <span title="Edit Task" className="svg__iconbox svg__icon--mail"></span>
                                 Share This Task
                             </span> ||
                             <a target="_blank" className="mx-2" data-interception="off"
@@ -3612,11 +3611,12 @@ const EditTaskPopup = (Items: any) => {
                                     return (
                                         <li key={index}>
                                             
-                                                <div className="form-check l-radio">
-                                                    <input className="form-check-input"
+                                                <div className="form-check ">
+                                                <label className="SpfxCheckRadio">
+                                                    <input className="radio"
                                                         type="radio" checked={(PercentCompleteCheck ? EditData.PercentComplete : UpdateTaskInfo.PercentCompleteStatus) == item.value}
                                                         onClick={() => PercentCompleted(item)} />
-                                                    <label className="form-check-label mx-2">{item.status}</label>
+                                                    {item.status} </label>
                                                 </div>
                                             
                                         </li>
@@ -3727,7 +3727,7 @@ const EditTaskPopup = (Items: any) => {
                                                     defaultValue={EditData.Title} onChange={(e) => setUpdateTaskInfo({ ...UpdateTaskInfo, Title: e.target.value })} />
                                             </div>
                                         </div>
-                                        <div className="mx-0 row  ">
+                                        <div className="mx-0 row taskdate ">
                                             <div className="col-6 ps-0 mt-2">
                                                 <div className="input-group ">
                                                     {/* <CDatePicker date={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}/> */}
@@ -3781,27 +3781,27 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="mx-0 row mt-2">
+                                        <div className="mx-0 row mt-2 taskservices">
                                             <div className="col ps-0">
                                                 <div className="input-group mb-2">
-                                                    <label className="full-width">
-                                                        <span className="form-check form-check-inline mb-0 l-radio">
+                                                    <label className="full-width rediobutton">
+                                                        <span className="SpfxCheckRadio m-0">
                                                             <input type="radio" id="Components"
                                                                 name="Portfolios" checked={ComponentTaskCheck}
                                                                 onClick={(e) => ChangeComponentStatus(e, "Component")}
                                                                 title="Component"
 
-                                                                className="form-check-input" />
-                                                            <label className="form-check-label mb-0">Component</label>
+                                                                className="radio" />
+                                                            Component
                                                         </span>
-                                                        <span className="form-check form-check-inline mb-0 l-radio">
+                                                        <span className=" SpfxCheckRadio m-0">
                                                             <input type="radio" id="Services"
                                                                 name="Portfolios" value="Services"
                                                                 title="Services"
                                                                 checked={ServicesTaskCheck}
                                                                 onClick={(e) => ChangeComponentStatus(e, "Service")}
-                                                                className="form-check-input" />
-                                                            <label className="form-check-label mb-0">Services</label>
+                                                                className="radio" />
+                                                                 Services
                                                         </span>
                                                     </label>
                                                     {smartComponentData?.length > 0 && ComponentTaskCheck || smartServicesData?.length > 0 && ServicesTaskCheck ? null :
@@ -3810,7 +3810,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 className="form-control"
                                                                 value={SearchedServiceCompnentKey}
                                                                 onChange={(e) => autoSuggestionsForServiceAndComponent(e)}
-                                                                placeholder="Select Componets / Service And Search Here"
+                                                                placeholder="Component / Services "
                                                             />
                                                         </>
                                                     }
@@ -4097,7 +4097,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                             </div>
                                             <div className="col-6 ps-0 pe-0 pt-4">
-                                                <div>
+                                                <div className="time-status">
                                                     <div className="input-group">
                                                         <input type="text" className="form-control"
                                                             placeholder="Enter Priority"
@@ -4106,27 +4106,30 @@ const EditTaskPopup = (Items: any) => {
                                                         />
                                                     </div>
                                                     <ul className="p-0 mt-1">
-                                                        <li className="form-check l-radio">
-                                                            <input className="form-check-input"
+                                                        <li className="form-check ">
+                                                        <label className="SpfxCheckRadio">
+                                                            <input className="radio"
                                                                 name="radioPriority" type="radio"
                                                                 checked={EditData.Priority_x0020_Rank <= 10 && EditData.Priority_x0020_Rank >= 8}
                                                                 onChange={() => setEditData({ ...EditData, Priority_x0020_Rank: 8 })}
                                                             />
-                                                            <label className="form-check-label">High</label>
+                                                            High </label>
                                                         </li>
-                                                        <li className="form-check l-radio">
-                                                            <input className="form-check-input" name="radioPriority"
+                                                        <li className="form-check ">
+                                                        <label className="SpfxCheckRadio">
+                                                            <input className="radio" name="radioPriority"
                                                                 type="radio" checked={EditData.Priority_x0020_Rank <= 7 && EditData.Priority_x0020_Rank >= 4}
                                                                 onChange={() => setEditData({ ...EditData, Priority_x0020_Rank: 4 })}
                                                             />
-                                                            <label className="form-check-label">Normal</label>
+                                                            Normal </label>
                                                         </li>
-                                                        <li className="form-check l-radio">
-                                                            <input className="form-check-input" name="radioPriority"
+                                                        <li className="form-check ">
+                                                        <label className="SpfxCheckRadio">
+                                                            <input className="radio" name="radioPriority"
                                                                 type="radio" checked={EditData.Priority_x0020_Rank <= 3 && EditData.Priority_x0020_Rank > 0}
                                                                 onChange={() => setEditData({ ...EditData, Priority_x0020_Rank: 1 })}
                                                             />
-                                                            <label className="form-check-label">Low</label>
+                                                            Low </label>
                                                         </li>
                                                     </ul>
                                                 </div>
@@ -4280,7 +4283,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="col-12 mb-2">
+                                        <div className="col-12 mb-2 taskurl">
                                             <div className="input-group">
                                                 <label className="form-label full-width ">Relevant URL</label>
                                                 <input type="text" className="form-control" defaultValue={EditData.component_x0020_link != null ? EditData.Relevant_Url : ''} placeholder="Url" onChange={(e) => setEditData({ ...EditData, Relevant_Url: e.target.value })}
@@ -4348,7 +4351,7 @@ const EditTaskPopup = (Items: any) => {
                                             : null}
 
                                         <div className="col mt-2">
-                                            <div className="input-group">
+                                            <div className="input-group taskTime">
                                                 <label className="form-label full-width">Status</label>
                                                 <input type="text" maxLength={3} placeholder="% Complete" disabled={InputFieldDisable} className="form-control px-2"
                                                     defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? Number(EditData.PercentComplete).toFixed(0) : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
@@ -4358,9 +4361,10 @@ const EditTaskPopup = (Items: any) => {
                                                     {/* <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> */}
                                                 </span>
                                                 {PercentCompleteStatus?.length > 0 ?
-                                                    <span className="full-width l-radio">
-                                                        <input type='radio' className="form-check-input my-2" checked />
-                                                        <label className="ps-2 pt-1">
+                                                    <span className="full-width ">
+                                                           <label className="SpfxCheckRadio">
+                                                        <input type='radio' className="my-2 radio" checked />
+                                                     
                                                             {PercentCompleteStatus}
                                                         </label>
                                                     </span> : null}
@@ -4375,37 +4379,41 @@ const EditTaskPopup = (Items: any) => {
                                                             defaultValue={EditData.Mileage != null ? EditData.Mileage : ""} onChange={(e) => setEditData({ ...EditData, Mileage: e.target.value })} />
                                                     </div>
                                                     <ul className="p-0 mt-1">
-                                                        <li className="form-check l-radio">
-                                                            <input name="radioTime" className="form-check-input"
+                                                        <li className="form-check">
+                                                            <label className="SpfxCheckRadio">
+                                                                <input name="radioTime" className=" radio"
                                                                 checked={EditData.Mileage <= 15 && EditData.Mileage > 0 ? true : false} type="radio"
                                                                 onChange={(e) => setEditData({ ...EditData, Mileage: '15' })}
-                                                                defaultChecked={EditData.Mileage <= 15 && EditData.Mileage > 0 ? true : false}
-                                                            />
-                                                            <label className="form-check-label">Very Quick</label>
+                                                                defaultChecked={EditData.Mileage <= 15 && EditData.Mileage > 0 ? true : false} 
+                                                                />
+                                                             Very Quick </label>
                                                         </li>
-                                                        <li className="form-check l-radio">
-                                                            <input name="radioTime" className="form-check-input"
+                                                        <li className="form-check">
+                                                        <label className="SpfxCheckRadio">
+                                                            <input name="radioTime" className=" radio"
                                                                 checked={EditData.Mileage <= 60 && EditData.Mileage > 15 ? true : false} type="radio"
                                                                 onChange={(e) => setEditData({ ...EditData, Mileage: '60' })}
                                                                 defaultChecked={EditData.Mileage <= 60 && EditData.Mileage > 15 ? true : false}
                                                             />
-                                                            <label className="form-check-label">Quick</label>
+                                                          Quick</label>
                                                         </li>
-                                                        <li className="form-check l-radio">
-                                                            <input name="radioTime" className="form-check-input"
+                                                        <li className="form-check">
+                                                        <label className="SpfxCheckRadio">
+                                                            <input name="radioTime" className="radio"
                                                                 checked={EditData.Mileage <= 240 && EditData.Mileage > 60 ? true : false} type="radio"
                                                                 onChange={(e) => setEditData({ ...EditData, Mileage: '240' })}
                                                                 defaultChecked={EditData.Mileage <= 240 && EditData.Mileage > 60 ? true : false}
                                                             />
-                                                            <label className="form-check-label">Medium</label>
+                                                           Medium</label>
                                                         </li>
-                                                        <li className="form-check l-radio">
-                                                            <input name="radioTime" className="form-check-input"
+                                                        <li className="form-check">
+                                                        <label className="SpfxCheckRadio">
+                                                            <input name="radioTime" className=" radio"
                                                                 checked={EditData.Mileage === '480'} type="radio"
                                                                 onChange={(e) => setEditData({ ...EditData, Mileage: '480' })}
                                                                 defaultChecked={EditData.Mileage <= 480 && EditData.Mileage > 240 ? true : false}
                                                             />
-                                                            <label className="form-check-label">Long</label>
+                                                            Long</label>
                                                         </li>
                                                     </ul>
                                                 </div>
@@ -4867,23 +4875,25 @@ const EditTaskPopup = (Items: any) => {
                                                         <div className="col ps-0">
                                                             <div className="input-group mb-2">
                                                                 <label className="full-width">
-                                                                    <span className="form-check form-check-inline mb-0 l-radio">
+                                                                    <span className="form-check">
+                                                                    <label className="SpfxCheckRadio">
                                                                         <input type="radio" id="Components"
                                                                             name="Portfolios" checked={ComponentTaskCheck}
                                                                             onClick={(e) => ChangeComponentStatus(e, "Component")}
                                                                             title="Component"
 
-                                                                            className="form-check-input" />
-                                                                        <label className="form-check-label mb-0">Component</label>
+                                                                            className="radio" />
+                                                                        Component</label>
                                                                     </span>
-                                                                    <span className="form-check form-check-inline mb-0 l-radio">
+                                                                    <span className="form-check ">
+                                                                    <label className="SpfxCheckRadio">
                                                                         <input type="radio" id="Services"
                                                                             name="Portfolios" value="Services"
                                                                             title="Services"
                                                                             checked={ServicesTaskCheck}
                                                                             onClick={(e) => ChangeComponentStatus(e, "Service")}
-                                                                            className="form-check-input" />
-                                                                        <label className="form-check-label mb-0">Services</label>
+                                                                            className="radio" />
+                                                                        Services</label>
                                                                     </span>
                                                                 </label>
                                                                 {smartComponentData?.length > 0 && ComponentTaskCheck || smartServicesData?.length > 0 && ServicesTaskCheck ? null :
@@ -4892,7 +4902,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             className="form-control"
                                                                             value={SearchedServiceCompnentKey}
                                                                             onChange={(e) => autoSuggestionsForServiceAndComponent(e)}
-                                                                            placeholder="Select Componets / Service And Search Here"
+                                                                            placeholder="Componets / Service"
                                                                         />
                                                                     </>
                                                                 }
@@ -5384,7 +5394,7 @@ const EditTaskPopup = (Items: any) => {
                                                         <div className="Sitecomposition">
                                                             <div className='dropdown'>
                                                                 <a className="sitebutton bg-fxdark" style={{ cursor: "pointer" }} onClick={() => setComposition(composition ? false : true)}>
-                                                                    <span>{composition ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span>Site Composition</span>
+                                                                    <span className="arrowicons">{composition ?  <SlArrowDown /> : <SlArrowRight />}</span><span>Site Composition</span>
                                                                 </a>
                                                                 {composition ?
                                                                     <div className="mt-1 spxdropdown-menu">
