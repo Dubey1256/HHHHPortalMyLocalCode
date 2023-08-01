@@ -2,6 +2,7 @@ import React from 'react'
 import DefaultFolderContent from './DefaultFolderContent'
 import axios from 'axios';
 import { usePopperTooltip } from "react-popper-tooltip";
+import { BsChevronDown, BsChevronRight } from "react-icons/bs";
 import "react-popper-tooltip/dist/styles.css";
 // import {
 //     Document,
@@ -21,7 +22,6 @@ import ExcelJS from 'exceljs';
 import { IFileAddResult } from "@pnp/sp/files";
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import ConnectExistingDoc from './ConnectExistingDoc';
-import { FaChevronDown, FaChevronRight } from 'react-icons/fa';
 let backupExistingFiles: any = [];
 let backupCurrentFolder: any = [];
 let AllFilesAndFolderBackup: any = [];
@@ -180,6 +180,7 @@ const AncTool = (props: any) => {
                 }
                 if (file.FileSystemObjectType == 1) {
                     file.isExpanded = false;
+                    file.EncodedAbsUrl = file.EncodedAbsUrl.replaceAll('%20', ' ');
                     file.parentFolderUrl = rootSiteName + file.FileDirRef;
                     folders.push(file);
                 }
@@ -330,38 +331,32 @@ const AncTool = (props: any) => {
         try {
             const library = sp.web.lists.getByTitle('Documents');
             const parentFolder = sp.web.getFolderByServerRelativeUrl(path);
-            await parentFolder.folders.add(folderName).then((data: any) => {
-                console.log('Folder created successfully.');
-                let folder = {
-                    parentFolderUrl: rootSiteName + path,
-                    FileLeafRef: folderName,
-                    FileDirRef: path,
-                    isExpanded: false,
-                    EncodedAbsUrl: rootSiteName + data.data.ServerRelativeUrl,
-                    FileSystemObjectType: 1
-                }
-                folders.push(folder);
-                let groupedFolders = createGrouping();
-                setAllFoldersGrouped(groupedFolders);
-                AllFilesAndFolderBackup.push(folder);
-                setAllFilesAndFolder(AllFilesAndFolderBackup);
-                return folder;
-            });
+            const data = await parentFolder.folders.add(folderName);
+            console.log('Folder created successfully.');
+            data?.data?.ServerRelativeUrl?.replaceAll('%20', ' ');
+            let newFolder = {
+                parentFolderUrl: rootSiteName + path,
+                FileLeafRef: folderName,
+                FileDirRef: path,
+                isExpanded: false,
+                EncodedAbsUrl: rootSiteName + data.data.ServerRelativeUrl,
+                FileSystemObjectType: 1
+            }
+
+            folders.push(newFolder);
+
+            AllFilesAndFolderBackup.push(newFolder);
+            setAllFilesAndFolder(AllFilesAndFolderBackup);
+            return newFolder; // Return the folder object here
         } catch (error) {
-            return Promise.reject(error)
+            return Promise.reject(error);
         }
     }
     const handleUpload = async () => {
-        let isFolderAvailable = false;
-        let uploadPath=';'
-        if(selectPathFromPopup?.length>0){
-            isFolderAvailable = true;
-            uploadPath=selectPathFromPopup;
-        }else{
-             isFolderAvailable = folderExist;
-             uploadPath=selectedPath.displayPath;
-        }
-       
+        let isFolderAvailable = folderExist;
+        let uploadPath = selectedPath.displayPath;
+
+
         if (isFolderAvailable == false) {
             try {
                 await CreateFolder(selectedPath?.displayPath?.split(props?.item?.Title)[0], props?.item?.Title).then((data: any) => {
@@ -520,33 +515,38 @@ const AncTool = (props: any) => {
     // Choose Path Folder
     const cancelPathFolder = () => {
         setChoosePathPopup(false);
-        setSelectPathFromPopup('');
         setNewSubFolderName('')
         showCreateFolderLocation(false);
     }
     const selectFolderToUpload = () => {
+        setSelectedPath({
+            ...selectedPath,
+            displayPath: selectPathFromPopup
+        })
+        setFolderExist(true)
         setChoosePathPopup(false);
+        showCreateFolderLocation(false);
     }
-    const handleToggle = (clickedFolder:any) => {
-        const toggleFolderRecursively = (folder:any) => {
-          if (folder.EncodedAbsUrl === clickedFolder.EncodedAbsUrl) {
-            return { ...folder, isExpanded: !folder.isExpanded };
-          }
-          if (folder.subRows && folder.subRows.length > 0) {
-            return {
-              ...folder,
-              subRows: folder.subRows.map(toggleFolderRecursively)
-            };
-          }
-          return folder;
+    const handleToggle = (clickedFolder: any) => {
+        const toggleFolderRecursively = (folder: any) => {
+            if (folder.EncodedAbsUrl === clickedFolder.EncodedAbsUrl) {
+                return { ...folder, isExpanded: !folder.isExpanded };
+            }
+            if (folder.subRows && folder.subRows.length > 0) {
+                return {
+                    ...folder,
+                    subRows: folder.subRows.map(toggleFolderRecursively)
+                };
+            }
+            return folder;
         };
-      
-        setAllFoldersGrouped((prevFolders:any) => {
-          const updatedFolders = prevFolders.map(toggleFolderRecursively);
-          return updatedFolders;
+
+        setAllFoldersGrouped((prevFolders: any) => {
+            const updatedFolders = prevFolders.map(toggleFolderRecursively);
+            return updatedFolders;
         });
-      };
-      
+    };
+
     const Folder = ({ folder, onToggle }: any) => {
         const hasChildren = folder.subRows && folder.subRows.length > 0;
 
@@ -558,9 +558,9 @@ const AncTool = (props: any) => {
             <li style={{ listStyle: 'none' }}>
                 <span onClick={toggleExpand}>
                     {hasChildren ? (
-                        folder.isExpanded ? <FaChevronDown /> : <FaChevronRight />
+                        folder.isExpanded ? <BsChevronDown /> : <BsChevronRight />
                     ) : (
-                        <FaChevronDown style={{ color: 'white' }} />
+                        <BsChevronDown style={{ color: 'white' }} />
                     )}
                     <span className='svg__iconbox svg__icon--folder me-1'></span>
                 </span>
@@ -576,22 +576,63 @@ const AncTool = (props: any) => {
         );
     };
     const onRenderCustomFooterMain = () => {
-        return (
+        return (<>
+
+            <div className="p-2 pb-0 pe-4">
+                <div>
+                    <span className='highlighted'>{selectPathFromPopup?.length > 0 ? `${selectPathFromPopup}/` : ''}</span>
+                    {CreateFolderLocation ?
+                        <><input type="text" placeholder='Folder Name' value={newSubFolderName} onChange={(e) => setNewSubFolderName(e.target.value)} />
+                            <button className="btn btnPrimary pull-right" disabled={newSubFolderName?.length > 0 ? false : true} onClick={() => { CreateSubFolder() }}>Create Folder</button>
+                        </> : ''}
+                </div>
+                {selectPathFromPopup?.length > 0 && CreateFolderLocation != true ?
+                    <div className="text-end">
+                        <a className='hreflink' onClick={() => showCreateFolderLocation(true)}>
+                            Create Sub Folder
+                        </a>
+                    </div> : ''}
+            </div>
             <footer className='text-end p-2'>
                 <button className="btn btnPrimary " disabled={selectPathFromPopup?.length > 0 ? false : true} onClick={() => { selectFolderToUpload() }}>Select</button>
                 <button className='btn btn-default ms-1' onClick={() => cancelPathFolder()}>Cancel</button>
             </footer>
-
+        </>
         );
     };
 
     const CreateSubFolder = async () => {
-        await CreateFolder(selectPathFromPopup, newSubFolderName).then((folder: any) => {
-            setSelectPathFromPopup(`${selectPathFromPopup}${folder?.FileLeafRef}`)
+        try {
+            const newFolder = await CreateFolder(selectPathFromPopup, newSubFolderName);
+            setSelectPathFromPopup(`${selectPathFromPopup}/${newFolder?.FileLeafRef}`)
+            const toggleFolderRecursively = (folder: any) => {
+                if (folder.EncodedAbsUrl === newFolder.parentFolderUrl) {
+                    folder
+                    let subFolders = [];
+                    if (folder?.subRows?.length > 0) {
+                        subFolders = folder?.subRows;
+                    }
+                    subFolders.push(newFolder)
+                    return { ...folder, isExpanded: true, subRows: subFolders };
+                }
+                if (folder.subRows && folder.subRows.length > 0) {
+                    return {
+                        ...folder,
+                        subRows: folder.subRows.map(toggleFolderRecursively)
+                    };
+                }
+                return folder;
+            };
+            setAllFoldersGrouped((prevFolders: any) => {
+                const updatedFolders = prevFolders.map(toggleFolderRecursively);
+                return updatedFolders;
+            });
+
             showCreateFolderLocation(false);
-            setNewSubFolderName('')
-            console.log(folder);
-        })
+            setNewSubFolderName('');
+        } catch (error) {
+            console.error('Error creating subfolder:', error);
+        }
     }
     const setFolderPathFromPopup = (folderName: any) => {
         let selectedfolderName = folderName.split(rootSiteName)[1];
@@ -699,23 +740,21 @@ const AncTool = (props: any) => {
 
                                         <>
                                             {selectPathFromPopup?.length > 0 ?
-                                                <div>
-                                                    <label className="full_width ">Selected Folder</label>
-                                                    <span>{selectPathFromPopup}</span>
-                                                </div>
-                                                : <div>
-                                                    <label className="full_width ">Default Folder</label>
-                                                    <span>{folderExist == true ? <span>{selectedPath?.displayPath}</span> : <span>{selectedPath?.displayPath?.split(props?.item?.Title)}<span className='highlighted'>{props?.item?.Title}
-                                                        <div className="popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                            <span className="svg__iconbox svg__icon--info " ></span>
-                                                            <div className="popover__content">
-                                                                <span>
-                                                                    Highlighted folder does not exist. It will be created at the time of document upload.
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                    </span></span>}</span> </div>
+                                                <label className="full_width ">Selected Folder</label>
+                                                : <label className="full_width ">Default Folder</label>
                                             }
+                                            <div>
+
+                                                <span>{folderExist == true ? <span>{selectedPath?.displayPath}</span> : <span>{selectedPath?.displayPath?.split(props?.item?.Title)}<span className='highlighted'>{props?.item?.Title}
+                                                    <div className="popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                        <span className="svg__iconbox svg__icon--info " ></span>
+                                                        <div className="popover__content">
+                                                            <span>
+                                                                Highlighted folder does not exist. It will be created at the time of document upload.
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </span></span>}</span> </div>
                                         </>
                                         <span>
                                             <a title="Click for Associated Folder" className='hreflink pull-right' onClick={() => setChoosePathPopup(true)} >Change Path</a>
@@ -834,19 +873,7 @@ const AncTool = (props: any) => {
                     </ul>
 
                 </div>
-                <div>
-                    <span>{selectPathFromPopup?.length > 0 ? `${selectPathFromPopup}/` : ''}</span>
-                    {CreateFolderLocation ?
-                        <><input type="text" placeholder='Folder Name' value={newSubFolderName} onChange={(e) => setNewSubFolderName(e.target.value)} />
-                            <button className="btn btnPrimary pull-right" disabled={newSubFolderName?.length > 0 ? false : true} onClick={() => { CreateSubFolder() }}>Create Folder</button>
-                        </> : ''}
-                </div>
-                {selectPathFromPopup?.length > 0 && CreateFolderLocation != true ?
-                    <div className="text-end">
-                        <a className='hreflink' onClick={() => showCreateFolderLocation(true)}>
-                            Create Sub Folder
-                        </a>
-                    </div> : ''}
+
 
             </Panel>
 
