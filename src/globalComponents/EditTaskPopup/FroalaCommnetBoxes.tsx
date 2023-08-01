@@ -158,11 +158,11 @@ export default function FroalaCommnetBoxes(textItems: any) {
                     if (UpdatedFeedBackParentArray[id].Title != undefined && UpdatedFeedBackParentArray[id].Title.length > 0) {
                         NewTitle = UpdatedFeedBackParentArray[id].Title + " (See " +Index +")";
                     } else {
-                        NewTitle = " (See " +Index +")"
+                        NewTitle = "See " +Index
                     }
                     UpdatedFeedBackParentArray[id].Title = NewTitle;
                     const copy = [...State];
-                    const obj = { ...State[id], Title: NewTitle };
+                    const obj = { ...State[id], Title: NewTitle, SeeAbove:true };
                     copy[id] = obj;
                     setState(copy);
                 } else {
@@ -176,7 +176,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                     }
                     UpdatedFeedBackParentArray[id].Title = NewTitle;
                     const copy = [...State];
-                    const obj = { ...State[id], Title: NewTitle };
+                    const obj = { ...State[id], Title: NewTitle, SeeAbove : false };
                     copy[id] = obj;
                     setState(copy);
                 }

@@ -151,7 +151,7 @@ const EditSiteComposition = (Props: any) => {
                 onRenderHeader={onRenderEditSCCustomHeader}
                 isOpen={EditSiteCompositionStatus}
                 onDismiss={closeEditSiteCompositionModel}
-                isBlocking={EditSiteCompositionStatus}
+                isBlocking={false}
                 type={PanelType.medium}
             >
                 <div className={ServicesTaskCheck ? "serviepannelgreena pt-3 edit-site-composition-on-task-profile" : "pt-3 edit-site-composition-on-task-profile"}>

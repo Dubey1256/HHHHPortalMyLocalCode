@@ -7,9 +7,8 @@ import * as Moment from 'moment';
 import ApprovalHistoryPopup from "./ApprovalHistoryPopup";
 
 export default function subCommentComponent(SubTextItemsArray: any) {
-    console.log("Subtext all data =======", SubTextItemsArray)
     const SubTextItems = SubTextItemsArray.SubTextItemsArray;
-    const callBack = SubTextItemsArray.callBack
+    const callBack = SubTextItemsArray.callBack;
     const Context = SubTextItemsArray.Context;
     const [Texts, setTexts] = useState(false);
     const [subCommentsData, setSubCommentsData] = useState([]);
@@ -22,8 +21,8 @@ export default function subCommentComponent(SubTextItemsArray: any) {
     const [ApprovalPointHistoryStatus, setApprovalPointHistoryStatus] = useState(false);
     const [ApprovalPointUserData, setApprovalPointUserData] = useState<any>([]);
     const [ApprovalPointCurrentIndex, setApprovalPointCurrentIndex] = useState('');
-    const currentArrayIndex = SubTextItemsArray.currentIndex
-    const isFirstComment = SubTextItemsArray.isFirstComment
+    const currentArrayIndex = SubTextItemsArray.currentIndex;
+    const isFirstComment = SubTextItemsArray.isFirstComment;
     let ApprovalStatus: any = SubTextItemsArray.ApprovalStatus;
     let SmartLightPercentStatus: any = SubTextItemsArray.SmartLightPercentStatus;
     let SmartLightStatus: any = SubTextItemsArray.SmartLightStatus;
@@ -78,7 +77,8 @@ export default function subCommentComponent(SubTextItemsArray: any) {
             Phone: "",
             LowImportance: "",
             HighImportance: "",
-            isShowLight: ""
+            isShowLight: "",
+            SeeAbove: ''
         };
         subCommentsData.push(object);
         setTexts(!Texts)
@@ -94,7 +94,8 @@ export default function subCommentComponent(SubTextItemsArray: any) {
             Phone: "",
             LowImportance: "",
             HighImportance: "",
-            isShowLight: ""
+            isShowLight: "",
+            SeeAbove: '',
         };
         subCommentsData.push(object);
         setTexts(!Texts)
@@ -134,6 +135,38 @@ export default function subCommentComponent(SubTextItemsArray: any) {
             const obj = { ...subCommentsData[id], [name]: value == "true" ? false : true };
             copy[id] = obj;
             setSubCommentsData(copy);
+            if (name == "SeeAbove") {
+                if (value == 'false') {
+                    const { id } = e.currentTarget.dataset;
+                    let Index = Number(id);
+                    let NewTitle: any = "";
+                    if (UpdatedFeedBackChildArray[id].Title != undefined && UpdatedFeedBackChildArray[id].Title.length > 0) {
+                        NewTitle = UpdatedFeedBackChildArray[id].Title + " (See " + (SubTextItemsArray.index+1)+"."+ Index +")";
+                    } else {
+                        NewTitle = "See " + (SubTextItemsArray.index+1)+"."+ Index
+                    }
+                    UpdatedFeedBackChildArray[id].Title = NewTitle;
+                    const copy = [...subCommentsData];
+                    const obj = { ...subCommentsData[id], Title: NewTitle, SeeAbove:true };
+                    copy[id] = obj;
+                    setSubCommentsData(copy);
+                } else {
+                    const { id } = e.currentTarget.dataset;
+                    let Index = Number(id);
+                    let NewTitle: any = "";
+                    if (UpdatedFeedBackChildArray[id].Title != undefined && UpdatedFeedBackChildArray[id].Title.length > 0) {
+                        NewTitle = UpdatedFeedBackChildArray[id].Title.replace(`(See ${SubTextItemsArray.index + 1}.${Index})`, "");
+                    } else {
+                        NewTitle = "";
+                    }
+                    UpdatedFeedBackChildArray[id].Title = NewTitle;
+                    const copy = [...subCommentsData];
+                    const obj = { ...subCommentsData[id], Title: NewTitle, SeeAbove: false};
+                    copy[id] = obj;
+                    setSubCommentsData(copy);
+                }
+                UpdatedFeedBackChildArray[id].SeeAbove = (value == "true" ? false : true)
+            }
             if (name == "Phone") {
                 UpdatedFeedBackChildArray[id].Phone = (value == "true" ? false : true)
             }
@@ -262,6 +295,16 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                             </div>
                                         </div>
                                         <div>
+                                            {index > 0 ? <><span className="mx-1">
+                                                <input className="form-check-input m-0 rounded-0 commentSectionLabel"
+                                                    type="checkbox"
+                                                    checked={obj.SeeAbove != undefined && obj.SeeAbove == true ? true : false}
+                                                    value={obj.SeeAbove != undefined && obj.SeeAbove == true ? "true" : "false"}
+                                                    name='SeeAbove'
+                                                />
+                                                <label className="commentSectionLabel ms-1">See Above</label>
+                                            </span>
+                                                <span> | </span> </> : null}
                                             <span className="mx-1">
                                                 <input className="form-check-input m-0 rounded-0 commentSectionLabel " type="checkbox"
                                                     checked={obj.Phone}
