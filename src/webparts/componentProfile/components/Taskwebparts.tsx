@@ -940,9 +940,9 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
           .orderBy("orderby", false)
           .getAll(4000);
 
-        console.log(AllTasksMatches);
+        // console.log(AllTasksMatches);
         Counter++;
-        console.log(AllTasksMatches.length);
+        // console.log(AllTasksMatches.length);
         if (AllTasksMatches != undefined && AllTasksMatches.length > 0) {
           $.each(AllTasksMatches, function (index: any, item: any) {
             item.isDrafted = false;
@@ -977,17 +977,6 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
               result.AllTeamName =
                 result.AllTeamName === undefined ? "" : result.AllTeamName;
               result.chekbox = false;
-              SmartTimeData(result)
-                              .then((returnresult) => {
-                                let myNumber = String(returnresult);
-                                let Mynextnumber = parseFloat(myNumber);
-
-                                result.smartTime = Mynextnumber.toFixed(1);
-                                // console.log("Final Total Time:", returnresult);
-                              })
-                              .catch((error) => {
-                                console.error("Error:", error);
-                              });
               
               result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
               result.Restructuring =
@@ -1128,8 +1117,8 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
               }
             });
 
-            console.log("taskssssssssssssss", AllActivitysData);
-            console.log("AllActivitysData", AllActivitysData);
+            // console.log("taskssssssssssssss", AllActivitysData);
+            // console.log("AllActivitysData", AllActivitysData);
             TasksItem = AllActivitysData;
             console.log(Response);
             map(TasksItem, (task: any) => {
@@ -1150,52 +1139,11 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     } else showProgressHide();
   };
 
-  const handleOpen = (item: any) => {
-    item.show = item.show = item.show == true ? false : true;
-    setData((maidataBackup) => [...maidataBackup]);
-  };
-
-  const handleOpenAll = () => {
-    var Isshow1: any = Isshow == true ? false : true;
-    map(data, (obj) => {
-      obj.show = Isshow1;
-      if (obj.subRows != undefined && obj.subRows.length > 0) {
-        map(obj.subRows, (subchild) => {
-          subchild.show = Isshow1;
-          if (subchild.subRows != undefined && subchild.subRows.length > 0) {
-            map(subchild.subRows, (child) => {
-              child.show = Isshow1;
-            });
-          }
-        });
-      }
-    });
-    setIsshow(Isshow1);
-    setData((data) => [...data]);
-  };
+  
 
   const addModal = () => {
     setAddModalOpen(true);
   };
-  const setModalIsOpenToTrue = () => {
-    setModalIsOpen(true);
-  };
-
-  // const sortBy = () => {
-  //   const copy = data;
-
-  //   copy.sort((a, b) => (a.Title > b.Title ? 1 : -1));
-
-  //   setTable(copy);
-  // };
-  // const sortByDng = () => {
-  //   const copy = data;
-
-  //   copy.sort((a, b) => (a.Title > b.Title ? -1 : 1));
-
-  //   setTable(copy);
-  // };
-
   // Global Search
   var getRegexPattern = function (keywordArray: any) {
     var pattern = "(^|\\b)(" + keywordArray.join("|") + ")";
@@ -1278,7 +1226,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   const getTaskUsers = async () => {
     let taskUsers = (Response = TaskUsers = await globalCommon.loadTaskUsers());
     setTaskUser(Response);
-    console.log(Response);
+    // console.log(Response);
   };
   const GetSmartmetadata = async () => {
     var metadatItem: any = [];
@@ -1489,38 +1437,6 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     return json;
   };
 
-  var ArrayCopy = function (array: any) {
-    let MainArray = [];
-    if (array != undefined && array.length != undefined) {
-      MainArray = parseJSON(JSON.stringify(array));
-    }
-    return MainArray;
-  };
-  var stringToArray1 = function (input: any) {
-    if (input) {
-      return input.split(">");
-    } else {
-      return [];
-    }
-  };
-  var getRegexPattern = function (keywordArray: any) {
-    var pattern = "(^|\\b)(" + keywordArray.join("|") + ")";
-    return new RegExp(pattern, "gi");
-  };
-
-  const getTeamLeadersName = function (Items: any, Item: any) {
-    if (Items != undefined) {
-      map(Items.results, (index: any, user: any) => {
-        $.each(AllUsers, function (index: any, item: any) {
-          $.each(AllUsers, function (index: any, item: any) {
-            if (user?.Id === item.AssingedToUser?.Id) {
-              Item.AllTeamName = Item.AllTeamName + item.Title + " ";
-            }
-          });
-        });
-      });
-    }
-  };
   var AllTasks: any = [];
   var CopyTaskData: any = [];
   var isItemExistsNew = function (array: any, items: any) {
@@ -1533,6 +1449,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     });
     return isExists;
   };
+  // tagged component
   const findTaggedComponents = function (task: any) {
     task.Portfolio_x0020_Type = "Component";
     task.isService = false;
@@ -1653,7 +1570,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     var ComponentsData: any = [];
     var SubComponentsData: any = [];
     var FeatureData: any = [];
-
+      
     $.each(ComponetsData["allComponets"], function (index: any, result: any) {
       result.TeamLeaderUser = result.TeamLeaderUser === undefined ? [] : result.TeamLeaderUser;
       // result.TeamLeader = result.TeamLeader != undefined ? result.TeamLeader : []
@@ -1859,6 +1776,19 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
           let Tasks = subcomp["subRows"].filter(
             (sub: { Item_x0020_Type: string }) => sub.Item_x0020_Type === "Task"
           );
+          Tasks.map((item:any)=>{
+            SmartTimeData(item)
+            .then((returnresult) => {
+              let myNumber = String(returnresult);
+              let Mynextnumber = parseFloat(myNumber);
+              let stringnumb=Mynextnumber.toFixed(1);
+              item.smartTime = String(stringnumb)
+              // console.log("Final Total Time:", returnresult);
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
+          })
           let Features = subcomp["subRows"].filter(
             (sub: { Item_x0020_Type: string }) =>
               sub.Item_x0020_Type === "Feature"
@@ -1890,6 +1820,19 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                 (sub: { Item_x0020_Type: string }) =>
                   sub.Item_x0020_Type === "Task"
               );
+              Tasks.map((item:any)=>{
+                SmartTimeData(item)
+                .then((returnresult) => {
+                  let myNumber = String(returnresult);
+                  let Mynextnumber = parseFloat(myNumber);     
+                   let stringnumb=Mynextnumber.toFixed(1);
+                  item.smartTime = String(stringnumb);
+                  // console.log("Final Total Time:", returnresult);
+                })
+                .catch((error) => {
+                  console.error("Error:", error);
+                });
+              })
               featurecomp["subRows"] = [];
               DynamicSort(Tasks, "Shareweb_x0020_ID");
               featurecomp["subRows"] = Tasks;
@@ -1969,6 +1912,19 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         var SubTasks = comp.subRows.filter(
           (sub: { Item_x0020_Type: string }) => sub.Item_x0020_Type === "Task"
         );
+        SubTasks.map((item:any)=>{
+          SmartTimeData(item)
+          .then((returnresult) => {
+            let myNumber = String(returnresult);
+            let Mynextnumber = parseFloat(myNumber);  
+                let stringnumb=Mynextnumber.toFixed(1);
+            item.smartTime = String(stringnumb)
+            // console.log("Final Total Time:", returnresult);
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+        })
         var SubFeatures = comp.subRows.filter(
           (sub: { Item_x0020_Type: string }) =>
             sub.Item_x0020_Type === "Feature"
@@ -1990,6 +1946,20 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
               var SubchildTasks = subcomp.subRows.filter(
                 (sub: any) => sub.Item_x0020_Type === "Task"
               );
+              
+              SubchildTasks.map((item:any)=>{
+                SmartTimeData(item)
+                .then((returnresult) => {
+                  let myNumber = String(returnresult);
+                  let Mynextnumber = parseFloat(myNumber);   
+                     let stringnumb=Mynextnumber.toFixed(1);
+                  item.smartTime = String(stringnumb)
+                  // console.log("Final Total Time:", returnresult);
+                })
+                .catch((error) => {
+                  console.error("Error:", error);
+                });
+              })
               Subchildcomponnet = Subchildcomponnet.concat(SubchildTasks);
               subcomp["subRows"] = Subchildcomponnet;
               // var SubchildTasks = subcomp.subRows.filter((sub: any) => (sub.ItemType === 'SubComponnet'));
@@ -2024,12 +1994,51 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     temp.subRows = ComponentsData[0].subRows.filter(
       (sub: any) => sub.Item_x0020_Type === "Task" && sub.subRows.length == 0
     );
+    temp?.subRows?.map((item:any)=>{
+      SmartTimeData(item)
+      .then((returnresult) => {
+        let myNumber = String(returnresult);
+        let Mynextnumber = parseFloat(myNumber);
+        let stringnumb=Mynextnumber.toFixed(1);
+        item.smartTime = String(stringnumb)
+        // console.log("Final Total Time:", returnresult);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    })
     AllItems = ComponentsData[0].subRows.filter(
       (sub: any) => sub.Item_x0020_Type != "Task" || sub.subRows.length > 0
     );
+    AllItems.map((item:any)=>{
+      SmartTimeData(item)
+      .then((returnresult) => {
+        let myNumber = String(returnresult);
+        let Mynextnumber = parseFloat(myNumber);
+        let stringnumb=Mynextnumber.toFixed(1);
+        item.smartTime = String(stringnumb);
+        // console.log("Final Total Time:", returnresult);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    })
     var activities = temp.subRows.filter(
       (sub: any) => sub?.SharewebTaskType?.Title === "Activities"
     );
+    activities.map((item:any)=>{
+      SmartTimeData(item)
+      .then((returnresult) => {
+        let myNumber = String(returnresult);
+        let Mynextnumber = parseFloat(myNumber);
+        let stringnumb=Mynextnumber.toFixed(1);
+        item.smartTime = String(stringnumb)
+        // console.log("Final Total Time:", returnresult);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    })
     if (activities != undefined && activities.length > 0) {
       AllItems = AllItems.concat(activities);
     }
@@ -2051,7 +2060,9 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     var AllTaskData1: any = [];
     ComponetsData["allUntaggedTasks"] = [];
     AllTaskData1 = AllTaskData1.concat(TasksItem);
+
     $.each(AllTaskData1, function (index: any, task: any) {
+     
       if (task?.Id === 3559 || task?.Id === 3677) console.log(task);
       task.Portfolio_x0020_Type = "Component";
       if (IsUpdated === "Service") {
@@ -2083,35 +2094,8 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
   var TasksItem: any = [];
 
-  function Buttonclick(e: any) {
-    e.preventDefault();
-    this.setState({ callchildcomponent: true });
-  }
-  const setModalIsOpenToFalse = () => {
-    setModalIsOpen(false);
-  };
-
-  const closeModal = () => {
-    setAddModalOpen(false);
-  };
-
-  const Prints = () => {
-    window.print();
-  };
-  // ---------------------Export to Excel-------------------------------------------------------------------------------------
-
-  const getCsvData = () => {
-    const csvData = [["Title"]];
-    let i;
-    for (i = 0; i < data.length; i += 1) {
-      csvData.push([`${data[i].Title}`]);
-    }
-    return csvData;
-  };
-  const clearSearch = () => {
-    setSearch("");
-  };
-
+  
+  
   // Expand Table
   const expndpopup = (e: any) => {
     settablecontiner(e);
@@ -2205,7 +2189,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     setCheckedList(checkedList => ([...list]));
   };
 
-  // const onChangeHandler = (itrm: any, child: any, e: any) => {
+ 
   //   var Arrays: any = [];
 
   //   const { checked } = e.target;
@@ -2293,8 +2277,6 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   //   setCheckedList((checkedList) => [...list]);
   // };
   var TaskTimeSheetCategoriesGrouping: any = [];
-  var TaskTimeSheetCategories: any = [];
-  var AllTimeSpentDetails: any = [];
   const isItemExists = function (arr: any, Id: any) {
     var isExists = false;
     $.each(arr, function (index: any, item: any) {
@@ -2305,32 +2287,13 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     });
     return isExists;
   };
-  const checkCategory = function (item: any, category: any) {
-    $.each(
-      TaskTimeSheetCategoriesGrouping,
-      function (index: any, categoryTitle: any) {
-        if (categoryTitle?.Id == category) {
-          // item.isShow = true;
-          if (categoryTitle.Childs.length == 0) {
-            categoryTitle.Childs = [];
-          }
-          if (!isItemExists(categoryTitle.Childs, item?.Id)) {
-            item.show = true;
-            categoryTitle.Childs.push(item);
-          }
-        }
-      }
-    );
-  };
+ 
 
   const EditData = (e: any, item: any) => {
     setIsTimeEntry(true);
     setSharewebTimeComponent(item);
   };
 
-  const handleTitle = (e: any) => {
-    setTitle(e.target.value);
-  };
 
   const EditComponentPopup = (item: any) => {
     // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
@@ -2344,7 +2307,6 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     setSharewebTask(item);
     // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
   };
-  function AddItem() { }
 
   const Call = React.useCallback((childItem: any) => {
     // if (MeetingItems.length > 0) {
@@ -2495,185 +2457,12 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     }
   }, []);
 
-  // const Call = React.useCallback((childItem: any) => {
-  //   table.setRowSelection({})
-  //   // MeetingItems?.forEach((val: any): any => {
-  //   //   val.chekBox = false;
-  //   // });
-  //   closeTaskStatusUpdatePoup2();
-  //   setIsComponent(false);
-  //   setIsTask(false);
-  //   setMeetingPopup(false);
-  //   setWSPopup(false);
-  //   var MainId: any = ''
-  //   let ParentTaskId: any = ''
-  //   if (childItem != undefined) {
-  //     childItem.data.Services = []
-  //     childItem.data.Component = []
-  //     childItem.data['flag'] = true;
-  //     childItem.data['TitleNew'] = childItem?.data?.Title;
-  //     if (childItem?.data?.ServicesId[0] != undefined) {
-  //       childItem.data.Services.push({ Id: childItem?.data?.ServicesId[0] });
-  //     }
-  //     if (childItem?.data?.ComponentId[0] != undefined) {
-  //       childItem.data.Component.push({ Id: childItem?.data?.ComponentId[0] });
-  //     }
-  //     if (childItem?.data?.ServicesId != undefined && childItem?.data?.ServicesId?.length > 0) {
-  //       MainId = childItem.data.ServicesId[0]
-  //     }
-  //     if (childItem.data.ComponentId != undefined && childItem.data.ComponentId.length > 0) {
-  //       MainId = childItem.data.ComponentId[0]
-  //     }
-  //     if (childItem.data.ParentTaskId != undefined && childItem.data.ParentTaskId != "") {
-  //       ParentTaskId = childItem.data.ParentTaskId
-  //     }
-  //     if (childItem?.data?.DueDate != undefined && childItem?.data?.DueDate != "" && childItem?.data?.DueDate != "Invalid date") {
-  //       childItem.data.DueDate = childItem.data.DueDate ? Moment(childItem?.data?.DueDate).format("MM-DD-YYYY") : null
-  //     }
-
-  //     if (AllItems != undefined) {
-  //       AllItems.forEach((val: any) => {
-  //         val.flag = true;
-  //         val.show = false;
-  //         if ( val?.Id == MainId ||(val.subRows != undefined && val.subRows.length > 0)) {
-  //           if (val?.Id == MainId) {
-  //             val.subRows.push(childItem.data);
-  //           }
-  //           if (val.subRows != undefined && val.subRows.length > 0) {
-  //             val.subRows.forEach((type: any) => {
-  //               if (type?.Id == MainId) {
-  //                 val.flag = true;
-  //                 type.subRows.push(childItem.data);
-  //               } else {
-  //                 AllItems.push(childItem.data);
-  //               }
-  //             });
-  //           }
-  //         } else {
-  //           AllItems.push(childItem.data);
-  //         }
-  //       });
-  //       AllItems = AllItems.filter((val: any, id: any, array: any) => {
-  //         return array.indexOf(val) == id;
-  //       });
-  //       setData(AllItems => ([...AllItems]))
-  //       refreshData();
-  //       rerender();
-  //     }
-  //   }
-  // }, []);
 
 
   const TimeEntryCallBack = React.useCallback((item1) => {
     setIsTimeEntry(false);
   }, []);
   let isOpenPopup = false;
-  const onPopUpdata = function (item: any) {
-    isOpenPopup = true;
-    item.data.subRows = [];
-    item.data.flag = true;
-    item.data.siteType = "Master Tasks";
-    item.data.TitleNew = item.data.Title;
-    item.data.childsLength = 0;
-    item.data["Shareweb_x0020_ID"] = item.data.PortfolioStructureID;
-    if (checkedList != undefined && checkedList.length > 0)
-      checkedList[0].subRows.unshift(item.data);
-    else AllItems.unshift(item.data);
-
-    setSharewebComponent(item.data);
-    setIsComponent(true);
-    setData((data) => [...AllItems]);
-  };
-  // const CloseCall = React.useCallback((item) => {
-  //   if (item.CreateOpenType === "CreatePopup") {
-  //     onPopUpdata(item.CreatedItem[0]);
-  //   } else if (!isOpenPopup && item.CreatedItem != undefined) {
-  //     item.CreatedItem.forEach((obj: any) => {
-  //       obj.data.subRows = [];
-  //       obj.data.flag = true;
-  //       obj.data.TitleNew = obj.data.Title;
-  //       // obj.data.Team_x0020_Members=item.TeamMembersIds;
-  //       // obj.AssignedTo =item.AssignedIds;
-  //       obj.data.siteType = "Master Tasks";
-  //       obj.data["Shareweb_x0020_ID"] = obj.data.PortfolioStructureID;
-  //       if (item.props != undefined && item.props.SelectedItem != undefined) {
-  //         item.props.SelectedItem.subRows =
-  //           item.props.SelectedItem.subRows == undefined
-  //             ? []
-  //             : item.props.SelectedItem.subRows;
-  //         if (item.props.SelectedItem.subRows.length === 0) {
-  //           item.props.SelectedItem.downArrowIcon =
-  //             IsUpdated != undefined && IsUpdated == "Service"
-  //               ? GlobalConstants.MAIN_SITE_URL +
-  //               "/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png"
-  //               : GlobalConstants.MAIN_SITE_URL +
-  //               "/SP/SiteCollectionImages/ICONS/24/list-icon.png";
-  //           item.props.SelectedItem.RightArrowIcon =
-  //             IsUpdated != undefined && IsUpdated == "Service"
-  //               ? GlobalConstants.MAIN_SITE_URL +
-  //               "/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png"
-  //               : GlobalConstants.MAIN_SITE_URL +
-  //               "/SP/SiteCollectionImages/ICONS/24/right-list-icon.png";
-  //         }
-  //         item.props.SelectedItem.subRows.unshift(obj.data);
-  //       }
-  //     });
-  //     if (AllItems != undefined && AllItems.length > 0) {
-  //       AllItems.forEach((comp: any, index: any) => {
-  //         if (
-  //           comp?.Id != undefined &&
-  //           item.props.SelectedItem != undefined &&
-  //           comp?.Id === item.props.SelectedItem?.Id
-  //         ) {
-  //           comp.childsLength = item.props.SelectedItem.subRows.length;
-  //           comp.show = comp.show == undefined ? false : comp.show;
-  //           if (comp.subRows.length === 0) {
-  //             comp.downArrowIcon = item.props.SelectedItem.downArrowIcon;
-  //             comp.RightArrowIcon = item.props.SelectedItem.RightArrowIcon;
-  //           }
-  //           comp.subRows = item.props.SelectedItem.subRows;
-  //         }
-  //         if (comp.subRows != undefined && comp.subRows.length > 0) {
-  //           comp.subRows.forEach((subcomp: any, index: any) => {
-  //             if (
-  //               subcomp?.Id != undefined &&
-  //               item.props.SelectedItem != undefined &&
-  //               subcomp?.Id === item.props.SelectedItem?.Id
-  //             ) {
-  //               subcomp.childsLength = item.props.SelectedItem.subRows.length;
-  //               subcomp.show = subcomp.show == undefined ? false : subcomp.show;
-  //               if (comp.subRows.length === 0) {
-  //                 subcomp.downArrowIcon = item.props.SelectedItem.downArrowIcon;
-  //                 subcomp.RightArrowIcon =
-  //                   item.props.SelectedItem.RightArrowIcon;
-  //               }
-  //               subcomp.subRows = item.props.SelectedItem.subRows;
-  //             }
-  //           });
-  //         }
-  //       });
-  //       // }
-  //     }
-  //     setData((AllItems) => [...AllItems]);
-  //     refreshData()
-  //     rerender()
-  //   }
-  //   if (!isOpenPopup && item.data != undefined) {
-  //     item.data.subRows = [];
-  //     item.data.flag = true;
-  //     item.data.TitleNew = item.data.Title;
-  //     item.data.siteType = "Master Tasks";
-  //     item.data.childsLength = 0;
-  //     item.data["Shareweb_x0020_ID"] = item.data.PortfolioStructureID;
-  //     AllItems.unshift(item.data);
-  //     // setData((data) => [...AllItems]);
-  //     setData((AllItems) => [...AllItems]);
-  //     refreshData()
-  //     rerender()
-  //   }
-  //   setAddModalOpen(false);
-  // }, []);
-
 
   const CloseCall = React.useCallback((item) => {
     if (MeetingItems.length > 0) {
@@ -2808,25 +2597,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     }
 
   }
-  const [lgShow, setLgShow] = React.useState(false);
-  function handleClose() {
-    selectedCategory = [];
-    setLgShow(false);
-  }
-  const [lgNextShow, setLgNextShow] = React.useState(false);
-  const handleCloseNext = () => setLgNextShow(false);
-  const [CreateacShow, setCreateacShow] = React.useState(false);
-  const handleCreateac = () => setCreateacShow(false);
-
-  const handleSuffixHover = (item: any) => {
-    item.Display = "block";
-    setData((data) => [...data]);
-  };
-
-  const handleuffixLeave = (item: any) => {
-    item.Display = "none";
-    setData((data) => [...data]);
-  };
+ 
   // Add activity popup array
   const closeTaskStatusUpdatePoup2 = () => {
     setRowSelection({})
@@ -2852,20 +2623,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     } else {
       if (MeetingItems[0] != undefined) {
         let parentcat:any=[];
-          // if(MeetingItems[0]?.ClientCategory!=undefined && (MeetingItems[0]?.ClientCategory?.results?.length>0||MeetingItems[0]?.ClientCategory?.length>0)){
-          //   if(MeetingItems[0]?.ClientCategory?.results?.length>0){
-          //     MeetingItems[0]?.ClientCategory?.results?.map((items:any)=>{
-          //       parentcat.push(items)
-          //     })
-          //   }else{
-          //     MeetingItems[0]?.ClientCategory?.map((items:any)=>{
-          //       parentcat.push(items)
-          //     })
-          //   }
-           
-          //   setSelectedClientCategory(parentcat)
-          //   selectedClientCategoryPopup=true
-          // }
+       
         if (items != undefined && items.length > 0) {
           MeetingItems[0].ClientCategory = [];
           items.forEach((val: any) => {
@@ -2875,12 +2633,6 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         if (MeetingItems[0].SharewebTaskType != undefined) {
           
           if (MeetingItems[0].SharewebTaskType.Title == "Activities") {
-            // selectedClientCategoryPopup=true
-            // if(selectedClientCategoryPopup==false){
-              
-            //   setWSPopup(true);
-             
-            // }
             setWSPopup(true);
           }
         }
@@ -2907,21 +2659,10 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       childsData[0].SharewebTaskType != undefined
     ) {
       let parentcat:any=[];
-      // if( childsData[0]?.ClientCategory!=undefined &&  childsData[0]?.ClientCategory?.length>0){
-      //   childsData[0]?.ClientCategory?.map((items:any)=>{
-      //     parentcat.push(items)
-      //   })
-      //   setSelectedClientCategory(parentcat)
-      //   selectedClientCategoryPopup=true
-      // }
       MeetingItems.push(childsData[0]);
       if (childsData[0].SharewebTaskType.Title == "Activities") {
-        // if(selectedClientCategoryPopup==false){
-        // setWSPopup(true);
-        // }
         setWSPopup(true);
-        //setMeetingItems(childsData)
-      }
+         }
       if (
         childsData[0] != undefined &&
         childsData[0].SharewebTaskType.Title == "Workstream"
@@ -3002,50 +2743,6 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
    }
       
     
-//     if( RestructureChecked != undefined && RestructureChecked?.length > 0 && (RestructureChecked[0].SharewebTaskType?.Title == "Workstream" || RestructureChecked[0].SharewebTaskType?.Title == "Task")){
-//       maidataBackup.map((obj:any)=>{
-//       if(obj.subRows.length > 0 && obj.subRows != undefined){
-//         obj.subRows.map((sub:any)=>{
-//           if(checkedList[0].ParentTask?.Id === sub.Id){
-//             if(SharewebTaskLevel1No <= sub.SharewebTaskLevel1No){
-//               SharewebTaskLevel1No = sub.SharewebTaskLevel1No + 1;
-//               PortfolioStructureIDs = sub.PortfolioStructureID;
-//               Shareweb_x0020_ID = 'SA' + SharewebTaskLevel1No;
-//             }
-// }   
-//           if(sub.subRows.length > 0 && sub.subRows != undefined){
-//             sub.subRows.map((newsub:any)=>{
-//               if(checkedList[0].ParentTask?.Id === newsub.Id){
-//                 if(SharewebTaskLevel1No <= newsub.SharewebTaskLevel1No){
-//                   SharewebTaskLevel1No = newsub.SharewebTaskLevel1No + 1;
-//               PortfolioStructureIDs = newsub.PortfolioStructureID;
-//               Shareweb_x0020_ID = 'SA' + SharewebTaskLevel1No;
-//                 }
-               
-//               }  
-              
-//               if(newsub.subRows.length > 0 && newsub.subRows != undefined){
-//                 newsub.subRows.map((feature:any)=>{
-//                   if(checkedList[0].ParentTask?.Id === feature.Id){
-//                     if(SharewebTaskLevel1No <= feature.SharewebTaskLevel1No){
-//                       SharewebTaskLevel1No = feature.SharewebTaskLevel1No +1;
-//                   PortfolioStructureIDs = feature.PortfolioStructureID;
-//                   Shareweb_x0020_ID = 'SA' + SharewebTaskLevel1No;
-//                     }
-                   
-//                   }  
-//                 })
-//               }
-              
-//             })
-//           }
-//         })
-//       }
-//    })
-//    }
-
-
-
 if (ChengedItemTitle != undefined && ChengedItemTitle != "" && (RestructureChecked[0].Item_x0020_Type == "SubComponent" || RestructureChecked[0].Item_x0020_Type == "Feature")) {
       let web = new Web(NextProp.siteUrl);
       var postData: any = {
@@ -5262,13 +4959,13 @@ var PortfolioLevelNum: any = 0;
         size: 127,
       },
       {
-        accessorFn: (row) => row?.smartTime,
+        accessorFn: (row) => String(row?.smartTime),
         cell: ({ row }) => (
           <>
             {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && (
 
               <>
-                <span>{row?.original?.smartTime}</span>
+                <span>{String(row?.original?.smartTime)}</span>
               </>
 
             )}
@@ -5674,12 +5371,12 @@ var PortfolioLevelNum: any = 0;
 <FaPaintBrush />
 
 </a>
-            <button
+            {/* <button
               type="button"
                onClick={()=>setcomparetool(true)}
             >
               Compare
-            </button>
+            </button> */}
             <a className="expand">
               <ExpndTable prop={expndpopup} prop1={tablecontiner} />
             </a>
