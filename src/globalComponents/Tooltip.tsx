@@ -2,7 +2,9 @@ import * as React from 'react';
 import Popup from 'reactjs-popup';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaCommentAlt, FaQuestion, FaBars } from 'react-icons/fa';
+//import { MdHelp } from 'react-icons/md';
 import { BiMenu } from 'react-icons/bi';
+
 import { Web } from "sp-pnp-js";
 import Feedback from 'react-bootstrap/esm/Feedback';
 import CreateMeetingPopup from './CreateMeetingPopup';
@@ -268,17 +270,17 @@ function Tooltip(props: any) {
         className='feedbackpanel'
       >
         {/* {isShown && ( */}
-        <div className='dropdown-menu show dropdown-menu-end toolmenu'>
-          <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Feedback SP')}><FaCommentAlt /> HHHH Feedback SP</a>
-          <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Bug')}><FaCommentAlt /> HHHH Bug</a>
-          <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Design')}><FaCommentAlt /> HHHH Design</a>
-          <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Quick')}><FaCommentAlt /> HHHH Quick</a>
-          <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Component Page')}><FaCommentAlt /> HHHH Component Page</a>
+        <div className='dropdown-menu show dropdown-menu-end toolmenubox'>
+          <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Feedback SP')}> <span className="svg__iconbox  svg__icon--Comments"></span> HHHH Feedback SP</a>
+          <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Bug')}> <span className="svg__iconbox  svg__icon--Comments"></span> HHHH Bug</a>
+          <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Design')}> <span className="svg__iconbox  svg__icon--Comments"></span> HHHH Design</a>
+          <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Quick')}> <span className="svg__iconbox  svg__icon--Comments"></span> HHHH Quick</a>
+          <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Component Page')}> <span className="svg__iconbox  svg__icon--Comments"></span> HHHH Component Page</a>
 
-          <a className='dropdown-item hreflink' onClick={(e) => feedbackInitial('Call Notes')}><FaCommentAlt /> Call Notes</a>
+          <a className='dropdown-item hreflink' onClick={(e) => feedbackInitial('Call Notes')}> <span className="svg__iconbox  svg__icon--Comments"></span> Call Notes</a>
 
-          <a className='dropdown-item hreflink' onClick={() => feedbackInitial('Admin Help')}><FaQuestion /> Admin Help</a>
-          <a className='dropdown-item hreflink' onClick={() => feedbackInitial('Help')}><FaQuestion /> Help</a>
+          <a className='dropdown-item hreflink' onClick={() => feedbackInitial('Admin Help')}> <span className="svg__iconbox  svg__icon--help-fill"></span> Admin Help</a>
+          <a className='dropdown-item hreflink' onClick={() => feedbackInitial('Help')}> <span className="svg__iconbox  svg__icon--help-fill"></span> Help</a>
         </div>
 
       </Popup>

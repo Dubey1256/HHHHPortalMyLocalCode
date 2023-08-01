@@ -196,7 +196,9 @@ const TaskDashboard = (props: any) => {
         } else if (startDateOf == 'Last Month') {
             const lastMonth = new Date(startingDate.getFullYear(), startingDate.getMonth() - 1);
             const startingDateOfLastMonth = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
-            formattedDate = startingDateOfLastMonth;
+            var change = (Moment(startingDateOfLastMonth).add(2, 'days').format())
+            var b = new Date(change)
+            formattedDate = b;
         } else if (startDateOf == 'Last Week') {
             const lastWeek = new Date(startingDate.getFullYear(), startingDate.getMonth(), startingDate.getDate() - 7);
             const startingDateOfLastWeek = new Date(lastWeek.getFullYear(), lastWeek.getMonth(), lastWeek.getDate() - lastWeek.getDay() + 1);
@@ -276,8 +278,9 @@ const TaskDashboard = (props: any) => {
                     if (timesheetLists?.listName != 'TasksTimesheet2') {
                         await web.lists
                             .getById(list?.listId)
-                            .items.select(list?.query)
-                            .filter("Modified gt '" + startDate + "'")
+                            .items.select("Id,Title,TaskDate,TaskTime,TimesheetTitle/Id,AdditionalTimeEntry,Modified,Description,TaskOffshoreTasks/Id,TaskOffshoreTasks/Title,TaskKathaBeck/Id,TaskKathaBeck/Title,TaskDE/Title,TaskDE/Id,TaskEI/Title,TaskEI/Id,TaskEPS/Title,TaskEPS/Id,TaskEducation/Title,TaskEducation/Id,TaskHHHH/Title,TaskHHHH/Id,TaskQA/Title,TaskQA/Id,TaskGender/Title,TaskGender/Id,TaskShareweb/Title,TaskShareweb/Id,TaskGruene/Title,TaskGruene/Id")
+                            .expand("TimesheetTitle,TaskKathaBeck,TaskDE,TaskEI,TaskEPS,TaskEducation,TaskGender,TaskQA,TaskDE,TaskShareweb,TaskHHHH,TaskGruene,TaskOffshoreTasks")
+                            .filter(`(Modified ge '${startDate}') and (TimesheetTitle/Id ne null)`)
                             .getAll().then((data: any) => {
                                 data?.map((item: any) => {
                                     item.taskDetails = checkTimeEntrySite(item, taskLists)
@@ -2022,7 +2025,7 @@ const TaskDashboard = (props: any) => {
                             })
                             body =
                                 '<h3><strong>'
-                                + teamMember?.Title + ` (${teamMember?.Group!=null?teamMember?.Group:''})`
+                                + teamMember?.Title + ` (${teamMember?.Group != null ? teamMember?.Group : ''})`
                                 + '</strong></h3>'
                                 + '<table style="border: 1px solid #ccc;" border="1" cellspacing="0" cellpadding="0" width="100%">'
                                 + '<thead>'
@@ -2045,7 +2048,7 @@ const TaskDashboard = (props: any) => {
                             body = body.replaceAll('>,<', '><').replaceAll(',', '')
                         } else {
                             body = '<h3><strong>'
-                                + teamMember?.Title + ` (${teamMember?.Group!=null?teamMember?.Group:''})`
+                                + teamMember?.Title + ` (${teamMember?.Group != null ? teamMember?.Group : ''})`
                                 + '</strong></h3>'
                                 + '<h4>'
                                 + 'No Working Today Tasks Available '

@@ -11,10 +11,10 @@ const EditSiteComposition = (Props: any) => {
     const ServicesTaskCheck = Props.ServicesTaskCheck;
     const AllListIdData = Props.AllListId;
     const siteUrls = Props.AllListId.siteUrl;
-    const callBack = Props.Call;
+    const callBack = Props.Call;     
     const SmartTotalTimeData = Props.SmartTotalTimeData;
     const selectedClientCategory: any = [];
-    const ComponentTaskCheck = Props.ComponentTaskCheck;
+    const ComponentTaskCheck = Props.ComponentTaskCheck; 
     const SitesTaggingData = Props.SitesTaggingData;
     const EditData = Props.EditData;
 
@@ -151,7 +151,7 @@ const EditSiteComposition = (Props: any) => {
                 onRenderHeader={onRenderEditSCCustomHeader}
                 isOpen={EditSiteCompositionStatus}
                 onDismiss={closeEditSiteCompositionModel}
-                isBlocking={EditSiteCompositionStatus}
+                isBlocking={false}
                 type={PanelType.medium}
             >
                 <div className={ServicesTaskCheck ? "serviepannelgreena pt-3 edit-site-composition-on-task-profile" : "pt-3 edit-site-composition-on-task-profile"}>
