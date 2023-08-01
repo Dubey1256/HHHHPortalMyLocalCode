@@ -976,7 +976,7 @@ const CreateWS = (props: any) => {
                 isBlocking={false}
                 className={AllItems?.Portfolio_x0020_Type == 'Service'|| AllItems?.Services?.length>0 ? "serviepannelgreena" : ""}
             >
-                <div className="modal-body border p-3 bg-f5f5 active">
+                <div className="modal-body border p-3 active Create-Item">
                     <div className='row'>
                         {
                             ParentArray?.map((pare: any) => {
@@ -1000,28 +1000,23 @@ const CreateWS = (props: any) => {
                             })
                         }
                     </div>
-                    <div className='row mt-2'>
-
-                        <span className="col-sm-2 padL-0 ">
-                            <label>
-                                <input type="radio" checked={checkedWS} onClick={() => selectType('Workstream')} className="me-1" />Workstream
-                            </label>
+                    <div className='row'>
+                        <span className="col-sm-3 rediobutton ">
+                            <span className='SpfxCheckRadio'>
+                                <input type="radio" checked={checkedWS} onClick={() => selectType('Workstream')} className="radio" /> Workstream
+                            </span>
+                            <span className='SpfxCheckRadio'>
+                                <input type="radio" checked={checkedTask} onClick={() => selectType('Task')} className="radio" />Task
+                            </span>
                         </span>
-                        <span className="col-sm-2" >
-                            <label>
-                                <input type="radio" checked={checkedTask} onClick={() => selectType('Task')} className="me-1" />Task
-                            </label>
-                        </span>
-
                     </div>
                     <div className='row'>
-                        <div className="col-sm-8 pad0">
-                            <label className="full-width"></label>
+                        <div className="col-md-8">
                             <input className="full-width" type="text"
                                 placeholder="Enter Child Item Title" defaultValue={AllItems?.Title} onChange={(e: any) => AllItems.Title = e.target.value}
                             />
                         </div>
-                        <div className="col-sm-4">
+                        <div className="col-md-4">
                             {AllItems?.Portfolio_x0020_Type == 'Component'
                                 &&
                                 <div className="">
@@ -1030,8 +1025,8 @@ const CreateWS = (props: any) => {
                                         <input type="text" id="txtSharewebComponentcrt"
                                         /><span role="status" aria-live="polite" title="Edit Component" data-toggle="modal"
                                             onClick={(e) => EditComponent(AllItems)}
-                                            className="input-group-text">
-                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png" />
+                                            className="full-width">
+                                            <span className="input-group-text" title="Status Popup"><span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span></span>
                                         </span>
                                     </div>
                                     <div className="col-sm-12 padL-0 PadR0">
@@ -1065,7 +1060,7 @@ const CreateWS = (props: any) => {
                         </div>
 
                     </div>
-                    <div className='row mt-4'>
+                    <div className='row mt-2'>
                         <div className='col-sm-4'>
                             <div className="input-group">
                                 <label className="full-width">Item Rank</label>
@@ -1098,52 +1093,50 @@ const CreateWS = (props: any) => {
                             </div>
                         </div>
                         <div className='col-sm-4'>
-                            <fieldset>
-                                <label className="full-width">Priority
-                                    <span>
-                                        <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
-
-                                            <div className="popover__content">
-                                                <span>
-
+                            <div className='Create-Priority'>
+                                <label className="full-width">
+                           
+                                     <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                     Priority  <span title="Edit" className="svg__iconbox svg__icon--info "></span>
+                                          <div className="popover__content">
                                                     8-10 = High Priority,<br />
                                                     4-7 = Normal Priority,<br />
-                                                    1-3 = Low Priority
-                                                </span>
-
+                                                    1-3 = Low Priority      
                                             </div>
 
                                         </div>
-                                    </span></label>
+                               
+                                    </label>
 
                                 <input type="text" className="full-width" placeholder="Priority" ng-model="PriorityRank"
                                     defaultValue={selectPriority} onChange={(e: any) => Priority(e)} />
-                                <div className="mt-2">
-                                    <label>
-                                        <input className="form-check-input  me-1" name="radioPriority"
+                                    <dl className='mt-1'>
+                                <dt>
+                                    <label className='SpfxCheckRadio'>
+                                        <input className="radio" name="radioPriority"
                                             type="radio" value="(1) High"
                                             defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(1) High', e)} />High
                                     </label>
-                                </div>
-                                <div className="">
-                                    <label>
-                                        <input className="form-check-input me-1" name="radioPriority"
+                                </dt>
+                                <dt>
+                                    <label className='SpfxCheckRadio'>
+                                        <input className="radio" name="radioPriority"
                                             type="radio" value="(2) Normal"
                                             defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(2) Normal', e)} />Normal
                                     </label>
-                                </div>
-                                <div className="">
-                                    <label>
-                                        <input className="form-check-input me-1" name="radioPriority"
+                                </dt>
+                                <dt>
+                                    <label className='SpfxCheckRadio'>
+                                        <input className="radio" name="radioPriority"
                                             type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(3) Low', e)} />Low
                                     </label>
-                                </div>
-                            </fieldset>
+                                </dt>
+                                </dl>
+                            </div>
 
                         </div>
                         <div className='col-sm-4'>
-                            <label className="full_width ng-binding" ng-bind-html="GetColumnDetails('dueDate') | trustedHTML">Due Date</label>
+                            <label className="full_width" ng-bind-html="GetColumnDetails('dueDate') | trustedHTML">Due Date</label>
                             <input className="form-control"
                                 type="date"
                                 // value={myDate != null ? Moment(new Date(myDate)).format('YYYY-MM-DD') : ''}
@@ -1151,31 +1144,32 @@ const CreateWS = (props: any) => {
                                 // dateFormat="dd/MM/yyyy"
                                 value={myDate.editDate != null ? Moment(new Date(myDate.editDate)).format('YYYY-MM-DD') : ""}
                                 onChange={(e: any) => setMyDate({ ...myDate, editDate: e.target.value })} />
-
-                            <div className="">
-                                <label>
-                                    <input className="form-check-input me-1" name="radioPriority2"
+                       <dl className='mt-1'>
+                            <dt className="">
+                                <label className='SpfxCheckRadio'>
+                                    <input className="radio" name="radioPriority2"
                                         type="radio" value="(3) Low" checked={myDate.selectDateName == 'Today'} onClick={(e: any) => SelectDate('Today')} />Today
                                 </label>
-                            </div>
-                            <div className="">
-                                <label>
-                                    <input className="form-check-input me-1" name="radioPriority2"
+                            </dt>
+                            <dt>
+                                <label className='SpfxCheckRadio'>
+                                    <input className="radio" name="radioPriority2"
                                         type="radio" value="(3) Low" checked={myDate.selectDateName == 'Tomorrow'} onClick={(e: any) => SelectDate('Tomorrow')} />Tomorrow
                                 </label>
-                            </div>
-                            <div className="">
-                                <label>
-                                    <input className="form-check-input me-1" name="radioPriority2"
+                            </dt>
+                            <dt>
+                                <label className='SpfxCheckRadio'>
+                                    <input className="radio" name="radioPriority2"
                                         type="radio" value="(3) Low" checked={myDate.selectDateName == 'This Week'} onClick={(e: any) => SelectDate('This Week')} />This Week
                                 </label>
-                            </div>
-                            <div className="">
-                                <label>
-                                    <input className="form-check-input me-1" name="radioPriority2"
+                            </dt>
+                             <dt>
+                                <label className='SpfxCheckRadio'>
+                                    <input className="radio" name="radioPriority2"
                                         type="radio" value="(3) Low" checked={myDate.selectDateName == 'This Month'} onClick={(e: any) => SelectDate('This Month')} />This Month
                                 </label>
-                            </div>
+                             </dt>
+                            </dl>
                         </div>
 
 
@@ -1198,95 +1192,16 @@ const CreateWS = (props: any) => {
                         showChildData == true && inputFields?.map((data, index) => {
                             const { Priority, DueDate, ItemRank, Description } = data;
                             return (
-                                <div>
+                                <div className='row mb-1'>
                                       
-                                      <div className="col-sm-8 pad0">
+                                      <div className="col-sm-8">
                             <label className="full-width"></label>
                             <input className="full-width" type="text"
                                 placeholder="Enter Child Item Title"  onChange={(e: any) => AllItems.Title = e.target.value}
                             />
                         </div>
                                     <div className="row my-3" key={index}>
-                                        <div className="col-sm-4">
-                                            <fieldset>
-                                                <label className="full-width">Priority
-                                                    <span>
-                                                        <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
-
-                                                            <div className="popover__content">
-                                                                <span>
-
-                                                                    8-10 = High Priority,<br />
-                                                                    4-7 = Normal Priority,<br />
-                                                                    1-3 = Low Priority
-                                                                </span>
-
-                                                            </div>
-
-                                                        </div>
-                                                    </span></label>
-
-                                                <input type="text" className="full-width" placeholder="Priority" ng-model="PriorityRank"
-                                                    defaultValue={selectPriority} />
-                                                <div className="mt-2">
-                                                    <label>
-                                                        <input className="form-check-input  me-1" name="radioPriority"
-                                                            type="radio" value="(1) High"
-                                                            defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(1) High', e)} />High
-                                                    </label>
-                                                </div>
-                                                <div className="">
-                                                    <label>
-                                                        <input className="form-check-input me-1" name="radioPriority"
-                                                            type="radio" value="(2) Normal"
-                                                            defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(2) Normal', e)} />Normal
-                                                    </label>
-                                                </div>
-                                                <div className="">
-                                                    <label>
-                                                        <input className="form-check-input me-1" name="radioPriority"
-                                                            type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(3) Low', e)} />Low
-                                                    </label>
-                                                </div>
-                                            </fieldset>
-                                        </div>
-
-                                        <div className='col-sm-4'>
-                                            <label className="full_width ng-binding" ng-bind-html="GetColumnDetails('dueDate') | trustedHTML">Due Date</label>
-                                            <input className="form-control"
-                                                // selected={date}
-                                                type="date"
-                                                // value={myDate != null ? Moment(new Date(myDate)).format('YYYY-MM-DD') : ''}
-                                                // onChange={(e) => setMyDate(`${e.target.value}`)}
-                                                value={myDate.editDate != null ? Moment(new Date(myDate.editDate)).format('YYYY-MM-DD') : ''}
-                                                onChange={(e: any) => setMyDate({ ...myDate, editDate: e.target.value })} />
-                                            <div className="">
-                                                <label>
-                                                    <input className="form-check-input me-1" name="radioPriority"
-                                                        type="radio" value="(3) Low" checked={myDate.selectDateName == 'Today'} onClick={(e: any) => SelectDate('Today')} />Today
-                                                </label>
-                                            </div>
-                                            <div className="">
-                                                <label>
-                                                    <input className="form-check-input me-1" name="radioPriority"
-                                                        type="radio" value="(3) Low" checked={myDate.selectDateName == 'Tomorrow'} onClick={(e: any) => SelectDate('Tomorrow')} />Tomorrow
-                                                </label>
-                                            </div>
-                                            <div className="">
-                                                <label>
-                                                    <input className="form-check-input me-1" name="radioPriority"
-                                                        type="radio" value="(3) Low" checked={myDate.selectDateName == 'This Week'} onClick={(e: any) => SelectDate('This Week')} />This Week
-                                                </label>
-                                            </div>
-                                            <div className="">
-                                                <label>
-                                                    <input className="form-check-input me-1" name="radioPriority"
-                                                        type="radio" value="(3) Low" checked={myDate.selectDateName == 'This Month'} onClick={(e: any) => SelectDate('This Month')} />This Month
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div className='col-sm-4'>
+                                    <div className='col-sm-4'>
                                             <div className="input-group">
                                                 <label className="full-width">Item Rank</label>
                                                 <select
@@ -1317,6 +1232,90 @@ const CreateWS = (props: any) => {
                                                 </select>
                                             </div>
                                         </div>
+                                        <div className="col-sm-4">
+                                    
+                                                <label className="full-width">Priority
+                                              
+                                                        <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+
+                                                            <div className="popover__content">
+                                                                <span>
+
+                                                                    8-10 = High Priority,<br />
+                                                                    4-7 = Normal Priority,<br />
+                                                                    1-3 = Low Priority
+                                                                </span>
+
+                                                            </div>
+
+                                                        </div>
+                                                   </label>
+
+                                                <input type="text" className="full-width" placeholder="Priority" ng-model="PriorityRank"
+                                                    defaultValue={selectPriority} />
+                                                    <dl className='mt-1'>
+                                                <dt>
+                                                    <label className="SpfxCheckRadio">
+                                                        <input className="radio" name="radioPriority"
+                                                            type="radio" value="(1) High"
+                                                            defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(1) High', e)} />High
+                                                    </label>
+                                                </dt>
+                                                <dt className="">
+                                                    <label className="SpfxCheckRadio">
+                                                        <input className="radio" name="radioPriority"
+                                                            type="radio" value="(2) Normal"
+                                                            defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(2) Normal', e)} />Normal
+                                                    </label>
+                                                </dt>
+                                                <dt className="">
+                                                    <label className="SpfxCheckRadio">
+                                                        <input className="radio" name="radioPriority"
+                                                            type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(3) Low', e)} />Low
+                                                    </label>
+                                                </dt>
+                                                </dl>
+                                  
+                                        </div>
+
+                                        <div className='col-sm-4'>
+                                            <label className="full_width ng-binding" ng-bind-html="GetColumnDetails('dueDate') | trustedHTML">Due Date</label>
+                                            <input className="form-control"
+                                                // selected={date}
+                                                type="date"
+                                                // value={myDate != null ? Moment(new Date(myDate)).format('YYYY-MM-DD') : ''}
+                                                // onChange={(e) => setMyDate(`${e.target.value}`)}
+                                                value={myDate.editDate != null ? Moment(new Date(myDate.editDate)).format('YYYY-MM-DD') : ''}
+                                                onChange={(e: any) => setMyDate({ ...myDate, editDate: e.target.value })} />
+                                                <dl className='mt-1'>
+                                            <dt className="">
+                                                <label className="SpfxCheckRadio">
+                                                    <input className="radio" name="radioPriority"
+                                                        type="radio" value="(3) Low" checked={myDate.selectDateName == 'Today'} onClick={(e: any) => SelectDate('Today')} />Today
+                                                </label>
+                                            </dt>
+                                            <dt>
+                                                <label className="SpfxCheckRadio">
+                                                    <input className="radio" name="radioPriority"
+                                                        type="radio" value="(3) Low" checked={myDate.selectDateName == 'Tomorrow'} onClick={(e: any) => SelectDate('Tomorrow')} />Tomorrow
+                                                </label>
+                                            </dt>
+                                            <dt>
+                                                <label className="SpfxCheckRadio">
+                                                    <input className="radio" name="radioPriority"
+                                                        type="radio" value="(3) Low" checked={myDate.selectDateName == 'This Week'} onClick={(e: any) => SelectDate('This Week')} />This Week
+                                                </label>
+                                            </dt>
+                                            <dt >
+                                                <label className="SpfxCheckRadio">
+                                                    <input className="radio" name="radioPriority"
+                                                        type="radio" value="(3) Low" checked={myDate.selectDateName == 'This Month'} onClick={(e: any) => SelectDate('This Month')} />This Month
+                                                </label>
+                                            </dt>
+                                            </dl>
+                                        </div>
+                                       
 
 
 
@@ -1324,13 +1323,13 @@ const CreateWS = (props: any) => {
                                     <div className='row'>
                                         <div className='col-sm-12 mt-1'>
                                             <label className='full_width'>Description</label>
-                                            <textarea rows={4} className="ng-pristine ng-valid ng-empty ng-touched full_width" onChange={(e: any) => AllItems.Description = e.target.value}></textarea>
+                                            <textarea rows={4} className="full_width" onChange={(e: any) => AllItems.Description = e.target.value}></textarea>
                                         </div>
                                     </div>
 
 
 
-                                    {(inputFields.length > 0) ? <a className="pull-left" onClick={removeInputFields}><span className='svg__iconbox svg__icon--cross'></span></a> : ''}
+                                    {(inputFields.length > 0) ? <a className="pull-right" onClick={removeInputFields}><span className='svg__iconbox svg__icon--cross'></span></a> : ''}
 
 
 

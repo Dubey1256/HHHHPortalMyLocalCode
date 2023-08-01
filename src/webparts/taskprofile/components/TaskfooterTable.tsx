@@ -8,6 +8,7 @@ import CreateWS from '../../servicePortfolio/components/CreateWS';
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 import Loader from "react-loader";
 import * as moment from 'moment';
+import { SlArrowRight } from "react-icons/sl";
 
 import {
   FaChevronRight,
@@ -1338,25 +1339,25 @@ function TasksTable(props: any) {
       <div className="Alltable mt-10">
         <div className="tbl-headings">
           <span className="leftsec">
-            <span className=''>
+            <span className='t-arrow'>
               {componentDetails !== undefined && props.props.ParentTask != undefined && props.props.ParentTask.Title != undefined &&
                 <>
                   <img className='icon-sites-img ml20' src={componentDetails.SiteIcon} />
-                  {'>'} <img className='icon-sites-img ml20' src={props.props.ParentIcon} />
-                  {'>'} <img className='icon-sites-img ml20' src={props.props.CurrentIcon} /> <a>{props.props.Title}</a>
+                  {<SlArrowRight></SlArrowRight>} <img className='icon-sites-img ml20' src={props.props.ParentIcon} />
+                  {<SlArrowRight></SlArrowRight>} <img className='icon-sites-img ml20' src={props.props.CurrentIcon} /> <a>{props.props.Title}</a>
                 </>
               }
               {componentDetails === undefined && props.props.ParentTask != undefined && props.props.ParentTask.Title != undefined &&
                 <>
 
                   <img className='icon-sites-img ml20' src={props.props.ParentIcon} />
-                  {'>'} <img className='icon-sites-img ml20' src={props.props.CurrentIcon} /> <a>{props.props.Title}</a>
+                  {<SlArrowRight></SlArrowRight>} <img className='icon-sites-img ml20' src={props.props.CurrentIcon} /> <a>{props.props.Title}</a>
                 </>
               }
               {componentDetails !== undefined && props.props.ParentTask === undefined &&
                 <>
                   <img className='icon-sites-img ml20' src={componentDetails.SiteIcon} />
-                  {'>'} <img className='icon-sites-img ml20' src={props.props.CurrentIcon} /> <a>{props.props.Title}</a>
+                  {<SlArrowRight></SlArrowRight>} <img className='icon-sites-img ml20' src={props.props.CurrentIcon} /> <a>{props.props.Title}</a>
                 </>
               }
             </span>
