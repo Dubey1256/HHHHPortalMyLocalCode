@@ -5,8 +5,8 @@ import { Panel, PanelType } from 'office-ui-fabric-react';
 const SelectFilterPanel = (props: any) => {
     // const [props?.selectedFilterPannelData, setCheckboxes] = React.useState({
     //   Title: { Title: 'Title', Selected: true },
-    //   Comments: { Comments: 'Comments', Selected: true },
-    //   Description: { Description: 'Body', Selected: true },
+    //   commentsSearch: { commentsSearch: 'commentsSearch', Selected: true },
+    //   descriptionsSearch: { descriptionsSearch: 'Body', Selected: true },
     // });
     // Function to handle individual checkbox toggling
     const handleCheckboxChange = (event: any) => {
@@ -18,8 +18,8 @@ const SelectFilterPanel = (props: any) => {
         const { checked } = event.target;
         props?.setSelectedFilterPannelData({
             Title: { Title: 'Title', Selected: checked },
-            Comments: { Comments: 'Comments', Selected: checked },
-            Description: { Description: 'Body', Selected: checked },
+            commentsSearch: { commentsSearch: 'commentsSearch', Selected: checked },
+            descriptionsSearch: { descriptionsSearch: 'descriptionsSearch', Selected: checked },
         });
     };
 
@@ -72,7 +72,7 @@ const SelectFilterPanel = (props: any) => {
                                 <input style={{marginRight: '6px', marginBottom: '6px', color: `${props?.portfolioColor}`}} className="cursor-pointer form-check-input rounded-0"
                                     type="checkbox"
                                     name="selectAll"
-                                    checked={props?.selectedFilterPannelData.Title.Selected && props?.selectedFilterPannelData.Comments.Selected && props?.selectedFilterPannelData.Description.Selected}
+                                    checked={props?.selectedFilterPannelData.Title.Selected && props?.selectedFilterPannelData.commentsSearch.Selected && props?.selectedFilterPannelData.descriptionsSearch.Selected}
                                     onChange={handleSelectAllChange}
                                 />
                                 Select All
@@ -91,21 +91,21 @@ const SelectFilterPanel = (props: any) => {
                             <label>
                                 <input className="cursor-pointer form-check-input rounded-0" style={{marginRight: '6px', marginBottom: '6px', color: `${props?.portfolioColor}`}}
                                     type="checkbox"
-                                    name="Comments"
-                                    checked={props?.selectedFilterPannelData.Comments.Selected}
+                                    name="commentsSearch"
+                                    checked={props?.selectedFilterPannelData.commentsSearch.Selected}
                                     onChange={handleCheckboxChange}
                                 />
-                                Comments
+                                commentsSearch
                             </label>
                             <br />
                             <label>
                                 <input className="cursor-pointer form-check-input rounded-0" style={{marginRight: '6px', marginBottom: '6px', color: `${props?.portfolioColor}`}}
                                     type="checkbox"
-                                    name="Description"
-                                    checked={props?.selectedFilterPannelData.Description.Selected}
+                                    name="descriptionsSearch"
+                                    checked={props?.selectedFilterPannelData.descriptionsSearch.Selected}
                                     onChange={handleCheckboxChange}
                                 />
-                                Description
+                                descriptionsSearch
                             </label>
                         </div>
                     </div>
