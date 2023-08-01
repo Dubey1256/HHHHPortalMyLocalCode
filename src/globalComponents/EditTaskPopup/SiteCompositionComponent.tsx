@@ -2,6 +2,8 @@ import * as React from "react";
 import { useState, useEffect } from 'react';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { ImPriceTags } from 'react-icons/im';
+import { SlPencil } from 'react-icons/sl';
+
 import Tooltip from "../Tooltip";
 import { Web } from "sp-pnp-js";
 
@@ -738,9 +740,9 @@ const SiteCompositionComponent = (Props: any) => {
 
     let TotalPercent: any = 0;
     return (
-        <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
+        <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
             <div className="col-sm-12 ps-3">
-                <span className="l-radio">
+                <span className="SpfxCheckRadio">
                     <input
                         type="radio"
                         id="Proportional"
@@ -749,24 +751,24 @@ const SiteCompositionComponent = (Props: any) => {
                         name="SiteCompositions"
                         value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Proportional : false}
                         title="add Proportional Time"
-                        className="me-1  mt-0"
+                        className="radio"
                     />
                     Proportional
                 </span>
-                <span className="l-radio">
+                <span className="SpfxCheckRadio">
                     <input
                         type="radio"
                         id="Manual"
                         name="SiteCompositions"
                         defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.Manual : false}
                         title="add manual Time"
-                        className="mx-1  mt-0"
+                        className="radio"
                         value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Manual : false}
                         onChange={() => ChangeSiteCompositionSettings("Manual")}
                     />
-                    <label>Manual</label>
+                    <label> Manual </label>
                 </span>
-                <span className="l-radio">
+                <span className="SpfxCheckRadio">
                     <input
                         type="radio"
                         id="Portfolio"
@@ -775,12 +777,12 @@ const SiteCompositionComponent = (Props: any) => {
                         title="Portfolio"
                         value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Portfolio : false}
                         onChange={() => ChangeSiteCompositionSettings("Portfolio")}
-                        className="mx-1 mt-0" />
+                        className="radio" />
                     <label>
                         Portfolio
                     </label>
                 </span>
-                <span> <img className="mt-0 siteColor mx-1" onClick={() => alert("We are working on it. This feature will be live soon..")} title="Click here to edit tagged portfolio site composition." src="/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" /></span>
+                <span><span className="svg__iconbox svg__icon--editBox" onClick={() => alert("We are working on it. This feature will be live soon..")} title="Click here to edit tagged portfolio site composition."></span></span>
                 <span className="d-flex justify-content-center pull-right overrid">
                     <input
                         type="checkbox"
@@ -790,7 +792,7 @@ const SiteCompositionComponent = (Props: any) => {
                     />
                     <label data-toggle="tooltip" data-placement="bottom" className="d-flex">
                         Overridden
-                        <span className="svg__iconbox svg__icon--info " title="If this is checked then it should consider site allocations in Time Entry from Task otherwise from tagged component."></span>
+                        <span className="svg__iconbox svg__icon--info" title="If this is checked then it should consider site allocations in Time Entry from Task otherwise from tagged component."></span>
                     </label>
                 </span>
             </div>
@@ -880,10 +882,10 @@ const SiteCompositionComponent = (Props: any) => {
                                                                 </> : <input type="text" value={SearchedKeyForEI} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EI", 340)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />}
                                                             {
                                                                 siteData.BtnStatus ?
-                                                                    <a className="bg-white border border-secondary"
+                                                                    <a className="bg-white border border-secondary pancilicons"
                                                                         onClick={() => openClientCategoryModel(340, 'EI')}
                                                                     >
-                                                                        <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink"></span>
+                                                                        <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
                                                                     </a>
                                                                     : null
                                                             }
@@ -930,7 +932,8 @@ const SiteCompositionComponent = (Props: any) => {
                                                                     <a className="bg-white border border-secondary"
                                                                         onClick={() => openClientCategoryModel(341, "EPS")}
                                                                     >
-                                                                        <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
+                                                                        <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
+                                                                        {/* <img src={require('../../Assets/ICON/edit_page.svg')} width="25" /> */}
                                                                     </a>
                                                                     : null
                                                             }
@@ -978,7 +981,8 @@ const SiteCompositionComponent = (Props: any) => {
                                                                     <a className="bg-white border border-secondary"
                                                                         onClick={() => openClientCategoryModel(344, "Education")}
                                                                     >
-                                                                        <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
+                                                                        <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
+                                                                        {/* <img src={require('../../Assets/ICON/edit_page.svg')} width="25" /> */}
                                                                     </a>
                                                                     : null
                                                             }
@@ -1026,7 +1030,8 @@ const SiteCompositionComponent = (Props: any) => {
                                                                     <a className="bg-white border border-secondary"
                                                                         onClick={() => openClientCategoryModel(569, 'Migration')}
                                                                     >
-                                                                        <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
+                                                                        <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
+                                                                        {/* <img src={require('../../Assets/ICON/edit_page.svg')} width="25" /> */}
                                                                     </a>
                                                                     : null
                                                             }
@@ -1054,221 +1059,222 @@ const SiteCompositionComponent = (Props: any) => {
                         </tbody>
                         : null}
                 </table>
-                <div className="bg-secondary d-flex justify-content-between p-1 shadow-lg">
-                    <div>
-                        <button className="btn btn-primary px-4 ms-2" onClick={UpdateSiteTaggingAndClientCategory} style={usedFor == 'Task-Profile' ? { display: 'block' } : { display: 'none' }}>
+
+
+                <div className="bg-e9  d-flex justify-content-end full-width py-1">
+                    <div className="bg-body col-sm-2 p-1">
+                        <div className="">{isPortfolioComposition == true || ProportionalStatus == false ? `${TotalPercent} %` : "100%"}</div>
+                    </div>
+                    <div className="bg-body col-sm-2 p-1 mx-2">
+                        <div className="">{TotalTime ? TotalTime : 0}</div>
+                    </div>
+                    <div className="me-1">
+                        <button className="btn btn-primary px-4 " onClick={UpdateSiteTaggingAndClientCategory} style={usedFor == 'Task-Profile' ? { display: 'block' } : { display: 'none' }}>
                             Save
                         </button>
                     </div>
-                    <div className="d-flex justify-content-end full-width">
-                        <div className="bg-body col-sm-2 p-1">
-                            <div className="">{isPortfolioComposition == true || ProportionalStatus == false ? `${TotalPercent} %` : "100%"}</div>
-                        </div>
-                        <div className="bg-body col-sm-2 p-1 mx-2">
-                            <div className="">{TotalTime ? TotalTime : 0}</div>
-                        </div>
-                    </div>
-
                 </div>
-            </div>
-            {/* ********************* this Client Category panel ****************** */}
-            <Panel
-                onRenderHeader={onRenderCustomClientCategoryHeader}
-                isOpen={ClientCategoryPopupStatus}
-                onDismiss={closeClientCategoryPopup}
-                isBlocking={false}
-                type={PanelType.custom}
-                customWidth="850px"
-                onRenderFooter={onRenderFooter}
-            >
-                <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
-                    <div className="">
-                        <div className="row">
-                            <div className="d-flex text-muted pt-3 showCateg">
-                                <ImPriceTags />
-                                <div className="pb-3 mb-0">
-                                    <div id="addNewTermDescription">
-                                        <p className="mb-1"> New items are added under the currently selected item.
-                                            <span><a className="hreflink" target="_blank" data-interception="off" href={`${siteUrls}/SitePages/SmartMetadata.aspx`} > Add New Item </a></span>
-                                        </p>
-                                    </div>
-                                    <div id="SendFeedbackTr">
-                                        <p className="mb-1">Make a request or send feedback to the Term Set manager.
-                                            <span><a className="hreflink"> Send Feedback </a></span>
-                                        </p>
-                                    </div>
 
-                                </div>
-                                <div className="d-end">
-                                    <button type="button" className="btn btn-primary" onClick={saveSelectedClientCategoryData}>
-                                        OK
-                                    </button>
+
+
+                {/* ********************* this Client Category panel ****************** */}
+                <Panel
+                    onRenderHeader={onRenderCustomClientCategoryHeader}
+                    isOpen={ClientCategoryPopupStatus}
+                    onDismiss={closeClientCategoryPopup}
+                    isBlocking={false}
+                    type={PanelType.custom}
+                    customWidth="850px"
+                    onRenderFooter={onRenderFooter}
+                >
+                    <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
+                        <div className="">
+                            <div className="row">
+                                <div className="d-flex text-muted pt-3 showCateg">
+                                    <ImPriceTags />
+                                    <div className="pb-3 mb-0">
+                                        <div id="addNewTermDescription">
+                                            <p className="mb-1"> New items are added under the currently selected item.
+                                                <span><a className="hreflink" target="_blank" data-interception="off" href={`${siteUrls}/SitePages/SmartMetadata.aspx`} > Add New Item </a></span>
+                                            </p>
+                                        </div>
+                                        <div id="SendFeedbackTr">
+                                            <p className="mb-1">Make a request or send feedback to the Term Set manager.
+                                                <span><a className="hreflink"> Send Feedback </a></span>
+                                            </p>
+                                        </div>
+
+                                    </div>
+                                    <div className="d-end">
+                                        <button type="button" className="btn btn-primary" onClick={saveSelectedClientCategoryData}>
+                                            OK
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className='col-sm-12'>
-                            <input type="checkbox" className="form-check-input me-1 rounded-0" defaultChecked={SearchWithDescriptionStatus} onChange={() => setSearchWithDescriptionStatus(SearchWithDescriptionStatus ? false : true)} /> <label>Include description (info-icons) in search</label>
-                            <input className="form-control my-2" type='text' placeholder={`Search ${ClientCategoryPopupSiteName} Client Category`} value={searchedKey} onChange={(e) => AutoSuggestionForClientCategory(e, "Popup")} />
-                            {SearchedClientCategoryData?.length > 0 ? (
-                                <div className="SearchTableCategoryComponent">
-                                    <ul className="list-group">
-                                        {SearchedClientCategoryData.map((item: any) => {
+                            <div className='col-sm-12'>
+                                <input type="checkbox" className="form-check-input me-1 rounded-0" defaultChecked={SearchWithDescriptionStatus} onChange={() => setSearchWithDescriptionStatus(SearchWithDescriptionStatus ? false : true)} /> <label>Include description (info-icons) in search</label>
+                                <input className="form-control my-2" type='text' placeholder={`Search ${ClientCategoryPopupSiteName} Client Category`} value={searchedKey} onChange={(e) => AutoSuggestionForClientCategory(e, "Popup")} />
+                                {SearchedClientCategoryData?.length > 0 ? (
+                                    <div className="SearchTableCategoryComponent">
+                                        <ul className="list-group">
+                                            {SearchedClientCategoryData.map((item: any) => {
+                                                return (
+                                                    <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectClientCategoryFromAutoSuggestion(item, "Popup")} >
+                                                        <a>{item.newLabel}</a>
+                                                    </li>
+                                                )
+                                            }
+                                            )}
+                                        </ul>
+                                    </div>) : null}
+
+                                <div className="border full-width my-2 p-2 pb-1 ActivityBox">
+                                    {ClientCategoryPopupSiteName == "EPS" ?
+                                        <>
+                                            {EPSClientCategory != undefined && EPSClientCategory.length > 0 ?
+                                                <span className="bg-69 p-1 ps-2">
+                                                    {EPSClientCategory != undefined && EPSClientCategory.length > 0 ? EPSClientCategory[0].Title : null}
+                                                    <a className=""
+                                                        onClick={() => removeSelectedClientCategory("EPS")}
+                                                    >
+                                                        <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
+                                                    </a>
+                                                </span>
+                                                : null}
+                                        </>
+                                        : null}
+                                    {ClientCategoryPopupSiteName == "EI" ?
+                                        <>
+                                            {EIClientCategory != undefined && EIClientCategory.length > 0 ?
+                                                <span className="bg-69 p-1 ps-2">
+                                                    {EIClientCategory[0].Title}
+                                                    <a className=""
+                                                        onClick={() => removeSelectedClientCategory("EI")}
+                                                    >
+                                                        <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
+                                                    </a>
+                                                </span>
+                                                : null}
+                                        </>
+                                        : null}
+                                    {ClientCategoryPopupSiteName == "Education" ?
+                                        <>
+                                            {EducationClientCategory != undefined && EducationClientCategory.length > 0 ?
+                                                <span className="bg-69 p-1 ps-2">
+                                                    {EducationClientCategory[0].Title}
+                                                    <a className=""
+                                                        onClick={() => removeSelectedClientCategory("Education")}
+                                                    >
+                                                        <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
+                                                    </a>
+                                                </span>
+                                                : null}
+                                        </>
+                                        : null}
+                                    {ClientCategoryPopupSiteName == "Migration" ?
+                                        <>
+                                            {MigrationClientCategory != undefined && MigrationClientCategory.length > 0 ?
+                                                <span className="bg-69 p-1 ps-2">
+
+                                                    {MigrationClientCategory[0].Title}
+                                                    <a className=""
+                                                        onClick={() => removeSelectedClientCategory("Migration")}
+                                                    >
+                                                        <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
+                                                    </a>
+
+                                                </span> : null}
+                                        </>
+                                        : null}
+
+                                </div>
+                                {SelectedSiteClientCategoryData != undefined && SelectedSiteClientCategoryData.length > 0 ?
+                                    <ul className="categories-menu p-0">
+                                        {SelectedSiteClientCategoryData.map(function (item: any) {
                                             return (
-                                                <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectClientCategoryFromAutoSuggestion(item, "Popup")} >
-                                                    <a>{item.newLabel}</a>
-                                                </li>
+                                                <>
+                                                    <li className="clientlist">
+                                                               <a className='mb-0 hreflink' onClick={() => SelectedClientCategoryFromDataList(item, "Popup")} >
+                                                                {item.Title}
+                                                                {item.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                <span title="Edit" className="svg__iconbox svg__icon--info"></span>
+                                                                    <div className="popover__content">
+                                                                        <span>{item.Description1}</span>
+                                                                    </div>
+                                                                </div> : null}
+                                                            </a>
+                                                     
+                                                        <ul className="sub-menu clr">
+                                                            {item.Child?.map(function (child1: any) {
+                                                                return (
+                                                                    <>
+                                                                        {child1.Title != null ?
+                                                                            <li className="clientlist">
+                                                                               
+                                                                                    <a className='mb-0 hreflink' onClick={() => SelectedClientCategoryFromDataList(child1, "Popup")}>
+                                                                                        {child1.Item_x0020_Cover ?
+                                                                                            <img className="flag_icon"
+                                                                                                style={{ height: "20px", borderRadius: "10px", border: "1px solid #000069" }}
+                                                                                                src={child1.Item_x0020_Cover ? child1.Item_x0020_Cover.Url : ''}
+                                                                                            /> :
+                                                                                            null}
+                                                                                        {child1.Title}
+                                                                                        {child1.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                                        <span title="Edit" className="svg__iconbox svg__icon--info"></span>
+                                                                                            <div className="popover__content">
+                                                                                                <span>{child1.Description1}</span>
+                                                                                            </div>
+                                                                                        </div> : null}
+                                                                                    </a>
+                                                                            
+                                                                                <ul className="sub-menu clr">
+                                                                                    {child1.Child?.map(function (child2: any) {
+                                                                                        return (
+                                                                                            <>
+                                                                                                {child2.Title != null ?
+                                                                                                    <li>
+                                                                                                       
+                                                                                                            <a className='mb-0 hreflink' onClick={() => SelectedClientCategoryFromDataList(child2, "Popup")}>
+                                                                                                                {child2.Item_x0020_Cover ?
+                                                                                                                    <img className="flag_icon"
+                                                                                                                        style={{ height: "20px", borderRadius: "10px", border: "1px solid #000069" }}
+                                                                                                                        src={child2.Item_x0020_Cover ? child2.Item_x0020_Cover.Url : ''}
+                                                                                                                    /> :
+                                                                                                                    null}
+                                                                                                                {child2.Title}
+                                                                                                                {child2.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                                                                <span title="Edit" className="svg__iconbox svg__icon--info"></span>
+                                                                                                                    <div className="popover__content">
+                                                                                                                        <span>{child2.Description1}</span>
+                                                                                                                    </div>
+                                                                                                                </div> : null}
+                                                                                                            </a>
+                                                                                                    
+                                                                                                    </li> : null
+                                                                                                }
+                                                                                            </>
+                                                                                        )
+                                                                                    })}
+                                                                                </ul>
+                                                                            </li> : null
+                                                                        }
+                                                                    </>
+                                                                )
+                                                            })}
+                                                        </ul>
+                                                    </li>
+                                                </>
                                             )
-                                        }
-                                        )}
+                                        })}
                                     </ul>
-                                </div>) : null}
-
-                            <div className="border full-width my-2 p-2 pb-1 ActivityBox">
-                                {ClientCategoryPopupSiteName == "EPS" ?
-                                    <>
-                                        {EPSClientCategory != undefined && EPSClientCategory.length > 0 ?
-                                            <span className="bg-69 p-1 ps-2">
-                                                {EPSClientCategory != undefined && EPSClientCategory.length > 0 ? EPSClientCategory[0].Title : null}
-                                                <a className=""
-                                                    onClick={() => removeSelectedClientCategory("EPS")}
-                                                >
-                                                    <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
-                                                </a>
-                                            </span>
-                                            : null}
-                                    </>
                                     : null}
-                                {ClientCategoryPopupSiteName == "EI" ?
-                                    <>
-                                        {EIClientCategory != undefined && EIClientCategory.length > 0 ?
-                                            <span className="bg-69 p-1 ps-2">
-                                                {EIClientCategory[0].Title}
-                                                <a className=""
-                                                    onClick={() => removeSelectedClientCategory("EI")}
-                                                >
-                                                    <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
-                                                </a>
-                                            </span>
-                                            : null}
-                                    </>
-                                    : null}
-                                {ClientCategoryPopupSiteName == "Education" ?
-                                    <>
-                                        {EducationClientCategory != undefined && EducationClientCategory.length > 0 ?
-                                            <span className="bg-69 p-1 ps-2">
-                                                {EducationClientCategory[0].Title}
-                                                <a className=""
-                                                    onClick={() => removeSelectedClientCategory("Education")}
-                                                >
-                                                    <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
-                                                </a>
-                                            </span>
-                                            : null}
-                                    </>
-                                    : null}
-                                {ClientCategoryPopupSiteName == "Migration" ?
-                                    <>
-                                        {MigrationClientCategory != undefined && MigrationClientCategory.length > 0 ?
-                                            <span className="bg-69 p-1 ps-2">
-
-                                                {MigrationClientCategory[0].Title}
-                                                <a className=""
-                                                    onClick={() => removeSelectedClientCategory("Migration")}
-                                                >
-                                                    <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
-                                                </a>
-
-                                            </span> : null}
-                                    </>
-                                    : null}
-
                             </div>
-                            {SelectedSiteClientCategoryData != undefined && SelectedSiteClientCategoryData.length > 0 ?
-                                <ul className="categories-menu p-0">
-                                    {SelectedSiteClientCategoryData.map(function (item: any) {
-                                        return (
-                                            <>
-                                                <li>
-                                                    <p className='mb-0 hreflink' onClick={() => SelectedClientCategoryFromDataList(item, "Popup")} >
-                                                        <a>
-                                                            {item.Title}
-                                                            {item.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
-                                                                <div className="popover__content">
-                                                                    <span>{item.Description1}</span>
-                                                                </div>
-                                                            </div> : null}
-                                                        </a>
-                                                    </p>
-                                                    <ul className="sub-menu clr">
-                                                        {item.Child?.map(function (child1: any) {
-                                                            return (
-                                                                <>
-                                                                    {child1.Title != null ?
-                                                                        <li>
-                                                                            <p className='mb-0 hreflink' onClick={() => SelectedClientCategoryFromDataList(child1, "Popup")}>
-                                                                                <a>
-                                                                                    {child1.Item_x0020_Cover ?
-                                                                                        <img className="flag_icon"
-                                                                                            style={{ height: "20px", borderRadius: "10px", border: "1px solid #000069" }}
-                                                                                            src={child1.Item_x0020_Cover ? child1.Item_x0020_Cover.Url : ''}
-                                                                                        /> :
-                                                                                        null}
-                                                                                    {child1.Title}
-                                                                                    {child1.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
-                                                                                        <div className="popover__content">
-                                                                                            <span>{child1.Description1}</span>
-                                                                                        </div>
-                                                                                    </div> : null}
-                                                                                </a>
-                                                                            </p>
-                                                                            <ul className="sub-menu clr">
-                                                                                {child1.Child?.map(function (child2: any) {
-                                                                                    return (
-                                                                                        <>
-                                                                                            {child2.Title != null ?
-                                                                                                <li>
-                                                                                                    <p className='mb-0 hreflink' onClick={() => SelectedClientCategoryFromDataList(child2, "Popup")}>
-                                                                                                        <a>
-                                                                                                            {child2.Item_x0020_Cover ?
-                                                                                                                <img className="flag_icon"
-                                                                                                                    style={{ height: "20px", borderRadius: "10px", border: "1px solid #000069" }}
-                                                                                                                    src={child2.Item_x0020_Cover ? child2.Item_x0020_Cover.Url : ''}
-                                                                                                                /> :
-                                                                                                                null}
-                                                                                                            {child2.Title}
-                                                                                                            {child2.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
-                                                                                                                <div className="popover__content">
-                                                                                                                    <span>{child2.Description1}</span>
-                                                                                                                </div>
-                                                                                                            </div> : null}
-                                                                                                        </a>
-                                                                                                    </p>
-                                                                                                </li> : null
-                                                                                            }
-                                                                                        </>
-                                                                                    )
-                                                                                })}
-                                                                            </ul>
-                                                                        </li> : null
-                                                                    }
-                                                                </>
-                                                            )
-                                                        })}
-                                                    </ul>
-                                                </li>
-                                            </>
-                                        )
-                                    })}
-                                </ul>
-                                : null}
                         </div>
-                    </div>
 
-                </div>
-            </Panel>
+                    </div>
+                </Panel>
+            </div >
         </div >
     )
 }

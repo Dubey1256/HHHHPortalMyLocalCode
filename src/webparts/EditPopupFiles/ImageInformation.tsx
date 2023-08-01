@@ -4,15 +4,17 @@ import FlorarImagetabportfolio from'./FlorarImagetabportfolio'
 import { Tabs, Tab, Col, Nav, Row, Button } from 'react-bootstrap';
 import pnp, { sp, Web } from "sp-pnp-js";
 import { useState } from 'react';
+import { Panel, PanelType } from 'office-ui-fabric-react';
 import "@pnp/sp/folders";
-
-
+import ShowImagesOOTB from './showImagesootb'
+let imageOTT=false;
 const ImagetabFunction = (props: any) => {
 const [editData,setEditData]=useState(props.EditdocumentsData)
     const [selectfolder, setSelectfolder] = useState("Logos");
     const [chooseExistingFile, setChooseExistingFile] = useState({
         ChooseExistinglogo: [], ChooseExistingCover: [], ChooseExistingImages1: []
     });
+    const[showImagesOOTB,setShowImagesOOTB]=useState(null)
     const [uploadedImage, setUploadedImage] = useState(null);
     const [uploadedImageUrl, setUploadedImageUrl] = useState("");
     console.log(props)
@@ -199,6 +201,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
         props.setData(taskItem)
     }
 }
+//==================existing ImgaeUpload===========================
  const ExistingImageUpload=(Imageurl:any)=>{
     let taskItem = {...editData};
   
@@ -210,17 +213,62 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
     setEditData(taskItem)
     props.setData(taskItem)
  }
+
+ //==========imageurl searching===============
+ const searchImageUrl=(value:any)=>{
+    let taskItem = {...editData};
+
+   
+    if (selectfolder == "Logos") {
+      let searchingImageData=chooseExistingFile?.ChooseExistinglogo?.filter((items:any)=>items?.ServerRelativeUrl==value) 
+    //   let taskItem = {...editData};
+  
+      var searchImagePicDetails={
+       Url :searchingImageData.length>0?searchingImageData[0]?.ServerRelativeUrl:value
+       
+     }
+       taskItem.Item_x002d_Image=searchImagePicDetails;
+       setEditData(taskItem)
+       props.setData(taskItem)
+   
+    }
+    if (selectfolder == "Covers") {
+        let searchingImageData= chooseExistingFile?.ChooseExistingCover?.filter((items:any)=>items?.ServerRelativeUrl==value)
+        // let taskItem = {...editData};
+  
+        var searchImagePicDetails={
+         Url :searchingImageData.length>0?searchingImageData[0]?.ServerRelativeUrl:value
+         
+       }
+         taskItem.Item_x002d_Image=searchImagePicDetails;
+         setEditData(taskItem)
+         props.setData(taskItem)
+    }
+    if (selectfolder == "Images1") {
+        let searchingImageData= chooseExistingFile?.ChooseExistingImages1?.filter((items:any)=>items?.ServerRelativeUrl==value)
+         // let taskItem = {...editData};
+  
+        var searchImagePicDetails={
+         Url :searchingImageData.length>0?searchingImageData[0]?.ServerRelativeUrl:value
+         
+       }
+         taskItem.Item_x002d_Image=searchImagePicDetails;
+         setEditData(taskItem)
+         props.setData(taskItem)
+    }
+ }
+
     return (
         <>
             <div className='d-flex '>
                 <div className="input-group "><label className=" full-width ">Image-Url </label>
-                    <input type="text" className="form-control" placeholder='Serach' value={editData?.Item_x002d_Image!=null?editData?.Item_x002d_Image?.Url:""}/>
+                    <input type="text" className="form-control" placeholder='Serach' value={editData?.Item_x002d_Image!=null?editData?.Item_x002d_Image?.Url:""} onChange={(e)=>searchImageUrl(e.target.value)}/>
                 </div>
 
 
                 <div className="input-group mx-3">
                     <label className=" full-width ">Selected image alternate text</label>
-                    <input type="text" className="form-control" placeholder='Alt text' />
+                    <input type="text" className="form-control" value={props?.EditdocumentsData?.Title} placeholder='Alt text' />
                 </div>
             </div>
 
@@ -296,12 +344,20 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                         </Tab>
                                         <Tab eventKey="Choose from existing (0)" title={`Choose from existing (${chooseExistingFile?.ChooseExistinglogo.length})`}>
                                             <div className='border border-top-0 ImageSec p-2 scrollbar maXh-500 hreflink'>
-                                                {chooseExistingFile?.ChooseExistinglogo != undefined && chooseExistingFile.ChooseExistinglogo.length > 0 && chooseExistingFile?.ChooseExistinglogo?.map((imagesData: any) => {
+                                            <div className='clearfix'>
+                                                 <div className="input-group "><label className=" full-width "><ShowImagesOOTB Context={props.Context}></ShowImagesOOTB></label>
+                                                  <input type="text" className="form-control" placeholder='Search Image ' />
+                                              </div>
+                                          </div>
+                                          <div>
+                                          {chooseExistingFile?.ChooseExistinglogo != undefined && chooseExistingFile.ChooseExistinglogo.length > 0 && chooseExistingFile?.ChooseExistinglogo?.map((imagesData: any) => {
                                                     return (
                                                         <>
                                                             <img src={`${imagesData?.ServerRelativeUrl}`}onClick={()=>ExistingImageUpload(imagesData)}></img></>
                                                     )
                                                 })}
+                                          </div>
+                                               
                                             </div>
                                         </Tab>
                                     </Tabs>
@@ -334,13 +390,21 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                             </div>
                                         </Tab>
                                         <Tab eventKey="Choose from existing (0)" title={`Choose from existing (${chooseExistingFile?.ChooseExistingCover.length})`}>
+                                            
                                             <div className='border border-top-0 ImageSec p-2 scrollbar maXh-500 hreflink'>
+                                            <div className='clearfix'>
+                                                 <div className="input-group "><label className=" full-width "><ShowImagesOOTB Context={props.Context}></ShowImagesOOTB></label>
+                                                  <input type="text" className="form-control" placeholder='Search Image ' />
+                                              </div>
+                                          </div>
+                                          <div>
                                                 {chooseExistingFile?.ChooseExistingCover != undefined && chooseExistingFile?.ChooseExistingCover?.length > 0 && chooseExistingFile?.ChooseExistingCover?.map((imagesData: any) => {
                                                     return (
                                                         <>
                                                             <img src={`${imagesData?.ServerRelativeUrl}`} onClick={()=>ExistingImageUpload(imagesData)}></img></>
                                                     )
                                                 })}
+                                            </div>
                                             </div>
                                         </Tab>
                                     </Tabs>
@@ -374,12 +438,19 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                         </Tab>
                                         <Tab eventKey="Choose from existing (0)" title={`Choose from existing (${chooseExistingFile?.ChooseExistingImages1?.length})`} >
                                             <div className='border border-top-0 ImageSec p-2 scrollbar maXh-500 hreflink'>
+                                            <div className='clearfix'>
+                                                 <div className="input-group "><label className=" full-width "><ShowImagesOOTB Context={props.Context}></ShowImagesOOTB></label>
+                                                  <input type="text" className="form-control" placeholder='Search Image ' />
+                                              </div>
+                                          </div>
+                                          <div>
                                                 {chooseExistingFile?.ChooseExistingImages1 != undefined && chooseExistingFile?.ChooseExistingImages1?.length > 0 && chooseExistingFile?.ChooseExistingImages1?.map((imagesData: any) => {
                                                     return (
                                                         <>
                                                             <img src={`${imagesData?.ServerRelativeUrl}`}onClick={()=>ExistingImageUpload(imagesData)}></img></>
                                                     )
                                                 })}
+                                                </div>
                                             </div>
                                         </Tab>
                                     </Tabs>
@@ -390,6 +461,17 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                     </Row>
                 </Tab.Container>
             </div>
+            {/* <Panel
+                // onRenderHeader={}
+                isOpen={showImagesOOTB?.showClose}
+                type={PanelType?.custom}
+                customWidth={showImagesOOTB?.width}
+                onDismiss={closePopupImagesOOTB}
+                isBlocking={showImagesOOTB?.showClose}
+            // onRenderFooter={customFooter}
+            >
+                {showImagesOOTB}
+                </Panel> */}
         </>
     )
 }

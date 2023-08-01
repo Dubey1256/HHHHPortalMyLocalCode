@@ -11,10 +11,10 @@ const EditSiteComposition = (Props: any) => {
     const ServicesTaskCheck = Props.ServicesTaskCheck;
     const AllListIdData = Props.AllListId;
     const siteUrls = Props.AllListId.siteUrl;
-    const callBack = Props.Call;
+    const callBack = Props.Call;     
     const SmartTotalTimeData = Props.SmartTotalTimeData;
     const selectedClientCategory: any = [];
-    const ComponentTaskCheck = Props.ComponentTaskCheck;
+    const ComponentTaskCheck = Props.ComponentTaskCheck; 
     const SitesTaggingData = Props.SitesTaggingData;
     const EditData = Props.EditData;
 

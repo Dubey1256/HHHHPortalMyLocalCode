@@ -26,9 +26,8 @@ import ExpndTable from "../../../globalComponents/ExpandTable/Expandtable";
 import { Panel, PanelType } from "office-ui-fabric-react";
 import CreateActivity from "../../servicePortfolio/components/CreateActivity";
 import CreateWS from "../../servicePortfolio/components/CreateWS";
-// import SelectedClientCategoryPupup1 from "../../../globalComponents/SelectedClientCategorypopup";
-// import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
-
+import SelectedClientCategoryPupup1 from "../../../globalComponents/SelectedClientCategorypopup";
+import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 import {
   Column,
   Table,
@@ -51,7 +50,6 @@ import Loader from "react-loader";
 import ShowTeamMembers from "../../../globalComponents/ShowTeamMember";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
-import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 // import HighlightableCell from "../../../globalComponents/highlight";
 import HighlightableCell from "../../componentPortfolio/components/highlight";
 
@@ -191,6 +189,9 @@ let SmartMetaData:any=[];
 let activity = 0;
 let workstrim = 0;
 let task = 0;
+let AllActivitysData: any = [];
+let AllWorkStreamData: any = [];
+
 export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   if (countaa == 0) {
     ParentDs = props?.Id
@@ -212,6 +213,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   const [ShowTeamPopup, setShowTeamPopup] = React.useState(false);
   // const[selectedClientCategory,setSelectedClientCategory]=React.useState([]);
   // const[selectedClientCategoryPopup,setSelectedClientCategoryPopup]=React.useState(false);
+  const [AllTasksData, setAllTasks] = React.useState([]);
 
 
 
@@ -256,7 +258,11 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   const [RestructureChecked, setRestructureChecked] = React.useState([]);
   const [ChengedItemTitl, setChengedItemTitle] = React.useState("");
   const [componentRestruct, setComponentRestruct]: any = React.useState(false);
-
+  const [newItemBackUp, setNewItemBackUp] :any = React.useState([]);
+  const [topCompoIcon, setTopCompoIcon]:any = React.useState(false);
+  const [taskTypeId, setTaskTypeId] :any = React.useState([]);
+  
+  const [comparetool, setcomparetool]:any = React.useState(false);
   // SmartTotalTime
 
   // Popover start 
@@ -275,7 +281,23 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
   React.useEffect(() => {
     FindAWTDataCount();
+    taskTypes();
   }, [data])
+
+
+  const taskTypes = async () => {
+    let web = new Web(NextProp.siteUrl);
+        await web.lists.getById(NextProp.TaskTypeID)
+          .items.
+          select("Title","Id","Level").
+          getAll().then((data:any)=>{
+            setTaskTypeId(data);
+          }).catch((err:any)=>{
+            console.log(err);
+          })
+  }
+
+
   const FindAWTDataCount = () => {
     data?.map((Com) => {
       Com.toolTitle = Com.Title;
@@ -743,174 +765,389 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
     // })
   };
+  var GetIconImageUrl = function (listName: any, listUrl: any, Item: any) {
+    var IconUrl = "";
+    if (listName != undefined) {
+      let TaskListsConfiguration = parseJSON(
+        GlobalConstants.LIST_CONFIGURATIONS_TASKS
+      );
+      let TaskListItem = TaskListsConfiguration.filter(function (
+        filterItem: any
+      ) {
+        let SiteRelativeUrl = filterItem.siteUrl;
+        return (
+          filterItem.Title.toLowerCase() == listName.toLowerCase() &&
+          SiteRelativeUrl.toLowerCase() == listUrl.toLowerCase()
+        );
+      });
+      if (TaskListItem.length > 0) {
+        if (Item == undefined) {
+          IconUrl = TaskListItem[0].ImageUrl;
+        } else if (TaskListItem[0].ImageInformation != undefined) {
+          var IconUrlItem = TaskListItem[0].ImageInformation.filter(function (
+            index: any,
+            filterItem: any
+          ) {
+            return (
+              filterItem.ItemType == Item.Item_x0020_Type &&
+              filterItem.PortfolioType == Item.Portfolio_x0020_Type
+            );
+          });
+          if (IconUrlItem != undefined && IconUrlItem.length > 0) {
+            IconUrl = IconUrlItem[0].ImageUrl;
+          }
+        }
+      }
+    }
+    return IconUrl;
+  };
 
-  const LoadAllSiteTasks = function (filterarray: any) {
+  const filterDataBasedOnList = function () {
+    //$scope.AllTaskData = angular.copy($scope.CopyTaskData);
+    //$scope.AllTaskData = JSON.parse(JSON.stringify($scope.CopyTas kData));
+
+    //$scope.AllTaskData = $scope.CopyTaskData.map(function (value) { value = Object.create(value); return value });
+    //$scope.AllTaskData = angular.copy($scope.CopyTaskData);
+    //$scope.AllTaskData = JSON.parse(JSON.stringify($scope.CopyTaskData));
+
+    //$scope.AllTaskData = $scope.CopyTaskData.map(function (value) { value = Object.create(value); return value });
+    var AllTaskData1: any = [];
+    AllTaskData1 = AllTaskData1.concat(CopyTaskData);
+    // CountOfAWTStructuredData();
+    var SelectedList: any = [];
+    $.each(filterItems, function (index: any, config: any) {
+      if (config.Selected && config.TaxType == "Sites") {
+        SelectedList.push(config);
+      }
+      if (config.Title == "Foundation" || config.Title == "SDC Sites") {
+        config.show = true;
+        config.showItem = true;
+      }
+      if (config.childs != undefined && config.childs.length > 0) {
+        $.each(config.childs, function (index: any, child: any) {
+          if (child.Selected && child.TaxType == "Sites") {
+            SelectedList.push(child);
+          }
+        });
+      }
+    });
+
+    var AllTaggedTask: any = [];
+    $.each(SelectedList, function (index: any, item: any) {
+      $.each(AllTaskData1, function (index: any, task: any) {
+        if (item.Title.toLowerCase() == task.siteType.toLowerCase()) {
+          AllTaggedTask.push(task);
+        }
+      });
+    });
+    if (AllTaggedTask != undefined) {
+      AllTaskData1 = AllTaggedTask;
+    }
+    makeFinalgrouping();
+  };
+
+  const LoadAllSiteTasks = function () {
     var Response: any = [];
     var Counter = 0;
-    filterarray.forEach((filter: any) => {
+    if (siteConfig != undefined && siteConfig.length > 0) {
       map(siteConfig, async (config: any) => {
-        if (config.Title != "Master Tasks" && config.Title != "SDC Sites") {
-          try {
-            let AllTasksMatches = [];
-            var select =
-              "SharewebTaskLevel2No,SiteCompositionSettings,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,SharewebTaskLevel1No,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,Shareweb_x0020_ID, Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level, Priority_x0020_Rank, Team_x0020_Members/Title, Team_x0020_Members/Name, Component/Id,Component/Title,Component/ItemType, Team_x0020_Members/Id,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$filter=" +
-              filter +
-              "";
-            AllTasksMatches = await globalCommon.getData(
-              NextProp.siteUrl,
-              config.listId,
-              select
-            );
-            console.log(AllTasksMatches);
-            Counter++;
-            console.log(AllTasksMatches.length);
-            if (AllTasksMatches != undefined && AllTasksMatches.length > 0) {
-              $.each(AllTasksMatches, function (index: any, item: any) {
-                item.isDrafted = false;
-                item.flag = true;
-                item.siteType = config.Title;
-                item.subRows = [];
-                item.TitleNew = item.Title;
-                item.listId = config.listId;
-                // item.Item_x0020_Type = 'Task';
-                item.siteUrl = GlobalConstants.SP_SITE_URL;
-                if (item.SharewebCategories != undefined) {
-                  if (item.SharewebCategories.length > 0) {
-                    $.each(
-                      item.SharewebCategories,
-                      function (ind: any, value: any) {
-                        if (value.Title.toLowerCase() == "draft") {
-                          item.isDrafted = true;
-                        }
-                      }
-                    );
+        let web = new Web(NextProp.siteUrl);
+        let AllTasksMatches = [];
+        AllTasksMatches = await web.lists
+          .getById(config.listId)
+          .items.select(
+            "ParentTask/Title",
+            "ParentTask/Id",
+            "Project/Id",
+            "Project/Title",
+            "Services/Title",
+            "ClientTime",
+            "Services/Id",
+            "Events/Id",
+            "Events/Title",
+            "ItemRank",
+            "Portfolio_x0020_Type",
+            "SiteCompositionSettings",
+            "SharewebTaskLevel1No",
+            "SharewebTaskLevel2No",
+            "TimeSpent",
+            "BasicImageInfo",
+            "OffshoreComments",
+            "OffshoreImageUrl",
+            "CompletedDate",
+            "Shareweb_x0020_ID",
+            "Responsible_x0020_Team/Id",
+            "Responsible_x0020_Team/Title",
+            "SharewebCategories/Id",
+            "SharewebCategories/Title",
+            "ParentTask/Shareweb_x0020_ID",
+            "SharewebTaskType/Id",
+            "SharewebTaskType/Title",
+            "SharewebTaskType/Level",
+            "Priority_x0020_Rank",
+            "Team_x0020_Members/Title",
+            "Team_x0020_Members/Name",
+            "Component/Id",
+            "Component/Title",
+            "Component/ItemType",
+            "Team_x0020_Members/Id",
+            "component_x0020_link",
+            "IsTodaysTask",
+            "AssignedTo/Title",
+            "AssignedTo/Name",
+            "AssignedTo/Id",
+            "ClientCategory/Id",
+            "ClientCategory/Title",
+            "FileLeafRef",
+            "FeedBack",
+            "Title",
+            "Id",
+            "ID",
+            "PercentComplete",
+            "StartDate",
+            "DueDate",
+            "Comments",
+            "Categories",
+            "Status",
+            "Body",
+            "Mileage",
+            "PercentComplete",
+            "ClientCategory",
+            "Priority",
+            "Created",
+            "Modified",
+            "Author/Id",
+            "Author/Title"
+            // "Editor/Id",
+            // "Editor/Title"
+          )
+          .expand(
+            "ParentTask",
+            "Project",
+            "Events",
+            "Services",
+            "SharewebTaskType",
+            "AssignedTo",
+            "Component",
+            "ClientCategory",
+            "Author",
+            // "Editor",
+            "Team_x0020_Members",
+            "Responsible_x0020_Team",
+            "SharewebCategories"
+          )
+          .filter("Status ne 'Completed'")
+          .orderBy("orderby", false)
+          .getAll(4000);
+
+        console.log(AllTasksMatches);
+        Counter++;
+        console.log(AllTasksMatches.length);
+        if (AllTasksMatches != undefined && AllTasksMatches.length > 0) {
+          $.each(AllTasksMatches, function (index: any, item: any) {
+            item.isDrafted = false;
+            item.flag = true;
+            item.TitleNew = item.Title;
+            // item.HierarchyData = globalCommon.hierarchyData(item, usePopHoverDataSend)
+            item.siteType = config.Title;
+            item.childs = [];
+            item.listId = config.listId;
+            item.siteUrl = NextProp.siteUrl;
+            if (item.SharewebCategories.results != undefined) {
+              if (item.SharewebCategories.results.length > 0) {
+                $.each(
+                  item.SharewebCategories.results,
+                  function (ind: any, value: any) {
+                    if (value.Title.toLowerCase() == "draft") {
+                      item.isDrafted = true;
+                    }
                   }
-                }
-              });
+                );
+              }
             }
-            AllTasks = AllTasks.concat(AllTasksMatches);
-            AllTasks = $.grep(AllTasks, function (type: any) {
-              return type.isDrafted == false;
-            });
+          });
+          AllTasks = AllTasks.concat(AllTasksMatches);
+          AllTasks = $.grep(AllTasks, function (type: any) {
+            return type.isDrafted == false;
+          });
+          if (Counter == siteConfig.length) {
+            map(AllTasks, (result: any) => {
+              result.Id = result.Id != undefined ? result.Id : result.ID;
+              result.TeamLeaderUser = [];
+              result.AllTeamName =
+                result.AllTeamName === undefined ? "" : result.AllTeamName;
+              result.chekbox = false;
+              SmartTimeData(result)
+                              .then((returnresult) => {
+                                let myNumber = String(returnresult);
+                                let Mynextnumber = parseFloat(myNumber);
 
-            if (
-              Counter ===
-              (filterarray.length === 1
-                ? siteConfig.length
-                : siteConfig.length * filterarray.length)
-            ) {
-              map(AllTasks, (result: any) => {
-                //   result.TeamLeader = []
-                result.CreatedDateImg = [];
-                result.TeamLeaderUserTitle = "";
-                //  result.AllTeamMembers = []
-                result.Display = "none";
-                // result.Created = Moment(result.Created).format("DD/MM/YYYY");
-                // result.DueDate = Moment(result.DueDate).format("DD/MM/YYYY");
+                                result.smartTime = Mynextnumber.toFixed(1);
+                                // console.log("Final Total Time:", returnresult);
+                              })
+                              .catch((error) => {
+                                console.error("Error:", error);
+                              });
+              
+              result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
+              result.Restructuring =
+              IsUpdated != undefined && IsUpdated == "Service"
+                ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
+                :"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+              result.chekbox = false;
+              if (result.Short_x0020_Description_x0020_On != undefined) {
+                result.Short_x0020_Description_x0020_On =
+                  result.Short_x0020_Description_x0020_On.replace(
+                    /(<([^>]+)>)/gi,
+                    ""
+                  );
+              }
 
-                // if (result.DueDate == "Invalid date" || result.Created == "Invalid date"|| "") {
-                //   result.DueDate = result.DueDate.replaceAll(
-                //     "Invalid date",
-                //     ""
-                //   );
-                //   result.Created = result.Created.replaceAll(
-                //     "Invalid date",
-                //     ""
-                //   );
-                // }
-                SmartTimeData(result)
-                  .then((returnresult) => {
-                    result.smartTime = String(returnresult)
-                    // console.log("Final Total Time:", returnresult);
-                  })
-                  .catch((error) => {
-                    console.error("Error:", error);
-                  });
-                result.PercentComplete = (result.PercentComplete * 100).toFixed(
-                  0
-                );
-
-                if (result.Short_x0020_Description_x0020_On != undefined) {
-                  result.Short_x0020_Description_x0020_On =
-                    result.Short_x0020_Description_x0020_On.replace(
-                      /(<([^>]+)>)/gi,
-                      ""
-                    );
-                }
-                if (result.Author != undefined) {
-                  if (result.Author?.Id != undefined) {
-                    $.each(TaskUsers, function (index: any, users: any) {
+              if (
+                result.AssignedTo != undefined &&
+                result.AssignedTo.length > 0
+              ) {
+                map(result.AssignedTo, (Assig: any) => {
+                  if (Assig.Id != undefined) {
+                    map(TaskUsers, (users: any) => {
                       if (
-                        result.Author?.Id != undefined &&
+                        Assig.Id != undefined &&
                         users.AssingedToUser != undefined &&
-                        result.Author?.Id == users.AssingedToUser?.Id
+                        Assig.Id == users.AssingedToUser.Id
                       ) {
-                        users.ItemCover = users.Item_x0020_Cover.Url;
-                        result.CreatedDateImg.push(users);
-                      }
-                    });
-                  }
-                }
-                result["SiteIcon"] = globalCommon.GetIconImageUrl(
-                  result.siteType,
-                  GlobalConstants.MAIN_SITE_URL + "/SP",
-                  undefined
-                );
-                // if (
-                //   result.ClientCategory != undefined &&
-                //   result.ClientCategory.length > 0
-                // ) {
-                //   map(result.Team_x0020_Members, (catego: any) => {
-                //     result.ClientCategory.push(catego);
-                //   });
-                // }
-                if (result?.Id === 498 || result?.Id === 104) console.log(result);
-                result["Shareweb_x0020_ID"] = globalCommon.getTaskId(result);
-                if (result["Shareweb_x0020_ID"] == undefined) {
-                  result["Shareweb_x0020_ID"] = "";
-                }
-                result["Item_x0020_Type"] = "Task";
-
-                result.Portfolio_x0020_Type = "Component";
-                TasksItem.push(result);
-              });
-              let AllAcivities = $.grep(AllTasks, function (type: any) {
-                return type.SharewebTaskType?.Title == "Activities";
-              });
-              if (AllAcivities != undefined && AllAcivities.length > 0) {
-                AllAcivities.forEach((activ: any) => {
-                  if (activ?.Id != undefined) {
-                    groupbyTasks(AllTasks, activ);
-                    AllTasks.forEach((obj: any) => {
-                      if (obj?.Id === activ?.Id) {
-                        obj.show = false;
-                        obj.subRows = activ.subRows;
-                        obj.childsLength = activ.subRows.length;
+                        users.ItemCover = users.Item_x0020_Cover;
+                        result.TeamLeaderUser.push(users);
+                        result.AllTeamName += users.Title + ";";
                       }
                     });
                   }
                 });
               }
-              AllTasks = $.grep(AllTasks, function (type: any) {
-                return type.tagged != true;
-              });
-              TasksItem = AllTasks;
-              console.log(Response);
-              map(TasksItem, (task: any) => {
-                if (!isItemExistsNew(CopyTaskData, task)) {
-                  CopyTaskData.push(task);
+              if (
+                result.Responsible_x0020_Team != undefined &&
+                result.Responsible_x0020_Team.length > 0
+              ) {
+                map(result.Responsible_x0020_Team, (Assig: any) => {
+                  if (Assig.Id != undefined) {
+                    map(TaskUsers, (users: any) => {
+                      if (
+                        Assig.Id != undefined &&
+                        users.AssingedToUser != undefined &&
+                        Assig.Id == users.AssingedToUser.Id
+                      ) {
+                        users.ItemCover = users.Item_x0020_Cover;
+                        result.TeamLeaderUser.push(users);
+                        result.AllTeamName += users.Title + ";";
+                      }
+                    });
+                  }
+                });
+              }
+              if (
+                result.Team_x0020_Members != undefined &&
+                result.Team_x0020_Members.length > 0
+              ) {
+                map(result.Team_x0020_Members, (Assig: any) => {
+                  if (Assig.Id != undefined) {
+                    map(TaskUsers, (users: any) => {
+                      if (
+                        Assig.Id != undefined &&
+                        users.AssingedToUser != undefined &&
+                        Assig.Id == users.AssingedToUser.Id
+                      ) {
+                        users.ItemCover = users.Item_x0020_Cover;
+                        result.TeamLeaderUser.push(users);
+                        result.AllTeamName += users.Title + ";";
+                      }
+                    });
+                  }
+                });
+              }
+              result["SiteIcon"] = GetIconImageUrl(result.siteType, NextProp.siteUrl, undefined);
+              // result["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url
+              // if (
+              //   result.ClientCategory != undefined &&
+              //   result.ClientCategory.length > 0
+              // ) {
+              //   map(result.Team_x0020_Members, (catego: any) => {
+              //     result.ClientCategory.push(catego);
+              //   });
+              // }
+              if (result.Id === 1441) console.log(result);
+              result["Shareweb_x0020_ID"] = globalCommon.getTaskId(result);
+              if (result["Shareweb_x0020_ID"] == undefined) {
+                result["Shareweb_x0020_ID"] = "";
+              }
+              result["Item_x0020_Type"] = "Task";
+              TasksItem.push(result);
+            });
+
+            AllActivitysData = AllTasks?.filter(
+              (elem: any) => elem?.SharewebTaskType?.Title == "Activities"
+            );
+            AllWorkStreamData = AllTasks?.filter(
+              (elem: any) => elem?.SharewebTaskType?.Title == "Workstream"
+            );
+
+            AllActivitysData?.forEach((elem: any) => {
+              elem.childs = [];
+              elem.subRows = [];
+              AllTasks?.forEach((task: any) => {
+                if (elem.Id === task.Id) {
+                  task.isTagged = false;
+                }
+                if (elem?.ID == task?.ParentTask?.Id && elem?.siteType === task?.siteType) {
+                  task.isTagged = false;
+                  elem.childs.push(task);
+                  elem.subRows.push(task);
                 }
               });
+            });
+            AllActivitysData?.forEach((elem: any) => {
+              elem?.subRows?.forEach((val: any) => {
+                val.childs = val.childs === undefined ? [] : val.childs;
+                val.subRows = val.subRows === undefined ? [] : val.subRows;
+                AllTasks?.forEach((task: any) => {
+                  if (val.Id === task.Id) {
+                    task.isTagged = false;
+                  }
+                  if (val?.ID == task?.ParentTask?.Id && val?.siteType === task?.siteType) {
+                    task.isTagged = false;
+                    val.childs.push(task);
+                    val.subRows.push(task);
+                  }
+                });
+              });
+            });
 
-              // bindData();
-              makeFinalgrouping();
-            }
-          } catch (error) {
-            console.log(error);
+            AllTasks?.forEach((value: any) => {
+              if (value.isTagged != false) {
+                value.childs = [];
+                value.subRows = [];
+                AllActivitysData.push(value);
+              }
+            });
+
+            console.log("taskssssssssssssss", AllActivitysData);
+            console.log("AllActivitysData", AllActivitysData);
+            TasksItem = AllActivitysData;
+            console.log(Response);
+            map(TasksItem, (task: any) => {
+              if (!isItemExistsNew(CopyTaskData, task)) {
+                CopyTaskData.push(task);
+              }
+            });
+            setAllTasks(CopyTaskData);
+            filterDataBasedOnList();
           }
-        } else Counter++;
+        } else {
+          if (Counter == siteConfig.length) {
+            filterDataBasedOnList();
+            showProgressHide();
+          }
+        }
       });
-    });
+    } else showProgressHide();
   };
 
   const handleOpen = (item: any) => {
@@ -1019,89 +1256,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     });
     return isExists;
   };
-  let handleChange1 = (e: { target: { value: string } }, titleName: any) => {
-    setSearch(e.target.value.toLowerCase());
-    var Title = titleName;
-
-    var AllFilteredTagNews = [];
-    var filterglobal = e.target.value.toLowerCase();
-    if (filterglobal != undefined && filterglobal.length >= 1) {
-      var searchTerms = stringToArray(filterglobal);
-      $.each(data, function (pareIndex: any, item: any) {
-        item.flag = false;
-        item.isSearch = true;
-        item.show = false;
-        item.flag = getSearchTermAvialable1(searchTerms, item, Title);
-        if (item.subRows != undefined && item.subRows.length > 0) {
-          $.each(item.subRows, function (parentIndex: any, child1: any) {
-            child1.flag = false;
-            child1.isSearch = true;
-            child1.flag = getSearchTermAvialable1(searchTerms, child1, Title);
-            if (child1.flag) {
-              item.subRows[parentIndex].flag = true;
-              data[pareIndex].flag = true;
-              item.subRows[parentIndex].show = true;
-              data[pareIndex].show = true;
-            }
-            if (child1.subRows != undefined && child1.subRows.length > 0) {
-              $.each(child1.subRows, function (index: any, subchild: any) {
-                subchild.flag = false;
-                subchild.flag = getSearchTermAvialable1(
-                  searchTerms,
-                  subchild,
-                  Title
-                );
-                if (subchild.flag) {
-                  item.subRows[parentIndex].flag = true;
-                  child1.flag = true;
-                  child1.subRows[index].flag = true;
-                  child1.subRows[index].show = true;
-                  item.subRows[parentIndex].show = true;
-                  data[pareIndex].flag = true;
-                  data[pareIndex].show = true;
-                }
-                if (
-                  subchild.subRows != undefined &&
-                  subchild.subRows.length > 0
-                ) {
-                  $.each(
-                    subchild.subRows,
-                    function (childindex: any, subchilds: any) {
-                      subchilds.flag = false;
-                      // subchilds.Title = subchilds.newTitle;
-                      subchilds.flag = getSearchTermAvialable1(
-                        searchTerms,
-                        subchilds,
-                        Title
-                      );
-                      if (subchilds.flag) {
-                        item.subRows[parentIndex].flag = true;
-                        child1.flag = true;
-                        subchild.flag = true;
-                        subchild.subRows[childindex].flag = true;
-                        child1.subRows[index].flag = true;
-                        child1.subRows[index].show = true;
-                        item.subRows[parentIndex].show = true;
-                        data[pareIndex].flag = true;
-                        data[pareIndex].show = true;
-                      }
-                    }
-                  );
-                }
-              });
-            }
-          });
-        }
-      });
-      //   getFilterLength();
-    } else {
-      //  ungetFilterLength();
-      // setData(data => ([...maidataBackup]));
-      setData(maidataBackup);
-      //setData(ComponentsData)= SharewebCommonFactoryService.ArrayCopy($scope.CopyData);
-    }
-    // console.log($scope.ComponetsData['allComponentItemWithStructure']);
-  };
+  
 
   // var TaxonomyItems: any = [];
   var AllComponetsData: any = [];
@@ -1311,7 +1466,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       // do whatever
     }
 
-    LoadAllSiteTasks(Itmes);
+    LoadAllSiteTasks();
   };
   //const [IsUpdated, setIsUpdated] = React.useState(SelectedProp.SelectedProp);
   React.useEffect(() => {
@@ -1510,7 +1665,9 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       // if (result.DueDate == "Invalid date" || "") {
       //   result.DueDate = result.DueDate.replaceAll("Invalid date", "");
       // }
-      result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
+      
+      // result.siteType = config.Title;
+         result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
 
       if (result.Short_x0020_Description_x0020_On != undefined) {
         result.Short_x0020_Description_x0020_On =
@@ -2781,173 +2938,931 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       }
     }
   };
-  const buttonRestructuring = () => {
-    var ArrayTest: any = [];
-    //  if (checkedList != undefined && checkedList.length === 1) {
-      setComponentRestruct(true);
-    if (
-      checkedList.length > 0 &&
-      checkedList[0].subRows != undefined &&
-      checkedList[0].subRows.length > 0 &&
-      checkedList[0].Item_x0020_Type === "Component"
-    )
-      alert("You are not allowed to Restructure this item.");
-    if (
-      checkedList.length > 0 &&
-      checkedList[0].subRows != undefined &&
-      checkedList[0].subRows.length === 0 &&
-      checkedList[0].Item_x0020_Type === "Component"
-    ) {
-      maidataBackup.forEach((obj) => {
-        obj.isRestructureActive = true;
-        if (obj?.Id === checkedList[0]?.Id) obj.isRestructureActive = false;
-        ArrayTest.push(...[obj]);
-        if (obj.subRows != undefined && obj.subRows.length > 0) {
-          obj.subRows.forEach((sub: any) => {
-            if (sub.Item_x0020_Type === "SubComponent") {
-              sub.isRestructureActive = true;
-              // ArrayTest.push(sub)
-            }
-          });
-        }
-      });
-    }
-    if (
-      checkedList.length > 0 &&
-      checkedList[0].Item_x0020_Type === "SubComponent"
-    ) {
-      maidataBackup.forEach((obj) => {
-          obj.isRestructureActive = true;
-        if (obj?.Id === checkedList[0]?.Id && obj.Item_x0020_Type != 'Task') {
-          obj.isRestructureActive = false;
-          ArrayTest.push(...[obj]);
-        }
-        if (obj.subRows != undefined && obj.subRows.length > 0) {
-          obj.subRows.forEach((sub: any) => {
-            if (sub?.Id === checkedList[0]?.Id && sub.Item_x0020_Type != 'Task') {
-              obj.isRestructureActive = false;
-              ArrayTest.push(...[obj]);
-              ArrayTest.push(...[sub]);
-              // ArrayTest.push(sub)
-            }
-          });
-        }
-      });
-    }
-    if (
-      checkedList.length > 0 &&
-      checkedList[0].Item_x0020_Type === "Feature"
-    ) {
-      maidataBackup.forEach((obj) => {
-        obj.isRestructureActive = true;
-        if (obj?.Id === checkedList[0]?.Id && obj.Item_x0020_Type != 'Task') {
-          obj.isRestructureActive = false;
-        }
 
-        if (obj.subRows != undefined && obj.subRows.length > 0) {
-          obj.subRows.forEach((sub: any) => {
-            sub.isRestructureActive = true;
-            if (sub?.Id === checkedList[0]?.Id && sub.Item_x0020_Type != 'Task') {
-              sub.isRestructureActive = false;
-              obj.isRestructureActive = false;
-              ArrayTest.push(...[obj]);
-              ArrayTest.push(...[sub]);
-            }
-            if (sub.subRows != undefined && sub.subRows.length > 0) {
-              sub.subRows.forEach((newsub: any) => {
-                if (newsub?.Id === checkedList[0]?.Id && newsub.Item_x0020_Type != 'Task') {
-                  ArrayTest.push(...[obj]);
-                  ArrayTest.push(...[sub]);
-                  ArrayTest.push(...[newsub]);
-                }
-              });
-            }
-          });
+  const topRestructureClose=()=>{
+    setComponentRestruct(false);
+    setTopCompoIcon(false)   
+  }
+
+
+  const makeTopComp=async ()=>{
+    let PortfolioStructureIDs: any = "";
+    let ItemTitle:any='';
+    let ChengedItemTitle: any = "";
+    let siteIcon : any = '';
+    let PortfolioLevelNum: any = 0;
+    let SharewebTaskLevel1No:number =0;
+    let Shareweb_x0020_ID:any ;
+    let parentId :any ;
+    AllItems = [];
+   
+   
+   if(RestructureChecked[0]?.Item_x0020_Type !== "Task"){
+    maidataBackup.map((obj:any)=>{
+      if(obj.Item_x0020_Type === RestructureChecked[0]?.Item_x0020_Type){
+        if(PortfolioLevelNum <= obj.PortfolioLevel){
+          PortfolioLevelNum = obj.PortfolioLevel + 1;
+          siteIcon = RestructureChecked[0]?.siteIcon;
+          parentId = Iconssc[0].Id;
+          if(RestructureChecked[0]?.Item_x0020_Type === "SubComponent"){
+            PortfolioStructureIDs = Iconssc[0]?.PortfolioStructureID + "-" + "S" + PortfolioLevelNum;
+            ChengedItemTitle ="SubComponent";
+          }else{
+            PortfolioStructureIDs = Iconssc[0]?.PortfolioStructureID + "-" + "F" + PortfolioLevelNum;
+            ChengedItemTitle ="Feature";
+          }
         }
-      });
-    } else if (
-      checkedList.length > 0 &&
-      checkedList[0].Item_x0020_Type === "Task"
-    ) {
-      maidataBackup.forEach((obj) => {
-        obj.isRestructureActive = true;
-        if (obj?.Id === checkedList[0]?.Id) {
-          ArrayTest.push(...[obj]);
-        }
-        if (obj.subRows != undefined && obj.subRows.length > 0) {
-          obj.subRows.forEach((sub: any) => {
-            if (
-              sub.Item_x0020_Type === "SubComponent" ||
-              sub.Item_x0020_Type === "Feature"
-            )
-              sub.isRestructureActive = true;
-            if (sub?.Id === checkedList[0]?.Id) {
-              ArrayTest.push(...[obj]);
-              ArrayTest.push(...[sub]);
-              // ArrayTest.push(sub)
-            }
-            if (sub.subRows != undefined && sub.subRows.length > 0) {
-              sub.subRows.forEach((subchild: any) => {
-                if (
-                  subchild.Item_x0020_Type === "SubComponent" ||
-                  subchild.Item_x0020_Type === "Feature"
-                )
-                  subchild.isRestructureActive = true;
-                if (subchild?.Id === checkedList[0]?.Id) {
-                  ArrayTest.push(...[obj]);
-                  ArrayTest.push(...[sub]);
-                  ArrayTest.push(...[subchild]);
-                  // ArrayTest.push(sub)
-                }
-                if (
-                  subchild.subRows != undefined &&
-                  subchild.subRows.length > 0
-                ) {
-                  subchild.subRows.forEach((listsubchild: any) => {
-                    if (listsubchild?.Id === checkedList[0]?.Id) {
-                      ArrayTest.push(...[obj]);
-                      ArrayTest.push(...[sub]);
-                      ArrayTest.push(...[subchild]);
-                      ArrayTest.push(...[listsubchild]);
-                    }
-                  });
-                }
-                if (
-                  subchild.subRows != undefined &&
-                  subchild.subRows.length > 0
-                ) {
-                  subchild.subRows.forEach((listsubchild: any) => {
-                    if (listsubchild?.Id === checkedList[0]?.Id) {
-                      ArrayTest.push(...[obj]);
-                      ArrayTest.push(...[sub]);
-                      ArrayTest.push(...[subchild]);
-                      ArrayTest.push(...[listsubchild]);
-                    }
-                  });
-                }
-              });
-            }
-          });
-        }
-      });
-    }
-    if (props.Item_x0020_Type !== "SubComponent") IsShowRestru = true;
-    maidataBackup.forEach((obj) => {
-      if (obj.isRestructureActive === false) {
-        if (obj.subRows != undefined && obj.subRows.length > 0) {
-          obj.subRows.forEach((sub: any) => {
-            sub.isRestructureActive = false;
-            if (sub.subRows != undefined && sub.subRows.length > 0) {
-              sub.subRows.forEach((newsub: any) => {
-                newsub.isRestructureActive = false;
-              });
-            }
-          });
-        }
+    }else{
+      if(RestructureChecked[0]?.Item_x0020_Type === "SubComponent"){
+        PortfolioLevelNum = 1;
+          siteIcon = RestructureChecked[0]?.siteIcon;
+          parentId = Iconssc[0].Id;
+        PortfolioStructureIDs = Iconssc[0]?.PortfolioStructureID + "-" + "S" + PortfolioLevelNum;
+        ChengedItemTitle ="SubComponent";
+      }else{
+        PortfolioLevelNum = 1;
+          siteIcon = RestructureChecked[0]?.siteIcon;
+          parentId = Iconssc[0].Id;
+        PortfolioStructureIDs = Iconssc[0]?.PortfolioStructureID + "-" + "F" + PortfolioLevelNum;
+        ChengedItemTitle ="Feature";
       }
-    });
+    }
+ })
+   }else{
+    maidataBackup.map((obj:any)=>{
+      if(obj.SharewebTaskType?.Title === "Activities"){
+        if(SharewebTaskLevel1No <= obj.SharewebTaskLevel1No){
+          SharewebTaskLevel1No = obj.SharewebTaskLevel1No + 1;
+          parentId = Iconssc[0].Id;
+          PortfolioStructureIDs = obj.PortfolioStructureID;
+          Shareweb_x0020_ID = 'SA' + SharewebTaskLevel1No;
+        }
+    }
+ })
+   }
+      
+    
+//     if( RestructureChecked != undefined && RestructureChecked?.length > 0 && (RestructureChecked[0].SharewebTaskType?.Title == "Workstream" || RestructureChecked[0].SharewebTaskType?.Title == "Task")){
+//       maidataBackup.map((obj:any)=>{
+//       if(obj.subRows.length > 0 && obj.subRows != undefined){
+//         obj.subRows.map((sub:any)=>{
+//           if(checkedList[0].ParentTask?.Id === sub.Id){
+//             if(SharewebTaskLevel1No <= sub.SharewebTaskLevel1No){
+//               SharewebTaskLevel1No = sub.SharewebTaskLevel1No + 1;
+//               PortfolioStructureIDs = sub.PortfolioStructureID;
+//               Shareweb_x0020_ID = 'SA' + SharewebTaskLevel1No;
+//             }
+// }   
+//           if(sub.subRows.length > 0 && sub.subRows != undefined){
+//             sub.subRows.map((newsub:any)=>{
+//               if(checkedList[0].ParentTask?.Id === newsub.Id){
+//                 if(SharewebTaskLevel1No <= newsub.SharewebTaskLevel1No){
+//                   SharewebTaskLevel1No = newsub.SharewebTaskLevel1No + 1;
+//               PortfolioStructureIDs = newsub.PortfolioStructureID;
+//               Shareweb_x0020_ID = 'SA' + SharewebTaskLevel1No;
+//                 }
+               
+//               }  
+              
+//               if(newsub.subRows.length > 0 && newsub.subRows != undefined){
+//                 newsub.subRows.map((feature:any)=>{
+//                   if(checkedList[0].ParentTask?.Id === feature.Id){
+//                     if(SharewebTaskLevel1No <= feature.SharewebTaskLevel1No){
+//                       SharewebTaskLevel1No = feature.SharewebTaskLevel1No +1;
+//                   PortfolioStructureIDs = feature.PortfolioStructureID;
+//                   Shareweb_x0020_ID = 'SA' + SharewebTaskLevel1No;
+//                     }
+                   
+//                   }  
+//                 })
+//               }
+              
+//             })
+//           }
+//         })
+//       }
+//    })
+//    }
+
+
+
+if (ChengedItemTitle != undefined && ChengedItemTitle != "" && (RestructureChecked[0].Item_x0020_Type == "SubComponent" || RestructureChecked[0].Item_x0020_Type == "Feature")) {
+      let web = new Web(NextProp.siteUrl);
+      var postData: any = {
+        Item_x0020_Type: ChengedItemTitle,
+        PortfolioStructureID : PortfolioStructureIDs,
+        PortfolioLevel : PortfolioLevelNum,
+        Shareweb_x0020_ID : PortfolioStructureIDs,
+        ParentId:parentId
+
+      };
+     
+      await web.lists
+        .getById(NextProp.MasterTaskListID)
+        .items.getById(checkedList[0].Id)
+        .update(postData)
+        .then(async (res: any) => {
+
+
+          let checkUpdate : number = 1;
+          let array : any = [...maidataBackup];
+          let backupCheckedList :any =[];
+          let latestCheckedList:any =[] ; 
+          let count:number = 0;
+          checkedList.map((items:any)=>{
+            latestCheckedList.push({...items})
+            backupCheckedList.push({...items})
+          })
+          
+          latestCheckedList?.map((items:any)=>{
+              items.PortfolioLevel = postData.PortfolioLevel,
+              items.PortfolioStructureID = postData.PortfolioStructureID,
+              items.Item_x0020_Type = postData.Item_x0020_Type
+              items.Shareweb_x0020_ID = postData.PortfolioStructureID,
+              items.SiteIconTitle = siteIcon,
+              items.Parent = {Id:Iconssc[0].Id,Title:Iconssc[0].Title}
+          })
+
+
+          array.map((obj:any,index:any)=>{
+            obj.isRestructureActive=false;
+
+            if(count==0){
+              array.splice(array.length-1,0,...latestCheckedList);
+              count = 1;
+            }
+                       
+            if(obj?.subRows != undefined && obj?.subRows.length > 0){
+              obj?.subRows?.map((sub:any,subIndex:any)=>{
+                if(sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && checkUpdate == 1){
+                            array[index]?.subRows.splice(subIndex,1);
+                            checkUpdate = 2;
+                      }
+                if(sub?.subRows != undefined && sub?.subRows.length > 0){
+                  sub?.subRows?.map((newsub:any,newsubIndex:any)=>{
+                    if(newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type  && checkUpdate == 1){
+                      array[index]?.subRows[subIndex]?.subRows.splice(newsubIndex,1);
+                   checkUpdate = 2;
+                }
+                  })
+                }
+  
+              })
+            }
+           
+          })
+ 
+          setmaidataBackup(array);
+          setComponentRestruct(false);
+          setTopCompoIcon(false)   
+          setRestructureChecked([]);
+          setNewArrayBackup([]);
+          setOldArrayBackup([]);
+          setRowSelection({});
+          RestruringCloseCall();
+          setCheckedList([]);
+          setComponentRestruct(false);
+          setTopCompoIcon(false)   
+          AllItems = AllItems?.concat(array);
+          setData((AllItems) => [...AllItems]);
+          refreshData();
+          rerender();
+
+
+        });
+    }
+
+    if (RestructureChecked[0].Item_x0020_Type === "Task") {
+      let web = new Web(NextProp.siteUrl);
+      var postData: any = {
+        SharewebTaskTypeId:taskTypeId[0].Id,
+        SharewebTaskLevel1No:SharewebTaskLevel1No,
+        Shareweb_x0020_ID:Shareweb_x0020_ID,
+        ServicesId: checkedList[0].Services?.length > 0
+          ? { results: [parentId] }
+          : { results: [] },
+        ComponentId: checkedList[0].Component?.length > 0
+          ? { results: [parentId] }
+          : { results: [] },
+        ParentTaskId:null
+     };
+     
+      await web.lists
+        .getById(checkedList[0].listId)
+        .items.getById(checkedList[0].Id)
+        .update(postData)
+        .then(async (res: any) => {
+
+
+          let checkUpdate : number = 1;
+          let count :number =0
+          let array : any = [...maidataBackup];
+          let backupCheckedList :any =[];
+          let latestCheckedList:any =[] ; 
+          checkedList.map((items:any)=>{
+            latestCheckedList.push({...items})
+            backupCheckedList.push({...items})
+          })
+          
+          latestCheckedList?.map((items:any)=>{
+              items.PortfolioStructureID = postData.PortfolioStructureID,
+              items.Shareweb_x0020_ID = postData.Shareweb_x0020_ID,
+              items.ParentTask = {Id:null,Title:null,Shareweb_x0020_ID:null},
+              items.SharewebTaskLevel1No = postData.SharewebTaskLevel1No
+              items.SharewebTaskType = {Id:taskTypeId[0].Id,Level:taskTypeId[0].Level,Title:taskTypeId[0].Title}
+          })
+
+
+
+          array?.map((obj:any,index:any)=>{
+            obj.isRestructureActive=false;
+            if(obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3 ){
+                     obj.subRows.push(...latestCheckedList);
+                     checkUpdate = checkUpdate + 1;
+            }
+            if(obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3){
+                          array.splice(index,1);
+                          checkUpdate = checkUpdate + 1;
+            }
+
+            if(obj.subRows != undefined && obj.subRows.length > 0){
+              obj.subRows.forEach((sub: any, indexsub: any) => {
+                sub.isRestructureActive=false;
+                if(sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title  && checkUpdate != 3){
+                  sub.subRows.push(...latestCheckedList) ;
+                  checkUpdate = checkUpdate + 1;
+         }
+         if(sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3){
+                       array[index]?.subRows.splice(indexsub,1);
+                       checkUpdate = checkUpdate + 1;
+         }
+
+         if (sub.subRows != undefined && sub.subRows.length > 0) {
+          sub.subRows.forEach((newsub: any, lastIndex: any) => {
+            newsub.isRestructureActive=false;
+            if(newsub.Id === newItemBackUp?.Id && newsub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && newsub.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title  && checkUpdate != 3){
+              newsub.subRows.push(...latestCheckedList);
+              checkUpdate = checkUpdate + 1;
+     }
+     if(newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && newsub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3){
+                   array[index]?.subRows[indexsub]?.subRows.splice(lastIndex,1);
+                   checkUpdate = checkUpdate + 1;
+     }
+
+     if (newsub.subRows != undefined && newsub.subRows.length > 0) {
+      newsub.subRows.forEach((activity: any, activityIndex: any) => {
+        activity.isRestructureActive=false;
+        if(activity.Id === newItemBackUp?.Id && activity.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && activity.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title  && checkUpdate != 3){
+          activity.subRows.push(...latestCheckedList);
+          checkUpdate = checkUpdate + 1;
+ }
+ if(activity.Id === backupCheckedList[0]?.Id && activity.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && activity.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3){
+               array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows.splice(activityIndex,1);
+               checkUpdate = checkUpdate + 1;
+ }
+
+ if (activity.subRows != undefined && activity.subRows.length > 0) {
+  activity.subRows.forEach((workstream: any, workstreamIndex: any) => {
+    workstream.isRestructureActive=false;
+    if(workstream.Id === newItemBackUp?.Id && workstream.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && workstream.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title  && checkUpdate != 3){
+      workstream.subRows.push(...latestCheckedList);
+      checkUpdate = checkUpdate + 1;
+}
+if(workstream.Id === backupCheckedList[0]?.Id && workstream.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && workstream.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3){
+           array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows[activityIndex]?.subRows.splice(workstreamIndex,1);
+           checkUpdate = checkUpdate + 1;
+}
+
+if (activity.subRows != undefined && activity.subRows.length > 0) {
+  activity.subRows.forEach((task: any, taskIndex: any) => {
+    task.isRestructureActive=false;
+    if(task.Id === newItemBackUp?.Id && task.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && task.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title  && checkUpdate != 3){
+      task.subRows.push(...latestCheckedList);
+      checkUpdate = checkUpdate + 1;
+}
+if(task.Id === backupCheckedList[0]?.Id && task.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && task.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3){
+           array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows[activityIndex]?.subRows[workstreamIndex]?.subRows.splice(taskIndex,1);
+           checkUpdate = checkUpdate + 1;
+}
+  })}
+
+
+  })
+}
+
+
+})
+     }
+          })
+         }
+              })
+            }
+
+          })
+ 
+          setmaidataBackup(array);
+          setComponentRestruct(false);
+          setTopCompoIcon(false)   
+          setRestructureChecked([]);
+          setNewArrayBackup([]);
+          setOldArrayBackup([]);
+          setRowSelection({});
+          RestruringCloseCall();
+          setCheckedList([]);
+          setComponentRestruct(false);
+          setTopCompoIcon(false)   
+          AllItems = AllItems?.concat(array);
+          setData((AllItems) => [...AllItems]);
+          refreshData();
+          rerender();
+
+
+        });
+    }
+
+
+  }
+
+
+  const buttonRestructuring = () => {
+
+      var ArrayTest: any = [];
+      if (
+        checkedList.length > 0 &&
+        checkedList[0].subRows != undefined &&
+        checkedList[0].subRows.length > 0 &&
+        checkedList[0].Item_x0020_Type === "Component"
+      )
+        alert("You are not allowed to Restructure this item.");
+  
+        if(checkedList.length > 0){
+          checkedList.map((items:any)=>{
+            if( items.subRows != undefined &&
+              items.subRows.length === 0 &&
+              items.Item_x0020_Type === "Component"){
+                let newObj:any={};
+                let newarrays:any=[];
+                maidataBackup.forEach((obj) => {
+                  if(items?.Id !== obj.Id && obj.SharewebTaskType?.Title !== "Task" && obj.SharewebTaskType?.Title !== "Activities"){
+                    newarrays.push(obj);
+                    // setCheckSubsubRows(obj);
+                    // setRestructuredItemarray(newarrays);
+                    obj.isRestructureActive = true;
+                  }else{
+                    newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIcon};
+                    ArrayTest.push(newObj)
+                    setRestructureChecked(ArrayTest);
+                  }
+                  if (obj.subRows != undefined && obj.subRows.length > 0) {
+                    obj.subRows.forEach((sub: any) => {
+                      if (sub.Item_x0020_Type === "SubComponent" && sub.SharewebTaskType?.Title !== "Task" && sub.SharewebTaskType?.Title !== "Activities") {
+                        sub.isRestructureActive = true;
+                      }
+                    });
+                  }
+                });
+            }else if(items.Item_x0020_Type === "SubComponent"){
+              let newObj:any={}
+          maidataBackup.forEach((obj) => {
+            let newChildarray:any=[];
+              let newarrays:any=[];
+            if (obj.Id === items?.Id && obj.Item_x0020_Type === "SubComponent") {
+              newarrays.push(obj);
+              // setCheckSubsubRows(sub);
+              // setRestructuredItemarray(newarrays);
+              
+              newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIcon,SharewebTaskType:obj.SharewebTaskType,};
+                newChildarray.push(newObj)
+                setRestructureChecked(newChildarray);
+                ArrayTest.push(newObj);
+                obj.isRestructureActive = false;
+            }else{
+              if(items?.Item_x0020_Type === "SubComponent" && items?.subRows[0]?.Item_x0020_Type !== "Feature" && obj?.Item_x0020_Type === "SubComponent" && obj.SharewebTaskType?.Title !== "Task" && obj.SharewebTaskType?.Title !== "Activities")
+                  {
+                    obj.isRestructureActive = true;
+                    setComponentRestruct(true);
+                  }
+              }
+          });
+        }else if(items.Item_x0020_Type === "Feature"){
+          let newObj:any={}
+          maidataBackup.forEach((obj) => {
+            let newarrays:any=[];
+            let newChildarray:any=[];
+            if(obj.SharewebTaskType?.Title !== "Task" && obj.SharewebTaskType?.Title !== "Activities" && obj.Item_x0020_Type === "SubComponent"){
+              obj.isRestructureActive = true;
+            }
+            setComponentRestruct(true);
+            if(obj.Item_x0020_Type === "SubComponent"){
+              obj.isRestructureActive = true;
+            }
+            if (obj.Id === items?.Id) {
+              newarrays.push(obj);
+              // setCheckSubsubRows(sub);
+              obj.isRestructureActive = false;
+          // setRestructuredItemarray(newarrays);
+              newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIcon,SharewebTaskType:obj.SharewebTaskType,};
+              setComponentRestruct(true);
+              newChildarray.push(newObj)
+              setRestructureChecked(newChildarray);
+              ArrayTest.push(newObj);
+            }
+           
+           if (obj.subRows != undefined && obj.subRows.length > 0) {
+            let newarrays:any=[];
+            let newChildarray:any=[];
+              obj.subRows.forEach((sub: any) => {
+                setComponentRestruct(true);
+                if(sub.Item_x0020_Type === "SubComponent"){
+                  sub.isRestructureActive = true;
+                }
+                if (sub.Id === items?.Id) {
+                  newarrays.push(obj);
+                  // setCheckSubsubRows(sub);
+                  sub.isRestructureActive = false;
+                  obj.isRestructureActive = false;
+              // setRestructuredItemarray(newarrays);
+                  newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIcon,SharewebTaskType:obj.SharewebTaskType,
+                  newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIcon,SharewebTaskType:sub.SharewebTaskType,
+                }};
+                  setComponentRestruct(true);
+                  newChildarray.push(newObj.newChild)
+                  setRestructureChecked(newChildarray);
+                  ArrayTest.push(newObj);
+                }
+              });
+            }
+          });
+        }else if(items.SharewebTaskType?.Title === "Activities" && items.Item_x0020_Type === "Task"){
+          let newObj:any={}
+          maidataBackup.forEach((obj) => {
+            let newChildarray:any=[];
+              let newarrays:any=[];
+            if(obj.SharewebTaskType?.Title !== "Task" && obj?.Id == items?.Id && obj?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID){
+              newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIcon,SharewebTaskType:obj.SharewebTaskType,
+              } 
+              newarrays.push(obj);
+              obj.isRestructureActive = false;
+              // setRestructuredItemarray(newarrays);
+              newChildarray.push(newObj);
+              setRestructureChecked(newChildarray);
+              ArrayTest.push(newObj); 
+            }
+            if(obj.SharewebTaskType?.Title !== "Task" &&  obj?.Shareweb_x0020_ID !== items?.Shareweb_x0020_ID && obj?.Id !== items?.Id){
+           obj.isRestructureActive = true
+         } 
+         if((obj.SharewebTaskType?.Title == "Activities" || obj.SharewebTaskType?.Title == "Workstream") && items?.subRows.length > 0){
+          obj.isRestructureActive = false;
+         }
+         if(obj.siteType != items?.siteType && (obj.SharewebTaskType?.Title == "Activities" || obj.SharewebTaskType?.Title == "Workstream")){
+          obj.isRestructureActive = false;
+         }
+           if (obj?.subRows != undefined && obj?.subRows?.length > 0) {
+              obj.subRows.forEach((sub: any) => {
+                let newChildarray:any=[];
+                    let newarrays:any=[];
+                    if(sub.SharewebTaskType?.Title !== "Task" && sub?.Id == items?.Id && sub?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID){
+                  newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIcon,SharewebTaskType:obj.SharewebTaskType,
+                    newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIcon,SharewebTaskType:sub.SharewebTaskType,
+                   }} 
+                   newarrays.push(obj);
+                   if(items?.subRows.length > 0){
+                    obj.isRestructureActive = false;
+                   }
+                  
+                   sub.isRestructureActive = false;
+                  //  setRestructuredItemarray(newarrays);
+                   newChildarray.push(newObj?.newChild);
+                 setRestructureChecked(newChildarray);
+                 ArrayTest.push(newObj); 
+                }
+                if(sub.SharewebTaskType?.Title !== "Task" && sub?.Shareweb_x0020_ID !== items?.Shareweb_x0020_ID && sub?.Id !== items?.Id){
+                 sub.isRestructureActive = true
+                   }
+                   if((sub.SharewebTaskType?.Title == "Activities" || sub.SharewebTaskType?.Title == "Workstream") && items?.subRows.length > 0){
+                    sub.isRestructureActive = false;
+                   } 
+                   if(sub.siteType != items?.siteType && (sub.SharewebTaskType?.Title == "Activities" || sub.SharewebTaskType?.Title == "Workstream")){
+                    sub.isRestructureActive = false;
+                   }
+                if (sub.subRows != undefined && sub.subRows.length > 0) {
+                  sub.subRows.forEach((newsub: any) => {
+                    let newChildarray:any=[];
+                    let newarrays:any=[];
+                    setComponentRestruct(true);
+                    if(newsub.SharewebTaskType?.Title !== "Task" && newsub?.Id == items?.Id && newsub?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID){
+                          newarrays.push(obj);
+                          // setRestructuredItemarray(newarrays);
+                      newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIcon ,SharewebTaskType:obj.SharewebTaskType,
+                        newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIcon,SharewebTaskType:sub.SharewebTaskType,
+                        newFchild:{Title:newsub.Title,Item_x0020_Type:newsub.Item_x0020_Type,Id:newsub.Id,siteIcon:newsub.SiteIcon,SharewebTaskType:newsub.SharewebTaskType,
+                        }}}   
+                        if(items?.subRows.length > 0){
+                          sub.isRestructureActive = false;
+                         }
+                         newsub.isRestructureActive = false;
+                        newChildarray.push(newObj?.newChild?.newFchild)
+                        setRestructureChecked(newChildarray);
+                        ArrayTest.push(newObj);  
+                    }
+                    if(newsub.SharewebTaskType?.Title !== "Task" && newsub?.Shareweb_x0020_ID !== items?.Shareweb_x0020_ID && newsub?.Id !== items?.Id){
+                           newsub.isRestructureActive = true
+                         }
+                        if((newsub.SharewebTaskType?.Title == "Activities" || newsub.SharewebTaskType?.Title == "Workstream") && items?.subRows.length > 0){
+                          newsub.isRestructureActive = false;
+                         } 
+
+                         if(newsub.siteType != items?.siteType && (newsub.SharewebTaskType?.Title == "Activities" || newsub.SharewebTaskType?.Title == "Workstream")){
+                          newsub.isRestructureActive = false;
+                         }
+                    if (newsub.subRows != undefined && newsub.subRows.length > 0) {
+                     let newChildarray:any=[];
+                     let newarrays:any=[];
+                      newsub.subRows.forEach((activity: any) => {
+                        if(activity.SharewebTaskType?.Title !== "Task" && activity?.Id == items?.Id && activity?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID){
+                          newarrays.push(obj);
+                          // setRestructuredItemarray(newarrays);
+                          if(items?.subRows.length > 0){
+                            newsub.isRestructureActive = false;
+                           }
+                          activity.isRestructureActive = false;
+                          
+                          newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIcon  ,SharewebTaskType:obj.SharewebTaskType,
+                          newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIcon  ,SharewebTaskType:sub.SharewebTaskType,
+                          newFchild:{Title:newsub.Title,Item_x0020_Type:newsub.Item_x0020_Type,Id:newsub.Id,siteIcon:newsub.SiteIcon  ,SharewebTaskType:newsub.SharewebTaskType,
+                          newActChild:{Title:activity.Title,Item_x0020_Type:activity.Item_x0020_Type,Id:activity.Id,siteIcon:activity.SiteIcon,SharewebTaskType:activity.SharewebTaskType}}}};
+                          newChildarray.push(newObj?.newChild?.newFchild?.newActChild)
+                          setRestructureChecked(newChildarray);
+                          ArrayTest.push(newObj);  
+                        }
+                          if(activity.SharewebTaskType?.Title !== "Task" && activity.SharewebTaskType?.Title !== "Task" && activity?.Shareweb_x0020_ID !== items?.Shareweb_x0020_ID && activity?.Id !== items?.Id){
+                            activity.isRestructureActive = true;
+                           }  
+                           
+                           if((activity.SharewebTaskType?.Title == "Activities" || activity.SharewebTaskType?.Title == "Workstream") && items?.subRows.length > 0){
+                            activity.isRestructureActive = false;
+                           } 
+                           if(activity.siteType != items?.siteType && (activity.SharewebTaskType?.Title == "Activities" || activity.SharewebTaskType?.Title == "Workstream")){
+                            activity.isRestructureActive = false;
+                           }
+                      })
+                    }
+                  });
+                }
+              });
+            }
+          });
+        }else if(items.SharewebTaskType?.Title === "Workstream" && items.Item_x0020_Type === "Task"){
+
+
+          let newObj:any={}
+          maidataBackup.forEach((obj) => {
+            let newChildarray:any=[];
+              let newarrays:any=[];
+            if(obj.SharewebTaskType?.Title !== "Task" && obj?.Id == items?.Id && obj?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID){
+              newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIcon,SharewebTaskType:obj.SharewebTaskType,
+              } 
+              newarrays.push(obj);
+              obj.isRestructureActive = false;
+              // setRestructuredItemarray(newarrays);
+              newChildarray.push(newObj);
+              setRestructureChecked(newChildarray);
+              ArrayTest.push(newObj); 
+            }
+            if(obj.SharewebTaskType?.Title !== "Task" &&  obj?.Shareweb_x0020_ID !== items?.Shareweb_x0020_ID && obj?.Id !== items?.Id){
+           obj.isRestructureActive = true
+         } 
+         if(obj.SharewebTaskType?.Title == "Workstream" && items?.subRows.length > 0){
+          obj.isRestructureActive = false;
+         }
+         if(obj.siteType != items?.siteType && (obj.SharewebTaskType?.Title == "Activities" || obj.SharewebTaskType?.Title == "Workstream")){
+          obj.isRestructureActive = false;
+         }
+           if (obj?.subRows != undefined && obj?.subRows?.length > 0) {
+              obj.subRows.forEach((sub: any) => {
+                let newChildarray:any=[];
+                    let newarrays:any=[];
+                    if(sub.SharewebTaskType?.Title !== "Task" && sub?.Id == items?.Id && sub?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID){
+                  newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIcon,SharewebTaskType:obj.SharewebTaskType,
+                    newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIcon,SharewebTaskType:sub.SharewebTaskType,
+                   }} 
+                   newarrays.push(obj);
+                   if(items?.subRows.length > 0){
+                    obj.isRestructureActive = false;
+                   }
+                  
+                   sub.isRestructureActive = false;
+                  //  setRestructuredItemarray(newarrays);
+                   newChildarray.push(newObj?.newChild);
+                 setRestructureChecked(newChildarray);
+                 ArrayTest.push(newObj); 
+                }
+                if(sub.SharewebTaskType?.Title !== "Task" && sub?.Shareweb_x0020_ID !== items?.Shareweb_x0020_ID && sub?.Id !== items?.Id){
+                 sub.isRestructureActive = true
+                   }
+                   if(sub.SharewebTaskType?.Title == "Workstream" && items?.subRows.length > 0){
+                    sub.isRestructureActive = false;
+                   } 
+                   if(sub.siteType != items?.siteType && (sub.SharewebTaskType?.Title == "Activities" || sub.SharewebTaskType?.Title == "Workstream")){
+                    sub.isRestructureActive = false;
+                   }
+                if (sub.subRows != undefined && sub.subRows.length > 0) {
+                  sub.subRows.forEach((newsub: any) => {
+                    let newChildarray:any=[];
+                    let newarrays:any=[];
+                    setComponentRestruct(true);
+                    if(newsub.SharewebTaskType?.Title !== "Task" && newsub?.Id == items?.Id && newsub?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID){
+                          newarrays.push(obj);
+                          // setRestructuredItemarray(newarrays);
+                      newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIcon ,SharewebTaskType:obj.SharewebTaskType,
+                        newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIcon ,SharewebTaskType:sub.SharewebTaskType,
+                        newFchild:{Title:newsub.Title,Item_x0020_Type:newsub.Item_x0020_Type,Id:newsub.Id,siteIcon:newsub.SiteIcon,SharewebTaskType:newsub.SharewebTaskType,
+                        }}}   
+                        if(items?.subRows.length > 0){
+                          sub.isRestructureActive = false;
+                         }
+                         newsub.isRestructureActive = false;
+                        newChildarray.push(newObj?.newChild?.newFchild)
+                        setRestructureChecked(newChildarray);
+                        ArrayTest.push(newObj);  
+                    }
+                    if(newsub.SharewebTaskType?.Title !== "Task" && newsub?.Shareweb_x0020_ID !== items?.Shareweb_x0020_ID && newsub?.Id !== items?.Id){
+                           newsub.isRestructureActive = true
+                         }
+                        if(newsub.SharewebTaskType?.Title == "Workstream" && items?.subRows.length > 0){
+                          newsub.isRestructureActive = false;
+                         } 
+                         if(newsub.siteType != items?.siteType && (newsub.SharewebTaskType?.Title == "Activities" || newsub.SharewebTaskType?.Title == "Workstream")){
+                          newsub.isRestructureActive = false;
+                         }
+                    if (newsub.subRows != undefined && newsub.subRows.length > 0) {
+                     let newChildarray:any=[];
+                     let newarrays:any=[];
+                      newsub.subRows.forEach((activity: any) => {
+                        if(activity.SharewebTaskType?.Title !== "Task" && activity?.Id == items?.Id && activity?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID){
+                          newarrays.push(obj);
+                          // setRestructuredItemarray(newarrays);
+                          if(items?.subRows.length > 0){
+                            newsub.isRestructureActive = false;
+                           }
+                          activity.isRestructureActive = false;
+                          
+                          newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIcon  ,SharewebTaskType:obj.SharewebTaskType,
+                          newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIcon  ,SharewebTaskType:sub.SharewebTaskType,
+                          newFchild:{Title:newsub.Title,Item_x0020_Type:newsub.Item_x0020_Type,Id:newsub.Id,siteIcon:newsub.SiteIcon  ,SharewebTaskType:newsub.SharewebTaskType,
+                          newActChild:{Title:activity.Title,Item_x0020_Type:activity.Item_x0020_Type,Id:activity.Id,siteIcon:activity.SiteIcon,SharewebTaskType:activity.SharewebTaskType}}}};
+                          newChildarray.push(newObj?.newChild?.newFchild?.newActChild)
+                          setRestructureChecked(newChildarray);
+                          ArrayTest.push(newObj);  
+                        }
+                          if(activity.SharewebTaskType?.Title !== "Task" && activity.SharewebTaskType?.Title !== "Task" && activity?.Shareweb_x0020_ID !== items?.Shareweb_x0020_ID && activity?.Id !== items?.Id){
+                            activity.isRestructureActive = true;
+                           }  
+                           
+                           if(activity.SharewebTaskType?.Title == "Workstream" && items?.subRows.length > 0){
+                            activity.isRestructureActive = false;
+                           }
+                           if(activity.siteType != items?.siteType && (activity.SharewebTaskType?.Title == "Activities" || activity.SharewebTaskType?.Title == "Workstream")){
+                            activity.isRestructureActive = false;
+                           }
+                           if (activity.subRows != undefined && activity.subRows.length > 0) {
+                            let newChildarray:any=[];
+                            let newarrays:any=[];
+                            activity.subRows.forEach((wrkstrm: any) => {
+                               if(wrkstrm.SharewebTaskType?.Title !== "Task" && wrkstrm?.Id == items?.Id && wrkstrm?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID){
+                                 newarrays.push(obj);
+                                 // setRestructuredItemarray(newarrays);
+                                 if(items?.subRows.length > 0){
+                                  activity.isRestructureActive = false;
+                                  }
+                                  wrkstrm.isRestructureActive = false;
+                                 
+                                 newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIcon  ,SharewebTaskType:obj.SharewebTaskType,
+                                 newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIcon  ,SharewebTaskType:sub.SharewebTaskType,
+                                 newFchild:{Title:newsub.Title,Item_x0020_Type:newsub.Item_x0020_Type,Id:newsub.Id,siteIcon:newsub.SiteIcon  ,SharewebTaskType:newsub.SharewebTaskType,
+                                 newActChild:{Title:activity.Title,Item_x0020_Type:activity.Item_x0020_Type,Id:activity.Id,siteIcon:activity.SiteIcon,SharewebTaskType:activity.SharewebTaskType,
+                                  newWrkChild:{Title:wrkstrm.Title,Item_x0020_Type:wrkstrm.Item_x0020_Type,Id:wrkstrm.Id,siteIcon:wrkstrm.SiteIcon,SharewebTaskType:wrkstrm.SharewebTaskType,}
+                                }}}};
+                                 newChildarray.push(newObj?.newChild?.newFchild?.newActChild?.newWrkChild);
+                                 setRestructureChecked(newChildarray);
+                                 ArrayTest.push(newObj);  
+                               }
+                                 if(wrkstrm.SharewebTaskType?.Title !== "Task" && wrkstrm.SharewebTaskType?.Title !== "Task" && wrkstrm?.Shareweb_x0020_ID !== items?.Shareweb_x0020_ID && wrkstrm?.Id !== items?.Id){
+                                   wrkstrm.isRestructureActive = true;
+                                  }  
+                                  
+                                  if(wrkstrm.SharewebTaskType?.Title == "Workstream" && items?.subRows.length > 0){
+                                   wrkstrm.isRestructureActive = false;
+                                  } 
+                                  if(wrkstrm.siteType != items?.siteType && (wrkstrm.SharewebTaskType?.Title == "Activities" || wrkstrm.SharewebTaskType?.Title == "Workstream")){
+                                    wrkstrm.isRestructureActive = false;
+                                   }
+                             })
+                           }
+                      })
+                    }
+
+                  });
+                }
+              });
+            }
+          });
+        }else if(items.SharewebTaskType?.Title === "Task" && items.Item_x0020_Type === "Task"){
+
+          
+          let newObj:any={}
+          maidataBackup.forEach((obj) => {
+            let newChildarray:any=[];
+              let newarrays:any=[];
+            if(obj.SharewebTaskType?.Title == "Task" && obj?.Id == items?.Id && obj?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID){
+              newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIcon,SharewebTaskType:obj.SharewebTaskType,
+              } 
+              newarrays.push(obj);
+              obj.isRestructureActive = false;
+              // setRestructuredItemarray(newarrays);
+              newChildarray.push(newObj);
+              setRestructureChecked(newChildarray);
+              ArrayTest.push(newObj); 
+            }
+            if(obj.SharewebTaskType?.Title !== "Task" &&  obj?.Shareweb_x0020_ID !== items?.Shareweb_x0020_ID && obj?.Id !== items?.Id){
+           obj.isRestructureActive = true
+         } 
+         if(obj.SharewebTaskType?.Title == "Workstream" && items?.subRows.length > 0){
+          obj.isRestructureActive = false;
+         }
+         if(obj.siteType != items?.siteType &&  obj.SharewebTaskType?.Title == "Workstream"){
+          obj.isRestructureActive = false;
+         }
+           if (obj?.subRows != undefined && obj?.subRows?.length > 0) {
+              obj.subRows.forEach((sub: any) => {
+                let newChildarray:any=[];
+                    let newarrays:any=[];
+                    if(sub.SharewebTaskType?.Title == "Task" && sub?.Id == items?.Id && sub?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID){
+                  newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIcon,SharewebTaskType:obj.SharewebTaskType,
+                    newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIcon,SharewebTaskType:sub.SharewebTaskType,
+                   }} 
+                   newarrays.push(obj);
+                   if(obj?.SharewebTaskType?.Title == "Workstream"){
+                    obj.isRestructureActive = false;
+                   }
+                  
+                   sub.isRestructureActive = false;
+                  //  setRestructuredItemarray(newarrays);
+                   newChildarray.push(newObj?.newChild);
+                 setRestructureChecked(newChildarray);
+                 ArrayTest.push(newObj); 
+                }
+                if(sub.SharewebTaskType?.Title !== "Task" && sub?.Shareweb_x0020_ID !== items?.Shareweb_x0020_ID && sub?.Id !== items?.Id){
+                 sub.isRestructureActive = true
+                   }
+                   if(sub.SharewebTaskType?.Title == "Workstream" && items?.subRows.length > 0){
+                    sub.isRestructureActive = false;
+                   } 
+                   if(sub.siteType != items?.siteType &&  sub.SharewebTaskType?.Title == "Workstream"){
+                    sub.isRestructureActive = false;
+                   }
+                if (sub.subRows != undefined && sub.subRows.length > 0) {
+                  sub.subRows.forEach((newsub: any) => {
+                    let newChildarray:any=[];
+                    let newarrays:any=[];
+                    setComponentRestruct(true);
+                    if(newsub.SharewebTaskType?.Title == "Task" && newsub?.Id == items?.Id && newsub?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID){
+                          newarrays.push(obj);
+                          // setRestructuredItemarray(newarrays);
+                      newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIcon ,SharewebTaskType:obj.SharewebTaskType,
+                        newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIcon ,SharewebTaskType:sub.SharewebTaskType,
+                        newFchild:{Title:newsub.Title,Item_x0020_Type:newsub.Item_x0020_Type,Id:newsub.Id,siteIcon:newsub.SiteIcon,SharewebTaskType:newsub.SharewebTaskType,
+                        }}}   
+                        if(sub?.SharewebTaskType?.Title == "Workstream"){
+                          sub.isRestructureActive = false;
+                         }
+                         newsub.isRestructureActive = false;
+                        newChildarray.push(newObj?.newChild?.newFchild)
+                        setRestructureChecked(newChildarray);
+                        ArrayTest.push(newObj);  
+                    }
+                    if(newsub.SharewebTaskType?.Title !== "Task" && newsub?.Shareweb_x0020_ID !== items?.Shareweb_x0020_ID && newsub?.Id !== items?.Id){
+                           newsub.isRestructureActive = true
+                         }
+                        if(newsub.SharewebTaskType?.Title == "Workstream" && items?.subRows.length > 0){
+                          newsub.isRestructureActive = false;
+                         } 
+                         if(newsub.siteType != items?.siteType &&  newsub.SharewebTaskType?.Title == "Workstream"){
+                          newsub.isRestructureActive = false;
+                         }
+                    if (newsub.subRows != undefined && newsub.subRows.length > 0) {
+                     let newChildarray:any=[];
+                     let newarrays:any=[];
+                      newsub.subRows.forEach((activity: any) => {
+                        if(activity.SharewebTaskType?.Title == "Task" && activity?.Id == items?.Id && activity?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID){
+                          newarrays.push(obj);
+                          // setRestructuredItemarray(newarrays);
+                          if(newsub?.SharewebTaskType?.Title == "Workstream"){
+                            newsub.isRestructureActive = false;
+                           }
+                          activity.isRestructureActive = false;
+                          
+                          newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIcon  ,SharewebTaskType:obj.SharewebTaskType,
+                          newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIcon  ,SharewebTaskType:sub.SharewebTaskType,
+                          newFchild:{Title:newsub.Title,Item_x0020_Type:newsub.Item_x0020_Type,Id:newsub.Id,siteIcon:newsub.SiteIcon  ,SharewebTaskType:newsub.SharewebTaskType,
+                          newActChild:{Title:activity.Title,Item_x0020_Type:activity.Item_x0020_Type,Id:activity.Id,siteIcon:activity.SiteIcon,SharewebTaskType:activity.SharewebTaskType}}}};
+                          newChildarray.push(newObj?.newChild?.newFchild?.newActChild)
+                          setRestructureChecked(newChildarray);
+                          ArrayTest.push(newObj);  
+                        }
+                          if(activity.SharewebTaskType?.Title !== "Task" && activity.SharewebTaskType?.Title !== "Task" && activity?.Shareweb_x0020_ID !== items?.Shareweb_x0020_ID && activity?.Id !== items?.Id){
+                            activity.isRestructureActive = true;
+                           }  
+                           
+                           if(activity.SharewebTaskType?.Title == "Workstream" && items?.subRows.length > 0){
+                            activity.isRestructureActive = false;
+                           }
+                           if(activity.siteType != items?.siteType &&  activity.SharewebTaskType?.Title == "Workstream"){
+                            activity.isRestructureActive = false;
+                           }
+                           if (activity.subRows != undefined && activity.subRows.length > 0) {
+                            let newChildarray:any=[];
+                            let newarrays:any=[];
+                            activity.subRows.forEach((wrkstrm: any) => {
+                               if(wrkstrm.SharewebTaskType?.Title == "Task" && wrkstrm?.Id == items?.Id && wrkstrm?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID){
+                                 newarrays.push(obj);
+                                 // setRestructuredItemarray(newarrays);
+                                 if(activity?.SharewebTaskType?.Title == "Workstream"){
+                                  activity.isRestructureActive = false;
+                                  }
+                                  wrkstrm.isRestructureActive = false;
+                                 
+                                 newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIcon  ,SharewebTaskType:obj.SharewebTaskType,
+                                 newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIcon  ,SharewebTaskType:sub.SharewebTaskType,
+                                 newFchild:{Title:newsub.Title,Item_x0020_Type:newsub.Item_x0020_Type,Id:newsub.Id,siteIcon:newsub.SiteIcon  ,SharewebTaskType:newsub.SharewebTaskType,
+                                 newActChild:{Title:activity.Title,Item_x0020_Type:activity.Item_x0020_Type,Id:activity.Id,siteIcon:activity.SiteIcon,SharewebTaskType:activity.SharewebTaskType,
+                                  newWrkChild:{Title:wrkstrm.Title,Item_x0020_Type:wrkstrm.Item_x0020_Type,Id:wrkstrm.Id,siteIcon:wrkstrm.SiteIcon,SharewebTaskType:wrkstrm.SharewebTaskType,}
+                                }}}};
+                                 newChildarray.push(newObj?.newChild?.newFchild?.newActChild?.newWrkChild);
+                                 setRestructureChecked(newChildarray);
+                                 ArrayTest.push(newObj);  
+                               }
+                                 if(wrkstrm.SharewebTaskType?.Title !== "Task" && wrkstrm.SharewebTaskType?.Title !== "Task" && wrkstrm?.Shareweb_x0020_ID !== items?.Shareweb_x0020_ID && wrkstrm?.Id !== items?.Id){
+                                   wrkstrm.isRestructureActive = true;
+                                  }  
+                                  
+                                  if(wrkstrm.SharewebTaskType?.Title == "Workstream" && items?.subRows.length > 0){
+                                   wrkstrm.isRestructureActive = false;
+                                  } 
+                                  if(wrkstrm.siteType != items?.siteType &&  wrkstrm.SharewebTaskType?.Title == "Workstream"){
+                                    wrkstrm.isRestructureActive = false;
+                                   }
+
+                                  if (wrkstrm.subRows != undefined && wrkstrm.subRows.length > 0) {
+                                    let newChildarray:any=[];
+                                    let newarrays:any=[];
+                                    wrkstrm.subRows.forEach((task: any) => {
+                                       if(task.SharewebTaskType?.Title == "Task" && task?.Id == items?.Id && task?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID){
+                                         newarrays.push(obj);
+                                         // setRestructuredItemarray(newarrays);
+                                         if(wrkstrm.SharewebTaskType?.Title == "Workstream"){
+                                          wrkstrm.isRestructureActive = false;
+                                          }
+                                          task.isRestructureActive = false;
+                                         
+                                         newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIcon  ,SharewebTaskType:obj.SharewebTaskType,
+                                         newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIcon  ,SharewebTaskType:sub.SharewebTaskType,
+                                         newFchild:{Title:newsub.Title,Item_x0020_Type:newsub.Item_x0020_Type,Id:newsub.Id,siteIcon:newsub.SiteIcon  ,SharewebTaskType:newsub.SharewebTaskType,
+                                         newActChild:{Title:activity.Title,Item_x0020_Type:activity.Item_x0020_Type,Id:activity.Id,siteIcon:activity.SiteIcon,SharewebTaskType:activity.SharewebTaskType,
+                                          newWrkChild:{Title:wrkstrm.Title,Item_x0020_Type:wrkstrm.Item_x0020_Type,Id:wrkstrm.Id,siteIcon:wrkstrm.SiteIcon,SharewebTaskType:wrkstrm.SharewebTaskType,
+                                            newTskChild:{Title:task.Title,Item_x0020_Type:task.Item_x0020_Type,Id:task.Id,siteIcon:task.SiteIcon,SharewebTaskType:task.SharewebTaskType,}}
+                                        }}}};
+                                         newChildarray.push(newObj?.newChild?.newFchild?.newActChild?.newWrkChild?.newTskChild);
+                                         setRestructureChecked(newChildarray);
+                                         ArrayTest.push(newObj);  
+                                       }
+                                         if(task.SharewebTaskType?.Title !== "Task" && task.SharewebTaskType?.Title !== "Task" && task?.Shareweb_x0020_ID !== items?.Shareweb_x0020_ID && task?.Id !== items?.Id){
+                                           task.isRestructureActive = true;
+                                          }  
+                                          
+                                          if(task.SharewebTaskType?.Title == "Workstream" && items?.subRows.length > 0){
+                                           task.isRestructureActive = false;
+                                          } 
+                                          if(task.siteType != items?.siteType &&  task.SharewebTaskType?.Title == "Workstream"){
+                                            task.isRestructureActive = false;
+                                           }
+                                     })
+                                   }
+                             })
+                           }
+                      })
+                    }
+
+                  });
+                }
+              });
+            }
+          });
+        }
+          });
+        };
     setOldArrayBackup(ArrayTest);
-    setData((data) => [...maidataBackup]);
+    setData([...maidataBackup]);
 
     //  }
     // setAddModalOpen(true)
@@ -2957,442 +3872,880 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     setResturuningOpen(false);
   };
   const OpenModal = (item: any) => {
+
+
     var TestArray: any = [];
     setResturuningOpen(true);
+    setNewItemBackUp(item);
     maidataBackup.forEach((obj) => {
-      if (obj?.Id === item?.Id)
-        TestArray.push(obj);
-      if (obj.subRows != undefined && obj.subRows.length > 0) {
-        obj.subRows.forEach((sub: any) => {
-          sub.isRestructureActive = true;
-          if (sub?.Id === item?.Id && sub.Item_x0020_Type != 'Task') {
-            //TestArray.push(obj)
-            TestArray.push(...[obj]);
-            TestArray.push(...[sub]);
+          let object:any={};
+          if(obj.Shareweb_x0020_ID===item.Shareweb_x0020_ID && obj.Id===item.Id && obj.SharewebTaskType?.Title===item.SharewebTaskType?.Title){
+            object={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIcon,SharewebTaskType:obj.SharewebTaskType == undefined ? null : {Title:obj.SharewebTaskType.Title,Id:obj.SharewebTaskType.Id}};
+          TestArray.push(object);
           }
-          if (sub.subRows != undefined && sub.subRows.length > 0) {
-            sub.subRows.forEach((newsub: any) => {
-              if (newsub?.Id === item?.Id && newsub.Item_x0020_Type != 'Task') {
-                TestArray.push(...[obj]);
-                TestArray.push(...[sub]);
-                TestArray.push(...[newsub]);
-              }
-            });
-          }
-        });
-      }
-    });
-    setChengedItemTitle(checkedList[0].Item_x0020_Type);
-    ChengedTitle =
-      checkedList[0].Item_x0020_Type === "Feature"
-        ? "SubComponent"
-        : checkedList[0].Item_x0020_Type === "SubComponent"
-          ? "Component"
-          : checkedList[0].Item_x0020_Type;
-    let Items: any = [];
-    if (OldArrayBackup.length > 1)
-      Items.push(OldArrayBackup[OldArrayBackup.length - 1]);
-    else Items = checkedList;
-    setRestructureChecked(Items);
-    if (TestArray.length === 0) {
-      OldArrayBackup.unshift(props);
-      TestArray.push(props);
-    }else OldArrayBackup.unshift(props);
-    //     setNewArrayBackup(NewArrayBackup => ([...props]));
-    //    else
-    setNewArrayBackup((NewArrayBackup) => [...TestArray]);
-  };
-  var PortfolioLevelNum: any = 0;
-  const setRestructure = (item: any, title: any) => {
-    let array: any = [];
-    item.Item_x0020_Type = title;
-    if (item != undefined && title === "SubComponent") {
-      item.SiteIcon =
-        IsUpdated != undefined && IsUpdated == "Service"
-          ? "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png"
-          : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png";
-
-      ChengedTitle = "Component";
-    }
-    if (item != undefined && title === "Feature") {
-      item.SiteIcon =
-        IsUpdated != undefined && IsUpdated == "Service"
-          ? "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png"
-          : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/feature_icon.png";
-      ChengedTitle = "SubComponent";
-    }
-    setChengedItemTitle(title);
-    array.push(item);
-    setRestructureChecked((RestructureChecked: any) => [...array]);
-    maidataBackup.forEach((obj) => {
-      if (obj?.Id === item?.Id) {
-        PortfolioLevelNum = obj.subRows.length + 1;
-      }
-      if (obj.subRows != undefined && obj.subRows.length > 0) {
-        obj.subRows.forEach((sub: any) => {
-          if (sub?.Id === item?.Id) {
-            PortfolioLevelNum = sub.subRows.length + 1;
-          }
-          if (sub.subRows != undefined && sub.subRows.length > 0) {
-            sub.subRows.forEach((newsub: any) => {
-              if (newsub?.Id === item?.Id) {
-                PortfolioLevelNum = newsub.subRows.length + 1;
-              }
-            });
-          }
-        });
-      }
-    });
-    // setRestructureChecked(item);
-  };
-  let changetoTaxType: any = "";
-  const UpdateTaskRestructure = async function () {
-    var Ids: any = [];
-    if (NewArrayBackup != undefined && NewArrayBackup.length > 0) {
-      NewArrayBackup.forEach((obj, index) => {
-        if (NewArrayBackup.length - 1 === index) Ids.push(obj?.Id);
-      });
-    }
-
-    let web = new Web(NextProp?.siteUrl);
-    await web.lists
-      .getById(checkedList[0].listId)
-      .items.getById(checkedList[0]?.Id)
-      .update({
-        // EventsId: checkedList[0].Portfolio_x0020_Type === 'Event' ? { "results": Ids } : [],
-        //    '__metadata': { 'type': 'SP.Data.'+checkedList[0].siteType+'ListItem' },
-        ComponentId:
-          checkedList[0].Portfolio_x0020_Type === "Component"
-            ? { results: Ids }
-            : { results: [] },
-        ServicesId:
-          checkedList[0].Portfolio_x0020_Type === "Service"
-            ? { results: Ids }
-            : { results: [] },
-      })
-      .then((res: any) => {
-        maidataBackup.forEach((obj, index) => {
-          obj.isRestructureActive = false;
-          if (obj?.Id === checkedList[0]?.Id) {
-            maidataBackup.splice(index, 1);
-            if (obj.subRows.length === 0) {
-              obj.downArrowIcon = "";
-              obj.RightArrowIcon = "";
-            }
-          }
-          if (obj.subRows != undefined && obj.subRows.length > 0) {
-            obj.subRows.forEach((sub: any, indexsub: any) => {
-              sub.isRestructureActive = false;
-              if (sub?.Id === checkedList[0]?.Id) {
-                obj.subRows.splice(indexsub, 1);
-                if (sub.subRows.length === 0) {
-                  sub.downArrowIcon = "";
-                  sub.RightArrowIcon = "";
+          if(obj.subRows != undefined && obj.subRows.length > 0){
+            obj.subRows.forEach((sub: any) => {
+              if(sub.Shareweb_x0020_ID===item.Shareweb_x0020_ID && sub.Id===item.Id && sub.SharewebTaskType?.Title===item.SharewebTaskType?.Title){
+                object={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIcon,SharewebTaskType: obj.SharewebTaskType == undefined ? null : {Title:obj.SharewebTaskType.Title,Id:obj.SharewebTaskType.Id},
+                  newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIcon,SharewebTaskType: sub.SharewebTaskType == undefined ? null : {Title:sub.SharewebTaskType.Title,Id:sub.SharewebTaskType.Id},}}
+                  TestArray.push(object)
                 }
-              }
-              if (sub.subRows != undefined && sub.subRows.length > 0) {
-                sub.subRows.forEach((newsub: any, lastIndex: any) => {
-                  newsub.isRestructureActive = false;
-                  if (newsub?.Id === checkedList[0]?.Id) {
-                    sub.subRows.splice(lastIndex, 1);
-                    if (newsub.subRows.length === 0) {
-                      newsub.downArrowIcon = "";
-                      newsub.RightArrowIcon = "";
+              if(sub.subRows != undefined && sub.subRows.length > 0){
+                sub.subRows.forEach((newsub: any) => {
+                  if(newsub.Shareweb_x0020_ID===item.Shareweb_x0020_ID && newsub.Id===item.Id && newsub.SharewebTaskType?.Title===item.SharewebTaskType?.Title){
+                    object={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIcon,SharewebTaskType: obj.SharewebTaskType == undefined ? null : {Title:obj.SharewebTaskType.Title,Id:obj.SharewebTaskType.Id},
+                      newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIcon,SharewebTaskType: sub.SharewebTaskType == undefined ? null : {Title:sub.SharewebTaskType.Title,Id:sub.SharewebTaskType.Id},
+                      newFchild:{Title:newsub.Title,Item_x0020_Type:newsub.Item_x0020_Type,Id:newsub.Id,siteIcon:newsub.SiteIcon,SharewebTaskType: newsub.SharewebTaskType == undefined ? null : {Title:newsub.SharewebTaskType.Title,Id:newsub.SharewebTaskType.Id}}}}
+                      TestArray.push(object)
                     }
-                  }
-                  if (newsub.subRows != undefined && newsub.subRows.length > 0) {
-                    newsub.subRows.forEach((newsub1: any, lastIndex: any) => {
-                      newsub1.isRestructureActive = false;
-                      if (newsub1?.Id === checkedList[0]?.Id) {
-                        newsub1.subRows.splice(lastIndex, 1);
-                        if (newsub1.subRows.length === 0) {
-                          newsub1.downArrowIcon = "";
-                          newsub1.RightArrowIcon = "";
+                  if(newsub.subRows != undefined && newsub.subRows.length > 0){
+                    newsub.subRows.forEach((activity: any) => {
+                      if(activity.Shareweb_x0020_ID===item.Shareweb_x0020_ID && activity.Id===item.Id && activity.SharewebTaskType?.Title===item.SharewebTaskType?.Title){
+                        object={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIcon,SharewebTaskType:obj.SharewebTaskType == undefined ? null : {Title:obj.SharewebTaskType.Title,Id:obj.SharewebTaskType.Id},
+                          newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIcon,SharewebTaskType: sub.SharewebTaskType == undefined ? null : {Title:sub.SharewebTaskType.Title,Id:sub.SharewebTaskType.Id},
+                          newFchild:{Title:newsub.Title,Item_x0020_Type:newsub.Item_x0020_Type,Id:newsub.Id,siteIcon:newsub.SiteIcon,SharewebTaskType: newsub.SharewebTaskType == undefined ? null : {Title:newsub.SharewebTaskType.Title,Id:newsub.SharewebTaskType.Id},
+                          newActChild:{Title:activity.Title,Item_x0020_Type:activity.Item_x0020_Type,Id:activity.Id,siteIcon:activity.SiteIcon,SharewebTaskType: activity.SharewebTaskType == undefined ? null : {Title:activity.SharewebTaskType.Title,Id:activity.SharewebTaskType.Id},}}}}
+                          TestArray.push(object)
                         }
+                      if(newsub.subRows != undefined && newsub.subRows.length > 0){
+                        activity.subRows.forEach((wrkstrm: any) => {
+                          if(wrkstrm.Shareweb_x0020_ID===item.Shareweb_x0020_ID && wrkstrm.Id===item.Id  && wrkstrm.SharewebTaskType?.Title===item.SharewebTaskType?.Title){
+                            object={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIcon,SharewebTaskType:obj.SharewebTaskType == undefined ? null : {Title:obj.SharewebTaskType.Title,Id:obj.SharewebTaskType.Id},
+                              newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIcon,SharewebTaskType:sub.SharewebTaskType == undefined ? null : {Title:sub.SharewebTaskType.Title,Id:sub.SharewebTaskType.Id},
+                              newFchild:{Title:newsub.Title,Item_x0020_Type:newsub.Item_x0020_Type,Id:newsub.Id,siteIcon:newsub.SiteIcon,SharewebTaskType: newsub.SharewebTaskType == undefined ? null : {Title:newsub.SharewebTaskType.Title,Id:newsub.SharewebTaskType.Id},
+                              newActChild:{Title:activity.Title,Item_x0020_Type:activity.Item_x0020_Type,Id:activity.Id,siteIcon:activity.SiteIcon,SharewebTaskType: activity.SharewebTaskType == undefined ? null : {Title:activity.SharewebTaskType.Title,Id:activity.SharewebTaskType.Id},
+                              newWrkChild:{Title:wrkstrm.Title,Item_x0020_Type:wrkstrm.Item_x0020_Type,Id:wrkstrm.Id,siteIcon:wrkstrm.SiteIcon,SharewebTaskType: wrkstrm.SharewebTaskType == undefined ? null : {Title:wrkstrm.SharewebTaskType.Title,Id:wrkstrm.SharewebTaskType.Id},}
+                              }}}};
+                            TestArray.push(object)
+                          }
+                        })
                       }
-                    });
+                     
+                    })
                   }
-                });
+                 
+                })
               }
-            });
+              
+            })
           }
-        });
-        let flag = true;
-        maidataBackup.forEach((obj, index) => {
-          if (obj?.Id === Ids[0]) {
-            obj.flag = true;
-            obj.show = true;
-            obj.downArrowIcon =
-              obj.Portfolio_x0020_Type == "Service"
-                ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png"
-                : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png";
-            obj.RightArrowIcon =
-              obj.Portfolio_x0020_Type == "Service"
-                ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png"
-                : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png";
-            flag = false;
-            obj.subRows.push(checkedList[0]);
-            obj.childsLength = obj.subRows.length;
-          }
-          if (obj.subRows != undefined && obj.subRows.length > 0) {
-            obj.subRows.forEach((sub: any, indexsub: any) => {
-              sub.isRestructureActive = false;
-              if (sub?.Id === Ids[0]) {
-                sub.flag = true;
-                sub.show = true;
-                sub.downArrowIcon =
-                  sub.Portfolio_x0020_Type == "Service"
-                    ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png"
-                    : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png";
-                sub.RightArrowIcon =
-                  sub.Portfolio_x0020_Type == "Service"
-                    ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png"
-                    : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png";
-                flag = false;
-                sub.subRows.push(checkedList[0]);
-                sub.childsLength = sub.subRows.length;
-              }
-              if (sub.subRows != undefined && sub.subRows.length > 0) {
-                sub.subRows.forEach((newsub: any, lastIndex: any) => {
-                  if (newsub?.Id === Ids[0]) {
-                    newsub.flag = true;
-                    newsub.show = true;
-                    newsub.downArrowIcon =
-                      newsub.Portfolio_x0020_Type == "Service"
-                        ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png"
-                        : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png";
-                    newsub.RightArrowIcon =
-                      newsub.Portfolio_x0020_Type == "Service"
-                        ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png"
-                        : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png";
-                    flag = false;
-                    newsub.subRows.push(checkedList[0]);
-                    newsub.childsLength = newsub.subRows.length;
-                  }
-                });
-              }
-            });
-          }
-        });
-        if (flag) maidataBackup.push(checkedList[0]);
-        setData((data) => [...maidataBackup]);
-        RestruringCloseCall();
-      });
+        })
+    setNewArrayBackup(TestArray);  
+
   };
-  const UpdateRestructure = async function () {
-    let PortfolioStructureIDs: any = "";
-    var Item: any = "";
-    let flag: any = true;
-    let ChengedItemTitle: any = "";
-    // if (ChengedItemTitle === '' && RestructureChecked != undefined && RestructureChecked.length > 0 && RestructureChecked[0].Item_x0020_Type == 'Component') {
-    //     ChengedItemTitle = RestructureChecked[0].Item_x0020_Type;
-    // }
-    if (
-      RestructureChecked != undefined &&
-      RestructureChecked.length > 0 &&
-      RestructureChecked[0].Item_x0020_Type == "Feature"
-    ) {
-      ChengedItemTitle = RestructureChecked[0].Item_x0020_Type;
-    } else if (
-      RestructureChecked != undefined &&
-      RestructureChecked.length > 0 &&
-      RestructureChecked[0].Item_x0020_Type == "SubComponent"
-    ) {
-      ChengedItemTitle = RestructureChecked[0].Item_x0020_Type;
-    }
-    // else if (ChengedItemTitl !== '' && RestructureChecked != undefined && RestructureChecked.length > 0 && RestructureChecked[0].Item_x0020_Type == 'Feature') {
-    //     ChengedItemTitle = 'SubComponent';
-    //     flag = true;
-    // }
-    // else if (ChengedItemTitle !== '' && RestructureChecked != undefined && RestructureChecked.length > 0 && RestructureChecked[0].Item_x0020_Type == 'SubComponent') {
-    //     ChengedItemTitle = 'Component';
-    //     flag = true;
-    // }
-    let count: any = 0;
-    let newItem: any = "";
-    if (NewArrayBackup.length === 1) newItem = NewArrayBackup[0];
-    else {
-      // if (flag) {
-      NewArrayBackup.forEach((newe: any) => {
-        if (ChengedTitle != "" && newe.Item_x0020_Type === ChengedTitle)
-          newItem = newe;
-        else if (newe.Item_x0020_Type === ChengedItemTitle) newItem = newe;
-      });
-      // }
-      // if (!flag) {
-      //     NewArrayBackup.forEach((newe1: any) => {
-      //         if (newe1.Item_x0020_Type !== ChengedItemTitle)
-      //             newItem = newe1;
-      //     })
-      // }
-    }
-    maidataBackup.forEach((obj) => {
-      if (obj?.Id === newItem?.Id) {
-        PortfolioLevelNum = obj.subRows.length + 1;
-        flag = false;
-      }
-      if (obj.subRows != undefined && obj.subRows.length > 0) {
-        obj.subRows.forEach((sub: any) => {
-          if (sub?.Id === newItem?.Id) {
-            obj.subRows.forEach((leng: any) => {
-              if (leng.Item_x0020_Type === newItem.Item_x0020_Type) count++;
-            });
-            PortfolioLevelNum = count + 1;
-            flag = false;
-          }
-          if (sub.subRows != undefined && sub.subRows.length > 0) {
-            sub.subRows.forEach((newsub: any) => {
-              if (newsub?.Id === newItem?.Id) {
-                sub.subRows.forEach((subleng: any) => {
-                  if (subleng.Item_x0020_Type === newItem.Item_x0020_Type)
-                    count++;
-                });
-                PortfolioLevelNum = count + 1;
-                flag = false;
+
+
+
+
+var PortfolioLevelNum: any = 0;
+  const setRestructure = (item: any, title: any) => {
+   
+ 
+      let array: any = [];
+      let data:any=[]
+      item?.map((items:any)=>{
+        if (items != undefined && title === "SubComponent") {
+          data.push({Id:items.Id,Item_x0020_Type:"SubComponent",SharewebTaskType:items.SharewebTaskType,Title:items.Title,siteIcon:"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png"})
+        }
+        if (items != undefined && title === "Feature") {
+          data.push({Id:items.Id,Item_x0020_Type:"Feature",SharewebTaskType:items.SharewebTaskType,Title:items.Title,siteIcon:"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png"})
+        }
+        if (items != undefined && title === "Workstream") {
+          data.push({Id:items.Id,Item_x0020_Type:"Task",SharewebTaskType:{Title:"Workstream", Id:items.SharewebTaskType.Id},Title:items.Title,siteIcon:items.siteIcon})
+        }
+        if (items != undefined && title === "Task") {
+          data.push({Id:items.Id,Item_x0020_Type:"Task",SharewebTaskType:{Title:"Task", Id:items.SharewebTaskType.Id},Title:items.Title,siteIcon:items.siteIcon})
+        }
+      })
+      array.push(...data);
+      setRestructureChecked(array)
+  };
+
+
+
+  const UpdateTaskRestructure = async function () {
+        
+    AllItems = [];
+      var Ids: any = [];
+          Ids=newItemBackUp.Id;
+          let Title:any = newItemBackUp.Title;
+          let PortfolioStructureID = newItemBackUp.PortfolioStructureID;
+         let  ServicesId : any=newItemBackUp?.Services[0]?.Id;
+         let SharewebTaskType : any = RestructureChecked[0].SharewebTaskType?.Title;
+         let Item_x0020_Type = RestructureChecked[0].Item_x0020_Type;
+         let Shareweb_x0020_ID:any ;
+         let ShowTooltipSharewebId :any;
+         let siteIcon : any = RestructureChecked[0].Item_x0020_Type;
+        
+         
+  
+      if(newItemBackUp?.SharewebTaskType?.Title !== "Activities" && newItemBackUp?.SharewebTaskType?.Title !== "Workstream"){
+        let numbers :any ;
+  
+        if(newItemBackUp.subRows.length > 0){
+          newItemBackUp.subRows.map((items:any)=>{
+            if(items?.SharewebTaskType?.Title == "Activities"){
+              numbers = items?.SharewebTaskLevel1No + 1;
+            }else{
+              numbers = 1;
+            }
+          })
+        }
+        
+        if(newItemBackUp.subRows.length == 0){
+         numbers = 1;
+               }
+            
+  
+            Shareweb_x0020_ID = `SA${numbers}`
+            ShowTooltipSharewebId =newItemBackUp?.PortfolioStructureID + "-" + Shareweb_x0020_ID;
+  
+        let web = new Web(NextProp.siteUrl);
+        await web.lists
+          .getById(checkedList[0].listId)
+          .items.getById(checkedList[0].Id)
+          .update({
+            ServicesId:
+              checkedList[0].Services?.length > 0
+                ? { results: [Ids] }
+                : { results: [] },
+              ComponentId:
+              checkedList[0].Component?.length > 0
+                ? { results: [Ids] }
+                : { results: [] },
+                ParentTaskId:null,
+                SharewebTaskTypeId:taskTypeId[0].Id,
+                SharewebTaskLevel1No:numbers,
+                Shareweb_x0020_ID:Shareweb_x0020_ID,
+         })
+          .then((res: any) => {
+            
+            
+            let checkUpdate : number = 1;
+            let array : any = [...maidataBackup];
+            let backupCheckedList :any =[];
+            let latestCheckedList:any =[] ; 
+            checkedList.map((items:any)=>{
+              latestCheckedList.push({...items})
+              backupCheckedList.push({...items})
+            })
+            
+            latestCheckedList?.map((items:any)=>{
+            checkedList[0].Services?.length > 0 ?   items.Services = {Id:Ids, Title : Title} : items.Component={Id:Ids, Title : Title},
+                items.Parent = null,
+                items.SharewebTaskLevel1No = numbers,
+                items.Shareweb_x0020_ID = Shareweb_x0020_ID,
+                items.SharewebTaskType = {Id:taskTypeId[0].Id,Level:taskTypeId[0].Level,Title:taskTypeId[0].Title},
+                items.SiteIconTitle = siteIcon,
+                items.PortfolioStructureID = PortfolioStructureID,
+                items.Item_x0020_Type = Item_x0020_Type
+              
+            })
+  
+            array?.map((obj:any,index:any)=>{
+              obj.isRestructureActive=false;
+              if(obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3 ){
+                       obj.subRows.push(...latestCheckedList);
+                       checkUpdate = checkUpdate + 1;
               }
-            });
-          }
+              if(obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3){
+                            array.splice(index,1);
+                            checkUpdate = checkUpdate + 1;
+              }
+  
+              if(obj.subRows != undefined && obj.subRows.length > 0){
+                obj.subRows.forEach((sub: any, indexsub: any) => {
+                  sub.isRestructureActive=false;
+                  if(sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title  && checkUpdate != 3){
+                    sub.subRows.push(...latestCheckedList) ;
+                    checkUpdate = checkUpdate + 1;
+           }
+           if(sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3){
+                         array[index]?.subRows.splice(indexsub,1);
+                         checkUpdate = checkUpdate + 1;
+           }
+  
+           if (sub.subRows != undefined && sub.subRows.length > 0) {
+            sub.subRows.forEach((newsub: any, lastIndex: any) => {
+              newsub.isRestructureActive=false;
+              if(newsub.Id === newItemBackUp?.Id && newsub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && newsub.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title  && checkUpdate != 3){
+                newsub.subRows.push(...latestCheckedList);
+                checkUpdate = checkUpdate + 1;
+       }
+       if(newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && newsub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3){
+                     array[index]?.subRows[indexsub]?.subRows.splice(lastIndex,1);
+                     checkUpdate = checkUpdate + 1;
+       }
+  
+       if (newsub.subRows != undefined && newsub.subRows.length > 0) {
+        newsub.subRows.forEach((activity: any, activityIndex: any) => {
+          activity.isRestructureActive=false;
+          if(activity.Id === newItemBackUp?.Id && activity.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && activity.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title  && checkUpdate != 3){
+            activity.subRows.push(...latestCheckedList);
+            checkUpdate = checkUpdate + 1;
+   }
+   if(activity.Id === backupCheckedList[0]?.Id && activity.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && activity.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3){
+                 array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows.splice(activityIndex,1);
+                 checkUpdate = checkUpdate + 1;
+   }
+  
+   if (activity.subRows != undefined && activity.subRows.length > 0) {
+    activity.subRows.forEach((workstream: any, workstreamIndex: any) => {
+      workstream.isRestructureActive=false;
+      if(workstream.Id === newItemBackUp?.Id && workstream.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && workstream.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title  && checkUpdate != 3){
+        workstream.subRows.push(...latestCheckedList);
+        checkUpdate = checkUpdate + 1;
+  }
+  if(workstream.Id === backupCheckedList[0]?.Id && workstream.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && workstream.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3){
+             array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows[activityIndex]?.subRows.splice(workstreamIndex,1);
+             checkUpdate = checkUpdate + 1;
+  }
+  
+  if (activity.subRows != undefined && activity.subRows.length > 0) {
+    activity.subRows.forEach((task: any, taskIndex: any) => {
+      task.isRestructureActive=false;
+      if(task.Id === newItemBackUp?.Id && task.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && task.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title  && checkUpdate != 3){
+        task.subRows.push(...latestCheckedList);
+        checkUpdate = checkUpdate + 1;
+  }
+  if(task.Id === backupCheckedList[0]?.Id && task.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && task.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3){
+             array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows[activityIndex]?.subRows[workstreamIndex]?.subRows.splice(taskIndex,1);
+             checkUpdate = checkUpdate + 1;
+  }
+    })}
+  
+  
+    })
+  }
+  
+  
+  })
+       }
+            })
+           }
+                })
+              }
+  
+            })
+  
+            setmaidataBackup(array);
+            setComponentRestruct(false);
+            setTopCompoIcon(false)   
+            setRestructureChecked([]);
+            setNewArrayBackup([]);
+            setOldArrayBackup([]);
+            setRowSelection({});
+            RestruringCloseCall();
+            setCheckedList([]);
+            AllItems = AllItems?.concat(array);
+            setData((AllItems) => [...AllItems]);
+            refreshData();
+            rerender();
+
+
         });
-      }
-    });
-    if (NewArrayBackup != undefined && NewArrayBackup.length > 0) {
-      NewArrayBackup.forEach((newobj: any) => {
-        if (ChengedTitle != "" && newobj.Item_x0020_Type === ChengedTitle)
-          Item = newobj;
-        else if (
-          ChengedTitle === "" &&
-          ChengedItemTitle === newobj.Item_x0020_Type
-        )
-          Item = newobj;
-      });
-    }
-    if (Item === "") Item = NewArrayBackup[0];
-    if (
-      Item !== undefined &&
-      Item.PortfolioStructureID != undefined &&
-      ChengedItemTitle != undefined
-    ) {
-      PortfolioStructureIDs =
-        Item.PortfolioStructureID +
-        "-" +
-        ChengedItemTitle.slice(0, 1) +
-        PortfolioLevelNum;
-      // if (Item != undefined)
-      //     PortfolioStructureIDs = Item.PortfolioStructureID + '-' + ChengedItemTitle.slice(0, 1) + PortfolioLevelNum;
-    }
-    if (flag === true) {
-      let findItem = maidataBackup.filter((obj: any) => obj.Item_x0020_Type === checkedList[0]?.Item_x0020_Type)
-      var result = findItem[findItem.length - 1];
-      PortfolioLevelNum = result.PortfolioLevel + 1
-      PortfolioStructureIDs = Item.PortfolioStructureID + "-" + ChengedItemTitle.slice(0, 1) + PortfolioLevelNum;
-
-    }
-    var UploadImage: any = [];
-
-    var item: any = {};
-    if (ChengedItemTitl === undefined) {
-      let web = new Web(NextProp?.siteUrl);
-      await web.lists
-        .getById("ec34b38f-0669-480a-910c-f84e92e58adf")
-        .items.getById(checkedList[0]?.Id)
-        .update({
-          ParentId: Item?.Id,
-          PortfolioLevel: PortfolioLevelNum,
-          PortfolioStructureID: PortfolioStructureIDs,
-        })
-        .then((res: any) => {
-          if (ChengedItemTitl === undefined) {
-            checkedList[0].Shareweb_x0020_ID = PortfolioStructureIDs;
-            checkedList[0].PortfolioStructureID = PortfolioStructureIDs;
-            checkedList[0].PortfolioLevel = PortfolioLevelNum;
-            if (Item.subRows != undefined) {
-              Item.subRows.push(checkedList[0]);
-            } else {
-              Item.subRows = [];
-              Item.subRows.push(checkedList[0]);
-            }
-          }
-          console.log(res);
-          setData((data) => [...maidataBackup]);
-          RestruringCloseCall();
-          //setModalIsOpenToFalse();
-        });
-    }
-    setComponentRestruct(false);
-    if (ChengedItemTitl != undefined && ChengedItemTitl != "") {
-      let web = new Web(NextProp?.siteUrl);
-      await web.lists
-        .getById("ec34b38f-0669-480a-910c-f84e92e58adf")
-        .items.getById(checkedList[0]?.Id)
-        .update({
-          ParentId: Item?.Id,
-          PortfolioLevel: PortfolioLevelNum,
-          PortfolioStructureID: PortfolioStructureIDs,
-          Item_x0020_Type: ChengedItemTitl,
-        })
-        .then((res: any) => {
-          console.log(res);
-          maidataBackup.forEach((obj, index) => {
-            obj.isRestructureActive = false;
-            if (obj?.Id === checkedList[0]?.Id) {
-              //  maidataBackup[index].subRows.splice(index, 1)
-              checkedList[0].downArrowIcon = obj.downArrowIcon;
-              checkedList[0].RightArrowIcon = obj.RightArrowIcon;
-            }
-            if (obj.subRows != undefined && obj.subRows.length > 0) {
-              obj.subRows.forEach((sub: any, indexsub: any) => {
-                sub.isRestructureActive = false;
-                if (sub?.Id === checkedList[0]?.Id) {
-                  obj.subRows.splice(indexsub, 1);
-                  checkedList[0].downArrowIcon = obj.downArrowIcon;
-                  checkedList[0].RightArrowIcon = obj.RightArrowIcon;
-                }
-                if (sub.subRows != undefined && sub.subRows.length > 0) {
-                  sub.subRows.forEach((newsub: any, lastIndex: any) => {
-                    newsub.isRestructureActive = false;
-                    if (newsub?.Id === checkedList[0]?.Id) {
-                      sub.subRows.splice(lastIndex, 1);
-
-                      checkedList[0].downArrowIcon = obj.downArrowIcon;
-                      checkedList[0].RightArrowIcon = obj.RightArrowIcon;
+      }else{
+  
+        let numbers :any ;
+        let numbers1 :any ;
+      let  SharewebTaskTypeId : any;
+  
+        if(newItemBackUp.subRows.length > 0){
+          newItemBackUp.subRows.map((items:any)=>{
+  
+            if(newItemBackUp?.SharewebTaskType?.Title == "Activities"){
+              if(RestructureChecked[0].SharewebTaskType?.Title === 'Activities'){
+                    if(items?.SharewebTaskType?.Title == "Workstream"){
+                      numbers1 =items?.SharewebTaskLevel2No + 1;
+                      
+                    }else{
+                      numbers1 = 1;
                     }
-                  });
+                
+              }else{
+                if(RestructureChecked[0].SharewebTaskType?.Title ===items?.SharewebTaskType?.Title ){
+                  numbers1 =items?.SharewebTaskLevel2No + 1;
+                }else{
+                  numbers1 = 1;
                 }
-              });
-            }
-          });
-          checkedList[0].PortfolioStructureID = PortfolioStructureIDs;
-          checkedList[0].Shareweb_x0020_ID = PortfolioStructureIDs;
-          checkedList[0].PortfolioLevel = PortfolioLevelNum;
-          checkedList[0].IsNew = true;
-          checkedList[0].Item_x0020_Type = ChengedItemTitl;
-          if (Item.subRows != undefined) {
-            checkedList[0].downArrowIcon =
-              Item.Portfolio_x0020_Type == "Service"
-                ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png"
-                : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png";
-            checkedList[0].RightArrowIcon =
-              Item.Portfolio_x0020_Type == "Service"
-                ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png"
-                : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png";
+              }
+            }else if(newItemBackUp?.SharewebTaskType?.Title == "Workstream"){
+              if(items?.SharewebTaskType?.Title == "Task"){
+                numbers1 =items?.SharewebTaskLevel2No + 1;
+              }
+              
+            }else{
+              numbers1 = 1;
+            }})
+        }else{
+          numbers1 = 1;
+        }
+            
+  
+        if(SharewebTaskType === "Activities"){
+          SharewebTaskTypeId = taskTypeId[2];
+        }else{
+          SharewebTaskTypeId = SharewebTaskType === "Task" ?taskTypeId[1] : taskTypeId[2];
+        }
+         
+             numbers = newItemBackUp.SharewebTaskLevel1No;
+            Shareweb_x0020_ID = newItemBackUp.Shareweb_x0020_ID + "-" + `W${numbers1}`
+            // ShowTooltipSharewebId =newItemBackUp?.PortfolioStructureID + Shareweb_x0020_ID;
+  
+  
+        let web = new Web(NextProp.siteUrl);
+        await web.lists
+          .getById(checkedList[0].listId)
+          .items.getById(checkedList[0].Id)
+          .update({
+            ServicesId:
+              checkedList[0].Services?.length > 0
+                ? { results: [Ids] }
+                : { results: [] },
+              ComponentId:
+              checkedList[0].Component?.length > 0
+                ? { results: [Ids] }
+                : { results: [] },
+                Shareweb_x0020_ID:Shareweb_x0020_ID,
+                SharewebTaskLevel1No:numbers,
+                SharewebTaskLevel2No:numbers1,
+                SharewebTaskTypeId:SharewebTaskTypeId.Id,
+                ParentTaskId : Ids
+          })
+          .then((res: any) => {
+            let checkUpdate : number = 1;
+            let array : any = [...maidataBackup];
+            let backupCheckedList :any =[];
+            let latestCheckedList:any =[] ; 
+            checkedList.map((items:any)=>{
+              latestCheckedList.push({...items})
+              backupCheckedList.push({...items})
+            })
+            
+            latestCheckedList?.map((items:any)=>{
+            checkedList[0].Services?.length > 0 ?   items.Services = {Id:Ids, Title : Title} : items.Component={Id:Ids, Title : Title},
+                items.Parent = {Id:Ids,Shareweb_x0020_ID:Shareweb_x0020_ID,Title:Title},
+                items.SharewebTaskLevel1No = numbers,
+                items.Shareweb_x0020_ID = Shareweb_x0020_ID,
+                items.SharewebTaskLevel2No = numbers1,
+                items.SharewebTaskType = {Id:SharewebTaskTypeId.Id,Level:SharewebTaskTypeId.Level,Title:SharewebTaskTypeId.Title},
+                items.Item_x0020_Type = Item_x0020_Type          
+         })
+  
+            array?.map((obj:any,index:any)=>{
+              obj.isRestructureActive=false;
+              if(obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3 ){
+                       obj.subRows.push(...latestCheckedList);
+                       checkUpdate = checkUpdate + 1;
+              }
+              if(obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3){
+                            array.splice(index,1);
+                            checkUpdate = checkUpdate + 1;
+              }
+  
+              if(obj.subRows != undefined && obj.subRows.length > 0){
+                obj.subRows.forEach((sub: any, indexsub: any) => {
+                  sub.isRestructureActive=false;
+                  if(sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title  && checkUpdate != 3){
+                    sub.subRows.push(...latestCheckedList) ;
+                    checkUpdate = checkUpdate + 1;
+           }
+           if(sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3){
+                         array[index]?.subRows.splice(indexsub,1);
+                         checkUpdate = checkUpdate + 1;
+           }
+  
+           if (sub.subRows != undefined && sub.subRows.length > 0) {
+            sub.subRows.forEach((newsub: any, lastIndex: any) => {
+              newsub.isRestructureActive=false;
+              if(newsub.Id === newItemBackUp?.Id && newsub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && newsub.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title  && checkUpdate != 3){
+                newsub.subRows.push(...latestCheckedList);
+                checkUpdate = checkUpdate + 1;
+       }
+       if(newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && newsub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3){
+                     array[index]?.subRows[indexsub]?.subRows.splice(lastIndex,1);
+                     checkUpdate = checkUpdate + 1;
+       }
+  
+       if (newsub.subRows != undefined && newsub.subRows.length > 0) {
+        newsub.subRows.forEach((activity: any, activityIndex: any) => {
+          activity.isRestructureActive=false;
+          if(activity.Id === newItemBackUp?.Id && activity.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && activity.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title  && checkUpdate != 3){
+            activity.subRows.push(...latestCheckedList);
+            checkUpdate = checkUpdate + 1;
+   }
+   if(activity.Id === backupCheckedList[0]?.Id && activity.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && activity.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3){
+                 array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows.splice(activityIndex,1);
+                 checkUpdate = checkUpdate + 1;
+   }
+  
+   if (activity.subRows != undefined && activity.subRows.length > 0) {
+    activity.subRows.forEach((workstream: any, workstreamIndex: any) => {
+      workstream.isRestructureActive=false;
+      if(workstream.Id === newItemBackUp?.Id && workstream.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && workstream.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title  && checkUpdate != 3){
+        workstream.subRows.push(...latestCheckedList);
+        checkUpdate = checkUpdate + 1;
+  }
+  if(workstream.Id === backupCheckedList[0]?.Id && workstream.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && workstream.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3){
+             array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows[activityIndex]?.subRows.splice(workstreamIndex,1);
+             checkUpdate = checkUpdate + 1;
+  }
+  
+  if (activity.subRows != undefined && activity.subRows.length > 0) {
+    activity.subRows.forEach((task: any, taskIndex: any) => {
+      task.isRestructureActive=false;
+      if(task.Id === newItemBackUp?.Id && task.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && task.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title  && checkUpdate != 3){
+        task.subRows.push(...latestCheckedList);
+        checkUpdate = checkUpdate + 1;
+  }
+  if(task.Id === backupCheckedList[0]?.Id && task.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && task.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3){
+             array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows[activityIndex]?.subRows[workstreamIndex].subRows?.splice(taskIndex,1);
+             checkUpdate = checkUpdate + 1;
+  }
+    })}
+  
+  
+    })
+  }
+  
+  
+  })
+       }
+            })
+           }
+                })
+              }
+  
+            })
+  
+            setmaidataBackup(array);
+            setComponentRestruct(false);
+            setTopCompoIcon(false)   
+            setRestructureChecked([]);
+            setNewArrayBackup([]);
+            setOldArrayBackup([]);
+            setRowSelection({});
+            RestruringCloseCall();
+            setCheckedList([]);
+            AllItems = AllItems?.concat(array);
+            setData((AllItems) => [...AllItems]);
+            refreshData();
+            rerender();
 
-            Item.subRows.push(checkedList[0]);
-          } else {
-            Item.subRows = [];
-            Item.show = true;
-            Item.downArrowIcon = checkedList[0].downArrowIcon;
-            Item.RightArrowIcon = checkedList[0].RightArrowIcon;
-            // Item.show = Item.show == undefined ? false : Item.show
-            // Item.downArrowIcon = item.props.SelectedItem.downArrowIcon;
-            // Item.RightArrowIcon = item.props.SelectedItem.RightArrowIcon;
-            Item.subRows.push(checkedList[0]);
-          }
-          setCheckedList((checkedList) => [...[]]);
-          setData((data) => [...maidataBackup]);
-          RestruringCloseCall();
-        });
-    }
-    // setResturuningOpen(true)
+
+  
+          });
+      }  
+  };
+
+
+
+  const UpdateRestructure = async function () {
+
+
+      let PortfolioStructureIDs: any = "";
+      var ItemId: any = "";
+      let ItemTitle:any='';
+      let flag: any = false;
+      let count: any = 0;
+      let newItem: any = "";
+      let ChengedItemTitle: any = "";
+      let siteIcon : any = '';
+      let PortfolioLevelNum: any = 0;
+      AllItems = [];
+      
+  
+            ChengedItemTitle ="Feature";
+            siteIcon = "F";
+  
+  
+      maidataBackup?.forEach((obj) => {
+        if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj?.subRows?.length == 0) {
+                     PortfolioLevelNum = 1;
+                     ItemId = obj.Id;
+                     ItemTitle = obj.Title;
+                     PortfolioStructureIDs = obj.PortfolioStructureID + "-" + siteIcon + PortfolioLevelNum;
+        }
+  
+  
+        if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj?.subRows?.length > 0) {
+          obj.subRows.forEach((sub: any) => {
+                    if (sub.Item_x0020_Type === ChengedItemTitle) {
+                                   PortfolioLevelNum = sub.PortfolioLevel+1;
+                         }else{
+                          PortfolioLevelNum = 1;
+                         }
+          });
+          ItemId = obj.Id;
+          ItemTitle = obj.Title;
+          PortfolioStructureIDs = obj.PortfolioStructureID + "-" + siteIcon + PortfolioLevelNum;
+        }else{
+          obj.subRows.forEach((sub: any) => {
+            if (sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub?.subRows?.length == 0) {
+              PortfolioLevelNum = 1;
+              ItemId = sub.Id;
+              ItemTitle = sub.Title;
+              PortfolioStructureIDs = sub.PortfolioStructureID + "-" + siteIcon + PortfolioLevelNum;
+                        }
+  
+            if (sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub?.subRows?.length > 0) {
+                  sub.subRows.forEach((newsub: any) => {
+                        if (newsub.Item_x0020_Type === ChengedItemTitle) {
+                      PortfolioLevelNum = newsub.PortfolioLevel+1;
+                                 }else{
+                                  PortfolioLevelNum = 1;
+                                 }
+                  });
+                  ItemId = sub.Id;
+                  ItemTitle = sub.Title;
+                  PortfolioStructureIDs = sub.PortfolioStructureID + "-" + siteIcon + PortfolioLevelNum;
+                }
+           });
+        }
+      });
+  
+  
+  
+     
+      if (ChengedItemTitle != undefined && ChengedItemTitle != "") {
+        let web = new Web(NextProp.siteUrl);
+        var postData: any = {
+          ParentId: ItemId,
+          PortfolioLevel: PortfolioLevelNum,
+          PortfolioStructureID: PortfolioStructureIDs,
+          Item_x0020_Type: ChengedItemTitle,
+        };
+          await web.lists
+          .getById(NextProp.MasterTaskListID)
+          .items.getById(checkedList[0].Id)
+          .update(postData)
+          .then(async (res: any) => {
+  
+  
+            let checkUpdate : number = 1;
+            let array : any = [...maidataBackup];
+            let backupCheckedList :any =[];
+            let latestCheckedList:any =[] ; 
+            checkedList.map((items:any)=>{
+              latestCheckedList.push({...items})
+              backupCheckedList.push({...items})
+            })
+            
+            latestCheckedList?.map((items:any)=>{
+                items.Parent = {Id:postData.ParentId,Title:ItemTitle}
+                items.PortfolioLevel = postData.PortfolioLevel,
+                items.PortfolioStructureID = postData.PortfolioStructureID,
+                items.Item_x0020_Type = postData.Item_x0020_Type
+                items.Shareweb_x0020_ID = postData.PortfolioStructureID,
+                items.SiteIconTitle = siteIcon
+            })
+  
+            array?.map((obj:any,index:any)=>{
+              obj.isRestructureActive=false;
+              if(obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && checkUpdate != 3 ){
+                      obj.subRows.push(...latestCheckedList);
+                  
+                       checkUpdate = checkUpdate + 1;
+              }
+              if(obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && checkUpdate != 3){
+                            array.splice(index,1);
+                            checkUpdate = checkUpdate + 1;
+              }
+  
+              if(obj.subRows != undefined && obj.subRows.length > 0){
+                obj.subRows.forEach((sub: any, indexsub: any) => {
+                  sub.isRestructureActive=false;
+                  if(sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && checkUpdate != 3){
+                    sub.subRows.push(...latestCheckedList);
+                
+                    checkUpdate = checkUpdate + 1;
+           }
+           if(sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && checkUpdate != 3){
+                         array[index]?.subRows.splice(indexsub,1);
+                      
+                         checkUpdate = checkUpdate + 1;
+           }
+  
+           if (sub.subRows != undefined && sub.subRows.length > 0) {
+            sub.subRows.forEach((newsub: any, lastIndex: any) => {
+              newsub.isRestructureActive=false;
+              if(newsub.Id === newItemBackUp?.Id && newsub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && checkUpdate != 3){
+                newsub.subRows.push(...latestCheckedList);
+       
+                checkUpdate = checkUpdate + 1;
+       }
+       if(newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && checkUpdate != 3){
+                     array[index]?.subRows[indexsub]?.subRows.splice(lastIndex,1);
+                  
+                     checkUpdate = checkUpdate + 1;
+       }
+            })
+           }
+                })
+              }
+  
+            })
+  
+            setmaidataBackup(array);
+            setComponentRestruct(false);
+            setTopCompoIcon(false)   
+            setRestructureChecked([]);
+            setNewArrayBackup([]);
+            setOldArrayBackup([]);
+            setRowSelection({});
+            RestruringCloseCall();
+            setCheckedList([]);
+            // AllDataRender = AllDataRender?.concat(array);
+            // Renderarray = [];
+            // Renderarray = Renderarray.concat(AllDataRender);
+            // refreshDataTaskLable();
+            AllItems = AllItems?.concat(array);
+            setData((AllItems) => [...AllItems]);
+            refreshData();
+            rerender();
+  
+  
+  
+          });
+      }
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // let PortfolioStructureIDs: any = "";
+    // var Item: any = "";
+    // let flag: any = true;
+    // let ChengedItemTitle: any = "";
+    // // if (ChengedItemTitle === '' && RestructureChecked != undefined && RestructureChecked.length > 0 && RestructureChecked[0].Item_x0020_Type == 'Component') {
+    // //     ChengedItemTitle = RestructureChecked[0].Item_x0020_Type;
+    // // }
+
+    // if (
+    //   RestructureChecked != undefined &&
+    //   RestructureChecked.length > 0 &&
+    //   RestructureChecked[0].Item_x0020_Type == "Feature"
+    // ) {
+    //   ChengedItemTitle = RestructureChecked[0].Item_x0020_Type;
+    // } else if (
+    //   RestructureChecked != undefined &&
+    //   RestructureChecked.length > 0 &&
+    //   RestructureChecked[0].Item_x0020_Type == "SubComponent"
+    // ) {
+    //   ChengedItemTitle = RestructureChecked[0].Item_x0020_Type;
+    // }
+    // // else if (ChengedItemTitl !== '' && RestructureChecked != undefined && RestructureChecked.length > 0 && RestructureChecked[0].Item_x0020_Type == 'Feature') {
+    // //     ChengedItemTitle = 'SubComponent';
+    // //     flag = true;
+    // // }
+    // // else if (ChengedItemTitle !== '' && RestructureChecked != undefined && RestructureChecked.length > 0 && RestructureChecked[0].Item_x0020_Type == 'SubComponent') {
+    // //     ChengedItemTitle = 'Component';
+    // //     flag = true;
+    // // }
+    // let count: any = 0;
+    // let newItem: any = "";
+    // if (NewArrayBackup.length === 1) newItem = NewArrayBackup[0];
+    // else {
+    //   // if (flag) {
+    //   NewArrayBackup.forEach((newe: any) => {
+    //     if (ChengedTitle != "" && newe.Item_x0020_Type === ChengedTitle)
+    //       newItem = newe;
+    //     else if (newe.Item_x0020_Type === ChengedItemTitle) newItem = newe;
+    //   });
+    //   // }
+    //   // if (!flag) {
+    //   //     NewArrayBackup.forEach((newe1: any) => {
+    //   //         if (newe1.Item_x0020_Type !== ChengedItemTitle)
+    //   //             newItem = newe1;
+    //   //     })
+    //   // }
+    // }
+    // maidataBackup.forEach((obj) => {
+    //   if (obj?.Id === newItem?.Id) {
+    //     PortfolioLevelNum = obj.subRows.length + 1;
+    //     flag = false;
+    //   }
+    //   if (obj.subRows != undefined && obj.subRows.length > 0) {
+    //     obj.subRows.forEach((sub: any) => {
+    //       if (sub?.Id === newItem?.Id) {
+    //         obj.subRows.forEach((leng: any) => {
+    //           if (leng.Item_x0020_Type === newItem.Item_x0020_Type) count++;
+    //         });
+    //         PortfolioLevelNum = count + 1;
+    //         flag = false;
+    //       }
+    //       if (sub.subRows != undefined && sub.subRows.length > 0) {
+    //         sub.subRows.forEach((newsub: any) => {
+    //           if (newsub?.Id === newItem?.Id) {
+    //             sub.subRows.forEach((subleng: any) => {
+    //               if (subleng.Item_x0020_Type === newItem.Item_x0020_Type)
+    //                 count++;
+    //             });
+    //             PortfolioLevelNum = count + 1;
+    //             flag = false;
+    //           }
+    //         });
+    //       }
+    //     });
+    //   }
+    // });
+    // if (NewArrayBackup != undefined && NewArrayBackup.length > 0) {
+    //   NewArrayBackup.forEach((newobj: any) => {
+    //     if (ChengedTitle != "" && newobj.Item_x0020_Type === ChengedTitle)
+    //       Item = newobj;
+    //     else if (
+    //       ChengedTitle === "" &&
+    //       ChengedItemTitle === newobj.Item_x0020_Type
+    //     )
+    //       Item = newobj;
+    //   });
+    // }
+    // if (Item === "") Item = NewArrayBackup[0];
+    // if (
+    //   Item !== undefined &&
+    //   Item.PortfolioStructureID != undefined &&
+    //   ChengedItemTitle != undefined
+    // ) {
+    //   PortfolioStructureIDs =
+    //     Item.PortfolioStructureID +
+    //     "-" +
+    //     ChengedItemTitle.slice(0, 1) +
+    //     PortfolioLevelNum;
+    //   // if (Item != undefined)
+    //   //     PortfolioStructureIDs = Item.PortfolioStructureID + '-' + ChengedItemTitle.slice(0, 1) + PortfolioLevelNum;
+    // }
+    // if (flag === true) {
+    //   let findItem = maidataBackup.filter((obj: any) => obj.Item_x0020_Type === checkedList[0]?.Item_x0020_Type)
+    //   var result = findItem[findItem.length - 1];
+    //   PortfolioLevelNum = result.PortfolioLevel + 1
+    //   PortfolioStructureIDs = Item.PortfolioStructureID + "-" + ChengedItemTitle.slice(0, 1) + PortfolioLevelNum;
+
+    // }
+    // var UploadImage: any = [];
+
+    // var item: any = {};
+    // if (ChengedItemTitl === undefined) {
+    //   let web = new Web(NextProp?.siteUrl);
+    //   await web.lists
+    //     .getById("ec34b38f-0669-480a-910c-f84e92e58adf")
+    //     .items.getById(checkedList[0]?.Id)
+    //     .update({
+    //       ParentId: Item?.Id,
+    //       PortfolioLevel: PortfolioLevelNum,
+    //       PortfolioStructureID: PortfolioStructureIDs,
+    //     })
+    //     .then((res: any) => {
+    //       if (ChengedItemTitl === undefined) {
+    //         checkedList[0].Shareweb_x0020_ID = PortfolioStructureIDs;
+    //         checkedList[0].PortfolioStructureID = PortfolioStructureIDs;
+    //         checkedList[0].PortfolioLevel = PortfolioLevelNum;
+    //         if (Item.subRows != undefined) {
+    //           Item.subRows.push(checkedList[0]);
+    //         } else {
+    //           Item.subRows = [];
+    //           Item.subRows.push(checkedList[0]);
+    //         }
+    //       }
+    //       console.log(res);
+    //       setData((data) => [...maidataBackup]);
+    //       RestruringCloseCall();
+    //       //setModalIsOpenToFalse();
+    //     });
+    // }
+    // setComponentRestruct(false);
+    // if (ChengedItemTitl != undefined && ChengedItemTitl != "") {
+    //   let web = new Web(NextProp?.siteUrl);
+    //   await web.lists
+    //     .getById("ec34b38f-0669-480a-910c-f84e92e58adf")
+    //     .items.getById(checkedList[0]?.Id)
+    //     .update({
+    //       ParentId: Item?.Id,
+    //       PortfolioLevel: PortfolioLevelNum,
+    //       PortfolioStructureID: PortfolioStructureIDs,
+    //       Item_x0020_Type: ChengedItemTitl,
+    //     })
+    //     .then((res: any) => {
+    //       console.log(res);
+    //       maidataBackup.forEach((obj, index) => {
+    //         obj.isRestructureActive = false;
+    //         if (obj?.Id === checkedList[0]?.Id) {
+    //           //  maidataBackup[index].subRows.splice(index, 1)
+    //           checkedList[0].downArrowIcon = obj.downArrowIcon;
+    //           checkedList[0].RightArrowIcon = obj.RightArrowIcon;
+    //         }
+    //         if (obj.subRows != undefined && obj.subRows.length > 0) {
+    //           obj.subRows.forEach((sub: any, indexsub: any) => {
+    //             sub.isRestructureActive = false;
+    //             if (sub?.Id === checkedList[0]?.Id) {
+    //               obj.subRows.splice(indexsub, 1);
+    //               checkedList[0].downArrowIcon = obj.downArrowIcon;
+    //               checkedList[0].RightArrowIcon = obj.RightArrowIcon;
+    //             }
+    //             if (sub.subRows != undefined && sub.subRows.length > 0) {
+    //               sub.subRows.forEach((newsub: any, lastIndex: any) => {
+    //                 newsub.isRestructureActive = false;
+    //                 if (newsub?.Id === checkedList[0]?.Id) {
+    //                   sub.subRows.splice(lastIndex, 1);
+
+    //                   checkedList[0].downArrowIcon = obj.downArrowIcon;
+    //                   checkedList[0].RightArrowIcon = obj.RightArrowIcon;
+    //                 }
+    //               });
+    //             }
+    //           });
+    //         }
+    //       });
+    //       checkedList[0].PortfolioStructureID = PortfolioStructureIDs;
+    //       checkedList[0].Shareweb_x0020_ID = PortfolioStructureIDs;
+    //       checkedList[0].PortfolioLevel = PortfolioLevelNum;
+    //       checkedList[0].IsNew = true;
+    //       checkedList[0].Item_x0020_Type = ChengedItemTitl;
+    //       if (Item.subRows != undefined) {
+    //         checkedList[0].downArrowIcon =
+    //           Item.Portfolio_x0020_Type == "Service"
+    //             ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png"
+    //             : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png";
+    //         checkedList[0].RightArrowIcon =
+    //           Item.Portfolio_x0020_Type == "Service"
+    //             ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png"
+    //             : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png";
+
+    //         Item.subRows.push(checkedList[0]);
+    //       } else {
+    //         Item.subRows = [];
+    //         Item.show = true;
+    //         Item.downArrowIcon = checkedList[0].downArrowIcon;
+    //         Item.RightArrowIcon = checkedList[0].RightArrowIcon;
+    //         // Item.show = Item.show == undefined ? false : Item.show
+    //         // Item.downArrowIcon = item.props.SelectedItem.downArrowIcon;
+    //         // Item.RightArrowIcon = item.props.SelectedItem.RightArrowIcon;
+    //         Item.subRows.push(checkedList[0]);
+    //       }
+    //       setCheckedList((checkedList) => [...[]]);
+    //       setData((data) => [...maidataBackup]);
+    //       RestruringCloseCall();
+    //     });
+    // }
+    // // setResturuningOpen(true)
   };
 
   var SomeMetaData1 = [
@@ -3685,7 +5038,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
             >
               {table.getIsAllRowsExpanded() ? (
                 <FaChevronDown />) : (<FaChevronRight />)}
-            </button>{" "}
+            </button>
           </>
         ),
         cell: ({ row, getValue }) => (
@@ -3703,7 +5056,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                 </span>
               ) : (
                 ""
-              )}{" "}
+              )}
               {getValue()}
             </>
           </div>
@@ -3718,7 +5071,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                 indeterminate: table.getIsSomeRowsSelected(),
                 onChange: table.getToggleAllRowsSelectedHandler(),
               }}
-            />{" "}
+            />
           </>
         ),
         cell: ({ row, getValue }) => (
@@ -3734,7 +5087,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                 />
               ) : (
                 ""
-              )}{" "}
+              )}
               {row?.original?.SiteIcon != undefined ? (
                 <a className="hreflink" title="Show All Child" data-toggle="modal" >
                   <img className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 icon-sites-img ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 icon-sites-img ml20 me-1" : row?.original?.SharewebTaskType?.Title == "Activities" ? "ml-36 icon-sites-img ml20 me-1" :
@@ -3896,7 +5249,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                     className="workmember"
                     src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"
                   />
-                )}{" "}
+                )}
 
               </>
             )
@@ -3943,13 +5296,35 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         header: "",
         size: 1,
       },
-      {
+      { header: ({ table }: any) => (
+        <>
+          {
+            componentRestruct ?
+              <span onClick={()=>setTopCompoIcon(true)}>
+                <img
+                  className="icon-sites-img"
+                  src={IsUpdated == "Service" ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png'}
+
+                />
+              </span>
+              : ''
+          }
+
+        </>
+      ),
         cell: ({ row, getValue }) => (
           <>
 
-            {row?.original?.siteType === "Master Tasks" && row?.original?.isRestructureActive && (
-              <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit">
-                <img className="icon-sites-img" src={row?.original?.Restructuring} onClick={(e) => OpenModal(row?.original)} />
+            {row?.original?.isRestructureActive && (
+              <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" onClick={(e) => OpenModal(row?.original)} title="Edit">
+                {
+                   <img
+                   className="icon-sites-img"
+                   src={IsUpdated == "Service" ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png'}
+
+                 />
+                }
+
               </a>
             )}
 
@@ -3957,29 +5332,6 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
           </>
         ),
         id: "row?.original?.Id",
-        canSort: false,
-        placeholder: "",
-        header: "",
-        size: 1,
-      },
-      {
-        header: ({ table }: any) => (
-          <>
-            {
-              componentRestruct ?
-                <span onClick={() => OpenModal(props)}>
-                  <img
-                    className="icon-sites-img"
-                    src={IsUpdated == "Service" ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png'}
-
-                  />
-                </span>
-                : ''
-            }
-
-          </>
-        ),
-        id: "row?.original.Id",
         canSort: false,
         placeholder: "",
         size: 1,
@@ -4322,18 +5674,17 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 <FaPaintBrush />
 
 </a>
-            {/* <button
+            <button
               type="button"
-              className="btn {{(compareComponents.length==0 && SelectedTasks.length==0)?'btn-grey':'btn-primary'}}"
-              disabled={true}
+               onClick={()=>setcomparetool(true)}
             >
               Compare
-            </button> */}
+            </button>
             <a className="expand">
               <ExpndTable prop={expndpopup} prop1={tablecontiner} />
             </a>
             <a>
-              <Tooltip ComponentId="5756" />
+              <Tooltip ComponentId="1748" />
             </a>
           </span>
 
@@ -4462,6 +5813,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       {IsComponent && (
         <EditInstituton item={SharewebComponent} SelectD={NextProp} Calls={Call}></EditInstituton>
       )}
+    
       {IsTimeEntry && (
         <TimeEntryPopup
           props={SharewebTimeComponent}
@@ -4735,7 +6087,10 @@ Bug
           </button>
         </div>
       </Panel>
-      <Panel
+
+      {
+        ResturuningOpen &&
+        <Panel
         headerText={` Restructuring Tool `}
         type={PanelType.medium}
         isOpen={ResturuningOpen}
@@ -4748,11 +6103,11 @@ Bug
               <div>
                 {NewArrayBackup != undefined && NewArrayBackup.length > 0 ? (
                   <span>
-                    All below selected items will become child of{" "}
+                    All below selected items will become child of
                     <img
                       className="icon-sites-img me-1 "
-                      src={NewArrayBackup[0].SiteIcon}
-                    ></img>{" "}
+                      src={NewArrayBackup[0].siteIcon}
+                    ></img>
                     <a
                       data-interception="off"
                       target="_blank"
@@ -4763,7 +6118,7 @@ Bug
                       }
                     >
                       <span>{NewArrayBackup[0].Title}</span>
-                    </a>{" "}
+                    </a>
                     please click Submit to continue.
                   </span>
                 ) : (
@@ -4771,123 +6126,130 @@ Bug
                 )}
               </div>
               <div>
-                <span> Old: </span>
-                {OldArrayBackup.map(function (obj: any, index) {
+              <span> Old: </span>
+                {OldArrayBackup?.map(function (obj: any, index) {
                   return (
                     <span>
-                      {" "}
-                      <img
-                        className="icon-sites-img me-1 ml20"
-                        src={obj.SiteIcon}
-                      ></img>
+                      <span><img width={"25px"} height={"25px"} src={obj.siteIcon}/></span>
                       <a
                         data-interception="off"
                         target="_blank"
                         className="hreflink serviceColor_Active"
                         href={
-                          NextProp.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" +
+                          NextProp.siteUrl +
+                          "/SitePages/Portfolio-Profile.aspx?taskId=" +
                           obj?.Id
                         }
                       >
-                        <span>{obj.Title} </span>
+                        <span>{obj?.Title} </span>
                       </a>
-                      {OldArrayBackup.length - 1 < index ? ">" : ""}{" "}
+                      {/* {OldArrayBackup.length - 1 < index ? ">" : ""} */}
+                      <span>{obj?.newChild ? <span> {'>'} <span><img width={"25px"} height={"25px"} src={obj?.newChild?.siteIcon}/></span> {obj?.newChild?.Title}</span>   : ''}</span>
+                      <span>{obj?.newChild?.newFchild ? <span> {'>'}<span><img width={"25px"} height={"25px"} src={obj?.newChild?.newFchild?.siteIcon}/></span>{obj?.newChild?.newFchild?.Title}</span> : ''}</span>
+                      <span>{obj?.newChild?.newFchild?.newActChild ? <span> {'>'} <span className=""><img width={"25px"} height={"25px"} src={obj?.newChild?.newFchild?.newActChild?.siteIcon} /></span> {obj?.newChild?.newFchild?.newActChild?.Title}</span> : ''}</span>
+                      <span>{obj?.newChild?.newFchild?.newActChild?.newWrkChild ? <span> {'>'} <span className=""><img width={"25px"} height={"25px"} src={obj?.newChild?.newFchild?.newActChild?.newWrkChild?.siteIcon} /> </span> {obj?.newChild?.newFchild?.newActChild?.newWrkChild?.Title}</span> : ''}</span>
+                      <span>{obj?.newChild?.newFchild?.newActChild?.newWrkChild?.newTskChild ? <span> {'>'} <span className=""> <img width={"25px"} height={"25px"} src={obj?.newChild?.newFchild?.newActChild?.newWrkChild?.newTskChild?.siteIcon} /> </span> {obj?.newChild?.newFchild?.newActChild?.newWrkChild?.newTskChild?.Title}</span> : ''}</span>
+                    
                     </span>
                   );
                 })}
               </div>
               <div>
-                <span> New: </span>{" "}
-                {NewArrayBackup.map(function (newobj: any, indexnew) {
+                <span> New: </span>
+                {NewArrayBackup?.map(function (newobj: any, indexnew) {
                   return (
                     <>
                       <span>
-                        {" "}
-                        <img
-                          className="icon-sites-img me-1 ml20"
-                          src={newobj.SiteIcon}
-                        ></img>
+                        <span><img width={"25px"} height={"25px"} src={newobj?.siteIcon}/></span>
                         <a
                           data-interception="off"
                           target="_blank"
                           className="hreflink serviceColor_Active"
                           href={
-                            NextProp.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" +
-                            newobj?.Id
+                            NextProp.siteUrl +
+                            "/SitePages/Portfolio-Profile.aspx?taskId=" +
+                            newobj.Id
                           }
                         >
                           <span>{newobj.Title} </span>
                         </a>
-                        {NewArrayBackup.length - 1 < indexnew ? ">" : ""}
+                        {/* {NewArrayBackup.length - 1 < indexnew ? ">" : ""} */}
+                        <span>{newobj?.newChild ? <span> {'>'} <span><img width={"25px"} height={"25px"} src={newobj?.newChild?.siteIcon} /></span>{newobj?.newChild?.Title}</span>   : ''}</span>
+                      <span>{newobj?.newChild?.newFchild ? <span> {'>'}<span><img width={"25px"} height={"25px"} src={newobj?.newChild?.newFchild?.siteIcon} /></span> {newobj?.newChild?.newFchild?.Title}</span> : ''}</span>
+                      <span>{newobj?.newChild?.newFchild?.newActChild ? <span> {'>'} <span className=""><img width={"25px"} height={"25px"} src={newobj?.newChild?.newFchild?.newActChild?.siteIcon} /> </span> {newobj?.newChild?.newFchild?.newActChild?.Title}</span> : ''}</span>
+                      <span>{newobj?.newChild?.newFchild?.newActChild?.newWrkChild ? <span> {'>'} <span className=""><img width={"25px"} height={"25px"} src={newobj?.newChild?.newFchild?.newActChild?.newWrkChild?.siteIcon} /> </span> {newobj?.newChild?.newFchild?.newActChild?.newWrkChild?.Title}</span> : ''}</span>
+                      <span>{newobj?.newChild?.newFchild?.newActChild?.newWrkChild?.newTskChild ? <span> {'>'} <span className=""><img width={"25px"} height={"25px"} src={newobj?.newChild?.newFchild?.newActChild?.newWrkChild?.newTskChild?.siteIcon} /> </span> {newobj?.newChild?.newFchild?.newActChild?.newWrkChild?.newTskChild?.Title}</span> : ''}</span>
                       </span>
                     </>
                   );
                 })}
-                <span>
-                  {" "}
-                  {RestructureChecked != undefined && RestructureChecked.length > 0 && RestructureChecked[0].SiteIcon != undefined &&    <img
-                    className="icon-sites-img me-1 ml20"
-                    src={RestructureChecked[0].SiteIcon}
-                  ></img>}
+
+                {
+                  RestructureChecked?.map((items:any)=>
+                  <span> {">"}
+                    {
+                      items?.Item_x0020_Type === "SubComponent" ? <span>
+                               <img width={"25px"} height={"25px"} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Feature_icon.png" />
+                      </span> : <span><img width={"25px"} height={"25px"} src={items?.siteIcon}/></span>
+                    }
                   <a
                     data-interception="off"
                     target="_blank"
                     className="hreflink serviceColor_Active"
                     href={
-                      NextProp.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" +
-                      RestructureChecked[0]?.Id
+                      NextProp.siteUrl +
+                      "/SitePages/Portfolio-Profile.aspx?taskId=" +
+                      items?.Id
                     }
                   >
-                    <span>{RestructureChecked[0].Title} </span>
+                    <span className="ms-1 me-1" >{items?.Title} </span>
                   </a>
                 </span>
+                  )
+                }
+                
               </div>
-              {console.log(
-                "restructure functio test in div==================================="
-              )}
-              {checkedList != undefined &&
-                checkedList.length > 0 &&
-                checkedList[0].Item_x0020_Type != "Task" ? (
-                <div>
-                  <span>
-                    {" "}
-                    {"Select Component Type :"}
-                    <input
-                      type="radio"
-                      name="fav_language"
-                      value="SubComponent"
-                      checked={
-                        RestructureChecked[0].Item_x0020_Type == "SubComponent"
-                          ? true
-                          : false
-                      }
-                      onChange={(e) =>
-                        setRestructure(RestructureChecked[0], "SubComponent")
-                      }
-                    />
-                    <label className="ms-1"> {"SubComponent"} </label>
-                  </span>
-                  <span>
-                    {" "}
-                    <input
-                      type="radio"
-                      name="fav_language"
-                      value="SubComponent"
-                      checked={
-                        RestructureChecked[0].Item_x0020_Type === "Feature"
-                          ? true
-                          : false
-                      }
-                      onChange={(e) =>
-                        setRestructure(RestructureChecked[0], "Feature")
-                      }
-                    />{" "}
-                    <label className="ms-1"> {"Feature"} </label>{" "}
-                  </span>
-                </div>
-              ) : (
-                ""
-              )}
+{
+            (RestructureChecked[0]?.Item_x0020_Type === "Task" && (checkedList[0]?.subRows?.length == 0 || checkedList[0]?.subRows == undefined) && newItemBackUp?.SharewebTaskType?.Title == "Activities")  
+             ?
+            <span>
+            <span>
+                          
+                          {"Select Component Type :"}
+                          <input
+                            type="radio"
+                            name="fav_language"
+                            value="Workstream"
+                            checked={
+                              RestructureChecked[0]?.SharewebTaskType?.Title == "Workstream"
+                                ? true
+                                : (RestructureChecked[0]?.SharewebTaskType?.Title == "Activities" ? true : false) 
+                            }
+                            onChange={(e) =>
+                              setRestructure(RestructureChecked, "Workstream")
+                            }
+                          />
+                          <label className="ms-1"> {"Workstream"} </label>
+                        </span>
+                        <span>
+                      
+                          <input
+                            type="radio"
+                            name="fav_language"
+                            value="Task"
+                            checked={
+                              RestructureChecked[0]?.SharewebTaskType?.Title === "Task"
+                                ? true
+                                : false
+                            }
+                            onChange={(e) =>
+                              setRestructure(RestructureChecked, "Task")
+                            }
+                          />
+                          <label className="ms-1"> {"Task"} </label>
+                        </span>
+                              </span> : " "
+          }
             </div>
           ) : (
             ""
@@ -4922,7 +6284,129 @@ Bug
           </button>
         </footer>
       </Panel>
-      
+      }
+     
+
+      {
+        topCompoIcon &&
+        <Panel
+        isOpen={topCompoIcon}
+        isBlocking={false}
+        onDismiss={()=>setTopCompoIcon(false)}
+      >
+        <div>
+         <span> Old: </span>
+                {OldArrayBackup?.map(function (obj: any, index) {
+                  return (
+                    <span>
+                      <span><img width={"25px"} height={"25px"} src={obj.siteIcon}/></span>
+                      <a
+                        data-interception="off"
+                        target="_blank"
+                        className="hreflink serviceColor_Active"
+                        href={
+                          NextProp.siteUrl +
+                          "/SitePages/Portfolio-Profile.aspx?taskId=" +
+                          obj?.Id
+                        }
+                      >
+                        <span>{obj?.Title} </span>
+                      </a>
+                      {/* {OldArrayBackup.length - 1 < index ? ">" : ""} */}
+                      <span>{obj?.newChild ? <span> {'>'} <span><img width={"25px"} height={"25px"} src={obj?.newChild?.siteIcon}/></span> {obj?.newChild?.Title}</span>   : ''}</span>
+                      <span>{obj?.newChild?.newFchild ? <span> {'>'}<span><img width={"25px"} height={"25px"} src={obj?.newChild?.newFchild?.siteIcon}/></span>{obj?.newChild?.newFchild?.Title}</span> : ''}</span>
+                      <span>{obj?.newChild?.newFchild?.newActChild ? <span> {'>'} <span className=""><img width={"25px"} height={"25px"} src={obj?.newChild?.newFchild?.newActChild?.siteIcon} /></span> {obj?.newChild?.newFchild?.newActChild?.Title}</span> : ''}</span>
+                      <span>{obj?.newChild?.newFchild?.newActChild?.newWrkChild ? <span> {'>'} <span className=""><img width={"25px"} height={"25px"} src={obj?.newChild?.newFchild?.newActChild?.newWrkChild?.siteIcon} /> </span> {obj?.newChild?.newFchild?.newActChild?.newWrkChild?.Title}</span> : ''}</span>
+                      <span>{obj?.newChild?.newFchild?.newActChild?.newWrkChild?.newTskChild ? <span> {'>'} <span className=""> <img width={"25px"} height={"25px"} src={obj?.newChild?.newFchild?.newActChild?.newWrkChild?.newTskChild?.siteIcon} /> </span> {obj?.newChild?.newFchild?.newActChild?.newWrkChild?.newTskChild?.Title}</span> : ''}</span>
+                    </span>
+                    
+                  );
+                })}
+                <div>
+                <span> New: </span>
+                {
+                  RestructureChecked?.map((items:any)=>
+                  <span>
+                    {
+                            <span><img width={"25px"} height={"25px"} src={items?.siteIcon}/></span>
+                    }
+                  <a
+                    data-interception="off"
+                    target="_blank"
+                    className="hreflink serviceColor_Active"
+                    href={
+                      NextProp.siteUrl +
+                      "/SitePages/Portfolio-Profile.aspx?taskId=" +
+                      items?.Id
+                    }
+                  >
+                    <span className="ms-1 me-1" >{items?.Title} </span>
+                  </a>
+                </span>
+                  )
+                }
+                </div>
+
+                {
+            (checkedList[0]?.Item_x0020_Type !== "Task" && checkedList != undefined && checkedList.length > 0)  
+             ?
+            <span>
+            <span>
+                         {"Select Component Type :"}
+                          <input
+                            type="radio"
+                            name="fav_language"
+                            value="SubComponent"
+                            checked={
+                              RestructureChecked[0]?.Item_x0020_Type == "SubComponent"
+                                ? true
+                                :  false
+                            }
+                            onChange={(e) =>
+                              setRestructure(RestructureChecked, "SubComponent")
+                            }
+                          />
+                          <label className="ms-1"> {"SubComponent"} </label>
+                        </span>
+                        <span>
+                      
+                          <input
+                            type="radio"
+                            name="fav_language"
+                            value="Feature"
+                            checked={
+                              RestructureChecked[0]?.Item_x0020_Type === "Feature"
+                                ? true
+                                : false
+                            }
+                            onChange={(e) =>
+                              setRestructure(RestructureChecked, "Feature")
+                            }
+                          />
+                          <label className="ms-1"> {"Feature"} </label>
+                        </span>
+                              </span> : " "
+          }
+           <footer className="mt-2 text-end">
+          <button
+              type="button"
+              className="btn btn-primary "
+              onClick={(e) => makeTopComp()}
+            >
+              Save
+            </button>
+          <button
+            type="button"
+            className="btn btn-default btn-default ms-1"
+            onClick={topRestructureClose}
+          >
+            Cancel
+          </button>
+        </footer>
+        </div>
+      </Panel>
+      }
+     
     </div>
   
   );

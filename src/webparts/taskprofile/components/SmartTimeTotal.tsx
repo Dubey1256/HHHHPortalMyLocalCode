@@ -210,9 +210,9 @@ let AllAvailableTitle: any = [];
                                         <>
                                             <tr className='for-c0l'>
                                                 <td style={{ width: "20%" }}>
-                                                    <img style={{ width: "30px" }} src={items.AuthorImage}></img>
+                                                    <img className='workmember '  src={items.AuthorImage}></img>
                                                 </td>
-                                                <td style={{ width: "80%" }} colSpan={2}><span className='px-2'>Total- Time</span>{items.hoverTime}</td>
+                                                <td style={{ width: "80%" }} colSpan={2}><span className='px-2'>Total Time</span>{items.hoverTime}</td>
                                             </tr>
 
                                             {items?.additionaltime2?.length > 0 && items?.additionaltime2?.map((details: any) => {
