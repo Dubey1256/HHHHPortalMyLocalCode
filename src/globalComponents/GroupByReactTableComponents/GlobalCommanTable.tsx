@@ -165,19 +165,19 @@ const GlobalCommanTable = (items: any) => {
     const [globalSearchType, setGlobalSearchType] = React.useState("ALL");
     const [selectedFilterPanelIsOpen, setSelectedFilterPanelIsOpen] = React.useState(false);
     const [tablecontiner, settablecontiner]: any = React.useState("hundred");
-    const [columnVisibility, setColumnVisibility] = React.useState({ Description: false, Comments: false });
+    const [columnVisibility, setColumnVisibility] = React.useState({ descriptionsSearch: false, commentsSearch: false });
     const [selectedFilterPannelData, setSelectedFilterPannelData] = React.useState({
         Title: { Title: 'Title', Selected: true },
-        Comments: { Comments: 'Comments', Selected: true },
-        Description: { Description: 'Description', Selected: true },
+        commentsSearch: { commentsSearch: 'commentsSearch', Selected: true },
+        descriptionsSearch: { descriptionsSearch: 'descriptionsSearch', Selected: true },
     });
 
     const customGlobalSearch = (row: any, id: any, query: any) => {
         query = query.replace(/\s+/g, " ").trim().toLowerCase();
         if (String(query).trim() === "") return true;
 
-        if ((selectedFilterPannelData?.Title?.Title === id && selectedFilterPannelData?.Title?.Selected === true) || (selectedFilterPannelData?.Comments?.Comments === id && selectedFilterPannelData?.Comments?.Selected === true) ||
-            (selectedFilterPannelData?.Description?.Description === id && selectedFilterPannelData?.Description?.Selected === true)) {
+        if ((selectedFilterPannelData?.Title?.Title === id && selectedFilterPannelData?.Title?.Selected === true) || (selectedFilterPannelData?.commentsSearch?.commentsSearch === id && selectedFilterPannelData?.commentsSearch?.Selected === true) ||
+            (selectedFilterPannelData?.descriptionsSearch?.descriptionsSearch === id && selectedFilterPannelData?.descriptionsSearch?.Selected === true)) {
 
             const cellValue: any = String(row.getValue(id)).toLowerCase();
 
@@ -530,7 +530,7 @@ const GlobalCommanTable = (items: any) => {
                                                         ? { asc: <FaSortDown style={{ color: `${portfolioColor}` }} />, desc: <FaSortUp style={{ color: `${portfolioColor}` }} /> }[
                                                         header.column.getIsSorted() as string
                                                         ] ?? null
-                                                        : <FaSort style={{ color: `${portfolioColor}` }} />}
+                                                        : <FaSort style={{ color: "gray" }} />}
                                                 </div> : ""}
                                             </div>
                                         )}

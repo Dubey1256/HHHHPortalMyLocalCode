@@ -374,7 +374,8 @@ function TeamPortlioTable(SelectedProp: any) {
                             result.AllTeamName =
                                 result.AllTeamName === undefined ? "" : result.AllTeamName;
                             result.chekbox = false;
-                            result.Description = '';
+                            result.descriptionsSearch = '';
+                            result.commentsSearch='';
                             result.DueDate = Moment(result.DueDate).format("DD/MM/YYYY");
 
                             if (result.DueDate == "Invalid date" || "") {
@@ -383,7 +384,10 @@ function TeamPortlioTable(SelectedProp: any) {
                             result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
                             result.chekbox = false;
                             if (result?.Body != undefined) {
-                                result.Description = result?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
+                                result.descriptionsSearch = result?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
+                            }
+                            if (result?.Comments != null) {
+                                result.commentsSearch = result?.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
                             }
                             if (
                                 result.AssignedTo != undefined &&
@@ -514,7 +518,8 @@ function TeamPortlioTable(SelectedProp: any) {
         componentDetails.forEach((result: any) => {
             result["siteType"] = "Master Tasks";
             result.AllTeamName = "";
-            result.Description = '';
+            result.descriptionsSearch = '';
+            result.commentsSearch='';
             result.TeamLeaderUser = [];
             if (result.Item_x0020_Type === 'Component') {
                 result.boldRow = 'boldClable'
@@ -537,7 +542,10 @@ function TeamPortlioTable(SelectedProp: any) {
             }
             result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
             if (result?.Short_x0020_Description_x0020_On != undefined) {
-                result.Description = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
+                result.descriptionsSearch = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
+            }
+            if (result?.Comments != null) {
+                result.commentsSearch = result?.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
             }
             result.Id = result.Id != undefined ? result.Id : result.ID;
             if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
@@ -1181,7 +1189,7 @@ function TeamPortlioTable(SelectedProp: any) {
                             <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
                         {/* {<span className='ms-1'>{'(' + row?.original?.ChlidLenghtVal + ')'}</span> : ''} */}
 
-                        {row?.original?.Description != null && row?.original?.Description != '' && (
+                        {row?.original?.descriptionsSearch != null && row?.original?.descriptionsSearch != '' && (
                             // <span className="popover__wrapper ms-1" data-bs-toggle="tooltip" data-bs-placement="auto" >
                             //     <span
                             //         title="Edit"
@@ -1194,7 +1202,7 @@ function TeamPortlioTable(SelectedProp: any) {
                             //         }}
                             //     ></span>
                             // </span>
-                            <InfoIconsToolTip Discription={row?.original?.Description} row={row?.original} />
+                            <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />
                         )}
                     </>
                 ),
@@ -1254,20 +1262,20 @@ function TeamPortlioTable(SelectedProp: any) {
                 id: "DueDate",
             },
             {
-                accessorKey: "Description",
-                placeholder: "Description",
+                accessorKey: "descriptionsSearch",
+                placeholder: "descriptionsSearch",
                 header: "",
                 resetColumnFilters: false,
                 size: 100,
-                id: "Description",
+                id: "descriptionsSearch",
             },
             {
-                accessorKey: "Comments",
-                placeholder: "Comments",
+                accessorKey: "commentsSearch",
+                placeholder: "commentsSearch",
                 header: "",
                 resetColumnFilters: false,
                 size: 100,
-                id: "Comments",
+                id: "commentsSearch",
             },
             {
                 cell: ({ row, getValue }) => (
@@ -1446,13 +1454,7 @@ function TeamPortlioTable(SelectedProp: any) {
                                     <div className="">
                                         <div className="wrapper">
                                             <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1}
-                                                color={
-                                                    IsUpdated == "Events Portfolio"
-                                                        ? "#f98b36"
-                                                        : IsUpdated == "Service Portfolio"
-                                                            ? "#228b22"
-                                                            : "#000069"
-                                                }
+                                                color={`${portfolioColor ? portfolioColor : "#000069"}`}
                                                 speed={2}
                                                 trail={60}
                                                 shadow={false}
