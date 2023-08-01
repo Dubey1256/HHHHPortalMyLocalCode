@@ -281,27 +281,32 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
         
         accessorKey: "Group",
         header: "",
+        id: "Group",
         placeholder: "Group"
       },
       {
         accessorKey: "Category",
         header: "",
+        id:"Category",
         placeholder: "Category",
       },
       {
         accessorKey: "Role",
         header: "",
+        id:"Role",
         placeholder: "Role",
       },
       {
         accessorKey: "Company",
         header: "",
+        id:"Company",
         placeholder: "Company",
       },
       {
         accessorKey: "Approver",
         header: "",
-        placeholder: "Approver",
+        id:'Approver',
+        placeholder: "Approver"
       },
       {
         id: "TaskId",
@@ -369,7 +374,7 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
       </div>
 
 
-      { <GlobalCommanTable columns={columns} data={data} callBackData={callBackData} excelDatas={data} showHeader={true}  />}
+      { <GlobalCommanTable columns={columns} data={data} callBackData={callBackData}  showHeader={true}  />}
 
       {/* <div className="Alltable mt-10">
         <div className="col-sm-12 p-0 smart">
