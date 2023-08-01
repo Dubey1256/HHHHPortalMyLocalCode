@@ -1782,7 +1782,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
               let myNumber = String(returnresult);
               let Mynextnumber = parseFloat(myNumber);
               let stringnumb=Mynextnumber.toFixed(1);
-              item.smartTime = String(stringnumb)
+              item.smartTime = stringnumb
               // console.log("Final Total Time:", returnresult);
             })
             .catch((error) => {
@@ -1826,7 +1826,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                   let myNumber = String(returnresult);
                   let Mynextnumber = parseFloat(myNumber);     
                    let stringnumb=Mynextnumber.toFixed(1);
-                  item.smartTime = String(stringnumb);
+                  item.smartTime = stringnumb;
                   // console.log("Final Total Time:", returnresult);
                 })
                 .catch((error) => {
@@ -1918,7 +1918,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
             let myNumber = String(returnresult);
             let Mynextnumber = parseFloat(myNumber);  
                 let stringnumb=Mynextnumber.toFixed(1);
-            item.smartTime = String(stringnumb)
+            item.smartTime = stringnumb
             // console.log("Final Total Time:", returnresult);
           })
           .catch((error) => {
@@ -1953,7 +1953,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                   let myNumber = String(returnresult);
                   let Mynextnumber = parseFloat(myNumber);   
                      let stringnumb=Mynextnumber.toFixed(1);
-                  item.smartTime = String(stringnumb)
+                  item.smartTime = stringnumb
                   // console.log("Final Total Time:", returnresult);
                 })
                 .catch((error) => {
@@ -2000,7 +2000,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         let myNumber = String(returnresult);
         let Mynextnumber = parseFloat(myNumber);
         let stringnumb=Mynextnumber.toFixed(1);
-        item.smartTime = String(stringnumb)
+        item.smartTime = stringnumb
         // console.log("Final Total Time:", returnresult);
       })
       .catch((error) => {
@@ -2016,7 +2016,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         let myNumber = String(returnresult);
         let Mynextnumber = parseFloat(myNumber);
         let stringnumb=Mynextnumber.toFixed(1);
-        item.smartTime = String(stringnumb);
+        item.smartTime = stringnumb;
         // console.log("Final Total Time:", returnresult);
       })
       .catch((error) => {
@@ -2032,7 +2032,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         let myNumber = String(returnresult);
         let Mynextnumber = parseFloat(myNumber);
         let stringnumb=Mynextnumber.toFixed(1);
-        item.smartTime = String(stringnumb)
+        item.smartTime = stringnumb
         // console.log("Final Total Time:", returnresult);
       })
       .catch((error) => {
@@ -4962,7 +4962,7 @@ var PortfolioLevelNum: any = 0;
         accessorFn: (row) => String(row?.smartTime),
         cell: ({ row }) => (
           <>
-            {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && (
+            {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && row?.original?.smartTime != undefined && (
 
               <>
                 <span>{String(row?.original?.smartTime)}</span>
@@ -5381,7 +5381,7 @@ var PortfolioLevelNum: any = 0;
               <ExpndTable prop={expndpopup} prop1={tablecontiner} />
             </a>
             <a>
-              <Tooltip ComponentId="1748" />
+              <Tooltip ComponentId="5756" />
             </a>
           </span>
 
