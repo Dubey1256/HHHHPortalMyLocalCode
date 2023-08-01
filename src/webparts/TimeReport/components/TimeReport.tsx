@@ -615,6 +615,7 @@ const TimeReport = (props:any) => {
 
         if (Dates == 'Today') {
             setcheckedWS(false)
+            setcheckedCustom(false)
             selectdate = undefined
             setcheckedTask(true)
             var Yesterday: any = new window.Date();
@@ -955,7 +956,7 @@ const TimeReport = (props:any) => {
             + '<td width="10%" style="border: 1px solid #aeabab;padding: 4px">' + item?.Components + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.SubComponents + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Features + '</td>'
-            + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<a href=' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId='+ item.TaskId +'>' + '<span style="font-size:11px; font-weight:600">' + item.Task + '</span>' + '</a >' + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<a href=' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId='+ item.TaskId +'&Site=' + item.siteType +'>' + '<span style="font-size:11px; font-weight:600">' + item.Task + '</span>' + '</a >' + '</td>'
             + '<td align="left" style="border: 1px solid #aeabab;padding: 4px">' + item?.Comments + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Priority_x0020_Rank + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Effort + '</td>'
@@ -1000,7 +1001,7 @@ const TimeReport = (props:any) => {
     body2 +
     '</tbody>' +
     '</table>'
-var pageurl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TimeReportSpfx.aspx";
+var pageurl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TimeReport.aspx";
 var ReportDate = new Date()
  var ReportDatetime =Moment(ReportDate).format('DD/MM/YYYY')
     var body:any =

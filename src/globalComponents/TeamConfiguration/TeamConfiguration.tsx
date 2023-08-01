@@ -522,7 +522,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                         onDrop={(e) => this.onDropTeam1(e, this.state.AssignedToUsers, 'Assigned User', this.state.taskUsers, 'Assigned User')}
                                         onDragOver={(e) => e.preventDefault()}>
                                         <div className="working-box p-1" >
-                                            <div className='d-flex flex-wrap selectmember'>
+                                            <div className='d-flex flex-wrap'data-placeholder="Working Members" style={{ minHeight: "30px", height: 'auto' }}>
                                                 {this.state.AssignedToUsers && this.state.AssignedToUsers.map((image: any, index: number) => {
                                                     return <img
                                                         className="ProirityAssignedUserPhoto"
