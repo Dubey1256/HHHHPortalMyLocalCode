@@ -217,7 +217,7 @@ if(fieldName =="PercentComplete"){
     <div>
       <span>{fieldValue}</span>
       <a className="pancil-icons" onClick={handleEdit}>
-        <FaPencilAlt/> 
+      <span className="svg__iconbox svg__icon--editBox"></span>
       </a>
     </div>
   );
@@ -259,7 +259,8 @@ if(fieldName =="PercentComplete"){
       <div>
         <span>{fieldValue}</span>
         <a className="pancil-icons" onClick={handleEdit}>
-          <FaPencilAlt/> 
+          
+      <span className="svg__iconbox svg__icon--editBox"></span>
         </a>
       </div>
     );
@@ -305,7 +306,8 @@ if(fieldName =="PercentComplete"){
     <div>
       <span>{fieldValue}</span>
       <a className="pancil-icons" onClick={handleEdit}>
-        <FaPencilAlt/> 
+        
+      <span className="svg__iconbox svg__icon--editBox"></span>
       </a>
     </div>
   );
