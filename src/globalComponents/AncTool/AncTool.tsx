@@ -2,7 +2,7 @@ import React from 'react'
 import DefaultFolderContent from './DefaultFolderContent'
 import axios from 'axios';
 import { usePopperTooltip } from "react-popper-tooltip";
-import { BsChevronDown, BsChevronRight } from "react-icons/bs";
+import { FaChevronDown, FaChevronRight } from 'react-icons/fa';
 import "react-popper-tooltip/dist/styles.css";
 // import {
 //     Document,
@@ -558,9 +558,9 @@ const AncTool = (props: any) => {
             <li style={{ listStyle: 'none' }}>
                 <span onClick={toggleExpand}>
                     {hasChildren ? (
-                        folder.isExpanded ? <BsChevronDown /> : <BsChevronRight />
+                        folder.isExpanded ? <FaChevronDown /> : <FaChevronRight />
                     ) : (
-                        <BsChevronDown style={{ color: 'white' }} />
+                        <FaChevronDown style={{ color: 'white' }} />
                     )}
                     <span className='svg__iconbox svg__icon--folder me-1'></span>
                 </span>
