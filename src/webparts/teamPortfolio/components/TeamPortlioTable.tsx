@@ -56,6 +56,7 @@ import SmartFilterSearchGlobal from "../../../globalComponents/SmartFilterGoloba
 import { concat } from "lodash";
 import saveAs from "file-saver";
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
+import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 // import Excel from 'exceljs';
 var filt: any = "";
 var ContextValue: any = {};
@@ -72,7 +73,6 @@ let filterCount: any = 0;
 let FinalFilterData: any = [];
 let portfolioColor: any = '';
 // ReactTable Part/////
-
 // ReactTable Part end/////
 
 function TeamPortlioTable(SelectedProp: any) {
@@ -215,6 +215,64 @@ function TeamPortlioTable(SelectedProp: any) {
         setMetadata(smartmetaDetails);
     };
 
+    // React.useEffect(() => {
+    //     let newarray: any = [];
+    //     if (AllMetadata.length > 0) {
+    //         (async () => {
+    //             try {
+    //                 if (AllMetadata.length > 0) {
+    //                     const ItemTypeColumn = "Item Type";
+    //                     console.log("Fetching portfolio icons...");
+    //                     const PortfolioIcon = await Promise.all([globalCommon.getPortFolioIcons(ContextValue.MasterTaskListID, ItemTypeColumn)]);
+    //                     if (PortfolioIcon.length > 0 && PortfolioIcon != undefined) {
+    //                         PortfolioIcon?.forEach((obj: any) => {
+    //                             if (obj != undefined) {
+    //                                 let Item: any = {};
+    //                                 Item.Title = obj;
+    //                                 Item[obj + 'array'] = [];
+    //                                 newarray.push(Item);
+    //                             }
+    //                         })
+    //                         console.log("Portfolio icons retrieved:", newarray);
+    //                         setPortFolioTypeIcon(newarray);
+    //                     }
+    //                 }
+
+    //             } catch (error) {
+    //                 console.error("Error fetching portfolio icons:", error);
+    //             }
+    //         })();
+    //     }
+    // }, [AllMetadata.length > 0]);
+
+    // const findPortFolioIconsAndPortfolio = () => {
+    //     let newarray: any = [];
+    //     (async () => {
+    //         try {
+    //             const ItemTypeColumn = "Item Type";
+    //             console.log("Fetching portfolio icons...");
+    //             // const PortfolioIcon = await Promise.all([globalCommon.getPortFolioIcons(ContextValue.MasterTaskListID, ItemTypeColumn)]);
+    //             let [field] = await Promise.all([new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP").lists.getById(ContextValue?.MasterTaskListID).fields.getByTitle(ItemTypeColumn).get()]);
+    //             console.log("Data fetched successfully:", field?.Choices);
+    //             if (field?.Choices?.length > 0 && field?.Choices != undefined) {
+    //                 field?.Choices?.forEach((obj: any) => {
+    //                     if (obj != undefined) {
+    //                         let Item: any = {};
+    //                         Item.Title = obj;
+    //                         Item[obj + 'number'] = 0;
+    //                         Item[obj + 'numberCopy'] = 0;
+    //                         newarray.push(Item);
+    //                     }
+    //                 })
+    //                 console.log("Portfolio icons retrieved:", newarray);
+    //                 setPortFolioTypeIcon(newarray);
+    //             }
+
+    //         } catch (error) {
+    //             console.error("Error fetching portfolio icons:", error);
+    //         }
+    //     })();
+    // }
 
     const findPortFolioIconsAndPortfolio = async () => {
         try {
@@ -316,6 +374,7 @@ function TeamPortlioTable(SelectedProp: any) {
                             result.AllTeamName =
                                 result.AllTeamName === undefined ? "" : result.AllTeamName;
                             result.chekbox = false;
+                            result.Description = '';
                             result.DueDate = Moment(result.DueDate).format("DD/MM/YYYY");
 
                             if (result.DueDate == "Invalid date" || "") {
@@ -323,14 +382,9 @@ function TeamPortlioTable(SelectedProp: any) {
                             }
                             result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
                             result.chekbox = false;
-                            if (result.Short_x0020_Description_x0020_On != undefined) {
-                                result.Short_x0020_Description_x0020_On =
-                                    result.Short_x0020_Description_x0020_On.replace(
-                                        /(<([^>]+)>)/gi,
-                                        ""
-                                    );
+                            if (result?.Body != undefined) {
+                                result.Description = result?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
                             }
-
                             if (
                                 result.AssignedTo != undefined &&
                                 result.AssignedTo.length > 0
@@ -460,6 +514,7 @@ function TeamPortlioTable(SelectedProp: any) {
         componentDetails.forEach((result: any) => {
             result["siteType"] = "Master Tasks";
             result.AllTeamName = "";
+            result.Description = '';
             result.TeamLeaderUser = [];
             if (result.Item_x0020_Type === 'Component') {
                 result.boldRow = 'boldClable'
@@ -482,8 +537,7 @@ function TeamPortlioTable(SelectedProp: any) {
             }
             result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
             if (result?.Short_x0020_Description_x0020_On != undefined) {
-                result.Short_x0020_Description_x0020_On =
-                    result?.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/gi, "");
+                result.Description = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
             }
             result.Id = result.Id != undefined ? result.Id : result.ID;
             if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
@@ -546,6 +600,20 @@ function TeamPortlioTable(SelectedProp: any) {
         LoadAllSiteTasks();
     };
 
+    // React.useEffect(() => {
+    //     const params = new URLSearchParams(window.location.search);
+    //     let query = params.get("PortfolioType");
+    //     if (query === 'Service' || query === 'service') {
+    //         let QueryPams = "Service Portfolio"
+    //         setIsUpdated(QueryPams);
+    //         isUpdated = query;
+    //     } else if (query === 'component' || query === 'component') {
+    //         let QueryPams = "Component Portfolio"
+    //         setIsUpdated(QueryPams);
+    //         isUpdated = query;
+
+    //     }
+    // }, [])
     React.useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         let query = params.get("PortfolioType");
@@ -805,7 +873,114 @@ function TeamPortlioTable(SelectedProp: any) {
             setData(finalDataCopyArray);
         }
     }
+
+
+    // const filterDataAfterUpdate = () => {
+    //     let AllsmartAllFilterData = smartAllFilterData?.filter((elemVal: any) => elemVal.PortfolioType != undefined);
+    //     const updatedRows = [];
+    //     for (let i = 0; i < AllsmartAllFilterData.length; i++) {
+    //         const row = AllsmartAllFilterData[i];
+    //         row.subRows=[];
+    //         const updatedRow = updatedSmartFilterGrouping(row);
+    //         updatedRows.push(...updatedRow);
+    //     }
+    //     FinalFilterData.push(updatedRows);
+    //     console.log(updatedRows);
+    // };
+
+    // const updatedSmartFilterGrouping = (row: any): any[] => {
+    //     for (let i = 0; i < allDataBackup.length; i++) {
+    //         const Object = allDataBackup[i];
+    //         if (Object.Id === row?.Portfolio?.Id) {
+    //             Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
+    //             Object.subRows.push(row);
+    //             return updatedSmartFilterGrouping(Object);
+    //         } else if (Object.Id === row?.Parent?.Id) {
+    //             Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
+    //             Object.subRows.push(row);
+    //             return updatedSmartFilterGrouping(Object);
+    //         } else if (row?.Component != undefined && row?.Component?.length > 0 && Object.Id === row?.Component[0]?.Id) {
+    //             Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
+    //             Object.subRows.push(row);
+    //             return updatedSmartFilterGrouping(Object);
+    //         } else if (row?.Services != undefined && row?.Services?.length > 0 && Object.Id === row?.Services[0]?.Id) {
+    //             Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
+    //             Object.subRows.push(row);
+    //             return updatedSmartFilterGrouping(Object);
+    //         }
+    //     }
+    //     if(row.subRows?.length>0){
+    //         row.subRows = row?.subRows?.filter((ele: any, ind: any) => ind === row?.subRows?.findIndex((elem: any) => elem.ID === ele.ID));
+    //     }
+    //     return [row];
+    // };
+
+
+
+
+
+
+
+    // const filterDataAfterUpdate = () => {
+    //     let AllsmartAllFilterData = smartAllFilterData?.filter((elemVal: any) => elemVal.PortfolioType != undefined);
+    //     let updatedRows = [];
+    //     for (let i = 0; i < AllsmartAllFilterData.length; i++) {
+    //         const row = AllsmartAllFilterData[i];
+    //         row.subRows = [];
+    //         const updatedRow = updatedSmartFilterGrouping(row);
+    //         updatedRows.push(updatedRow);
+    //     }
+    //     FinalFilterData.push(updatedRows);
+    //     console.log(updatedRows);
+    // };
+
+    // const updatedSmartFilterGrouping = (row: any): any => {
+    //     // for (let i = 0; i < allDataBackup.length; i++) {
+    //     const checkIfParentIsPersent = (parentRow: any) => {
+    //         for (let i = 0; i < allDataBackup.length; i++) {
+    //             let Object = allDataBackup[i];
+    //             if (Object.Id === parentRow?.Portfolio?.Id) {
+    //                 Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
+    //                 Object.subRows.push(parentRow);
+    //                 return Object
+    //             } else if (Object.Id === parentRow?.Parent?.Id) {
+    //                 Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
+    //                 Object.subRows.push(parentRow);
+    //                 return Object
+    //             } else if (parentRow?.Component != undefined && parentRow?.Component?.length > 0 && Object.Id === parentRow?.Component[0]?.Id) {
+    //                 Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
+    //                 Object.subRows.push(parentRow);
+    //                 return Object
+    //             } else if (parentRow?.Services != undefined && parentRow?.Services?.length > 0 && Object.Id === parentRow?.Services[0]?.Id) {
+    //                 Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
+    //                 Object.subRows.push(parentRow);
+    //                 return Object
+    //             }
+    //         }
+    //         return undefined;
+    //     }
+    //     let parentRows = checkIfParentIsPersent(row)
+    //     if (parentRows === undefined) {
+    //         return row;
+    //     }
+    //     return updatedSmartFilterGrouping(parentRows);
+    // };
+
+
+
+
+    const Prints = () => {
+        window.print();
+    };
     // ---------------------Export to Excel-------------------------------------------------------------------------------------
+    const getCsvData = () => {
+        const csvData = [["Title"]];
+        let i;
+        for (i = 0; i < data.length; i += 1) {
+            csvData.push([`${data[i].Title}`]);
+        }
+        return csvData;
+    };
     const expndpopup = (e: any) => {
         settablecontiner(e);
     };
@@ -996,7 +1171,7 @@ function TeamPortlioTable(SelectedProp: any) {
                             </a>
                         )}
                         {row?.original.Title === "Others" ? (
-                            <span style={{ color: `${row?.original?.PortfolioType?.Color + '!important'}` }}>{row?.original.Title}</span>
+                            <span style={{ color: `${row?.original?.PortfolioType?.Color}` }}>{row?.original.Title}</span>
                         ) : (
                             ""
                         )}
@@ -1006,19 +1181,20 @@ function TeamPortlioTable(SelectedProp: any) {
                             <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
                         {/* {<span className='ms-1'>{'(' + row?.original?.ChlidLenghtVal + ')'}</span> : ''} */}
 
-                        {row?.original?.Short_x0020_Description_x0020_On != null && (
-                            <span className="popover__wrapper ms-1" data-bs-toggle="tooltip" data-bs-placement="auto" >
-                                <span
-                                    title="Edit"
-                                    className="svg__iconbox svg__icon--info"
-                                ></span>
-                                <span
-                                    className="popover__content"
-                                    dangerouslySetInnerHTML={{
-                                        __html: row?.original?.Short_x0020_Description_x0020_On,
-                                    }}
-                                ></span>
-                            </span>
+                        {row?.original?.Description != null && row?.original?.Description != '' && (
+                            // <span className="popover__wrapper ms-1" data-bs-toggle="tooltip" data-bs-placement="auto" >
+                            //     <span
+                            //         title="Edit"
+                            //         className="svg__iconbox svg__icon--info"
+                            //     ></span>
+                            //     <span
+                            //         className="popover__content"
+                            //         dangerouslySetInnerHTML={{
+                            //             __html: row?.original?.Body,
+                            //         }}
+                            //     ></span>
+                            // </span>
+                            <InfoIconsToolTip Discription={row?.original?.Description} row={row?.original} />
                         )}
                     </>
                 ),
@@ -1076,6 +1252,22 @@ function TeamPortlioTable(SelectedProp: any) {
                 resetColumnFilters: false,
                 size: 100,
                 id: "DueDate",
+            },
+            {
+                accessorKey: "Description",
+                placeholder: "Description",
+                header: "",
+                resetColumnFilters: false,
+                size: 100,
+                id: "Description",
+            },
+            {
+                accessorKey: "Comments",
+                placeholder: "Comments",
+                header: "",
+                resetColumnFilters: false,
+                size: 100,
+                id: "Comments",
             },
             {
                 cell: ({ row, getValue }) => (
@@ -1272,7 +1464,7 @@ function TeamPortlioTable(SelectedProp: any) {
                                                 scale={1.0}
                                                 loadedClassName="loadedContent"
                                             />
-                                            <GlobalCommanTable AllListId={ContextValue} columns={columns} data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} />
+                                            <GlobalCommanTable AllListId={ContextValue} columns={columns} data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} expandIcon={true} />
                                         </div>
                                     </div>
                                 </div>

@@ -1,0 +1,117 @@
+import * as React from "react";
+import { Panel, PanelType } from 'office-ui-fabric-react';
+
+
+const SelectFilterPanel = (props: any) => {
+    // const [props?.selectedFilterPannelData, setCheckboxes] = React.useState({
+    //   Title: { Title: 'Title', Selected: true },
+    //   Comments: { Comments: 'Comments', Selected: true },
+    //   Description: { Description: 'Body', Selected: true },
+    // });
+    // Function to handle individual checkbox toggling
+    const handleCheckboxChange = (event: any) => {
+        const { name, checked } = event.target;
+        props?.setSelectedFilterPannelData((prevCheckboxes: any) => ({ ...prevCheckboxes, [name]: { [name]: name, Selected: checked } }));
+    };
+
+    const handleSelectAllChange = (event: any) => {
+        const { checked } = event.target;
+        props?.setSelectedFilterPannelData({
+            Title: { Title: 'Title', Selected: checked },
+            Comments: { Comments: 'Comments', Selected: checked },
+            Description: { Description: 'Body', Selected: checked },
+        });
+    };
+
+    const setModalIsOpenToFalse = () => {
+        props?.selectedFilterCallBack();
+    };
+
+    const handleChangeData = () => {
+        props?.selectedFilterCallBack(props?.selectedFilterPannelData);
+    };
+
+    const CustomFooter = () => {
+        return (
+            <div>
+                <button type="button" className="btn btn-default mx-1 me-2 pull-right" style={{backgroundColor: `${props?.portfolioColor}`}} onClick={setModalIsOpenToFalse}>
+                    Cancel
+                </button>
+                <button type="button" className="btn btn-primary pull-right" style={{backgroundColor: `${props?.portfolioColor}`}} onClick={() => handleChangeData()}>
+                    Apply
+                </button>
+            </div>
+        );
+    };
+
+    const onRenderCustomHeader = () => {
+        return (
+            <div className="d-flex full-width pb-1">
+                <div style={{ marginRight: 'auto', fontSize: '20px', fontWeight: '600', marginLeft: '20px' }}>
+                    <span style={{color: `${props?.portfolioColor}`}}>Select Filter</span>
+                </div>
+            </div>
+        );
+    };
+
+    return (
+        <Panel
+            type={PanelType.custom}
+            customWidth="250px"
+            isOpen={props?.isOpen}
+            onDismiss={setModalIsOpenToFalse}
+            onRenderHeader={onRenderCustomHeader}
+            isBlocking={props?.isOpen}
+            onRenderFooter={CustomFooter}
+        >
+            <div className="modal-body p-0 mt-2">
+                <div className="col-sm-12 p-0 smart">
+                    <div className="">
+                        <div>
+                            <label>
+                                <input style={{marginRight: '6px', marginBottom: '6px', color: `${props?.portfolioColor}`}} className="cursor-pointer form-check-input rounded-0"
+                                    type="checkbox"
+                                    name="selectAll"
+                                    checked={props?.selectedFilterPannelData.Title.Selected && props?.selectedFilterPannelData.Comments.Selected && props?.selectedFilterPannelData.Description.Selected}
+                                    onChange={handleSelectAllChange}
+                                />
+                                Select All
+                            </label>
+                            <br />
+                            <label>
+                                <input className="cursor-pointer form-check-input rounded-0" style={{marginRight: '6px', marginBottom: '6px', color: `${props?.portfolioColor}`}}
+                                    type="checkbox"
+                                    name="Title"
+                                    checked={props?.selectedFilterPannelData.Title.Selected}
+                                    onChange={handleCheckboxChange}
+                                />
+                                Title
+                            </label>
+                            <br />
+                            <label>
+                                <input className="cursor-pointer form-check-input rounded-0" style={{marginRight: '6px', marginBottom: '6px', color: `${props?.portfolioColor}`}}
+                                    type="checkbox"
+                                    name="Comments"
+                                    checked={props?.selectedFilterPannelData.Comments.Selected}
+                                    onChange={handleCheckboxChange}
+                                />
+                                Comments
+                            </label>
+                            <br />
+                            <label>
+                                <input className="cursor-pointer form-check-input rounded-0" style={{marginRight: '6px', marginBottom: '6px', color: `${props?.portfolioColor}`}}
+                                    type="checkbox"
+                                    name="Description"
+                                    checked={props?.selectedFilterPannelData.Description.Selected}
+                                    onChange={handleCheckboxChange}
+                                />
+                                Description
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </Panel>
+    );
+};
+export default SelectFilterPanel;

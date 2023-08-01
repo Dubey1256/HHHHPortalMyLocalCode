@@ -24,7 +24,8 @@ import * as XLSX from "xlsx";
 import saveAs from "file-saver";
 import { RiFileExcel2Fill } from 'react-icons/ri';
 import ShowTeamMembers from '../ShowTeamMember';
-import Tooltip from '../Tooltip';
+import SelectFilterPanel from './selectFilterPannel';
+import ExpndTable from '../ExpandTable/Expandtable';
 
 // ReactTable Part/////
 declare module "@tanstack/table-core" {
@@ -130,7 +131,7 @@ export function IndeterminateCheckbox(
         <input
             type="checkbox"
             ref={ref}
-            className={className + " cursor-pointer form-check-input "}
+            className={className + " cursor-pointer"}
             {...rest}
         />
     );
@@ -147,10 +148,11 @@ const GlobalCommanTable = (items: any) => {
     let pageName = items?.pageName;
     let siteUrl: any = '';
     let showHeader = items?.showHeader;
-    let showDateTime = items?.showDateTime;
     let showPagination: any = items?.showPagination;
     let usedFor: any = items?.usedFor;
     let portfolioColor = items?.portfolioColor;
+    let expandIcon = items?.expandIcon;
+    // let portfolioTypeData = items?.portfolioTypeData;
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
         []
     );
@@ -159,7 +161,48 @@ const GlobalCommanTable = (items: any) => {
     const [rowSelection, setRowSelection] = React.useState({});
     const [globalFilter, setGlobalFilter] = React.useState("");
     const [ShowTeamPopup, setShowTeamPopup] = React.useState(false);
-    // const [showTeamMemberOnCheck, setShowTeamMemberOnCheck] = React.useState(false)
+    const [showTeamMemberOnCheck, setShowTeamMemberOnCheck] = React.useState(false)
+    const [globalSearchType, setGlobalSearchType] = React.useState("ALL");
+    const [selectedFilterPanelIsOpen, setSelectedFilterPanelIsOpen] = React.useState(false);
+    const [tablecontiner, settablecontiner]: any = React.useState("hundred");
+    const [columnVisibility, setColumnVisibility] = React.useState({ Description: false, Comments: false });
+    const [selectedFilterPannelData, setSelectedFilterPannelData] = React.useState({
+        Title: { Title: 'Title', Selected: true },
+        Comments: { Comments: 'Comments', Selected: true },
+        Description: { Description: 'Description', Selected: true },
+    });
+
+    const customGlobalSearch = (row: any, id: any, query: any) => {
+        query = query.replace(/\s+/g, " ").trim().toLowerCase();
+        if (String(query).trim() === "") return true;
+
+        if ((selectedFilterPannelData?.Title?.Title === id && selectedFilterPannelData?.Title?.Selected === true) || (selectedFilterPannelData?.Comments?.Comments === id && selectedFilterPannelData?.Comments?.Selected === true) ||
+            (selectedFilterPannelData?.Description?.Description === id && selectedFilterPannelData?.Description?.Selected === true)) {
+
+            const cellValue: any = String(row.getValue(id)).toLowerCase();
+
+            if (globalSearchType === "ALL") {
+                return (
+                    cellValue.split(" ").sort().join(" ") ===
+                    query.split(" ").sort().join(" ")
+                );
+            } else if (globalSearchType === "ANY") {
+                for (let item of query.split(" ")) {
+                    if (cellValue.includes(item)) return true;
+                }
+                return false;
+            } else if (globalSearchType === "EXACT") {
+                return cellValue === query;
+            }
+        };
+    };
+
+    const selectedFilterCallBack = React.useCallback((item: any) => {
+        if (item != undefined) {
+            setSelectedFilterPannelData(item)
+        }
+        setSelectedFilterPanelIsOpen(false)
+    }, []);
 
     const table: any = useReactTable({
         data,
@@ -173,12 +216,13 @@ const GlobalCommanTable = (items: any) => {
             expanded,
             sorting,
             rowSelection,
+            columnVisibility,
         },
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
         onExpandedChange: setExpanded,
         onGlobalFilterChange: setGlobalFilter,
-        globalFilterFn: fuzzyFilter,
+        globalFilterFn: customGlobalSearch,
         getSubRows: (row: any) => row?.subRows,
         onRowSelectionChange: setRowSelection,
         getCoreRowModel: getCoreRowModel(),
@@ -233,6 +277,34 @@ const GlobalCommanTable = (items: any) => {
         let ShowingData = { ComponentCopy: ComponentCopy, SubComponentCopy: SubComponentCopy, FeatureCopy: FeatureCopy, FilterShowhideShwingData: FilterShowhideShwingData }
         callBackData(item, ShowingData)
     }, [table?.getRowModel()?.rows])
+
+    // React.useEffect(() => {
+    //     if (AfterSearch != undefined && AfterSearch.length > 0) {
+    //         AfterSearch?.map((Comp: any) => {
+    //             if (Comp.columnFilters.Title == true || Comp.columnFilters.Shareweb_x0020_ID == true || Comp.columnFilters.ClientCategory == true ||
+    //                 Comp.columnFilters.TeamLeaderUser == true || Comp.columnFilters.PercentComplete == true || Comp.columnFilters.ItemRank == true ||
+    //                 Comp.columnFilters.DueDate == true || Comp?.columnFilters?.__global__ === true) {
+
+    //                 portfolioTypeData?.map((type: any) => {
+    //                     if (Comp?.original?.Item_x0020_Type === type.Title) {
+    //                         type[type.Title + 'numberCopy'] += 1;
+    //                     }
+    //                 })
+    //                 FilterShowhideShwingData = true;
+    //             }else {
+    //                 portfolioTypeData?.map((type: any) => {
+    //                     if (type.Title + 'numberCopy' !=undefined) {
+    //                         type[type.Title + 'numberCopy']= 0;
+    //                     }
+    //                 })
+    //                 FilterShowhideShwingData = false;
+    //             }
+    //             console.log("portfolioTypeData", portfolioTypeData)
+    //         })
+    //     }
+    // }, [table?.getRowModel()?.rows])
+
+
 
     const CheckDataPrepre = () => {
         if (usedFor == "SiteComposition") {
@@ -307,8 +379,8 @@ const GlobalCommanTable = (items: any) => {
         })
         doc.save('Data PrintOut');
     }
-    // Export To Excel////////
 
+    // Export To Excel////////
     const exportToExcel = () => {
         const flattenedData: any[] = [];
         const flattenRowData = (row: any) => {
@@ -373,8 +445,12 @@ const GlobalCommanTable = (items: any) => {
             downloadLink.click();
         }
     };
-
     ////Export to excel end/////
+
+    const expndpopup = (e: any) => {
+        settablecontiner(e);
+    };
+
     return (
         <>
             {showHeader === true && <div className='tbl-headings justify-content-between mb-1'>
@@ -386,11 +462,27 @@ const GlobalCommanTable = (items: any) => {
                         placeholder="Search All..."
                         portfolioColor={portfolioColor}
                     />
+                    <span className="svg__iconbox svg__icon--setting" style={{ backgroundColor: `${portfolioColor}` }} onClick={() => setSelectedFilterPanelIsOpen(true)}></span>
+                    <span>
+                        <select style={{ height: "30px", color: `${portfolioColor}` }}
+                            className=""
+                            aria-label="Default select example"
+                            value={globalSearchType}
+                            onChange={(e) => {
+                                setGlobalSearchType(e.target.value);
+                                setGlobalFilter("");
+                            }}
+                        >
+                            <option value="ALL">All Words</option>
+                            <option value="ANY">Any Words</option>
+                            <option value="EXACT">Exact Phrase</option>
+                        </select>
+                    </span>
                 </span>
                 <span className="toolbox">
-                    {table?.getSelectedRowModel()?.flatRows?.length > 0 ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--team teamIcon"></span></a>
+                    {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--team teamIcon"></span></a>
                     </span> : <span><a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team teamIcon"></span></a></span>}
-                    {table?.getSelectedRowModel()?.flatRows?.length > 0 ? <span>
+                    {table?.getSelectedRowModel()?.rows?.length > 0 ? <span>
                         <a onClick={() => openTaskAndPortfolioMulti()} className="openWebIcon"><span style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--openWeb"></span></a>
                     </span> : <span><a className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a></span>}
                     <a className='excal' onClick={() => exportToExcel()}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a>
@@ -401,9 +493,10 @@ const GlobalCommanTable = (items: any) => {
                     <a className='Prints' onClick={() => downloadPdf()}>
                         <i className="fa fa-print" aria-hidden="true" style={{ color: `${portfolioColor}` }} title="Print"></i>
                     </a>
-                    <a>
-              <Tooltip ComponentId="5756" />
-            </a>
+                    {expandIcon === true && <a className="expand" style={{ color: `${portfolioColor}` }}>
+                        <ExpndTable prop={expndpopup} prop1={tablecontiner} />
+                    </a>}
+
                 </span>
             </div>}
 
@@ -520,6 +613,7 @@ const GlobalCommanTable = (items: any) => {
                 </select>
             </div> : ''}
             {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} /> : ''}
+            {selectedFilterPanelIsOpen && <SelectFilterPanel isOpen={selectedFilterPanelIsOpen} selectedFilterCallBack={selectedFilterCallBack} setSelectedFilterPannelData={setSelectedFilterPannelData} selectedFilterPannelData={selectedFilterPannelData} portfolioColor={portfolioColor} />}
 
         </>
     )
