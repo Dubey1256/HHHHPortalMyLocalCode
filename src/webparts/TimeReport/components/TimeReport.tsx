@@ -40,6 +40,7 @@ var todayLeaveUsers:any=[]
 var TotalTime: any = 0
 var CurrentUserId=''
 var StartDatesss:any=''
+var selectDatess:any=''
 const TimeReport = (props:any) => {
    
     CurrentUserId = props.ContextData.Context.pageContext._legacyPageContext?.userId
@@ -215,14 +216,17 @@ const TimeReport = (props:any) => {
 
     var datess = ''
     var TodayDate =''
-    const GeneratedTask = async (Type: any) => {
+    const GeneratedTask = async () => {
         leaveUsers =0.00
          DevloperTime = 0.00;
          QATime = 0.00;
          DesignTime = 0.00;
          TotleTaskTime = 0.00
-
-        if (Type == "Yesterday") {
+         if(selectDatess == ''){
+            selectDatess = 'Custom'
+         }
+        
+        if (selectDatess == "Yesterday") {
             var datteee = new Date()
             var MyYesterdayDate:any = Moment(datteee).add(-1, 'days').format()
             setDefaultDate(MyYesterdayDate)
@@ -230,8 +234,9 @@ const TimeReport = (props:any) => {
             var myDate = new Date()
             var final: any = (Moment(myDate).add(-2, 'days').format())
         }
-        if(Type == 'Today'){
+        if(selectDatess == 'Today'){
             var dat:any = new Date()
+            setcheckedCustom(false)
             setDefaultDate(dat)
             var myDate = new Date()
             var Datenew = Moment(myDate).format("DD/MM/YYYY")
@@ -240,7 +245,7 @@ const TimeReport = (props:any) => {
             var final: any = (Moment(myDate).add(-1, 'days').format())
            
         }
-        if(Type == 'Custom') {
+        if(selectDatess == 'Custom') {
             setcheckedWS(false)
             setcheckedTask(false)
             setcheckedCustom(true)
@@ -361,7 +366,7 @@ const TimeReport = (props:any) => {
         if (selectdate != undefined) {
             var myDate = new Date(selectdate)
             var Datenew = Moment(myDate).format("DD/MM/YYYY")
-            setcheckedCustom(true)
+            //setcheckedCustom(true)
         }
         else {
             var myDate = new Date()
@@ -491,6 +496,7 @@ const TimeReport = (props:any) => {
             })
 
         })
+        selectDatess = ''
         await GetleaveUser(StartDatesss)
         finalTask(SelectedTime)
 
@@ -612,7 +618,7 @@ const TimeReport = (props:any) => {
     }
 
     const selectType = (Dates: any) => {
-
+        selectDatess = Dates;
         if (Dates == 'Today') {
             setcheckedWS(false)
             setcheckedCustom(false)
@@ -637,7 +643,7 @@ const TimeReport = (props:any) => {
             var Datenew = Moment(Datene).format("DD-MM-YYYY")
             var Daten = Moment(Datene).format("DD/MM/YYYY")
             checkDate = Datenew;
-            GeneratedTask(Dates);
+            GeneratedTask();
         }
        
         if (Dates == 'Custom') {
@@ -1142,7 +1148,7 @@ var ReportDate = new Date()
                     <label className='mx-2'>
                         <input type="radio" name="Today" checked={checkedTask} onClick={() => selectType('Today')} className="me-1" />Today
                     </label>
-                    <button className='btn btn-primary' type="submit" onClick={() => GeneratedTask("Custom")}>Generate TimeSheet</button>
+                    <button className='btn btn-primary' type="submit" onClick={() => GeneratedTask()}>Generate TimeSheet</button>
 
 
                 </div>

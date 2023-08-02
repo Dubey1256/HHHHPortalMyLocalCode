@@ -1082,7 +1082,7 @@ const SiteCompositionComponent = (Props: any) => {
                     onRenderHeader={onRenderCustomClientCategoryHeader}
                     isOpen={ClientCategoryPopupStatus}
                     onDismiss={closeClientCategoryPopup}
-                    isBlocking={ClientCategoryPopupStatus}
+                    isBlocking={false}
                     type={PanelType.custom}
                     customWidth="850px"
                     onRenderFooter={onRenderFooter}
