@@ -4923,7 +4923,7 @@ function ComponentTable(SelectedProp: any) {
       setCheckedList([]);
       setShowTeamMemberOnCheck(false)
       setComponentRestruct(false);
-      Renderarray = [...maidataBackup];
+      // Renderarray = [...maidataBackup];
       refreshDataTaskLable();
       setRowSelection({});
       setRestructureChecked([]);
