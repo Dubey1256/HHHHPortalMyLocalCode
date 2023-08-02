@@ -1779,15 +1779,18 @@ function CreateTaskComponent(props: any) {
                         <input type="text" placeholder='Enter task Name' className='full-width' value={save.taskName} onChange={(e) => { changeTitle(e) }}></input>
                     </div>
                     <div className='col-sm-2 p-0 mt-4'>
+                    <label className='SpfxCheckRadio'>
                         <input
-                            type="radio" className="form-check-input radio  me-1" checked={save.portfolioType === 'Component'}
+                            type="radio" className="radio" checked={save.portfolioType === 'Component'}
                             name="taskcategory" onChange={() => selectPortfolioType('Component')} />
-                        <label className='form-check-label me-2'>Component</label>
+                        Component</label>
                         {
-                            burgerMenuTaskDetails?.ComponentID == undefined ? <><input
-                                type="radio" className="form-check-input radio  me-1" checked={save.portfolioType === 'Service'}
+                            burgerMenuTaskDetails?.ComponentID == undefined ? <>
+                              <label className='SpfxCheckRadio'>
+                            <input
+                                type="radio" className="radio" checked={save.portfolioType === 'Service'}
                                 name="taskcategory" onChange={() => selectPortfolioType('Service')} />
-                                <label className='form-check-label'>Service</label></> : ''
+                               Service </label></> : ''
                         }
                     </div>
                     <div className='col-sm-4 pe-0'>{
