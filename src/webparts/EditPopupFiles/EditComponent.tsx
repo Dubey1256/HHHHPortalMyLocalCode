@@ -2744,9 +2744,9 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                             />
                           </div>
 
-                          <div className="form-check">
+                          <div className="SpfxCheckRadio ">
                             <input
-                              className="form-check-input"
+                              className="radio"
                               name="NotStarted"
                               type="radio"
                               value="Not Started"
@@ -2759,13 +2759,13 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                                 setStatus(EditData, "Not Started")
                               }
                             ></input>
-                            <label className="form-check-label">
+                            <label>
                               Not Started{" "}
                             </label>
                           </div>
-                          <div className="form-check">
+                          <div className="SpfxCheckRadio">
                             <input
-                              className="form-check-input"
+                              className="radio"
                               name="NotStarted"
                               type="radio"
                               value="In Preparation"
@@ -2778,14 +2778,14 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                                   : false
                               }
                             ></input>
-                            <label className="form-check-label">
+                            <label >
                               {" "}
                               In Preparation
                             </label>
                           </div>
-                          <div className="form-check">
+                          <div className="SpfxCheckRadio">
                             <input
-                              className="form-check-input"
+                              className="radio"
                               name="NotStarted"
                               type="radio"
                               value="In Development"
@@ -2798,14 +2798,14 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                                   : false
                               }
                             ></input>
-                            <label className="form-check-label">
+                            <label>
                               {" "}
                               In Development{" "}
                             </label>
                           </div>
-                          <div className="form-check">
+                          <div className="SpfxCheckRadio">
                             <input
-                              className="form-check-input"
+                              className="radio"
                               name="NotStarted"
                               type="radio"
                               value="Active"
@@ -2814,11 +2814,11 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                                 EditData?.AdminStatus === "Active" ? true : false
                               }
                             ></input>
-                            <label className="form-check-label">Active</label>
+                            <label> Active </label>
                           </div>
-                          <div className="form-check">
+                          <div className="SpfxCheckRadio">
                             <input
-                              className="form-check-input"
+                              className="radio"
                               name="NotStarted"
                               type="radio"
                               value="Archived"
@@ -2829,7 +2829,7 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                                   : false
                               }
                             ></input>
-                            <label className="form-check-label">
+                            <label>
                               Archived{" "}
                             </label>
                           </div>
@@ -2849,42 +2849,42 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                             />
                           </div>
 
-                          <div className="form-check">
+                          <div className="SpfxCheckRadio">
                             <input
-                              className="form-check-input"
+                              className="radio"
                               name="radioTime"
                               onChange={(e) => setTime(EditData, "05")}
                               checked={EditData?.Mileage === "05" ? true : false}
                               type="radio"
                             ></input>
-                            <label className="form-check-label">
+                            <label>
                               Very Quick
                             </label>
                           </div>
-                          <div className="form-check">
+                          <div className="SpfxCheckRadio">
                             <input
-                              className="form-check-input"
+                              className="radio"
                               name="radioTime"
                               onChange={(e) => setTime(EditData, "15")}
                               checked={EditData?.Mileage === "15" ? true : false}
                               type="radio"
                             ></input>
 
-                            <label className="form-check-label">Quick </label>
+                            <label>Quick </label>
                           </div>
-                          <div className="form-check">
+                          <div className="SpfxCheckRadio">
                             <input
-                              className="form-check-input"
+                              className="radio"
                               name="radioTime"
                               onChange={(e) => setTime(EditData, "60")}
                               checked={EditData?.Mileage === "60" ? true : false}
                               type="radio"
                             ></input>
-                            <label className="form-check-label">Medium</label>
+                            <label>Medium</label>
                           </div>
-                          <div className="form-check">
+                          <div className="SpfxCheckRadio">
                             <input
-                              className="form-check-input"
+                              className="radio"
                               name="radioTime"
                               onChange={(e) => setTime(EditData, "240")}
                               checked={
@@ -2892,7 +2892,7 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                               }
                               type="radio"
                             ></input>
-                            <label className="form-check-label">Long</label>
+                            <label>Long</label>
                           </div>
                         </div>
                       </div>
@@ -2912,9 +2912,9 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                           />
                         </div>
 
-                        <div className="form-check">
+                        <div className="SpfxCheckRadio">
                           <input
-                            className="form-check-input"
+                            className="radio"
                             name="radioPriority"
                             type="radio"
                             value="(1) High"
@@ -2925,9 +2925,9 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                           ></input>
                           <label> High</label>
                         </div>
-                        <div className="form-check">
+                        <div className="SpfxCheckRadio">
                           <input
-                            className="form-check-input"
+                            className="radio"
                             name="radioPriority"
                             type="radio"
                             value="(2) Normal"
@@ -2938,9 +2938,9 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                           ></input>
                           <label> Normal</label>
                         </div>
-                        <div className="form-check">
+                        <div className="SpfxCheckRadio">
                           <input
-                            className="form-check-input"
+                            className="radio"
                             name="radioPriority"
                             type="radio"
                             value="(3) Low"
@@ -3003,11 +3003,8 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                       <div className="col">
                         
 
-                        <div className="col-sm-11  inner-tabb">
-                         
-
-<div className="row mt-2">
-
+                        <div className="col-sm-11  inner-tabb">                      
+                          <div className="row mt-2">
                                    <div className="col-sm-12">
 
                                        <div className="col-sm-12 padding-0 input-group">
@@ -3887,18 +3884,19 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                     </a>
                     <button
                       type="button"
-                      className="btn btn-primary "
-                      onClick={(e) => SaveData()}
-                    >
-                      Save
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-default btn-default ms-1"
+                      className="btn btn-default btn-default "
                       onClick={setModalIsOpenToFalse}
                     >
                       Cancel
                     </button>
+                    <button
+                      type="button"
+                      className="btn btn-primary ms-1 "
+                      onClick={(e) => SaveData()}
+                    >
+                      Save
+                    </button>
+                 
                   </div>
                 </div>
               </div>

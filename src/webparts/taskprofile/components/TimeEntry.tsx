@@ -34,12 +34,13 @@ function TimeEntry(props: any) {
           <TimeEntryPopup props={props.data} Context={props.context}context={props.context} />
         </div>
         <footer className="mt-3 text-end">
-          <Button variant="primary" onClick={handleClose}>
-            OK
-          </Button>
-          <Button variant="btn btn-default ms-2" onClick={handleClose}>
+        <Button variant="btn btn-default " onClick={handleClose}>
             Cancel
           </Button>
+          <Button className="ms-2" variant="primary" onClick={handleClose}>
+            OK
+          </Button>
+          
         </footer>
       </Panel>
     </>
