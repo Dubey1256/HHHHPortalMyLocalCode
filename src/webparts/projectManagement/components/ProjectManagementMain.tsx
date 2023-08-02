@@ -1,15 +1,10 @@
 import * as React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import InlineEditingcolumns from "../../projectmanagementOverviewTool/components/inlineEditingcolumns";
-import { Button, Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
-import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaCaretDown, FaCaretRight, FaChevronDown, FaChevronRight, FaSort, FaSortDown, FaSortUp, } from "react-icons/fa";
-import { useTable, useSortBy, useFilters, useExpanded, usePagination, HeaderGroup, } from "react-table";
-import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewTool/components/filters";
-import { FaAngleDown, FaAngleUp, FaHome } from "react-icons/fa";
+import { FaChevronDown, FaChevronRight, FaSort, FaSortDown, FaSortUp, } from "react-icons/fa";
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import { Web } from "sp-pnp-js";
 import EditProjectPopup from "../../projectmanagementOverviewTool/components/EditProjectPopup";
-import { IoMdArrowDropright, IoMdArrowDropdown } from "react-icons/io";
 import * as Moment from "moment";
 import {
   ColumnDef,
@@ -40,7 +35,7 @@ let headerOptions: any = {
   openTab: true,
   teamsIcon: true
 }
-var allSmartInfo:any=[];
+var allSmartInfo: any = [];
 var DynamicData: any = {}
 var AllSitesAllTasks: any = [];
 var ChildData: any = []
@@ -77,9 +72,9 @@ const ProjectManagementMain = (props: any) => {
   const [createTaskId, setCreateTaskId] = React.useState({});
   const [isSmartInfoAvailable, setIsSmartInfoAvailable]: any = React.useState(false);
   // const[allSmartInfo,setAllSmartInfo]=React.useState([])
-  const[remark,setRemark]=React.useState(false)
-  const[remarkData,setRemarkData]=React.useState(null)
-  const[editSmartInfo,setEditSmartInfo]=React.useState(false)
+  const [remark, setRemark] = React.useState(false)
+  const [remarkData, setRemarkData] = React.useState(null)
+  const [editSmartInfo, setEditSmartInfo] = React.useState(false)
   const StatusArray = [
     { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
     { value: 2, status: "02% Follow Up", taskStatusComment: "Follow Up" },
@@ -144,17 +139,15 @@ const ProjectManagementMain = (props: any) => {
     if (props?.props?.SmartInformationListID != undefined) {
       setIsSmartInfoAvailable(true)
     }
+
     getQueryVariable((e: any) => e);
-    loadAllSmartInformation().then((Data:any)=>{
-      GetMetaData();
+
+    loadAllSmartInformation().then((Data: any) => {
       LoadAllSiteAllTasks()
-      GetMasterData();
-    }).catch((error:any)=>{
-      GetMetaData();
+    }).catch((error: any) => {
       LoadAllSiteAllTasks()
-      GetMasterData();
     })
-  
+
     try {
       $("#spPageCanvasContent").removeClass();
       $("#spPageCanvasContent").addClass("hundred");
@@ -171,30 +164,35 @@ const ProjectManagementMain = (props: any) => {
     $(" #SpfxProgressbar").hide();
   };
   const loadAllSmartInformation = async () => {
-  return new Promise((resolve, reject)=>{
-    const web = new Web(props?.siteUrl);
-    // var Data = await web.lists.getByTitle("SmartInformation")
-     web.lists.getById(AllListId?.SmartInformationListID)
-      .items.select('Id,Title,Description,SelectedFolder,URL,Acronym,InfoType/Id,InfoType/Title,Created,Modified,Author/Name,Author/Title,Author/Title,Author/Id,Editor/Name,Editor/Title,Editor/Id')
-      .expand("InfoType,Author,Editor").filter("(InfoType/Title eq 'Remarks')")
-      .get().then((Data:any)=>{
-        console.log(Data)
-        allSmartInfo=[];
-        allSmartInfo=Data
-        resolve(Data)
-      }).catch((error:any)=>{
-        reject(error)
-      })
-  
-  })
-   
-   
-    }
+    return new Promise((resolve, reject) => {
+      const web = new Web(props?.siteUrl);
+      // var Data = await web.lists.getByTitle("SmartInformation")
+      web.lists.getById(AllListId?.SmartInformationListID)
+        .items.select('Id,Title,Description,SelectedFolder,URL,Acronym,InfoType/Id,InfoType/Title,Created,Modified,Author/Name,Author/Title,Author/Title,Author/Id,Editor/Name,Editor/Title,Editor/Id')
+        .expand("InfoType,Author,Editor").filter("(InfoType/Title eq 'Remarks')")
+        .get().then((Data: any) => {
+          console.log(Data)
+          allSmartInfo = [];
+          allSmartInfo = Data
+          resolve(Data)
+        }).catch((error: any) => {
+          reject(error)
+        })
+
+    })
+
+
+  }
   const getQueryVariable = async (variable: any) => {
     const params = new URLSearchParams(window.location.search);
     let query = params.get("ProjectId");
     QueryId = query;
+    await loadAllComponent()
+    AllUser = await loadTaskUsers();
+    setAllTaskUsers(AllUser);
     setProjectId(QueryId);
+    GetMasterData();
+    GetMetaData();
     console.log(query); //"app=article&act=news_content&aid=160990"
     return false;
   };
@@ -217,105 +215,94 @@ const ProjectManagementMain = (props: any) => {
   const GetMasterData = async () => {
     if (AllListId?.MasterTaskListID != undefined) {
       try {
-        AllUser = await loadTaskUsers();
-        setAllTaskUsers(AllUser);
         let web = new Web(props?.siteUrl);
-        let taskUsers: any = {};
-        var AllUsers: any = [];
-        taskUsers = await web.lists
+        await web.lists
           .getById(AllListId?.MasterTaskListID)
           .items.select("ComponentCategory/Id", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "Deliverable_x002d_Synonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "Admin_x0020_Notes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "SharewebCategories/Id", "SharewebCategories/Title", "Priority_x0020_Rank", "Reference_x0020_Item_x0020_Json", "Team_x0020_Members/Title", "Team_x0020_Members/Name", "Component/Id", "Services/Id", "Services/Title", "Services/ItemType", "Component/Title", "Component/ItemType", "Team_x0020_Members/Id", "Item_x002d_Image", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
           .expand("ClientCategory", "ComponentCategory", "AssignedTo", "Component", "Services", "AttachmentFiles", "Author", "Editor", "Team_x0020_Members", "SharewebComponent", "SharewebCategories", "Parent")
           .getById(QueryId)
-          .get();
-
-
-        if ((taskUsers.PercentComplete != undefined)) {
-          taskUsers.PercentComplete = (taskUsers?.PercentComplete * 100).toFixed(0)
-        }
-        // if (taskUsers.Body != undefined) {
-        //   taskUsers.Body = taskUsers.Body.replace(/(<([^>]+)>)/gi, "");
-        // }
-
-        let allPortfolios: any[] = [];
-        allPortfolios = await getPortfolio("All");
-
-        taskUsers.smartService = [];
-        taskUsers?.ServicesId?.map((item: any) => {
-          allPortfolios?.map((portfolio: any) => {
-            if (portfolio?.Id == item) {
-              portfolio.filterActive = false;
-              taskUsers.smartService.push(portfolio);
+          .get().then((fetchedProject: any) => {
+            if ((fetchedProject.PercentComplete != undefined)) {
+              fetchedProject.PercentComplete = (fetchedProject?.PercentComplete * 100).toFixed(0)
             }
-          });
-        });
-        taskUsers.smartComponent = [];
-        taskUsers?.ComponentId?.map((item: any) => {
-          allPortfolios?.map((portfolio: any) => {
-            if (portfolio?.Id == item) {
-              portfolio.filterActive = false;
-              taskUsers.smartComponent.push(portfolio);
+            // if (taskUsers.Body != undefined) {
+            //   taskUsers.Body = taskUsers.Body.replace(/(<([^>]+)>)/gi, "");
+            // }
+
+
+            if (fetchedProject?.DueDate != undefined) {
+              fetchedProject.DisplayDueDate = fetchedProject.DueDate != null
+                ? Moment(fetchedProject.DueDate).format("DD/MM/YYYY")
+                : "";
+            } else {
+              fetchedProject.DisplayDueDate = '';
             }
-          });
-        });
-        AllUsers.push(taskUsers);
-
-        AllUsers?.map((items: any) => {
-          items.AssignedUser = [];
-          items.AssignedTo = [];
-          items.Team_x0020_Members = [];
-          items.Responsible_x0020_Team = [];
-          AllUser?.map((user: any) => {
-            if (items?.Team_x0020_MembersId != undefined) {
-              items?.Team_x0020_MembersId?.map((taskUser: any) => {
-                if (user.AssingedToUserId == taskUser) {
-                  user.Id = user.AssingedToUserId;
-                  items.Team_x0020_Members.push(user)
-                }
-              })
-            }
-            if (items?.Responsible_x0020_TeamId != undefined) {
-              items?.Responsible_x0020_TeamId?.map((taskUser: any) => {
-                if (user.AssingedToUserId == taskUser) {
-                  user.Id = user.AssingedToUserId;
-                  items.Responsible_x0020_Team.push(user)
-                }
-              })
-            }
-
-          });
-          if (items.AssignedToId != undefined) {
-            items.AssignedToId.map((taskUser: any) => {
-
-              var newuserdata: any = {};
-
-              AllUser?.map((user: any) => {
-                if (user.AssingedToUserId == taskUser) {
-                  user.Id = user.AssingedToUserId;
-                  items.AssignedTo.push(user);
-                  newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
-                  newuserdata["Suffix"] = user?.Suffix;
-                  newuserdata["Title"] = user?.Title;
-                  newuserdata["UserId"] = user?.AssingedToUserId;
-                  items["Usertitlename"] = user?.Title;
+            fetchedProject.smartService = [];
+            fetchedProject?.ServicesId?.map((item: any) => {
+              MasterListData?.map((portfolio: any) => {
+                if (portfolio?.Id == item) {
+                  portfolio.filterActive = false;
+                  fetchedProject?.smartService?.push(portfolio);
                 }
               });
-              items.AssignedUser.push(newuserdata);
             });
-          }
-        });
-        if (AllUsers?.length > 0) {
+            fetchedProject.smartComponent = [];
+            fetchedProject?.ComponentId?.map((item: any) => {
+              MasterListData?.map((portfolio: any) => {
+                if (portfolio?.Id == item) {
+                  portfolio.filterActive = false;
+                  fetchedProject?.smartComponent?.push(portfolio);
+                }
+              });
+            });
+            fetchedProject.AssignedUser = [];
+            fetchedProject.AssignedTo = [];
+            fetchedProject.Team_x0020_Members = [];
+            fetchedProject.Responsible_x0020_Team = [];
+            AllUser?.map((user: any) => {
+              if (fetchedProject?.Team_x0020_MembersId != undefined) {
+                fetchedProject?.Team_x0020_MembersId?.map((taskUser: any) => {
+                  if (user.AssingedToUserId == taskUser) {
+                    user.Id = user?.AssingedToUserId;
+                    fetchedProject?.Team_x0020_Members?.push(user)
+                  }
+                })
+              }
+              if (fetchedProject?.Responsible_x0020_TeamId != undefined) {
+                fetchedProject?.Responsible_x0020_TeamId?.map((taskUser: any) => {
+                  if (user.AssingedToUserId == taskUser) {
+                    user.Id = user.AssingedToUserId;
+                    fetchedProject?.Responsible_x0020_Team?.push(user)
+                  }
+                })
+              }
+              if (fetchedProject.AssignedToId != undefined) {
+                fetchedProject.AssignedToId.map((taskUser: any) => {
+                  var newuserdata: any = {};
+                  if (user.AssingedToUserId == taskUser) {
+                    user.Id = user.AssingedToUserId;
+                    fetchedProject.AssignedTo.push(user);
+                    newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
+                    newuserdata["Suffix"] = user?.Suffix;
+                    newuserdata["Title"] = user?.Title;
+                    newuserdata["UserId"] = user?.AssingedToUserId;
+                    fetchedProject["Usertitlename"] = user?.Title;
+                  }
+                  fetchedProject?.AssignedUser?.push(newuserdata);
+                });
+              }
+            });
+            setProjectTitle(fetchedProject?.Title);
+            if (fetchedProject?.smartService != undefined) {
+              smartComponentData = fetchedProject.smartService
+            }
+            if (fetchedProject?.smartComponent != undefined) {
+              linkedComponentData = fetchedProject.smartComponent
+            }
+            setMasterdata((prev: any) => fetchedProject);
+          })
 
-          setProjectTitle(AllUsers[0].Title);
-          setCount(count + 1)
-          if (AllUsers[0].smartService != undefined && AllUsers[0].smartService.length > 0) {
-            smartComponentData = AllUsers[0].smartService
-          }
-          if (AllUsers[0].smartComponent != undefined && AllUsers[0].smartComponent.length > 0) {
-            linkedComponentData = AllUsers[0].smartComponent
-          }
-        }
-        setMasterdata(AllUsers[0]);
+
       } catch (error) {
         console.log(error)
       }
@@ -324,7 +311,6 @@ const ProjectManagementMain = (props: any) => {
     }
   };
 
-  // Load All Component And Services
   const callBackData = React.useCallback((elem: any, ShowingData: any) => {
 
 
@@ -487,14 +473,15 @@ const ProjectManagementMain = (props: any) => {
           .get();
         if (smartmeta.length > 0) {
           smartmeta?.map((site: any) => {
-            if (site?.Title != "Master Tasks" && site?.Title != "SDC Sites"&&site?.IsVisible==true) {
+            if (site?.Title != "Master Tasks" && site?.Title != "SDC Sites" && site?.IsVisible == true) {
               siteConfig.push(site)
             }
           })
+          LoadAllSiteTasks();
         } else {
           siteConfig = smartmeta;
         }
-        LoadAllSiteTasks();
+
       } catch (error) {
         console.log(error)
 
@@ -583,16 +570,16 @@ const ProjectManagementMain = (props: any) => {
             .get();
           arraycount++;
           smartmeta.map((items: any) => {
-             if(items?.SmartInformation?.length>0){
-              allSmartInfo?.map((smart:any)=>{
-                if(smart?.Id==items?.SmartInformation[0]?.Id){
+            if (items?.SmartInformation?.length > 0) {
+              allSmartInfo?.map((smart: any) => {
+                if (smart?.Id == items?.SmartInformation[0]?.Id) {
                   // var smartdata=[]
                   // smartdata.push(smart)
-                  items.SmartInformation=[smart]
+                  items.SmartInformation = [smart]
                 }
-                
+
               })
-             }
+            }
             items.AllTeamMember = [];
             items.HierarchyData = [];
             items.siteType = config.Title;
@@ -743,16 +730,8 @@ const ProjectManagementMain = (props: any) => {
 
 
   const LoadAllSiteAllTasks = async function () {
-    await loadAllComponent()
     let AllSiteTasks: any = [];
-    let approverTask: any = [];
-    let SharewebTask: any = [];
-    let AllImmediates: any = [];
-    let AllEmails: any = [];
-    let AllBottleNeckTasks: any = [];
-    let AllPriority: any = [];
-    let query =
-      "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
+    "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
     let Counter = 0;
     let web = new Web(AllListId?.siteUrl);
     let arraycount = 0;
@@ -881,14 +860,14 @@ const ProjectManagementMain = (props: any) => {
     setCreateTaskId({ portfolioData: items, portfolioType: 'Component' });
     setisOpenCreateTask(true)
   }
-  const openRemark=(items:any)=>{
+  const openRemark = (items: any) => {
     setRemarkData(items)
-    if(items.SmartInformation.length>0){
+    if (items.SmartInformation.length > 0) {
       setEditSmartInfo(true);
-    }else{
-      setEditSmartInfo(false);  
+    } else {
+      setEditSmartInfo(false);
     }
-   setRemark(true);
+    setRemark(true);
   }
   const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
     if (functionType == 'close') {
@@ -1096,7 +1075,7 @@ const ProjectManagementMain = (props: any) => {
                   {row?.original?.Title}
                 </a>
               )}
-              {row?.original?.Body !== null && row?.original?.Body !=undefined ? <InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} />:''}
+              {row?.original?.Body !== null && row?.original?.Body != undefined ? <InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} /> : ''}
             </span>
           </>
         ),
@@ -1234,17 +1213,18 @@ const ProjectManagementMain = (props: any) => {
         header: "",
         size: 110
       },
-      {   accessorFn: (row) => row?.SmartInformation[0]?.Title,
+      {
+        accessorFn: (row) => row?.SmartInformation[0]?.Title,
         cell: ({ row }) => (
-          <span  style={{ display: "flex", width: "100%", height: "100%" }} className='d-flex'  onClick={() => openRemark(row?.original)}>
-           &nbsp; {row?.original?.SmartInformation[0]?.Title}
+          <span style={{ display: "flex", width: "100%", height: "100%" }} className='d-flex' onClick={() => openRemark(row?.original)}>
+            &nbsp; {row?.original?.SmartInformation[0]?.Title}
           </span>
         ),
         id: 'SmartInformation',
         resetSorting: false,
         resetColumnFilters: false,
         placeholder: "Remarks",
-        header:'',
+        header: '',
         size: 125
       },
       // {
@@ -1668,11 +1648,7 @@ const ProjectManagementMain = (props: any) => {
                                   <dd className="bg-light">
                                     <span>
                                       <a>
-                                        {Masterdata.DueDate != null
-                                          ? Moment(Masterdata?.Duedate).format(
-                                            "DD/MM/YYYY"
-                                          )
-                                          : ""}
+                                        {Masterdata?.DisplayDueDate}
                                       </a>
                                     </span>
                                     <span
@@ -1871,16 +1847,16 @@ const ProjectManagementMain = (props: any) => {
               selectionType={"Multi"}
             ></ServiceComponentPortfolioPopup>
           )}
-          {remark&&<SmartInformation Id={remarkData?.Id}
-           AllListId={AllListId}
+          {remark && <SmartInformation Id={remarkData?.Id}
+            AllListId={AllListId}
             Context={props?.Context}
-             taskTitle={remarkData?.Title}
-              listName={remarkData?.siteType}
-              showHide={"projectManagement"}
-              setRemark={setRemark}
+            taskTitle={remarkData?.Title}
+            listName={remarkData?.siteType}
+            showHide={"projectManagement"}
+            setRemark={setRemark}
             editSmartInfo={editSmartInfo}
-              RemarkData={remarkData}
-              />}
+            RemarkData={remarkData}
+          />}
         </>
       ) : (
         <div>Project not found</div>
