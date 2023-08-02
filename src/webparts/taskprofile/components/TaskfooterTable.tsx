@@ -70,7 +70,7 @@ function IndeterminateCheckbox(
     <input
       type="checkbox"
       ref={ref}
-      className={className + " cursor-pointer"}
+      className={className + "cursor-pointer form-check-input me-1  "}
       {...rest}
     />
   );
@@ -87,7 +87,7 @@ function Filter({
   const columnFilterValue = column.getFilterValue();
 
   return (
-    <input style={{ width: "100%" }} className="me-1 mb-1 on-search-cross"
+    <input style={{ width: "100%" }} className="me-1 mb-1 mt-1 on-search-cross form-control "
 
       title={placeholder?.placeholder}
       type="search"
@@ -776,13 +776,13 @@ function TasksTable(props: any) {
                 {row?.original?.Author != undefined ? (
                   <>
                     <span>{moment(row?.original?.Created).format("DD/MM/YYYY")}</span>
-                    <img className="AssignUserPhoto" title={row?.original?.Author?.Title} src={findUserByName(row?.original?.Author?.Id)}
+                    <img className="workmember ms-1" title={row?.original?.Author?.Title} src={findUserByName(row?.original?.Author?.Id)}
                     />
 
                   </>
                 ) : (
                   <img
-                    className="AssignUserPhoto"
+                    className="workmember ms-1"
                     src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"
                   />
                 )}{" "}
@@ -801,8 +801,8 @@ function TasksTable(props: any) {
         cell: ({ row, getValue }) => (
           <>
             {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && (
-              <a onClick={(e) => EditData(e, row?.original)} >
-                <span className="svg__iconbox svg__icon--clock"></span>
+              <a className='time-icons' onClick={(e) => EditData(e, row?.original)} >
+                <span title='Time' className="svg__iconbox svg__icon--clock"></span>
               </a>
             )}
             {getValue()}
@@ -822,8 +822,8 @@ function TasksTable(props: any) {
              topTaskresIcon?<span onClick={()=>setTasksRestruct(true)}>
                { 
                  (checkedList[0].Services != undefined &&  checkedList[0].Services.length > 0 ? 
-                  <img className="icon-sites-img" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png" /> :
-                 <img className="icon-sites-img" src='https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png' />
+                  <img title='Restructure' className="icon-sites-img" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png" /> :
+                 <img title='Restructure' className="icon-sites-img" src='https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png' />
               )
                } 
               </span>:<span></span> 
@@ -838,7 +838,7 @@ function TasksTable(props: any) {
               {row?.original?.isRestructureActive && (
               <span onClick={(e) => OpenModal(row?.original)}><img className="icon-sites-img me-2" src={row?.original?.Restructuring} /> </span>)}
               {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && (
-                <span onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit"></span>
+                <span title='Edit' onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit"></span>
               )}
             </a>
             {getValue()}
@@ -1397,7 +1397,7 @@ function TasksTable(props: any) {
         <div className="col-sm-12 pad0 smart" >
           <div className="">
             <div className={`${data.length > 10 ? "wrapper" : "MinHeight"}`}>
-              <table className="SortingTable table table-hover" style={{ width: "100%" }}>
+              <table className=" Improvementstable SortingTable table table-hover" style={{ width: "100%" }}>
                 <thead className='fixed-Header top-0'>
                   {table.getHeaderGroups().map((headerGroup: any) => (
                     <tr key={headerGroup.id}>
@@ -1418,7 +1418,7 @@ function TasksTable(props: any) {
                                 {header.column.getCanSort() ? <div
                                   {...{
                                     className: header.column.getCanSort()
-                                      ? "cursor-pointer select-none shorticon"
+                                      ? "cursor-pointer  select-none shorticon"
                                       : "",
                                     onClick: header.column.getToggleSortingHandler(),
                                   }}
