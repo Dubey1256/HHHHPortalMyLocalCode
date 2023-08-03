@@ -101,7 +101,7 @@ const AddCommentComponent = (FbData: any) => {
                 isApprovalComment: MarkAsApproval,
                 isShowLight: '',
             };
-            FeedBackArray.push(temp);
+            FeedBackArray.unshift(temp);
         }
         FbData.callBack(status, FeedBackArray, Index);
         setMarkAsApproval(false)
