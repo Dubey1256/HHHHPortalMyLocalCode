@@ -17,6 +17,7 @@ import {
 } from "@tanstack/react-table";
 import { RankingInfo, rankItem, compareItems } from "@tanstack/match-sorter-utils";
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp, FaInfoCircle, FaChevronRight, FaChevronDown, FaChevronLeft, FaAngleDoubleRight, FaAngleDoubleLeft } from 'react-icons/fa';
+import {SlArrowRight, SlArrowLeft, SlArrowUp, SlArrowDown} from "react-icons/sl";
 import { HTMLProps } from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -131,7 +132,7 @@ export function IndeterminateCheckbox(
         <input
             type="checkbox"
             ref={ref}
-            className={className + " cursor-pointer"}
+            className={className + "form-check-input cursor-pointer"}
             {...rest}
         />
     );
