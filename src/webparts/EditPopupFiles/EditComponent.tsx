@@ -3231,7 +3231,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                         <label className="form-label  full-width"></label>
                         <input
                           type="text"
-                          className="form-control"
+                          className="form-control me-1"
                           defaultValue={
                             EditData.component_x0020_link != null
                               ? EditData.component_x0020_link
@@ -3242,7 +3242,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                           }
                           placeholder="Url"
                         ></input>
-                        <span><a target="_blank" data-interception="off" href={EditData.component_x0020_link}> Open </a></span>
+                        <span> <a target="_blank" data-interception="off" href={EditData.component_x0020_link}> Open  </a></span>
                       </div>
                     </div>
                   </div>
