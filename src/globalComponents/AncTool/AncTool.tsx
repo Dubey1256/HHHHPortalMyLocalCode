@@ -27,8 +27,10 @@ let backupCurrentFolder: any = [];
 let AllFilesAndFolderBackup: any = [];
 let folders: any = [];
 let rootSiteName = '';
+let TaskTypes: any = [];
 let createNewDocType: any = '';
 let siteName: any = '';
+let generatedLocalPath = '';
 const itemRanks: any[] = [
     { rankTitle: 'Select Item Rank', rank: null },
     { rankTitle: '(8) Top Highlights', rank: 8 },
@@ -52,6 +54,8 @@ const AncTool = (props: any) => {
     const [newSubFolderName, setNewSubFolderName]: any = React.useState('');
     const [selectPathFromPopup, setSelectPathFromPopup]: any = React.useState('');
     const [selectedFile, setSelectedFile] = React.useState(null);
+    const [ShowConfirmation, setShowConfirmation]: any = React.useState(false);
+    const [UploadedDocDetails, setUploadedDocDetails] = React.useState(null);
     const [newlyCreatedFile, setNewlyCreatedFile]: any = React.useState(null);
     const [itemRank, setItemRank] = React.useState(5);
     const [selectedPath, setSelectedPath] = React.useState({
@@ -65,6 +69,7 @@ const AncTool = (props: any) => {
     const [ExistingFiles, setExistingFiles]: any = React.useState([]);
     const [DocsToTag, setDocsToTag]: any = React.useState([]);
     React.useEffect(() => {
+        GetSmartMetadata();
         siteUrl = props?.Context?.pageContext?.web?.absoluteUrl;
         if (props?.item != undefined) {
             setItem(props?.item)
@@ -75,7 +80,7 @@ const AncTool = (props: any) => {
         pathGenerator();
         rootSiteName = props.Context.pageContext.site.absoluteUrl.split(props.Context.pageContext.site.serverRelativeUrl)[0];
     }, [])
-
+    // Generate Path And Basic Calls
     const pathGenerator = async () => {
         const params = new URLSearchParams(window.location.search);
         var query = window.location.search.substring(1);
@@ -86,25 +91,21 @@ const AncTool = (props: any) => {
         Href = Href.toLowerCase().split('?')[0]
         Href = Href.split('#')[0];
         siteName = params.get("Site");
-        let path = '';
+     
         if (siteName?.length > 0) {
             if (siteName === "Offshore Tasks") {
                 siteName = "OffShoreTask";
             }
-            if (props?.item?.Services?.length > 0) {
-                path = `/documents/tasks/Service-tasks/${siteName}/${props?.item?.Title}`
-            } else {
-                path = `/documents/tasks/Component-tasks/${siteName}/${props?.item?.Title}`
-            }
+            generatedLocalPath = `/documents/tasks/${siteName}`
         } else {
             if (ServicesTaskCheck) {
-                path = `/documents/Service-Portfolio/${props?.item?.Title}`
+                generatedLocalPath = `/documents/Service-Portfolio/${props?.item?.Title}`
             } else {
-                path = `/documents/Component-Portfolio/${props?.item?.Title}`
+                generatedLocalPath = `/documents/Component-Portfolio/${props?.item?.Title}`
             }
         }
-        let displayUrl = props?.Context?.pageContext?.web?.serverRelativeUrl + path
-        let internalPath = siteUrl + path
+        let displayUrl = props?.Context?.pageContext?.web?.serverRelativeUrl + generatedLocalPath
+        let internalPath = siteUrl + generatedLocalPath
         setSelectedPath({
             ...selectedPath,
             displayPath: displayUrl,
@@ -116,16 +117,34 @@ const AncTool = (props: any) => {
         setAllFoldersGrouped(groupedFolders);
         setAllFilesAndFolder(allFiles);
         AllFilesAndFolderBackup = allFiles;
-        checkFolderExistence(props?.item?.Title);
+        checkFolderExistence(siteName,displayUrl);
     }
-    const checkFolderExistence = (title: any) => {
+    const checkFolderExistence = (title: any,path:any) => {
+       let currentPath:any=`${rootSiteName}${path}`;
         AllFilesAndFolderBackup?.map((File: any) => {
-            if (File?.FileLeafRef == title && File?.FileSystemObjectType == 1) {
+            if (File?.FileLeafRef == title && File?.FileSystemObjectType == 1 && File?.EncodedAbsUrl?.toLowerCase()==currentPath?.toLowerCase()) {
                 setFolderExist(true)
             }
         })
     }
+    const GetSmartMetadata = async () => {
+        let MetaData = [];
+        MetaData = await sp.web.lists
+            .getById(props.AllListId.SmartMetadataListID)
+            .items
+            .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,Parent/Id,Parent/Title,EncodedAbsUrl,IsVisible,Created,Item_x0020_Cover,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,AlternativeTitle")
+            .top(4999)
+            .expand('Author,Editor,Parent')
+            .get();
 
+        MetaData?.map((data: any) => {
+            if (data?.Parent?.Title === 'Type' && data?.TaxType === 'Categories') {
+                TaskTypes.push(data);
+            }
+        })
+
+    }
+    // Create Group Hierarchy of Folder //
     const createGrouping = (): any[] => {
         const groupedFolder: any[] = [];
         let copyFolders = JSON.parse(JSON.stringify(folders));
@@ -157,8 +176,7 @@ const AncTool = (props: any) => {
 
         return groupedFolder;
     };
-
-
+    // Get Files And Folders From Server //
     async function getExistingUploadedDocuments(): Promise<any[]> {
         try {
             let alreadyTaggedFiles: any = [];
@@ -195,6 +213,54 @@ const AncTool = (props: any) => {
             return [];
         }
     }
+    const fetchFilesByPath = async (folderPath: any) => {
+        fetchFilesFromFolder(folderPath)
+            .then((files) => {
+                files?.map((file: any) => {
+                    file.docType = getFileType(file?.Name)
+                })
+                backupCurrentFolder = files;
+                setCurrentFolderFiles(files)
+            })
+            .catch((error) => {
+                console.log('An error occurred:', error);
+            });
+
+    }
+    async function fetchFilesFromFolder(folderPath: string): Promise<any[]> {
+        try {
+            const folder = sp.web.getFolderByServerRelativeUrl(folderPath);
+            const files = await folder.files.get();
+
+            return files;
+        } catch (error) {
+            console.log('An error occurred while fetching files:', error);
+            return [];
+        }
+    }
+    function getFileType(fileName: any) {
+        const regex = /(?:\.([^.]+))?$/;
+        const match = regex.exec(fileName);
+        if (match === null) {
+            return null;
+        }
+        return match[1];
+    }
+    //End//
+
+    // Searching Functions //
+    const searchCurrentFolder = (value: any) => {
+        if (value?.length > 0) {
+            setCurrentFolderFiles((prevFile: any) => {
+                return backupCurrentFolder.filter((file: any) => {
+                    return file?.Title?.toLowerCase()?.includes(value?.toLowerCase());
+                });
+            });
+        } else {
+            setCurrentFolderFiles(backupCurrentFolder);
+        }
+
+    }
     const searchExistingFile = (value: any) => {
         if (value?.length > 0) {
             setExistingFiles((prevFile: any) => {
@@ -204,7 +270,132 @@ const AncTool = (props: any) => {
             setExistingFiles(backupExistingFiles);
         }
     }
+    //End
+    const setModalIsOpenToFalse = () => {
+        setSelectedFile(null);
+        setModalIsOpen(false);
+    }
+    // Main Popup Header//
+    const onRenderCustomHeaderMain = () => {
+        return (
+            <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
+                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                    <img className="imgWid29 pe-1 mb-1 " src={Item?.SiteIcon} />
+                    <span className="siteColor">
+                        {`Add & Connect Tool - ${Item.TaskId != undefined || Item.TaskId != null ? Item.TaskId : ""} ${Item.Title != undefined || Item.Title != null ? Item.Title : ""}`}
+                    </span>
+                </div>
+                <Tooltip ComponentId="528" />
+            </div>
+        );
+    };
+    //End//
+    // File Drag And Drop And Upload
+    const handleFileDrop = (event: any) => {
+        event.preventDefault();
+        const file = event.dataTransfer.files[0];
+        setSelectedFile(file);
+    };
+    const handleFileInputChange = (event: any) => {
+        const file = event.target.files[0];
+        setSelectedFile(file);
+    };
+    const handleRankChange = (event: any) => {
+        const rank = parseInt(event.target.value);
+        setItemRank(rank);
+    };
+    const handleUpload = async () => {
+        let isFolderAvailable = folderExist;
+        let fileName = ''
+        let uploadPath = selectedPath.displayPath;
+        let taggedDocument = {
+            fileName: '',
+            docType: '',
+            uploaded: false,
+            tagged: false,
+            link: '',
+            size:''
+        }
+        if(renamedFileName?.length > 0){
+            fileName=renamedFileName;
+        }else{
+            fileName=selectedFile?.name;
+        }
+        if (isFolderAvailable == false) {
+            try {
+                await CreateFolder(`${props?.Context?.pageContext?.web?.serverRelativeUrl}${generatedLocalPath?.split(siteName)[0]}`, siteName).then((data: any) => {
+                    isFolderAvailable = true
+                    setFolderExist(true)
+                })
 
+            } catch (error) {
+                console.log('An error occurred while creating the folder:', error);
+            }
+        }
+        if (isFolderAvailable == true) {
+            try {
+                // Read the file content
+                const reader = new FileReader();
+                reader.onloadend = async () => {
+                    const fileContent = reader.result as ArrayBuffer;
+                   
+                    // Upload the file
+                    await sp.web
+                        .getFolderByServerRelativeUrl(uploadPath)
+                        .files.add(fileName, fileContent, true).then(async (uploadedFile: any) => {
+
+                            setTimeout(async () => {
+                                const fileItems = await getExistingUploadedDocuments()
+                                fileItems?.map(async (file: any) => {
+                                    if (file?.FileDirRef != undefined && file?.FileDirRef?.toLowerCase() == uploadPath?.toLowerCase() && file?.FileSystemObjectType == 0 && file?.FileLeafRef == selectedFile?.name) {
+                                        let resultArray: any = [];
+                                        resultArray.push(props?.item?.Id)
+                                        let siteColName = `${siteName}Id`
+                                        let fileSize=getSizeString(newlyCreatedFile?.byteLength)
+                                        taggedDocument = {
+                                            ...taggedDocument,
+                                            fileName: fileName,
+                                            docType: createNewDocType,
+                                            uploaded: true,
+                                            link: `${rootSiteName}${selectedPath.displayPath}/${fileName}`,
+                                            size:fileSize
+                                        }
+                                        // Update the document file here
+                                        let postData = {
+                                            [siteColName]: { "results": resultArray },
+                                            ItemRank: itemRank,
+                                            Title:fileName 
+                                        }
+                                        await sp.web.lists.getByTitle('Documents').items.getById(file.Id)
+                                            .update(postData).then((updatedFile: any) => {
+                                                file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
+                                                setDocsToTag([...DocsToTag, ...[file]])
+                                                pathGenerator()
+                                                taggedDocument.tagged = true;
+                                                setRenamedFileName('')
+                                                return file;
+                                            })
+                                        console.log("File uploaded successfully.", file);
+                                    }
+                                })
+                            }, 2000);
+
+                        });
+                        setUploadedDocDetails(taggedDocument);
+                        setShowConfirmation(true)
+
+                };
+
+                reader.readAsArrayBuffer(selectedFile);
+            } catch (error) {
+                console.log("File upload failed:", error);
+            }
+        }
+        setSelectedFile(null);
+        setItemRank(5);
+    };
+    //End //
+    // Tag and Untag Existing Documents//
     const tagSelectedDoc = async (file: any) => {
         let resultArray: any = [];
         if (file[siteName] != undefined && file[siteName].length > 0) {
@@ -247,178 +438,7 @@ const AncTool = (props: any) => {
         }
 
     }
-    const fetchFilesByPath = async (folderPath: any) => {
-        fetchFilesFromFolder(folderPath)
-            .then((files) => {
-                files?.map((file: any) => {
-                    file.docType = getFileType(file?.Name)
-                })
-                backupCurrentFolder = files;
-                setCurrentFolderFiles(files)
-            })
-            .catch((error) => {
-                console.log('An error occurred:', error);
-            });
-
-    }
-
-    function getFileType(fileName: any) {
-        const regex = /(?:\.([^.]+))?$/;
-        const match = regex.exec(fileName);
-        if (match === null) {
-            return null;
-        }
-        return match[1];
-    }
-    async function fetchFilesFromFolder(folderPath: string): Promise<any[]> {
-        try {
-            const folder = sp.web.getFolderByServerRelativeUrl(folderPath);
-            const files = await folder.files.get();
-
-            return files;
-        } catch (error) {
-            console.log('An error occurred while fetching files:', error);
-            return [];
-        }
-    }
-    const searchCurrentFolder = (value: any) => {
-        if (value?.length > 0) {
-            setCurrentFolderFiles((prevFile: any) => {
-                return backupCurrentFolder.filter((file: any) => {
-                    return file?.Title?.toLowerCase()?.includes(value?.toLowerCase());
-                });
-            });
-        } else {
-            setCurrentFolderFiles(backupCurrentFolder);
-        }
-
-    }
-    const setModalIsOpenToFalse = () => {
-        setSelectedFile(null);
-        setModalIsOpen(false);
-    }
-    const onRenderCustomHeaderMain = () => {
-        return (
-            <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
-                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <img className="imgWid29 pe-1 mb-1 " src={Item?.SiteIcon} />
-                    <span className="siteColor">
-                        {`Add & Connect Tool - ${Item.TaskId != undefined || Item.TaskId != null ? Item.TaskId : ""} ${Item.Title != undefined || Item.Title != null ? Item.Title : ""}`}
-                    </span>
-                </div>
-                <Tooltip ComponentId="528" />
-            </div>
-        );
-    };
-
-
-    const handleFileDrop = (event: any) => {
-        event.preventDefault();
-        const file = event.dataTransfer.files[0];
-        setSelectedFile(file);
-    };
-
-    const handleFileInputChange = (event: any) => {
-        const file = event.target.files[0];
-        setSelectedFile(file);
-    };
-
-    const handleRankChange = (event: any) => {
-        const rank = parseInt(event.target.value);
-        setItemRank(rank);
-    };
-    const CreateFolder = async (path: any, folderName: any): Promise<any> => {
-        try {
-            const library = sp.web.lists.getByTitle('Documents');
-            const parentFolder = sp.web.getFolderByServerRelativeUrl(path);
-            const data = await parentFolder.folders.add(folderName);
-            console.log('Folder created successfully.');
-            data?.data?.ServerRelativeUrl?.replaceAll('%20', ' ');
-            let newFolder = {
-                parentFolderUrl: rootSiteName + path,
-                FileLeafRef: folderName,
-                FileDirRef: path,
-                isExpanded: false,
-                EncodedAbsUrl: rootSiteName + data.data.ServerRelativeUrl,
-                FileSystemObjectType: 1
-            }
-
-            folders.push(newFolder);
-
-            AllFilesAndFolderBackup.push(newFolder);
-            setAllFilesAndFolder(AllFilesAndFolderBackup);
-            return newFolder; // Return the folder object here
-        } catch (error) {
-            return Promise.reject(error);
-        }
-    }
-    const handleUpload = async () => {
-        let isFolderAvailable = folderExist;
-        let uploadPath = selectedPath.displayPath;
-
-
-        if (isFolderAvailable == false) {
-            try {
-                await CreateFolder(selectedPath?.displayPath?.split(props?.item?.Title)[0], props?.item?.Title).then((data: any) => {
-                    isFolderAvailable = true
-                    setFolderExist(true)
-                })
-
-            } catch (error) {
-                console.log('An error occurred while creating the folder:', error);
-            }
-        }
-        if (isFolderAvailable == true) {
-            try {
-                // Read the file content
-                const reader = new FileReader();
-                reader.onloadend = async () => {
-                    const fileContent = reader.result as ArrayBuffer;
-
-                    // Upload the file
-                    await sp.web
-                        .getFolderByServerRelativeUrl(uploadPath)
-                        .files.add(selectedFile?.name, fileContent, true).then(async (uploadedFile: any) => {
-                            setTimeout(async () => {
-                                const fileItems = await getExistingUploadedDocuments()
-                                fileItems?.map(async (file: any) => {
-                                    if (file?.FileDirRef != undefined && file?.FileDirRef?.toLowerCase() == uploadPath?.toLowerCase() && file?.FileSystemObjectType == 0 && file?.FileLeafRef == selectedFile?.name) {
-                                        let resultArray: any = [];
-                                        resultArray.push(props?.item?.Id)
-                                        let siteColName = `${siteName}Id`
-                                        // Update the document file here
-                                        let postData = {
-                                            [siteColName]: { "results": resultArray },
-                                            ItemRank: itemRank,
-                                            Title: renamedFileName?.length > 0 ? renamedFileName : selectedFile?.name?.split(`.${file.docType}`)[0]
-                                        }
-                                        await sp.web.lists.getByTitle('Documents').items.getById(file.Id)
-                                            .update(postData).then((updatedFile: any) => {
-                                                file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
-                                                setDocsToTag([...DocsToTag, ...[file]])
-                                                alert(`The file '${renamedFileName?.length > 0 ? renamedFileName : selectedFile?.name}' has been successfully tagged to the task '${props?.item?.TaskId}'.Please refresh the page to get the changes.`);
-                                                pathGenerator()
-                                                setRenamedFileName('')
-                                                return file;
-                                            })
-                                        console.log("File uploaded successfully.", file);
-                                    }
-                                })
-                            }, 2000);
-
-                        });
-
-
-                };
-
-                reader.readAsArrayBuffer(selectedFile);
-            } catch (error) {
-                console.log("File upload failed:", error);
-            }
-        }
-        setSelectedFile(null);
-        setItemRank(5);
-    };
+    //End //
     // Create Files direct From Code And Tag
     async function createBlankWordDocx() {
         createNewDocType = 'docx'
@@ -426,7 +446,6 @@ const AncTool = (props: any) => {
         setNewlyCreatedFile(jsonResult)
         setFileNamePopup(true)
     }
-
     async function createBlankExcelXlsx() {
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet('Sheet1');
@@ -436,7 +455,6 @@ const AncTool = (props: any) => {
         setNewlyCreatedFile(buffer)
         setFileNamePopup(true)
     }
-
     async function createBlankPowerPointPptx() {
         createNewDocType = 'pptx'
         const pptx = new pptxgen();
@@ -448,11 +466,19 @@ const AncTool = (props: any) => {
         })
     }
     const CreateNewAndTag = async () => {
+        let taggedDocument = {
+            fileName: '',
+            docType: '',
+            uploaded: false,
+            tagged: false,
+            link: '',
+            size:''
+        }
         let isFolderAvailable = folderExist;
         let fileName = ''
         if (isFolderAvailable == false) {
             try {
-                await CreateFolder(selectedPath?.displayPath?.split(props?.item?.Title)[0], props?.item?.Title).then((data: any) => {
+                await CreateFolder(`${props?.Context?.pageContext?.web?.serverRelativeUrl}${generatedLocalPath?.split(siteName)[0]}`, siteName).then((data: any) => {
                     isFolderAvailable = true
                     setFolderExist(true)
                 })
@@ -471,6 +497,15 @@ const AncTool = (props: any) => {
                 await sp.web
                     .getFolderByServerRelativeUrl(selectedPath.displayPath)
                     .files.add(fileName, newlyCreatedFile, true).then(async (uploadedFile: any) => {
+                        let fileSize=getSizeString(newlyCreatedFile?.byteLength)
+                        taggedDocument = {
+                            ...taggedDocument,
+                            fileName: fileName,
+                            docType: createNewDocType,
+                            uploaded: true,
+                            link: `${rootSiteName}${selectedPath.displayPath}/${fileName}`,
+                            size:fileSize
+                        }
                         setTimeout(async () => {
                             const fileItems = await getExistingUploadedDocuments()
                             fileItems?.map(async (file: any) => {
@@ -488,7 +523,7 @@ const AncTool = (props: any) => {
                                         .update(postData).then((updatedFile: any) => {
                                             file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
                                             setDocsToTag([...DocsToTag, ...[file]])
-                                            alert(`The file '${fileName}' has been successfully tagged to the task '${props?.item?.TaskId}'. Please refresh the page to get the changes.`);
+                                            taggedDocument.tagged = true;
                                             pathGenerator()
                                             cancelNewCreateFile()
                                             return file;
@@ -499,11 +534,27 @@ const AncTool = (props: any) => {
                         }, 2000);
 
                     });
+                setUploadedDocDetails(taggedDocument);
+                setShowConfirmation(true)
             } catch (error) {
                 console.log("File upload failed:", error);
             }
         }
     }
+    const getSizeString = (sizeInBytes: number): string => {
+        const kbThreshold = 1024;
+        const mbThreshold = kbThreshold * 1024;
+      
+        if (sizeInBytes < kbThreshold) {
+          return `${sizeInBytes} KB`;
+        } else if (sizeInBytes < mbThreshold) {
+          const sizeInKB = (sizeInBytes / kbThreshold).toFixed(2);
+          return `${sizeInKB} KB`;
+        } else {
+          const sizeInMB = (sizeInBytes / mbThreshold).toFixed(2);
+          return `${sizeInMB} MB`;
+        }
+      };
     //File Name Popup
     const cancelNewCreateFile = () => {
         setFileNamePopup(false);
@@ -511,7 +562,6 @@ const AncTool = (props: any) => {
         setRenamedFileName('');
         createNewDocType = '';
     }
-
     // Choose Path Folder
     const cancelPathFolder = () => {
         setChoosePathPopup(false);
@@ -546,7 +596,10 @@ const AncTool = (props: any) => {
             return updatedFolders;
         });
     };
-
+    const setFolderPathFromPopup = (folderName: any) => {
+        let selectedfolderName = folderName.split(rootSiteName)[1];
+        setSelectPathFromPopup(selectedfolderName === selectPathFromPopup ? '' : selectedfolderName);
+    };
     const Folder = ({ folder, onToggle }: any) => {
         const hasChildren = folder.subRows && folder.subRows.length > 0;
 
@@ -575,6 +628,7 @@ const AncTool = (props: any) => {
             </li>
         );
     };
+    // Choose Path Popup Footer 
     const onRenderCustomFooterMain = () => {
         return (<>
 
@@ -600,7 +654,32 @@ const AncTool = (props: any) => {
         </>
         );
     };
+    // Create New Folder
+    const CreateFolder = async (path: any, folderName: any): Promise<any> => {
+        try {
+            const library = sp.web.lists.getByTitle('Documents');
+            const parentFolder = sp.web.getFolderByServerRelativeUrl(path);
+            const data = await parentFolder.folders.add(folderName);
+            console.log('Folder created successfully.');
+            data?.data?.ServerRelativeUrl?.replaceAll('%20', ' ');
+            let newFolder = {
+                parentFolderUrl: rootSiteName + path,
+                FileLeafRef: folderName,
+                FileDirRef: path,
+                isExpanded: false,
+                EncodedAbsUrl: rootSiteName + data.data.ServerRelativeUrl,
+                FileSystemObjectType: 1
+            }
 
+            folders.push(newFolder);
+
+            AllFilesAndFolderBackup.push(newFolder);
+            setAllFilesAndFolder(AllFilesAndFolderBackup);
+            return newFolder; // Return the folder object here
+        } catch (error) {
+            return Promise.reject(error);
+        }
+    }
     const CreateSubFolder = async () => {
         try {
             const newFolder = await CreateFolder(selectPathFromPopup, newSubFolderName);
@@ -634,10 +713,11 @@ const AncTool = (props: any) => {
             console.error('Error creating subfolder:', error);
         }
     }
-    const setFolderPathFromPopup = (folderName: any) => {
-        let selectedfolderName = folderName.split(rootSiteName)[1];
-        setSelectPathFromPopup(selectedfolderName === selectPathFromPopup ? '' : selectedfolderName);
-    };
+    // Confirmation Popup Functions//
+    const cancelConfirmationPopup = () => {
+        setShowConfirmation(false)
+        setUploadedDocDetails(undefined);
+    }
 
     return (
         <>
@@ -745,7 +825,7 @@ const AncTool = (props: any) => {
                                             }
                                             <div>
 
-                                                <span>{folderExist == true ? <span>{selectedPath?.displayPath}</span> : <span>{selectedPath?.displayPath?.split(props?.item?.Title)}<span className='highlighted'>{props?.item?.Title}
+                                                <span>{folderExist == true ? <span>{selectedPath?.displayPath}</span> : <span>{selectedPath?.displayPath?.split(siteName)}<span className='highlighted'>{siteName}
                                                     <div className="popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
                                                         <span className="svg__iconbox svg__icon--info " ></span>
                                                         <div className="popover__content">
@@ -895,6 +975,48 @@ const AncTool = (props: any) => {
                     </footer>
                 </div>
             </Modal>
+
+            <Modal show={ShowConfirmation} isOpen={ShowConfirmation} size='mg' isBlocking={ShowConfirmation} className={ServicesTaskCheck ? "serviepannelgreena " : ""} containerClassName="custommodalpopup p-2">
+                <div className="modal-content rounded-0">
+                    <div className="modal-header">
+                        <h5 className="modal-title">Upload Documents - Confirmation</h5>
+                        <span onClick={() => cancelConfirmationPopup()}><i className="svg__iconbox svg__icon--cross crossBtn"></i></span>
+                    </div>
+                    <div className="modal-body p-2">
+                        <div><strong>Folder :</strong> <a href={`${rootSiteName}${selectedPath?.displayPath}`} target="_blank" data-interception="off" className='hreflink'> {selectedPath?.displayPath}</a><span className="svg__iconbox svg__icon--folder ms-1"></span></div>
+                        <div><strong>Metadat-Tag :</strong> <span>{props?.item?.Title}</span></div>
+                        <div className="row">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>&nbsp;</th>
+                                        <th>File Name</th>
+                                        <th>Uploaded</th>
+                                        <th>Tagged</th>
+                                        <th>Share Link</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                        <td><span className={`svg__iconbox svg__icon--${UploadedDocDetails?.docType}`}></span></td>
+                                        <td><a href={UploadedDocDetails?.link} target="_blank" data-interception="off" className='hreflink'>{UploadedDocDetails?.fileName}</a>{`(${UploadedDocDetails?.size})`}</td>
+                                        <td>{UploadedDocDetails?.uploaded == true ? <span className='svg__iconbox svg__icon--Completed'></span> : <span className='svg__iconbox svg__icon--cross'></span>}</td>
+                                        <td>{UploadedDocDetails?.tagged == true ? <span className='svg__iconbox svg__icon--Completed'></span> : <span className='svg__iconbox svg__icon--cross'></span>}</td>
+                                        <td>{UploadedDocDetails?.uploaded == true ? <>
+                                            <span className='svg__iconbox svg__icon--link hreflink' title='Copy Link' onClick={() => { navigator.clipboard.writeText(UploadedDocDetails?.link); }}></span>
+                                            <span className='svg__iconbox svg__icon--mail hreflink' title='Share In Mail' onClick={() => { window.open(`mailto:?&subject=${props?.item?.Title}&body=${UploadedDocDetails?.link}`) }}></span>
+                                        </> : <></>}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <footer className='text-end p-2'>
+                        <button className="btn btnPrimary" onClick={() => cancelConfirmationPopup()}>Ok</button>
+                    </footer>
+                </div>
+            </Modal>
+
 
         </>
     )
