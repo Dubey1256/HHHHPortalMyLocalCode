@@ -152,6 +152,7 @@ const GlobalCommanTable = (items: any) => {
     let usedFor: any = items?.usedFor;
     let portfolioColor = items?.portfolioColor;
     let expandIcon = items?.expandIcon;
+    let fixedWidth = items?.fixedWidth;
     // let portfolioTypeData = items?.portfolioTypeData;
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
         []
@@ -171,6 +172,19 @@ const GlobalCommanTable = (items: any) => {
         commentsSearch: { commentsSearch: 'commentsSearch', Selected: true },
         descriptionsSearch: { descriptionsSearch: 'descriptionsSearch', Selected: true },
     });
+
+    React.useEffect(() => {
+        if (fixedWidth === true) {
+            try {
+                $('#spPageCanvasContent').removeClass();
+                $('#spPageCanvasContent').addClass('sixtyHundred')
+                $('#workbenchPageContent').removeClass();
+                $('#workbenchPageContent').addClass('sixtyHundred')
+            } catch (e) {
+                console.log(e);
+            }
+        }
+    }, [fixedWidth === true])
 
     const customGlobalSearch = (row: any, id: any, query: any) => {
         query = query.replace(/\s+/g, " ").trim().toLowerCase();
@@ -307,12 +321,48 @@ const GlobalCommanTable = (items: any) => {
 
 
     const CheckDataPrepre = () => {
+        let itrm: any;
+        let parentData: any;
+        let parentDataCopy: any;
         if (usedFor == "SiteComposition") {
             let finalData: any = table?.getSelectedRowModel()?.flatRows;
             callBackData(finalData);
         } else {
             if (table?.getSelectedRowModel()?.flatRows.length > 0) {
                 table?.getSelectedRowModel()?.flatRows?.map((elem: any) => {
+                    if (elem?.getParentRows() != undefined) {
+                        // parentData = elem?.parentRow;
+                        // parentDataCopy = elem?.parentRow?.original
+                        parentDataCopy = elem?.getParentRows()[0]?.original;
+                        // if (parentData != undefined && parentData?.parentRow != undefined) {
+
+                        //   parentData = elem?.parentRow?.parentRow
+                        //   parentDataCopy = elem?.parentRow?.parentRow?.original
+
+                        //   if (parentData != undefined && parentData?.parentRow != undefined) {
+
+                        //     parentData = elem?.parentRow?.parentRow?.parentRow
+                        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
+                        //   }
+                        //   if (parentData != undefined && parentData?.parentRow != undefined) {
+
+                        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
+                        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                        //   }
+                        //   if (parentData != undefined && parentData?.parentRow != undefined) {
+
+                        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+                        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                        //   }
+                        //   if (parentData != undefined && parentData?.parentRow != undefined) {
+                        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+                        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                        //   }
+                        // }
+                    }
+                    if(parentDataCopy){
+                        elem.original.parentDataId = parentDataCopy
+                    }
                     elem.original.Id = elem.original.ID
                     item = elem.original;
                 });
