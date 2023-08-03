@@ -113,7 +113,6 @@ const SelectedClientCategoryPupup = (props: any) => {
                         </label>
                         <br></br>
                     </React.Fragment>
-                    
                 ))}
 
             </Panel>

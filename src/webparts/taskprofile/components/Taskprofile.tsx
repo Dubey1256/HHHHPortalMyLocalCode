@@ -44,6 +44,7 @@ export interface ITaskprofileState {
   updateComment: boolean;
   showComposition: boolean;
   isOpenEditPopup: boolean;
+  TaskDeletedStatus: boolean;
   isTimeEntry: boolean,
   emailStatus: String,
   countfeedback: any,
@@ -115,6 +116,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       updateComment: false,
       showComposition: true,
       isOpenEditPopup: false,
+      TaskDeletedStatus: false,
       isopenversionHistory: false,
       isTimeEntry: false,
       emailStatus: "",
@@ -809,13 +811,28 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     })
   }
 
-  private CallBack() {
+  private CallBack(FunctionType: any) {
     // ClientTimeArray=[];
-    this.setState({
-      isOpenEditPopup: false,
-      countfeedback: this.state.countfeedback + 1
-    })
-    this.GetResult();
+    if (FunctionType == "Save") {
+      this.setState({
+        isOpenEditPopup: false,
+        EditSiteCompositionStatus: false,
+      })
+      this.GetResult();
+    }
+    if (FunctionType == "Delete") {
+      this.setState({
+        isOpenEditPopup: false,
+        TaskDeletedStatus: true,
+      })
+      window.location.href = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskDashboard.aspx";
+    }
+    if (FunctionType == "Close") {
+      this.setState({
+        isOpenEditPopup: false,
+        EditSiteCompositionStatus: false,
+      })
+    }
   }
 
   private async approvalcallback() {
@@ -945,7 +962,6 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                       else if (component?.Parent?.Id == undefined && self.taskResult?.Services[0]?.ItemType == "Feature") {
                         flag = true
                         breadcrumbitem.Parentitem = subchild;
-
                         breadcrumbitem.Subchild = item;
                       }
                     })
@@ -970,9 +986,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       this.taskResult?.Events?.forEach(function (item: any) {
         flag = false;
         gAllDataMatches?.forEach(function (value: any) {
-
           if (item?.Id == value?.Id) {
-
             if (value?.Parent?.Id != undefined) {
               gAllDataMatches.forEach(function (component: any) {
                 if (component?.Id == value?.Parent?.Id) {
@@ -1103,8 +1117,6 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
   }
 
-
-
   private sendEmail(item: any) {
     var data = this.state.Result;
     if (item == "Approved") {
@@ -1115,8 +1127,6 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     var data = this.state.Result;
     this.setState({
       Result: data,
-
-
     }),
       console.log(item);
     this.setState({
@@ -1595,14 +1605,11 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       hasTeamsContext,
       userDisplayName
     } = this.props;
-
     if (this.state.Result["TaskId"] != undefined && this.state.Result['Title'] != undefined) {
-
       document.title = `${this.state.Result["TaskId"]}-${this.state.Result['Title']}`
     } else {
       document.title = "Task Profile"
     }
-
     return (
       <div className={this.state.Result["Services"] != undefined && this.state.Result["Services"].length > 0 ? 'app component serviepannelgreena' : "app component"}>
         {this.state.maincollection != null && this.state.maincollection.length > 0 &&
@@ -1667,21 +1674,17 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                     }
                   </>
                 })
-
                 }
               </ul>
             </div>
           </div>
-
         }
-
         <section className='row p-0'>
           <h2 className="heading d-flex ps-0 justify-content-between align-items-center">
             <span>
               {this.state.Result["SiteIcon"] != "" && <img className="imgWid29 pe-1 " title={this?.state?.Result?.siteType} src={this.state.Result["SiteIcon"]} />}
               {this.state.Result["SiteIcon"] === "" && <img className="imgWid29 pe-1 " src="" />}
               {this.state.Result['Title']}
-
               <a className="hreflink" title='Edit' onClick={() => this.OpenEditPopUp()}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="25" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
                 {/* <img style={{ width: '16px', height: '16px', borderRadius: '0' }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" /> */}
@@ -1689,8 +1692,6 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
               {this.state.Result["Approver"] != undefined && this.state.Result["Categories"].includes("Approval") && this.currentUser != undefined && this.currentUser.length > 0 && this.state.Result.Approver.Id == this.currentUser[0].Id && this.state.Result["Status"] == "For Approval" &&
                 this.state.Result["PercentComplete"] == 1 && <span><button onClick={() => this.sendEmail("Approved")} className="btn btn-success ms-3 mx-2">Approve</button><span><button className="btn btn-danger" onClick={() => this.sendEmail("Rejected")}>Reject</button></span></span>
               }
-
-
               {this.currentUser != undefined && this.state.sendMail && this.state.emailStatus != "" && <EmailComponenet approvalcallback={() => { this.approvalcallback() }} Context={this.props.Context} emailStatus={this.state.emailStatus} currentUser={this.currentUser} items={this.state.Result} />}
             </span>
             <span className="text-end fs-6"> <a target='_blank' data-interception="off" href={this.oldTaskLink} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span>
@@ -1706,9 +1707,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                     <dt className='bg-Fa'>Task Id</dt>
                     <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["TaskId"]} </span>
                       {TaskIdCSF != "" && <span className="idhide bg-fxdark siteColor">{TaskIdCSF?.replace("-", ">")}{TaskIdAW == "" && this.state.Result["TaskId"] != undefined && <span className='text-body'>{">" + this.state.Result["TaskId"]}</span>} {TaskIdAW != "" && <span className='text-body'>{">" + TaskIdAW?.replace("-", ">")}</span>}</span>}
-
                     </dd>
-
                   </dl>
                   <dl>
                     <dt className='bg-Fa'>Due Date</dt>
@@ -2368,12 +2367,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
             </div>
           </div>
         </div>
-
-        {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} context={this.props.Context} setState={this.setState} AllListId={AllListId} Call={() => { this.CallBack() }} /> : ''}
+        {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} context={this.props.Context} AllListId={AllListId} Call={(Type: any) => { this.CallBack(Type) }} /> : ''}
         {/* {this.state.isTimeEntry ? <TimeEntry props={this.state.Result} isopen={this.state.isTimeEntry} CallBackTimesheet={() => { this.CallBackTimesheet() }} /> : ''} */}
-        {this.state.EditSiteCompositionStatus ? <EditSiteComposition EditData={this.state.Result} context={this.props.Context} AllListId={AllListId} Call={() => { this.CallBack() }} /> : ''}
-        {this.state?.emailcomponentopen && countemailbutton == 0 && <EmailComponenet approvalcallback={() => { this.approvalcallback() }} Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus} currentUser={this?.currentUser} items={this.state?.Result} />}
-
+        {this.state.EditSiteCompositionStatus ? <EditSiteComposition EditData={this.state.Result} context={this.props.Context} ServicesTaskCheck={this.state.Result["Services"] != undefined && this.state.Result["Services"].length > 0 ? true : false} AllListId={AllListId} Call={(Type: any) => { this.CallBack(Type) }} /> : ''}
+        { this.state?.emailcomponentopen && countemailbutton==0 &&<EmailComponenet approvalcallback={() => { this.approvalcallback() }}  Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus}  currentUser={this?.currentUser} items={this.state?.Result} />}
       </div>
     );
   }
