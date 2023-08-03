@@ -1165,8 +1165,8 @@ const SmartInformation = (props: any) => {
                 Select
                 Permission:
               </dt>
-              <dt><input type="radio" checked={allValue?.SelectedFolder == "Public"} value="Public" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>Global</label></dt>
-              <dt><input type="radio" checked={allValue?.SelectedFolder == "Only For Me"} value="Only For Me" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>Only for me</label></dt>
+              <dt><label className='SpfxCheckRadio'><input className='radio' type="radio" checked={allValue?.SelectedFolder == "Public"} value="Public" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /> Global </label></dt>
+              <dt><label className='SpfxCheckRadio'><input className='radio' type="radio" checked={allValue?.SelectedFolder == "Only For Me"} value="Only For Me" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /> Only for me </label></dt>
 
               {/* <dt><input type="radio" checked={allValue?.SelectedFolder == "Memberarea"} value="Memberarea" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>Memberarea</label></dt> */}
               {/* <dt><input type="radio" checked={allValue?.SelectedFolder == "EDA"} value="EDA" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>EDA Only</label></dt>
@@ -1178,7 +1178,7 @@ const SmartInformation = (props: any) => {
             <div className='col-md-6'>
               <label htmlFor="Title" className='full-width'>Title
                 <span className='ml-1 mr-1 text-danger'>*</span>
-                {popupEdit != true && <span className='mx-2'><input type="checkbox" onClick={(e) => checkboxFunction(e)} /></span>}</label>
+                {popupEdit != true && <span className='mx-2'><input className='form-check-input' type="checkbox" onClick={(e) => checkboxFunction(e)} /></span>}</label>
               <input type="text" className="full-width" value={allValue?.Title} id="Title" onChange={(e) => changeInputField(e.target.value, "Title")} />
               {/* {allValue.AstricMesaage &&<span className='ml-1 mr-1 text-danger'>Please enter your Title !</span>} */}
               {filterSmartinfo != undefined && filterSmartinfo.length > 0 && <div className='bg-Fa border overflow-auto'><ul className='list-group mx-2 tex'> {filterSmartinfo.map((smartinfofilter: any) => {
@@ -1225,14 +1225,15 @@ const SmartInformation = (props: any) => {
 
             <div className='col-sm-6 mt-2 p-0'>
               {popupEdit && <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/Lists/SmartInformation/EditForm.aspx?ID=${editvalue?.Id != null ? editvalue?.Id : null}`}>Open out-of-the-box form |</a></span>}
-              <span><a title='Add Link/ Document' style={{ cursor: "pointer" }} onClick={() => addDocument("popupaddDocument", editvalue)}>Add Link/ Document</a></span>
-              <Button className='btn btn-primary ms-1  mx-2' onClick={saveSharewebItem}>
-                Save
-              </Button>
+              <span><a title='Add Link / Document' style={{ cursor: "pointer" }} onClick={() => addDocument("popupaddDocument", editvalue)}>Add Link / Document</a></span>
               <Button className='btn btn-default' onClick={() => handleClose()}>
                 Cancel
               </Button>
             </div>
+              <Button className='btn btn-primary ms-1  mx-2' onClick={saveSharewebItem}>
+                Save
+              </Button>
+              
           </div>
         </footer>
       </Panel>
@@ -1303,10 +1304,9 @@ const SmartInformation = (props: any) => {
               <div className='col-md-6'><input type="text" className="full-width mt-3" placeholder='Rename your document' value={allValue?.fileupload != "" ? allValue?.fileupload : ""}></input></div>
             </div>
             <div className='mt-2 text-end' >
-              <button className='btn btn-primary mx-3 text-end ' onClick={(e) => onUploadDocumentFunction("uploadFile", "UploadDocument")}>upload</button>
-              <Button className='btn btn-default text-end  btn btn-primary' onClick={() => handleClose()}>
-                Cancel
-              </Button> </div>
+            <Button className='btn btn-default text-end  btn btn-primary' onClick={() => handleClose()}>  Cancel </Button>
+            <button className='btn btn-primary mx-3 text-end ' onClick={(e) => onUploadDocumentFunction("uploadFile", "UploadDocument")}>upload</button>
+               </div>
           </div>}
           {SelectedTilesTitle === "UploadEmail" && <div>
             <div className='mt-2 emailupload'>Email</div>
