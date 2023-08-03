@@ -22,7 +22,7 @@ var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
 var dynamicList: any = {}
 var TeamMemberIds: any = [];
-let InheritClientCategory:any=[];
+
 //var checkedWS:boolean=true;
 const CreateWS = (props: any) => {
     if (props.SelectedProp != undefined && props.SelectedProp.SelectedProp != undefined) {
@@ -33,11 +33,9 @@ const CreateWS = (props: any) => {
     SelectedTasks = []
     if (props != undefined) {
         var AllItems = props.props
-       
         SelectedTasks.push(AllItems)
         console.log(props)
     }
-
     const [TaskStatuspopup, setTaskStatuspopup] = React.useState(true);
 
     const [isDropItem, setisDropItem] = React.useState(false);
@@ -65,6 +63,7 @@ const CreateWS = (props: any) => {
     const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
     const [showChildData, setShowChildData] = React.useState(false);
     const [childItem, setChildItem] = React.useState(false);
+    const [trgetValue, setTrgetValue] = React.useState({ Title: '', Description: '' });
 
 
 
@@ -233,6 +232,14 @@ const CreateWS = (props: any) => {
             if (item.Title != "") {
                 if (SharewebTasknewTypeId == 3 || SharewebTasknewTypeId == 5) {
                     createChildAsWorkStream(item, Type, index, WorstreamLatestId);
+                    if (inputFields != undefined && inputFields.length > 0) {
+                        inputFields.forEach((obj: any) => {
+                            if (obj.Title != undefined && obj.Title != "") {
+                                index++
+                                createMultiChildAsWorkStream(obj, Type, index, WorstreamLatestId);
+                            }
+                        })
+                    }
                 } else {
                     createChildAsTask(item, Type, index);
                 }
@@ -242,12 +249,8 @@ const CreateWS = (props: any) => {
 
 
     }
-    const createChildAsWorkStream = async (item: any, Type: any, index: any, WorstreamLatestId: any) => {
+    const createMultiChildAsWorkStream = async (item: any, Type: any, index: any, WorstreamLatestId: any) => {
         var NewDate = ''
-       var  clientcaterogiesdata2:any=[];
-       var AssignedToUser:any=[];
-       var AllTeamMembers:any=[];
-       var TeamLeaderws:any=[];
         WorstreamLatestId += index;
         var SharewebID = '';
         if (Task == undefined || Task == '')
@@ -326,89 +329,75 @@ const CreateWS = (props: any) => {
                 CategoryID.push(category.Id)
             }
         })
-        if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length>0) {
+        if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length > 0) {
             AllItems.AssignedTo.forEach((obj: any) => {
                 AssignedToIds.push(obj.Id);
-                AssignedToUser.push(obj);
-              
             })
         }
         if (isDropItemRes == true) {
             if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
                 TaskAssignedTo.map((taskInfo) => {
                     AssignedToIds.push(taskInfo.Id);
-                    AssignedToUser.push(taskInfo);
                 })
             }
         }
-        if (AllItems?.TeamMembers != undefined  && AllItems?.TeamMembers?.length>0) {
-            AllItems?.TeamMembers.forEach((obj: any) => {
+        if (AllItems?.TeamMembers != undefined && AllItems?.TeamMembers?.length > 0) {
+            AllItems.TeamMembers.forEach((obj: any) => {
                 TeamMemberIds.push(obj.Id);
-                AllTeamMembers.push(obj);
-    
             })
         }
         if (isDropItem == true) {
             if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
-                TaskTeamMembers?.map((taskInfo) => {
+                TaskTeamMembers.map((taskInfo) => {
                     TeamMemberIds.push(taskInfo.Id);
-                    AllTeamMembers.push(taskInfo);
-      
                 })
             }
         }
-        if (AllItems?.TeamLeader != undefined &&  AllItems?.TeamLeader?.length>0) {
-            AllItems?.TeamLeader?.forEach((obj: any) => {
+        if (AllItems?.TeamLeader != undefined && AllItems?.TeamLeader?.length > 0) {
+            AllItems.TeamLeader.forEach((obj: any) => {
                 ResponsibleTeamIds.push(obj.Id);
-                 TeamLeaderws.push(obj)
             })
         }
         if (isDropItem == true) {
             if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
-                TaskResponsibleTeam?.map((taskInfo) => {
+                TaskResponsibleTeam.map((taskInfo) => {
                     ResponsibleTeamIds.push(taskInfo.Id);
-                    TeamLeaderws.push(taskInfo)
                 })
             }
         }
-        if(props?.props!=undefined && props?.props?.ClientCategory?.length>0){
-          if(props?.props?.ClientCategory2!=undefined && props?.props?.ClientCategory2?.results?.length>0){
-            props?.props?.ClientCategory2?.results?.map((items:any)=>{
-                InheritClientCategory.push(items.Id)
-                clientcaterogiesdata2.push(items)  
-            })
-          }else{
-            props.props.ClientCategory?.map((items:any)=>{
-                InheritClientCategory.push(items.Id) 
-                clientcaterogiesdata2.push(items)  
-            }) 
-          }
 
-           
-        }
         let web = new Web(dynamicList.siteUrl);
-        // if(props?.props?.ClientTime?.length>0){
-        //     props.props.ClientTime=JSON.stringify(props?.props?.ClientTime) 
-        // }
+        let FeedBackItemArrayNew:any =[];
+        if(item.Description !=undefined){
+        let param: any = Moment(new Date().toLocaleString())
+        let FeedBackItem:any ={};
+        FeedBackItem['Title'] = "FeedBackPicture" + param;
+        FeedBackItem['FeedBackDescriptions'] = [];
+        FeedBackItem.FeedBackDescriptions = [{
+            'Title': item.Description
+        }]
+        FeedBackItem['ImageDate'] = "" + param;
+        FeedBackItem['Completed'] = '';
+        if(FeedBackItem !=undefined && FeedBackItem.length >1)
+        FeedBackItemArrayNew.push(FeedBackItem)
+    }
         await web.lists.getById(AllItems.listId).items.add({
-            Title: AllItems.Title,
+            Title: item?.Title != undefined ? item?.Title : AllItems.Title,
             ComponentId: { "results": Component },
             Categories: categoriesItem ? categoriesItem : null,
             SharewebCategoriesId: { "results": CategoryID },
-            Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
+            Priority_x0020_Rank: item.selectPriority ,
             ParentTaskId: AllItems.Id,
             ServicesId: { "results": RelevantPortfolioIds },
-            Priority: AllItems.Priority,
-            Body: AllItems.Description,
+            Priority: item.Priority,
+            Body: item?.Description != undefined ? item?.Description : AllItems.Description,
             // DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
-            DueDate: myDate.editDate = myDate.editDate ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy"): '',
+            DueDate: item.editDate = item.editDate ? Moment(item?.editDate).format("ddd, DD MMM yyyy") : '',
             SharewebTaskTypeId: SharewebTasknewTypeId,
+            FeedBack: FeedBackItemArrayNew.length ===0 ?'' :JSON.stringify(FeedBackItemArrayNew),
             Shareweb_x0020_ID: SharewebID,
             SharewebTaskLevel2No: WorstreamLatestId,
             SharewebTaskLevel1No: AllItems.SharewebTaskLevel1No,
-            ClientCategoryId: { "results": InheritClientCategory },
-            SiteCompositionSettings:props?.props?.SiteCompositionSettings!=undefined?props?.props?.SiteCompositionSettings:"",
-            ClientTime:props?.props?.ClientTime!=null ?props?.props?.ClientTime:"",
             AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
             Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
             Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
@@ -419,19 +408,44 @@ const CreateWS = (props: any) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
-                res.data.DueDate = res?.data?.DueDate ?  Moment(res?.data?.DueDate).format("DD-MM-YYYY"):'',
-                    res.data['siteType'] = AllItems.siteType
-                res.data['Shareweb_x0020_ID'] = SharewebID,
-                res.data.ClientCategory=clientcaterogiesdata2,
-                res.data.Created=new Date();
-                res.data.Author={
-                    Id: res?.data?.AuthorId
+                res.data.AssignedTo = []
+                res.data.Responsible_x0020_Team = []
+                res.data.Team_x0020_Members = []
+                if (res?.data?.Team_x0020_MembersId?.length > 0) {
+                    res.data?.Team_x0020_MembersId?.map((teamUser: any) => {
+                        let elementFound = props?.TaskUsers?.filter((User: any) => {
+                            if (User?.AssingedToUser?.Id == teamUser) {
+                                res.data.Team_x0020_Members.push(User?.AssingedToUser)
+                            }
+                        })
+
+                    })
                 }
-                res.data.Team_x0020_Members=AllTeamMembers?.length>0?AllTeamMembers:[]
-                res.data.Responsible_x0020_Team=TeamLeaderws?.length>0?TeamLeaderws:[]
-                res.data.AssignedTo=AssignedToUser?.length>0?AssignedToUser:[]
-                res.Item_x0020_Type=""
-                setIsPopupComponent(true)
+                if (res?.data?.Responsible_x0020_TeamId?.length > 0) {
+                    res.data?.Responsible_x0020_TeamId?.map((teamUser: any) => {
+                        let elementFound = props?.TaskUsers?.filter((User: any) => {
+                            if (User?.AssingedToUser?.Id == teamUser) {
+                                res.data.Responsible_x0020_Team.push(User?.AssingedToUser);
+                            }
+                        })
+
+                    })
+                }
+                if (res?.data?.AssignedToId?.length > 0) {
+                    res.data?.AssignedToId?.map((teamUser: any) => {
+                        let elementFound = props?.TaskUsers?.filter((User: any) => {
+                            if (User?.AssingedToUser?.Id == teamUser) {
+                                res.data.AssignedTo.push(User?.AssingedToUser)
+                            }
+                        })
+
+                    })
+                }
+                res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("DD-MM-YYYY") : '',
+                    res.data['siteType'] = AllItems.siteType
+                res.data['Shareweb_x0020_ID'] = SharewebID
+                if (SelectedTasks != undefined && SelectedTasks.length > 0)
+                    setIsPopupComponent(true)
                 setSharewebTask(res.data)
                 closeTaskStatusUpdatePoup(res);
             }
@@ -439,18 +453,224 @@ const CreateWS = (props: any) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
-                res.data.DueDate = res?.data?.DueDate ?  Moment(res?.data?.DueDate).format("MM-DD-YYYY"):'',
+                res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : '',
                     res.data['siteType'] = AllItems.siteType
                 res.data['Shareweb_x0020_ID'] = SharewebID
-                res.data.ClientCategory= clientcaterogiesdata2,
-                res.data.Created=new Date();
-                res.data.Author={
-                    Id: res?.data?.AuthorId
+                setSharewebTask(res.data)
+                closeTaskStatusUpdatePoup(res);
+            }
+
+
+
+        })
+
+    }
+    const createChildAsWorkStream = async (item: any, Type: any, index: any, WorstreamLatestId: any) => {
+        var NewDate = ''
+        WorstreamLatestId += index;
+        var SharewebID = '';
+        if (Task == undefined || Task == '')
+            Task = SelectedTasks[0];
+        if (TaskprofileId == '' || SelectedTasks.length > 0) {
+            TaskprofileId = SelectedTasks[0].Id;
+        }
+        if (Task.Component != undefined && Task.Component.length > 0) {
+            SharewebID = 'CA' + Task.SharewebTaskLevel1No + '-W' + WorstreamLatestId;
+        }
+        if (Task.Services != undefined && Task.Services.length > 0) {
+            SharewebID = 'SA' + Task.SharewebTaskLevel1No + '-W' + WorstreamLatestId;
+        }
+        // if (Task.SharewebTaskType != undefined && Task.SharewebTaskType.Title != undefined) {
+        //     SharewebID = 'A' + Task.SharewebTaskLevel1No + '-W' + WorstreamLatestId;
+        // }
+        var Component: any = []
+        var RelevantPortfolioIds: any = []
+
+        // smartComponentData.forEach((com: any) => {
+        //     if (com != undefined) {
+        //         Component.push(com.Id)
+        //     }
+
+        // })
+        // if (myDate?.editDate != undefined && myDate?.editDate != null) {
+        //     var dateValue = myDate?.editDate?.split("/");
+        //     var dp = dateValue[1] + "/" + dateValue[0] + "/" + dateValue[2];
+        //     var Dateet = new Date(dp)
+        //     NewDate = Moment(Dateet).format("ddd, DD MMM yyyy")
+        // }
+        if (date != undefined) {
+            NewDate = new Date(date).toDateString();
+        }
+        if (AllItems.Component[0] != undefined && AllItems.Component.length > 0) {
+            Component.push(AllItems.Component[0].Id)
+        }
+        if (AllItems.Services[0] != undefined && AllItems.Services.length > 0) {
+            RelevantPortfolioIds.push(AllItems.Services[0].Id)
+        }
+        if (AllItems?.Portfolio_x0020_Type == undefined) {
+            if (AllItems.Component != undefined && AllItems.Component.length > 0) {
+                smartComponentData.push(AllItems.Component);
+            }
+
+            if (AllItems.Services != undefined && AllItems.Services.length > 0) {
+                linkedComponentData.push(AllItems);
+            }
+
+        }
+
+        var categoriesItem = '';
+        CategoriesData.map((category) => {
+            if (category.Title != undefined) {
+                categoriesItem = categoriesItem == "" ? category.Title : categoriesItem + ';' + category.Title;
+            }
+        })
+        smartComponentData.forEach((com: any) => {
+            if (com != undefined) {
+                Component.push(com[0].Id)
+            }
+
+        })
+        if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
+            linkedComponentData?.map((com: any) => {
+                if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
+                    $.each(linkedComponentData, function (index: any, smart: any) {
+                        RelevantPortfolioIds.push(smart.Id)
+                    })
                 }
-                res.data.Team_x0020_Members=AllTeamMembers?.length>0?AllTeamMembers:[]
-                res.data.Responsible_x0020_Team=TeamLeaderws?.length>0?TeamLeaderws:[]
-                res.data.AssignedTo=AssignedToUser?.length>0?AssignedToUser:[]
-                res.Item_x0020_Type=""
+            })
+        }
+        var CategoryID: any = []
+        CategoriesData.map((category) => {
+            if (category.Id != undefined) {
+                CategoryID.push(category.Id)
+            }
+        })
+        if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length > 0) {
+            AllItems.AssignedTo.forEach((obj: any) => {
+                AssignedToIds.push(obj.Id);
+            })
+        }
+        if (isDropItemRes == true) {
+            if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
+                TaskAssignedTo.map((taskInfo) => {
+                    AssignedToIds.push(taskInfo.Id);
+                })
+            }
+        }
+        if (AllItems?.TeamMembers != undefined && AllItems?.TeamMembers?.length > 0) {
+            AllItems.TeamMembers.forEach((obj: any) => {
+                TeamMemberIds.push(obj.Id);
+            })
+        }
+        if (isDropItem == true) {
+            if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
+                TaskTeamMembers.map((taskInfo) => {
+                    TeamMemberIds.push(taskInfo.Id);
+                })
+            }
+        }
+        if (AllItems?.TeamLeader != undefined && AllItems?.TeamLeader?.length > 0) {
+            AllItems.TeamLeader.forEach((obj: any) => {
+                ResponsibleTeamIds.push(obj.Id);
+            })
+        }
+        if (isDropItem == true) {
+            if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
+                TaskResponsibleTeam.map((taskInfo) => {
+                    ResponsibleTeamIds.push(taskInfo.Id);
+                })
+            }
+        }
+        let FeedBackItemArrayNew:any =[];
+        if(AllItems.Description !=undefined){
+        let param: any = Moment(new Date().toLocaleString())
+        let FeedBackItem:any ={};
+        FeedBackItem['Title'] = "FeedBackPicture" + param;
+        FeedBackItem['FeedBackDescriptions'] = [];
+        FeedBackItem.FeedBackDescriptions = [{
+            'Title': item.Description
+        }]
+        FeedBackItem['ImageDate'] = "" + param;
+        FeedBackItem['Completed'] = '';
+        if(FeedBackItem !=undefined && FeedBackItem.length >1)
+        FeedBackItemArrayNew.push(FeedBackItem)
+    }
+        let web = new Web(dynamicList.siteUrl);
+        await web.lists.getById(AllItems.listId).items.add({
+            Title: trgetValue?.Title != undefined ? trgetValue?.Title : AllItems.Title,
+            ComponentId: { "results": Component },
+            Categories: categoriesItem ? categoriesItem : null,
+            SharewebCategoriesId: { "results": CategoryID },
+            Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
+            ParentTaskId: AllItems.Id,
+            ServicesId: { "results": RelevantPortfolioIds },
+            Priority: AllItems.Priority,
+            Body: trgetValue?.Description != undefined ? trgetValue?.Description : AllItems.Description,
+            FeedBack: FeedBackItemArrayNew.length ===0 ?'' :JSON.stringify(FeedBackItemArrayNew),
+            // DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
+            DueDate: myDate.editDate = myDate.editDate ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy") : '',
+            SharewebTaskTypeId: SharewebTasknewTypeId,
+            Shareweb_x0020_ID: SharewebID,
+            SharewebTaskLevel2No: WorstreamLatestId,
+            SharewebTaskLevel1No: AllItems.SharewebTaskLevel1No,
+            AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
+            Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
+            Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
+
+        }).then((res: any) => {
+            console.log(res);
+            if (PopupType == 'CreatePopup') {
+                res.data['SiteIcon'] = AllItems.SiteIcon
+                res.data['listId'] = AllItems.listId
+                res.data['SharewebTaskType'] = { Title: 'Workstream' }
+                res.data.AssignedTo = []
+                res.data.Responsible_x0020_Team = []
+                res.data.Team_x0020_Members = []
+                if (res?.data?.Team_x0020_MembersId?.length > 0) {
+                    res.data?.Team_x0020_MembersId?.map((teamUser: any) => {
+                        let elementFound = props?.TaskUsers?.filter((User: any) => {
+                            if (User?.AssingedToUser?.Id == teamUser) {
+                                res.data.Team_x0020_Members.push(User?.AssingedToUser)
+                            }
+                        })
+
+                    })
+                }
+                if (res?.data?.Responsible_x0020_TeamId?.length > 0) {
+                    res.data?.Responsible_x0020_TeamId?.map((teamUser: any) => {
+                        let elementFound = props?.TaskUsers?.filter((User: any) => {
+                            if (User?.AssingedToUser?.Id == teamUser) {
+                                res.data.Responsible_x0020_Team.push(User?.AssingedToUser);
+                            }
+                        })
+
+                    })
+                }
+                if (res?.data?.AssignedToId?.length > 0) {
+                    res.data?.AssignedToId?.map((teamUser: any) => {
+                        let elementFound = props?.TaskUsers?.filter((User: any) => {
+                            if (User?.AssingedToUser?.Id == teamUser) {
+                                res.data.AssignedTo.push(User?.AssingedToUser)
+                            }
+                        })
+
+                    })
+                }
+                res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("DD-MM-YYYY") : '',
+                    res.data['siteType'] = AllItems.siteType
+                res.data['Shareweb_x0020_ID'] = SharewebID
+                if (SelectedTasks != undefined && SelectedTasks.length > 0)
+                    setIsPopupComponent(true)
+                setSharewebTask(res.data)
+                closeTaskStatusUpdatePoup(res);
+            }
+            else {
+                res.data['SiteIcon'] = AllItems.SiteIcon
+                res.data['listId'] = AllItems.listId
+                res.data['SharewebTaskType'] = { Title: 'Workstream' }
+                res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : '',
+                    res.data['siteType'] = AllItems.siteType
+                res.data['Shareweb_x0020_ID'] = SharewebID
                 setSharewebTask(res.data)
                 closeTaskStatusUpdatePoup(res);
             }
@@ -480,6 +700,34 @@ const CreateWS = (props: any) => {
             setselectPriority("1")
         }
     }
+    const SelectPriorityArray = (data: any, e: any) => {
+        if (e.target.value == '(1) High') {
+            data.selectPriority = '8'
+            data.Priorityy = e.target.value;
+        }
+        if (e.target.value == '(2) Normal') {
+            data.selectPriority = "4"
+            data.Priorityy = e.target.value;
+        }
+        if (e.target.value == '(3) Low') {
+            data.selectPriority = ("1")
+            data.Priorityy = e.target.value;
+        }
+        setInputFields((inputFields: any) => [...inputFields]);
+    }
+    const PriorityArray = (e: any, data: any) => {
+        if (e.target.value == '1' || e.target.value == '2' || e.target.value == '3') {
+            data.selectPriority = (e.target.value)
+            // setPriorityy(true)
+        }
+        if (e.target.value == '4' || e.target.value == '5' || e.target.value == '6' || e.target.value == '7') {
+            data.selectPriority = (e.target.value)
+        }
+        if (e.target.value == '8' || e.target.value == '9' || e.target.value == '10') {
+            data.selectPriority = (e.target.value)
+        }
+        setInputFields((inputFields: any) => [...inputFields]);
+    }
     const Priority = (e: any) => {
         if (e.target.value == '1' || e.target.value == '2' || e.target.value == '3') {
             setselectPriority(e.target.value)
@@ -498,10 +746,6 @@ const CreateWS = (props: any) => {
     const createChildAsTask = async (item: any, Type: any, index: any) => {
         let NewDate = ''
         var RelevantPortfolioIds: any = []
-        var clientcaterogiesdata2:any=[];
-        var AssignedToUser:any=[];
-        var AllTeamMembers:any=[];
-        var TeamLeaderws:any=[];
         let web = new Web(dynamicList.siteUrl);
         let componentDetails: any = [];
         componentDetails = await web.lists
@@ -603,64 +847,59 @@ const CreateWS = (props: any) => {
                     CategoryID.push(category.Id)
                 }
             })
-            if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length>0) {
+            if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length > 0) {
                 AllItems.AssignedTo.forEach((obj: any) => {
                     AssignedToIds.push(obj.Id);
-                    AssignedToUser.push(obj)
                 })
             }
             if (isDropItemRes == true) {
                 if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
                     TaskAssignedTo.map((taskInfo) => {
                         AssignedToIds.push(taskInfo.Id);
-                        AssignedToUser.push(taskInfo);
                     })
                 }
             }
-            if (AllItems?.TeamMembers != undefined  && AllItems?.TeamMembers?.length>0) {
+            if (AllItems?.TeamMembers != undefined && AllItems?.TeamMembers?.length > 0) {
                 AllItems.TeamMembers.forEach((obj: any) => {
                     TeamMemberIds.push(obj.Id);
-                    AllTeamMembers.push(obj)
                 })
             }
             if (isDropItem == true) {
                 if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
                     TaskTeamMembers.map((taskInfo) => {
                         TeamMemberIds.push(taskInfo.Id);
-                        AllTeamMembers.push(taskInfo)
                     })
                 }
             }
-            if (AllItems?.TeamLeader != undefined &&  AllItems?.TeamLeader?.length>0) {
+            if (AllItems?.TeamLeader != undefined && AllItems?.TeamLeader?.length > 0) {
                 AllItems.TeamLeader.forEach((obj: any) => {
                     ResponsibleTeamIds.push(obj.Id);
-                    TeamLeaderws.push(obj)
                 })
             }
             if (isDropItem == true) {
                 if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
                     TaskResponsibleTeam.map((taskInfo) => {
                         ResponsibleTeamIds.push(taskInfo.Id);
-                        TeamLeaderws.push(taskInfo)
                     })
                 }
             }
-            if(props?.props!=undefined && props?.props?.ClientCategory?.length>0){
-                if(props?.props?.ClientCategory2!=undefined && props?.props?.ClientCategory2?.results?.length>0){
-                  props?.props?.ClientCategory2?.results?.map((items:any)=>{
-                      InheritClientCategory.push(items.Id)
-                      clientcaterogiesdata2.push(items)  
-                  })
-                }else{
-                  props.props.ClientCategory?.map((items:any)=>{
-                      InheritClientCategory.push(items.Id) 
-                      clientcaterogiesdata2.push(items)  
-                  }) 
-                }
+            let FeedBackItemArrayNew:any =[];
+            if(AllItems.Description !=undefined){
+                let param: any = Moment(new Date().toLocaleString())
+                let FeedBackItem:any ={};
+                FeedBackItem['Title'] = "FeedBackPicture" + param;
+                FeedBackItem['FeedBackDescriptions'] = [];
+                FeedBackItem.FeedBackDescriptions = [{
+                    'Title': item.Description
+                }]
+                FeedBackItem['ImageDate'] = "" + param;
+                FeedBackItem['Completed'] = '';
+                if(FeedBackItem !=undefined && FeedBackItem.length >1)
+                FeedBackItemArrayNew.push(FeedBackItem)
             }
             let web = new Web(dynamicList.siteUrl);
             await web.lists.getById(AllItems.listId).items.add({
-                Title: AllItems.Title,
+                Title: trgetValue.Title != undefined ? trgetValue.Title : AllItems.Title,
                 ComponentId: { "results": Component },
                 Categories: categoriesItem ? categoriesItem : null,
                 Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
@@ -668,37 +907,60 @@ const CreateWS = (props: any) => {
                 ParentTaskId: AllItems.Id,
                 ServicesId: { "results": RelevantPortfolioIds },
                 SharewebTaskTypeId: SharewebTasknewTypeId,
-                Body: AllItems.Description,
+                Body: trgetValue.Description != undefined ? trgetValue.Description : AllItems.Description,
+                FeedBack: FeedBackItemArrayNew.length ===0 ?'' :JSON.stringify(FeedBackItemArrayNew),
                 // DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
-                DueDate: myDate.editDate = myDate.editDate ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy"): '',
+                DueDate: myDate.editDate = myDate.editDate ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy") : '',
                 Shareweb_x0020_ID: SharewebID,
                 Priority: AllItems.Priority,
                 //SharewebTaskLevel2No: WorstreamLatestId,
                 SharewebTaskLevel1No: AllItems.SharewebTaskLevel1No,
                 AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
                 Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
-                Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] },
-                ClientCategoryId: { "results": InheritClientCategory },
-                SiteCompositionSettings:props?.props?.SiteCompositionSettings!=undefined?props?.props?.SiteCompositionSettings:"",
-                ClientTime:props?.props?.ClientTime!=null ?props?.props?.ClientTime:"",
+                Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
+
             }).then((res: any) => {
                 console.log(res);
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
+                res.data.AssignedTo = []
+                res.data.Responsible_x0020_Team = []
+                res.data.Team_x0020_Members = []
+                if (res?.data?.Team_x0020_MembersId?.length > 0) {
+                    res.data?.Team_x0020_MembersId?.map((teamUser: any) => {
+                        let elementFound = props?.TaskUsers?.filter((User: any) => {
+                            if (User?.AssingedToUser?.Id == teamUser) {
+                                res.data.Team_x0020_Members.push(User?.AssingedToUser)
+                            }
+                        })
+
+                    })
+                }
+                if (res?.data?.Responsible_x0020_TeamId?.length > 0) {
+                    res.data?.Responsible_x0020_TeamId?.map((teamUser: any) => {
+                        let elementFound = props?.TaskUsers?.filter((User: any) => {
+                            if (User?.AssingedToUser?.Id == teamUser) {
+                                res.data.Responsible_x0020_Team.push(User?.AssingedToUser);
+                            }
+                        })
+
+                    })
+                }
+                if (res?.data?.AssignedToId?.length > 0) {
+                    res.data?.AssignedToId?.map((teamUser: any) => {
+                        let elementFound = props?.TaskUsers?.filter((User: any) => {
+                            if (User?.AssingedToUser?.Id == teamUser) {
+                                res.data.AssignedTo.push(User?.AssingedToUser)
+                            }
+                        })
+
+                    })
+                }
                 // res.DueDate = NewDate != '' && NewDate != undefined ? NewDate : undefined,
-                res.data.DueDate = res?.data?.DueDate ?  Moment(res?.data?.DueDate).format("MM-DD-YYYY"):'',
+                res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : '',
                     res.data['siteType'] = AllItems.siteType
                 res.data['Shareweb_x0020_ID'] = SharewebID
-                res.data.Created=new Date();
-                res.data.Author={
-                    Id: res?.data?.AuthorId
-                }
-                res.data.ClientCategory=clientcaterogiesdata2,
-                res.data.Team_x0020_Members=AllTeamMembers?.length>0?AllItems?.AllTeamMembers:[]
-                res.data.Responsible_x0020_Team=TeamLeaderws.length>0?TeamLeaderws:[]
-                res.data.AssignedTo= AssignedToUser?.length>0?AssignedToUser:[]
-                res.Item_x0020_Type=""
                 closeTaskStatusUpdatePoup(res);
             })
         }
@@ -755,7 +1017,7 @@ const CreateWS = (props: any) => {
     // };
     const onRenderCustomHeaderMain = () => {
         return (
-            <div className={AllItems?.Portfolio_x0020_Type == 'Service'|| AllItems?.Services?.length>0? "serviepannelgreena d-flex full-width pb-1" : "d-flex full-width pb-1"} >
+            <div className={AllItems?.Portfolio_x0020_Type == 'Service' ? "serviepannelgreena d-flex full-width pb-1" : "d-flex full-width pb-1"} >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <h2 className='heading'>
                         {`Create Item`}
@@ -803,20 +1065,47 @@ const CreateWS = (props: any) => {
         if (item == 'Today') {
             setMyDate({ ...myDate, editDate: dates, selectDateName: item });
         }
-         if (item == 'Tomorrow') {
+        if (item == 'Tomorrow') {
             setMyDate({ ...myDate, editDate: dates.setDate(dates.getDate() + 1), selectDateName: item })
         }
-         if (item == 'This Week') {
+        if (item == 'This Week') {
             setMyDate({ ...myDate, editDate: new Date(dates.setDate(dates.getDate() - dates.getDay() + 7)), selectDateName: item });
         }
-         if (item == 'This Month') {
+        if (item == 'This Month') {
             let lastDay = new Date(dates.getFullYear(), dates.getMonth() + 1, 0);
-            setMyDate({ ...myDate, editDate: lastDay, selectDateName: item  });
+            setMyDate({ ...myDate, editDate: lastDay, selectDateName: item });
         }
     }
+    const SelectChildDate = (Value: any, item: any) => {
+        let dates = new Date();
+        if (item == 'Today') {
+            Value.editDate = dates;
+            Value.selectDateName = item;
+        }
+        if (item == 'Tomorrow') {
+            Value.editDate = dates.setDate(dates.getDate() + 1);
+            Value.selectDateName = item;
+        }
+        if (item == 'This Week') {
+            Value.editDate = new Date(dates.setDate(dates.getDate() - dates.getDay() + 7));
+            Value.selectDateName = item;
+        }
+        if (item == 'This Month') {
+            let lastDay = new Date(dates.getFullYear(), dates.getMonth() + 1, 0);
+            Value.editDate = lastDay;
+            Value.selectDateName = item;
+        }
+        setInputFields((inputFields: any) => [...inputFields]);
+    }
+    const clickonDate = (Value: any, e: any) => {
+        let dates = new Date();
+        Value.editDate = e.target.value;
 
-    React.useEffect(()=>{
-        if(myDate?.editDate == undefined || myDate.editDate == null){
+        setInputFields((inputFields: any) => [...inputFields]);
+    }
+
+    React.useEffect(() => {
+        if (myDate?.editDate == undefined || myDate.editDate == null) {
             let dates = new Date();
             setMyDate({ ...myDate, editDate: dates, selectDateName: "Today" });
         }
@@ -825,7 +1114,7 @@ const CreateWS = (props: any) => {
     const AddchildItem = () => {
         setShowChildData(true)
         setInputFields([...inputFields, {
-            Title:'',
+            Title: '',
             ItemRank: '',
             Priority: '',
             DueDate: '',
@@ -974,9 +1263,9 @@ const CreateWS = (props: any) => {
                 isOpen={TaskStatuspopup}
                 onDismiss={closeTaskStatusUpdatePoup}
                 isBlocking={false}
-                className={AllItems?.Portfolio_x0020_Type == 'Service'|| AllItems?.Services?.length>0 ? "serviepannelgreena" : ""}
+                className={AllItems?.Portfolio_x0020_Type == 'Service' ? "serviepannelgreena" : ""}
             >
-                <div className="modal-body border p-3 active Create-Item">
+                <div className="modal-body border p-3 bg-f5f5 active">
                     <div className='row'>
                         {
                             ParentArray?.map((pare: any) => {
@@ -1000,23 +1289,28 @@ const CreateWS = (props: any) => {
                             })
                         }
                     </div>
-                    <div className='row'>
-                        <span className="col-sm-3 rediobutton ">
-                            <span className='SpfxCheckRadio'>
-                                <input type="radio" checked={checkedWS} onClick={() => selectType('Workstream')} className="radio" /> Workstream
-                            </span>
-                            <span className='SpfxCheckRadio'>
-                                <input type="radio" checked={checkedTask} onClick={() => selectType('Task')} className="radio" />Task
-                            </span>
+                    <div className='row mt-2'>
+
+                        <span className="col-sm-2 padL-0 ">
+                            <label>
+                                <input type="radio" checked={checkedWS} onClick={() => selectType('Workstream')} className="me-1" />Workstream
+                            </label>
                         </span>
+                        <span className="col-sm-2" >
+                            <label>
+                                <input type="radio" checked={checkedTask} onClick={() => selectType('Task')} className="me-1" />Task
+                            </label>
+                        </span>
+
                     </div>
                     <div className='row'>
-                        <div className="col-md-8">
+                        <div className="col-sm-8 pad0">
+                            <label className="full-width"></label>
                             <input className="full-width" type="text"
-                                placeholder="Enter Child Item Title" defaultValue={AllItems?.Title} onChange={(e: any) => AllItems.Title = e.target.value}
+                                placeholder="Enter Child Item Title" defaultValue={AllItems?.Title} onChange={(e: any) => setTrgetValue({ ...trgetValue, Title: e.target.value })}
                             />
                         </div>
-                        <div className="col-md-4">
+                        <div className="col-sm-4">
                             {AllItems?.Portfolio_x0020_Type == 'Component'
                                 &&
                                 <div className="">
@@ -1025,8 +1319,8 @@ const CreateWS = (props: any) => {
                                         <input type="text" id="txtSharewebComponentcrt"
                                         /><span role="status" aria-live="polite" title="Edit Component" data-toggle="modal"
                                             onClick={(e) => EditComponent(AllItems)}
-                                            className="full-width">
-                                            <span className="input-group-text" title="Status Popup"><span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span></span>
+                                            className="input-group-text">
+                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png" />
                                         </span>
                                     </div>
                                     <div className="col-sm-12 padL-0 PadR0">
@@ -1060,7 +1354,7 @@ const CreateWS = (props: any) => {
                         </div>
 
                     </div>
-                    <div className='row mt-2'>
+                    <div className='row mt-4'>
                         <div className='col-sm-4'>
                             <div className="input-group">
                                 <label className="full-width">Item Rank</label>
@@ -1093,50 +1387,52 @@ const CreateWS = (props: any) => {
                             </div>
                         </div>
                         <div className='col-sm-4'>
-                            <div className='Create-Priority'>
-                                <label className="full-width">
-                           
-                                     <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                     Priority  <span title="Edit" className="svg__iconbox svg__icon--info "></span>
-                                          <div className="popover__content">
+                            <fieldset>
+                                <label className="full-width">Priority
+                                    <span>
+                                        <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+
+                                            <div className="popover__content">
+                                                <span>
+
                                                     8-10 = High Priority,<br />
                                                     4-7 = Normal Priority,<br />
-                                                    1-3 = Low Priority      
+                                                    1-3 = Low Priority
+                                                </span>
+
                                             </div>
 
                                         </div>
-                               
-                                    </label>
+                                    </span></label>
 
-                                <input type="text" className="full-width" placeholder="Priority" ng-model="PriorityRank"
+                                <input type="text" className="full-width" placeholder="Priority"
                                     defaultValue={selectPriority} onChange={(e: any) => Priority(e)} />
-                                    <dl className='mt-1'>
-                                <dt>
-                                    <label className='SpfxCheckRadio'>
-                                        <input className="radio" name="radioPriority"
+                                <div className="mt-2">
+                                    <label>
+                                        <input className="form-check-input  me-1" name="radioPriority"
                                             type="radio" value="(1) High"
                                             defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(1) High', e)} />High
                                     </label>
-                                </dt>
-                                <dt>
-                                    <label className='SpfxCheckRadio'>
-                                        <input className="radio" name="radioPriority"
+                                </div>
+                                <div className="">
+                                    <label>
+                                        <input className="form-check-input me-1" name="radioPriority"
                                             type="radio" value="(2) Normal"
                                             defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(2) Normal', e)} />Normal
                                     </label>
-                                </dt>
-                                <dt>
-                                    <label className='SpfxCheckRadio'>
-                                        <input className="radio" name="radioPriority"
+                                </div>
+                                <div className="">
+                                    <label>
+                                        <input className="form-check-input me-1" name="radioPriority"
                                             type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(3) Low', e)} />Low
                                     </label>
-                                </dt>
-                                </dl>
-                            </div>
+                                </div>
+                            </fieldset>
 
                         </div>
                         <div className='col-sm-4'>
-                            <label className="full_width" ng-bind-html="GetColumnDetails('dueDate') | trustedHTML">Due Date</label>
+                            <label className="full_width ng-binding" ng-bind-html="GetColumnDetails('dueDate') | trustedHTML">Due Date</label>
                             <input className="form-control"
                                 type="date"
                                 // value={myDate != null ? Moment(new Date(myDate)).format('YYYY-MM-DD') : ''}
@@ -1144,44 +1440,43 @@ const CreateWS = (props: any) => {
                                 // dateFormat="dd/MM/yyyy"
                                 value={myDate.editDate != null ? Moment(new Date(myDate.editDate)).format('YYYY-MM-DD') : ""}
                                 onChange={(e: any) => setMyDate({ ...myDate, editDate: e.target.value })} />
-                       <dl className='mt-1'>
-                            <dt className="">
-                                <label className='SpfxCheckRadio'>
-                                    <input className="radio" name="radioPriority2"
+
+                            <div className="">
+                                <label>
+                                    <input className="form-check-input me-1" name="radioPriority"
                                         type="radio" value="(3) Low" checked={myDate.selectDateName == 'Today'} onClick={(e: any) => SelectDate('Today')} />Today
                                 </label>
-                            </dt>
-                            <dt>
-                                <label className='SpfxCheckRadio'>
-                                    <input className="radio" name="radioPriority2"
+                            </div>
+                            <div className="">
+                                <label>
+                                    <input className="form-check-input me-1" name="radioPriority"
                                         type="radio" value="(3) Low" checked={myDate.selectDateName == 'Tomorrow'} onClick={(e: any) => SelectDate('Tomorrow')} />Tomorrow
                                 </label>
-                            </dt>
-                            <dt>
-                                <label className='SpfxCheckRadio'>
-                                    <input className="radio" name="radioPriority2"
+                            </div>
+                            <div className="">
+                                <label>
+                                    <input className="form-check-input me-1" name="radioPriority"
                                         type="radio" value="(3) Low" checked={myDate.selectDateName == 'This Week'} onClick={(e: any) => SelectDate('This Week')} />This Week
                                 </label>
-                            </dt>
-                             <dt>
-                                <label className='SpfxCheckRadio'>
-                                    <input className="radio" name="radioPriority2"
+                            </div>
+                            <div className="">
+                                <label>
+                                    <input className="form-check-input me-1" name="radioPriority"
                                         type="radio" value="(3) Low" checked={myDate.selectDateName == 'This Month'} onClick={(e: any) => SelectDate('This Month')} />This Month
                                 </label>
-                             </dt>
-                            </dl>
+                            </div>
                         </div>
 
 
 
                     </div>
                     <div className='row mt-2'>
-                      {AllItems!=undefined && dynamicList!=undefined && <TeamConfigurationCard ItemInfo={AllItems} AllListId={dynamicList} parentCallback={DDComponentCallBack}></TeamConfigurationCard>}
+                        {AllItems != undefined && dynamicList != undefined && <TeamConfigurationCard ItemInfo={AllItems} AllListId={dynamicList} parentCallback={DDComponentCallBack}></TeamConfigurationCard>}
                     </div>
                     <div className='row'>
                         <div className='col-sm-12 mt-1'>
                             <label className='full_width'>Description</label>
-                            <textarea rows={4} className="ng-pristine ng-valid ng-empty ng-touched full_width" onChange={(e: any) => AllItems.Description = e.target.value}></textarea>
+                            <textarea rows={4} className="ng-pristine ng-valid ng-empty ng-touched full_width" onChange={(e: any) => setTrgetValue({ ...trgetValue, Description: e.target.value })}></textarea>
                         </div>
                     </div>
 
@@ -1192,39 +1487,39 @@ const CreateWS = (props: any) => {
                         showChildData == true && inputFields?.map((data, index) => {
                             const { Priority, DueDate, ItemRank, Description } = data;
                             return (
-                                <div className='row mb-1'>
-                                      
-                                      <div className="col-sm-8">
-                            <label className="full-width"></label>
-                            <input className="full-width" type="text"
-                                placeholder="Enter Child Item Title"  onChange={(e: any) => AllItems.Title = e.target.value}
-                            />
-                        </div>
+                                <div>
+
+                                    <div className="col-sm-8 pad0">
+                                        <label className="full-width"></label>
+                                        <input className="full-width" type="text"
+                                            placeholder="Enter Child Item Title" onChange={(e: any) => data.Title = e.target.value}
+                                        />
+                                    </div>
                                     <div className="row my-3" key={index}>
-                                    <div className='col-sm-4'>
+                                        <div className='col-sm-4'>
                                             <div className="input-group">
                                                 <label className="full-width">Item Rank</label>
                                                 <select
                                                     className="full_width searchbox_height"
-                                                    defaultValue={AllItems?.ItemRankTitle}
+                                                    defaultValue={data?.ItemRankTitle}
                                                     onChange={(e) =>
-                                                        (AllItems.ItemRankTitle = e.target.value)
+                                                        (data.ItemRankTitle = e.target.value)
                                                     }
                                                 >
                                                     <option>
-                                                        {AllItems?.ItemRankTitle == undefined
+                                                        {data?.ItemRankTitle == undefined
                                                             ? "select Item Rank"
-                                                            : AllItems.ItemRankTitle}
+                                                            : data.ItemRankTitle}
                                                     </option>
                                                     {TaskItemRank &&
                                                         TaskItemRank[0].map(function (h: any, i: any) {
                                                             return (
                                                                 <option
                                                                     key={i}
-                                                                    defaultValue={AllItems?.ItemRankTitle}
+                                                                    defaultValue={data?.ItemRankTitle}
                                                                 >
-                                                                    {AllItems?.ItemRankTitle == h.rankTitle
-                                                                        ? AllItems.ItemRankTitle
+                                                                    {data?.ItemRankTitle == h.rankTitle
+                                                                        ? data.ItemRankTitle
                                                                         : h.rankTitle}
                                                                 </option>
                                                             );
@@ -1232,10 +1527,11 @@ const CreateWS = (props: any) => {
                                                 </select>
                                             </div>
                                         </div>
+
                                         <div className="col-sm-4">
-                                    
+                                            <fieldset>
                                                 <label className="full-width">Priority
-                                              
+                                                    <span>
                                                         <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                                                             <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
 
@@ -1250,72 +1546,67 @@ const CreateWS = (props: any) => {
                                                             </div>
 
                                                         </div>
-                                                   </label>
+                                                    </span></label>
 
-                                                <input type="text" className="full-width" placeholder="Priority" ng-model="PriorityRank"
-                                                    defaultValue={selectPriority} />
-                                                    <dl className='mt-1'>
-                                                <dt>
-                                                    <label className="SpfxCheckRadio">
-                                                        <input className="radio" name="radioPriority"
+                                                <input type="text" className="full-width" placeholder="Priority"
+                                                    defaultValue={data.selectPriority} onClick={(e: any) => PriorityArray(data, e)} />
+                                                <div className="mt-2">
+                                                    <label>
+                                                        <input className="form-check-input  me-1" name={'radioPriority' + index}
                                                             type="radio" value="(1) High"
-                                                            defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(1) High', e)} />High
+                                                            defaultChecked={data.Priorityy === "(1) High"} onClick={(e: any) => SelectPriorityArray(data, e)} />High
                                                     </label>
-                                                </dt>
-                                                <dt className="">
-                                                    <label className="SpfxCheckRadio">
-                                                        <input className="radio" name="radioPriority"
+                                                </div>
+                                                <div className="">
+                                                    <label>
+                                                        <input className="form-check-input me-1" name={'radioPriority' + index}
                                                             type="radio" value="(2) Normal"
-                                                            defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(2) Normal', e)} />Normal
+                                                            defaultChecked={data.Priorityy === "(2) Normal"} onClick={(e: any) => SelectPriorityArray(data, e)} />Normal
                                                     </label>
-                                                </dt>
-                                                <dt className="">
-                                                    <label className="SpfxCheckRadio">
-                                                        <input className="radio" name="radioPriority"
-                                                            type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(3) Low', e)} />Low
+                                                </div>
+                                                <div className="">
+                                                    <label>
+                                                        <input className="form-check-input me-1" name={'radioPriority' + index}
+                                                            type="radio" value="(3) Low" defaultChecked={data.Priorityy === "(3) Low"} onClick={(e: any) => SelectPriorityArray(data, e)} />Low
                                                     </label>
-                                                </dt>
-                                                </dl>
-                                  
+                                                </div>
+                                            </fieldset>
                                         </div>
 
                                         <div className='col-sm-4'>
-                                            <label className="full_width ng-binding" ng-bind-html="GetColumnDetails('dueDate') | trustedHTML">Due Date</label>
+                                            <label className="full_width ng-binding" >Due Date</label>
                                             <input className="form-control"
                                                 // selected={date}
                                                 type="date"
                                                 // value={myDate != null ? Moment(new Date(myDate)).format('YYYY-MM-DD') : ''}
                                                 // onChange={(e) => setMyDate(`${e.target.value}`)}
-                                                value={myDate.editDate != null ? Moment(new Date(myDate.editDate)).format('YYYY-MM-DD') : ''}
-                                                onChange={(e: any) => setMyDate({ ...myDate, editDate: e.target.value })} />
-                                                <dl className='mt-1'>
-                                            <dt className="">
-                                                <label className="SpfxCheckRadio">
-                                                    <input className="radio" name="radioPriority"
-                                                        type="radio" value="(3) Low" checked={myDate.selectDateName == 'Today'} onClick={(e: any) => SelectDate('Today')} />Today
+                                                value={data.editDate != null ? Moment(new Date(data.editDate)).format('YYYY-MM-DD') : ''}
+                                                onChange={(e: any) => clickonDate(data, e)} />
+                                            <div className="">
+                                                <label>
+                                                    <input className="form-check-input me-1" name={'radioPriority1' + index}
+                                                        type="radio" value="Today" checked={data.selectDateName == "Today"} onClick={(e: any) => SelectChildDate(data, 'Today')} />Today
                                                 </label>
-                                            </dt>
-                                            <dt>
-                                                <label className="SpfxCheckRadio">
-                                                    <input className="radio" name="radioPriority"
-                                                        type="radio" value="(3) Low" checked={myDate.selectDateName == 'Tomorrow'} onClick={(e: any) => SelectDate('Tomorrow')} />Tomorrow
+                                            </div>
+                                            <div className="">
+                                                <label>
+                                                    <input className="form-check-input me-1" name={'radioPriority1' + index}
+                                                        type="radio" value="Tomorrow" checked={data.selectDateName == 'Tomorrow'} onClick={(e: any) => SelectChildDate(data, 'Tomorrow')} />Tomorrow
                                                 </label>
-                                            </dt>
-                                            <dt>
-                                                <label className="SpfxCheckRadio">
-                                                    <input className="radio" name="radioPriority"
-                                                        type="radio" value="(3) Low" checked={myDate.selectDateName == 'This Week'} onClick={(e: any) => SelectDate('This Week')} />This Week
+                                            </div>
+                                            <div className="">
+                                                <label>
+                                                    <input className="form-check-input me-1" name={'radioPriority1' + index}
+                                                        type="radio" value="This Week" defaultChecked={data.selectDateName == "This Week"} onClick={(e: any) => SelectChildDate(data, 'This Week')} />This Week
                                                 </label>
-                                            </dt>
-                                            <dt >
-                                                <label className="SpfxCheckRadio">
-                                                    <input className="radio" name="radioPriority"
-                                                        type="radio" value="(3) Low" checked={myDate.selectDateName == 'This Month'} onClick={(e: any) => SelectDate('This Month')} />This Month
+                                            </div>
+                                            <div className="">
+                                                <label>
+                                                    <input className="form-check-input me-1" name={'radioPriority1' + index}
+                                                        type="radio" value="This Month" checked={data.selectDateName == "This Month"} onClick={(e: any) => SelectChildDate(data, 'This Month')} />This Month
                                                 </label>
-                                            </dt>
-                                            </dl>
+                                            </div>
                                         </div>
-                                       
 
 
 
@@ -1323,13 +1614,13 @@ const CreateWS = (props: any) => {
                                     <div className='row'>
                                         <div className='col-sm-12 mt-1'>
                                             <label className='full_width'>Description</label>
-                                            <textarea rows={4} className="full_width" onChange={(e: any) => AllItems.Description = e.target.value}></textarea>
+                                            <textarea rows={4} className="ng-pristine ng-valid ng-empty ng-touched full_width" onChange={(e: any) => data.Description = e.target.value}></textarea>
                                         </div>
                                     </div>
 
 
 
-                                    {(inputFields.length > 0) ? <a className="pull-right" onClick={removeInputFields}><span className='svg__iconbox svg__icon--cross'></span></a> : ''}
+                                    {(inputFields.length > 0) ? <a className="pull-left" onClick={removeInputFields}><span className='svg__iconbox svg__icon--cross'></span></a> : ''}
 
 
 
@@ -1348,9 +1639,9 @@ const CreateWS = (props: any) => {
                 <div className="modal-footer pt-1">
                     {/* {(inputFields.length!==1)? <button className="btn btn-outline-danger" onClick={removeInputFields}>x</button>:''} */}
 
-                    <button type="button" className="btn btn-primary me-1" onClick={() => createWorkStream('CreatePopup')}>
+                    {(inputFields.length === undefined || inputFields.length === 0) && <button type="button" className="btn btn-primary me-1" onClick={() => createWorkStream('CreatePopup')}>
                         Create & OpenPopup
-                    </button>
+                    </button>}
                     <button type="button" className="btn btn-primary" onClick={() => createWorkStream('Create')}>
                         Create
                     </button>

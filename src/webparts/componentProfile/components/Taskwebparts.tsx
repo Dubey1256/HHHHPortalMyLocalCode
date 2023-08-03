@@ -5386,7 +5386,7 @@ var PortfolioLevelNum: any = 0;
           </span>
 
         </div>
-        <div className="col-sm-12 p-0 smart mt-1 ">
+        <div className="col-sm-12 p-0 smart ">
           <div className="wrapper">
             <table
               className="SortingTable searchCrossIcon groupTable  table table-hover"

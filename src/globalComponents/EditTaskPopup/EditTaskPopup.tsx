@@ -3970,29 +3970,31 @@ const EditTaskPopup = (Items: any) => {
                                                         />
                                                     </div>
                                                     <div className="col ps-4">
-                                                        <ul className="p-0 mt-1">
-                                                            <li className="form-check l-radio">
-                                                                <input className="form-check-input"
+                                                        <ul className="p-0 mt-1 list-none">
+                                                            <li className="SpfxCheckRadio">
+                                                                <input className="radio"
                                                                     name="ApprovalLevel"
                                                                     type="radio"
                                                                 />
                                                                 <label className="form-check-label">Normal Approval</label>
                                                             </li>
                                                             <li
-                                                                className="form-check l-radio">
-                                                                <label> Complex Approval</label>
-                                                                <input
+                                                                className="SpfxCheckRadio">
+                                                                          <input
                                                                     type="radio"
-                                                                    className="form-check-input"
+                                                                    className="radio"
                                                                     name="ApprovalLevel" />
+                                                                <label> Complex Approval</label>
+                                                          
                                                             </li>
                                                             <li
-                                                                className="form-check l-radio">
-                                                                <label>Quick Approval</label>
-                                                                <input
+                                                                className="SpfxCheckRadio">
+                                                                             <input
                                                                     type="radio"
-                                                                    className="form-check-input"
+                                                                    className="radio"
                                                                     name="ApprovalLevel" />
+                                                                <label>Quick Approval</label>
+                                                       
                                                             </li>
                                                         </ul>
                                                     </div>
