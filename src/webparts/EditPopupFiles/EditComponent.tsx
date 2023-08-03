@@ -43,10 +43,10 @@ let RequireData: any = {};
 var selectedClientCategoryData: any = [];
 var AllClientCategoryDataBackup: any = [];
 let AutoCompleteItemsArray: any = [];
-var AllClientCategory:any=[];
+var AllClientCategory: any = [];
 let ShowCategoryDatabackup: any = [];
 
-function EditInstitution({ item, SelectD, Calls }: any) {
+function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
   if (SelectD != undefined && SelectD?.siteUrl != undefined) {
     web = new Web(SelectD?.siteUrl);
     RequireData = SelectD
@@ -96,14 +96,14 @@ function EditInstitution({ item, SelectD, Calls }: any) {
   // For Status
   const [PhoneStatus, setPhoneStatus] = React.useState(false);
 
-    const [EmailStatus, setEmailStatus] = React.useState(false);
+  const [EmailStatus, setEmailStatus] = React.useState(false);
 
-    const [ImmediateStatus, setImmediateStatus] = React.useState(false);
+  const [ImmediateStatus, setImmediateStatus] = React.useState(false);
 
-    const [ApprovalStatus, setApprovalStatus] = React.useState(false);
-    const [AllCategoryData, setAllCategoryData] = React.useState([]);
-    const [categorySearchKey, setCategorySearchKey] = React.useState('');
-    const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
+  const [ApprovalStatus, setApprovalStatus] = React.useState(false);
+  const [AllCategoryData, setAllCategoryData] = React.useState([]);
+  const [categorySearchKey, setCategorySearchKey] = React.useState('');
+  const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
   // End of Status
   const setModalIsOpenToTrue = (e: any) => {
     setModalIsOpen(true);
@@ -144,23 +144,23 @@ function EditInstitution({ item, SelectD, Calls }: any) {
 
       if (item1 != undefined && item1.length > 0) {
 
-          item1?.map((itenn: any) => {
+        item1?.map((itenn: any) => {
 
-              selectedCategoryTrue(itenn.Title)
-
-
-
-
-          })
+          selectedCategoryTrue(itenn.Title)
 
 
 
 
-          setCategoriesData(item1)
+        })
+
+
+
+
+        setCategoriesData(item1)
 
       }
 
-  }
+    }
     if (type == "Category") {
       if (item1 != undefined && item1.categories != "") {
         var title: any = {};
@@ -1297,9 +1297,9 @@ function EditInstitution({ item, SelectD, Calls }: any) {
           Admin_x0020_Notes: Items.Admin_x0020_Notes,
           Item_x002d_Image: {
             "__metadata": { type: "SP.FieldUrlValue" },
-            Description: EditData?.Item_x002d_Image?.Url !=undefined? EditData?.Item_x002d_Image?.Url : '',
-            Url:  EditData?.Item_x002d_Image?.Url !=undefined? EditData?.Item_x002d_Image?.Url : ''
-        },
+            Description: EditData?.Item_x002d_Image?.Url != undefined ? EditData?.Item_x002d_Image?.Url : '',
+            Url: EditData?.Item_x002d_Image?.Url != undefined ? EditData?.Item_x002d_Image?.Url : ''
+          },
           component_x0020_link: {
             Description:
               Items.component_x0020_link != undefined
@@ -1363,7 +1363,7 @@ function EditInstitution({ item, SelectD, Calls }: any) {
 
 
 
-}
+  }
   const ChangeStatus = (e: any, item: any) => {
     item.AdminStatus = e.target.value;
     setComponent((EditData) => [...EditData]);
@@ -1841,37 +1841,37 @@ function EditInstitution({ item, SelectD, Calls }: any) {
 
     if (searchedKey?.length > 0) {
 
-        AutoCompleteItemsArray?.map((itemData: any) => {
+      AutoCompleteItemsArray?.map((itemData: any) => {
 
-            if (itemData.Newlabel.toLowerCase().includes(searchedKey.toLowerCase())) {
+        if (itemData.Newlabel.toLowerCase().includes(searchedKey.toLowerCase())) {
 
-                tempArray.push(itemData);
+          tempArray.push(itemData);
 
-            }
+        }
 
-        })
+      })
 
-        setSearchedCategoryData(tempArray);
+      setSearchedCategoryData(tempArray);
 
     } else {
 
-        setSearchedCategoryData([]);
+      setSearchedCategoryData([]);
 
     }
 
-}
-let AutoCompleteItems:any=[];
-const loadAllCategoryData = function (SmartTaxonomy: any) {
+  }
+  let AutoCompleteItems: any = [];
+  const loadAllCategoryData = function (SmartTaxonomy: any) {
 
-  var AllTaskusers = []
+    var AllTaskusers = []
 
-  var AllMetaData: any = []
+    var AllMetaData: any = []
 
-  var TaxonomyItems: any = []
+    var TaxonomyItems: any = []
 
-  var url = (`${RequireData?.siteUrl}/_api/web/lists/getbyid('${RequireData?.SmartMetadataListID}')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '` + SmartTaxonomy + "'")
+    var url = (`${RequireData?.siteUrl}/_api/web/lists/getbyid('${RequireData?.SmartMetadataListID}')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '` + SmartTaxonomy + "'")
 
-  $.ajax({
+    $.ajax({
 
       url: url,
 
@@ -1879,381 +1879,381 @@ const loadAllCategoryData = function (SmartTaxonomy: any) {
 
       headers: {
 
-          "Accept": "application/json; odata=verbose"
+        "Accept": "application/json; odata=verbose"
 
       },
 
       success: function (data) {
 
-          AllTaskusers = data.d.results;
+        AllTaskusers = data.d.results;
 
-          $.each(AllTaskusers, function (index: any, item: any) {
+        $.each(AllTaskusers, function (index: any, item: any) {
 
-              if (item.Title.toLowerCase() == 'pse' && item.TaxType == 'Client Category') {
+          if (item.Title.toLowerCase() == 'pse' && item.TaxType == 'Client Category') {
 
-                  item.newTitle = 'EPS';
+            item.newTitle = 'EPS';
 
-              }
+          }
 
-              else if (item.Title.toLowerCase() == 'e+i' && item.TaxType == 'Client Category') {
+          else if (item.Title.toLowerCase() == 'e+i' && item.TaxType == 'Client Category') {
 
-                  item.newTitle = 'EI';
+            item.newTitle = 'EI';
 
-              }
+          }
 
-              else if (item.Title.toLowerCase() == 'education' && item.TaxType == 'Client Category') {
+          else if (item.Title.toLowerCase() == 'education' && item.TaxType == 'Client Category') {
 
-                  item.newTitle = 'Education';
+            item.newTitle = 'Education';
 
-              }
+          }
 
-              else {
+          else {
 
-                  item.newTitle = item.Title;
+            item.newTitle = item.Title;
 
-              }
+          }
 
-              AllMetaData.push(item);
+          AllMetaData.push(item);
 
 
 
+
+        })
+
+        if (SmartTaxonomy == "Categories") {
+
+          TaxonomyItems = loadSmartTaxonomyPortfolioPopup(AllMetaData, SmartTaxonomy);
+
+          setAllCategoryData(TaxonomyItems)
+
+          TaxonomyItems?.map((items: any) => {
+
+            if (items.Title == "Actions") {
+
+              ShowCategoryDatabackup = ShowCategoryDatabackup.concat(items.childs)
+
+            }
 
           })
 
-          if (SmartTaxonomy == "Categories") {
-
-              TaxonomyItems = loadSmartTaxonomyPortfolioPopup(AllMetaData, SmartTaxonomy);
-
-              setAllCategoryData(TaxonomyItems)
-
-              TaxonomyItems?.map((items: any) => {
-
-                  if (items.Title == "Actions") {
-
-                      ShowCategoryDatabackup = ShowCategoryDatabackup.concat(items.childs)
-
-                  }
-
-              })
 
 
 
-
-          }
+        }
 
       },
 
       error: function (error: any) {
 
-          console.log('Error:', error)
+        console.log('Error:', error)
 
       }
 
-  })
+    })
 
-};
-var loadSmartTaxonomyPortfolioPopup = (AllTaxonomyItems: any, SmartTaxonomy: any) => {
+  };
+  var loadSmartTaxonomyPortfolioPopup = (AllTaxonomyItems: any, SmartTaxonomy: any) => {
 
-  var TaxonomyItems: any = [];
+    var TaxonomyItems: any = [];
 
-  var uniqueNames: any = [];
+    var uniqueNames: any = [];
 
-  $.each(AllTaxonomyItems, function (index: any, item: any) {
+    $.each(AllTaxonomyItems, function (index: any, item: any) {
 
       if (item.ParentID == 0 && SmartTaxonomy == item.TaxType) {
 
-          TaxonomyItems.push(item);
+        TaxonomyItems.push(item);
 
-          getChilds(item, AllTaxonomyItems);
+        getChilds(item, AllTaxonomyItems);
 
-          if (item.childs != undefined && item.childs.length > 0) {
+        if (item.childs != undefined && item.childs.length > 0) {
 
-              TaxonomyItems.push(item)
+          TaxonomyItems.push(item)
 
-          }
+        }
 
-          uniqueNames = TaxonomyItems.filter((val: any, id: any, array: any) => {
+        uniqueNames = TaxonomyItems.filter((val: any, id: any, array: any) => {
 
-              return array.indexOf(val) == id;
+          return array.indexOf(val) == id;
 
-          });
+        });
 
       }
 
-  });
+    });
 
-  return uniqueNames;
+    return uniqueNames;
 
-}
-const getChilds = (item: any, items: any) => {
+  }
+  const getChilds = (item: any, items: any) => {
 
-  item.childs = [];
+    item.childs = [];
 
-  $.each(items, function (index: any, childItem: any) {
+    $.each(items, function (index: any, childItem: any) {
 
       if (childItem.ParentID != undefined && parseInt(childItem.ParentID) == item.ID) {
 
-          childItem.isChild = true;
+        childItem.isChild = true;
 
-          item.childs.push(childItem);
+        item.childs.push(childItem);
 
-          getChilds(childItem, items);
-
-      }
-
-  });
-
-}
-
-
-
-
-if (AllCategoryData?.length > 0) {
-
-  AllCategoryData?.map((item: any) => {
-
-      if (item.newTitle != undefined) {
-
-          item['Newlabel'] = item.newTitle;
-
-          AutoCompleteItems.push(item)
-
-          if (item.childs != null && item.childs != undefined && item.childs.length > 0) {
-
-              item.childs.map((childitem: any) => {
-
-                  if (childitem.newTitle != undefined) {
-
-                      childitem['Newlabel'] = item['Newlabel'] + ' > ' + childitem.Title;
-
-                      AutoCompleteItems.push(childitem)
-
-                  }
-
-                  if (childitem.childs.length > 0) {
-
-                      childitem.childs.map((subchilditem: any) => {
-
-                          if (subchilditem.newTitle != undefined) {
-
-                              subchilditem['Newlabel'] = childitem['Newlabel'] + ' > ' + subchilditem.Title;
-
-                              AutoCompleteItems.push(subchilditem)
-
-                          }
-
-                      })
-
-                  }
-
-              })
-
-          }
+        getChilds(childItem, items);
 
       }
 
-  })
-
-}
-
-
-
-
-AutoCompleteItemsArray = AutoCompleteItems.reduce(function (previous: any, current: any) {
-
-  var alredyExists = previous.filter(function (item: any) {
-
-      return item.Title === current.Title
-
-  }).length > 0
-
-  if (!alredyExists) {
-
-      previous.push(current)
+    });
 
   }
 
-  return previous
-
-}, [])
-const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
-
-        setCategorySearchKey("");
-
-        console.log(selectCategoryData)
-
-        selectedCategoryTrue(selectCategoryData[0].Title)
 
 
 
+  if (AllCategoryData?.length > 0) {
 
-        setIsComponentPicker(false);
+    AllCategoryData?.map((item: any) => {
 
-        let data: any = CategoriesData
+      if (item.newTitle != undefined) {
 
-        data = data.concat(selectCategoryData)
+        item['Newlabel'] = item.newTitle;
 
-        setCategoriesData(CategoriesData => [...data])
+        AutoCompleteItems.push(item)
 
+        if (item.childs != null && item.childs != undefined && item.childs.length > 0) {
 
+          item.childs.map((childitem: any) => {
 
+            if (childitem.newTitle != undefined) {
 
+              childitem['Newlabel'] = item['Newlabel'] + ' > ' + childitem.Title;
 
-        setSearchedCategoryData([]);
+              AutoCompleteItems.push(childitem)
 
+            }
 
+            if (childitem.childs.length > 0) {
 
+              childitem.childs.map((subchilditem: any) => {
 
-        // setCategoriesData(data)
+                if (subchilditem.newTitle != undefined) {
 
-    }
+                  subchilditem['Newlabel'] = childitem['Newlabel'] + ' > ' + subchilditem.Title;
 
-    // ==============CHANGE Category function==============
-
-    const CategoryChange = (e: any, typeValue: any, IdValue: any) => {
-
-        let statusValue: any = e.currentTarget.checked;
-
-        let type: any = typeValue;
-
-        let Id: any = IdValue;
-
-        if (statusValue) {
-
-
-
-
-            selectedCategoryTrue(type)
-
-            console.log(ShowCategoryDatabackup)
-
-            let array: any = [];
-
-
-
-
-            array = array.concat(CategoriesData);
-
-            ShowCategoryDatabackup.map((items: any) => {
-
-                if (items.Title == type) {
-
-                    array.push(items)
+                  AutoCompleteItems.push(subchilditem)
 
                 }
 
-            })
+              })
 
+            }
 
-
-
-            setCategoriesData(CategoriesData => [...array])
-
-        }
-
-        if (statusValue == false) {
-
-
-
-
-            selectedCategoryFalse(type)
-
-            console.log(ShowCategoryDatabackup)
-
-            let array: any = [];
-
-
-
-
-            array = array.concat(CategoriesData);
-
-            array?.map((item: any, index: any) => {
-
-
-
-
-                if (item.Title == type) {
-
-                    array.splice(index, 1);
-
-                }
-
-            })
-
-            setCategoriesData(CategoriesData => [...array])
+          })
 
         }
 
+      }
+
+    })
+
+  }
 
 
 
+
+  AutoCompleteItemsArray = AutoCompleteItems.reduce(function (previous: any, current: any) {
+
+    var alredyExists = previous.filter(function (item: any) {
+
+      return item.Title === current.Title
+
+    }).length > 0
+
+    if (!alredyExists) {
+
+      previous.push(current)
+
+    }
+
+    return previous
+
+  }, [])
+  const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
+
+    setCategorySearchKey("");
+
+    console.log(selectCategoryData)
+
+    selectedCategoryTrue(selectCategoryData[0].Title)
+
+
+
+
+    setIsComponentPicker(false);
+
+    let data: any = CategoriesData
+
+    data = data.concat(selectCategoryData)
+
+    setCategoriesData(CategoriesData => [...data])
+
+
+
+
+
+    setSearchedCategoryData([]);
+
+
+
+
+    // setCategoriesData(data)
+
+  }
+
+  // ==============CHANGE Category function==============
+
+  const CategoryChange = (e: any, typeValue: any, IdValue: any) => {
+
+    let statusValue: any = e.currentTarget.checked;
+
+    let type: any = typeValue;
+
+    let Id: any = IdValue;
+
+    if (statusValue) {
+
+
+
+
+      selectedCategoryTrue(type)
+
+      console.log(ShowCategoryDatabackup)
+
+      let array: any = [];
+
+
+
+
+      array = array.concat(CategoriesData);
+
+      ShowCategoryDatabackup.map((items: any) => {
+
+        if (items.Title == type) {
+
+          array.push(items)
+
+        }
+
+      })
+
+
+
+
+      setCategoriesData(CategoriesData => [...array])
+
+    }
+
+    if (statusValue == false) {
+
+
+
+
+      selectedCategoryFalse(type)
+
+      console.log(ShowCategoryDatabackup)
+
+      let array: any = [];
+
+
+
+
+      array = array.concat(CategoriesData);
+
+      array?.map((item: any, index: any) => {
+
+
+
+
+        if (item.Title == type) {
+
+          array.splice(index, 1);
+
+        }
+
+      })
+
+      setCategoriesData(CategoriesData => [...array])
 
     }
 
 
 
 
-    const selectedCategoryFalse = (type: any) => {
 
-        if (type == "Phone") {
+  }
 
-            setPhoneStatus(false)
 
-        }
 
-        if (type == "Email Notification") {
 
-            setEmailStatus(false)
+  const selectedCategoryFalse = (type: any) => {
 
-        }
+    if (type == "Phone") {
 
-        if (type == "Immediate") {
-
-            setImmediateStatus(false)
-
-        }
-
-        if (type == "Approval") {
-
-            setApprovalStatus(false)
-
-        }
+      setPhoneStatus(false)
 
     }
 
-    const selectedCategoryTrue = (type: any) => {
+    if (type == "Email Notification") {
 
-        if (type == "Phone") {
-
-            setPhoneStatus(true)
-
-        }
-
-        if (type == "Email Notification") {
-
-            setEmailStatus(true)
-
-        }
-
-        if (type == "Immediate") {
-
-            setImmediateStatus(true)
-
-        }
-
-        if (type == "Approval") {
-
-            setApprovalStatus(true)
-
-        }
+      setEmailStatus(false)
 
     }
-    const imageTabCallBack=React.useCallback((data:any)=>{
-      setEditData(data)
-      console.log(EditData);
-  console.log(data)
-  // setEditdocumentsData(data);
-    },[])
+
+    if (type == "Immediate") {
+
+      setImmediateStatus(false)
+
+    }
+
+    if (type == "Approval") {
+
+      setApprovalStatus(false)
+
+    }
+
+  }
+
+  const selectedCategoryTrue = (type: any) => {
+
+    if (type == "Phone") {
+
+      setPhoneStatus(true)
+
+    }
+
+    if (type == "Email Notification") {
+
+      setEmailStatus(true)
+
+    }
+
+    if (type == "Immediate") {
+
+      setImmediateStatus(true)
+
+    }
+
+    if (type == "Approval") {
+
+      setApprovalStatus(true)
+
+    }
+
+  }
+  const imageTabCallBack = React.useCallback((data: any) => {
+    setEditData(data)
+    console.log(EditData);
+    console.log(data)
+    // setEditdocumentsData(data);
+  }, [])
   return (
     <>
       {console.log("All Done")}
@@ -2271,7 +2271,7 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
               <ul className="nav nav-tabs" id="myTab" role="tablist">
                 <li className="nav-item" role="presentation">
                   <button
-                    className="nav-link active"
+                    className={usedFor != "Task-Popup" ? "nav-link active" : "nav-link"}
                     id="home-tab"
                     data-bs-toggle="tab"
                     data-bs-target="#home"
@@ -2285,7 +2285,7 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                 </li>
                 <li className="nav-item" role="presentation">
                   <button
-                    className="nav-link"
+                    className={usedFor == "Task-Popup" ? "nav-link active" : "nav-link"}
                     id="cncept-tab"
                     data-bs-toggle="tab"
                     data-bs-target="#concept"
@@ -2331,7 +2331,7 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                 id="myTabContent"
               >
                 <div
-                  className="tab-pane  show active"
+                  className={usedFor != "Task-Popup" ? "tab-pane show active" : "tab-pane"}
                   id="home"
                   role="tabpanel"
                   aria-labelledby="home-tab"
@@ -2744,9 +2744,9 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                             />
                           </div>
 
-                          <div className="SpfxCheckRadio ">
+                          <div className="form-check">
                             <input
-                              className="radio"
+                              className="form-check-input"
                               name="NotStarted"
                               type="radio"
                               value="Not Started"
@@ -2759,13 +2759,13 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                                 setStatus(EditData, "Not Started")
                               }
                             ></input>
-                            <label>
+                            <label className="form-check-label">
                               Not Started{" "}
                             </label>
                           </div>
-                          <div className="SpfxCheckRadio">
+                          <div className="form-check">
                             <input
-                              className="radio"
+                              className="form-check-input"
                               name="NotStarted"
                               type="radio"
                               value="In Preparation"
@@ -2778,14 +2778,14 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                                   : false
                               }
                             ></input>
-                            <label >
+                            <label className="form-check-label">
                               {" "}
                               In Preparation
                             </label>
                           </div>
-                          <div className="SpfxCheckRadio">
+                          <div className="form-check">
                             <input
-                              className="radio"
+                              className="form-check-input"
                               name="NotStarted"
                               type="radio"
                               value="In Development"
@@ -2798,14 +2798,14 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                                   : false
                               }
                             ></input>
-                            <label>
+                            <label className="form-check-label">
                               {" "}
                               In Development{" "}
                             </label>
                           </div>
-                          <div className="SpfxCheckRadio">
+                          <div className="form-check">
                             <input
-                              className="radio"
+                              className="form-check-input"
                               name="NotStarted"
                               type="radio"
                               value="Active"
@@ -2814,11 +2814,11 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                                 EditData?.AdminStatus === "Active" ? true : false
                               }
                             ></input>
-                            <label> Active </label>
+                            <label className="form-check-label">Active</label>
                           </div>
-                          <div className="SpfxCheckRadio">
+                          <div className="form-check">
                             <input
-                              className="radio"
+                              className="form-check-input"
                               name="NotStarted"
                               type="radio"
                               value="Archived"
@@ -2829,7 +2829,7 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                                   : false
                               }
                             ></input>
-                            <label>
+                            <label className="form-check-label">
                               Archived{" "}
                             </label>
                           </div>
@@ -2849,42 +2849,42 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                             />
                           </div>
 
-                          <div className="SpfxCheckRadio">
+                          <div className="form-check">
                             <input
-                              className="radio"
+                              className="form-check-input"
                               name="radioTime"
                               onChange={(e) => setTime(EditData, "05")}
                               checked={EditData?.Mileage === "05" ? true : false}
                               type="radio"
                             ></input>
-                            <label>
+                            <label className="form-check-label">
                               Very Quick
                             </label>
                           </div>
-                          <div className="SpfxCheckRadio">
+                          <div className="form-check">
                             <input
-                              className="radio"
+                              className="form-check-input"
                               name="radioTime"
                               onChange={(e) => setTime(EditData, "15")}
                               checked={EditData?.Mileage === "15" ? true : false}
                               type="radio"
                             ></input>
 
-                            <label>Quick </label>
+                            <label className="form-check-label">Quick </label>
                           </div>
-                          <div className="SpfxCheckRadio">
+                          <div className="form-check">
                             <input
-                              className="radio"
+                              className="form-check-input"
                               name="radioTime"
                               onChange={(e) => setTime(EditData, "60")}
                               checked={EditData?.Mileage === "60" ? true : false}
                               type="radio"
                             ></input>
-                            <label>Medium</label>
+                            <label className="form-check-label">Medium</label>
                           </div>
-                          <div className="SpfxCheckRadio">
+                          <div className="form-check">
                             <input
-                              className="radio"
+                              className="form-check-input"
                               name="radioTime"
                               onChange={(e) => setTime(EditData, "240")}
                               checked={
@@ -2892,7 +2892,7 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                               }
                               type="radio"
                             ></input>
-                            <label>Long</label>
+                            <label className="form-check-label">Long</label>
                           </div>
                         </div>
                       </div>
@@ -2912,9 +2912,9 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                           />
                         </div>
 
-                        <div className="SpfxCheckRadio">
+                        <div className="form-check">
                           <input
-                            className="radio"
+                            className="form-check-input"
                             name="radioPriority"
                             type="radio"
                             value="(1) High"
@@ -2925,9 +2925,9 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                           ></input>
                           <label> High</label>
                         </div>
-                        <div className="SpfxCheckRadio">
+                        <div className="form-check">
                           <input
-                            className="radio"
+                            className="form-check-input"
                             name="radioPriority"
                             type="radio"
                             value="(2) Normal"
@@ -2938,9 +2938,9 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                           ></input>
                           <label> Normal</label>
                         </div>
-                        <div className="SpfxCheckRadio">
+                        <div className="form-check">
                           <input
-                            className="radio"
+                            className="form-check-input"
                             name="radioPriority"
                             type="radio"
                             value="(3) Low"
@@ -3001,215 +3001,218 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                         </div>
                       </div>
                       <div className="col">
-                        
 
-                        <div className="col-sm-11  inner-tabb">                      
+
+                        <div className="col-sm-11  inner-tabb">
+
+
                           <div className="row mt-2">
-                                   <div className="col-sm-12">
 
-                                       <div className="col-sm-12 padding-0 input-group">
+                            <div className="col-sm-12">
 
-                                           <label className="full_width">Categories</label>
+                              <div className="col-sm-12 padding-0 input-group">
 
-                                           {/* <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e)} /> */}
+                                <label className="full_width">Categories</label>
 
-                                           <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e)}  />
+                                {/* <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e)} /> */}
 
-                                           <span className="input-group-text">
+                                <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e)} />
 
+                                <span className="input-group-text">
 
 
 
-                                               <a className="hreflink" title="Edit Categories">
 
+                                  <a className="hreflink" title="Edit Categories">
 
 
 
-                                                   <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png"
 
-                                                       onClick={() => EditComponentPicker(item)} />
+                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png"
 
-                                               </a>
+                                      onClick={() => EditComponentPicker(item)} />
 
-                                           </span>
+                                  </a>
 
-                                       </div>
+                                </span>
 
-                                   </div>
+                              </div>
 
+                            </div>
 
 
 
 
 
-                               </div>
 
-                               {SearchedCategoryData?.length > 0 ? (
+                          </div>
 
-                                   <div className="SmartTableOnTaskPopup">
+                          {SearchedCategoryData?.length > 0 ? (
 
-                                       <ul className="list-group">
+                            <div className="SmartTableOnTaskPopup">
 
-                                           {SearchedCategoryData.map((item: any) => {
+                              <ul className="list-group">
 
-                                               return (
+                                {SearchedCategoryData.map((item: any) => {
 
-                                                   <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id}  onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                  return (
 
-                                                       <a>{item.Newlabel}</a>
+                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
 
-                                                   </li>
+                                      <a>{item.Newlabel}</a>
 
-                                               )
+                                    </li>
 
-                                           }
+                                  )
 
-                                           )}
+                                }
 
-                                       </ul>
+                                )}
 
-                                   </div>) : null}
+                              </ul>
 
+                            </div>) : null}
 
 
 
-                                <div className="col">
 
-                                   <div className="col">
+                          <div className="col">
 
-                                       <div
+                            <div className="col">
 
-                                           className="form-check">
+                              <div
 
-                                           <input className="form-check-input rounded-0"
+                                className="form-check">
 
-                                               name="Phone"
+                                <input className="form-check-input rounded-0"
 
-                                               type="checkbox" checked={PhoneStatus}
+                                  name="Phone"
 
-                                               value={`${PhoneStatus}`}
+                                  type="checkbox" checked={PhoneStatus}
 
-                                               onClick={(e) => CategoryChange(e, "Phone", 199)}
+                                  value={`${PhoneStatus}`}
 
-                                           />
+                                  onClick={(e) => CategoryChange(e, "Phone", 199)}
 
-                                           <label className="form-check-label">Phone</label>
+                                />
 
-                                       </div>
+                                <label className="form-check-label">Phone</label>
 
-                                       <div
+                              </div>
 
-                                           className="form-check">
+                              <div
 
-                                           <input className="form-check-input rounded-0"
+                                className="form-check">
 
-                                               type="checkbox"
+                                <input className="form-check-input rounded-0"
 
-                                               checked={EmailStatus}
+                                  type="checkbox"
 
-                                               value={`${EmailStatus}`}
+                                  checked={EmailStatus}
 
-                                               onClick={(e) => CategoryChange(e, "Email Notification", 276)}
+                                  value={`${EmailStatus}`}
 
-                                           />
+                                  onClick={(e) => CategoryChange(e, "Email Notification", 276)}
 
-                                           <label>Email Notification</label>
+                                />
 
+                                <label>Email Notification</label>
 
 
 
-                                       </div>
 
-                                       <div
+                              </div>
 
-                                           className="form-check">
+                              <div
 
-                                           <input className="form-check-input rounded-0"
+                                className="form-check">
 
-                                               type="checkbox"
+                                <input className="form-check-input rounded-0"
 
-                                               checked={ImmediateStatus}
+                                  type="checkbox"
 
-                                               value={`${ImmediateStatus}`}
+                                  checked={ImmediateStatus}
 
-                                               onClick={(e) => CategoryChange(e, "Immediate", 228)} />
+                                  value={`${ImmediateStatus}`}
 
-                                           <label>Immediate</label>
+                                  onClick={(e) => CategoryChange(e, "Immediate", 228)} />
 
-                                       </div>
+                                <label>Immediate</label>
 
+                              </div>
 
 
 
-                                   </div>
 
-                                   <div className="form-check ">
+                            </div>
 
-                                       <label className="full-width">Approval</label>
+                            <div className="form-check ">
 
-                                       <input
+                              <label className="full-width">Approval</label>
 
-                                           type="checkbox"
+                              <input
 
-                                           className="form-check-input rounded-0"
+                                type="checkbox"
 
-                                           name="Approval"
+                                className="form-check-input rounded-0"
 
-                                           checked={ApprovalStatus}
+                                name="Approval"
 
-                                           value={`${ApprovalStatus}`}
+                                checked={ApprovalStatus}
 
-                                           onClick={(e) => CategoryChange(e, "Approval", 227)}
+                                value={`${ApprovalStatus}`}
 
+                                onClick={(e) => CategoryChange(e, "Approval", 227)}
 
 
 
-                                       />
 
-                                   </div>
+                              />
 
-                               </div>
+                            </div>
 
-                               {CategoriesData != undefined ?
+                          </div>
 
-                                   <div>
+                          {CategoriesData != undefined ?
 
-                                       {CategoriesData?.map((type: any, index: number) => {
+                            <div>
 
-                                           return (
+                              {CategoriesData?.map((type: any, index: number) => {
 
-                                               <>
+                                return (
 
-                                                   {(type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Approval" && type.Title != "Immediate") &&
+                                  <>
 
+                                    {(type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Approval" && type.Title != "Immediate") &&
 
 
 
-                                                       <div className="block d-flex full-width justify-content-between mb-1 p-2">
 
-                                                           <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${RequireData?.siteUrl}/SitePages/Portfolio-Profile.aspx?${item?.Id}`}>
+                                      <div className="block d-flex full-width justify-content-between mb-1 p-2">
 
-                                                               {type.Title}
+                                        <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${RequireData?.siteUrl}/SitePages/Portfolio-Profile.aspx?${item?.Id}`}>
 
-                                                           </a>
+                                          {type.Title}
 
-                                                           <span className='bg-light svg__iconbox svg__icon--cross' onClick={() => deleteCategories(type?.Id)}></span>
+                                        </a>
 
-                                                           {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
+                                        <span className='bg-light svg__iconbox svg__icon--cross' onClick={() => deleteCategories(type?.Id)}></span>
 
-                                                       </div>
+                                        {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
 
-                                                   }
+                                      </div>
 
-                                               </>
+                                    }
 
-                                           )
+                                  </>
 
-                                       })}
+                                )
 
-                                   </div> : null
+                              })}
 
-                               }
+                            </div> : null
+
+                          }
                         </div>
                       </div>
                     </div>
@@ -3223,7 +3226,7 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                       ></CommentCard>
                     </div>
                     <div className="col-sm-8">
-                      
+
                       <div className="input-group mb-2">
                         <label className="form-label  full-width"></label>
                         <input
@@ -3246,7 +3249,7 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                 </div>
 
                 <div
-                  className="tab-pane"
+                  className={usedFor == "Task-Popup" ? "tab-pane show active" : "tab-pane"}
                   id="concept"
                   role="tabpanel"
                   aria-labelledby="profile-tab"
@@ -3782,7 +3785,7 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                   aria-labelledby="image-tab"
                 >
                   <div className="col-sm-12">
-                    <ImagesC EditdocumentsData={EditData} setData={setEditData}AllListId={RequireData} Context={RequireData.Context} callBack={imageTabCallBack}/>
+                    <ImagesC EditdocumentsData={EditData} setData={setEditData} AllListId={RequireData} Context={RequireData.Context} callBack={imageTabCallBack} />
                   </div>
                 </div>
               </div>
@@ -3884,19 +3887,18 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                     </a>
                     <button
                       type="button"
-                      className="btn btn-default btn-default "
-                      onClick={setModalIsOpenToFalse}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-primary ms-1 "
+                      className="btn btn-primary "
                       onClick={(e) => SaveData()}
                     >
                       Save
                     </button>
-                 
+                    <button
+                      type="button"
+                      className="btn btn-default btn-default ms-1"
+                      onClick={setModalIsOpenToFalse}
+                    >
+                      Cancel
+                    </button>
                   </div>
                 </div>
               </div>
@@ -3933,8 +3935,8 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
               ></ServiceComponentPortfolioPopup> : null
             }
             {IsComponentPicker && (
-              <Picker props={SharewebCategory} Call={Call} 
-              usedFor="Task-Footertable" selectedCategoryData={CategoriesData} AllListId={RequireData}></Picker>
+              <Picker props={SharewebCategory} Call={Call}
+                usedFor="Task-Footertable" selectedCategoryData={CategoriesData} AllListId={RequireData}></Picker>
             )}
           </div>
         )}

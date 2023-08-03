@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { ImPriceTags } from 'react-icons/im';
 import { SlPencil } from 'react-icons/sl';
-
+import EditComponentProtfolio from '../../webparts/EditPopupFiles/EditComponent';
 import Tooltip from "../Tooltip";
 import { Web } from "sp-pnp-js";
 
@@ -50,7 +50,9 @@ const SiteCompositionComponent = (Props: any) => {
     const [MigrationClientCategory, setMigrationClientCategory] = useState([]);
     // const [SitesTaggingData, setSitesTaggingData] = useState([]);
     const [isPortfolioComposition, setIsPortfolioComposition] = useState(false);
-    const [checkBoxStatus, setCheckBoxStatus] = useState(false)
+    const [EditComponentPanelStaus, setEditComponentPanelStaus] = useState(false);
+    const [checkBoxStatus, setCheckBoxStatus] = useState(false);
+    const [selectedComponentData, setSelectedComponentData] = useState<any>([]);
     const closePopupCallBack = Props.closePopupCallBack;
     const SiteCompositionObject: any = {
         ClientTime: [],
@@ -126,6 +128,19 @@ const SiteCompositionComponent = (Props: any) => {
                 setIsPortfolioComposition(true);
                 setCheckBoxStatus(true)
             }
+        }
+
+        if (Props.selectedServicesData?.length > 0 || Props.selectedComponentData?.length > 0) {
+            let tempArray: any = [];
+            if (Props.selectedServicesData?.length > 0) {
+                tempArray = Props.selectedServicesData;
+            }
+            if (Props.selectedComponentData?.length > 0) {
+                tempArray = Props.selectedComponentData;
+            }
+            setSelectedComponentData(tempArray[0])
+        } else {
+            setSelectedComponentData([]);
         }
 
         // if (Props.SitesTaggingData != undefined && Props.SitesTaggingData.length > 0) {
@@ -706,6 +721,20 @@ const SiteCompositionComponent = (Props: any) => {
 
     }
 
+    const editComponentCallback = React.useCallback(() => {
+        setEditComponentPanelStaus(false);
+    }, [])
+
+    const openEditComponentPanelFunction = () => {
+        if(selectedComponentData?.Id != undefined){
+            setEditComponentPanelStaus(true);
+        }else{
+            alert("There are No Tagged Component/Services");
+        }
+       
+    }
+
+
     //    ************* this is Custom Header For Client Category Popup *****************
 
     const onRenderCustomClientCategoryHeader = () => {
@@ -782,7 +811,7 @@ const SiteCompositionComponent = (Props: any) => {
                         Portfolio
                     </label>
                 </span>
-                <span><span className="svg__iconbox svg__icon--editBox" onClick={() => alert("We are working on it. This feature will be live soon..")} title="Click here to edit tagged portfolio site composition."></span></span>
+                <span><span className="svg__iconbox svg__icon--editBox" onClick={openEditComponentPanelFunction} title="Click here to edit tagged portfolio site composition."></span></span>
                 <span className="d-flex justify-content-center pull-right overrid">
                     <input
                         type="checkbox"
@@ -1195,62 +1224,62 @@ const SiteCompositionComponent = (Props: any) => {
                                             return (
                                                 <>
                                                     <li className="clientlist">
-                                                               <a className='mb-0 hreflink' onClick={() => SelectedClientCategoryFromDataList(item, "Popup")} >
-                                                                {item.Title}
-                                                                {item.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                        <a className='mb-0 hreflink' onClick={() => SelectedClientCategoryFromDataList(item, "Popup")} >
+                                                            {item.Title}
+                                                            {item.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                                                                 <span title="Edit" className="svg__iconbox svg__icon--info"></span>
-                                                                    <div className="popover__content">
-                                                                        <span>{item.Description1}</span>
-                                                                    </div>
-                                                                </div> : null}
-                                                            </a>
-                                                     
+                                                                <div className="popover__content">
+                                                                    <span>{item.Description1}</span>
+                                                                </div>
+                                                            </div> : null}
+                                                        </a>
+
                                                         <ul className="sub-menu clr">
                                                             {item.Child?.map(function (child1: any) {
                                                                 return (
                                                                     <>
                                                                         {child1.Title != null ?
                                                                             <li className="clientlist">
-                                                                               
-                                                                                    <a className='mb-0 hreflink' onClick={() => SelectedClientCategoryFromDataList(child1, "Popup")}>
-                                                                                        {child1.Item_x0020_Cover ?
-                                                                                            <img className="flag_icon"
-                                                                                                style={{ height: "20px", borderRadius: "10px", border: "1px solid #000069" }}
-                                                                                                src={child1.Item_x0020_Cover ? child1.Item_x0020_Cover.Url : ''}
-                                                                                            /> :
-                                                                                            null}
-                                                                                        {child1.Title}
-                                                                                        {child1.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+
+                                                                                <a className='mb-0 hreflink' onClick={() => SelectedClientCategoryFromDataList(child1, "Popup")}>
+                                                                                    {child1.Item_x0020_Cover ?
+                                                                                        <img className="flag_icon"
+                                                                                            style={{ height: "20px", borderRadius: "10px", border: "1px solid #000069" }}
+                                                                                            src={child1.Item_x0020_Cover ? child1.Item_x0020_Cover.Url : ''}
+                                                                                        /> :
+                                                                                        null}
+                                                                                    {child1.Title}
+                                                                                    {child1.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                                                                                         <span title="Edit" className="svg__iconbox svg__icon--info"></span>
-                                                                                            <div className="popover__content">
-                                                                                                <span>{child1.Description1}</span>
-                                                                                            </div>
-                                                                                        </div> : null}
-                                                                                    </a>
-                                                                            
+                                                                                        <div className="popover__content">
+                                                                                            <span>{child1.Description1}</span>
+                                                                                        </div>
+                                                                                    </div> : null}
+                                                                                </a>
+
                                                                                 <ul className="sub-menu clr">
                                                                                     {child1.Child?.map(function (child2: any) {
                                                                                         return (
                                                                                             <>
                                                                                                 {child2.Title != null ?
                                                                                                     <li>
-                                                                                                       
-                                                                                                            <a className='mb-0 hreflink' onClick={() => SelectedClientCategoryFromDataList(child2, "Popup")}>
-                                                                                                                {child2.Item_x0020_Cover ?
-                                                                                                                    <img className="flag_icon"
-                                                                                                                        style={{ height: "20px", borderRadius: "10px", border: "1px solid #000069" }}
-                                                                                                                        src={child2.Item_x0020_Cover ? child2.Item_x0020_Cover.Url : ''}
-                                                                                                                    /> :
-                                                                                                                    null}
-                                                                                                                {child2.Title}
-                                                                                                                {child2.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+
+                                                                                                        <a className='mb-0 hreflink' onClick={() => SelectedClientCategoryFromDataList(child2, "Popup")}>
+                                                                                                            {child2.Item_x0020_Cover ?
+                                                                                                                <img className="flag_icon"
+                                                                                                                    style={{ height: "20px", borderRadius: "10px", border: "1px solid #000069" }}
+                                                                                                                    src={child2.Item_x0020_Cover ? child2.Item_x0020_Cover.Url : ''}
+                                                                                                                /> :
+                                                                                                                null}
+                                                                                                            {child2.Title}
+                                                                                                            {child2.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                                                                                                                 <span title="Edit" className="svg__iconbox svg__icon--info"></span>
-                                                                                                                    <div className="popover__content">
-                                                                                                                        <span>{child2.Description1}</span>
-                                                                                                                    </div>
-                                                                                                                </div> : null}
-                                                                                                            </a>
-                                                                                                    
+                                                                                                                <div className="popover__content">
+                                                                                                                    <span>{child2.Description1}</span>
+                                                                                                                </div>
+                                                                                                            </div> : null}
+                                                                                                        </a>
+
                                                                                                     </li> : null
                                                                                                 }
                                                                                             </>
@@ -1275,6 +1304,10 @@ const SiteCompositionComponent = (Props: any) => {
                     </div>
                 </Panel>
             </div >
+            {EditComponentPanelStaus ?
+                <EditComponentProtfolio item={selectedComponentData} SelectD={AllListIdData} usedFor="Task-Popup" Calls={editComponentCallback} />
+                : null
+            }
         </div >
     )
 }
