@@ -3258,7 +3258,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                     <div className="col-sm-7 pe-0">
                       <div className="row">
                         <TeamConfigurationCard
-                          ItemInfo={item}
+                          ItemInfo={EditData}
                           Sitel={RequireData}
                           parentCallback={DDComponentCallBack}
                         ></TeamConfigurationCard>
