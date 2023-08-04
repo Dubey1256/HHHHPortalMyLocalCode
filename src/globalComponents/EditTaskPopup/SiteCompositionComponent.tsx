@@ -726,12 +726,12 @@ const SiteCompositionComponent = (Props: any) => {
     }, [])
 
     const openEditComponentPanelFunction = () => {
-        if(selectedComponentData?.Id != undefined){
+        if (selectedComponentData?.Id != undefined) {
             setEditComponentPanelStaus(true);
-        }else{
+        } else {
             alert("There are No Tagged Component/Services");
         }
-       
+
     }
 
 
@@ -889,35 +889,50 @@ const SiteCompositionComponent = (Props: any) => {
                                             <td className="m-0 p-1 align-middle" style={{ width: "36%" }}>
                                                 {siteData.Title == "EI" ?
                                                     <>
-                                                        <div className="input-group block justify-content-between">
+                                                        <div className="input-group block">
                                                             {EIClientCategory != undefined && EIClientCategory.length > 0 ?
                                                                 <> {EIClientCategory?.map((dataItem: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
                                                                         return (
-                                                                            <div className="bg-69 p-1 ps-2"> {dataItem.Title ? dataItem.Title : null}
+                                                                            <div className="bg-69 selected-CC d-flex full-width justify-content-between p-1 ps-2" title={dataItem.Title ? dataItem.Title : null}>{dataItem.Title ? dataItem.Title : null}
                                                                                 <a className=""
                                                                                     onClick={() => removeSelectedClientCategory("EI")}
                                                                                 >
-                                                                                    <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
+                                                                                    <span className="bg-light svg__icon--cross svg__iconbox"></span>
                                                                                 </a>
                                                                             </div>
                                                                         )
                                                                     } else {
                                                                         return (
-                                                                            <input type="text" value={SearchedKeyForEI} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EI", 340)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
+                                                                            <>
+                                                                                <input type="text" value={SearchedKeyForEI} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EI", 340)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
+                                                                                {
+                                                                                    siteData.BtnStatus ?
+                                                                                        <a className="bg-white border border-secondary pancilicons"
+                                                                                            onClick={() => openClientCategoryModel(340, 'EI')}
+                                                                                        >
+                                                                                            <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
+                                                                                        </a>
+                                                                                        : null
+                                                                                }
+                                                                            </>
                                                                         )
                                                                     }
                                                                 })}
-                                                                </> : <input type="text" value={SearchedKeyForEI} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EI", 340)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />}
-                                                            {
-                                                                siteData.BtnStatus ?
-                                                                    <a className="bg-white border border-secondary pancilicons"
-                                                                        onClick={() => openClientCategoryModel(340, 'EI')}
-                                                                    >
-                                                                        <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
-                                                                    </a>
-                                                                    : null
-                                                            }
+                                                                </> :
+                                                                <>
+                                                                    <input type="text" value={SearchedKeyForEI} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EI", 340)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
+                                                                    {
+                                                                        siteData.BtnStatus ?
+                                                                            <a className="bg-white border border-secondary pancilicons"
+                                                                                onClick={() => openClientCategoryModel(340, 'EI')}
+                                                                            >
+                                                                                <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
+                                                                            </a>
+                                                                            : null
+                                                                    }
+                                                                </>}
+
                                                         </div>
                                                         {SearchedClientCategoryDataForInput?.length > 0 && ClientCategoryPopupSiteName == "EI" ? (
                                                             <div className="SearchTableClientCategoryComponent">
@@ -936,36 +951,53 @@ const SiteCompositionComponent = (Props: any) => {
                                                     : null}
                                                 {siteData.Title == "EPS" ?
                                                     <>
-                                                        <div className="input-group block justify-content-between">
+                                                        <div className="input-group block">
                                                             {EPSClientCategory != undefined && EPSClientCategory.length > 0 ?
                                                                 <> {EPSClientCategory?.map((dataItem: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
                                                                         return (
-                                                                            <div className="bg-69 p-1 ps-2"> {dataItem.Title ? dataItem.Title : null}
+                                                                            <div className="bg-69 selected-CC d-flex full-width justify-content-between p-1 ps-2" title={dataItem.Title ? dataItem.Title : null}> {dataItem.Title ? dataItem.Title : null}
                                                                                 <a className=""
                                                                                     onClick={() => removeSelectedClientCategory("EPS")}
                                                                                 >
-                                                                                    <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
+                                                                                    <span className="bg-light svg__icon--cross svg__iconbox"></span>
                                                                                 </a>
                                                                             </div>
                                                                         )
                                                                     } else {
                                                                         return (
-                                                                            <input type="text" value={SearchedKeyForEPS} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EPS", 341)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
+                                                                            <>
+                                                                                <input type="text" value={SearchedKeyForEPS} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EPS", 341)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
+                                                                                {
+                                                                                    siteData.BtnStatus ?
+                                                                                        <a className="bg-white border border-secondary"
+                                                                                            onClick={() => openClientCategoryModel(341, "EPS")}
+                                                                                        >
+                                                                                            <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
+                                                                                            {/* <img src={require('../../Assets/ICON/edit_page.svg')} width="25" /> */}
+                                                                                        </a>
+                                                                                        : null
+                                                                                }
+                                                                            </>
                                                                         )
                                                                     }
                                                                 })}
-                                                                </> : <input type="text" value={SearchedKeyForEPS} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EPS", 341)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />}
-                                                            {
-                                                                siteData.BtnStatus ?
-                                                                    <a className="bg-white border border-secondary"
-                                                                        onClick={() => openClientCategoryModel(341, "EPS")}
-                                                                    >
-                                                                        <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
-                                                                        {/* <img src={require('../../Assets/ICON/edit_page.svg')} width="25" /> */}
-                                                                    </a>
-                                                                    : null
+                                                                </> :
+                                                                <>
+                                                                    <input type="text" value={SearchedKeyForEPS} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EPS", 341)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
+                                                                    {
+                                                                        siteData.BtnStatus ?
+                                                                            <a className="bg-white border border-secondary"
+                                                                                onClick={() => openClientCategoryModel(341, "EPS")}
+                                                                            >
+                                                                                <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
+                                                                                {/* <img src={require('../../Assets/ICON/edit_page.svg')} width="25" /> */}
+                                                                            </a>
+                                                                            : null
+                                                                    }
+                                                                </>
                                                             }
+
                                                         </div>
                                                         {SearchedClientCategoryDataForInput?.length > 0 && ClientCategoryPopupSiteName == "EPS" ? (
                                                             <div className="SearchTableClientCategoryComponent">
@@ -989,31 +1021,45 @@ const SiteCompositionComponent = (Props: any) => {
                                                                 <> {EducationClientCategory?.map((dataItem: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
                                                                         return (
-                                                                            <div className="bg-69 p-1 ps-2"> {dataItem.Title ? dataItem.Title : null}
+                                                                            <div className="bg-69 selected-CC d-flex full-width justify-content-between p-1 ps-2" title={dataItem.Title ? dataItem.Title : null}>
+                                                                                {dataItem.Title ? dataItem.Title : null}
                                                                                 <a className=""
                                                                                     onClick={() => removeSelectedClientCategory("Education")}
                                                                                 >
-                                                                                    <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
+                                                                                    <span className="bg-light svg__icon--cross svg__iconbox"></span>
                                                                                 </a>
                                                                             </div>
                                                                         )
                                                                     } else {
                                                                         return (
-                                                                            <input type="text" value={SearchedKeyForEducation} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Education", 344)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
+                                                                            <>
+                                                                                <input type="text" value={SearchedKeyForEducation} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Education", 344)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
+                                                                                {
+                                                                                    siteData.BtnStatus ?
+                                                                                        <a className="bg-white border border-secondary"
+                                                                                            onClick={() => openClientCategoryModel(344, "Education")}
+                                                                                        >
+                                                                                            <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
+                                                                                        </a>
+                                                                                        : null
+                                                                                }
+                                                                            </>
                                                                         )
                                                                     }
                                                                 })}
-                                                                </> : <input type="text" value={SearchedKeyForEducation} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Education", 344)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />}
-
-                                                            {
-                                                                siteData.BtnStatus ?
-                                                                    <a className="bg-white border border-secondary"
-                                                                        onClick={() => openClientCategoryModel(344, "Education")}
-                                                                    >
-                                                                        <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
-                                                                        {/* <img src={require('../../Assets/ICON/edit_page.svg')} width="25" /> */}
-                                                                    </a>
-                                                                    : null
+                                                                </> :
+                                                                <>
+                                                                    <input type="text" value={SearchedKeyForEducation} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Education", 344)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
+                                                                    {
+                                                                        siteData.BtnStatus ?
+                                                                            <a className="bg-white border border-secondary"
+                                                                                onClick={() => openClientCategoryModel(344, "Education")}
+                                                                            >
+                                                                                <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
+                                                                            </a>
+                                                                            : null
+                                                                    }
+                                                                </>
                                                             }
                                                         </div>
                                                         {SearchedClientCategoryDataForInput?.length > 0 && ClientCategoryPopupSiteName == "Education" ? (
@@ -1038,31 +1084,59 @@ const SiteCompositionComponent = (Props: any) => {
                                                                 <> {MigrationClientCategory?.map((dataItem: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
                                                                         return (
-                                                                            <div className="bg-69 p-1 ps-2"> {dataItem.Title ? dataItem.Title : null}
+                                                                            <div className="bg-69 selected-CC d-flex full-width justify-content-between p-1 ps-2" title={dataItem.Title ? dataItem.Title : null}>
+                                                                                {dataItem.Title ? dataItem.Title : null}
                                                                                 <a className=""
                                                                                     onClick={() => removeSelectedClientCategory("Migration")}
                                                                                 >
-                                                                                    <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
+                                                                                    <span className="bg-light svg__icon--cross svg__iconbox"></span>
                                                                                 </a>
                                                                             </div>
                                                                         )
                                                                     } else {
                                                                         return (
-                                                                            <input type="text" value={SearchedKeyForMigration} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Migration", 569)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
+                                                                            <>
+                                                                                <input type="text"
+                                                                                    value={SearchedKeyForMigration}
+                                                                                    onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Migration", 569)}
+                                                                                    style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }}
+                                                                                    className="border-secondary form-control"
+                                                                                    placeholder="Search Client Category Here!"
+                                                                                    readOnly={siteData.BtnStatus ? false : true}
+                                                                                />
+                                                                                {
+                                                                                    siteData.BtnStatus ?
+                                                                                        <a className="bg-white border border-secondary"
+                                                                                            onClick={() => openClientCategoryModel(569, 'Migration')}
+                                                                                        >
+                                                                                            <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
+                                                                                        </a>
+                                                                                        : null
+                                                                                }
+                                                                            </>
                                                                         )
                                                                     }
                                                                 })}
-                                                                </> : <input type="text" value={SearchedKeyForMigration} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Migration", 569)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />}
-
-                                                            {
-                                                                siteData.BtnStatus ?
-                                                                    <a className="bg-white border border-secondary"
-                                                                        onClick={() => openClientCategoryModel(569, 'Migration')}
-                                                                    >
-                                                                        <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
-                                                                        {/* <img src={require('../../Assets/ICON/edit_page.svg')} width="25" /> */}
-                                                                    </a>
-                                                                    : null
+                                                                </> :
+                                                                <>
+                                                                    <input type="text"
+                                                                        value={SearchedKeyForMigration}
+                                                                        onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Migration", 569)}
+                                                                        style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }}
+                                                                        className="border-secondary form-control"
+                                                                        placeholder="Search Client Category Here!"
+                                                                        readOnly={siteData.BtnStatus ? false : true}
+                                                                    />
+                                                                    {
+                                                                        siteData.BtnStatus ?
+                                                                            <a className="bg-white border border-secondary"
+                                                                                onClick={() => openClientCategoryModel(569, 'Migration')}
+                                                                            >
+                                                                                <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
+                                                                            </a>
+                                                                            : null
+                                                                    }
+                                                                </>
                                                             }
                                                         </div>
                                                         {SearchedClientCategoryDataForInput?.length > 0 && ClientCategoryPopupSiteName == "Migration" ? (
