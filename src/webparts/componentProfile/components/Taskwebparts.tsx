@@ -2589,8 +2589,8 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       }
 
     });
-    if (props.ClientCategory.results.length != 0) {
-      props.ClientCategory.results.map((terms: any) => {
+    if (props?.ClientCategory?.results?.length != 0) {
+      props?.ClientCategory?.results.map((terms: any) => {
 
         myarray2.push(terms);
       });
