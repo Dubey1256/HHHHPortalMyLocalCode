@@ -161,7 +161,7 @@ const EditSiteComposition = (Props: any) => {
                                 AllListId={AllListIdData}
                                 siteUrls={siteUrls}
                                 SiteTypes={SiteTypes}
-                                ClientTime={EditData.ClientTime}
+                                ClientTime={EditData.ClientTime != false ? EditData.ClientTime : []}
                                 SiteCompositionSettings={EditData.SiteCompositionSettings}
                                 SmartTotalTimeData={SmartTotalTimeData}
                                 currentListName={EditData.siteType}
