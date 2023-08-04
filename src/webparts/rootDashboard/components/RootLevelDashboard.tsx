@@ -278,9 +278,7 @@ const RootLevelDashboard = (props: any) => {
         console.log(error)
 
       }
-    } else {
-      alert('Site Config Length less than 0')
-    }
+    } 
   };
   const getComponentasString = function (results: any) {
     var component = "";
