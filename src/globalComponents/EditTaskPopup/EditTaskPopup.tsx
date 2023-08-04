@@ -3356,7 +3356,7 @@ const EditTaskPopup = (Items: any) => {
                         {`${EditData.TaskId != undefined || EditData.TaskId != null ? EditData.TaskId : ""} ${EditData.Title != undefined || EditData.Title != null ? EditData.Title : ""}`}
                     </span>
                 </div>
-                <Tooltip ComponentId="1683" />
+                <Tooltip ComponentId="1683" isServiceTask ={ServicesTaskCheck} />
             </div>
         );
     };
@@ -3368,7 +3368,7 @@ const EditTaskPopup = (Items: any) => {
                         Update Task Status
                     </span>
                 </div>
-                <Tooltip ComponentId="1683" />
+                <Tooltip ComponentId="1683" isServiceTask ={ServicesTaskCheck}/>
             </div>
         );
     };
@@ -3382,7 +3382,7 @@ const EditTaskPopup = (Items: any) => {
                         Select Site
                     </span>
                 </div>
-                <Tooltip ComponentId="1683" />
+                <Tooltip ComponentId="1683" isServiceTask ={ServicesTaskCheck}/>
             </div>
         );
     };
@@ -3394,7 +3394,7 @@ const EditTaskPopup = (Items: any) => {
                         Replace Image
                     </span>
                 </div>
-                <Tooltip ComponentId="756" />
+                <Tooltip ComponentId="756" isServiceTask ={ServicesTaskCheck}/>
             </div>
         )
     }
@@ -3406,7 +3406,7 @@ const EditTaskPopup = (Items: any) => {
                         Select Project
                     </span>
                 </div>
-                <Tooltip ComponentId="1608" />
+                <Tooltip ComponentId="1608" isServiceTask ={ServicesTaskCheck}/>
             </div>
         )
     }
@@ -3418,7 +3418,7 @@ const EditTaskPopup = (Items: any) => {
                         Select Approver
                     </span>
                 </div>
-                <Tooltip ComponentId="1683" />
+                <Tooltip ComponentId="1683" isServiceTask ={ServicesTaskCheck}/>
             </div>
         )
     }
@@ -5742,7 +5742,7 @@ const EditTaskPopup = (Items: any) => {
             <Modal isOpen={AddImageDescriptions} isBlocking={AddImageDescriptions} containerClassName="custommodalpopup p-2">
                 <div className="modal-header mb-1">
                     <h5 className="modal-title">Add Image Description</h5>
-                    <span className='mx-1'> <Tooltip ComponentId='5669' /></span>
+                    <span className='mx-1'> <Tooltip ComponentId='5669' isServiceTask ={ServicesTaskCheck} /></span>
                     <button type="button"
                         className="btn-close"
                         data-bs-dismiss="modal"
