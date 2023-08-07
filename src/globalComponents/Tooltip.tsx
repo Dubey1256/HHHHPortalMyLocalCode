@@ -25,6 +25,7 @@ function Tooltip(props: any) {
   const [IsComponent, setIsComponent] = React.useState(false);
   const [SharewebComponent, setSharewebComponent] = React.useState('');
   const [IsTask, setIsTask] = React.useState(false);
+  const isServiceTask = props.IsServiceTask;
 
   // React.useEffect(() => {
   //   getQueryVariable((e: any) => e)},
@@ -270,7 +271,7 @@ function Tooltip(props: any) {
         className='feedbackpanel'
       >
         {/* {isShown && ( */}
-        <div className='dropdown-menu show dropdown-menu-end toolmenubox'>
+        <div className={isServiceTask ? 'dropdown-menu show dropdown-menu-end toolmenubox serviepannelgreena' :'dropdown-menu show dropdown-menu-end toolmenubox'}>
           <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Feedback SP')}> <span className="svg__iconbox  svg__icon--Comments"></span> HHHH Feedback SP</a>
           <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Bug')}> <span className="svg__iconbox  svg__icon--Comments"></span> HHHH Bug</a>
           <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Design')}> <span className="svg__iconbox  svg__icon--Comments"></span> HHHH Design</a>

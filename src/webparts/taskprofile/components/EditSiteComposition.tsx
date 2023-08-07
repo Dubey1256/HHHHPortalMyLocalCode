@@ -129,7 +129,7 @@ const EditSiteComposition = (Props: any) => {
                         Edit Site Composition
                     </span>
                 </div>
-                <Tooltip ComponentId="1626" />
+                <Tooltip ComponentId="1626" isServiceTask ={ServicesTaskCheck} />
             </div>
         )
     }
@@ -161,7 +161,7 @@ const EditSiteComposition = (Props: any) => {
                                 AllListId={AllListIdData}
                                 siteUrls={siteUrls}
                                 SiteTypes={SiteTypes}
-                                ClientTime={EditData.ClientTime}
+                                ClientTime={EditData.ClientTime != false ? EditData.ClientTime : []}
                                 SiteCompositionSettings={EditData.SiteCompositionSettings}
                                 SmartTotalTimeData={SmartTotalTimeData}
                                 currentListName={EditData.siteType}

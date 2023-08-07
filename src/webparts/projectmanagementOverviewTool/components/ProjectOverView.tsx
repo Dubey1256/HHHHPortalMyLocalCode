@@ -167,15 +167,8 @@ export default function ProjectOverview(props: any) {
     const LoadAllSiteAllTasks = async function () {
         await loadAllComponent()
         let AllSiteTasks: any = [];
-        let approverTask: any = [];
-        let SharewebTask: any = [];
-        let AllImmediates: any = [];
-        let AllEmails: any = [];
-        let AllBottleNeckTasks: any = [];
-        let AllPriority: any = [];
         let query =
             "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
-        let Counter = 0;
         let web = new Web(AllListId?.siteUrl);
         let arraycount = 0;
         try {
@@ -279,7 +272,7 @@ export default function ProjectOverview(props: any) {
             {
                 accessorKey: "Shareweb_x0020_ID",
                 placeholder: "Id",
-                id:'Shareweb_x0020_ID',
+                id: 'Shareweb_x0020_ID',
                 resetColumnFilters: false,
                 resetSorting: false,
                 size: 80,
@@ -345,9 +338,9 @@ export default function ProjectOverview(props: any) {
                 cell: ({ row, getValue }) => (
                     <>
                         {row?.original?.siteType === "Project" ? <>
-                        <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a> 
-                        {row?.original?.Body !== null && <InfoIconsToolTip Discription={row?.original?.Body} row={row?.original} />}
-                        </>: ''}
+                            <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
+                            {row?.original?.Body !== null && <InfoIconsToolTip Discription={row?.original?.Body} row={row?.original} />}
+                        </> : ''}
                         {row?.original?.Item_x0020_Type === "tasks" ? <span>
                             <a className='hreflink'
                                 href={`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
@@ -468,6 +461,22 @@ export default function ProjectOverview(props: any) {
                 size: 60,
             },
             {
+                accessorKey: "descriptionsSearch",
+                placeholder: "descriptionsSearch",
+                header: "",
+                resetColumnFilters: false,
+                size: 100,
+                id: "descriptionsSearch",
+            },
+            {
+                accessorKey: "commentsSearch",
+                placeholder: "commentsSearch",
+                header: "",
+                resetColumnFilters: false,
+                size: 100,
+                id: "commentsSearch",
+            },
+            {
 
                 cell: ({ row }) => (
                     <>
@@ -495,7 +504,7 @@ export default function ProjectOverview(props: any) {
         () => [
             {
                 accessorKey: "Shareweb_x0020_ID",
-                id:'Shareweb_x0020_ID',
+                id: 'Shareweb_x0020_ID',
                 placeholder: "Id",
                 resetColumnFilters: false,
                 resetSorting: false,
@@ -662,6 +671,22 @@ export default function ProjectOverview(props: any) {
                 resetSorting: false,
                 header: "",
                 size: 100,
+            },
+            {
+                accessorKey: "descriptionsSearch",
+                placeholder: "descriptionsSearch",
+                header: "",
+                resetColumnFilters: false,
+                size: 100,
+                id: "descriptionsSearch",
+            },
+            {
+                accessorKey: "commentsSearch",
+                placeholder: "commentsSearch",
+                header: "",
+                resetColumnFilters: false,
+                size: 100,
+                id: "commentsSearch",
             },
             {
                 accessorFn: (row) => row?.TeamMembersSearch,
@@ -884,6 +909,22 @@ export default function ProjectOverview(props: any) {
                 size: 152,
             },
             {
+                accessorKey: "descriptionsSearch",
+                placeholder: "descriptionsSearch",
+                header: "",
+                resetColumnFilters: false,
+                size: 100,
+                id: "descriptionsSearch",
+            },
+            {
+                accessorKey: "commentsSearch",
+                placeholder: "commentsSearch",
+                header: "",
+                resetColumnFilters: false,
+                size: 100,
+                id: "commentsSearch",
+            },
+            {
                 accessorFn: (row) => row?.DueDate,
                 cell: ({ row }) => (
                     <InlineEditingcolumns
@@ -1036,6 +1077,22 @@ export default function ProjectOverview(props: any) {
                 resetColumnFilters: false,
                 resetSorting: false,
                 header: "",
+            },
+            {
+                accessorKey: "descriptionsSearch",
+                placeholder: "descriptionsSearch",
+                header: "",
+                resetColumnFilters: false,
+                size: 100,
+                id: "descriptionsSearch",
+            },
+            {
+                accessorKey: "commentsSearch",
+                placeholder: "commentsSearch",
+                header: "",
+                resetColumnFilters: false,
+                size: 100,
+                id: "commentsSearch",
             },
             {
                 accessorFn: (row) => row?.ProjectPriority,
@@ -1351,6 +1408,7 @@ export default function ProjectOverview(props: any) {
             //     }
 
             Alltask.map((items: any) => {
+                items.descriptionsSearch = '';
                 items.ShowTeamsIcon = false
                 items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
                 items.siteUrl = AllListId?.siteUrl;
@@ -1369,6 +1427,8 @@ export default function ProjectOverview(props: any) {
                         })
                     })
                 }
+                items.descriptionsSearch = items.Short_x0020_Description_x0020_On != undefined ? items?.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
+                items.commentsSearch = items?.Comments != null && items?.Comments != undefined ? items.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
                 items['Shareweb_x0020_ID'] = 'P' + items.Id
                 items['subRows'] = [];
                 allSitesTasks?.map((task: any) => {
@@ -1476,7 +1536,7 @@ export default function ProjectOverview(props: any) {
                     smartmeta.map((items: any) => {
                         items.Item_x0020_Type = 'tasks';
                         items.ShowTeamsIcon = false
-
+                        items.descriptionsSearch = '';
                         items.AllTeamMember = [];
                         items.siteType = config.Title;
                         items.siteUrl = config.siteUrl.Url;
@@ -1489,6 +1549,10 @@ export default function ProjectOverview(props: any) {
                                 console.error("Error:", error);
                             });
                         items.bodys = items.Body != null && items.Body.split('<p><br></p>').join('');
+                        if (items?.Body != undefined && items?.Body != null) {
+                            items.descriptionsSearch = items?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
+                        }
+                        items.commentsSearch = items?.Comments != null && items?.Comments != undefined ? items.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
                         items.listId = config.listId;
 
                         items.PercentComplete = (items.PercentComplete * 100).toFixed(0);

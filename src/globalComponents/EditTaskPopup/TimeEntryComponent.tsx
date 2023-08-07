@@ -2873,7 +2873,7 @@ function TimeEntryPopup(item: any) {
                                 + Add Time in New Structure
                             </a>
                             <div>
-                                <input type="checkbox" className="hreflink pull-Left mt-1 me-1" onClick={(e: any) => flatviewOpen(e)} />
+                                <input type="checkbox" className="form-check-input pull-Left mt-1 me-1" onClick={(e: any) => flatviewOpen(e)} />
 
                                 FlatView
 
@@ -3158,11 +3158,11 @@ function TimeEntryPopup(item: any) {
                 onDismiss={closeTaskStatusUpdatePoup}
                 isBlocking={false}
             >
-                <div className={PortfolioType == "Service" ? "modal-body border p-3 serviepannelgreena" : "modal-body border p-3"}>
+                <div className={PortfolioType == "Service" ? "modal-body border p-1 serviepannelgreena" : "modal-body border p-1"}>
 
                     <div className='row'>
                         <div className="col-sm-9 border-end" >
-                            <div className='mb-3'>
+                            <div className='mb-1'>
                                 <div className=" form-group">
                                     <label>Selected Category</label>
                                     <input type="text" autoComplete="off"
@@ -3173,7 +3173,7 @@ function TimeEntryPopup(item: any) {
                                     />
                                 </div>
                             </div>
-                            <div className='mb-3'>
+                            <div className='mb-1'>
                                 <div className=" form-group" key={checkCategories}>
                                     <label>Title</label>
                                     <input type="text"
@@ -3182,7 +3182,7 @@ function TimeEntryPopup(item: any) {
                                         onChange={(e) => setNewData({ ...newData, Title: e.target.value })} />
                                 </div>
                             </div>
-                            <div className='mb-3'>
+                            <div className='mb-1'>
                                 <div className=" form-group">
                                     <div className='row'>
                                         <div className="col-sm-6">
@@ -3370,27 +3370,27 @@ function TimeEntryPopup(item: any) {
                         <div className="col-sm-3">
 
                             <div className="col mb-2">
-                                <div>
-                                    <b>
+                                <div className='mb-1'>
+                                   
                                         <a target="_blank" href="{{pageContext}}/SitePages/SmartMetadata.aspx?TabName=Timesheet">
                                             Manage
                                             Categories
                                         </a>
-                                    </b>
+                                    
                                 </div>
                                 {TimeSheet.map((Items: any) => {
                                     return (
                                         <>
-                                            <div className="form-check"
+                                            <div className="SpfxCheckRadio "
                                                 id="subcategorytasksPriority{{item.Id}}">
                                                 <input
-                                                    type="radio" className="form-check-input"
+                                                    type="radio" className="radio"
                                                     checked={showCat == Items.Title ? true : false}
                                                     // checked={selectCategories === Items.Title ? true : false}
                                                     onChange={(e) => selectCategories(e, Items.Title)}
 
                                                     name="taskcategory" />
-                                                <label className='form-check-label'>{Items.Title}</label>
+                                                <label>{Items.Title}</label>
                                             </div>
                                         </>
                                     )
@@ -4163,7 +4163,7 @@ function TimeEntryPopup(item: any) {
                 onDismiss={closeEditcategorypopup}
                 isBlocking={false}
             >
-                <div className={PortfolioType == "Service" ? "modal-body border p-3 serviepannelgreena" : "modal-body border p-3"}>
+                <div className={PortfolioType == "Service" ? "modal-body border p-1 serviepannelgreena" : "modal-body border p-1"}>
 
                     <div className='row'>
                         {categoryData?.map((item) => {
@@ -4196,23 +4196,22 @@ function TimeEntryPopup(item: any) {
                         <div className="col-sm-3">
 
                             <div className="col mb-2">
-                                <div>
-                                    <a target="_blank" ng-href="{{pageContext}}/SitePages/SmartMetadata.aspx?TabName=Timesheet">
-                                        Manage
-                                        Categories
+                                <div className='mb-1'>
+                                    <a className='hreflink' target="_blank" ng-href="{{pageContext}}/SitePages/SmartMetadata.aspx?TabName=Timesheet">
+                                        Manage Categories
                                     </a>
                                 </div>
                                 {TimeSheet.map((Items: any) => {
                                     return (
                                         <>
-                                            <div className="form-check"
+                                            <div className="SpfxCheckRadio"
                                                 id="subcategorytasksPriority{{item.Id}}">
                                                 <input
-                                                    type="radio" className="form-check-input"
+                                                    type="radio" className="redio"
                                                     value={Items.Title} defaultChecked={Items.Title == Categoryy}
                                                     onChange={() => setcheckCategories(Items.Title)}
                                                     name="taskcategory" />
-                                                <label className='form-check-label'>{Items.Title}</label>
+                                                <label>{Items.Title}</label>
                                             </div>
                                         </>
                                     )
