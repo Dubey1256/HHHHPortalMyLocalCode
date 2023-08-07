@@ -129,19 +129,19 @@ const EditSiteComposition = (Props: any) => {
                         Edit Site Composition
                     </span>
                 </div>
-                <Tooltip ComponentId="1626" />
+                <Tooltip ComponentId="1626" isServiceTask ={ServicesTaskCheck} />
             </div>
         )
     }
 
     const closeEditSiteCompositionModel = () => {
         setEditSiteCompositionStatus(false);
-        callBack();
+        callBack("Close");
     }
 
     const closePopupCallBack = React.useCallback(() => {
         setEditSiteCompositionStatus(false);
-        callBack();
+        callBack("Close");
     }, [])
 
     return (
