@@ -1065,7 +1065,7 @@ const ProjectManagementMain = (props: any) => {
         accessorFn: (row) => row?.Title,
         cell: ({ row, column, getValue }) => (
           <>
-            <span className='d-flex'>
+            <span >
               {row.original.Services.length >= 1 ? (
                 <a
                   className="hreflink text-success"
