@@ -28,7 +28,6 @@ let AllFilesAndFolderBackup: any = [];
 let folders: any = [];
 let rootSiteName = '';
 let TaskTypes: any = [];
-let createNewDocType: any = '';
 let siteName: any = '';
 let generatedLocalPath = '';
 const itemRanks: any[] = [
@@ -51,6 +50,7 @@ const AncTool = (props: any) => {
     const [folderExist, setFolderExist] = React.useState(false);
     const [Item, setItem]: any = React.useState({});
     const [renamedFileName, setRenamedFileName]: any = React.useState('');
+    const [createNewDocType, setCreateNewDocType]: any = React.useState('');
     const [newSubFolderName, setNewSubFolderName]: any = React.useState('');
     const [selectPathFromPopup, setSelectPathFromPopup]: any = React.useState('');
     const [selectedFile, setSelectedFile] = React.useState(null);
@@ -91,7 +91,7 @@ const AncTool = (props: any) => {
         Href = Href.toLowerCase().split('?')[0]
         Href = Href.split('#')[0];
         siteName = params.get("Site");
-     
+
         if (siteName?.length > 0) {
             if (siteName === "Offshore Tasks") {
                 siteName = "OffShoreTask";
@@ -117,12 +117,12 @@ const AncTool = (props: any) => {
         setAllFoldersGrouped(groupedFolders);
         setAllFilesAndFolder(allFiles);
         AllFilesAndFolderBackup = allFiles;
-        checkFolderExistence(siteName,displayUrl);
+        checkFolderExistence(siteName, displayUrl);
     }
-    const checkFolderExistence = (title: any,path:any) => {
-       let currentPath:any=`${rootSiteName}${path}`;
+    const checkFolderExistence = (title: any, path: any) => {
+        let currentPath: any = `${rootSiteName}${path}`;
         AllFilesAndFolderBackup?.map((File: any) => {
-            if (File?.FileLeafRef == title && File?.FileSystemObjectType == 1 && File?.EncodedAbsUrl?.toLowerCase()==currentPath?.toLowerCase()) {
+            if (File?.FileLeafRef == title && File?.FileSystemObjectType == 1 && File?.EncodedAbsUrl?.toLowerCase() == currentPath?.toLowerCase()) {
                 setFolderExist(true)
             }
         })
@@ -314,12 +314,12 @@ const AncTool = (props: any) => {
             uploaded: false,
             tagged: false,
             link: '',
-            size:''
+            size: ''
         }
-        if(renamedFileName?.length > 0){
-            fileName=renamedFileName;
-        }else{
-            fileName=selectedFile?.name;
+        if (renamedFileName?.length > 0) {
+            fileName = renamedFileName;
+        } else {
+            fileName = selectedFile?.name;
         }
         if (isFolderAvailable == false) {
             try {
@@ -338,7 +338,7 @@ const AncTool = (props: any) => {
                 const reader = new FileReader();
                 reader.onloadend = async () => {
                     const fileContent = reader.result as ArrayBuffer;
-                   
+                    setCreateNewDocType(getFileType(selectedFile))
                     // Upload the file
                     await sp.web
                         .getFolderByServerRelativeUrl(uploadPath)
@@ -351,20 +351,20 @@ const AncTool = (props: any) => {
                                         let resultArray: any = [];
                                         resultArray.push(props?.item?.Id)
                                         let siteColName = `${siteName}Id`
-                                        let fileSize=getSizeString(newlyCreatedFile?.byteLength)
+                                        let fileSize = getSizeString(newlyCreatedFile?.byteLength)
                                         taggedDocument = {
                                             ...taggedDocument,
                                             fileName: fileName,
                                             docType: createNewDocType,
                                             uploaded: true,
                                             link: `${rootSiteName}${selectedPath.displayPath}/${fileName}`,
-                                            size:fileSize
+                                            size: fileSize
                                         }
                                         // Update the document file here
                                         let postData = {
                                             [siteColName]: { "results": resultArray },
                                             ItemRank: itemRank,
-                                            Title:fileName 
+                                            Title: fileName
                                         }
                                         await sp.web.lists.getByTitle('Documents').items.getById(file.Id)
                                             .update(postData).then((updatedFile: any) => {
@@ -381,8 +381,8 @@ const AncTool = (props: any) => {
                             }, 2000);
 
                         });
-                        setUploadedDocDetails(taggedDocument);
-                        setShowConfirmation(true)
+                    setUploadedDocDetails(taggedDocument);
+                    setShowConfirmation(true)
 
                 };
 
@@ -441,22 +441,20 @@ const AncTool = (props: any) => {
     //End //
     // Create Files direct From Code And Tag
     async function createBlankWordDocx() {
-        createNewDocType = 'docx'
+        setCreateNewDocType('docx')
         let jsonResult = await GlobalFunction.docxUint8Array();
         setNewlyCreatedFile(jsonResult)
-        setFileNamePopup(true)
     }
     async function createBlankExcelXlsx() {
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet('Sheet1');
         worksheet.addRow([]);
         const buffer = await workbook.xlsx.writeBuffer();
-        createNewDocType = 'xlsx'
+        setCreateNewDocType('xlsx')
         setNewlyCreatedFile(buffer)
-        setFileNamePopup(true)
     }
     async function createBlankPowerPointPptx() {
-        createNewDocType = 'pptx'
+        setCreateNewDocType('pptx')
         const pptx = new pptxgen();
         pptx.addSlide();
 
@@ -472,7 +470,7 @@ const AncTool = (props: any) => {
             uploaded: false,
             tagged: false,
             link: '',
-            size:''
+            size: ''
         }
         let isFolderAvailable = folderExist;
         let fileName = ''
@@ -497,14 +495,14 @@ const AncTool = (props: any) => {
                 await sp.web
                     .getFolderByServerRelativeUrl(selectedPath.displayPath)
                     .files.add(fileName, newlyCreatedFile, true).then(async (uploadedFile: any) => {
-                        let fileSize=getSizeString(newlyCreatedFile?.byteLength)
+                        let fileSize = getSizeString(newlyCreatedFile?.byteLength)
                         taggedDocument = {
                             ...taggedDocument,
                             fileName: fileName,
                             docType: createNewDocType,
                             uploaded: true,
                             link: `${rootSiteName}${selectedPath.displayPath}/${fileName}`,
-                            size:fileSize
+                            size: fileSize
                         }
                         setTimeout(async () => {
                             const fileItems = await getExistingUploadedDocuments()
@@ -544,23 +542,23 @@ const AncTool = (props: any) => {
     const getSizeString = (sizeInBytes: number): string => {
         const kbThreshold = 1024;
         const mbThreshold = kbThreshold * 1024;
-      
+
         if (sizeInBytes < kbThreshold) {
-          return `${sizeInBytes} KB`;
+            return `${sizeInBytes} KB`;
         } else if (sizeInBytes < mbThreshold) {
-          const sizeInKB = (sizeInBytes / kbThreshold).toFixed(2);
-          return `${sizeInKB} KB`;
+            const sizeInKB = (sizeInBytes / kbThreshold).toFixed(2);
+            return `${sizeInKB} KB`;
         } else {
-          const sizeInMB = (sizeInBytes / mbThreshold).toFixed(2);
-          return `${sizeInMB} MB`;
+            const sizeInMB = (sizeInBytes / mbThreshold).toFixed(2);
+            return `${sizeInMB} MB`;
         }
-      };
+    };
     //File Name Popup
-    const cancelNewCreateFile = () => {
+    const cancelNewCreateFile = () => { 
         setFileNamePopup(false);
         setNewlyCreatedFile(null);
         setRenamedFileName('');
-        createNewDocType = '';
+        setCreateNewDocType('');
     }
     // Choose Path Folder
     const cancelPathFolder = () => {
@@ -732,23 +730,10 @@ const AncTool = (props: any) => {
                         <div className="comment-box hreflink mb-2 col-sm-12">
                             <span onClick={() => { setModalIsOpen(true) }}> Click here to add more content</span>
                         </div>
-                        <div className="col-sm-4">
-                            <span onClick={() => createBlankWordDocx()} >
-                                <span className='svg__iconbox svg__icon--docx hreflink' title='Word'></span>
+                        <div className="comment-box hreflink mb-2 col-sm-12">
+                            <span onClick={() => { setFileNamePopup(true) }}> Create New File</span>
+                        </div>
 
-                            </span>
-                        </div>
-                        <div className="col-sm-4">
-                            <span onClick={() => createBlankExcelXlsx()} >
-                                <span className='svg__iconbox svg__icon--xlsx hreflink' title='Excel'></span>
-
-                            </span>
-                        </div>
-                        <div className="col-sm-4">
-                            <span onClick={() => createBlankPowerPointPptx()}>
-                                <span className='svg__iconbox svg__icon--ppt hreflink' title='Presentation'></span>
-                            </span>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -964,7 +949,24 @@ const AncTool = (props: any) => {
                         <h5 className="modal-title">Create New File</h5>
                         <span onClick={() => cancelNewCreateFile()}><i className="svg__iconbox svg__icon--cross crossBtn"></i></span>
                     </div>
-                    <div className="modal-body p-2">
+                    <div className="modal-body p-2 row">
+                        <div className="col-sm-4">
+                            <span onClick={() => createBlankWordDocx()} >
+                                <span className='svg__iconbox svg__icon--docx hreflink' title='Word'></span>
+
+                            </span>
+                        </div>
+                        <div className="col-sm-4">
+                            <span onClick={() => createBlankExcelXlsx()} >
+                                <span className='svg__iconbox svg__icon--xlsx hreflink' title='Excel'></span>
+
+                            </span>
+                        </div>
+                        <div className="col-sm-4">
+                            <span onClick={() => createBlankPowerPointPptx()}>
+                                <span className='svg__iconbox svg__icon--ppt hreflink' title='Presentation'></span>
+                            </span>
+                        </div>
                         <div className="col-sm-12">
                             <input type="text" onChange={(e) => { setRenamedFileName(e.target.value) }} value={renamedFileName} placeholder='Enter File Name' className='full-width' />
                         </div>
@@ -997,7 +999,7 @@ const AncTool = (props: any) => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                <tr>
+                                    <tr>
                                         <td><span className={`svg__iconbox svg__icon--${UploadedDocDetails?.docType}`}></span></td>
                                         <td><a href={UploadedDocDetails?.link} target="_blank" data-interception="off" className='hreflink'>{UploadedDocDetails?.fileName}</a>{`(${UploadedDocDetails?.size})`}</td>
                                         <td>{UploadedDocDetails?.uploaded == true ? <span className='svg__iconbox svg__icon--Completed'></span> : <span className='svg__iconbox svg__icon--cross'></span>}</td>
