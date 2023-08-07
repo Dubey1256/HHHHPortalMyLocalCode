@@ -1980,7 +1980,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                             userdisplay.push({ Title: this.props?.userDisplayName })
 
 
-                            if (fbData != null && fbData != undefined) {
+                            if (fbData != null && fbData != undefined && fbData.Title != '') {
 
                               try {
                                 if (fbData?.Title != undefined) {
