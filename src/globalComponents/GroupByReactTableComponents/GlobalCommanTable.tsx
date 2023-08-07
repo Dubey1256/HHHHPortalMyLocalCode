@@ -138,7 +138,7 @@ export function IndeterminateCheckbox(
 }
 
 // ReactTable Part end/////
-
+let isShowingDataAll: any = false;
 const GlobalCommanTable = (items: any) => {
     let expendedTrue = items?.expendedTrue
     let data = items?.data;
@@ -153,7 +153,8 @@ const GlobalCommanTable = (items: any) => {
     let portfolioColor = items?.portfolioColor;
     let expandIcon = items?.expandIcon;
     let fixedWidth = items?.fixedWidth;
-    // let portfolioTypeData = items?.portfolioTypeData;
+    let portfolioTypeData = items?.portfolioTypeData;
+    let showingAllPortFolioCount = items?.showingAllPortFolioCount
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
         []
     );
@@ -196,17 +197,21 @@ const GlobalCommanTable = (items: any) => {
             const cellValue: any = String(row.getValue(id)).toLowerCase();
 
             if (globalSearchType === "ALL") {
-                return (
-                    cellValue.split(" ").sort().join(" ") ===
-                    query.split(" ").sort().join(" ")
-                );
+                let found = true;
+                let a = query?.split(" ")
+                for (let item of a) {
+                    if (!cellValue.split(" ").some((elem: any) => elem === item)) {
+                        found = false;
+                    }
+                }
+                return found
             } else if (globalSearchType === "ANY") {
                 for (let item of query.split(" ")) {
                     if (cellValue.includes(item)) return true;
                 }
                 return false;
             } else if (globalSearchType === "EXACT") {
-                return cellValue === query;
+                return cellValue.includes(query);
             }
         };
     };
@@ -292,31 +297,33 @@ const GlobalCommanTable = (items: any) => {
         callBackData(item, ShowingData)
     }, [table?.getRowModel()?.rows])
 
-    // React.useEffect(() => {
-    //     if (AfterSearch != undefined && AfterSearch.length > 0) {
-    //         AfterSearch?.map((Comp: any) => {
-    //             if (Comp.columnFilters.Title == true || Comp.columnFilters.Shareweb_x0020_ID == true || Comp.columnFilters.ClientCategory == true ||
-    //                 Comp.columnFilters.TeamLeaderUser == true || Comp.columnFilters.PercentComplete == true || Comp.columnFilters.ItemRank == true ||
-    //                 Comp.columnFilters.DueDate == true || Comp?.columnFilters?.__global__ === true) {
-
-    //                 portfolioTypeData?.map((type: any) => {
-    //                     if (Comp?.original?.Item_x0020_Type === type.Title) {
-    //                         type[type.Title + 'numberCopy'] += 1;
-    //                     }
-    //                 })
-    //                 FilterShowhideShwingData = true;
-    //             }else {
-    //                 portfolioTypeData?.map((type: any) => {
-    //                     if (type.Title + 'numberCopy' !=undefined) {
-    //                         type[type.Title + 'numberCopy']= 0;
-    //                     }
-    //                 })
-    //                 FilterShowhideShwingData = false;
-    //             }
-    //             console.log("portfolioTypeData", portfolioTypeData)
-    //         })
-    //     }
-    // }, [table?.getRowModel()?.rows])
+    React.useEffect(() => {
+        if (AfterSearch != undefined && AfterSearch.length > 0) {
+            portfolioTypeData?.filter((count: any) => { count[count.Title + 'numberCopy'] = 0 })
+            AfterSearch?.map((Comp: any) => {
+                if (columnFilters.length > 0 || globalFilter.length > 0) {
+                    isShowingDataAll = true;
+                    portfolioTypeData?.map((type: any) => {
+                        if (Comp?.original?.Item_x0020_Type === type.Title) {
+                            type[type.Title + 'numberCopy'] += 1;
+                            type.FilterShowhideShwingData = true;
+                        }
+                    })
+                } else {
+                    isShowingDataAll = false;
+                    portfolioTypeData?.map((type: any) => {
+                        if (type.Title + 'numberCopy' != undefined) {
+                            type[type.Title + 'numberCopy'] = 0;
+                            type.FilterShowhideShwingData = false;
+                        }
+                    })
+                }
+            })
+        } else {
+            portfolioTypeData?.filter((count: any) => { count[count.Title + 'numberCopy'] = 0 })
+            isShowingDataAll = true;
+        }
+    }, [table?.getRowModel()?.rows])
 
 
 
@@ -360,7 +367,7 @@ const GlobalCommanTable = (items: any) => {
                         //   }
                         // }
                     }
-                    if(parentDataCopy){
+                    if (parentDataCopy) {
                         elem.original.parentDataId = parentDataCopy
                     }
                     elem.original.Id = elem.original.ID
@@ -505,7 +512,20 @@ const GlobalCommanTable = (items: any) => {
         <>
             {showHeader === true && <div className='tbl-headings justify-content-between mb-1'>
                 <span className='leftsec'>
-                    <span style={{ color: `${portfolioColor}` }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} out of ${data?.length}`}</span>
+                    {showingAllPortFolioCount === true ? <div>
+                        <label style={{ color: `${portfolioColor}` }}>
+                            Showing
+                        </label>
+                        {portfolioTypeData.map((type: any, index: any) => {
+                            return (
+                                <>
+                                    {isShowingDataAll === true ? <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</> :
+                                        <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'number']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</>}
+                                </>
+                            )
+                        })}
+                    </div> :
+                        <span style={{ color: `${portfolioColor}` }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} out of ${data?.length}`}</span>}
                     <DebouncedInput
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}
@@ -515,7 +535,7 @@ const GlobalCommanTable = (items: any) => {
                     <span className="svg__iconbox svg__icon--setting" style={{ backgroundColor: `${portfolioColor}` }} onClick={() => setSelectedFilterPanelIsOpen(true)}></span>
                     <span>
                         <select style={{ height: "30px", color: `${portfolioColor}` }}
-                            className=""
+                            className="w80"
                             aria-label="Default select example"
                             value={globalSearchType}
                             onChange={(e) => {

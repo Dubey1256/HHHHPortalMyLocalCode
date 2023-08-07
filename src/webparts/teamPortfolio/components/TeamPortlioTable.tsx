@@ -5,27 +5,66 @@ import * as Moment from "moment";
 //import '../../cssFolder/foundation.scss';
 import { Modal, Panel, PanelType } from "office-ui-fabric-react";
 //import "bootstrap/dist/css/bootstrap.min.css";
-import { FaChevronRight, FaChevronDown, FaCompressArrowsAlt } from "react-icons/fa";
+import {
+    FaPrint,
+    FaFileExcel,
+    FaPaintBrush,
+    FaSearch,
+    FaSort,
+    FaSortDown,
+    FaSortUp,
+    FaInfoCircle,
+    FaChevronRight,
+    FaChevronDown,
+    FaMinus,
+    FaPlus,
+    FaCompressArrowsAlt,
+} from "react-icons/fa";
 import { CSVLink } from "react-csv";
-import pnp, { Web } from "sp-pnp-js";
+import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
+//import SmartFilter from './SmartFilter';
+//import '../../cssFolder/foundation.scss';
 import { map } from "jquery";
+import EditInstituton from "../../EditPopupFiles/EditComponent";
+import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
+import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup";
+import ExpndTable from "../../../globalComponents/ExpandTable/Expandtable";
+import { GlobalConstants } from "../../../globalComponents/LocalCommon";
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
+import { PortfolioStructureCreationCard } from "../../../globalComponents/tableControls/PortfolioStructureCreation";
+import CreateActivity from "../../servicePortfolio/components/CreateActivity";
+import CreateWS from "../../servicePortfolio/components/CreateWS";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { ColumnDef } from "@tanstack/react-table";
+import Tooltip from "../../../globalComponents/Tooltip";
+import * as XLSX from "xlsx";
+import {
+    Column, Table,
+    ExpandedState, useReactTable, getCoreRowModel, getFilteredRowModel, getExpandedRowModel, ColumnDef, flexRender, getSortedRowModel, SortingState,
+    ColumnFiltersState, FilterFn, getFacetedUniqueValues, getFacetedRowModel
+} from "@tanstack/react-table";
+import { RankingInfo, rankItem, compareItems } from "@tanstack/match-sorter-utils";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { HTMLProps } from "react";
 import HighlightableCell from "../../componentPortfolio/components/highlight";
 import Loader from "react-loader";
+import ShowTeamMembers from "../../../globalComponents/ShowTeamMember";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 import SmartFilterSearchGlobal from "../../../globalComponents/SmartFilterGolobalBomponents/SmartFilterGlobalComponents";
+import { concat } from "lodash";
+import saveAs from "file-saver";
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 // import Excel from 'exceljs';
 var filt: any = "";
 var ContextValue: any = {};
 let globalFilterHighlited: any;
+let forceExpanded: any = [];
+let activity = 0;
+let workstrim = 0;
+let task = 0;
 let isUpdated: any = "";
 let componentData: any = []; let subComponentData: any = []; let featureData: any = [];
 let activityData: any = []; let workstreamData: any = []; let tasksData: any = [];
@@ -51,10 +90,18 @@ function TeamPortlioTable(SelectedProp: any) {
         console.log(e);
     }
     ContextValue = SelectedProp?.SelectedProp;
+    const [sorting, setSorting] = React.useState<SortingState>([]);
+    const [expanded, setExpanded] = React.useState<ExpandedState>({});
+    const [rowSelection, setRowSelection] = React.useState({});
     const [loaded, setLoaded] = React.useState(false);
+    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
     const [globalFilter, setGlobalFilter] = React.useState("");
     globalFilterHighlited = globalFilter;
+    const [checkData, setcheckData] = React.useState([])
+    const [showTeamMemberOnCheck, setShowTeamMemberOnCheck] = React.useState(false)
+    const [ShowTeamPopup, setShowTeamPopup] = React.useState(false);
     const [siteConfig, setSiteConfig] = React.useState([]);
+    const [maidataBackup, setmaidataBackup] = React.useState([]);
     const [data, setData] = React.useState([]);
     const [AllUsers, setTaskUser] = React.useState([]);
     const [AllMetadata, setMetadata] = React.useState([])
@@ -81,6 +128,7 @@ function TeamPortlioTable(SelectedProp: any) {
         AfterSearchSubComponentItems: [],
         AfterSearchFeaturesItems: [],
     });
+    const [portfolioTypeConfrigration, setPortfolioTypeConfrigration] = React.useState<any>([{Title:'Component',Suffix:'C',Level: 1}, {Title:'SubComponent',Suffix:'S',Level: 2}, {Title:'Feature',Suffix:'F',Level: 3}]);
     let ComponetsData: any = {};
     let Response: any = [];
     let props = undefined;
@@ -167,6 +215,66 @@ function TeamPortlioTable(SelectedProp: any) {
         }
         setMetadata(smartmetaDetails);
     };
+
+    // React.useEffect(() => {
+    //     let newarray: any = [];
+    //     if (AllMetadata.length > 0) {
+    //         (async () => {
+    //             try {
+    //                 if (AllMetadata.length > 0) {
+    //                     const ItemTypeColumn = "Item Type";
+    //                     console.log("Fetching portfolio icons...");
+    //                     const PortfolioIcon = await Promise.all([globalCommon.getPortFolioIcons(ContextValue.MasterTaskListID, ItemTypeColumn)]);
+    //                     if (PortfolioIcon.length > 0 && PortfolioIcon != undefined) {
+    //                         PortfolioIcon?.forEach((obj: any) => {
+    //                             if (obj != undefined) {
+    //                                 let Item: any = {};
+    //                                 Item.Title = obj;
+    //                                 Item[obj + 'array'] = [];
+    //                                 newarray.push(Item);
+    //                             }
+    //                         })
+    //                         console.log("Portfolio icons retrieved:", newarray);
+    //                         setPortFolioTypeIcon(newarray);
+    //                     }
+    //                 }
+
+    //             } catch (error) {
+    //                 console.error("Error fetching portfolio icons:", error);
+    //             }
+    //         })();
+    //     }
+    // }, [AllMetadata.length > 0]);
+
+    // const findPortFolioIconsAndPortfolio = () => {
+    //     let newarray: any = [];
+    //     (async () => {
+    //         try {
+    //             const ItemTypeColumn = "Item Type";
+    //             console.log("Fetching portfolio icons...");
+    //             // const PortfolioIcon = await Promise.all([globalCommon.getPortFolioIcons(ContextValue.MasterTaskListID, ItemTypeColumn)]);
+    //             let [field] = await Promise.all([new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP").lists.getById(ContextValue?.MasterTaskListID).fields.getByTitle(ItemTypeColumn).get()]);
+    //             console.log("Data fetched successfully:", field?.Choices);
+    //             if (field?.Choices?.length > 0 && field?.Choices != undefined) {
+    //                 field?.Choices?.forEach((obj: any) => {
+    //                     if (obj != undefined) {
+    //                         let Item: any = {};
+    //                         Item.Title = obj;
+    //                         Item[obj + 'number'] = 0;
+    //                         Item[obj + 'numberCopy'] = 0;
+    //                         newarray.push(Item);
+    //                     }
+    //                 })
+    //                 console.log("Portfolio icons retrieved:", newarray);
+    //                 setPortFolioTypeIcon(newarray);
+    //             }
+
+    //         } catch (error) {
+    //             console.error("Error fetching portfolio icons:", error);
+    //         }
+    //     })();
+    // }
+
     const findPortFolioIconsAndPortfolio = async () => {
         try {
             let newarray: any = [];
@@ -190,6 +298,17 @@ function TeamPortlioTable(SelectedProp: any) {
                         newarray.push(Item);
                     }
                 })
+                if(newarray.length > 0){
+                    newarray = newarray.filter((findShowPort: any) => {
+                        let match = portfolioTypeConfrigration.find((config: any) => findShowPort.Title === config.Title);
+                        if (match) {
+                            findShowPort.Level = match?.Level;
+                            findShowPort.Suffix = match?.Suffix;
+                            return true
+                        }
+                        return false
+                    });
+                }
                 console.log("Portfolio icons retrieved:", newarray);
                 setPortFolioTypeIcon(newarray);
             }
@@ -279,6 +398,9 @@ function TeamPortlioTable(SelectedProp: any) {
                             if (result?.Body != undefined) {
                                 result.descriptionsSearch = result?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
                             }
+                            // if(result?.FeedBack !=undefined){
+                            //     result.FeedBack = JSON.parse(result.FeedBack)
+                            // }
                             if (result?.Comments != null) {
                                 result.commentsSearch = result?.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
                             }
@@ -357,11 +479,31 @@ function TeamPortlioTable(SelectedProp: any) {
                 }
             })
         }
+
+        // if (isUpdated === "") {
+        //     filt = "(Item_x0020_Type eq 'Component') or (Item_x0020_Type eq 'SubComponent') or (Item_x0020_Type eq 'Feature') and ((Portfolio_x0020_Type eq 'Service') or (Portfolio_x0020_Type eq 'Component'))";
+        // }
+        // if (isUpdated != undefined && isUpdated.toLowerCase().indexOf("service") > -1)
+        //     filt =
+        //         "((Item_x0020_Type eq 'Component') or (Item_x0020_Type eq 'SubComponent') or (Item_x0020_Type eq 'Feature')) and ((Portfolio_x0020_Type eq 'Service'))";
+        // if (
+        //     isUpdated != undefined &&
+        //     isUpdated.toLowerCase().indexOf("event") > -1
+        // )
+        //     filt =
+        //         "((Item_x0020_Type eq 'Component') or (Item_x0020_Type eq 'SubComponent') or (Item_x0020_Type eq 'Feature')) and ((Portfolio_x0020_Type eq 'Events'))";
+        // if (
+        //     isUpdated != undefined &&
+        //     isUpdated.toLowerCase().indexOf("component") > -1
+        // )
+        //     filt =
+        //         "((Item_x0020_Type eq 'Component') or (Item_x0020_Type eq 'SubComponent') or (Item_x0020_Type eq 'Feature')) and ((Portfolio_x0020_Type eq 'Component'))";
         let web = new Web(ContextValue.siteUrl);
         let componentDetails = [];
         componentDetails = await web.lists
             .getById(ContextValue.MasterTaskListID)
-            .items
+            //.getByTitle('Master Tasks')
+            .items//.getById(this.state.itemID)
             .select("ID", "Id", "Title", "Mileage", "TaskListId",
                 "TaskListName", "WorkspaceType", "PortfolioLevel", "PortfolioStructureID", "component_x0020_link", "Package", "Comments",
                 "DueDate", "Sitestagging", "Body", "Deliverables", "SiteCompositionSettings", "StartDate", "Created", "Item_x0020_Type",
@@ -372,13 +514,16 @@ function TeamPortlioTable(SelectedProp: any) {
                 "Author/Title", "Editor/Title",
                 "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title",
                 "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange",
-                "Component/Title", "Component/ItemType", "Services/Id", "Services/Title", "Services/ItemType", "Events/Id", "Events/Title", "Events/ItemType", "AssignedTo/Id", "Component/Id"
+                "Component/Title", "Component/ItemType", "Services/Id", "Services/Title", "Services/ItemType", "Events/Id", "Events/Title", "Events/ItemType", "AssignedTo/Id", "Component/Id",
+                // 'ClientCategory/Color_x0020_Tag',//"SharewebCategories/Id", "SharewebTaskType/Title","SharewebCategories/Title",
             )
             .expand(
                 "Parent", "PortfolioType", "AssignedTo", "ClientCategory", "Author", "Editor", "Team_x0020_Members", "Responsible_x0020_Team",
                 "Events",
                 "Services",
                 "Component",
+                // "SharewebTaskType",
+                // "SharewebCategories"
             )
             .top(4999)
             .filter(filt)
@@ -477,6 +622,21 @@ function TeamPortlioTable(SelectedProp: any) {
         ComponetsData["allComponets"] = componentDetails;
         LoadAllSiteTasks();
     };
+
+    // React.useEffect(() => {
+    //     const params = new URLSearchParams(window.location.search);
+    //     let query = params.get("PortfolioType");
+    //     if (query === 'Service' || query === 'service') {
+    //         let QueryPams = "Service Portfolio"
+    //         setIsUpdated(QueryPams);
+    //         isUpdated = query;
+    //     } else if (query === 'component' || query === 'component') {
+    //         let QueryPams = "Component Portfolio"
+    //         setIsUpdated(QueryPams);
+    //         isUpdated = query;
+
+    //     }
+    // }, [])
     React.useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         let query = params.get("PortfolioType");
@@ -539,6 +699,7 @@ function TeamPortlioTable(SelectedProp: any) {
             }
         }
         if (smartAllFilterData?.length > 0 && updatedSmartFilter === true) {
+            // updatedSmartFilterGrouping()
             setLoaded(false);
             filterCount = 0;
             componentDataCopyBackup = [];
@@ -547,6 +708,9 @@ function TeamPortlioTable(SelectedProp: any) {
             setDataBackup(structuredClone(AllSmartFilterDataBackupCopy));
             componentDataCopyBackup = structuredClone(componentData);
             filterDataAfterUpdate();
+            // portfolioTypeData?.map((port: any) => {
+            //     updatedSmartFilterGrouping(port?.Id);
+            // })
         }
     }, [smartAllFilterData])
 
@@ -555,7 +719,9 @@ function TeamPortlioTable(SelectedProp: any) {
     }
 
     const DynamicSort = function (items: any, column: any) {
+
         items?.sort(function (a: any, b: any) {
+            // return   a[column] - b[column];
             var aID = a[column];
             var bID = b[column];
             return aID == bID ? 0 : aID > bID ? 1 : -1;
@@ -628,12 +794,14 @@ function TeamPortlioTable(SelectedProp: any) {
             let worstreamAndTask = smartAllFilterData?.filter((taskData: any) => taskData?.ParentTask?.Id === act?.Id && taskData?.siteType === act?.siteType)
             if (worstreamAndTask.length > 0) {
                 act.subRows = act?.subRows?.concat(worstreamAndTask);
+                // act.subRows.push(worstreamAndTask);
             }
             worstreamAndTask?.forEach((wrkst: any) => {
                 wrkst.subRows = wrkst.subRows === undefined ? [] : wrkst.subRows;
                 let allTasksData = smartAllFilterData?.filter((elem: any) => elem?.ParentTask?.Id === wrkst?.Id && elem?.siteType === wrkst?.siteType);
                 if (allTasksData.length > 0) {
                     wrkst.subRows = wrkst?.subRows?.concat(allTasksData)
+                    // wrkst.subRows.push(allTasksData);
                 }
             })
         })
@@ -727,6 +895,98 @@ function TeamPortlioTable(SelectedProp: any) {
             setData(finalDataCopyArray);
         }
     }
+    // const filterDataAfterUpdate = () => {
+    //     let AllsmartAllFilterData = smartAllFilterData?.filter((elemVal: any) => elemVal.PortfolioType != undefined);
+    //     const updatedRows = [];
+    //     for (let i = 0; i < AllsmartAllFilterData.length; i++) {
+    //         const row = AllsmartAllFilterData[i];
+    //         row.subRows=[];
+    //         const updatedRow = updatedSmartFilterGrouping(row);
+    //         updatedRows.push(...updatedRow);
+    //     }
+    //     FinalFilterData.push(updatedRows);
+    //     console.log(updatedRows);
+    // };
+
+    // const updatedSmartFilterGrouping = (row: any): any[] => {
+    //     for (let i = 0; i < allDataBackup.length; i++) {
+    //         const Object = allDataBackup[i];
+    //         if (Object.Id === row?.Portfolio?.Id) {
+    //             Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
+    //             Object.subRows.push(row);
+    //             return updatedSmartFilterGrouping(Object);
+    //         } else if (Object.Id === row?.Parent?.Id) {
+    //             Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
+    //             Object.subRows.push(row);
+    //             return updatedSmartFilterGrouping(Object);
+    //         } else if (row?.Component != undefined && row?.Component?.length > 0 && Object.Id === row?.Component[0]?.Id) {
+    //             Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
+    //             Object.subRows.push(row);
+    //             return updatedSmartFilterGrouping(Object);
+    //         } else if (row?.Services != undefined && row?.Services?.length > 0 && Object.Id === row?.Services[0]?.Id) {
+    //             Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
+    //             Object.subRows.push(row);
+    //             return updatedSmartFilterGrouping(Object);
+    //         }
+    //     }
+    //     if(row.subRows?.length>0){
+    //         row.subRows = row?.subRows?.filter((ele: any, ind: any) => ind === row?.subRows?.findIndex((elem: any) => elem.ID === ele.ID));
+    //     }
+    //     return [row];
+    // };
+
+
+
+
+
+
+
+    // const filterDataAfterUpdate = () => {
+    //     let AllsmartAllFilterData = smartAllFilterData?.filter((elemVal: any) => elemVal.PortfolioType != undefined);
+    //     let updatedRows = [];
+    //     for (let i = 0; i < AllsmartAllFilterData.length; i++) {
+    //         const row = AllsmartAllFilterData[i];
+    //         row.subRows = [];
+    //         const updatedRow = updatedSmartFilterGrouping(row);
+    //         updatedRows.push(updatedRow);
+    //     }
+    //     FinalFilterData.push(updatedRows);
+    //     console.log(updatedRows);
+    // };
+
+    // const updatedSmartFilterGrouping = (row: any): any => {
+    //     // for (let i = 0; i < allDataBackup.length; i++) {
+    //     const checkIfParentIsPersent = (parentRow: any) => {
+    //         for (let i = 0; i < allDataBackup.length; i++) {
+    //             let Object = allDataBackup[i];
+    //             if (Object.Id === parentRow?.Portfolio?.Id) {
+    //                 Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
+    //                 Object.subRows.push(parentRow);
+    //                 return Object
+    //             } else if (Object.Id === parentRow?.Parent?.Id) {
+    //                 Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
+    //                 Object.subRows.push(parentRow);
+    //                 return Object
+    //             } else if (parentRow?.Component != undefined && parentRow?.Component?.length > 0 && Object.Id === parentRow?.Component[0]?.Id) {
+    //                 Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
+    //                 Object.subRows.push(parentRow);
+    //                 return Object
+    //             } else if (parentRow?.Services != undefined && parentRow?.Services?.length > 0 && Object.Id === parentRow?.Services[0]?.Id) {
+    //                 Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
+    //                 Object.subRows.push(parentRow);
+    //                 return Object
+    //             }
+    //         }
+    //         return undefined;
+    //     }
+    //     let parentRows = checkIfParentIsPersent(row)
+    //     if (parentRows === undefined) {
+    //         return row;
+    //     }
+    //     return updatedSmartFilterGrouping(parentRows);
+    // };
+
+
 
     ///react table start function//////
     /////////////////////Table Column Start///////////////////////////////
@@ -820,6 +1080,62 @@ function TeamPortlioTable(SelectedProp: any) {
                                     )}
                                 </>
                             )}
+
+
+                            {/* ////////// Plush Icons////// */}
+                            {/* <span>
+                                {((row.getCanExpand() &&
+                                    row.subRows?.length !== row.original.subRows?.length) ||
+                                    !row.getCanExpand() ||
+                                    forceExpanded.includes(row.id)) &&
+                                    row.original.subRows?.length ? (
+                                    <span className="mx-1"
+                                        {...{
+                                            onClick: () => {
+                                                if (!forceExpanded.includes(row.id)) {
+                                                    const coreIds = table.getCoreRowModel().rowsById;
+                                                    row.subRows = coreIds[row.id].subRows;
+                                                    const rowModel = table.getRowModel();
+                                                    const updateRowModelRecursively = (item: any) => {
+                                                        item.subRows?.forEach((elem: any) => {
+                                                            if (!rowModel.rowsById[elem.id]) {
+                                                                rowModel.flatRows.push(elem);
+                                                                rowModel.rowsById[elem.id] = elem;
+                                                            }
+                                                            elem?.subRows?.length &&
+                                                                updateRowModelRecursively(elem);
+                                                        });
+                                                    }
+                                                    updateRowModelRecursively(row);
+                                                    const temp = Object.keys(coreIds).filter(
+                                                        (item: any) =>
+                                                            item === row.id ||
+                                                            item.startsWith(row.id + ".")
+                                                    );
+                                                    forceExpanded = [...forceExpanded, ...temp];
+                                                    setExpanded((prev: any) => ({
+                                                        ...prev,
+                                                        [row.id]: true,
+                                                    }));
+                                                } else {
+                                                    row.getToggleExpandedHandler()();
+                                                }
+                                            },
+                                            style: { cursor: "pointer" },
+                                        }}
+                                    >
+                                        {!row.getCanExpand() ||
+                                            (row.getCanExpand() &&
+                                                row.subRows?.length !== row.original.subRows?.length)
+                                            ? <FaPlus style={{ fontSize: '10px' }} className={IsUpdated != "Service Portfolio" && IsUpdated != "Component Portfolio" ? row?.original?.dynamicColor : ''} />
+                                            : row.getIsExpanded()
+                                                ? <FaMinus className={IsUpdated != "Service Portfolio" && IsUpdated != "Component Portfolio" ? row?.original?.dynamicColor : ''} />
+                                                : <FaPlus style={{ fontSize: '10px' }} className={IsUpdated != "Service Portfolio" && IsUpdated != "Component Portfolio" ? row?.original?.dynamicColor : ''} />}
+                                    </span>
+                                ) : (
+                                    ""
+                                )}{" "}
+                            </span> */}
                             {getValue()}
                         </span>
                     </>
@@ -844,33 +1160,63 @@ function TeamPortlioTable(SelectedProp: any) {
             },
             {
                 accessorFn: (row) => row?.Title,
+                // cell: ({ row, column, getValue }) => (
+                //     <div className="column-fixedTitleWidth">
+                //         <div className="text-content">
+                //             {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== "Others" && (
+                //                 <a data-interception="off" target="_blank" style={{ color: `${row?.original?.PortfolioType?.Color}` }} href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.ID} >
+                //                     <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : globalFilterHighlited} />
+                //                 </a>
+                //             )}
+                //             {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== "Others" && (
+                //                 <a data-interception="off" target="_blank" style={{ color: `${row?.original?.PortfolioType?.Color}` }}
+                //                     href={ContextValue.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + row?.original?.ID + "&Site=" + row?.original?.siteType} >
+                //                     <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : globalFilterHighlited} />
+                //                 </a>
+                //             )}
+                //             {row?.original.Title === "Others" ? (
+                //                 <span style={{ color: `${row?.original?.PortfolioType?.Color}` }}>{row?.original.Title}</span>
+                //             ) : (
+                //                 ""
+                //             )}
+                //             {row?.original?.Categories == 'Draft' ?
+                //                 <FaCompressArrowsAlt style={{ height: '11px', width: '20px', color: `${row?.original?.PortfolioType?.Color}` }} /> : ''}
+                //             {row?.original?.subRows?.length > 0 ?
+                //                 <span className='ms-1 mt-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
+                //             {row?.original?.descriptionsSearch != null && row?.original?.descriptionsSearch != '' && (
+                //                 <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />
+                //             )}
+                //         </div>
+                //     </div>
+                // ),
+
                 cell: ({ row, column, getValue }) => (
-                    <div className="column-fixedTitleWidth">
-                        <div className="text-content">
+                    <div className="d-flex">
+                        <span className="column-description2">
                             {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== "Others" && (
-                                <a data-interception="off" target="_blank" style={{ color: `${row?.original?.PortfolioType?.Color}` }} href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.ID} >
+                                <a className="text-content hreflink" title={row?.original?.Title} data-interception="off" target="_blank" style={{ color: `${row?.original?.PortfolioType?.Color}` }} href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.ID} >
                                     <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : globalFilterHighlited} />
                                 </a>
                             )}
                             {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== "Others" && (
-                                <a data-interception="off" target="_blank" style={{ color: `${row?.original?.PortfolioType?.Color}` }}
+                                <a className="text-content hreflink" title={row?.original?.Title} data-interception="off" target="_blank" style={{ color: `${row?.original?.PortfolioType?.Color}` }}
                                     href={ContextValue.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + row?.original?.ID + "&Site=" + row?.original?.siteType} >
                                     <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : globalFilterHighlited} />
                                 </a>
                             )}
                             {row?.original.Title === "Others" ? (
-                                <span style={{ color: `${row?.original?.PortfolioType?.Color}` }}>{row?.original.Title}</span>
+                                <span className="text-content" title={row?.original?.Title} style={{ color: `${row?.original?.PortfolioType?.Color}` }}>{row?.original?.Title}</span>
                             ) : (
                                 ""
                             )}
-                            {row?.original?.Categories == 'Draft' ?
-                                <FaCompressArrowsAlt style={{ height: '11px', width: '20px', color: `${row?.original?.PortfolioType?.Color}` }} /> : ''}
-                            {row?.original?.subRows?.length > 0 ?
-                                <span className='ms-1 mt-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
-                            {row?.original?.descriptionsSearch != null && row?.original?.descriptionsSearch != '' && (
-                                <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />
-                            )}
-                        </div>
+                        </span>
+                        {row?.original?.Categories == 'Draft' ?
+                            <FaCompressArrowsAlt style={{ height: '11px', width: '20px', color: `${row?.original?.PortfolioType?.Color}` }} /> : ''}
+                        {row?.original?.subRows?.length > 0 ?
+                            <span className='ms-1 mt-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
+                        {row?.original?.descriptionsSearch != null && row?.original?.descriptionsSearch != '' && (
+                            <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />
+                        )}
                     </div>
                 ),
                 id: "Title",
@@ -1048,6 +1394,24 @@ function TeamPortlioTable(SelectedProp: any) {
         [data]
     );
 
+    // React.useEffect(() => {
+    //     if (table.getState().columnFilters.length || table.getState()?.globalFilter?.length > 0) {
+    //         const allKeys = Object.keys(table.getFilteredRowModel().rowsById).reduce(
+    //             (acc: any, cur: any) => {
+    //                 if (table.getFilteredRowModel().rowsById[cur].subRows?.length) {
+    //                     acc[cur] = true;
+    //                 }
+    //                 return acc;
+    //             },
+    //             {}
+    //         );
+    //         setExpanded(allKeys);
+    //     } else {
+    //         setExpanded({});
+    //     }
+    //     forceExpanded = [];
+    // }, [table.getState().columnFilters, table.getState().globalFilter]);
+
     const callBackData = React.useCallback((checkData: any) => {
         if (checkData != undefined) {
             setCheckedList(checkData);
@@ -1117,7 +1481,7 @@ function TeamPortlioTable(SelectedProp: any) {
                                                 scale={1.0}
                                                 loadedClassName="loadedContent"
                                             />
-                                            <GlobalCommanTable AllListId={ContextValue} columns={columns} data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} fixedWidth={true} />
+                                            <GlobalCommanTable AllListId={ContextValue} columns={columns} data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true}/>
                                         </div>
                                     </div>
                                 </div>
