@@ -1,51 +1,78 @@
 import * as React from 'react';
 import * as moment from 'moment';
 import { ITaskprofileProps } from './ITaskprofileProps';
-import AncTool from "../../../globalComponents/AncTool/AncTool"
 import TaskFeedbackCard from './TaskFeedbackCard';
 import { Web } from "sp-pnp-js";
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import * as globalCommon from '../../../globalComponents/globalCommon'
+import { BiInfoCircle } from 'react-icons/bi'
 import SmartTimeTotal from './SmartTimeTotal';
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
+import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
 import RelevantDocuments from './RelevantDocuments';
 import SmartInformation from './SmartInformation';
 import VersionHistoryPopup from '../../../globalComponents/VersionHistroy/VersionHistory';
 import TasksTable from './TaskfooterTable';
 import EmailComponenet from './emailComponent';
+import EditSiteComposition from './EditSiteComposition'
+import AncTool from '../../../globalComponents/AncTool/AncTool';
+
+import Tooltip from '../../../globalComponents/Tooltip'
+import ApprovalHistoryPopup from '../../../globalComponents/EditTaskPopup/ApprovalHistoryPopup';
+import { Modal } from 'office-ui-fabric-react';
 var ClientTimeArray: any = [];
 var TaskIdCSF: any = "";
 var TaskIdAW = "";
 var AllListId: any;
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
+var subchildcomment: any;
+let countemailbutton: number;
+var changespercentage = false;
 export interface ITaskprofileState {
   Result: any;
   listName: string;
   itemID: number;
   isModalOpen: boolean;
+  isEditModalOpen: boolean
   imageInfo: any;
   Display: string;
   showcomment: string;
+  showcomment_subtext: string,
+  subchildcomment: any,
   updateComment: boolean;
   showComposition: boolean;
   isOpenEditPopup: boolean;
+  TaskDeletedStatus: boolean;
   isTimeEntry: boolean,
   emailStatus: String,
   countfeedback: any,
+  subchildParentIndex: any
   sendMail: boolean,
   showPopup: any;
+  emailcomponentopen: boolean
+  showhideCommentBoxIndex: any
+  ApprovalCommentcheckbox: boolean;
+  CommenttoPost: string;
   maincollection: any;
   SharewebTimeComponent: any;
   isopenversionHistory: boolean;
   smarttimefunction: boolean;
   ApprovalStatus: boolean;
+  EditSiteCompositionStatus: any
+  CommenttoUpdate: string;
+  updateCommentText: any;
+  emailComponentstatus: any;
+  ApprovalHistoryPopup: boolean;
+  ApprovalPointUserData: any;
+  ApprovalPointCurrentParentIndex: number;
+  currentArraySubTextIndex: number;
 }
 
 export default class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> {
-   private relevantDocRef: any;
-   private smartInfoRef: any;
+  private relevantDocRef: any;
+  private smartInfoRef: any;
   private taskUsers: any = [];
   private smartMetaDataIcon: any;
   private currentUser: any;
@@ -54,14 +81,13 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
   count: number = 0;
 
-
   countemailbutton: number = 0;
   backGroundComment = false;
   this: any;
   public constructor(props: ITaskprofileProps, state: ITaskprofileState) {
     super(props);
     this.relevantDocRef = React.createRef();
-    this.smartInfoRef= React.createRef();
+    this.smartInfoRef = React.createRef();
     const params = new URLSearchParams(window.location.search);
     console.log(params.get('taskId'));
     console.log(params.get('Site'));
@@ -70,15 +96,31 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     this.oldTaskLink = `${props.siteUrl}/SitePages/Task-Profile-Old.aspx?taskId=` + params.get('taskId') + "&Site=" + params.get('Site');
     this.state = {
       Result: {},
+      currentArraySubTextIndex: null,
+      ApprovalPointUserData: null,
+      ApprovalPointCurrentParentIndex: null,
+      ApprovalHistoryPopup: false,
+      emailcomponentopen: false,
+      emailComponentstatus: null,
+      subchildParentIndex: null,
+      showcomment_subtext: 'none',
+      subchildcomment: null,
+      showhideCommentBoxIndex: null,
+      CommenttoUpdate: '',
+      ApprovalCommentcheckbox: false,
+      CommenttoPost: '',
+      updateCommentText: {},
       listName: params.get('Site'),
       itemID: Number(params.get('taskId')),
       isModalOpen: false,
+      isEditModalOpen: false,
       imageInfo: {},
       Display: 'none',
       showcomment: 'none',
       updateComment: false,
       showComposition: true,
       isOpenEditPopup: false,
+      TaskDeletedStatus: false,
       isopenversionHistory: false,
       isTimeEntry: false,
       emailStatus: "",
@@ -90,6 +132,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       SharewebTimeComponent: [],
       smarttimefunction: false,
       ApprovalStatus: false,
+      EditSiteCompositionStatus: false
     }
 
     this.GetResult();
@@ -359,6 +402,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       Project: taskDetails["Project"],
       IsTodaysTask: taskDetails["IsTodaysTask"],
       EstimatedTime: taskDetails["EstimatedTime"],
+      ClientTime: taskDetails["ClientTime"] != null && JSON.parse(taskDetails["ClientTime"]),
       ApproverHistory: taskDetails["ApproverHistory"] != null ? JSON.parse(taskDetails["ApproverHistory"]) : "",
       OffshoreComments: OffshoreComments.length > 0 ? OffshoreComments.reverse() : null,
       OffshoreImageUrl: taskDetails["OffshoreImageUrl"] != null && JSON.parse(taskDetails["OffshoreImageUrl"]),
@@ -385,7 +429,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       BasicImageInfo: this.GetAllImages(JSON.parse(taskDetails["BasicImageInfo"]), taskDetails["AttachmentFiles"], taskDetails["Attachments"]),
       FeedBack: JSON.parse(taskDetails["FeedBack"]),
       SharewebTaskType: taskDetails["SharewebTaskType"] != null ? taskDetails["SharewebTaskType"]?.Title : '',
-      ClientTime: taskDetails["ClientTime"] != null && JSON.parse(taskDetails["ClientTime"]),
+
       Component: taskDetails["Component"],
       Services: taskDetails["Services"],
       Creation: taskDetails["Created"],
@@ -393,17 +437,32 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       ModifiedBy: taskDetails["Editor"],
       listId: listInfo.Id,
       SharewebTaskLevel1No: taskDetails["SharewebTaskLevel1No"],
+      SharewebTaskLevel2No: taskDetails['SharewebTaskLevel2No'],
       Attachments: taskDetails["Attachments"],
       AttachmentFiles: taskDetails["AttachmentFiles"],
       SmartInformationId: taskDetails["SmartInformation"],
       Approver: taskDetails.Approver != undefined ? taskDetails.Approver[0] : "",
       ParentTask: taskDetails?.ParentTask,
     };
+    if (tempTask?.FeedBack != null && tempTask?.FeedBack.length > 0) {
+      tempTask?.FeedBack[0]?.FeedBackDescriptions?.map((items: any) => {
+        if (items?.Comments?.length > 0) {
+          items?.Comments?.map((comment: any) => {
+            comment.AuthorImage = comment?.AuthorImage?.replace(
+              "https://www.hochhuth-consulting.de",
+              "https://hhhhteams.sharepoint.com/sites/HHHH"
+            );
+          })
+        }
+      })
+    }
 
     console.log(tempTask);
 
     this.setState({
       Result: tempTask,
+
+
     }, () => {
       // this.showhideapproval();
       this.getSmartTime();
@@ -413,17 +472,17 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   }
 
   private sortAlphaNumericAscending = (a: any, b: any) => a.FileName.localeCompare(b.FileName, 'en', { numeric: true });
-  private AncCallback=(type:any)=> {
-    switch(type){
-      case 'anc':{
+  private AncCallback = (type: any) => {
+    switch (type) {
+      case 'anc': {
         this?.relevantDocRef?.current?.loadAllSitesDocuments()
         break
       }
-      case 'smartInfo':{
+      case 'smartInfo': {
         this?.smartInfoRef?.current?.GetResult();
         break
       }
-      default:{
+      default: {
         this?.relevantDocRef?.current?.loadAllSitesDocuments()
         this?.smartInfoRef?.current?.GetResult();
         break
@@ -450,6 +509,12 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         }
         if (attachdata.length > 0) {
           BasicImageInfo?.forEach(function (item: any) {
+            if (item?.ImageUrl != undefined && item?.ImageUrl != "") {
+              item.ImageUrl = item?.ImageUrl?.replace(
+                "https://www.hochhuth-consulting.de",
+                "https://hhhhteams.sharepoint.com/sites/HHHH"
+              );
+            }
             // if(item.ImageUrl!=undefined && item.ImageUrl.toLowerCase().indexOf('https://www.hochhuth-consulting.de/') > -1) {
             //   var imgurl = item.AuthorImage.split('https://www.hochhuth-consulting.de/')[1];
             //     item.ImageUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/' + imgurl;
@@ -460,7 +525,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                 ImageUrl: Attach?.ServerRelativeUrl,
                 UploadeDate: item?.UploadeDate,
                 UserImage: item?.UserImage,
-                UserName: item?.UserName
+                UserName: item?.UserName,
+                Description: item?.Description
               })
             }
           })
@@ -480,9 +546,6 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
       ImagesInfo = ImagesInfo;
 
-    }
-    else {
-      ImagesInfo = BasicImageInfo
     }
     return ImagesInfo;
   }
@@ -546,7 +609,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       console.log(ClientCategory);
     }
 
-    if (ClientTimeArray != undefined && ClientTimeArray != null) {
+    if (ClientTimeArray != undefined && ClientTimeArray.length > 0) {
       ClientTimeArray?.map((item: any) => {
         array2?.map((items: any) => {
           if (item?.SiteName == items?.SiteName) {
@@ -768,47 +831,30 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     })
   }
 
-  private CallBack() {
+  private CallBack(FunctionType: any) {
     // ClientTimeArray=[];
-    this.setState({
-      isOpenEditPopup: false,
-      countfeedback: this.state.countfeedback + 1
-    })
-    this.GetResult();
+    if (FunctionType == "Save") {
+      this.setState({
+        isOpenEditPopup: false,
+        EditSiteCompositionStatus: false,
+      })
+      this.GetResult();
+    }
+    if (FunctionType == "Delete") {
+      this.setState({
+        isOpenEditPopup: false,
+        TaskDeletedStatus: true,
+      })
+      window.location.href = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskDashboard.aspx";
+    }
+    if (FunctionType == "Close") {
+      this.setState({
+        isOpenEditPopup: false,
+        EditSiteCompositionStatus: false,
+      })
+    }
   }
-  // private showhideapproval() {
 
-  //   if (this.state.Result?.FeedBack != null || this.state.Result?.FeedBack != undefined) {
-  //     let isShowLight = 0;
-  //     let NotisShowLight = 0
-  //     this.state.Result?.FeedBack?.map((item: any) => {
-  //       if (item?.FeedBackDescriptions != undefined) {
-  //         item?.FeedBackDescriptions?.map((feedback: any) => {
-  //           if (feedback != null && feedback != undefined) {
-  //             if (feedback?.Subtext != undefined && feedback?.Subtext.length > 0) {
-  //               feedback?.Subtext?.map((subtextitem: any) => {
-  //                 if (subtextitem?.isShowLight != "" && subtextitem?.isShowLight != undefined) {
-  //                   // count=1
-  //                   isShowLight = isShowLight + 1;
-
-  //                 }
-  //               })
-  //             }
-  //             if (isShowLight == 0) {
-  //               if (feedback?.isShowLight != "" && feedback?.isShowLight != undefined) {
-  //                 // count=1
-  //                 isShowLight = isShowLight + 1;
-  //               }
-  //             }
-  //           }
-  //         })
-  //       }
-  //     })
-  //     if (isShowLight > NotisShowLight) {
-  //       this.countemailbutton = 1;
-  //     }
-  //   }
-  // }
   private async approvalcallback() {
     this.setState({
       sendMail: false,
@@ -936,7 +982,6 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                       else if (component?.Parent?.Id == undefined && self.taskResult?.Services[0]?.ItemType == "Feature") {
                         flag = true
                         breadcrumbitem.Parentitem = subchild;
-
                         breadcrumbitem.Subchild = item;
                       }
                     })
@@ -961,9 +1006,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       this.taskResult?.Events?.forEach(function (item: any) {
         flag = false;
         gAllDataMatches?.forEach(function (value: any) {
-
           if (item?.Id == value?.Id) {
-
             if (value?.Parent?.Id != undefined) {
               gAllDataMatches.forEach(function (component: any) {
                 if (component?.Id == value?.Parent?.Id) {
@@ -1057,7 +1100,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     if (breadcrumbitem != undefined) {
       if (breadcrumbitem?.ParentTask != undefined && breadcrumbitem?.ParentTask?.Shareweb_x0020_ID != undefined && breadcrumbitem?.ChildTask == undefined && breadcrumbitem?.SubChildTask == undefined) {
 
-        TaskIdAW = (breadcrumbitem?.ParentTask?.Shareweb_x0020_ID).replace("-", ">")
+        TaskIdAW = (breadcrumbitem?.ParentTask?.Shareweb_x0020_ID)?.replace("-", ">")
       }
       if (breadcrumbitem.ChildTask != undefined && breadcrumbitem.SubChildTask == undefined) {
         if (breadcrumbitem.ChildTask.Shareweb_x0020_ID != undefined) {
@@ -1066,11 +1109,11 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
           }
         }
         else if (breadcrumbitem?.ChildTask != undefined && breadcrumbitem?.ChildTask?.TaskId != undefined && breadcrumbitem?.SubChildTask == undefined) {
-          TaskIdAW = (breadcrumbitem?.ChildTask?.TaskId).replace("-", ">")
+          TaskIdAW = (breadcrumbitem?.ChildTask?.TaskId)?.replace("-", ">")
         }
       }
       else if (breadcrumbitem?.SubChildTask != undefined && breadcrumbitem?.SubChildTask?.TaskId != undefined) {
-        TaskIdAW = (breadcrumbitem?.SubChildTask?.TaskId).replace("-", ">")
+        TaskIdAW = (breadcrumbitem?.SubChildTask?.TaskId)?.replace("-", ">")
       }
     }
     this.maincollection.push(breadcrumbitem);
@@ -1094,11 +1137,18 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
   }
 
-
-
   private sendEmail(item: any) {
-
-    console.log(item);
+    var data = this.state.Result;
+    if (item == "Approved") {
+      data.PercentComplete = 3
+    } else {
+      data.PercentComplete = 2
+    }
+    var data = this.state.Result;
+    this.setState({
+      Result: data,
+    }),
+      console.log(item);
     this.setState({
       sendMail: true,
     });
@@ -1107,8 +1157,464 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     });
 
   }
+  //================================ taskfeedbackcard===============
+  private showhideCommentBox(index: any) {
+    if (this.state.showcomment == 'none') {
+      this.setState({
+        showcomment: 'block',
+        showhideCommentBoxIndex: index,
+        showcomment_subtext: 'none',
+        subchildcomment: null,
+      });
+    }
+    else {
+      this.setState({
+        showcomment: 'block',
+        showhideCommentBoxIndex: index,
+        showcomment_subtext: 'none',
+        subchildcomment: null,
+      });
+    }
+  }
+  private handleInputChange(e: any) {
+    this.setState({ CommenttoPost: e.target.value });
+  }
+  private PostButtonClick(fbData: any, i: any) {
+
+    let txtComment = this.state.CommenttoPost;
+    if (txtComment != '') {
+      //  var date= moment(new Date()).format('dd MMM yyyy HH:mm')
+      var temp: any = {
+        AuthorImage: this.currentUser != null && this.currentUser?.length > 0 ? this.currentUser[0]['userImage'] : "",
+        AuthorName: this.currentUser != null && this.currentUser.length > 0 ? this.currentUser[0]['Title'] : "",
+        // Created: new Date().toLocaleString('default',{ month: 'short',day:'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        Created: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+        Title: txtComment,
+        // isApprovalComment:this.state.ApprovalCommentcheckbox,
+        // isShowLight:this.props?.feedback?.isShowLight?this.props?.feedback?.isShowLight:""
+      };
+      if (this.state.ApprovalCommentcheckbox) {
+        temp.isApprovalComment = this.state.ApprovalCommentcheckbox
+        temp.isShowLight = fbData?.isShowLight ? fbData?.isShowLight : "";
+        var approvalDataHistory = {
+          ApprovalDate: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+          Id: this.currentUser[0].Id,
+          ImageUrl: this.currentUser[0].userImage,
+          Title: this.currentUser[0].Title,
+          isShowLight: fbData?.isShowLight ? fbData?.isShowLight : ""
+        }
+
+        if (temp.ApproverData != undefined) {
+          temp.ApproverData.push(approvalDataHistory)
+        } else {
+          temp.ApproverData = [];
+          temp.ApproverData.push(approvalDataHistory);
+        }
+      }
+      //Add object in feedback
+
+      if (fbData["Comments"] != undefined) {
+        fbData["Comments"].unshift(temp);
+      }
+      else {
+        fbData["Comments"] = [temp];
+      }
+      (document.getElementById('txtComment') as HTMLTextAreaElement).value = '';
+      this.setState({
+        showcomment: 'none',
+        CommenttoPost: '',
+      });
+      this.onPost();
+      this.setState({
+        ApprovalCommentcheckbox: false,
+        showhideCommentBoxIndex: null
+      })
+    } else {
+      alert('Please input some text.')
+    }
+
+  }
+  private openEditModal(comment: any, indexOfUpdateElement: any, indexOfSubtext: any, isSubtextComment: any, parentIndex: any) {
+    this.setState({
+      isEditModalOpen: true,
+      CommenttoUpdate: comment?.Title,
+      updateCommentText: {
+        'comment': comment?.Title,
+        'indexOfUpdateElement': indexOfUpdateElement,
+        'indexOfSubtext': indexOfSubtext,
+        'isSubtextComment': isSubtextComment,
+        "data": comment,
+        "parentIndexOpeneditModal": parentIndex
+      }
+    })
+  }
+
+  private clearComment(isSubtextComment: any, indexOfDeleteElement: any, indexOfSubtext: any, parentindex: any) {
+    if (confirm("Are you sure, you want to delete this?")) {
+      if (isSubtextComment) {
+        this.state.Result["FeedBack"][0]?.FeedBackDescriptions[parentindex]["Subtext"][indexOfSubtext]?.Comments?.splice(indexOfDeleteElement, 1)
+      } else {
+        this.state.Result["FeedBack"][0]?.FeedBackDescriptions[parentindex]["Comments"]?.splice(indexOfDeleteElement, 1);
+      }
+      this.onPost();
+    }
+
+  }
+  private handleUpdateComment(e: any) {
+    this.setState({ CommenttoUpdate: e.target.value });
+  }
+  private updateComment() {
+    let txtComment = this.state.CommenttoUpdate
+
+    if (txtComment != '') {
+      let temp: any = {
+        AuthorImage: this.currentUser != null && this.currentUser.length > 0 ? this.currentUser[0]['userImage'] : "",
+        AuthorName: this.currentUser != null && this.currentUser.length > 0 ? this.currentUser[0]['Title'] : "",
+        Created: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+        Title: txtComment
+      };
+      if (this.state?.updateCommentText?.data?.isApprovalComment) {
+        temp.isApprovalComment = this.state?.updateCommentText?.data?.isApprovalComment;
+        temp.isShowLight = this.state?.updateCommentText?.data?.isShowLight
+        temp.ApproverData = this.state?.updateCommentText?.data?.ApproverData;
+      }
+      if (this.state?.updateCommentText?.isSubtextComment) {
+        // this.props.feedback.Subtext[this.state.updateCommentText['indexOfSubtext']]['Comments'][this.state.updateCommentText['indexOfUpdateElement']] = temp;
+        this.state.Result["FeedBack"][0].FeedBackDescriptions[this.state?.updateCommentText?.parentIndexOpeneditModal].Subtext[this.state.updateCommentText['indexOfSubtext']]['Comments'][this.state.updateCommentText['indexOfUpdateElement']] = temp
+
+      }
+      else {
+        // this.props.feedback["Comments"][this.state.updateCommentText['indexOfUpdateElement']] = temp;
+        this.state.Result["FeedBack"][0].FeedBackDescriptions[this.state?.updateCommentText?.parentIndexOpeneditModal]["Comments"][this.state?.updateCommentText['indexOfUpdateElement']] = temp
+      }
+
+      this.onPost();
+    }
+    this.setState({
+      isEditModalOpen: false,
+      updateCommentText: {},
+      CommenttoUpdate: ''
+    });
+  }
+
+  private SubtextPostButtonClick(j: any, parentIndex: any) {
+    let txtComment = this.state.CommenttoPost;
+    if (txtComment != '') {
+      let temp: any = {
+        AuthorImage: this.currentUser != null && this.currentUser.length > 0 ? this.currentUser[0]['userImage'] : "",
+        AuthorName: this.currentUser != null && this.currentUser.length > 0 ? this.currentUser[0]['Title'] : "",
+        // Created: new Date().toLocaleString('default', { day:'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        Created: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+        Title: txtComment,
+        // isApprovalComment:this.state.ApprovalCommentcheckbox,
+        // isShowLight:this.props?.feedback?.Subtext[j].isShowLight!=undefined?this.props?.feedback?.Subtext[j].isShowLight:""
+      };
+      if (this.state.ApprovalCommentcheckbox) {
+        temp.isApprovalComment = this.state.ApprovalCommentcheckbox
+        temp.isShowLight = this.state.Result["FeedBack"][0]?.FeedBackDescriptions[parentIndex]?.Subtext[j].isShowLight != undefined ? this.state.Result["FeedBack"][0]?.FeedBackDescriptions[parentIndex]?.Subtext[j].isShowLight : ""
+        var approvalDataHistory = {
+          ApprovalDate: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+          Id: this.currentUser[0].Id,
+          ImageUrl: this.currentUser[0].userImage,
+          Title: this.currentUser[0].Title,
+          isShowLight: this.state.Result["FeedBack"][0]?.FeedBackDescriptions[parentIndex]?.Subtext[j].isShowLight != undefined ? this.state.Result["FeedBack"][0]?.FeedBackDescriptions[parentIndex]?.Subtext[j].isShowLight : ""
+        }
+
+        if (temp.ApproverData != undefined) {
+          temp.ApproverData.push(approvalDataHistory)
+        } else {
+          temp.ApproverData = [];
+          temp.ApproverData.push(approvalDataHistory);
+        }
+
+      }
+      //Add object in feedback
+
+      if (this.state.Result["FeedBack"][0]?.FeedBackDescriptions[parentIndex]["Subtext"][j].Comments != undefined) {
+        this.state.Result["FeedBack"][0]?.FeedBackDescriptions[parentIndex]["Subtext"][j].Comments.unshift(temp);
+      }
+      else {
+        this.state.Result["FeedBack"][0].FeedBackDescriptions[parentIndex]["Subtext"][j]['Comments'] = [temp];
+      }
+      (document.getElementById('txtCommentSubtext') as HTMLTextAreaElement).value = '';
+      this.setState({
+        showcomment_subtext: 'none',
+        CommenttoPost: '',
+      });
+      this.onPost();
+      // sunchildcomment=null
+      this.setState({
+        ApprovalCommentcheckbox: false,
+        subchildcomment: null,
+        subchildParentIndex: null
+
+      })
+    } else {
+      alert('Please input some text.')
+    }
+
+  }
+  private showhideCommentBoxOfSubText(j: any, parentIndex: any) {
+    // sunchildcomment = j;
+
+    if (this.state.showcomment_subtext == 'none') {
+      this.setState({
+        showcomment_subtext: 'block',
+        subchildcomment: j,
+        subchildParentIndex: parentIndex,
+        showcomment: 'none',
+        showhideCommentBoxIndex: null
+
+      });
+    }
+    else {
+      this.setState({
+        showcomment_subtext: 'block',
+        subchildcomment: j,
+        subchildParentIndex: parentIndex,
+        showcomment: 'none',
+        showhideCommentBoxIndex: null
+
+      });
+    }
+  }
+
+  //===============traffic light function==================
+  private async changeTrafficLigth(index: any, item: any) {
+    console.log(index);
+    console.log(item);
+    if (this.state.Result["Approver"]?.Id == this?.currentUser[0]?.Id) {
+      let tempData: any = this.state.Result["FeedBack"][0]?.FeedBackDescriptions[index];
+      var approvalDataHistory = {
+        ApprovalDate: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+        Id: this.currentUser[0].Id,
+        ImageUrl: this.currentUser[0].userImage,
+        Title: this.currentUser[0].Title,
+        isShowLight: item
+      }
+      tempData.isShowLight = item;
+      if (tempData.ApproverData != undefined && tempData.ApproverData.length > 0) {
+
+        tempData.ApproverData.push(approvalDataHistory);
+      } else {
+        tempData.ApproverData = [];
+        tempData.ApproverData.push(approvalDataHistory)
+      }
+      console.log(tempData);
+      console.log(this.state.Result["FeedBack"][0]?.FeedBackDescriptions);
+      await this.onPost();
+      if (this.state.Result["FeedBack"] != undefined) {
+        await this.checkforMail(this.state.Result["FeedBack"][0].FeedBackDescriptions, item, tempData);
+
+      }
+    }
+  }
+  private async changeTrafficLigthsubtext(parentindex: any, subchileindex: any, status: any) {
+    console.log(parentindex);
+    console.log(subchileindex);
+    console.log(status);
+    if (this.state.Result["Approver"]?.Id == this.currentUser[0]?.Id) {
+      let tempData: any = this.state.Result["FeedBack"][0]?.FeedBackDescriptions[parentindex];
+      var approvalDataHistory = {
+        ApprovalDate: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+        Id: this.currentUser[0].Id,
+        ImageUrl: this.currentUser[0].userImage,
+        Title: this.currentUser[0].Title,
+        isShowLight: status
+      }
+      tempData.Subtext[subchileindex].isShowLight = status;
+      if (tempData.Subtext[subchileindex].ApproverData != undefined && tempData.Subtext[subchileindex].ApproverData.length > 0) {
+
+        tempData.Subtext[subchileindex].ApproverData.push(approvalDataHistory);
+      } else {
+        tempData.Subtext[subchileindex].ApproverData = [];
+        tempData.Subtext[subchileindex].ApproverData.push(approvalDataHistory)
+      }
+
+      console.log(tempData);
+
+      console.log(this.state.emailcomponentopen)
+      await this.onPost();
+
+      if (this.state.Result["FeedBack"] != undefined) {
+        await this.checkforMail(this.state.Result["FeedBack"][0].FeedBackDescriptions, status, tempData?.Subtext[subchileindex]);
+      }
+    }
+  }
+  //========================= mail functionality==============
+  private async checkforMail(allfeedback: any, item: any, tempData: any) {
+    var countApprove = 0;
+    var countreject = 0;
+    console.log(allfeedback);
+    if (allfeedback != null && allfeedback != undefined) {
+      var isShowLight = 0;
+      var NotisShowLight = 0
+      if (allfeedback != undefined) {
+        allfeedback?.map((items: any) => {
+
+          if (items?.isShowLight != undefined && items?.isShowLight != "") {
+            isShowLight = isShowLight + 1;
+            if (items.isShowLight == "Approve") {
+              changespercentage = true;
+              countApprove = countApprove + 1;
+            } else {
+              countreject = countreject + 1;
+            }
 
 
+          }
+          if (items?.Subtext != undefined && items?.Subtext?.length > 0) {
+            items?.Subtext?.map((subtextItems: any) => {
+              if (subtextItems?.isShowLight != undefined && subtextItems?.isShowLight != "") {
+                isShowLight = isShowLight + 1;
+                if (subtextItems?.isShowLight == "Approve") {
+                  changespercentage = true;
+                  countApprove = countApprove + 1;
+                } else {
+                  countreject = countreject + 1;
+                }
+
+              }
+            })
+          }
+        })
+      }
+      if (this.state.Result.PercentComplete < 5) {
+        await this.changepercentageStatus(item, tempData, countApprove,);
+      }
+
+      if (isShowLight > NotisShowLight) {
+        if (item == "Reject") {
+          countemailbutton = 0;
+          this.setState({
+            emailcomponentopen: true,
+            emailComponentstatus: item
+          }
+
+          )
+        }
+        if (isShowLight == 1 && item == "Approve") {
+          countemailbutton = 0;
+          this.setState({
+            emailcomponentopen: true,
+            emailComponentstatus: item
+          })
+        } else {
+          countemailbutton = 1;
+          this.setState({
+            emailcomponentopen: false,
+
+          })
+
+        }
+
+      }
+    }
+  }
+  //================percentage changes ==========================
+  private async changepercentageStatus(percentageStatus: any, pervious: any, countApprove: any) {
+    console.log(percentageStatus)
+    console.log(pervious)
+    console.log(countApprove)
+    let percentageComplete;
+    let changespercentage1;
+    if ((countApprove == 1 && percentageStatus == "Approve" && (pervious?.isShowLight == "Approve" || pervious?.isShowLight != undefined))) {
+      changespercentage = true;
+    }
+    if ((countApprove == 0 && (percentageStatus == "Reject" || percentageStatus == "Maybe") && (pervious?.isShowLight == "Reject" && pervious?.isShowLight != undefined))) {
+      changespercentage = false;
+    }
+    if ((countApprove == 0 && percentageStatus == "Approve" && (pervious.isShowLight == "Reject" || pervious.isShowLight == "Maybe") && pervious.isShowLight != undefined)) {
+      changespercentage = true;
+    }
+
+
+    let taskStatus = "";
+    if (changespercentage == true) {
+      percentageComplete = 0.03;
+      changespercentage1 = 3
+      taskStatus = "Approved"
+
+    }
+    if (changespercentage == false) {
+      percentageComplete = 0.02;
+      changespercentage1 = 2
+      taskStatus = "Follow Up"
+    }
+    this.state.Result.PercentComplete = changespercentage1
+    const web = new Web(this.props.siteUrl);
+    await web.lists.getByTitle(this.state.Result.listName)
+
+      .items.getById(this.state.Result.Id).update({
+        PercentComplete: percentageComplete,
+        Status: taskStatus,
+      }).then((res: any) => {
+        console.log(res);
+
+
+
+      })
+      .catch((err: any) => {
+        console.log(err.message);
+      });
+
+
+  }
+  // ========approval history popup =================
+  private ShowApprovalHistory(items: any, parentIndex: any, subChildIndex: any) {
+    console.log("this is a Approval function cxall ", items)
+    this.setState({
+      ApprovalHistoryPopup: true,
+      ApprovalPointUserData: items,
+      ApprovalPointCurrentParentIndex: parentIndex,
+      currentArraySubTextIndex: subChildIndex
+
+    })
+
+  }
+  //  ===========Appproval history popup call back ==================
+  private ApprovalHistoryPopupCallBack() {
+    this.setState({
+      ApprovalHistoryPopup: false,
+      ApprovalPointUserData: '',
+      ApprovalPointCurrentParentIndex: null,
+      currentArraySubTextIndex: null
+
+    })
+  }
+  // private showhideapprovalMailcheck() {
+
+  //   if (this.state.Result?.FeedBack != null || this.state.Result?.FeedBack != undefined) {
+  //     let isShowLight = 0;
+  //     let NotisShowLight = 0
+  //     this.state.Result?.FeedBack?.map((item: any) => {
+  //       if (item?.FeedBackDescriptions != undefined) {
+  //         item?.FeedBackDescriptions?.map((feedback: any) => {
+  //           if (feedback != null && feedback != undefined) {
+  //             if (feedback?.Subtext != undefined && feedback?.Subtext.length > 0) {
+  //               feedback?.Subtext?.map((subtextitem: any) => {
+  //                 if (subtextitem?.isShowLight != "" && subtextitem?.isShowLight != undefined) {
+  //                   // count=1
+  //                   isShowLight = isShowLight + 1;
+
+  //                 }
+  //               })
+  //             }
+  //             if (isShowLight == 0) {
+  //               if (feedback?.isShowLight != "" && feedback?.isShowLight != undefined) {
+  //                 // count=1
+  //                 isShowLight = isShowLight + 1;
+  //               }
+  //             }
+  //           }
+  //         })
+  //       }
+  //     })
+  //     if (isShowLight > NotisShowLight) {
+  //       this.countemailbutton = 1;
+  //     }
+  //   }
+  // }
 
 
   public render(): React.ReactElement<ITaskprofileProps> {
@@ -1119,14 +1625,11 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       hasTeamsContext,
       userDisplayName
     } = this.props;
-
     if (this.state.Result["TaskId"] != undefined && this.state.Result['Title'] != undefined) {
-
       document.title = `${this.state.Result["TaskId"]}-${this.state.Result['Title']}`
     } else {
       document.title = "Task Profile"
     }
-
     return (
       <div className={this.state.Result["Services"] != undefined && this.state.Result["Services"].length > 0 ? 'app component serviepannelgreena' : "app component"}>
         {this.state.maincollection != null && this.state.maincollection.length > 0 &&
@@ -1191,30 +1694,24 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                     }
                   </>
                 })
-
                 }
               </ul>
             </div>
           </div>
-
         }
-
         <section className='row p-0'>
           <h2 className="heading d-flex ps-0 justify-content-between align-items-center">
             <span>
-              {this.state.Result["SiteIcon"] != "" && <img className="imgWid29 pe-1 " src={this.state.Result["SiteIcon"]} />}
+              {this.state.Result["SiteIcon"] != "" && <img className="imgWid29 pe-1 " title={this?.state?.Result?.siteType} src={this.state.Result["SiteIcon"]} />}
               {this.state.Result["SiteIcon"] === "" && <img className="imgWid29 pe-1 " src="" />}
               {this.state.Result['Title']}
-
-              <a className="hreflink" onClick={() => this.OpenEditPopUp()}>
+              <a className="hreflink" title='Edit' onClick={() => this.OpenEditPopUp()}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="25" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
                 {/* <img style={{ width: '16px', height: '16px', borderRadius: '0' }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" /> */}
               </a>
               {this.state.Result["Approver"] != undefined && this.state.Result["Categories"].includes("Approval") && this.currentUser != undefined && this.currentUser.length > 0 && this.state.Result.Approver.Id == this.currentUser[0].Id && this.state.Result["Status"] == "For Approval" &&
                 this.state.Result["PercentComplete"] == 1 && <span><button onClick={() => this.sendEmail("Approved")} className="btn btn-success ms-3 mx-2">Approve</button><span><button className="btn btn-danger" onClick={() => this.sendEmail("Rejected")}>Reject</button></span></span>
               }
-
-
               {this.currentUser != undefined && this.state.sendMail && this.state.emailStatus != "" && <EmailComponenet approvalcallback={() => { this.approvalcallback() }} Context={this.props.Context} emailStatus={this.state.emailStatus} currentUser={this.currentUser} items={this.state.Result} />}
             </span>
             <span className="text-end fs-6"> <a target='_blank' data-interception="off" href={this.oldTaskLink} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span>
@@ -1229,10 +1726,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   <dl>
                     <dt className='bg-Fa'>Task Id</dt>
                     <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["TaskId"]} </span>
-                      {TaskIdCSF != "" && <span className="idhide bg-fxdark siteColor">{TaskIdCSF?.replace("-", ">")}{TaskIdAW == "" && this.state.Result["TaskId"] != undefined && <span className='text-body'>{">" + this.state.Result["TaskId"]}</span>} {TaskIdAW != "" && <span className='text-body'>{">" + TaskIdAW.replace("-", ">")}</span>}</span>}
-
+                      {TaskIdCSF != "" && <span className="idhide bg-fxdark siteColor">{TaskIdCSF?.replace("-", ">")}{TaskIdAW == "" && this.state.Result["TaskId"] != undefined && <span className='text-body'>{">" + this.state.Result["TaskId"]}</span>} {TaskIdAW != "" && <span className='text-body'>{">" + TaskIdAW?.replace("-", ">")}</span>}</span>}
                     </dd>
-
                   </dl>
                   <dl>
                     <dt className='bg-Fa'>Due Date</dt>
@@ -1253,7 +1748,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   </dl>
                   <dl>
                     <dt className='bg-Fa'>Estimated Time</dt>
-                    <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["EstimatedTime"] != undefined ? this.state.Result["EstimatedTime"] : 0}Hours </span>
+                    <dd className='bg-Ff position-relative' ><span className='tooltipbox' title="hours">{this.state.Result["EstimatedTime"] != undefined ? this.state.Result["EstimatedTime"].toFixed(1) : "0.0"} </span>
                     </dd>
                   </dl>
                   {isShowTimeEntry && <dl>
@@ -1399,15 +1894,22 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   {isShowSiteCompostion && <dl className="Sitecomposition">
                     {ClientTimeArray != null && ClientTimeArray.length > 0 &&
                       <div className='dropdown'>
-                        <a className="sitebutton bg-fxdark " onClick={() => this.showhideComposition()}>
-                          <span >{this.state.showComposition ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span>Site Composition</span>
+                        <a className="sitebutton bg-fxdark d-flex">
+                          <span className="arrowicons" onClick={() => this.showhideComposition()}>{this.state.showComposition ? <SlArrowDown /> : <SlArrowRight />}</span>
+                          <div className="d-flex justify-content-between full-width">
+                            <p className="pb-0 mb-0">Site Composition</p>
+                            <p className="input-group-text mb-0 pb-0" title="Edit Site Composition" onClick={() => this.setState({ EditSiteCompositionStatus: true })}>
+                              <span className="svg__iconbox svg__icon--editBox"></span>
+                            </p>
+                          </div>
+
                         </a>
                         <div className="spxdropdown-menu" style={{ display: this.state.showComposition ? 'block' : 'none' }}>
                           <ul>
                             {ClientTimeArray?.map((cltime: any, i: any) => {
                               return <li className="Sitelist">
                                 <span>
-                                  <img style={{ width: "22px" }} src={this.GetSiteIcon(cltime?.SiteName) ? this.GetSiteIcon(cltime?.SiteName) : this.GetSiteIcon(cltime?.Title)} />
+                                  <img style={{ width: "22px" }} title={cltime?.SiteName} src={this.GetSiteIcon(cltime?.SiteName) ? this.GetSiteIcon(cltime?.SiteName) : this.GetSiteIcon(cltime?.Title)} />
                                 </span>
                                 {cltime?.ClienTimeDescription != undefined &&
                                   <span>
@@ -1425,15 +1927,11 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                         </div>
                       </div>
                     }
-
-
                   </dl>}
-
-
 
                 </div>
               </div>
-              <div className='row'>
+              <div className='row url'>
                 <div className="d-flex p-0">
                   <div className='bg-Fa p-2'><label>Url</label></div>
                   <div className='bg-Ff p-2 text-break full-width'>
@@ -1469,10 +1967,13 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                       <img className='align-self-start' title={imgData?.UserName} src={imgData?.UserImage} />
                                     }
                                   </span>
+                                  {imgData?.Description != undefined && imgData?.Description != "" && <span title={imgData?.Description} className="mx-1" >
+                                    <BiInfoCircle />
+                                  </span>}
 
                                 </span>
                               </div>
-                              <div>
+                              <div className="expandicon">
 
                                 <span >
                                   {imgData?.ImageName?.length > 15 ? imgData?.ImageName.substring(0, 15) + '...' : imgData?.ImageName}
@@ -1487,15 +1988,18 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                         })}
                       </div>
                     }
-                    <div className={this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"].length > 0 ? "col-sm-8 pe-0 mt-2" : "col-sm-12 pe-0 ps-0 mt-2"}>
+                    {/*feedback comment section code */}
+                    <div className={this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.length > 0 ? "col-sm-8 pe-0 mt-2" : "col-sm-12 pe-0 ps-0 mt-2"}>
                       {this.state.Result["SharewebTaskType"] != null && (this.state.Result["SharewebTaskType"] == '' ||
-                        this.state.Result["SharewebTaskType"] == 'Task' || this.state.Result["SharewebTaskType"] == "Activities") && this.state.Result["FeedBack"] != undefined && this.state.Result["FeedBack"].length > 0 && this.state.Result["FeedBack"][0].FeedBackDescriptions != undefined &&
-                        this.state.Result["FeedBack"][0].FeedBackDescriptions.length > 0 &&
-                        this.state.Result["FeedBack"][0].FeedBackDescriptions[0].Title != '' && this.state.countfeedback >= 0 &&
+                        this.state.Result["SharewebTaskType"] == 'Task' || this.state.Result["SharewebTaskType"] == "Workstream" || this.state.Result["SharewebTaskType"] == "Activities") && this.state.Result["FeedBack"] != undefined && this.state.Result["FeedBack"].length > 0 && this.state.Result["FeedBack"][0].FeedBackDescriptions != undefined &&
+                        this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
+                        this.state.Result["FeedBack"][0]?.FeedBackDescriptions[0]?.Title != '' && this.state.countfeedback >= 0 &&
                         <div className={"Addcomment " + "manage_gap"}>
                           {this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
                             let userdisplay: any = [];
                             userdisplay.push({ Title: this.props?.userDisplayName })
+
+
                             if (fbData != null && fbData != undefined) {
 
                               try {
@@ -1507,29 +2011,269 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                               }
                               return (
                                 <>
-                                  <TaskFeedbackCard feedback={...fbData} index={i + 1}
-                                    onPost={() => { this.onPost() }}
-                                    // approvalcallbacktask={() => { this.approvalcallbackfeedback() }}
-                                    fullfeedback={this.state.Result["FeedBack"]}
-                                    CurrentUser={this.currentUser != undefined && this.currentUser?.length > 0 ? this.currentUser : userdisplay}
-                                    ApprovalStatus={this.state.ApprovalStatus}
-                                    Approver={this.state.Result["Approver"]}
-                                    Result={this.state.Result}
-                                    Context={this.props?.Context}
+                                  <div>
+                                    {/* { this.state?.emailcomponentopen && countemailbutton==0 &&<EmailComponenet approvalcallback={() => { this.approvalcallback() }}  Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus}  currentUser={this.props?.CurrentUser} items={this.props?.Result} />} */}
+                                    <div className="col mb-2">
+                                      <div className='justify-content-between d-flex'>
+                                        <div className="pt-1">
+                                          {this.state.ApprovalStatus ?
+                                            <span className="MR5">
+                                              <span title="Rejected"
+                                                onClick={() => this.changeTrafficLigth(i, "Reject")}
+                                                className={fbData['isShowLight'] == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
+                                              >
+                                              </span>
+                                              <span
+                                                onClick={() => this.changeTrafficLigth(i, "Maybe")}
+                                                title="Maybe" className={fbData['isShowLight'] == "Maybe" ? "circlelight br_yellow pull-left yellow" : "circlelight br_yellow pull-left"}>
+                                              </span>
+                                              <span title="Approved"
+                                                onClick={() => this.changeTrafficLigth(i, "Approve")}
+                                                className={fbData['isShowLight'] == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
 
-                                  >
-                                  </TaskFeedbackCard>
+                                              </span>
+                                              {fbData['ApproverData'] != undefined && fbData?.ApproverData.length > 0 && <span className='px-3'>
+                                                <a
+                                                  onClick={() => this.ShowApprovalHistory(fbData, i, null)}
+                                                >Pre-approved by -</a>
+                                                <img className="workmember" src={fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.ImageUrl}></img>
+                                              </span>}
+                                            </span>
 
-                                  {console.log("You")}
+                                            : null
+                                          }
+                                        </div>
+                                        <div className='pb-1'>
+                                          <span className="d-block">
+                                            <a style={{ cursor: 'pointer' }} onClick={(e) => this.showhideCommentBox(i)}>Add Comment</a>
+                                          </span>
+                                        </div>
+                                      </div>
+
+
+                                      <div className="d-flex p-0 FeedBack-comment ">
+                                        <div className="border p-1 me-1">
+                                          <span>{i + 1}.</span>
+                                          <ul className='list-none'>
+                                            <li>
+                                              {fbData['Completed'] != null && fbData['Completed'] &&
+
+                                                <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/Completed.png'></img></span>
+                                              }
+                                            </li>
+                                            <li>
+                                              {fbData['HighImportance'] != null && fbData['HighImportance'] &&
+                                                <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/highPriorty.png'></img></span>
+                                              }
+                                            </li>
+                                            <li>
+                                              {fbData['LowImportance'] != null && fbData['LowImportance'] &&
+                                                <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/lowPriority.png'></img></span>
+                                              }
+                                            </li>
+                                            <li>
+                                              {fbData['Phone'] != null && fbData['Phone'] &&
+                                                <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/Phone.png'></img></span>
+                                              }
+                                            </li>
+                                          </ul>
+                                        </div>
+
+                                        <div className="border p-2 full-width text-break"
+                                          title={fbData.ApproverData != undefined && fbData.ApproverData.length > 0 ? fbData.ApproverData[fbData.ApproverData.length - 1].isShowLight : ""}>
+
+                                          <span dangerouslySetInnerHTML={{ __html: fbData.Title.replace(/\n/g, "<br />") }}></span>
+                                          <div className="col">
+                                            {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments']?.map((fbComment: any, k: any) => {
+                                              return <div className={fbComment.isShowLight != undefined && fbComment.isApprovalComment ? `col d-flex add_cmnt my-1 ${fbComment.isShowLight}` : "col d-flex add_cmnt my-1"}>
+                                                <div className="col-1 p-0">
+                                                  <img className="workmember" src={fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ?
+                                                    fbComment.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
+                                                </div>
+                                                <div className="col-11 pe-0" >
+                                                  <div className='d-flex justify-content-between align-items-center'>
+                                                    {fbComment?.AuthorName} - {fbComment?.Created}
+                                                    <span className='d-flex'>
+                                                      <a title='Edit'
+                                                        onClick={() => this.openEditModal(fbComment, k, 0, false, i)}
+                                                      >
+                                                        <span className='svg__iconbox svg__icon--edit'></span>
+                                                      </a>
+                                                      <a title='Delete'
+                                                        onClick={() => this.clearComment(false, k, 0, i)}
+                                                      >
+                                                        <span className='svg__iconbox svg__icon--trash'></span></a>
+                                                    </span>
+                                                  </div>
+                                                  <div><span dangerouslySetInnerHTML={{ __html: fbComment?.Title.replace(/\n/g, "<br />") }}></span></div>
+                                                </div>
+                                              </div>
+                                            })}
+                                          </div>
+                                        </div>
+                                      </div>
+                                      {this.state.showhideCommentBoxIndex == i && <div className='SpfxCheckRadio'>
+                                        <div className="col-sm-12 mt-2 p-0" style={{ display: this.state.showcomment }} >
+                                          {this.state.Result["Approver"]?.Id == this?.currentUser[0]?.Id && <label className='label--checkbox'><input type='checkbox' className='checkbox' name='approval' checked={this.state.ApprovalCommentcheckbox} onChange={(e) => this.setState({ ApprovalCommentcheckbox: e.target.checked })} />
+                                            Mark as Approval Comment</label>}
+                                        </div>
+                                        <div className="align-items-center d-flex"
+                                          style={{ display: this.state.showcomment }}
+                                        >  <textarea id="txtComment" onChange={(e) => this.handleInputChange(e)} className="form-control full-width"></textarea>
+                                          <button type="button" className={this.state.Result["Approver"]?.Id == this.currentUser[0]?.Id ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => this.PostButtonClick(fbData, i)}>Post</button>
+                                        </div>
+                                      </div>}
+
+                                    </div>
+
+                                    {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext']?.map((fbSubData: any, j: any) => {
+                                      return <div className="col-sm-12 p-0 mb-2" style={{ width: '100%' }}>
+                                        <div className='justify-content-between d-flex'>
+                                          <div>
+                                            {this.state.ApprovalStatus ?
+                                              <span className="MR5">
+                                                <span title="Rejected"
+                                                  onClick={() => this.changeTrafficLigthsubtext(i, j, "Reject")}
+                                                  className={fbSubData.isShowLight == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
+                                                >
+                                                </span>
+                                                <span title="Maybe"
+                                                  onClick={() => this.changeTrafficLigthsubtext(i, j, "Maybe")}
+                                                  className={fbSubData?.isShowLight == "Maybe" ? "circlelight br_yellow pull-left yellow" : "circlelight br_yellow pull-left"}>
+                                                </span>
+                                                <span title="Approved"
+                                                  onClick={() => this.changeTrafficLigthsubtext(i, j, "Approve")}
+                                                  className={fbSubData?.isShowLight == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
+
+                                                </span>
+                                                {fbSubData.ApproverData != undefined && fbSubData.ApproverData.length > 0 && <span className='px-3'>
+                                                  <a
+                                                    onClick={() => this.ShowApprovalHistory(fbSubData, i, j)}
+                                                  >Pre-approved by -</a>
+                                                  <img className="workmember" src={fbSubData?.ApproverData[fbSubData?.ApproverData?.length - 1]?.ImageUrl}></img>
+                                                </span>}
+                                              </span>
+                                              : null
+                                            }
+                                          </div>
+                                          <div>
+                                            <span className="d-block text-end">
+                                              <a style={{ cursor: 'pointer' }}
+                                                onClick={(e) => this.showhideCommentBoxOfSubText(j, i)}
+                                              >Add Comment</a>
+                                            </span>
+                                          </div>
+                                        </div>
+
+                                        <div className="d-flex pe-0 FeedBack-comment">
+                                          <div className="border p-1 me-1">
+                                            <span >{i + 1}.{j + 1}</span>
+                                            <ul className="list-none">
+                                              <li>
+                                                {fbSubData?.Completed != null && fbSubData?.Completed &&
+                                                  <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/Completed.png'></img></span>
+                                                }
+                                              </li>
+                                              <li>
+                                                {fbSubData?.HighImportance != null && fbSubData?.HighImportance &&
+                                                  <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/highPriorty.png'></img></span>
+                                                }
+                                              </li>
+                                              <li>
+                                                {fbSubData?.LowImportance != null && fbSubData?.LowImportance &&
+                                                  <span><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/lowPriority.png'></img></span>
+                                                }
+                                              </li>
+                                              <li>
+                                                {fbSubData?.Phone != null && fbSubData?.Phone &&
+                                                  <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/Phone.png'></img></span>
+                                                }
+                                              </li>
+                                            </ul>
+                                          </div>
+
+                                          <div className="border p-2 full-width text-break"
+                                            title={fbSubData?.ApproverData != undefined && fbSubData?.ApproverData?.length > 0 ? fbSubData?.ApproverData[fbSubData?.ApproverData.length - 1]?.isShowLight : ""}>
+                                            <span ><span dangerouslySetInnerHTML={{ __html: fbSubData?.Title?.replace(/\n/g, "<br />") }}></span></span>
+                                            <div className="feedbackcomment col-sm-12 PadR0 mt-10">
+                                              {fbSubData?.Comments != null && fbSubData.Comments.length > 0 && fbSubData?.Comments?.map((fbComment: any, k: any) => {
+                                                return <div className={fbComment?.isShowLight != undefined && fbComment.isApprovalComment ? `col-sm-12 d-flex mb-2 add_cmnt my-1 ${fbComment?.isShowLight}` : "col-sm-12 d-flex mb-2 add_cmnt my-1 "}>
+                                                  <div className="col-sm-1 padL-0 wid35">
+                                                    <img className="workmember" src={fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ?
+                                                      fbComment.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
+                                                  </div>
+                                                  <div className="col-sm-11 pad0" key={k}>
+                                                    <div className="d-flex justify-content-between align-items-center">
+                                                      {fbComment?.AuthorName} - {fbComment?.Created}
+                                                      <span className='d-flex'>
+                                                        <a title="Edit"
+                                                          onClick={() => this.openEditModal(fbComment, k, j, true, i)}
+                                                        >
+
+                                                          <span className='svg__iconbox svg__icon--edit'></span>
+                                                        </a>
+                                                        <a title='Delete'
+                                                          onClick={() => this.clearComment(true, k, j, i)}
+                                                        ><span className='svg__iconbox svg__icon--trash'></span></a>
+                                                      </span>
+                                                    </div>
+                                                    <div ><span dangerouslySetInnerHTML={{ __html: fbComment?.Title.replace(/\n/g, "<br />") }}></span></div>
+                                                  </div>
+                                                </div>
+                                              })}
+                                            </div>
+                                          </div>
+                                        </div>
+                                        {this.state?.subchildcomment == j && this.state?.subchildParentIndex == i ? <div className='SpfxCheckRadio' >
+                                          <div className="col-sm-12 mt-2 p-0  "
+                                          //  style={{ display: this.state.showcomment_subtext }}
+                                          >
+                                            {this.state.Result["Approver"]?.Id == this.currentUser[0]?.Id && <label className='label--checkbox'><input type='checkbox' className='checkbox' checked={this.state?.ApprovalCommentcheckbox} onChange={(e) => this.setState({ ApprovalCommentcheckbox: e.target?.checked })} />Mark as Approval Comment</label>}
+
+                                          </div>
+
+                                          <div className="align-items-center d-flex"
+                                          //  style={{ display: this.state.showcomment_subtext }}
+                                          >  <textarea id="txtCommentSubtext" onChange={(e) => this.handleInputChange(e)} className="form-control full-width" ></textarea>
+                                            <button type="button" className={this.state.Result["Approver"]?.Id == this.currentUser[0]?.Id ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => this.SubtextPostButtonClick(j, i)}>Post</button>
+                                          </div>
+                                        </div> : null}
+
+                                      </div>
+                                    })}
+                                    <Modal isOpen={this.state.isEditModalOpen} isBlocking={false} containerClassName="custommodalpopup p-2">
+
+                                      <div className="modal-header mb-1">
+                                        <h5 className="modal-title">Update Comment</h5>
+                                        <span className='mx-1'> <Tooltip ComponentId='1683' /></span>
+                                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={(e) => this.CloseModal(e)}></button>
+                                      </div>
+                                      <div className="modal-body">
+                                        <div className='col'><textarea id="txtUpdateComment" rows={6} className="full-width" onChange={(e) => this.handleUpdateComment(e)}  >{this.state?.CommenttoUpdate}</textarea></div>
+                                      </div>
+                                      <footer className='text-end mt-2'>
+                                        <button className="btn btnPrimary " onClick={(e) => this.updateComment()}>Save</button>
+                                        <button className='btn btn-default ms-1' onClick={(e) => this.CloseModal(e)}>Cancel</button>
+                                      </footer>
+                                    </Modal>
+                                    {this.state.ApprovalHistoryPopup ? <ApprovalHistoryPopup
+                                      ApprovalPointUserData={this.state.ApprovalPointUserData}
+                                      ApprovalPointCurrentIndex={this.state.ApprovalPointCurrentParentIndex}
+                                      ApprovalPointHistoryStatus={this.state.ApprovalHistoryPopup}
+                                      currentArrayIndex={this.state.currentArraySubTextIndex}
+                                      callBack={() => this.ApprovalHistoryPopupCallBack()}
+                                    />
+                                      : null}
+                                  </div>
+
+
                                 </>
                               )
-
                             }
                           })}
                         </div>
                       }
                     </div>
-
                   </div>
                 </div>
 
@@ -1558,7 +2302,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
                                 </span>
                               </div>
-                              <div>
+                              <div className="expandicon">
                                 <span >{imgData?.UploadeDate}</span>
                                 <span className='round px-1'>
                                   {imgData?.UserImage !== null &&
@@ -1603,11 +2347,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
             </div>
             <div className="col-3">
               <div>
+                {this.state.Result != undefined && AllListId != undefined && <CommentCard siteUrl={this.props.siteUrl} AllListId={AllListId} Context={this.props.Context}></CommentCard>}
                 {this.state.Result?.Id != undefined && AllListId != undefined && <>
-                  <CommentCard siteUrl={this.props.siteUrl} AllListId={AllListId} Context={this.props.Context}></CommentCard>
                   <AncTool item={this?.state?.Result} callBack={this.AncCallback} AllListId={AllListId} Context={this.props.Context} />
                 </>}
-
               </div>
               <div>{this.state.Result.Id && <SmartInformation ref={this.smartInfoRef} Id={this.state.Result.Id} AllListId={AllListId} Context={this.props?.Context} taskTitle={this.state.Result?.Title} listName={this.state.Result?.listName} />}</div>
               <div> {this.state.Result != undefined && <RelevantDocuments ref={this?.relevantDocRef} siteUrl={this.props.siteUrl} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments>}</div>
@@ -1644,13 +2387,11 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
             </div>
           </div>
         </div>
-
-        {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} context={this.props.Context} AllListId={AllListId} Call={() => { this.CallBack() }} /> : ''}
+        {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} context={this.props.Context} AllListId={AllListId} Call={(Type: any) => { this.CallBack(Type) }} /> : ''}
         {/* {this.state.isTimeEntry ? <TimeEntry props={this.state.Result} isopen={this.state.isTimeEntry} CallBackTimesheet={() => { this.CallBackTimesheet() }} /> : ''} */}
-
-
+        {this.state.EditSiteCompositionStatus ? <EditSiteComposition EditData={this.state.Result} context={this.props.Context} ServicesTaskCheck={this.state.Result["Services"] != undefined && this.state.Result["Services"].length > 0 ? true : false} AllListId={AllListId} Call={(Type: any) => { this.CallBack(Type) }} /> : ''}
+        {this.state?.emailcomponentopen && countemailbutton == 0 && <EmailComponenet approvalcallback={() => { this.approvalcallback() }} Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus} currentUser={this?.currentUser} items={this.state?.Result} />}
       </div>
     );
   }
 }
-
