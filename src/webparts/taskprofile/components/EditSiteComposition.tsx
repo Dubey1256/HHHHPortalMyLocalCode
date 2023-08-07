@@ -129,7 +129,7 @@ const EditSiteComposition = (Props: any) => {
                         Edit Site Composition
                     </span>
                 </div>
-                <Tooltip ComponentId="1626" />
+                <Tooltip ComponentId="1626" isServiceTask ={ServicesTaskCheck} />
             </div>
         )
     }
