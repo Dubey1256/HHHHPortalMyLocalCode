@@ -14,6 +14,14 @@ import { IProjectManagementProps } from './components/IProjectManagementProps';
 
 export interface IProjectManagementWebPartProps {
   description: string;
+  MasterTaskListID: 'ec34b38f-0669-480a-910c-f84e92e58adf';
+  TaskUsertListID: 'b318ba84-e21d-4876-8851-88b94b9dc300';
+  SmartMetadataListID: '01a34938-8c7e-4ea6-a003-cee649e8c67a';
+  SmartInformationListID: 'edf0a6fb-f80e-4772-ab1e-666af03f7ccd';
+  DocumentsListID: 'd0f88b8f-d96d-4e12-b612-2706ba40fb08';
+  TaskTimeSheetListID: '464fb776-e4b3-404c-8261-7d3c50ff343f';
+  TimeEntry: any;
+  SiteCompostion: any;
 }
 
 export default class ProjectManagementWebPart extends BaseClientSideWebPart<IProjectManagementWebPartProps> {
@@ -30,7 +38,17 @@ export default class ProjectManagementWebPart extends BaseClientSideWebPart<IPro
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        pageContext: this.context.pageContext
+        // pageContext: this.context.pageContext,
+        Context: this.context,
+        siteUrl: this.context.pageContext.web.absoluteUrl,
+        MasterTaskListID: this.properties.MasterTaskListID,
+        TaskUsertListID: this.properties.TaskUsertListID,
+        SmartMetadataListID: this.properties.SmartMetadataListID,
+        SmartInformationListID: this.properties.SmartInformationListID,
+        DocumentsListID: this.properties.DocumentsListID,
+        TaskTimeSheetListID: this.properties.TaskTimeSheetListID,
+        TimeEntry: this.properties.TimeEntry,
+        SiteCompostion: this.properties.SiteCompostion
       }
     );
 
@@ -73,7 +91,7 @@ export default class ProjectManagementWebPart extends BaseClientSideWebPart<IPro
     ReactDom.unmountComponentAtNode(this.domElement);
   }
 
-  
+
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     return {
@@ -88,6 +106,30 @@ export default class ProjectManagementWebPart extends BaseClientSideWebPart<IPro
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
+                }),
+                PropertyPaneTextField('MasterTaskListID', {
+                  label: "MasterTaskListID"
+                }),
+                PropertyPaneTextField('TaskUsertListID', {
+                  label: "TaskUsertListID"
+                }),
+                PropertyPaneTextField('SmartMetadataListID', {
+                  label: "SmartMetadataListID"
+                }),
+                PropertyPaneTextField('SmartInformationListID', {
+                  label: 'SmartInformationListID'
+                }),
+                PropertyPaneTextField('DocumentsListID', {
+                  label: "DocumentsListID"
+                }),
+                PropertyPaneTextField('TaskTimeSheetListID', {
+                  label: "TaskTimeSheetListID"
+                }),
+                PropertyPaneTextField('TimeEntry', {
+                  label: "TimeEntry"
+                }),
+                PropertyPaneTextField('SiteCompostion', {
+                  label: "SiteCompostion"
                 })
               ]
             }

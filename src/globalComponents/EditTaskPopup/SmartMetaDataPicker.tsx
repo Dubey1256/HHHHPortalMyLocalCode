@@ -9,35 +9,61 @@ import Tooltip from '../Tooltip';
 var NewArray: any = []
 var AutoCompleteItems: any = [];
 var AutoCompleteItemsArray: any = [];
+var SelectedCategoryBackupArray: any = [];
 const Picker = (item: any) => {
     const usedFor = item.usedFor;
-    const isServiceTask:any = item.isServiceTask;
+    const isServiceTask: any = item?.isServiceTask!=undefined?item.isServiceTask:item?.props?.Services?.length>0?true:false;
+    const AllListIdData: any = item?.AllListId;
+    const siteUrls: any = item?.AllListId?.siteUrl;
+    const selectedCategoryData: any = item.selectedCategoryData;
     const [PopupSmartTaxanomy, setPopupSmartTaxanomy] = React.useState(true);
     const [AllCategories, setAllCategories] = React.useState([]);
     const [select, setSelect] = React.useState([]);
     const [update, set] = React.useState([]);
     const [value, setValue] = React.useState("");
     const [selectedCategory, setSelectedCategory] = React.useState([]);
-    const [searchedData, setSearchedData] = React.useState([])
-
+    const [searchedData, setSearchedData] = React.useState([]);
+    const [isSearchWithDesciptions, setIsSearchWithDesciptions] = React.useState(true);
     const openPopupSmartTaxanomy = () => {
         setPopupSmartTaxanomy(true)
-
     }
     React.useEffect(() => {
         loadGmBHTaskUsers();
-
+        if (selectedCategoryData != undefined && selectedCategoryData.length > 0) {
+            setSelect(selectedCategoryData)
+            selectedCategoryData?.map((selectedData: any) => {
+                SelectedCategoryBackupArray.push(selectedData)
+            })
+        }
     }, [])
     const closePopupSmartTaxanomy = () => {
         setPopupSmartTaxanomy(false)
+        if(usedFor=="Task-Footertable"){
+            item?.Call(selectedCategoryData, "Category-Task-Footertable")
+           NewArray = []
+           SelectedCategoryBackupArray = [];
+           setSelect([])
+       }else{
         NewArray = []
         setSelect([])
-        item.closePopupCallBack();
-
+        item?.Call()
+        item?.closePopupCallBack();
+        SelectedCategoryBackupArray = [];
+       }
+       
     }
     const saveCategories = () => {
         if (usedFor == "Task-Popup") {
-            item.CallBack(selectedCategory);
+            item.CallBack(SelectedCategoryBackupArray);
+            NewArray = []
+            SelectedCategoryBackupArray = [];
+            setSelect([])
+        }
+        else if(usedFor=="Task-Footertable"){
+             item?.Call(select, "Category-Task-Footertable")
+            NewArray = []
+            SelectedCategoryBackupArray = [];
+            setSelect([])
         } else {
             item.props.categories = [];
             item.props.smartCategories = [];
@@ -54,7 +80,7 @@ const Picker = (item: any) => {
         var AllTaskusers = []
         var AllMetaData: any = []
         var TaxonomyItems: any = []
-        var url = ("https://hhhhteams.sharepoint.com/sites/HHHH/sp/_api/web/lists/getbyid('01a34938-8c7e-4ea6-a003-cee649e8c67a')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '" + SmartTaxonomyName + "'")
+        var url = (`${siteUrls}/_api/web/lists/getbyid('${AllListIdData.SmartMetadataListID}')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '` + SmartTaxonomyName + "'")
         $.ajax({
             url: url,
             method: "GET",
@@ -83,7 +109,6 @@ const Picker = (item: any) => {
                 setPopupSmartTaxanomy(true)
             },
             error: function (error) {
-
             }
         })
     };
@@ -117,62 +142,66 @@ const Picker = (item: any) => {
     }
 
     const selectPickerData = (item: any) => {
-        if (usedFor == "Task-Popup") {
-            setSelectedCategory([item])
+        if (usedFor == "Task-Popup"||usedFor=="Task-Footertable") {
+            let tempArray: any = [];
+            let checkDataExistCount = 0;
+            if (SelectedCategoryBackupArray != undefined && SelectedCategoryBackupArray.length > 0) {
+                SelectedCategoryBackupArray.map((CheckData: any) => {
+                    if (CheckData.Title == item.Title) {
+                        checkDataExistCount++;
+                    }
+                })
+            }
+            if (checkDataExistCount == 0) {
+                tempArray.push(item);
+            }
+            SelectedCategoryBackupArray=select
+            if (tempArray != undefined && tempArray.length > 0) {
+                SelectedCategoryBackupArray = SelectedCategoryBackupArray.concat(tempArray)
+            } else {
+                SelectedCategoryBackupArray = SelectedCategoryBackupArray
+            }
+            // setSelect(SelectedCategoryBackupArray => ([...SelectedCategoryBackupArray]));
+            setSelect(SelectedCategoryBackupArray);
         } else {
             NewArray.push(item)
-            //setSelect(NewArray)
             showSelectedData(NewArray);
+            setValue('');
+            setSearchedData([]);
         }
-        setValue('');
-        setSearchedData([]);
     }
     const showSelectedData = (itemss: any) => {
-        if (usedFor == "Task-Popup") {
-
-        } else {
-            var categoriesItem: any = []
-            itemss.forEach(function (val: any) {
-                if (val.Title != undefined) {
-                    categoriesItem.push(val);
-
-                }
-            })
-            const uniqueNames = categoriesItem.filter((val: any, id: any, array: any) => {
-                return array.indexOf(val) == id;
-            })
-
-            setSelect(uniqueNames)
-        }
-
+        var categoriesItem: any = []
+        itemss.forEach(function (val: any) {
+            if (val.Title != undefined) {
+                categoriesItem.push(val);
+            }
+        })
+        const uniqueNames = categoriesItem.filter((val: any, id: any, array: any) => {
+            return array.indexOf(val) == id;
+        })
+        setSelect(uniqueNames)
     }
     function Example(callBack: any, type: any) {
         NewArray = []
         setSelect([])
-        item.Call(callBack.props, type);
+        item?.Call(callBack.props, type);
     }
     const setModalIsOpenToFalse = () => {
         setPopupSmartTaxanomy(false)
     }
     const deleteSelectedCat = (val: any) => {
-        if (usedFor == "Task-Popup") {
-            setSelectedCategory([])
-        } else {
-            select.map((valuee: any, index) => {
-                if (val.Id == valuee.Id) {
-                    select.splice(index, 1)
-                }
-
-            })
-            NewArray.map((valuee: any, index: any) => {
-                if (val.Id == valuee.Id) {
-                    NewArray.splice(index, 1)
-                }
-
-            })
-
-            setSelect(select => ([...select]));
-        }
+        select.map((valuee: any, index: any) => {
+            if (val.Id == valuee.Id) {
+                select.splice(index, 1)
+            }
+        })
+        NewArray.map((valuee: any, index: any) => {
+            if (val.Id == valuee.Id) {
+                NewArray.splice(index, 1)
+            }
+        })
+        setSelect(select => ([...select]));
     }
     // Autosuggestion
 
@@ -180,17 +209,32 @@ const Picker = (item: any) => {
         setValue(event.target.value);
         let searchedKey: any = event.target.value;
         let tempArray: any = [];
-        if (searchedKey?.length > 0) {
-            AutoCompleteItemsArray.map((itemData: any) => {
-                if (itemData.Newlabel.toLowerCase().includes(searchedKey.toLowerCase())) {
-                    tempArray.push(itemData);
-                }
-            })
-            setSearchedData(tempArray)
-        } else {
-            setSearchedData([]);
+        if (!isSearchWithDesciptions) {
+            if (searchedKey?.length > 0) {
+                AutoCompleteItemsArray.map((itemData: any) => {
+                    if (itemData.Newlabel.toLowerCase().includes(searchedKey.toLowerCase())) {
+                        tempArray.push(itemData);
+                    }
+                })
+                setSearchedData(tempArray)
+            } else {
+                setSearchedData([]);
+            }
         }
-
+        else {
+            if (searchedKey?.length > 0) {
+                AutoCompleteItemsArray.map((itemData: any) => {
+                    if (itemData.Description1 != null) {
+                        if (itemData.Newlabel.toLowerCase().includes(searchedKey.toLowerCase()) || itemData.Description1.toLowerCase().includes(searchedKey.toLowerCase())) {
+                            tempArray.push(itemData);
+                        }
+                    }
+                })
+                setSearchedData(tempArray)
+            } else {
+                setSearchedData([]);
+            }
+        }
     };
     if (AllCategories.length > 0) {
         AllCategories.map((item: any) => {
@@ -229,21 +273,23 @@ const Picker = (item: any) => {
 
     const customFooter = () => {
         return (
-            <footer  className={isServiceTask?"serviepannelgreena":""}>
-                <button type="button" className="btn btn-primary float-end me-5" onClick={saveCategories}>
-                    OK
+            <footer className={isServiceTask ||item?.props?.Portfolio_x0020_Type=="Service" ? "serviepannelgreena" : ""}>
+                <span>
+                    <a className="siteColor mx-1" target="_blank" data-interception="off" href={`{}/SitePages/SmartMetadata.aspx`} >Manage Smart Taxonomy</a>
+                </span>
+                <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveCategories} >
+                    Save
                 </button>
             </footer>
+
         )
     }
 
     const customHeader = () => {
         return (
-            <div className={isServiceTask? "d-flex full-width pb-1 serviepannelgreena":"d-flex full-width pb-1"} >
+            <div className={isServiceTask ||item?.props?.Portfolio_x0020_Type=="Service" ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"} >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <span>
-                        Select Category
-                    </span>
+                <h2 className="heading">Select Category</h2>
                 </div>
                 <Tooltip ComponentId="1626" />
             </div>
@@ -260,10 +306,10 @@ const Picker = (item: any) => {
                 customWidth="850px"
                 onDismiss={closePopupSmartTaxanomy}
                 isBlocking={PopupSmartTaxanomy}
-                onRenderFooter={customFooter}
+            // onRenderFooter={customFooter}
             >
-                <div id="SmartTaxonomyPopup">
-                    <div className={isServiceTask? "modal-body serviepannelgreena":"modal-body"}>
+                <div id="SmartTaxonomyPopup" className={(item?.props?.Portfolio_x0020_Type != undefined && item?.props?.Portfolio_x0020_Type == "Service") ? "serviepannelgreena" : ""}>
+                    <div className={isServiceTask ? "modal-body serviepannelgreena" : "modal-body"}>
                         {/* <table className="ms-dialogHeaderDescription">
                             <tbody>
                                 <tr id="addNewTermDescription" className="">
@@ -294,12 +340,12 @@ const Picker = (item: any) => {
                                     <div className="pb-3 mb-0">
                                         <div id="addNewTermDescription">
                                             <p className="mb-1"> New items are added under the currently selected item.
-                                                <span><a className="hreflink" target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmartMetadata.aspx`} > Add New Item </a></span>
+                                                <span><a className="hreflink" target="_blank" data-interception="off" href={`${siteUrls}/SitePages/SmartMetadata.aspx`} > Add New Item </a></span>
                                             </p>
                                         </div>
                                         <div id="SendFeedbackTr">
                                             <p className="mb-1">Make a request or send feedback to the Term Set manager.
-                                                <span><a className="hreflink" ng-click="sendFeedback();"> Send Feedback </a></span>
+                                                <span><a className="hreflink"> Send Feedback </a></span>
                                             </p>
                                         </div>
                                         {/* <div className="block col p-1"> {select}</div> */}
@@ -315,7 +361,8 @@ const Picker = (item: any) => {
                         <div className="mb-3">
                             <div className="mb-2 col-sm-12 p-0">
                                 <div>
-                                    <input type="text" className="form-control  searchbox_height" value={value} onChange={onChange} placeholder="Search here" />
+                                    <input type="checkbox" defaultChecked={isSearchWithDesciptions} onChange={() => setIsSearchWithDesciptions(isSearchWithDesciptions ? false : true)} className="form-check-input me-1 rounded-0" /> <label>Include description (info-icons) in search</label>
+                                    <input type="text" className="form-control  searchbox_height" value={value} onChange={onChange} placeholder="Search Category" />
                                     {searchedData?.length > 0 ? (
                                         <div className="SearchTableCategoryComponent">
                                             <ul className="list-group">
@@ -348,30 +395,19 @@ const Picker = (item: any) => {
                                     </ul> */}
                                 </div>
                             </div>
-                            <div className="col-sm-12 ActivityBox">
-                                {usedFor == "Task-Popup" ? <div>
-                                    {selectedCategory.map((val: any) => {
-                                        return (
-                                            <>
-                                                <span>
-                                                    <a className="hreflink block p-1 px-2 mx-1" ng-click="removeSmartArray(item.Id)"> {val.Title}
-                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" className="ms-2" onClick={() => deleteSelectedCat(val)} /></a>
-                                                </span>
-                                            </>
-                                        )
-                                    })}
-                                </div> : <div>
-                                    {select.map((val: any) => {
-                                        return (
-                                            <>
-                                                <span>
-                                                    <a className="hreflink block p-1 px-2 mx-1" ng-click="removeSmartArray(item.Id)"> {val.Title}
-                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" className="ms-2" onClick={() => deleteSelectedCat(val)} /></a>
-                                                </span>
-                                            </>
-                                        )
-                                    })}
-                                </div>}
+                            <div className="border full-width my-2 p-2 pb-1 ActivityBox">
+                                {select.map((val: any) => {
+                                    return (
+                                        <>
+                                            <span className="bg-69 p-1 ps-2 me-1"> {val.Title}
+                                                <a>
+                                                    <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" onClick={() => deleteSelectedCat(val)} />
+                                                </a>
+                                            </span>
+                                        </>
+                                    )
+                                })}
+
                             </div>
                             {/* <div className="col-sm-12 ActivityBox">
                                     <span>
@@ -402,7 +438,7 @@ const Picker = (item: any) => {
                                                         </a>
                                                     </p>
                                                 }
-                                                <ul ng-if="item.childs.length>0" className="sub-menu clr mar0">
+                                                <ul className="sub-menu clr mar0">
                                                     {item.childs?.map(function (child1: any) {
                                                         return (
                                                             <>
@@ -464,6 +500,14 @@ const Picker = (item: any) => {
                             </ul>
                         </div>
                     </div>
+                    <footer className={isServiceTask ? "serviepannelgreena fixed-bottom bg-f4 text-end pe-2 py-2" : "fixed-bottom bg-f4 text-end pe-2 py-2"}>
+                        <span>
+                            <a className="siteColor mx-1" target="_blank" data-interception="off" href={`${siteUrls}/SitePages/SmartMetadata.aspx`} >Manage Smart Taxonomy</a>
+                        </span>
+                        <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveCategories} >
+                            Save
+                        </button>
+                    </footer>
                 </div>
             </Panel>
         </>

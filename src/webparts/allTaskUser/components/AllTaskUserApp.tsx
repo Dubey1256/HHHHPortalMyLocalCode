@@ -26,7 +26,7 @@ export default class AllTaskUserApp extends React.Component<ITaskUserProps, ITas
     
     public async loadTasks() {
 
-        const allTasks = await this.spService.getTasks();
+        const allTasks = await this.spService.getTasks(this.props.taskUsersListId);
         
         const teamMembersTasks = allTasks.filter(taskItem=>taskItem.ItemType=="User").map(taskItem => ({
             Title: taskItem.Title,
@@ -80,14 +80,25 @@ export default class AllTaskUserApp extends React.Component<ITaskUserProps, ITas
     }
 
     render() {
-
-        const elemTaskTeamMembers = (this.state.teamMembersTasks.length>0 && <TaskTeamMembers tasks={this.state.teamMembersTasks} spService={this.spService} context={this.props.context} loadTasks={this.loadTasks} teamGroups={this.state.teamGroupsTasks} />);
-        const elemTaskTeamGroups = (this.state.teamGroupsTasks.length>0 && <TaskTeamGroups tasks={this.state.teamGroupsTasks} spService={this.spService} context={this.props.context} loadTasks={this.loadTasks} />);
-
-        const elemPivot = (<Pivot linkFormat={ PivotLinkFormat.tabs } linkSize={ PivotLinkSize.normal }>
+       
+        const elemTaskTeamMembers = <TaskTeamMembers tasks={this.state.teamMembersTasks} spService={this.spService} context={this.props.context} loadTasks={this.loadTasks} teamGroups={this.state.teamGroupsTasks} taskUsersListId={this.props.taskUsersListId} smartMetadataListId={this.props.smartMetadataListId} imagesLibraryId={this.props.imagesLibraryId} defaultApproverEMail={"deepak@hochhuth-consulting.de"} />;
+        const elemTaskTeamGroups = <TaskTeamGroups tasks={this.state.teamGroupsTasks} spService={this.spService} context={this.props.context} loadTasks={this.loadTasks}  taskUsersListId={this.props.taskUsersListId} />;
+           
+        const elemPivot = (
+            <>
+              <div className='header-section full-width justify-content-between'>
+        <h2 style={{ color: "#000066", fontWeight: "600" }}>TaskUser Management
+            <a data-interception="off" className=' text-end pull-right' target='_blank' href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskUser-Management.aspx" style={{ cursor: "pointer", fontSize: "14px" }}>Old TaskUser Management</a>
+        </h2>
+    </div>
+          
+        <Pivot linkFormat={ PivotLinkFormat.tabs } linkSize={ PivotLinkSize.normal }>
+             
             <PivotItem headerText="TEAM MEMBERS">{elemTaskTeamMembers}</PivotItem>
             <PivotItem headerText="TEAM GROUPS">{elemTaskTeamGroups}</PivotItem>
-        </Pivot>);
+
+        </Pivot>
+        </>);
 
         return (<div className="ms-Grid"><div className="ms-Grid-row">{elemPivot}</div></div>);
     }

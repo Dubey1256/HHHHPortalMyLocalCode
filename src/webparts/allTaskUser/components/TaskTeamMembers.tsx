@@ -1,12 +1,16 @@
 import { Checkbox, ChoiceGroup, CommandBar, DefaultButton, Dialog, DialogFooter, DialogType, DocumentCard, FontIcon, FontSizes, IChoiceGroupOption, ICommandBarItemProps, Icon, IContextualMenuItem, IContextualMenuProps, IDropdownOption, Image, ImageFit, Label, Link, mergeStyles, Panel, PrimaryButton, SearchBox, Text, TextField } from "office-ui-fabric-react";
-import { buildColumns, DetailsList, DetailsListLayoutMode, Dropdown, IColumn, PanelType, Pivot, PivotItem, PivotLinkFormat, PivotLinkSize, Selection, SelectionMode, ConstrainMode } from "@fluentui/react";
+import { buildColumns, DetailsList, DetailsListLayoutMode, Dropdown, IColumn, PanelType, Pivot, PivotItem, PivotLinkFormat, PivotLinkSize, Selection, SelectionMode, ConstrainMode, Stack, IPersonaProps, PersonaSize, Persona, TooltipHost, IStackTokens } from "@fluentui/react";
 import * as React from "react";
 import { Component } from "react";
 import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/PeoplePicker";
 import { FilePicker, IFilePickerResult } from '@pnp/spfx-controls-react/lib/FilePicker';
-
 import { ITeamMembersProps } from "./ITeamMembersProps";
 import { ITeamMembersState } from "./ITeamMembersState";
+import * as pnp from 'sp-pnp-js';
+import { SPHttpClient } from '@microsoft/sp-http';
+import { getSP } from "../../../spservices/pnpjsConfig"
+import TaskUsersTable from "./TaskUsersTable";
+import Tooltip from "../../../globalComponents/Tooltip";
 
 const controlStyles = {
     root: {
@@ -46,25 +50,22 @@ const selExistingImageOptions: IChoiceGroupOption[] = [
     { key: "Portraits", text: "PORTRAITS" }
 ];
 
+const stackTokens: IStackTokens = {
+    childrenGap: 5
+};
+
 export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamMembersState> {
     private _selection: Selection;
     private commandBarItems: ICommandBarItemProps[] = null;
+    private _sp: any;
+    private _webSerRelURL: any;
     constructor(props:ITeamMembersProps) {
 
-        super(props);        
-
-        let teamGroups: IDropdownOption[] = [{
-            key: "",
-            text: "Select"
-        }];
-
-        this.props.teamGroups.forEach((teamGroup)=>teamGroups.push({
-            key: teamGroup.TaskId,
-            text: teamGroup.Title
-        }));
-
+        super(props);           
+        this._sp = getSP();
+        this.getWebInformation();   
         this.state = {
-            tasks: this.props.tasks,
+            tasks: [],
             searchText: "",
             showCreatePanel: false,
             showEditPanel: false,
@@ -82,7 +83,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                 userId: undefined,
                 userMail: [],
                 timeCategory: "",
-                approverId: [36],
+                approverId: [],
                 approverMail: [],
                 approvalType: undefined,
                 selSmartMetadataItems: [],
@@ -93,7 +94,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                 itemCover: ""
             },
             timesheetCategories: [],
-            teamGroups: teamGroups,
+            teamGroups: [],
             smartMetadataItems: [],
             hideSmartMetadataMenu: true,
             selImageFolder: "Portraits",
@@ -103,7 +104,8 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                 fileName: "",
                 fileURL: ""
             },
-            onImageHover: false
+            onImageHover: false,
+            enableUser: false
         };
         this._selection = new Selection({
             onSelectionChanged: this._onItemsSelectionChanged,
@@ -148,7 +150,9 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
 
         this.getSubMenuItems = this.getSubMenuItems.bind(this);
         this.menuProps = this.menuProps.bind(this);
-        
+
+        this.getUserPersona = this.getUserPersona.bind(this);
+        this.getImageUrl = this.getImageUrl.bind(this);        
         
         this.commandBarItems = [
             {
@@ -165,8 +169,27 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             }
         ];
     }
+    private async getWebInformation() {
+        const webInfo = await this._sp.web();
+        this._webSerRelURL = webInfo.ServerRelativeUrl;
+    }
+   
+    public async componentDidMount() {
+       //let IChoiceGroupOptions = 'PORTRAITS'
+       // this.onImageFolderChanged('ev', IChoiceGroupOptions:IChoiceGroupOption)
+        const _tasksRes = await this.props.spService.getTasks(this.props.taskUsersListId);
+        const _tasks = this.getMemberTasks(_tasksRes);
+        const _groupTasks = this.getGroupTasks(_tasksRes);
 
-    public async componentDidMount() {       
+        let teamGroups: IDropdownOption[] = [{
+            key: "",
+            text: "Select"
+        }];
+
+        _groupTasks.forEach((teamGroup)=>teamGroups.push({
+            key: teamGroup.TaskId,
+            text: teamGroup.Title
+        }));
 
         let timesheetCategories: IDropdownOption[] = [{
             key: "",
@@ -174,48 +197,111 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         }];
 
         let taxTypes: string[] = ["TimesheetCategories"];
-        const resTimesheetCategories = await this.props.spService.getSmartMetadata(taxTypes);
+        const resTimesheetCategories = await this.props.spService.getSmartMetadata(this.props.smartMetadataListId, taxTypes);
         if(resTimesheetCategories.length>0) {
-            resTimesheetCategories.forEach((tsCategory:any)=>timesheetCategories.push({
+            resTimesheetCategories.forEach((tsCategory)=>timesheetCategories.push({
                 key: tsCategory.Title,
                 text: tsCategory.Title
             }));
         }
 
         taxTypes = ["Categories", "Category", "teamSites", "Sites", "TimesheetCategories"];
-        let resCategories = await this.props.spService.getSmartMetadata(taxTypes);
+        let resCategories = await this.props.spService.getSmartMetadata(this.props.smartMetadataListId, taxTypes);
         let smartMetadataItems: IContextualMenuItem[] = [];
         
-        resCategories.filter(({TaxType, ParentID}:any)=>(TaxType=="Categories"&&ParentID==0)).forEach((item:any)=>{
+        resCategories.filter(({TaxType, ParentID})=>(TaxType=="Categories"&&ParentID==0)).forEach(item=>{
             let smartMetadataItem: IContextualMenuItem = {
                 key: item.Id,
                 text: item.Title,
                 disabled: false,
                 onClick:()=>this.onAddSmartMetadataItem(item),
-                subMenuProps: this.getSubMenuItems(resCategories.filter((i:any)=>i.ParentID==item.Id), resCategories)
+                subMenuProps: this.getSubMenuItems(resCategories.filter(i=>i.ParentID==item.Id), resCategories)
             }
             smartMetadataItems.push(smartMetadataItem);
         });
         
-        const listTasks: any[] = [...this.props.tasks].map(({Title, Group, Category, Role, Company, Approver, TaskId})=>({Title, Group, Category, Role, Company, Approver, TaskId}));
+        const listTasks: any[] = [..._tasks].map(({Title, Group, Category, Role, Company, Approver, TaskId})=>({Title, Group, Category, Role, Company, Approver, TaskId}));
+        let filteredImages:any=[]
+        let _filteredImages:any=[]
+        //let filteredImages = await this.props.spService.getImages(this.props.imagesLibraryId, this.state.selImageFolder);
+          filteredImages = await pnp.sp.web.getFolderByServerRelativeUrl(`${this._webSerRelURL}/PublishingImages/${this.state.selImageFolder}`).files.get().then((files)=>{
+             _filteredImages = files?.map((filteredImage: any) => ({
+                //Id: filteredImage.Id,
+                Name: filteredImage.Name,
+                URL: filteredImage.ServerRelativeUrl
+            }));
+            }).catch((error)=>{
+                console.log(error)
+            })
+        console.log(_filteredImages)
+        // let _filteredImages = filteredImages?.map((filteredImage: any) => ({
+        //     Id: filteredImage.Id,
+        //     Name: filteredImage.FileLeafRef,
+        //     URL: filteredImage.EncodedAbsUrl
+        // }));
 
-        let filteredImages = await this.props.spService.getImages(this.state.selImageFolder);
-        let _filteredImages = filteredImages.map((filteredImage: any) => ({
-            Id: filteredImage.Id,
-            Name: filteredImage.FileLeafRef,
-            URL: filteredImage.EncodedAbsUrl
-        }));
+        const _approverId: number = (await this.getUserInfo(this.props.defaultApproverEMail)).Id;
+        const _taskItem = {...this.state.taskItem};
+        _taskItem.approverMail.push(this.props.defaultApproverEMail);
+        _taskItem.approverId.push(_approverId);
 
         this.setState({
-            tasks: this.props.tasks,
+            tasks: _tasks,
             sortedItems: listTasks,
             columns: this._buildColumns(listTasks),
             timesheetCategories: timesheetCategories,
             smartMetadataItems: smartMetadataItems,
-            filteredImages: _filteredImages
+            filteredImages: _filteredImages,
+            taskItem: _taskItem,
+            teamGroups: teamGroups
         });
     }
+    
+    private getMemberTasks(allTasks: any[]) {
+        const teamMembersTasks = allTasks.filter(taskItem=>taskItem.ItemType=="User").map(taskItem => ({
+            Title: taskItem.Title,
+            Group: taskItem.UserGroup ? taskItem.UserGroup.Title : "",
+            Category: taskItem.TimeCategory,
+            Role: taskItem.Role ? (taskItem.Role.map((i: string)=> {
+                if(i=='Deliverable Teams') {return "Component Teams"}
+                else {return i}
+            }).join(",")) : "",
+            Company: taskItem.Company,            
+            Approver: taskItem.Approver ? taskItem.Approver.map((i: { Title: any; })=>i.Title).join(", ") : "",
+            TaskId: taskItem.Id,
+            Suffix: taskItem.Suffix,
+            GroupId: taskItem.UserGroup ? taskItem.UserGroup.Id.toString() : "",            
+            AssignedToUserMail: taskItem.AssingedToUser ? [taskItem.AssingedToUser.Name.split("|")[2]] : [],
+            ApproverMail: taskItem.Approver ? taskItem.Approver.map((i: { Name: string; })=>i.Name.split("|")[2]) : [],
+            ApprovalType: taskItem.IsApprovalMail,
+            //CategoriesItemsJson: taskItem.CategoriesItemsJson != null ? JSON.parse(taskItem.CategoriesItemsJson) : [],
+            TimeCategory: taskItem.TimeCategory,
+            IsActive: taskItem.IsActive,
+            IsTaskNotifications: taskItem.IsTaskNotifications,
+            ItemCover: taskItem.Item_x0020_Cover,
+            CreatedOn: taskItem.Created.split("T")[0],
+            CreatedBy: taskItem.Author.Title,
+            ModifiedOn: taskItem.Modified.split("T")[0],
+            ModifiedBy: taskItem.Editor.Title
+        }));
+        return teamMembersTasks;
+    }
 
+    private getGroupTasks(allTasks: any[]) {
+        const teamGroupsTasks = allTasks.filter(taskItem=>taskItem.ItemType=="Group").map(taskItem => ({
+            Title: taskItem.Title,
+            Suffix: taskItem.Suffix,
+            SortOrder: taskItem.SortOrder,
+            AssignedToUserMail: taskItem.AssingedToUser ? [taskItem.AssingedToUser.Name.split("|")[2]] : [],
+            CreatedOn: taskItem.Created.split("T")[0],
+            CreatedBy: taskItem.Author.Title,
+            ModifiedOn: taskItem.Modified.split("T")[0],
+            ModifiedBy: taskItem.Editor.Title,
+            TaskId: taskItem.Id.toString()
+        }));
+        return teamGroupsTasks;
+    }
+    
     private getSubMenuItems(menuColl: any[], allItems: any[]) {
         let items: any[] = [];
         menuColl.forEach(item=>{
@@ -235,7 +321,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
 
     private onSearchTextChange(ev: any, searchText: string) {
         let filterText = searchText.toLowerCase();
-        let allTasks = [...this.props.tasks];
+        let allTasks = [...this.state.tasks];
         allTasks = allTasks.map(({Title, Group, Category, Role, Company, Approver, TaskId})=>({Title, Group, Category, Role, Company, Approver, TaskId}));
         let fliteredTasks = [];
         let textExists: boolean;
@@ -267,12 +353,13 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
 
     private onEditIconClick(selTaskId: number) {
         this.setState({
-            selTaskId: selTaskId
+            selTaskId: selTaskId,
+            enableUser: false
         }, this.onEditTask);
     }
 
     private onEditTask() {
-        let allTasks = [...this.props.tasks];
+        let allTasks = [...this.state.tasks];
         let selTask = allTasks.filter(t=>t.TaskId==this.state.selTaskId)[0];
         console.log(selTask);
         let selTaskItem = {...this.state.taskItem};
@@ -285,7 +372,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         selTaskItem.approverMail = selTask.ApproverMail;
         selTaskItem.timeCategory = selTask.TimeCategory;
         selTaskItem.approvalType = selTask.ApprovalType;
-        selTaskItem.selSmartMetadataItems = selTask.CategoriesItemsJson;
+        selTaskItem.selSmartMetadataItems = selTask?.CategoriesItemsJson;
         selTaskItem.company = selTask.Company;
         selTaskItem.roles = selTask.Role ? selTask.Role.split(",") : []
         selTaskItem.isActive = selTask.IsActive,
@@ -335,7 +422,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
 
         if(users.length>0) {
             let userMail = users[0].id.split("|")[2];
-            let userInfo = await this.props.spService.getUserInfo(userMail);
+            let userInfo = await this.getUserInfo(userMail);
             userId = userInfo.Id;
             userTitle = userInfo.Title;
             userSuffix = userTitle.split(" ").map(i=>i.charAt(0)).join("");
@@ -358,7 +445,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
 
         if(approvers.length>0) {
             let approverMail = approvers[0].id.split("|")[2];
-            let userInfo = await this.props.spService.getUserInfo(approverMail);
+            let userInfo = await this.getUserInfo(approverMail);
             approverId = userInfo.Id;
         }        
         
@@ -375,11 +462,14 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         taskItem.userMail = [];
         this.setState({
             taskItem: taskItem,
-            showCreatePanel: true
+            showCreatePanel: true,
+            enableUser: true,
+            enableSave: false
         });
     }
 
     private onSaveTask() {
+        this.onCancelTask();
         if(this.state.selTaskId) {
             this.updateTask();
         }
@@ -399,7 +489,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             ItemType: taskItem.itemType
         }
 
-        const newTask = await this.props.spService.createTask(newTaskItem);
+        const newTask = await this.props.spService.createTask(this.props.taskUsersListId, newTaskItem);
         
         if(newTask) {
             this.updateGallery();
@@ -410,12 +500,13 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             _taskItem.userSuffix = newTask.Suffix;
             _taskItem.userId = newTask.AssingedToUserId;
             _taskItem.userMail = [assignedUserInfo.UserPrincipalName];
-            _taskItem.approverId = newTask.ApproverId[0];
+            _taskItem.approverId = newTask.ApproverId;
             _taskItem.approverMail = [approverInfo.UserPrincipalName];
             this.setState({
                 showCreatePanel: false,
                 selTaskId: newTask.Id,
                 showEditPanel: true,
+                enableUser: false,
                 taskItem: _taskItem
             });
         }
@@ -432,7 +523,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             TimeCategory: taskItem.timeCategory,
             ApproverId: taskItem.approverId,
             IsApprovalMail: taskItem.approvalType,
-            CategoriesItemsJson: (this.state.taskItem.selSmartMetadataItems.length>0) ? JSON.stringify(this.state.taskItem.selSmartMetadataItems) : null,
+            CategoriesItemsJson: (this.state.taskItem.selSmartMetadataItems != undefined && this.state.taskItem.selSmartMetadataItems.length>0) ? JSON.stringify(this.state.taskItem.selSmartMetadataItems) : null,
             Company: taskItem.company,
             Role: taskItem.roles,
             IsActive: taskItem.isActive,
@@ -443,21 +534,23 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             }
         };
         console.log(updateTaskItem);
+        taskItem.groupId=null
 
-        const updateTask = await this.props.spService.editTask(this.state.selTaskId, updateTaskItem);
+        const updateTask = await this.props.spService.editTask(this.props.taskUsersListId, this.state.selTaskId, updateTaskItem);
 
         if(updateTask) {
             this.updateGallery();
             this.setState({                
                 selTaskId: undefined,
-                showEditPanel: false
+                showEditPanel: false,
+                enableSave: false
             });
         }
     }
 
     private async deleteTask() {
 
-        await this.props.spService.deleteTask(this.state.selTaskId);
+        await this.props.spService.deleteTask(this.props.taskUsersListId, this.state.selTaskId);
 
         this.updateGallery();
         
@@ -501,14 +594,43 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         this.deleteTask();
     }
 
-    private updateGallery() {
-        this.props.loadTasks();
-        let allTasks = [...this.props.tasks];
-        let listTasks = allTasks.map(({Title, Group, Category, Role, Company, Approver, TaskId})=>({Title, Group, Category, Role, Company, Approver, TaskId}));
+    private async updateGallery() {
+
+        const allTasks = await this.props.spService.getTasks(this.props.taskUsersListId);
+        
+        const teamMembersTasks = allTasks.filter(taskItem=>taskItem.ItemType=="User").map(taskItem => ({
+            Title: taskItem.Title,
+            Group: taskItem.UserGroup ? taskItem.UserGroup.Title : "",
+            Category: taskItem.TimeCategory,
+            Role: taskItem.Role ? (taskItem.Role.map((i: string)=> {
+                if(i=='Deliverable Teams') {return "Component Teams"}
+                else {return i}
+            }).join(",")) : "",
+            Company: taskItem.Company,            
+            Approver: taskItem.Approver ? taskItem.Approver.map((i: { Title: any; })=>i.Title).join(", ") : "",
+            TaskId: taskItem.Id,
+            Suffix: taskItem.Suffix,
+            GroupId: taskItem.UserGroup ? taskItem.UserGroup.Id.toString() : "",            
+            AssignedToUserMail: taskItem.AssingedToUser ? [taskItem.AssingedToUser.Name.split("|")[2]] : [],
+            ApproverMail: taskItem.Approver ? taskItem.Approver.map((i: { Name: string; })=>i.Name.split("|")[2]) : [],
+            ApprovalType: taskItem.IsApprovalMail,
+           // CategoriesItemsJson: taskItem.CategoriesItemsJson ? JSON.parse(taskItem.CategoriesItemsJson) : [],
+            TimeCategory: taskItem.TimeCategory,
+            IsActive: taskItem.IsActive,
+            IsTaskNotifications: taskItem.IsTaskNotifications,
+            ItemCover: taskItem.Item_x0020_Cover,
+            CreatedOn: taskItem.Created.split("T")[0],
+            CreatedBy: taskItem.Author.Title,
+            ModifiedOn: taskItem.Modified.split("T")[0],
+            ModifiedBy: taskItem.Editor.Title
+        }));
+
+        let listTasks = teamMembersTasks.map(({Title, Group, Category, Role, Company, Approver, TaskId})=>({Title, Group, Category, Role, Company, Approver, TaskId}));
+        
         this.setState({
             selTaskId: undefined,
             searchText: "",
-            tasks: allTasks,
+            tasks: teamMembersTasks,
             sortedItems: listTasks,
             columns: this._buildColumns(listTasks)
         });
@@ -666,16 +788,34 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
 
     private async onImageFolderChanged(ev:any, optImageFolder: IChoiceGroupOption) {
         let selFolderName: string = optImageFolder.key;
-        let filteredImages = await this.props.spService.getImages(selFolderName);
-        let _filteredImages = filteredImages.map((filteredImage: any) => ({
-            Id: filteredImage.Id,
-            Name: filteredImage.FileLeafRef,
-            URL: filteredImage.EncodedAbsUrl
+        //let filteredImages = await this.props.spService.getImages(this.props.imagesLibraryId, selFolderName);
+        
+       var filteredImages:any=[]
+        //let filteredImages = await this.props.spService.getImages(this.props.imagesLibraryId, this.state.selImageFolder);
+          filteredImages = await pnp.sp.web.getFolderByServerRelativeUrl(`${this._webSerRelURL}/PublishingImages/${selFolderName}`).files.get().then((files)=>{
+        console.log(files)
+        let _filteredImages = files?.map((filteredImage: any) => ({
+            //Id: filteredImage.Id,
+            Name: filteredImage.Name,
+            URL: filteredImage.ServerRelativeUrl
         }));
         this.setState({
             selImageFolder: selFolderName,
             filteredImages: _filteredImages
         });
+        }).catch((error)=>{
+            console.log(error)
+        })
+        console.log(filteredImages)
+        // let _filteredImages = filteredImages?.map((filteredImage: any) => ({
+        //     Id: filteredImage.Id,
+        //     Name: filteredImage.FileLeafRef,
+        //     URL: filteredImage.EncodedAbsUrl
+        // }));
+        // this.setState({
+        //     selImageFolder: selFolderName,
+        //     filteredImages: _filteredImages
+        // });
     }
 
     private onImageSelected(ev:any, imgInfo: any) {
@@ -731,7 +871,30 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             target: null
         });
     }
+    private onRenderCustomHeaderCreateNewUser= () => {
+        return (
+          <>
+      
+            <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+            Create New User
+            </div>
+            <Tooltip ComponentId='1757' />
+          </>
+        );
+      };
+      private onRenderCustomHeaderTaskUserManagement= () => {
+        return (
+          <>
+      
+            <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+            {`Task-User Management - ${this.state.taskItem.userTitle}`}
+            </div>
+            <Tooltip ComponentId='1767' />
+          </>
+        );
+      };
 
+    
     render() {       
 
         const elemCommandBar = ( false && <CommandBar 
@@ -739,7 +902,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             styles={controlStyles}
         />);
 
-        const elemMemberTaskList = (<div className="ms-Grid-row">
+        let elemMemberTaskList = (<div className="ms-Grid-row">
             <DetailsList 
                 items={ this.state.sortedItems } 
                 columns={ this.state.columns }
@@ -751,19 +914,22 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             />
         </div>);
 
-        const elemTaskMetadata = (this.state.showEditPanel && <div style={{width:"40%",display:"inline-block"}}>
-            <Label>Created {this.state.taskItem.createdOn} by {this.state.taskItem.createdBy}</Label>
-            <Label>Last modified {this.state.taskItem.modifiedOn} by {this.state.taskItem.modifiedBy}</Label>
-            <Link href="#" onClick={this.onDeleteTask}><Icon iconName="Delete"/><Text>Delete this user</Text></Link>
-        </div>);
+        elemMemberTaskList = <TaskUsersTable TaskUsers={this.state.sortedItems} GetUser={(userName, taskId)=>this.GetTaskUser(userName, taskId)} AddTask={this.onAddTeamMemberClick} EditTask={this.onEditIconClick} DeleteTask={this.onDeleteIconClick} />
 
-        const elemSaveButton = (<PrimaryButton styles={controlStyles} onClick={this.onSaveTask} >Save</PrimaryButton>);
-        // disabled={!this.state.enableSave}
+        const elemTaskMetadata = (this.state.showEditPanel ?<div>
+              <p className="mb-0">Created {this.state.taskItem.createdOn} by {this.state.taskItem.createdBy}</p>
+            <p className="mb-0">Last modified {this.state.taskItem.modifiedOn} by {this.state.taskItem.modifiedBy}</p>
+            <Link href="#" onClick={this.onDeleteTask}><Icon iconName="Delete"/><Text>Delete this user</Text></Link>
+        
+          
+        </div>:<div></div>);
+
+        const elemSaveButton = (<PrimaryButton styles={controlStyles} onClick={this.onSaveTask} disabled={!this.state.enableSave}>Save</PrimaryButton>);
         const elemCancelButton = (<DefaultButton styles={controlStyles} onClick={this.onCancelTask}>Cancel</DefaultButton>);
         
-        const elemOOTBFormLink = (<Link href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/Task%20Users/DispForm.aspx?ID=${this.state.selTaskId}`} target="_blank" style={{marginRight:"8px"}}>Open out-of-the-box form</Link>);
-        const elemActionButons = (<div style={{float:"right",width:"60%",display:"inline-block",marginTop:"16px"}}>
-            <div style={{float:"right"}}>
+        const elemOOTBFormLink = (<Link href={`${this.props.context.pageContext.web.absoluteUrl}/Lists/Task%20Users/DispForm.aspx?ID=${this.state.selTaskId}`} target="_blank" className="openlink">Open out-of-the-box form</Link>);
+        const elemActionButons = (<div>
+            <div className="text-end c-footer">
                 { this.state.selTaskId && elemOOTBFormLink }
                 { elemSaveButton }
                 { elemCancelButton }
@@ -781,7 +947,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             </DialogFooter>
         </Dialog>);
 
-        const elemTaskMemberFooter = () => ( <div style={{width:"100%"}}>
+        const elemTaskMemberFooter = () => ( <div className="align-items-center d-flex justify-content-between ">
             { elemTaskMetadata }
             { elemActionButons }          
         </div>);       
@@ -795,7 +961,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             resolveDelay={1000}
             onChange = { this.getUserDetails }
             defaultSelectedUsers = {this.state.taskItem.userMail}
-            disabled={this.state.selTaskId!=undefined}
+            disabled={!this.state.enableUser}
         ></PeoplePicker>);
 
         const elemApprover = (<PeoplePicker 
@@ -809,7 +975,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         ></PeoplePicker>);
         
         const elemNewTaskMember = (<Panel
-            headerText="Create New User" 
+            onRenderHeader={ this.onRenderCustomHeaderCreateNewUser} 
             isOpen={this.state.showCreatePanel} 
             onDismiss={this.onCancelTask}
             isFooterAtBottom={true}
@@ -825,7 +991,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
              
         const elemApproveSelectedMenu = (<PrimaryButton menuProps={this.menuProps()}>Select Items</PrimaryButton>);
 
-        const elemSelSmartMetadataItems = this.state.taskItem.selSmartMetadataItems.map((selSmartMetadataItem) =>(
+        const elemSelSmartMetadataItems = this.state.taskItem.selSmartMetadataItems?.map((selSmartMetadataItem) =>(
             <Label>
                 {selSmartMetadataItem.Title}
                 <Icon iconName="Delete" onClick={()=>this.onRemoveSmartMetadataItem(selSmartMetadataItem.Id)}></Icon>
@@ -833,7 +999,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         ));             
 
         const elemEditTaskBasicInfo: JSX.Element = (<div className="ms-SPLegacyFabricBlock">
-            <div className="ms-Grid">
+            <div className="ms-Grid p-0">
                 <div className="ms-Grid-row">
                     <div className="ms-Grid-col ms-sm3 ms-md3 ms-lg3">
                         <TextField
@@ -848,7 +1014,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                             label="Suffix"
                             value = { this.state.taskItem.userSuffix }
                             defaultValue = { this.state.taskItem.userSuffix }
-                            onChange = { this.onUserSuffixChange } 
+                            onChange = {this.onUserSuffixChange } 
                         />
                     </div>
                     <div className="ms-Grid-col ms-sm3 ms-md3 ms-lg3">
@@ -858,6 +1024,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                              defaultSelectedKey = {this.state.taskItem.groupId}
                              selectedKey = {this.state.taskItem.groupId}
                              onChange = {this.onGroupChange } 
+                             calloutProps={{ doNotLayer: false }}
                         />
                     </div>
                     <div className="ms-Grid-col ms-sm3 ms-md3 ms-lg3">
@@ -878,7 +1045,8 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                             options = {this.state.timesheetCategories} 
                             defaultSelectedKey = {this.state.taskItem.timeCategory} 
                             selectedKey = {this.state.taskItem.timeCategory}
-                            onChange = { this.onManageTimeCategory } 
+                            onChange = {this.onManageTimeCategory } 
+                            calloutProps={{ doNotLayer: false }}
                         />
                     </div>
                     <div className="ms-Grid-col ms-sm4 ms-md4 ms-lg4">{elemApprover}</div>
@@ -950,7 +1118,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
 
         const elemSelImage = (this.state.taskItem.itemCover && <div>
             <Image src={this.state.taskItem.itemCover} imageFit={ImageFit.centerContain} height={120} width={160} />
-            <Link target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/${this.state.selImageFolder}`}>Image Folder</Link>
+            <Link target="_blank" href={`${this.props.context.pageContext.web.absoluteUrl}/PublishingImages/${this.state.selImageFolder}`}>Image Folder</Link>
             <Label onClick={this.onImageCleared}>
                 <Icon iconName="Delete" />
                 <Text>Clear Image</Text>
@@ -960,9 +1128,9 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         const elemImageGallery = (<div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
                         
         {
-            this.state.filteredImages.map( imgInfo => (<div style={{ width: '205px', display: 'inline-block', verticalAlign: 'top', margin: '2px' }}>
+            this.state.filteredImages?.map( imgInfo => (<div style={{ width: '205px', display: 'inline-block', verticalAlign: 'top', margin: '2px' }}>
                 <DocumentCard style={{border:(imgInfo.Id==this.state.selImageId)?"1px solid red":"" }}>
-                <div
+                <div 
                     //onMouseOver={(ev)=>{ev.preventDefault();this.setState({onImageHover:!this.state.onImageHover})}}
                     //onMouseOut={(ev)=>{ev.preventDefault();this.setState({onImageHover:!this.state.onImageHover})}}
                     onClick={(ev)=>this.onImageSelected(ev, imgInfo)}
@@ -988,6 +1156,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         const elemImagePivotSection = (<Pivot linkFormat={PivotLinkFormat.tabs} linkSize={PivotLinkSize.normal}>
             <PivotItem headerText="CHOOSE FROM EXISTING">                        
                 <br />
+               
                 { elemImageGallery }
             </PivotItem>
             <PivotItem headerText="UPLOAD">
@@ -1041,7 +1210,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         </div></div>);
 
         const elemEditTaskMember = (<Panel
-            headerText={`Task-User Management - ${this.state.taskItem.userTitle}`}
+            onRenderHeader={this.onRenderCustomHeaderTaskUserManagement}
             type={PanelType.large}
             isOpen={this.state.showEditPanel}
             onDismiss = {this.onCancelTask}
@@ -1066,14 +1235,27 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         </>
         );
 
-        return (<div data-is-scollable={true} className="ms-Grid">
-            { elemControls }
+        return (<div data-is-scollable={true} className="ms-Grid  p-0">
+            { false && elemControls }
             { elemMemberTaskList }
             { elemNewTaskMember }
             { elemEditTaskMember }
             { elemDeleteDialog }
         </div>);        
-    }      
+    }
+    
+    private GetTaskUser(userName: string, taskId: number) {
+        return (
+            <Stack horizontal tokens={stackTokens}>
+                <Stack.Item>
+                    {this.getUserPersona({UserName:userName,ImageUrl:this.getImageUrl(taskId)})}
+                </Stack.Item>
+                <Stack.Item>
+                    <div style={{fontSize: "12px", fontWeight: 400}}>{userName}</div>
+                </Stack.Item>
+            </Stack>
+        );
+    }
 
     private _buildColumns(items: any[]): IColumn[] {
 
@@ -1086,6 +1268,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             if(column.name=="Title") {
                 column.isSorted = true;
                 column.isSortedDescending = false;
+                column.onRender = (item) => this.GetTaskUser(item.Title, item.TaskId)
             }
             else if(column.name=="TaskId") {
                 column.name = "";
@@ -1127,6 +1310,52 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
           }),
         });
     };
+
+    private getUserPersona(userInfo: any) {
+        const personaProps: IPersonaProps = {
+            size: PersonaSize.size24,
+        }
+        const userImage = userInfo.ImageUrl;
+        const userName = userInfo.UserName;
+        if(userImage) {
+            personaProps.imageUrl = userImage;
+        }
+        else {
+            personaProps.imageInitials = userName.split(" ").map((i: string)=>i.indexOf("+")>-1?i:i.charAt(0)).join("");
+        }
+        const elemPersona = <Persona {...personaProps} styles={{details:{padding:"0px"}}} />
+        return (            
+            <TooltipHost content={userName}>
+                <Link href="#" target="_blank">
+                    { elemPersona }
+                </Link>
+            </TooltipHost>            
+        );
+    }
+
+    private getImageUrl(userId: number) {
+        const allTasks = [...this.state.tasks];
+        const userTaskItem = allTasks.filter(taskItem=>taskItem.TaskId==userId)[0];
+        return (userTaskItem && userTaskItem.ItemCover) ? userTaskItem.ItemCover.Url : "";
+    }
+
+    private async getUserInfo(userMail: string) {
+
+        const userEndPoint:string = `${this.props.context.pageContext.web.absoluteUrl}/_api/Web/EnsureUser`;
+
+        const userData: string = JSON.stringify({
+            "logonName": userMail
+        });
+
+        const userReqData = {
+            body: userData
+        };
+        
+        const resUserInfo = await this.props.context.spHttpClient.post(userEndPoint, SPHttpClient.configurations.v1, userReqData);
+        const userInfo = await resUserInfo.json()
+
+        return userInfo;
+    }
 }
 
 function _copyAndSort<T>(items: T[], columnKey: string, isSortedDescending?: boolean): T[] {

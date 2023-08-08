@@ -3,7 +3,7 @@ import { Input } from 'reactstrap';
 
 export const Filter = ({ column } : any) => {
   return (
-    <div style={{ marginTop: 5 }}>
+    <div>
       {column.canFilter && column.render('Filter')}
     </div>
   );
@@ -18,11 +18,12 @@ export const DefaultColumnFilter :any =  ({
   },
 }:any) => {
   return (
-    <Input
+    <Input type="search"
+    className='on-search-cross clearicons'
       value={filterValue || ''}
       onChange={(e) => {
         setFilter(e.target.value || undefined);
-      }}
+      }} title={`${internalHeader}`}
       placeholder={`${internalHeader}`}
     />
   );

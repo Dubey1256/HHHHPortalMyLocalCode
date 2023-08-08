@@ -14,10 +14,10 @@ export default function VersionHistoryPopup(props: any) {
 
   //------------------------jquery call--------------------------------
   const GetItemsVersionHistory = async () => {
-    var siteType = "https://hhhhteams.sharepoint.com/sites/HHHH/SP";
+    var siteTypeUrl = props.siteUrls;
     let listId = props.listId
     var itemId = props.taskId;
-    var url = `${siteType}/_layouts/15/Versions.aspx?list=` + listId + "&ID=" + itemId; //list=${listId}&ID=${itemId}
+    var url = `${siteTypeUrl}/_layouts/15/Versions.aspx?list=` + listId + "&ID=" + itemId; //list=${listId}&ID=${itemId}
     await $.ajax({
       url: url,
       method: "GET",

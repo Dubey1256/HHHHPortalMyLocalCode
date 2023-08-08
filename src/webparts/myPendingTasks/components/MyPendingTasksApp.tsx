@@ -246,8 +246,8 @@ class MyPendingTasksApp extends React.Component<IMyPendingTasksAppProps, IMyPend
     }
 
     private async getTaskUsers() {
-        const taskUsersRes = await this.spService.getTasks();
-        const taskUsers = taskUsersRes.filter((taskUser:any)=>taskUser.AssingedToUser!=null).map((taskUser:any)=>({
+        const taskUsersRes = await this.spService.getTasks(this.props.taskUsersListId);
+        const taskUsers = taskUsersRes.filter(taskUser=>taskUser.AssingedToUser!=null).map(taskUser=>({
             UserId: taskUser.AssingedToUser.Id,
             Title: taskUser.Title,
             ImageUrl: taskUser.Item_x0020_Cover ? taskUser.Item_x0020_Cover.Url : "",
@@ -261,10 +261,10 @@ class MyPendingTasksApp extends React.Component<IMyPendingTasksAppProps, IMyPend
         const taxTypes: string[] = ["Sites"];
         const excludedSites: string[] = ["Master Tasks", "DRR"];
         let _sMetadatItem = undefined;
-        const sMetadataRes = await this.spService.getSmartMetadata(taxTypes);
+        const sMetadataRes = await this.spService.getSmartMetadata(this.props.smartMetadataListId, taxTypes);
         const sMetadataItems = sMetadataRes.filter(sMetadateItem => {
             return (sMetadateItem.listId != undefined && excludedSites.indexOf(sMetadateItem.Title)==-1);
-        }).map((sMetadateItem:any) => {
+        }).map(sMetadateItem => {
             _sMetadatItem = {
                 "Id": sMetadateItem.Id,
                 "ListId": sMetadateItem.listId,
@@ -968,7 +968,7 @@ class MyPendingTasksApp extends React.Component<IMyPendingTasksAppProps, IMyPend
     }
     
     render(): JSX.Element {
-        const elemSectionTitle = <Label styles={{root:{color:"#0000BC",fontSize:"25px"}}}>My Pending Tasks - {this.state.currentUserInfo.Title}</Label>;
+        const elemSectionTitle = <Label styles={{root:{color:"#000066",fontSize:"25px"}}}>My Pending Tasks - {this.state.currentUserInfo.Title}</Label>;
         const elemListPendingTasks: JSX.Element = (<DetailsList 
             items = { this.state.displayedPendingTasks } 
             columns = { this.state.columns }

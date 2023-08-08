@@ -1,13 +1,11 @@
 import * as React from "react";
 // import ImagesC from "./Images";
 import {
-  arraysEqual,
-  Modal,
   Panel,
-  PanelType,
-  TextField,
+  PanelType
 } from "office-ui-fabric-react";
 
+// import * as Moment from 'moment';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/js/dist/modal.js";
 import "bootstrap/js/dist/tab.js";
@@ -16,22 +14,18 @@ import { Web } from "sp-pnp-js";
 import ComponentPortPolioPopup from "./ComponentPortfolioSelection";
 import CommentCard from "../../globalComponents/Comments/CommentCard";
 import { IoMdArrowDropdown, IoMdArrowDropright } from "react-icons/io";
-import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { map } from "lodash";
-import DatePicker from "react-datepicker";
-import { ClickAwayListener } from "@material-ui/core";
 import "react-datepicker/dist/react-datepicker.css";
 import Picker from "../../globalComponents/EditTaskPopup/SmartMetaDataPicker";
-import LinkedComponent from "../../globalComponents/EditTaskPopup/LinkedComponent";
+import ServiceComponentPortfolioPopup from "../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup";
 import { EditorState } from "draft-js";
 import HtmlEditorCard from "../../globalComponents/HtmlEditor/HtmlEditor";
 import TeamConfigurationCard from "./TeamConfigurationPortfolio";
 import Tooltip from "../../globalComponents/Tooltip";
-import ImagesC from "./Image";
-import { AllOut } from "@material-ui/icons";
+import ImagesC from "./ImageInformation";
 import VersionHistoryPopup from "../../globalComponents/VersionHistroy/VersionHistory";
-
+import SiteCompositionComponent from "./PortfolioSiteCompsition";
 var PostTechnicalExplanations = "";
 var PostDeliverables = "";
 var PostShort_x0020_Description_x0020_On = "";
@@ -40,13 +34,29 @@ var AllUsers: any = [];
 var Assin: any = [];
 var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
+var SiteTypeBackupArray: any = [];
 var TeamMemberIds: any = [];
 var Backupdata: any = [];
 var BackupCat: any = "";
-let listID = "EC34B38F-0669-480A-910C-F84E92E58ADF";
-function EditInstitution(item: any) {
-  // Id:any
+let web: any = '';
+let RequireData: any = {};
+var selectedClientCategoryData: any = [];
+var AllClientCategoryDataBackup: any = [];
+let AutoCompleteItemsArray: any = [];
+var AllClientCategory: any = [];
+let ShowCategoryDatabackup: any = [];
 
+function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
+  if (SelectD != undefined && SelectD?.siteUrl != undefined) {
+    web = new Web(SelectD?.siteUrl);
+    RequireData = SelectD
+  } else {
+    if (item?.siteUrl != undefined) {
+      web = new Web(item?.siteUrl);
+    }
+    RequireData = SelectD.SelectedProp
+    web = new Web(RequireData?.siteUrl);
+  }
   const [CompoenetItem, setComponent] = React.useState([]);
   const [update, setUpdate] = React.useState(0);
   const [isDropItem, setisDropItem] = React.useState(false);
@@ -59,40 +69,43 @@ function EditInstitution(item: any) {
   const [SharewebComponent, setSharewebComponent] = React.useState("");
   const [SharewebCategory, setSharewebCategory] = React.useState("");
   const [CollapseExpend, setCollapseExpend] = React.useState(true);
-  const [CategoriesData, setCategoriesData] = React.useState([]);
-  const TeamConfigInfo = item.props;
+  let [CategoriesData, setCategoriesData] = React.useState([]);
+  const TeamConfigInfo = item;
   const [smartComponentData, setSmartComponentData] = React.useState([]);
   const [TeamConfig, setTeamConfig] = React.useState();
   const [date, setDate] = React.useState(undefined);
   const [siteDetails, setsiteDetails] = React.useState([]);
   const [checkedCat, setcheckedCat] = React.useState(false);
   const [linkedComponentData, setLinkedComponentData] = React.useState([]);
-  const [Startdate, setStartdate] = React.useState(undefined);
   const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
   const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
   const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
   const [Completiondate, setCompletiondate] = React.useState(undefined);
   const [AssignUser, setAssignUser] = React.useState(undefined);
   const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
+  const [IsService, setIsService] = React.useState(false);
   const [editorState, setEditorState] = React.useState(
     EditorState.createEmpty()
   );
-  const [datepicker, setdatepicker] = React.useState(false);
-  const [activePicker, setActivePicker] = React.useState(null);
-  // Date picker closer
-  const handlePickerFocus = (pickerName: any) => {
-    setActivePicker(pickerName);
-  };
+  const [selectedClientCategory, setSelectedClientCategory] = React.useState([]);
+  const [ParentData, SetParentData] = React.useState([]);
+  const [SiteTypes, setSiteTypes] = React.useState([]);
+  const [EnableSiteCompositionValidation, setEnableSiteCompositionValidation] = React.useState(false);
+  const [SiteCompositionSetting, setSiteCompositionSetting] = React.useState([]);
+  const [SiteTaggingData, setSiteTaggingData] = React.useState([])
+  // For Status
+  const [PhoneStatus, setPhoneStatus] = React.useState(false);
 
-  const handlePickerBlur = () => {
-    setActivePicker(null);
-  };
-  function datepickercl() {
-    setdatepicker(true);
-  }
-  // $('.ms-Dialog-main .main-153').hide();
+  const [EmailStatus, setEmailStatus] = React.useState(false);
+
+  const [ImmediateStatus, setImmediateStatus] = React.useState(false);
+
+  const [ApprovalStatus, setApprovalStatus] = React.useState(false);
+  const [AllCategoryData, setAllCategoryData] = React.useState([]);
+  const [categorySearchKey, setCategorySearchKey] = React.useState('');
+  const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
+  // End of Status
   const setModalIsOpenToTrue = (e: any) => {
-    // e.preventDefault()
     setModalIsOpen(true);
   };
   const onEditorStateChange = React.useCallback(
@@ -105,34 +118,51 @@ function EditInstitution(item: any) {
     EditComponentCallback();
     setModalIsOpen(false);
   };
-  const handleDate = (date: any) => {
-    EditData.CompletedDate = date;
-    setCompletiondate(date);
-    setComponent((EditData) => [...EditData]);
-    setActivePicker(null);
-  };
-  const handleDatestart = (date: any) => {
-    EditData.StartDate = date;
-    setStartdate(date);
-    setComponent((EditData) => [...EditData]);
-    setActivePicker(null);
-  };
-  const handleDatedue = (date: any) => {
-    EditData.DueDate = date;
-    setDate(date);
-    setComponent((EditData) => [...EditData]);
-    setActivePicker(null);
-  };
-  const Call = React.useCallback((item1: any, type: any) => {
+
+  const Call = React.useCallback((item1: any, type: any, functionType: any) => {
     if (type == "SmartComponent") {
       if (EditData != undefined && item1 != undefined) {
-        item.props.smartComponent = item1.smartComponent;
+        item.smartComponent = item1.smartComponent;
         setSmartComponentData(item1.smartComponent);
       }
     }
+    if (type == "Category-Task-Footertable") {
 
+
+
+
+      setPhoneStatus(false)
+
+      setEmailStatus(false)
+
+      setImmediateStatus(false)
+
+      setApprovalStatus(false)
+
+
+
+
+      if (item1 != undefined && item1.length > 0) {
+
+        item1?.map((itenn: any) => {
+
+          selectedCategoryTrue(itenn.Title)
+
+
+
+
+        })
+
+
+
+
+        setCategoriesData(item1)
+
+      }
+
+    }
     if (type == "Category") {
-      if (item1 != undefined && item1.Categories != "") {
+      if (item1 != undefined && item1.categories != "") {
         var title: any = {};
         title.Title = item1.categories;
         item1.categories.map((itenn: any) => {
@@ -143,19 +173,27 @@ function EditInstitution(item: any) {
         item1.SharewebCategories.map((itenn: any) => {
           CategoriesData.push(itenn);
         });
-
-        //  Backupdata = CategoriesData
         setCategoriesData(CategoriesData);
-        //item.props.smartCategories = item1.smartCategories;
-        //  item.props.smartCategories.push(title);
       }
     }
-    if (type == "LinkedComponent") {
-      if (item1?.linkedComponent?.length > 0) {
-        // Item.props.linkedComponent = item1.linkedComponent;
-        // setEditData({ ...EditData, RelevantPortfolio: propsItems.linkedComponent })
-        setLinkedComponentData(item1.linkedComponent);
-        console.log("Popup component linkedComponent", item1.linkedComponent);
+    if (functionType == "Close") {
+      if (type == "Service") {
+        setIsService(false);
+      } else {
+        setIsComponent(false)
+      }
+    } else {
+      if (type == "Component") {
+        if (item1 != undefined && item1.length > 0) {
+          setLinkedComponentData(item1);
+          console.log("Popup component linkedComponent", item1.linkedComponent);
+        }
+      }
+      if (type == "Service") {
+        if (item1 != undefined && item1.length > 0) {
+          setLinkedComponentData(item1);
+          console.log("Popup component linkedComponent", item1.linkedComponent);
+        }
       }
     }
     if (CategoriesData != undefined) {
@@ -184,13 +222,13 @@ function EditInstitution(item: any) {
     return isExists;
   };
   const GetTaskUsers = async () => {
-    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+
     let taskUsers = [];
-    taskUsers = await web.lists.getByTitle("Task Users").items.top(4999).get();
+    taskUsers = await web.lists.getById(RequireData.TaskUsertListID).items.top(4999).get();
     AllUsers = taskUsers;
     var UpdatedData: any = {};
     AllUsers.forEach(function (taskUser: any) {
-      // item.props.AssignedTo.forEach(function(assign:any){
+      // item.AssignedTo.forEach(function(assign:any){
       //     if (taskUser.AssingedToUserId == assign.Id) {
       //         UpdatedData['AuthorName'] = taskUser.Title;
       //         UpdatedData['Company'] = taskUser.Company;
@@ -202,7 +240,7 @@ function EditInstitution(item: any) {
     });
   };
   // var ConvertLocalTOServerDate = function (LocalDateTime: any, dtformat: any) {
-  //     if (dtformat == undefined || dtformat == '') dtformat = "DD/MM/YYYY";
+  //     if (dtformat == undefined || dtformat == '') dtformat = "MM-DD-YYYY";
 
   //     // below logic works fine in all condition
   //     if (LocalDateTime != '') {
@@ -289,12 +327,10 @@ function EditInstitution(item: any) {
 
   var getMasterTaskListTasks = async function () {
     //  var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,Deliverable_x002d_Synonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title";
-    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+
     let componentDetails = [];
     componentDetails = await web.lists
-      //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
-      // .getById('ec34b38f-0669-480a-910c-f84e92e58adf')
-      .getByTitle("Master Tasks")
+      .getById(RequireData.MasterTaskListID)
       .items.select(
         "ComponentPortfolio/Id",
         "ComponentPortfolio/Title",
@@ -375,10 +411,12 @@ function EditInstitution(item: any) {
         "Editor/Title",
         "ClientCategory/Id",
         "ClientCategory/Title",
+        "Sitestagging",
+        "SiteCompositionSettings",
         "Responsible_x0020_Team/Id",
-        "Responsible_x0020_Team/Title"
+        "Responsible_x0020_Team/Title",
+        "Parent/Id", "Parent/Title", "Parent/ItemType"
       )
-
       .expand(
         "ClientCategory",
         "AssignedTo",
@@ -391,13 +429,13 @@ function EditInstitution(item: any) {
         "Team_x0020_Members",
         "SharewebComponent",
         "SharewebCategories",
-        "Responsible_x0020_Team"
+        "Responsible_x0020_Team", "Parent"
       )
-      .filter("Id eq " + item.props.Id + "")
+      .filter("Id eq " + item.Id + "")
       .get();
     console.log(componentDetails);
 
-    // var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,Deliverable_x002d_Synonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title&$expand=ClientCategory,ComponentCategory,AssignedTo,Component,ComponentPortfolio,ServicePortfolio,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebComponent,SharewebCategories,Parent&$filter=Id eq " + item.props.Id + "";
+    // var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,Deliverable_x002d_Synonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title&$expand=ClientCategory,ComponentCategory,AssignedTo,Component,ComponentPortfolio,ServicePortfolio,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebComponent,SharewebCategories,Parent&$filter=Id eq " + item.Id + "";
     // $.ajax({
     //     url: "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('ec34b38f-0669-480a-910c-f84e92e58adf')/items?$select=" + query + "",
     //     method: "GET",
@@ -406,21 +444,22 @@ function EditInstitution(item: any) {
     //     },
     //     success: function (data) {
     var Tasks = componentDetails;
+    let ParentData: any = [];
     $.each(Tasks, function (index: any, item: any) {
       item.DateTaskDueDate = new Date(item.DueDate);
       if (item.DueDate != null)
-        item.TaskDueDate = moment(item.DueDate).format("DD/MM/YYYY");
-      // item.TaskDueDate = ConvertLocalTOServerDate(item.DueDate, 'DD/MM/YYYY');
+        item.TaskDueDate = moment(item.DueDate).format("MM-DD-YYYY");
+      // item.TaskDueDate = ConvertLocalTOServerDate(item.DueDate, 'MM-DD-YYYY');
       item.FilteredModifiedDate = item.Modified;
       item.DateModified = new Date(item.Modified);
       item.DateCreatedNew = new Date(item.Created);
 
       item.DateCreated = item.CreatedDate = moment(item.Created).format(
-        "DD/MM/YYYY"
-      ); // ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY');
-      item.Creatednewdate = moment(item.Created).format("DD/MM/YYYY"); //ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY HH:mm');
-      // item.Modified = moment(item.Modified).format('DD/MM/YYYY');
-      //ConvertLocalTOServerDate(item.Modified, 'DD/MM/YYYY HH:mm');
+        "MM-DD-YYYY"
+      ); // ConvertLocalTOServerDate(item.Created, 'MM-DD-YYYY');
+      item.Creatednewdate = moment(item.Created).format("MM-DD-YYYY"); //ConvertLocalTOServerDate(item.Created, 'MM-DD-YYYY HH:mm');
+      // item.Modified = moment(item.Modified).format('MM-DD-YYYY');
+      //ConvertLocalTOServerDate(item.Modified, 'MM-DD-YYYY HH:mm');
       if (item.Priority_x0020_Rank == undefined && item.Priority != undefined) {
         switch (item.Priority) {
           case "(1) High":
@@ -458,19 +497,104 @@ function EditInstitution(item: any) {
             });
         }
       }
-      if (item.Sitestagging != undefined && item.Sitestagging != null) {
-        item.Sitestagging = JSON.parse(item.Sitestagging);
-        item.Sitestagging.forEach(function (site: any) {
-          siteDetail.forEach(function (siteDetail: any) {
-            siteDetail.isEditableSiteDate = false;
-            if (siteDetail.Title == site.Title) {
-              siteDetail.Date = site.Date;
-              siteDetail.ClienTimeDescription = site.ClienTimeDescription;
-              siteDetail.Selected = true;
-              siteDetail.flag = true;
+      let ClientCategory: any;
+      ClientCategory = item.ClientCategory
+      if (ClientCategory != undefined && ClientCategory.length > 0) {
+        let TempArray: any = [];
+        ClientCategory.map((ClientData: any) => {
+          if (AllClientCategoryDataBackup != undefined && AllClientCategoryDataBackup.length > 0) {
+            AllClientCategoryDataBackup.map((clientCategoryData: any) => {
+              if (ClientData.Id == clientCategoryData.ID) {
+                ClientData.siteName = clientCategoryData.siteName;
+                ClientData.ParentID = clientCategoryData.ParentID;
+                TempArray.push(ClientData)
+              }
+            })
+
+          }
+        })
+        setSelectedClientCategory(TempArray);
+        selectedClientCategoryData = TempArray;
+        console.log("selected client category form backend ==========", TempArray)
+      }
+      // if (item.Sitestagging != undefined && item.Sitestagging != null) {
+      //   item.Sitestagging = JSON.parse(item.Sitestagging);
+      //   item.Sitestagging.forEach(function (site: any) {
+      //     siteDetail.forEach(function (siteDetail: any) {
+      //       siteDetail.isEditableSiteDate = false;
+      //       if (siteDetail.Title == site.Title) {
+      //         siteDetail.Date = site.Date;
+      //         siteDetail.ClienTimeDescription = site.ClienTimeDescription;
+      //         siteDetail.Selected = true;
+      //         siteDetail.flag = true;
+      //       }
+      //     });
+      //   });
+      // }
+      if (item.Sitestagging != null && item.Sitestagging != undefined) {
+        let tempData: any = JSON.parse(item.Sitestagging);
+        let tempData2: any = [];
+        if (tempData != undefined && tempData.length > 0) {
+          tempData.map((siteData: any) => {
+            let siteName: any;
+            if (siteData != undefined) {
+              if (siteData.SiteName != undefined) {
+                siteName = siteData?.SiteName?.toLowerCase();
+              } else {
+                siteName = siteData?.Title?.toLowerCase();
+              }
             }
-          });
-        });
+            if (siteName == "migration" || siteName == "health" || siteName == "eps" || siteName == "qa" || siteName == "ei" || siteName == "gender" || siteName == "education" || siteName == "cep" || siteName == "shareweb" || siteName == "small projects" || siteName == 'offshore tasks') {
+              siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_${siteName}.png`
+            }
+            if (siteName == 'alakdigital' || siteName == 'da e+e') {
+              siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_da.png`
+            }
+            if (siteName == 'development-effectiveness' || siteName == 'de') {
+              siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_de.png`
+            }
+            if (siteName == "kathabeck") {
+              siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/Icon_Kathabeck.png`
+            }
+            if (siteName == "gruene") {
+              siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/logo-gruene.png`
+            }
+            if (siteName == "hhhh") {
+              siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/icon_hhhh.png`
+            }
+            tempData2.push(siteData);
+          })
+        }
+
+        let tempArray3: any = [];
+        if (tempData2 != undefined && tempData2.length > 0) {
+          tempData2.map((siteData: any) => {
+            siteData.ClientCategory = [];
+            if (selectedClientCategoryData != undefined && selectedClientCategoryData.length > 0) {
+              selectedClientCategoryData.map((ClientCategoryData: any) => {
+                if (ClientCategoryData.siteName == siteData.SiteName) {
+                  siteData.ClientCategory.push(ClientCategoryData)
+                }
+              })
+              tempArray3.push(siteData);
+            } else {
+              tempArray3.push(siteData);
+            }
+
+          })
+        }
+        // setClientTimeData(tempArray3)
+        item.siteCompositionData = tempArray3;
+      }
+      else {
+        const object: any = {
+          SiteName: "HHHH",
+          ClienTimeDescription: 100,
+          localSiteComposition: true,
+          siteIcons: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png"
+        }
+        item.siteCompositionData = [object];
+        // setClientTimeData([object]);
       }
 
       item.AssignedUsers = [];
@@ -500,7 +624,7 @@ function EditInstitution(item: any) {
       if (item.Task_x0020_Type == undefined)
         item.Task_x0020_Type = "Activity Tasks";
       if (item.DueDate != undefined) {
-        item.DueDate = moment(item.DueDate).format("DD/MM/YYYY");
+        item.DueDate = moment(item.DueDate).format("MM-DD-YYYY");
         // setDate(item.DueDate);
       }
       if (item.SharewebCategories != null) {
@@ -524,39 +648,67 @@ function EditInstitution(item: any) {
         Rr.push(item.ServicePortfolio);
         setLinkedComponentData(Rr);
       }
-      if (item.StartDate != undefined) {
-        item.StartDate = moment(item.StartDate).format("DD/MM/YYYY");
-        //setStartdate(item.StartDate);
-      }
+      // if (item.StartDate != undefined) {
+      //   item.StartDate = moment(item.StartDate).format("MM-DD-YYYY");
+      //   //setStartdate(item.StartDate);
+      // }
       if (item.component_x0020_link != null) {
         item.component_x0020_link = item.component_x0020_link.Url;
         //setStartdate(item.StartDate);
       }
       if (item.CompletedDate != undefined) {
-        item.CompletedDate = moment(item.CompletedDate).format("DD/MM/YYYY");
+        item.CompletedDate = moment(item.CompletedDate).format("MM-DD-YYYY");
         // item.CompletedDate = item.CompletedDate.toString();
         // setCompletiondatenew(item.CompletedDate);
       }
       item.SmartCountries = [];
-      item.siteUrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP";
+      item.siteUrl = RequireData.siteUrl;
       item["SiteIcon"] =
         item.siteType == "Master Tasks"
           ? GetIconImageUrl(
-              item.siteType,
-              "https://hhhhteams.sharepoint.com/sites/HHHH/SP/",
-              undefined
-            )
+            item.siteType,
+            "https://hhhhteams.sharepoint.com/sites/HHHH/SP/",
+            undefined
+          )
           : GetIconImageUrl(
-              item.siteType,
-              "https://hhhhteams.sharepoint.com/sites/HHHH/SP/",
-              undefined
-            );
+            item.siteType,
+            "https://hhhhteams.sharepoint.com/sites/HHHH/SP/",
+            undefined
+          );
       if (item.Synonyms != undefined && item.Synonyms.length > 0) {
         item.Synonyms = JSON.parse(item.Synonyms);
+      }
+      let ParentId: any = "";
+      if (
+        item?.Parent != undefined &&
+        item.Parent.Id != undefined &&
+        item.Item_x0020_Type == "Feature"
+      ) {
+        ParentId = item.Parent.Id;
+        let urln = `${RequireData.siteUrl}/_api/lists/getbyid(${RequireData.MasterTaskListID})/items?$select=Id,Parent/Id,Title,Parent/Title,Parent/ItemType&$expand=Parent&$filter=Id eq ${ParentId}`;
+        $.ajax({
+          url: urln,
+          method: "GET",
+          headers: {
+            Accept: "application/json; odata=verbose",
+          },
+          success: function (data) {
+            ParentData = ParentData.concat(data.d.results);
+            if (data.d.__next) {
+              urln = data.d.__next;
+            } else SetParentData(ParentData);
+            // console.log(responsen);
+          },
+          error: function (error) {
+            console.log(error);
+            // error handler code goes here
+          },
+        });
       }
     });
     //  deferred.resolve(Tasks);
     setComponent(Tasks);
+    console.log("All Portfolio Data From Backend =====", Tasks);
     setEditData(Tasks[0]);
     setModalIsOpenToTrue(true);
 
@@ -583,11 +735,11 @@ function EditInstitution(item: any) {
   const site: any = [];
   const siteDetail: any = [];
   const GetSmartmetadata = async () => {
-    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+
     let smartmetaDetails = [];
     smartmetaDetails = await web.lists
       //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
-      .getByTitle("SmartMetadata")
+      .getById(RequireData.SmartMetadataListID)
       .items//.getById(this.state.itemID)
       .select(
         "ID,Title,IsVisible,ParentID,Parent/Id,Parent/Title,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable"
@@ -621,23 +773,22 @@ function EditInstitution(item: any) {
     setsiteDetails(siteDetail);
     getMasterTaskListTasks();
   };
-  // const EditLinkedServices = (items: any, title: any) => {
-  //     setIsComponentPicker(true);
-  //     setSharewebCategory(items);
-  // }
+
 
   React.useEffect(() => {
     GetTaskUsers();
+    getAllSitesData();
+    loadAllCategoryData("Categories");
     var initLoading = function () {
-      if (item.props != undefined) {
-        var Item = item.props;
+      if (item != undefined) {
+        var Item = item;
         if (Item.siteType == "HTTPS:") {
           Item.siteType = "HHHH";
         }
         GetSmartmetadata();
 
-        ListId = "ec34b38f-0669-480a-910c-f84e92e58adf";
-        CurrentSiteUrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/";
+        ListId = RequireData.MasterTaskListID;
+        CurrentSiteUrl = RequireData.siteUrl;
         TaskItemRank.push([
           { rankTitle: "Select Item Rank", rank: null },
           { rankTitle: "(8) Top Highlights", rank: 8 },
@@ -650,6 +801,7 @@ function EditInstitution(item: any) {
           { rankTitle: "(0) No Show", rank: 0 },
         ]);
         setSharewebItemRank(TaskItemRank[0]);
+        loadAllClientCategoryData("Client Category");
         // if (useeffectdata == false)
         //     setuseeffectdata(true);
         // else setuseeffectdata(false);
@@ -658,18 +810,24 @@ function EditInstitution(item: any) {
     };
     initLoading();
   }, []);
+
   const EditComponent = (items: any, title: any) => {
-    // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
-    setIsComponent(true);
-    setSharewebComponent(items);
+    if (title == "Service") {
+      setIsComponent(true);
+      setSharewebComponent(items);
+    } else {
+      setIsService(true);
+      setSharewebComponent(items);
+    }
+
     // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
   };
   const GetComponents = async () => {
-    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+
     let componentDetails = [];
     componentDetails = await web.lists
       //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
-      .getByTitle("Master Tasks")
+      .getById(RequireData.MasterTaskListID)
       .items//.getById(this.state.itemID)
       .select(
         "ID",
@@ -706,7 +864,7 @@ function EditInstitution(item: any) {
     console.log(componentDetails);
   };
   function EditComponentCallback() {
-    item.Call();
+    Calls();
   }
   let mentionUsers: any = [];
   //  mentionUsers = this.taskUsers.map((i:any)=>{
@@ -882,19 +1040,22 @@ function EditInstitution(item: any) {
   };
   const setPriorityNew = function (e: any, item: any) {
     item.Priority_x0020_Rank = e.target.value;
-    switch (item.Priority_x0020_Rank) {
-      case "8":
+    if (item.Priority_x0020_Rank <= 10) {
+
+      if (item.Priority_x0020_Rank == 8 || item.Priority_x0020_Rank == 9 || item.Priority_x0020_Rank == 10) {
         item.Priority = "(1) High";
-        break;
-      case "4":
+      }
+      if (item.Priority_x0020_Rank == 4 || item.Priority_x0020_Rank == 5 || item.Priority_x0020_Rank == 6 || item.Priority_x0020_Rank == 7) {
         item.Priority = "(2) Normal";
-        break;
-      case "1":
+      }
+      if (item.Priority_x0020_Rank == 1 || item.Priority_x0020_Rank == 2 || item.Priority_x0020_Rank == 3 || item.Priority_x0020_Rank == 0) {
         item.Priority = "(3) Low";
-        break;
-      case "":
-        item.Priority = "";
-        break;
+      }
+
+    } else {
+      item.Priority_x0020_Rank = ""
+      alert("Please Enter priority between 0 to 10");
+
     }
     // getpriority(item);
     setComponent((EditData) => [...EditData]);
@@ -936,10 +1097,10 @@ function EditInstitution(item: any) {
       } else item["Synonyms"] = [];
       flag
         ? item["Synonyms"].push({
-            status: true,
-            Title: item.SynonymsTitle,
-            Id: "",
-          })
+          status: true,
+          Title: item.SynonymsTitle,
+          Id: "",
+        })
         : null;
       item.SynonymsTitle = "";
     }
@@ -955,229 +1116,254 @@ function EditInstitution(item: any) {
     setComponent((EditData) => [...EditData]);
   };
   const SaveData = async () => {
+    let TaskShuoldBeUpdate = true;
     var UploadImage: any = [];
-
+    let ClientCategoryIDs: any = [];
     var item: any = {};
     var smartComponentsIds: any[] = [];
     var RelevantPortfolioIds = "";
+    let TotalCompositionsValue: any = 0;
     var Items = EditData;
-    if (smartComponentData != undefined && smartComponentData.length > 0) {
-      smartComponentData.map((com: any) => {
-        if (smartComponentData != undefined && smartComponentData.length >= 0) {
-          $.each(smartComponentData, function (index: any, smart: any) {
-            smartComponentsIds.push(smart.Id);
-          });
-        }
-      });
-    }
-    if (NewArray != undefined && NewArray.length > 0) {
-      NewArray.map((NeitemA: any) => {
-        CategoriesData.push(NeitemA);
-      });
-    }
-    var categoriesItem = "";
-    CategoriesData.map((category) => {
-      if (category.Title != undefined) {
-        categoriesItem =
-          categoriesItem == ""
-            ? category.Title
-            : categoriesItem + ";" + category.Title;
-      }
-    });
-    var CategoryID: any = [];
-    CategoriesData.map((category) => {
-      if (category.Id != undefined) {
-        CategoryID.push(category.Id);
-      }
-    });
-    if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
-      linkedComponentData?.map((com: any) => {
-        if (
-          linkedComponentData != undefined &&
-          linkedComponentData?.length >= 0
-        ) {
-          $.each(linkedComponentData, function (index: any, smart: any) {
-            RelevantPortfolioIds = smart.Id;
-          });
-        }
-      });
-    }
-    if (isDropItemRes == true) {
-      if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
-        TaskAssignedTo.map((taskInfo) => {
-          AssignedToIds.push(taskInfo.Id);
-        });
-      }
-    } else {
-      if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
-        EditData.AssignedTo.map((taskInfo: any) => {
-          AssignedToIds.push(taskInfo.Id);
-        });
-      }
-    }
-    if (isDropItem == true) {
-      if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
-        TaskTeamMembers.map((taskInfo) => {
-          TeamMemberIds.push(taskInfo.Id);
-        });
-      }
-    } else {
-      if (
-        EditData.Team_x0020_Members != undefined &&
-        EditData.Team_x0020_Members?.length > 0
-      ) {
-        EditData.Team_x0020_Members.map((taskInfo: any) => {
-          TeamMemberIds.push(taskInfo.Id);
-        });
-      }
-    }
-
-    // if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
-    //     TaskResponsibleTeam.map((taskInfo) => {
-    //         ResponsibleTeamIds.push(taskInfo.Id);
-    //     })
-    // }
-
-    //     if (EditData.Responsible_x0020_Team != undefined && EditData.Responsible_x0020_Team?.length > 0) {
-    //         EditData.Responsible_x0020_Team.map((taskInfo: any) => {
-    //             ResponsibleTeamIds.push(taskInfo.Id);
-    //         })
-    //     }
-
-    // if (Items.smartComponent != undefined) {
-    //     Items.smartComponent.map((com: any) => {
-    //         // if (com.Title != undefined) {
-
-    //         //     component = com.Title
-
-    //         // }
-
-    //         if (Items.smartComponent != undefined && Items.smartComponent.length >= 0) {
-
-    //             $.each(Items.smartComponent, function (index: any, smart: any) {
-
-    //                 smartComponentsIds.push(smart.Id);
-
-    //             })
-    //         }
-    //     })
-    // }
-    if (
-      Items.ItemRankTitle != undefined &&
-      Items.ItemRankTitle != "Select Item Rank"
-    )
-      var ItemRank = SharewebItemRank.filter(
-        (option: { rankTitle: any }) => option.rankTitle == Items.ItemRankTitle
-      )[0].rank;
-    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-    await web.lists
-      .getById("ec34b38f-0669-480a-910c-f84e92e58adf")
-      .items.getById(Items.ID)
-      .update({
-        Title: Items.Title,
-
-        ItemRank: ItemRank,
-        Priority_x0020_Rank: Items.Priority_x0020_Rank,
-        ComponentId: { results: smartComponentsIds },
-        Deliverable_x002d_Synonyms: Items.Deliverable_x002d_Synonyms,
-        StartDate:
-          Startdate != undefined
-            ? new Date(Startdate).toDateString()
-            : Startdate,
-        DueDate: date != undefined ? new Date(date).toDateString() : date,
-        CompletedDate:
-          Completiondate != undefined
-            ? new Date(Completiondate).toDateString()
-            : Completiondate,
-        // Categories:EditData.smartCategories != undefined && EditData.smartCategories != ''?EditData.smartCategories[0].Title:EditData.Categories,
-        Categories: categoriesItem ? categoriesItem : null,
-        SharewebCategoriesId: { results: CategoryID },
-        // ClientCategoryId: { "results": RelevantPortfolioIds },
-        ServicePortfolioId:
-          RelevantPortfolioIds != "" ? RelevantPortfolioIds : null,
-        Synonyms: JSON.stringify(Items["Synonyms"]),
-        Package: Items.Package,
-        AdminStatus: Items.AdminStatus,
-        Priority: Items.Priority,
-        Mileage: Items.Mileage,
-        ValueAdded: Items.ValueAdded,
-        Idea: Items.Idea,
-        Background: Items.Background,
-        Admin_x0020_Notes: Items.Admin_x0020_Notes,
-        component_x0020_link: {
-          Description:
-            Items.component_x0020_link != undefined
-              ? Items.component_x0020_link
-              : null,
-          Url:
-            Items.component_x0020_link != undefined
-              ? Items.component_x0020_link
-              : null,
-        },
-        TechnicalExplanations:
-          PostTechnicalExplanations != undefined &&
-          PostTechnicalExplanations != ""
-            ? PostTechnicalExplanations
-            : EditData.TechnicalExplanations,
-        Deliverables:
-          PostDeliverables != undefined && PostDeliverables != ""
-            ? PostDeliverables
-            : EditData.Deliverables,
-        Short_x0020_Description_x0020_On:
-          PostShort_x0020_Description_x0020_On != undefined &&
-          PostShort_x0020_Description_x0020_On != ""
-            ? PostShort_x0020_Description_x0020_On
-            : EditData.Short_x0020_Description_x0020_On,
-        Body:
-          PostBody != undefined && PostBody != "" ? PostBody : EditData.Body,
-        AssignedToId: {
-          results:
-            AssignedToIds != undefined && AssignedToIds?.length > 0
-              ? AssignedToIds
-              : [],
-        },
-        Responsible_x0020_TeamId: {
-          results:
-            ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0
-              ? ResponsibleTeamIds
-              : [],
-        },
-        Team_x0020_MembersId: {
-          results:
-            TeamMemberIds != undefined && TeamMemberIds?.length > 0
-              ? TeamMemberIds
-              : [],
-        },
-        // PercentComplete: saveData.PercentComplete == undefined ? EditData.PercentComplete : saveData.PercentComplete,
-
-        // Categories: Items.Categories
-
-        // BasicImageInfo: JSON.stringify(UploadImage)
+    if (SiteTaggingData?.length > 0) {
+      SiteTaggingData.map((clientData: any) => {
+        TotalCompositionsValue = TotalCompositionsValue + Number(clientData.ClienTimeDescription);
       })
-      .then((res: any) => {
-        console.log(res);
-
-        setModalIsOpenToFalse();
+    }
+    if (EnableSiteCompositionValidation) {
+      if (TotalCompositionsValue > 100) {
+        TaskShuoldBeUpdate = false;
+        TotalCompositionsValue = 0
+        alert("site composition allocation should not be more than 100%");
+      }
+      if (TotalCompositionsValue.toFixed(0) < 100 && TotalCompositionsValue > 0) {
+        TotalCompositionsValue = 0
+        let conformationStatus = confirm("Site composition should not be less than 100% if you still want to do it click on OK")
+        if (conformationStatus) {
+          TaskShuoldBeUpdate = true;
+        } else {
+          TaskShuoldBeUpdate = false;
+        }
+      }
+    }
+    if (TaskShuoldBeUpdate) {
+      if (smartComponentData != undefined && smartComponentData.length > 0) {
+        smartComponentData.map((com: any) => {
+          if (smartComponentData != undefined && smartComponentData.length >= 0) {
+            $.each(smartComponentData, function (index: any, smart: any) {
+              smartComponentsIds.push(smart.Id);
+            });
+          }
+        });
+      }
+      if (NewArray != undefined && NewArray.length > 0) {
+        CategoriesData = []
+        NewArray.map((NeitemA: any) => {
+          CategoriesData.push(NeitemA);
+        });
+      }
+      var categoriesItem = "";
+      CategoriesData.map((category) => {
+        if (category.Title != undefined) {
+          categoriesItem =
+            categoriesItem == ""
+              ? category.Title
+              : categoriesItem + ";" + category.Title;
+        }
       });
+      var CategoryID: any = [];
+      CategoriesData.map((category) => {
+        if (category.Id != undefined) {
+          CategoryID.push(category.Id);
+        }
+      });
+      if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
+        linkedComponentData?.map((com: any) => {
+          if (
+            linkedComponentData != undefined &&
+            linkedComponentData?.length >= 0
+          ) {
+            $.each(linkedComponentData, function (index: any, smart: any) {
+              RelevantPortfolioIds = smart.Id;
+            });
+          }
+        });
+      }
+      if (isDropItemRes == true) {
+        if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
+          TaskAssignedTo.map((taskInfo) => {
+            AssignedToIds.push(taskInfo.Id);
+          });
+        }
+      } else {
+        if (EditData?.AssignedTo != undefined && EditData?.AssignedTo?.length > 0) {
+          EditData?.AssignedTo.map((taskInfo: any) => {
+            AssignedToIds.push(taskInfo.Id);
+          });
+        }
+      }
+      if (isDropItem == true) {
+        if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
+          TaskTeamMembers.map((taskInfo) => {
+            TeamMemberIds.push(taskInfo.Id);
+          });
+        }
+      } else {
+        if (
+          EditData?.Team_x0020_Members != undefined &&
+          EditData?.Team_x0020_Members?.length > 0
+        ) {
+          EditData?.Team_x0020_Members.map((taskInfo: any) => {
+            TeamMemberIds.push(taskInfo.Id);
+          });
+        }
+      }
+
+      // if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
+      //     TaskResponsibleTeam.map((taskInfo) => {
+      //         ResponsibleTeamIds.push(taskInfo.Id);
+      //     })
+      // }
+
+      //     if (EditData?.Responsible_x0020_Team != undefined && EditData?.Responsible_x0020_Team?.length > 0) {
+      //         EditData?.Responsible_x0020_Team.map((taskInfo: any) => {
+      //             ResponsibleTeamIds.push(taskInfo.Id);
+      //         })
+      //     }
+
+      // if (Items.smartComponent != undefined) {
+      //     Items.smartComponent.map((com: any) => {
+      //         // if (com.Title != undefined) {
+
+      //         //     component = com.Title
+
+      //         // }
+
+      //         if (Items.smartComponent != undefined && Items.smartComponent.length >= 0) {
+
+      //             $.each(Items.smartComponent, function (index: any, smart: any) {
+
+      //                 smartComponentsIds.push(smart.Id);
+
+      //             })
+      //         }
+      //     })
+      // }
+
+      if (selectedClientCategory?.length > 0) {
+        selectedClientCategory.map((dataItem: any) => {
+          ClientCategoryIDs.push(dataItem.Id);
+        })
+
+      } else {
+        ClientCategoryIDs = [];
+      }
+
+      if (
+        Items.ItemRankTitle != undefined &&
+        Items.ItemRankTitle != "Select Item Rank"
+      )
+        var ItemRank = SharewebItemRank.filter(
+          (option: { rankTitle: any }) => option.rankTitle == Items.ItemRankTitle
+        )[0].rank;
+
+      await web.lists
+        .getById(RequireData.MasterTaskListID)
+        .items.getById(Items.Id)
+        .update({
+          Title: Items.Title,
+
+          ItemRank: ItemRank,
+          Priority_x0020_Rank: Items.Priority_x0020_Rank,
+          ComponentId: { results: smartComponentsIds },
+          Deliverable_x002d_Synonyms: Items.Deliverable_x002d_Synonyms,
+          StartDate: EditData?.StartDate ? moment(EditData?.StartDate).format("MM-DD-YYYY") : null,
+          DueDate: EditData?.DueDate ? moment(EditData?.DueDate).format("MM-DD-YYYY") : null,
+          CompletedDate: EditData?.CompletedDate ? moment(EditData?.CompletedDate).format("MM-DD-YYYY") : null,
+
+          // Categories:EditData?.smartCategories != undefined && EditData?.smartCategories != ''?EditData?.smartCategories[0].Title:EditData?.Categories,
+          Categories: categoriesItem ? categoriesItem : null,
+          SharewebCategoriesId: { results: CategoryID },
+          // ClientCategoryId: { "results": RelevantPortfolioIds },
+          ServicePortfolioId:
+            RelevantPortfolioIds != "" ? RelevantPortfolioIds : null,
+          Synonyms: JSON.stringify(Items["Synonyms"]),
+          Package: Items.Package,
+          AdminStatus: Items.AdminStatus,
+          Priority: Items.Priority,
+          Mileage: Items.Mileage,
+          ValueAdded: Items.ValueAdded,
+          Idea: Items.Idea,
+          Background: Items.Background,
+          Admin_x0020_Notes: Items.Admin_x0020_Notes,
+          Item_x002d_Image: {
+            "__metadata": { type: "SP.FieldUrlValue" },
+            Description: EditData?.Item_x002d_Image?.Url != undefined ? EditData?.Item_x002d_Image?.Url : '',
+            Url: EditData?.Item_x002d_Image?.Url != undefined ? EditData?.Item_x002d_Image?.Url : ''
+          },
+          component_x0020_link: {
+            Description:
+              Items.component_x0020_link != undefined
+                ? Items.component_x0020_link
+                : null,
+            Url:
+              Items.component_x0020_link != undefined
+                ? Items.component_x0020_link
+                : null,
+          },
+          TechnicalExplanations:
+            PostTechnicalExplanations != undefined &&
+              PostTechnicalExplanations != ""
+              ? PostTechnicalExplanations
+              : EditData?.TechnicalExplanations,
+          Deliverables:
+            PostDeliverables != undefined && PostDeliverables != ""
+              ? PostDeliverables
+              : EditData?.Deliverables,
+          Short_x0020_Description_x0020_On:
+            PostShort_x0020_Description_x0020_On != undefined &&
+              PostShort_x0020_Description_x0020_On != ""
+              ? PostShort_x0020_Description_x0020_On
+              : EditData?.Short_x0020_Description_x0020_On,
+          Body:
+            PostBody != undefined && PostBody != "" ? PostBody : EditData?.Body,
+          AssignedToId: {
+            results:
+              AssignedToIds != undefined && AssignedToIds?.length > 0
+                ? AssignedToIds
+                : [],
+          },
+          Responsible_x0020_TeamId: {
+            results:
+              ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0
+                ? ResponsibleTeamIds
+                : [],
+          },
+          Team_x0020_MembersId: {
+            results:
+              TeamMemberIds != undefined && TeamMemberIds?.length > 0
+                ? TeamMemberIds
+                : [],
+          },
+          Sitestagging: SiteTaggingData?.length > 0 ? JSON.stringify(SiteTaggingData) : EditData.siteCompositionData?.length > 0 ? JSON.stringify(EditData.siteCompositionData) : '',
+          ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] },
+          SiteCompositionSettings: SiteCompositionSetting?.length > 0 ? JSON.stringify(SiteCompositionSetting) : EditData.SiteCompositionSettings?.length > 0 ? JSON.stringify(EditData.SiteCompositionSettings) : ''
+        })
+        .then((res: any) => {
+          console.log(res);
+          setModalIsOpenToFalse();
+        });
+    }
   };
-  const EditComponentPicker = (item: any, title: any) => {
-    // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
+  const EditComponentPicker = (item: any) => {
+
     setIsComponentPicker(true);
+
     setSharewebCategory(item);
-    // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
-  };
-  // const onEditorStateChange = (e: any, item: any) => {
-  //     //  item.Description = e.target.value;
-  //     setComponent(EditData => ([...EditData]));
-  //     // const { components } = this.state;
-  //     // const x = { components };
-  //     // for (const i in x){
-  //     //     if(x[i].id ==== id){
-  //     //         x[i].contentValue.editorState = e;
-  //     //     }
-  //     // }
-  //     // this.setState({components: x})
-  // }
+
+
+
+
+  }
   const ChangeStatus = (e: any, item: any) => {
     item.AdminStatus = e.target.value;
     setComponent((EditData) => [...EditData]);
@@ -1189,21 +1375,21 @@ function EditInstitution(item: any) {
   const HtmlEditorCallBack = React.useCallback((Editorvalue: any) => {
     let message: any = Editorvalue;
     EditData.Body = message;
-    PostBody = EditData.Body;
+    PostBody = EditData?.Body;
     console.log("Editor Data call back ====", Editorvalue);
   }, []);
   const SortHtmlEditorCallBack = React.useCallback((Editorvalue: any) => {
     let message: any = Editorvalue;
     EditData.Short_x0020_Description_x0020_On = message;
     PostShort_x0020_Description_x0020_On =
-      EditData.Short_x0020_Description_x0020_On;
+      EditData?.Short_x0020_Description_x0020_On;
     console.log("Editor Data call back ====", Editorvalue);
   }, []);
   const DeliverablesHtmlEditorCallBack = React.useCallback(
     (Editorvalue: any) => {
       let message: any = Editorvalue;
       EditData.Deliverables = message;
-      PostDeliverables = EditData.Deliverables;
+      PostDeliverables = EditData?.Deliverables;
       console.log("Editor Data call back ====", Editorvalue);
     },
     []
@@ -1212,7 +1398,7 @@ function EditInstitution(item: any) {
     (Editorvalue: any) => {
       let message: any = Editorvalue;
       EditData.TechnicalExplanations = message;
-      PostTechnicalExplanations = EditData.TechnicalExplanations;
+      PostTechnicalExplanations = EditData?.TechnicalExplanations;
       console.log("Editor Data call back ====", Editorvalue);
     },
     []
@@ -1246,6 +1432,8 @@ function EditInstitution(item: any) {
       });
       setTaskAssignedTo(tempArray);
       console.log("Team Config  assigadf=====", tempArray);
+    } else {
+      setTaskAssignedTo([]);
     }
     if (dt?.TeamMemberUsers?.length > 0) {
       let tempArray: any = [];
@@ -1258,6 +1446,8 @@ function EditInstitution(item: any) {
       });
       setTaskTeamMembers(tempArray);
       console.log("Team Config member=====", tempArray);
+    } else {
+      setTaskTeamMembers([]);
     }
     if (dt.ResponsibleTeam != undefined && dt.ResponsibleTeam.length > 0) {
       let tempArray: any = [];
@@ -1276,14 +1466,14 @@ function EditInstitution(item: any) {
   };
   var itemInfo = {
     Portfolio_x0020_Type: TeamConfigInfo
-      ? TeamConfigInfo.Portfolio_x0020_Type
+      ? TeamConfigInfo?.Portfolio_x0020_Type
       : "",
-    Services: TeamConfigInfo ? TeamConfigInfo.Services : "",
+    Services: TeamConfigInfo ? TeamConfigInfo?.Services : "",
     siteUrl: TeamConfigInfo
-      ? TeamConfigInfo.siteUrl
-      : "https://hhhhteams.sharepoint.com/sites/HHHH/SP",
-    listName: TeamConfigInfo ? TeamConfigInfo.siteType : "",
-    itemID: TeamConfigInfo ? TeamConfigInfo.Id : "",
+      ? TeamConfigInfo?.siteUrl
+      : RequireData.siteUrl,
+    listName: TeamConfigInfo ? TeamConfigInfo?.siteType : "",
+    itemID: TeamConfigInfo ? TeamConfigInfo?.Id : "",
   };
   const deleteCategories = (id: any) => {
     CategoriesData.map((catId, index) => {
@@ -1294,7 +1484,7 @@ function EditInstitution(item: any) {
     setCategoriesData((CategoriesData) => [...CategoriesData]);
   };
   const deleteComponent = (type: any) => {
-    if (type == "EditData.Component") {
+    if (type == "EditData?.Component") {
       EditData.Component = "";
     } else {
       EditData.smartComponent = "";
@@ -1304,24 +1494,78 @@ function EditInstitution(item: any) {
   const onRenderCustomHeader = () => {
     return (
       <>
-        <div
-          style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", paddingLeft: "24px" }}
-        >
-          {`${EditData.Portfolio_x0020_Type}-Portfolio > ${EditData.Title}`}
+        <div className="align-items-center d-flex full-width justify-content-between">
+          <div className="ps-4">  <ul className=" m-0 p-0 spfxbreadcrumb"
+          >
+            <li>
+              {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+              {EditData?.Portfolio_x0020_Type != undefined && (
+                <a
+                  target="_blank"
+                  data-interception="off"
+                  href={`${RequireData.siteUrl}/SitePages/${EditData?.Portfolio_x0020_Type}-Portfolio.aspx`}
+                >
+                  {EditData?.Portfolio_x0020_Type}-Portfolio
+                </a>
+              )}
+            </li>
+            {(EditData?.Item_x0020_Type == "SubComponent" ||
+              EditData?.Item_x0020_Type == "Feature") && (
+                <> <li>
+                  {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                  {(EditData?.Parent != undefined && ParentData != undefined && ParentData.length != 0) && (
+
+                    <a
+                      target="_blank"
+                      data-interception="off"
+                      href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${ParentData[0].Parent.Id}`}
+                    >
+                      {ParentData[0].Parent.Title}
+                    </a>
+
+                  )}
+                </li>
+                  <li>
+                    {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                    {EditData?.Parent != undefined && (
+                      <a
+                        target="_blank"
+                        data-interception="off"
+                        href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${EditData?.Parent.Id}`}
+                      >
+                        {EditData?.Parent.Title}
+                      </a>
+                    )}
+                  </li>
+                </>
+              )}
+
+            <li>
+              {EditData?.Item_x0020_Type == "Feature" && <a>
+                <><img style={{ width: "20px", marginRight: "2px" }} src={EditData?.Portfolio_x0020_Type == "Service" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/component_icon.png"} />{EditData?.Title}</>
+              </a>}
+              {EditData?.Item_x0020_Type == "SubComponent" && <a>
+                <><img style={{ width: "20px", marginRight: "2px" }} src={EditData?.Portfolio_x0020_Type == "Service" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png"} />{EditData?.Title}</>
+              </a>}
+              {EditData?.Item_x0020_Type == "Component" && <a>
+                <><img style={{ width: "20px", marginRight: "2px" }} src={EditData?.Portfolio_x0020_Type == "Service" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/component_icon.png"} />{EditData?.Title}</>
+              </a>}
+            </li>
+          </ul></div>
+
+          <div className="feedbkicon"> <Tooltip /> </div>
         </div>
-        <Tooltip />
       </>
     );
   };
   const deleteTask = async () => {
     var confirmDelete = confirm("Are you sure, you want to delete this?");
     if (confirmDelete) {
-      let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
       await web.lists
-        .getByTitle("Master Tasks")
-        .items.getById(item.props.Id)
-        .delete()
-        .then((i) => {
+        .getById(RequireData.MasterTaskListID)
+        .items.getById(item.Id)
+        .recycle()
+        .then((i: any) => {
           console.log(i);
           setComponent((EditData) => [...EditData]);
           setModalIsOpenToFalse();
@@ -1338,24 +1582,696 @@ function EditInstitution(item: any) {
       }
     });
   };
+
+  // ******************** This is for the Site Compsition Component related All Functions And CallBack *******************
+
+  const SiteCompositionCallBack = React.useCallback((Data: any, Type: any) => {
+    if (Data.ClientTime != undefined && Data.ClientTime.length > 0) {
+      setEnableSiteCompositionValidation(true);
+      let tempArray: any = [];
+      Data.ClientTime?.map((ClientTimeItems: any) => {
+        if (ClientTimeItems.ClientCategory != undefined || ClientTimeItems.SiteImages?.length > 0) {
+          let newObject: any = {
+            ClienTimeDescription: ClientTimeItems.ClienTimeDescription,
+            Title: ClientTimeItems.Title,
+            localSiteComposition: true,
+            SiteImages: ClientTimeItems.SiteImages,
+            Date: ClientTimeItems.Date
+          }
+          tempArray.push(newObject);
+        } else {
+          tempArray.push(ClientTimeItems);
+        }
+      })
+      const finalData = tempArray.filter((val: any, id: any, array: any) => {
+        return array.indexOf(val) == id;
+      })
+      setSiteTaggingData(finalData);
+    } else {
+      if (Type == "dataDeleted") {
+        setSiteTaggingData([{}])
+      }
+    }
+    if (Data.selectedClientCategory != undefined && Data.selectedClientCategory.length > 0) {
+      setSelectedClientCategory(Data.selectedClientCategory);
+    } else {
+      if (Type == "dataDeleted") {
+        setSelectedClientCategory([]);
+      }
+    }
+    if (Data.SiteCompositionSettings != undefined && Data.SiteCompositionSettings.length > 0) {
+      setSiteCompositionSetting(Data.SiteCompositionSettings);
+    }
+    console.log("Site Composition final Call back Data =========", Data);
+  }, [])
+
+
+  //  ******************  This is All Site Details Get Data Call From Backend **************
+
+  const getAllSitesData = async () => {
+    let web = new Web(RequireData.siteUrl);
+    let MetaData: any = [];
+    let siteConfig: any = [];
+    let tempArray: any = [];
+    MetaData = await web.lists
+      .getById(RequireData.SmartMetadataListID)
+      .items
+      .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title")
+      .top(4999)
+      .expand('Author,Editor')
+      .get()
+
+    siteConfig = getSmartMetadataItemsByTaxType(MetaData, 'Sites');
+    siteConfig?.map((site: any) => {
+      if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== "SDC Sites") {
+        site.BtnStatus = false;
+        site.isSelected = false;
+        tempArray.push(site);
+      }
+    })
+    setSiteTypes(tempArray);
+    tempArray?.map((tempData: any) => {
+      SiteTypeBackupArray.push(tempData);
+    })
+  }
+  var getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
+    var Items: any = [];
+    metadataItems.map((taxItem: any) => {
+      if (taxItem.TaxType === taxType)
+        Items.push(taxItem);
+    });
+    Items.sort((a: any, b: any) => {
+      return a.SortOrder - b.SortOrder;
+    });
+    return Items;
+  }
+
+  //  ######################  This is  Client Category Get Data Call From Backend  #######################
+
+  const loadAllClientCategoryData = function (SmartTaxonomy: any) {
+    var AllTaskusers = []
+    var AllMetaData: any = []
+    var TaxonomyItems: any = []
+    var url = (`${RequireData.siteUrl}/_api/web/lists/getbyid('${RequireData?.SmartMetadataListID}')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '` + SmartTaxonomy + "'")
+    $.ajax({
+      url: url,
+      method: "GET",
+      headers: {
+        "Accept": "application/json; odata=verbose"
+      },
+      success: function (data) {
+        AllTaskusers = data.d.results;
+        $.each(AllTaskusers, function (index: any, item: any) {
+          if (item.Title.toLowerCase() == 'pse' && item.TaxType == 'Client Category') {
+            item.newTitle = 'EPS';
+          }
+          else if (item.Title.toLowerCase() == 'e+i' && item.TaxType == 'Client Category') {
+            item.newTitle = 'EI';
+          }
+          else if (item.Title.toLowerCase() == 'education' && item.TaxType == 'Client Category') {
+            item.newTitle = 'Education';
+          }
+          else if (item.Title.toLowerCase() == 'migration' && item.TaxType == 'Client Category') {
+            item.newTitle = 'Migration';
+          }
+          else {
+            item.newTitle = item.Title;
+          }
+          AllMetaData.push(item);
+        })
+        if (SmartTaxonomy == "Client Category") {
+          // setAllClientCategoryData(AllMetaData);
+          // AllClientCategoryDataBackup = AllMetaData;
+          BuildClieantCategoryAllDataArray(AllMetaData);
+        }
+      },
+      error: function (error: any) {
+        console.log('Error:', error)
+      }
+    })
+  };
+
+  const BuildClieantCategoryAllDataArray = (DataItem: any) => {
+    let MainParentArray: any = [];
+    let FinalArray: any = [];
+    if (DataItem != undefined && DataItem.length > 0) {
+      DataItem.map((Item: any) => {
+        if (Item.ParentID == 0) {
+          Item.Child = [];
+          MainParentArray.push(Item);
+        }
+      })
+    }
+    if (MainParentArray?.length > 0) {
+      MainParentArray.map((ParentArray: any) => {
+        if (DataItem?.length > 0) {
+          DataItem.map((ChildArray: any) => {
+            if (ParentArray.Id == ChildArray.ParentID) {
+              ChildArray.siteName = ParentArray.newTitle;
+              ChildArray.Child = [];
+              ParentArray.Child.push(ChildArray);
+            }
+          })
+        }
+
+      })
+    }
+    if (MainParentArray?.length > 0) {
+      MainParentArray.map((ParentArray: any) => {
+        if (ParentArray?.Child?.length > 0) {
+          ParentArray?.Child.map((ChildLevelFirst: any) => {
+            if (DataItem?.length > 0) {
+              DataItem.map((ChildArray: any) => {
+                if (ChildLevelFirst.Id == ChildArray.ParentID) {
+                  ChildArray.siteName = ParentArray.newTitle;
+                  ChildArray.Child = [];
+                  ChildLevelFirst.Child.push(ChildArray);
+                }
+              })
+            }
+          })
+        }
+      })
+    }
+    if (MainParentArray?.length > 0) {
+      MainParentArray.map((ParentArray: any) => {
+        if (ParentArray?.Child?.length > 0) {
+          ParentArray?.Child.map((ChildLevelFirst: any) => {
+            if (ChildLevelFirst.Child?.length > 0) {
+              ChildLevelFirst.Child.map((lastChild: any) => {
+                if (DataItem?.length > 0) {
+                  DataItem.map((ChildArray: any) => {
+                    if (lastChild.Id == ChildArray.ParentID) {
+                      ChildArray.siteName = ParentArray.newTitle;
+                      ChildArray.Child = [];
+                      lastChild.Child.push(ChildArray);
+                    }
+                  })
+                }
+              })
+
+            }
+
+          })
+        }
+      })
+    }
+    if (MainParentArray?.length > 0) {
+      MainParentArray.map((ParentArray: any) => {
+        if (ParentArray?.Child?.length > 0) {
+          ParentArray?.Child.map((ChildLevelFirst: any) => {
+            if (ChildLevelFirst.Child?.length > 0) {
+              ChildLevelFirst.Child.map((lastChild: any) => {
+                if (lastChild.Child?.length > 0) {
+                  lastChild.Child?.map((endChild: any) => {
+                    if (DataItem?.length > 0) {
+                      DataItem.map((ChildArray: any) => {
+                        if (endChild.Id == ChildArray.ParentID) {
+                          ChildArray.siteName = ParentArray.newTitle;
+                          ChildArray.Child = [];
+                          endChild.Child.push(ChildArray);
+                        }
+                      })
+                    }
+
+                  })
+                }
+
+              })
+
+            }
+
+          })
+        }
+      })
+    }
+    if (MainParentArray?.length > 0) {
+      MainParentArray.map((finalItem: any) => {
+        FinalArray.push(finalItem);
+        if (finalItem.Child?.length > 0) {
+          finalItem.Child.map((FinalChild: any) => {
+            FinalArray.push(FinalChild);
+            if (FinalChild.Child?.length > 0) {
+              FinalChild.Child.map((LastChild: any) => {
+                FinalArray.push(LastChild)
+                if (LastChild.Child?.length > 0) {
+                  LastChild.Child?.map((endChild: any) => {
+                    FinalArray.push(endChild);
+                  })
+                }
+              })
+
+            }
+          })
+
+        }
+      })
+    }
+    AllClientCategoryDataBackup = FinalArray;
+  }
+
+  // AutoSuggestion
+  const autoSuggestionsForCategory = (e: any) => {
+
+    let searchedKey: any = e.target.value;
+
+    setCategorySearchKey(e.target.value);
+
+    let tempArray: any = [];
+
+    if (searchedKey?.length > 0) {
+
+      AutoCompleteItemsArray?.map((itemData: any) => {
+
+        if (itemData.Newlabel.toLowerCase().includes(searchedKey.toLowerCase())) {
+
+          tempArray.push(itemData);
+
+        }
+
+      })
+
+      setSearchedCategoryData(tempArray);
+
+    } else {
+
+      setSearchedCategoryData([]);
+
+    }
+
+  }
+  let AutoCompleteItems: any = [];
+  const loadAllCategoryData = function (SmartTaxonomy: any) {
+
+    var AllTaskusers = []
+
+    var AllMetaData: any = []
+
+    var TaxonomyItems: any = []
+
+    var url = (`${RequireData?.siteUrl}/_api/web/lists/getbyid('${RequireData?.SmartMetadataListID}')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '` + SmartTaxonomy + "'")
+
+    $.ajax({
+
+      url: url,
+
+      method: "GET",
+
+      headers: {
+
+        "Accept": "application/json; odata=verbose"
+
+      },
+
+      success: function (data) {
+
+        AllTaskusers = data.d.results;
+
+        $.each(AllTaskusers, function (index: any, item: any) {
+
+          if (item.Title.toLowerCase() == 'pse' && item.TaxType == 'Client Category') {
+
+            item.newTitle = 'EPS';
+
+          }
+
+          else if (item.Title.toLowerCase() == 'e+i' && item.TaxType == 'Client Category') {
+
+            item.newTitle = 'EI';
+
+          }
+
+          else if (item.Title.toLowerCase() == 'education' && item.TaxType == 'Client Category') {
+
+            item.newTitle = 'Education';
+
+          }
+
+          else {
+
+            item.newTitle = item.Title;
+
+          }
+
+          AllMetaData.push(item);
+
+
+
+
+        })
+
+        if (SmartTaxonomy == "Categories") {
+
+          TaxonomyItems = loadSmartTaxonomyPortfolioPopup(AllMetaData, SmartTaxonomy);
+
+          setAllCategoryData(TaxonomyItems)
+
+          TaxonomyItems?.map((items: any) => {
+
+            if (items.Title == "Actions") {
+
+              ShowCategoryDatabackup = ShowCategoryDatabackup.concat(items.childs)
+
+            }
+
+          })
+
+
+
+
+        }
+
+      },
+
+      error: function (error: any) {
+
+        console.log('Error:', error)
+
+      }
+
+    })
+
+  };
+  var loadSmartTaxonomyPortfolioPopup = (AllTaxonomyItems: any, SmartTaxonomy: any) => {
+
+    var TaxonomyItems: any = [];
+
+    var uniqueNames: any = [];
+
+    $.each(AllTaxonomyItems, function (index: any, item: any) {
+
+      if (item.ParentID == 0 && SmartTaxonomy == item.TaxType) {
+
+        TaxonomyItems.push(item);
+
+        getChilds(item, AllTaxonomyItems);
+
+        if (item.childs != undefined && item.childs.length > 0) {
+
+          TaxonomyItems.push(item)
+
+        }
+
+        uniqueNames = TaxonomyItems.filter((val: any, id: any, array: any) => {
+
+          return array.indexOf(val) == id;
+
+        });
+
+      }
+
+    });
+
+    return uniqueNames;
+
+  }
+  const getChilds = (item: any, items: any) => {
+
+    item.childs = [];
+
+    $.each(items, function (index: any, childItem: any) {
+
+      if (childItem.ParentID != undefined && parseInt(childItem.ParentID) == item.ID) {
+
+        childItem.isChild = true;
+
+        item.childs.push(childItem);
+
+        getChilds(childItem, items);
+
+      }
+
+    });
+
+  }
+
+
+
+
+  if (AllCategoryData?.length > 0) {
+
+    AllCategoryData?.map((item: any) => {
+
+      if (item.newTitle != undefined) {
+
+        item['Newlabel'] = item.newTitle;
+
+        AutoCompleteItems.push(item)
+
+        if (item.childs != null && item.childs != undefined && item.childs.length > 0) {
+
+          item.childs.map((childitem: any) => {
+
+            if (childitem.newTitle != undefined) {
+
+              childitem['Newlabel'] = item['Newlabel'] + ' > ' + childitem.Title;
+
+              AutoCompleteItems.push(childitem)
+
+            }
+
+            if (childitem.childs.length > 0) {
+
+              childitem.childs.map((subchilditem: any) => {
+
+                if (subchilditem.newTitle != undefined) {
+
+                  subchilditem['Newlabel'] = childitem['Newlabel'] + ' > ' + subchilditem.Title;
+
+                  AutoCompleteItems.push(subchilditem)
+
+                }
+
+              })
+
+            }
+
+          })
+
+        }
+
+      }
+
+    })
+
+  }
+
+
+
+
+  AutoCompleteItemsArray = AutoCompleteItems.reduce(function (previous: any, current: any) {
+
+    var alredyExists = previous.filter(function (item: any) {
+
+      return item.Title === current.Title
+
+    }).length > 0
+
+    if (!alredyExists) {
+
+      previous.push(current)
+
+    }
+
+    return previous
+
+  }, [])
+  const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
+
+    setCategorySearchKey("");
+
+    console.log(selectCategoryData)
+
+    selectedCategoryTrue(selectCategoryData[0].Title)
+
+
+
+
+    setIsComponentPicker(false);
+
+    let data: any = CategoriesData
+
+    data = data.concat(selectCategoryData)
+
+    setCategoriesData(CategoriesData => [...data])
+
+
+
+
+
+    setSearchedCategoryData([]);
+
+
+
+
+    // setCategoriesData(data)
+
+  }
+
+  // ==============CHANGE Category function==============
+
+  const CategoryChange = (e: any, typeValue: any, IdValue: any) => {
+
+    let statusValue: any = e.currentTarget.checked;
+
+    let type: any = typeValue;
+
+    let Id: any = IdValue;
+
+    if (statusValue) {
+
+
+
+
+      selectedCategoryTrue(type)
+
+      console.log(ShowCategoryDatabackup)
+
+      let array: any = [];
+
+
+
+
+      array = array.concat(CategoriesData);
+
+      ShowCategoryDatabackup.map((items: any) => {
+
+        if (items.Title == type) {
+
+          array.push(items)
+
+        }
+
+      })
+
+
+
+
+      setCategoriesData(CategoriesData => [...array])
+
+    }
+
+    if (statusValue == false) {
+
+
+
+
+      selectedCategoryFalse(type)
+
+      console.log(ShowCategoryDatabackup)
+
+      let array: any = [];
+
+
+
+
+      array = array.concat(CategoriesData);
+
+      array?.map((item: any, index: any) => {
+
+
+
+
+        if (item.Title == type) {
+
+          array.splice(index, 1);
+
+        }
+
+      })
+
+      setCategoriesData(CategoriesData => [...array])
+
+    }
+
+
+
+
+
+  }
+
+
+
+
+  const selectedCategoryFalse = (type: any) => {
+
+    if (type == "Phone") {
+
+      setPhoneStatus(false)
+
+    }
+
+    if (type == "Email Notification") {
+
+      setEmailStatus(false)
+
+    }
+
+    if (type == "Immediate") {
+
+      setImmediateStatus(false)
+
+    }
+
+    if (type == "Approval") {
+
+      setApprovalStatus(false)
+
+    }
+
+  }
+
+  const selectedCategoryTrue = (type: any) => {
+
+    if (type == "Phone") {
+
+      setPhoneStatus(true)
+
+    }
+
+    if (type == "Email Notification") {
+
+      setEmailStatus(true)
+
+    }
+
+    if (type == "Immediate") {
+
+      setImmediateStatus(true)
+
+    }
+
+    if (type == "Approval") {
+
+      setApprovalStatus(true)
+
+    }
+
+  }
+  const imageTabCallBack = React.useCallback((data: any) => {
+    setEditData(data)
+    console.log(EditData);
+    console.log(data)
+    // setEditdocumentsData(data);
+  }, [])
   return (
     <>
-      {console.log("Done")}
-      <Panel
-        headerText={`${EditData.Portfolio_x0020_Type}-Portfolio > ${EditData.Title}`}
+      {console.log("All Done")}
+      <Panel className={`${EditData?.Portfolio_x0020_Type == "Service" ? " serviepannelgreena" : ""}`}
+        headerText={`${EditData?.Portfolio_x0020_Type}-Portfolio > ${EditData?.Title}`}
         isOpen={modalIsOpen}
         onDismiss={setModalIsOpenToFalse}
         onRenderHeader={onRenderCustomHeader}
         isBlocking={false}
         type={PanelType.large}
       >
-        {EditData != undefined && EditData.Title != undefined && (
+        {EditData != undefined && EditData?.Title != undefined && (
           <div id="EditGrueneContactSearch">
-            <div className={`${EditData.Portfolio_x0020_Type == "Service" ? "modal-body serviepannelgreena":"modal-body"}`}>
+            <div className="modal-body">
               <ul className="nav nav-tabs" id="myTab" role="tablist">
                 <li className="nav-item" role="presentation">
                   <button
-                    className="nav-link active"
+                    className={usedFor != "Task-Popup" ? "nav-link active" : "nav-link"}
                     id="home-tab"
                     data-bs-toggle="tab"
                     data-bs-target="#home"
@@ -1369,7 +2285,7 @@ function EditInstitution(item: any) {
                 </li>
                 <li className="nav-item" role="presentation">
                   <button
-                    className="nav-link"
+                    className={usedFor == "Task-Popup" ? "nav-link active" : "nav-link"}
                     id="cncept-tab"
                     data-bs-toggle="tab"
                     data-bs-target="#concept"
@@ -1378,7 +2294,7 @@ function EditInstitution(item: any) {
                     aria-controls="concept"
                     aria-selected="false"
                   >
-                    Concept
+                    CONCEPT
                   </button>
                 </li>
                 <li className="nav-item" role="presentation">
@@ -1392,7 +2308,7 @@ function EditInstitution(item: any) {
                     aria-controls="profile"
                     aria-selected="false"
                   >
-                    Architecture & Technologies
+                    ARCHITECTURE & TECHNOLOGIES
                   </button>
                 </li>
                 <li className="nav-item" role="presentation">
@@ -1411,17 +2327,17 @@ function EditInstitution(item: any) {
                 </li>
               </ul>
               <div
-                className="tab-content border border-top-0 clearfix "
+                className="tab-content clearfix "
                 id="myTabContent"
               >
                 <div
-                  className="tab-pane  show active"
+                  className={usedFor != "Task-Popup" ? "tab-pane show active" : "tab-pane"}
                   id="home"
                   role="tabpanel"
                   aria-labelledby="home-tab"
                 >
                   <div className="row  px-3 py-2">
-                    <div className="col-sm-5 ">
+                    <div className="col-sm-6 ">
                       <div className="col-12">
                         <div className="input-group">
                           <label className="form-label  full-width">
@@ -1431,7 +2347,7 @@ function EditInstitution(item: any) {
                             type="text"
                             className="form-control"
                             defaultValue={
-                              EditData.Title != undefined ? EditData.Title : ""
+                              EditData?.Title != undefined ? EditData?.Title : ""
                             }
                             onChange={(e) => (EditData.Title = e.target.value)}
                           />
@@ -1446,25 +2362,25 @@ function EditInstitution(item: any) {
                             </label>
                             <select
                               className="full_width searchbox_height"
-                              defaultValue={EditData.ItemRankTitle}
+                              defaultValue={EditData?.ItemRankTitle}
                               onChange={(e) =>
                                 (EditData.ItemRankTitle = e.target.value)
                               }
                             >
                               <option>
-                                {EditData.ItemRankTitle == undefined
+                                {EditData?.ItemRankTitle == undefined
                                   ? "select Item Rank"
-                                  : EditData.ItemRankTitle}
+                                  : EditData?.ItemRankTitle}
                               </option>
                               {SharewebItemRank &&
                                 SharewebItemRank.map(function (h: any, i: any) {
                                   return (
                                     <option
                                       key={i}
-                                      defaultValue={EditData.ItemRankTitle}
+                                      defaultValue={EditData?.ItemRankTitle}
                                     >
-                                      {EditData.ItemRankTitle == h.rankTitle
-                                        ? EditData.ItemRankTitle
+                                      {EditData?.ItemRankTitle == h.rankTitle
+                                        ? EditData?.ItemRankTitle
                                         : h.rankTitle}
                                     </option>
                                   );
@@ -1482,19 +2398,19 @@ function EditInstitution(item: any) {
                               type="text"
                               className="form-control"
                               defaultValue={
-                                EditData.Deliverable_x002d_Synonyms != undefined
-                                  ? EditData.Deliverable_x002d_Synonyms
+                                EditData?.Deliverable_x002d_Synonyms != undefined
+                                  ? EditData?.Deliverable_x002d_Synonyms
                                   : ""
                               }
                               onChange={(e) =>
-                                (EditData.Deliverable_x002d_Synonyms =
-                                  e.target.value)
+                              (EditData.Deliverable_x002d_Synonyms =
+                                e.target.value)
                               }
                             />
                           </div>
                         </div>
                         <div className="col-4 ps-0 pe-0 mt-2 ">
-                          {EditData.Portfolio_x0020_Type == "Service" && (
+                          {EditData?.Portfolio_x0020_Type == "Service" && (
                             <div className="input-group">
                               <label className="form-label full-width">
                                 Component Portfolio
@@ -1503,7 +2419,7 @@ function EditInstitution(item: any) {
                               <span className="input-group-text">
                                 <svg
                                   onClick={(e) =>
-                                    EditComponent(EditData, "Componet")
+                                    EditComponent(EditData, 'Component')
                                   }
                                   xmlns="http://www.w3.org/2000/svg"
                                   viewBox="0 0 48 48"
@@ -1519,7 +2435,7 @@ function EditInstitution(item: any) {
                               </span>
                             </div>
                           )}
-                          {EditData.Portfolio_x0020_Type == "Component" && (
+                          {EditData?.Portfolio_x0020_Type == "Component" && (
                             <div className="input-group">
                               <label className="form-label full-width">
                                 Service Portfolio
@@ -1528,7 +2444,7 @@ function EditInstitution(item: any) {
                               <span className="input-group-text">
                                 <svg
                                   onClick={(e) =>
-                                    EditComponent(EditData, "Componet")
+                                    EditComponent(EditData, 'Service')
                                   }
                                   xmlns="http://www.w3.org/2000/svg"
                                   viewBox="0 0 48 48"
@@ -1544,30 +2460,30 @@ function EditInstitution(item: any) {
                               </span>
                             </div>
                           )}
-                          {EditData.Portfolio_x0020_Type == "Component" && (
-                            <div className="input-group">
+                          {EditData?.Portfolio_x0020_Type == "Component" && (
+                            <div className="col-sm-12  inner-tabb">
                               {linkedComponentData?.length > 0 ? (
-                                <div>
+                                <div className="serviepannelgreena">
+
                                   {linkedComponentData?.map((com: any) => {
                                     return (
                                       <>
-                                        <div className="d-flex Component-container-edit-task  block">
-                                          <div className="">
-                                            <a
-                                              className="hreflink service"
-                                              target="_blank"
-                                              data-interception="off"
-                                              href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
-                                            >
-                                              {com.Title}
-                                            </a>
-                                            <img
-                                              src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif"
-                                              onClick={() =>
-                                                setLinkedComponentData([])
-                                              }
-                                            />
-                                          </div>
+                                        <div className="block d-flex justify-content-between mb-1">
+
+                                          <a
+                                            className="hreflink service ps-2"
+                                            target="_blank"
+                                            data-interception="off"
+                                            href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
+                                          >
+                                            {com.Title}
+                                          </a>
+                                          <a className='text-end'>  <span className="bg-light svg__icon--cross svg__iconbox" onClick={() =>
+                                            setLinkedComponentData([])
+                                          }></span></a>
+
+
+
                                         </div>
                                       </>
                                     );
@@ -1580,30 +2496,31 @@ function EditInstitution(item: any) {
                                                         </span> */}
                             </div>
                           )}
-                           {EditData.Portfolio_x0020_Type == "Service" && (
-                            <div className="input-group">
+                          {EditData?.Portfolio_x0020_Type == "Service" && (
+                            <div className="col-sm-12  inner-tabb">
                               {linkedComponentData?.length > 0 ? (
                                 <div>
                                   {linkedComponentData?.map((com: any) => {
                                     return (
                                       <>
-                                        <div className="d-flex Component-container-edit-task  block ">
-                                          <div className="serviepannelgreena">
-                                            <a
-                                              className="hreflink service "
-                                              target="_blank"
-                                              data-interception="off"
-                                              href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
-                                            >
-                                              {com.Title}
-                                            </a>
-                                            <img
-                                              src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif"
-                                              onClick={() =>
-                                                setLinkedComponentData([])
-                                              }
-                                            />
-                                          </div>
+                                        <div className="block d-flex justify-content-between mb-1">
+
+                                          <a
+                                            className="hreflink service ps-2"
+                                            target="_blank"
+                                            data-interception="off"
+                                            href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
+                                          >
+                                            {com.Title}
+                                          </a>
+                                          <a className='text-end'>
+                                            <span className="bg-light svg__icon--cross svg__iconbox" onClick={() =>
+                                              setLinkedComponentData([])
+                                            }></span>
+                                          </a>
+
+
+
                                         </div>
                                       </>
                                     );
@@ -1617,17 +2534,17 @@ function EditInstitution(item: any) {
                             </div>
                           )}
 
-                          <div className="col-sm-11  inner-tabb">
+                          <div className="col-sm-12  inner-tabb">
                             <div>
-                              {/* {(EditData != undefined && EditData.smartComponent != undefined)?
+                              {/* {(EditData != undefined && EditData?.smartComponent != undefined)?
                                                                 <>
-                                                                {(EditData != undefined && EditData.smartComponent != undefined && EditData.smartComponent.length>0)&& EditData.smartComponent.map((childinew: any) =>{
+                                                                {(EditData != undefined && EditData?.smartComponent != undefined && EditData?.smartComponent.length>0)&& EditData?.smartComponent.map((childinew: any) =>{
                                                                 return(
                                                                     < div className="block bgsiteColor"
 
                                                                     >
                                                                         <a className="hreflink" target="_blank"
-                                                                            href="{{pageContext}}/SitePages/Portfolio-Profile.aspx?taskId={{EditData.Id}}&amp;Site={{EditData.siteType}}">{childinew.Title}</a>
+                                                                            href="{{pageContext}}/SitePages/Portfolio-Profile.aspx?taskId={{EditData?.Id}}&amp;Site={{EditData?.siteType}}">{childinew.Title}</a>
                                                                         <a className="hreflink"
                                                                         >
                                                                             <img src="/_layouts/images/delete.gif" ></img>
@@ -1636,13 +2553,13 @@ function EditInstitution(item: any) {
                                                                 )}
                                                                 )}
                                                                 </>:<>
-                                                                 {(EditData != undefined && EditData.Component != undefined  && EditData.Component.length>0) && EditData.Component.map((childinew: any) =>{
+                                                                 {(EditData != undefined && EditData?.Component != undefined  && EditData?.Component.length>0) && EditData?.Component.map((childinew: any) =>{
                                                                  return(
                                                                     < div className="block bgsiteColor"
 
                                                                     >
                                                                         <a className="hreflink" target="_blank"
-                                                                            href="{{pageContext}}/SitePages/Portfolio-Profile.aspx?taskId={{EditData.Id}}&amp;Site={{EditData.siteType}}">{childinew.Title}</a>
+                                                                            href="{{pageContext}}/SitePages/Portfolio-Profile.aspx?taskId={{EditData?.Id}}&amp;Site={{EditData?.siteType}}">{childinew.Title}</a>
                                                                         <a className="hreflink"
                                                                         >
                                                                             <img src="/_layouts/images/delete.gif" ></img>
@@ -1662,32 +2579,31 @@ function EditInstitution(item: any) {
                                                     } */}
                               {smartComponentData
                                 ? smartComponentData?.map((com: any) => {
-                                    return (
-                                      <>
+                                  return (
+                                    <>
+                                      <div className="">
                                         <div
-                                          className="d-flex Component-container-edit-task block"
+                                          className="d-flex Component-container-edit-task block "
                                           style={{ width: "81%" }}
                                         >
                                           <a
                                             style={{ color: "#fff !important" }}
                                             target="_blank"
-                                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
+                                            href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
                                           >
                                             {com.Title}
                                           </a>
                                           <a>
-                                            <img
-                                              className="mx-2"
-                                              src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif"
-                                              onClick={() =>
-                                                setSmartComponentData([])
-                                              }
-                                            />
+                                            <span className="bg-light svg__icon--cross svg__iconbox" onClick={() =>
+                                              setSmartComponentData([])
+                                            }></span>
+
                                           </a>
                                         </div>
-                                      </>
-                                    );
-                                  })
+                                      </div>
+                                    </>
+                                  );
+                                })
                                 : null}
                             </div>
                           </div>
@@ -1699,17 +2615,13 @@ function EditInstitution(item: any) {
                             <label className="form-label  full-width">
                               Start Date
                             </label>
-
-                            <DatePicker
-                              className="form-control"
-                              selected={Startdate}
-                              value={EditData.StartDate}
-                              onChange={handleDatestart}
-                              dateFormat="dd/MM/yyyy"
-                              onFocus={() => handlePickerFocus("startDate")}
-                              onBlur={handlePickerBlur}
-                              open={activePicker === "startDate"}
+                            <input type="date" className="form-control" max="9999-12-31"
+                              defaultValue={moment(EditData?.StartDate).format("YYYY-MM-DD")}
+                              onChange={(e) => setEditData({
+                                ...EditData, StartDate: e.target.value
+                              })}
                             />
+
                           </div>
                         </div>
                         <div className="col-sm-4 ">
@@ -1717,15 +2629,11 @@ function EditInstitution(item: any) {
                             <label className="form-label  full-width">
                               Due Date
                             </label>
-                            <DatePicker
-                              className="form-control"
-                              selected={date}
-                              value={EditData.DueDate}
-                              onChange={handleDatedue}
-                              dateFormat="dd/MM/yyyy"
-                              onFocus={() => handlePickerFocus("date")}
-                              onBlur={handlePickerBlur}
-                              open={activePicker === "date"}
+                            <input type="date" className="form-control" max="9999-12-31"
+                              defaultValue={EditData?.DueDate ? moment(EditData?.DueDate).format("YYYY-MM-DD") : ''}
+                              onChange={(e) => setEditData({
+                                ...EditData, DueDate: e.target.value
+                              })}
                             />
                           </div>
                         </div>
@@ -1735,18 +2643,11 @@ function EditInstitution(item: any) {
                               {" "}
                               Completion Date{" "}
                             </label>
-                            <DatePicker
-                              className="form-control"
-                              name="CompletionDate"
-                              selected={Completiondate}
-                              dateFormat="dd/MM/yyyy"
-                              value={EditData.CompletedDate}
-                              onChange={handleDate}
-                              onFocus={() =>
-                                handlePickerFocus("Completiondate")
-                              }
-                              onBlur={handlePickerBlur}
-                              open={activePicker === "Completiondate"}
+                            <input type="date" className="form-control" max="9999-12-31"
+                              defaultValue={EditData?.CompletedDate ? moment(EditData?.CompletedDate).format("YYYY-MM-DD") : ''}
+                              onChange={(e) => setEditData({
+                                ...EditData, CompletedDate: e.target.value
+                              })}
                             />
                           </div>
                         </div>
@@ -1760,7 +2661,7 @@ function EditInstitution(item: any) {
                             <input
                               type="text"
                               className="form-control"
-                              defaultValue={EditData.SynonymsTitle}
+                              defaultValue={EditData?.SynonymsTitle}
                               onChange={(e) =>
                                 (EditData.SynonymsTitle = e.target.value)
                               }
@@ -1803,8 +2704,8 @@ function EditInstitution(item: any) {
                               type="text"
                               className="form-control"
                               defaultValue={
-                                EditData.Twitter != null
-                                  ? EditData.Twitter.Description
+                                EditData?.Twitter != null
+                                  ? EditData?.Twitter.Description
                                   : ""
                               }
                             />
@@ -1820,7 +2721,7 @@ function EditInstitution(item: any) {
                               type="text"
                               className="form-control"
                               defaultValue={
-                                EditData.Package != null ? EditData.Package : ""
+                                EditData?.Package != null ? EditData?.Package : ""
                               }
                               onChange={(e) =>
                                 (EditData.Package = e.target.value)
@@ -1838,7 +2739,7 @@ function EditInstitution(item: any) {
                             <input
                               type="text"
                               className="form-control"
-                              value={EditData.AdminStatus}
+                              value={EditData?.AdminStatus}
                               onChange={(e) => ChangeStatus(e, EditData)}
                             />
                           </div>
@@ -1850,7 +2751,7 @@ function EditInstitution(item: any) {
                               type="radio"
                               value="Not Started"
                               checked={
-                                EditData.AdminStatus === "Not Started"
+                                EditData?.AdminStatus === "Not Started"
                                   ? true
                                   : false
                               }
@@ -1872,7 +2773,7 @@ function EditInstitution(item: any) {
                                 setStatus(EditData, "In Preparation")
                               }
                               checked={
-                                EditData.AdminStatus === "In Preparation"
+                                EditData?.AdminStatus === "In Preparation"
                                   ? true
                                   : false
                               }
@@ -1892,7 +2793,7 @@ function EditInstitution(item: any) {
                                 setStatus(EditData, "In Development")
                               }
                               checked={
-                                EditData.AdminStatus === "In Development"
+                                EditData?.AdminStatus === "In Development"
                                   ? true
                                   : false
                               }
@@ -1910,7 +2811,7 @@ function EditInstitution(item: any) {
                               value="Active"
                               onChange={(e) => setStatus(EditData, "Active")}
                               checked={
-                                EditData.AdminStatus === "Active" ? true : false
+                                EditData?.AdminStatus === "Active" ? true : false
                               }
                             ></input>
                             <label className="form-check-label">Active</label>
@@ -1923,7 +2824,7 @@ function EditInstitution(item: any) {
                               value="Archived"
                               onChange={(e) => setStatus(EditData, "Archived")}
                               checked={
-                                EditData.AdminStatus === "Archived"
+                                EditData?.AdminStatus === "Archived"
                                   ? true
                                   : false
                               }
@@ -1942,7 +2843,7 @@ function EditInstitution(item: any) {
                               type="text"
                               className="form-control"
                               value={
-                                EditData.Mileage != null ? EditData.Mileage : ""
+                                EditData?.Mileage != null ? EditData?.Mileage : ""
                               }
                               onChange={(e) => changeTime(e, EditData)}
                             />
@@ -1953,7 +2854,7 @@ function EditInstitution(item: any) {
                               className="form-check-input"
                               name="radioTime"
                               onChange={(e) => setTime(EditData, "05")}
-                              checked={EditData.Mileage === "05" ? true : false}
+                              checked={EditData?.Mileage === "05" ? true : false}
                               type="radio"
                             ></input>
                             <label className="form-check-label">
@@ -1965,7 +2866,7 @@ function EditInstitution(item: any) {
                               className="form-check-input"
                               name="radioTime"
                               onChange={(e) => setTime(EditData, "15")}
-                              checked={EditData.Mileage === "15" ? true : false}
+                              checked={EditData?.Mileage === "15" ? true : false}
                               type="radio"
                             ></input>
 
@@ -1976,7 +2877,7 @@ function EditInstitution(item: any) {
                               className="form-check-input"
                               name="radioTime"
                               onChange={(e) => setTime(EditData, "60")}
-                              checked={EditData.Mileage === "60" ? true : false}
+                              checked={EditData?.Mileage === "60" ? true : false}
                               type="radio"
                             ></input>
                             <label className="form-check-label">Medium</label>
@@ -1987,7 +2888,7 @@ function EditInstitution(item: any) {
                               name="radioTime"
                               onChange={(e) => setTime(EditData, "240")}
                               checked={
-                                EditData.Mileage === "240" ? true : false
+                                EditData?.Mileage === "240" ? true : false
                               }
                               type="radio"
                             ></input>
@@ -1996,7 +2897,7 @@ function EditInstitution(item: any) {
                         </div>
                       </div>
                     </div>
-                    <div className="col-sm-3 ">
+                    <div className="col-sm-2 ">
                       <div className="col" title="Priority">
                         <div className="input-group mb-2">
                           <label className="form-label  full-width">
@@ -2005,8 +2906,9 @@ function EditInstitution(item: any) {
                           <input
                             type="text"
                             className="form-control"
-                            value={EditData.Priority_x0020_Rank}
+                            value={EditData?.Priority_x0020_Rank}
                             onChange={(e) => setPriorityNew(e, EditData)}
+                            maxLength={2}
                           />
                         </div>
 
@@ -2018,7 +2920,7 @@ function EditInstitution(item: any) {
                             value="(1) High"
                             onChange={(e) => setPriority(EditData, 8)}
                             checked={
-                              EditData.Priority === "(1) High" ? true : false
+                              EditData?.Priority === "(1) High" ? true : false
                             }
                           ></input>
                           <label> High</label>
@@ -2031,7 +2933,7 @@ function EditInstitution(item: any) {
                             value="(2) Normal"
                             onChange={(e) => setPriority(EditData, 4)}
                             checked={
-                              EditData.Priority === "(2) Normal" ? true : false
+                              EditData?.Priority === "(2) Normal" ? true : false
                             }
                           ></input>
                           <label> Normal</label>
@@ -2044,26 +2946,26 @@ function EditInstitution(item: any) {
                             value="(3) Low"
                             onChange={(e) => setPriority(EditData, 1)}
                             checked={
-                              EditData.Priority === "(3) Low" ? true : false
+                              EditData?.Priority === "(3) Low" ? true : false
                             }
                           ></input>
                           <label> Low</label>
                         </div>
                         <div className="col mt-2">
                           <div className="input-group">
-                          
-                                  <div className="TaskUsers">
-                                    <label className="form-label full-width  mx-2">
-                                      Task Users
-                                    </label>
-                                    {EditData.AssignedUsers?.map(
-                              (userDtl: any, index: any) => {
-                                return (
+
+                            <div className="TaskUsers">
+                              <label className="form-label full-width  mx-2">
+                                Working Member
+                              </label>
+                              {EditData?.AssignedUsers?.map(
+                                (userDtl: any, index: any) => {
+                                  return (
                                     <a
                                       target="_blank"
                                       href={
                                         userDtl.Item_x0020_Cover
-                                          ? userDtl.Item_x0020_Cover.Url
+                                          ? userDtl.Item_x0020_Cover?.Url
                                           : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"
                                       }
                                     >
@@ -2084,177 +2986,252 @@ function EditInstitution(item: any) {
                                           borderRadius: "50px",
                                         }}
                                         src={
-                                          userDtl.Item_x0020_Cover.Url
-                                            ? userDtl.Item_x0020_Cover.Url
+                                          userDtl.Item_x0020_Cover?.Url
+                                            ? userDtl.Item_x0020_Cover?.Url
                                             : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"
                                         }
                                       />
                                     </a>
-                                      );
-                                    }
-                                  )}
-                                  </div>
-                              
+                                  );
+                                }
+                              )}
+                            </div>
+
                           </div>
                         </div>
                       </div>
                       <div className="col">
-                        <div className="input-group position-relative">
-                          <label className="form-label  full-width">
-                            Categories{" "}
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            defaultValue={
-                              EditData.Facebook != null
-                                ? EditData.Facebook.Description
-                                : ""
-                            }
-                          />
 
-                          <span className="input-group-text">
-                            <svg
-                              onClick={(e) =>
-                                EditComponentPicker(EditData, "Categories")
-                              }
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 48 48"
-                              fill="none"
-                            >
-                              <path
-                                fill-rule="evenodd"
-                                clip-rule="evenodd"
-                                d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z"
-                                fill="#333333"
-                              />
-                            </svg>
-                          </span>
-                        </div>
 
                         <div className="col-sm-11  inner-tabb">
-                          {/* <div>
-                                                       
-                                                        {CategoriesData != "" ?
-                                                            <div className="Component-container-edit-task d-flex justify-content-between">
-                                                                <a style={{ color: "#fff !important" }} target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
-                                                                    {CategoriesData}
-                                                                </a>
-                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setCategoriesData('')} className="p-1" />
-                                                            </div> : null
-                                                        }
+
+
+                          <div className="row mt-2">
+
+                            <div className="col-sm-12">
+
+                              <div className="col-sm-12 padding-0 input-group">
+
+                                <label className="full_width">Categories</label>
+
+                                {/* <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e)} /> */}
+
+                                <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e)} />
+
+                                <span className="input-group-text">
 
 
 
 
-                                                    </div> */}
-                          <div className="col">
-                            <div className="col">
-                              {CheckCategory.map((type: any) => {
-                                return (
-                                  <>
-                                    <div className="form-check">
-                                      <input
-                                        className="form-check-input"
-                                        checked={
-                                          BackupCat == type.Id
-                                            ? checkedCat
-                                            : false
-                                        }
-                                        type="checkbox"
-                                        onClick={() => checkCat(type.Title)}
-                                      />
-                                      <label className="form-check-label">
-                                        {type.Title}
-                                      </label>
-                                    </div>
-                                  </>
-                                );
-                              })}
-                              {/* <div
-                                                                className="form-check">
-                                                                <input className="form-check-input"
-                                                                    type="checkbox"
-                                                                onClick={()=>checkCat('Phone')}/>
-                                                                <label className="form-check-label">Phone</label>
-                                                            </div> */}
-                              {/* <div
-                                                                className="form-check">
-                                                                <input className="form-check-input"
-                                                                    type="checkbox"
-                                                                    onClick={()=>checkCat('Email Notification')} />
-                                                                <label>Email Notification</label>
+                                  <a className="hreflink" title="Edit Categories">
 
-                                                            </div>
-                                                            <div
-                                                                className="form-check">
-                                                                <input className="form-check-input"
-                                                                    type="checkbox"
-                                                                    onClick={()=>checkCat('Approvel')}/>
-                                                                <label>Approvel</label>
 
-                                                            </div>
-                                                            <div
-                                                                className="form-check">
-                                                                <input className="form-check-input" type="checkbox"  onClick={()=>checkCat('Immediate')}/>
-                                                                <label>Immediate</label>
-                                                            </div> */}
-                              {CategoriesData != undefined ? (
-                                <div>
-                                  {CategoriesData?.map(
-                                    (type: any, index: number) => {
-                                      return (
-                                        <>
-                                          {type.Title != "Phone" &&
-                                            type.Title !=
-                                              "Email Notification" &&
-                                            type.Title != "Approval" &&
-                                            type.Title != "Immediate" && (
-                                              <div className="block d-flex justify-content-between my-1 p-1">
-                                                <a
-                                                  style={{
-                                                    color: "#fff !important",
-                                                  }}
-                                                  target="_blank"
-                                                  data-interception="off"
-                                                  href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}
-                                                >
-                                                  {type.Title}
-                                                </a>
-                                                <img
-                                                  src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif"
-                                                  onClick={() =>
-                                                    deleteCategories(type.Id)
-                                                  }
-                                                  className="p-1"
-                                                />
-                                              </div>
-                                            )}
-                                        </>
-                                      );
-                                    }
-                                  )}
-                                </div>
-                              ) : null}
+
+
+                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png"
+
+                                      onClick={() => EditComponentPicker(item)} />
+
+                                  </a>
+
+                                </span>
+
+                              </div>
+
                             </div>
+
+
+
+
+
+
                           </div>
+
+                          {SearchedCategoryData?.length > 0 ? (
+
+                            <div className="SmartTableOnTaskPopup">
+
+                              <ul className="list-group">
+
+                                {SearchedCategoryData.map((item: any) => {
+
+                                  return (
+
+                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+
+                                      <a>{item.Newlabel}</a>
+
+                                    </li>
+
+                                  )
+
+                                }
+
+                                )}
+
+                              </ul>
+
+                            </div>) : null}
+
+
+
+
+                          <div className="col">
+
+                            <div className="col">
+
+                              <div
+
+                                className="form-check">
+
+                                <input className="form-check-input rounded-0"
+
+                                  name="Phone"
+
+                                  type="checkbox" checked={PhoneStatus}
+
+                                  value={`${PhoneStatus}`}
+
+                                  onClick={(e) => CategoryChange(e, "Phone", 199)}
+
+                                />
+
+                                <label className="form-check-label">Phone</label>
+
+                              </div>
+
+                              <div
+
+                                className="form-check">
+
+                                <input className="form-check-input rounded-0"
+
+                                  type="checkbox"
+
+                                  checked={EmailStatus}
+
+                                  value={`${EmailStatus}`}
+
+                                  onClick={(e) => CategoryChange(e, "Email Notification", 276)}
+
+                                />
+
+                                <label>Email Notification</label>
+
+
+
+
+                              </div>
+
+                              <div
+
+                                className="form-check">
+
+                                <input className="form-check-input rounded-0"
+
+                                  type="checkbox"
+
+                                  checked={ImmediateStatus}
+
+                                  value={`${ImmediateStatus}`}
+
+                                  onClick={(e) => CategoryChange(e, "Immediate", 228)} />
+
+                                <label>Immediate</label>
+
+                              </div>
+
+
+
+
+                            </div>
+
+                            <div className="form-check ">
+
+                              <label className="full-width">Approval</label>
+
+                              <input
+
+                                type="checkbox"
+
+                                className="form-check-input rounded-0"
+
+                                name="Approval"
+
+                                checked={ApprovalStatus}
+
+                                value={`${ApprovalStatus}`}
+
+                                onClick={(e) => CategoryChange(e, "Approval", 227)}
+
+
+
+
+                              />
+
+                            </div>
+
+                          </div>
+
+                          {CategoriesData != undefined ?
+
+                            <div>
+
+                              {CategoriesData?.map((type: any, index: number) => {
+
+                                return (
+
+                                  <>
+
+                                    {(type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Approval" && type.Title != "Immediate") &&
+
+
+
+
+                                      <div className="block d-flex full-width justify-content-between mb-1 p-2">
+
+                                        <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${RequireData?.siteUrl}/SitePages/Portfolio-Profile.aspx?${item?.Id}`}>
+
+                                          {type.Title}
+
+                                        </a>
+
+                                        <span className='bg-light svg__iconbox svg__icon--cross' onClick={() => deleteCategories(type?.Id)}></span>
+
+                                        {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
+
+                                      </div>
+
+                                    }
+
+                                  </>
+
+                                )
+
+                              })}
+
+                            </div> : null
+
+                          }
                         </div>
                       </div>
                     </div>
                     <div className="col-sm-4  ">
                       <CommentCard
-                        siteUrl={EditData.siteUrl}
-                        userDisplayName={EditData.userDisplayName}
-                        listName={EditData.siteType}
-                        itemID={EditData.Id}
+                        siteUrl={EditData?.siteUrl}
+                        userDisplayName={EditData?.userDisplayName}
+                        listName={EditData?.siteType}
+                        itemID={EditData?.Id}
+                        AllListId={RequireData}
                       ></CommentCard>
                     </div>
                     <div className="col-sm-8">
+
                       <div className="input-group mb-2">
-                        <label className="form-label  full-width">Url</label>
+                        <label className="form-label  full-width"></label>
                         <input
                           type="text"
-                          className="form-control"
+                          className="form-control me-1"
                           defaultValue={
                             EditData.component_x0020_link != null
                               ? EditData.component_x0020_link
@@ -2265,22 +3242,24 @@ function EditInstitution(item: any) {
                           }
                           placeholder="Url"
                         ></input>
+                        <span> <a target="_blank" data-interception="off" href={EditData.component_x0020_link}> Open  </a></span>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 <div
-                  className="tab-pane"
+                  className={usedFor == "Task-Popup" ? "tab-pane show active" : "tab-pane"}
                   id="concept"
                   role="tabpanel"
                   aria-labelledby="profile-tab"
                 >
                   <div className="row">
-                    <div className="col-sm-7">
+                    <div className="col-sm-7 pe-0">
                       <div className="row">
                         <TeamConfigurationCard
-                          ItemInfo={item.props}
+                          ItemInfo={EditData}
+                          Sitel={RequireData}
                           parentCallback={DDComponentCallBack}
                         ></TeamConfigurationCard>
                       </div>
@@ -2306,7 +3285,7 @@ function EditInstitution(item: any) {
                                     data-bs-toggle="collapse"
                                   >
                                     <span className="sign">
-                                      {EditData.showsAdmin ? (
+                                      {EditData?.showsAdmin ? (
                                         <IoMdArrowDropdown />
                                       ) : (
                                         <IoMdArrowDropright />
@@ -2319,7 +3298,7 @@ function EditInstitution(item: any) {
                                   </button>
                                 </div>
                                 <div className="accordion-collapse collapse show">
-                                  {EditData.showsAdmin && (
+                                  {EditData?.showsAdmin && (
                                     <div
                                       className="accordion-body pt-1"
                                       id="testDiv1"
@@ -2327,11 +3306,11 @@ function EditInstitution(item: any) {
                                       <textarea
                                         className="full_width"
                                         defaultValue={
-                                          EditData.Admin_x0020_Notes
+                                          EditData?.Admin_x0020_Notes
                                         }
                                         onChange={(e) =>
-                                          (EditData.Admin_x0020_Notes =
-                                            e.target.value)
+                                        (EditData.Admin_x0020_Notes =
+                                          e.target.value)
                                         }
                                       ></textarea>
                                     </div>
@@ -2356,7 +3335,7 @@ function EditInstitution(item: any) {
                                   >
                                     <span className="fw-medium font-sans-serif text-900">
                                       <span className="sign">
-                                        {EditData.showdes ? (
+                                        {EditData?.showdes ? (
                                           <IoMdArrowDropdown />
                                         ) : (
                                           <IoMdArrowDropright />
@@ -2367,7 +3346,7 @@ function EditInstitution(item: any) {
                                   </button>
                                 </div>
                                 <div className="accordion-collapse collapse show">
-                                  {EditData.showdes && (
+                                  {EditData?.showdes && (
                                     <div
                                       className="accordion-body pt-1"
                                       id="testDiv1"
@@ -2376,7 +3355,7 @@ function EditInstitution(item: any) {
                                         <input
                                           type="checkbox"
                                           defaultChecked={
-                                            EditData.descriptionVerified ===
+                                            EditData?.descriptionVerified ===
                                             true
                                           }
                                         ></input>
@@ -2385,8 +3364,8 @@ function EditInstitution(item: any) {
                                       {/* <HtmlEditorCard editorValue={this.state.editorValue} HtmlEditorStateChange={this.HtmlEditorStateChange}></HtmlEditorCard> */}
                                       <HtmlEditorCard
                                         editorValue={
-                                          EditData.Body != undefined
-                                            ? EditData.Body
+                                          EditData?.Body != undefined
+                                            ? EditData?.Body
                                             : ""
                                         }
                                         HtmlEditorStateChange={
@@ -2415,7 +3394,7 @@ function EditInstitution(item: any) {
                                   >
                                     <span className="fw-medium font-sans-serif text-900">
                                       <span className="sign">
-                                        {EditData.show ? (
+                                        {EditData?.show ? (
                                           <IoMdArrowDropdown />
                                         ) : (
                                           <IoMdArrowDropright />
@@ -2426,7 +3405,7 @@ function EditInstitution(item: any) {
                                   </button>
                                 </div>
                                 <div className="accordion-collapse collapse show">
-                                  {EditData.show && (
+                                  {EditData?.show && (
                                     <div
                                       className="accordion-body pt-1"
                                       id="testDiv1"
@@ -2435,7 +3414,7 @@ function EditInstitution(item: any) {
                                         <input
                                           type="checkbox"
                                           defaultChecked={
-                                            EditData.ShortDescriptionVerified ===
+                                            EditData?.ShortDescriptionVerified ===
                                             true
                                           }
                                         ></input>
@@ -2444,9 +3423,9 @@ function EditInstitution(item: any) {
 
                                       <HtmlEditorCard
                                         editorValue={
-                                          EditData.Short_x0020_Description_x0020_On !=
-                                          undefined
-                                            ? EditData.Short_x0020_Description_x0020_On
+                                          EditData?.Short_x0020_Description_x0020_On !=
+                                            undefined
+                                            ? EditData?.Short_x0020_Description_x0020_On
                                             : ""
                                         }
                                         HtmlEditorStateChange={
@@ -2475,7 +3454,7 @@ function EditInstitution(item: any) {
                                     data-bs-toggle="collapse"
                                   >
                                     <span className="sign">
-                                      {EditData.showl ? (
+                                      {EditData?.showl ? (
                                         <IoMdArrowDropdown />
                                       ) : (
                                         <IoMdArrowDropright />
@@ -2488,7 +3467,7 @@ function EditInstitution(item: any) {
                                   </button>
                                 </div>
                                 <div className="accordion-collapse collapse show">
-                                  {EditData.showl && (
+                                  {EditData?.showl && (
                                     <div
                                       className="accordion-body pt-1"
                                       id="testDiv1"
@@ -2497,18 +3476,18 @@ function EditInstitution(item: any) {
                                         <input
                                           type="checkbox"
                                           defaultChecked={
-                                            EditData.BackgroundVerified === true
+                                            EditData?.BackgroundVerified === true
                                           }
                                           onChange={(e) =>
-                                            (EditData.BackgroundVerified =
-                                              e.target.value)
+                                          (EditData.BackgroundVerified =
+                                            e.target.value)
                                           }
                                         ></input>
                                         <span className="ps-1">Verified</span>
                                       </span>
                                       <textarea
                                         className="full_width"
-                                        defaultValue={EditData.Background}
+                                        defaultValue={EditData?.Background}
                                         onChange={(e) =>
                                           (EditData.Background = e.target.value)
                                         }
@@ -2535,7 +3514,7 @@ function EditInstitution(item: any) {
                                     data-bs-toggle="collapse"
                                   >
                                     <span className="sign">
-                                      {EditData.shows ? (
+                                      {EditData?.shows ? (
                                         <IoMdArrowDropdown />
                                       ) : (
                                         <IoMdArrowDropright />
@@ -2548,7 +3527,7 @@ function EditInstitution(item: any) {
                                   </button>
                                 </div>
                                 <div className="accordion-collapse collapse show">
-                                  {EditData.shows && (
+                                  {EditData?.shows && (
                                     <div
                                       className="accordion-body pt-1"
                                       id="testDiv1"
@@ -2557,18 +3536,18 @@ function EditInstitution(item: any) {
                                         <input
                                           type="checkbox"
                                           defaultChecked={
-                                            EditData.IdeaVerified === true
+                                            EditData?.IdeaVerified === true
                                           }
                                           onChange={(e) =>
-                                            (EditData.BackgroundVerified =
-                                              e.target.value)
+                                          (EditData.BackgroundVerified =
+                                            e.target.value)
                                           }
                                         ></input>
                                         <span className="ps-1">Verified</span>
                                       </span>
                                       <textarea
                                         className="full_width"
-                                        defaultValue={EditData.Idea}
+                                        defaultValue={EditData?.Idea}
                                         onChange={(e) =>
                                           (EditData.Idea = e.target.value)
                                         }
@@ -2595,7 +3574,7 @@ function EditInstitution(item: any) {
                                     data-bs-toggle="collapse"
                                   >
                                     <span className="sign">
-                                      {EditData.showj ? (
+                                      {EditData?.showj ? (
                                         <IoMdArrowDropdown />
                                       ) : (
                                         <IoMdArrowDropright />
@@ -2608,7 +3587,7 @@ function EditInstitution(item: any) {
                                   </button>
                                 </div>
                                 <div className="accordion-collapse collapse show">
-                                  {EditData.showj && (
+                                  {EditData?.showj && (
                                     <div
                                       className="accordion-body pt-1"
                                       id="testDiv1"
@@ -2617,18 +3596,18 @@ function EditInstitution(item: any) {
                                         <input
                                           type="checkbox"
                                           defaultChecked={
-                                            EditData.ValueAddedVerified === true
+                                            EditData?.ValueAddedVerified === true
                                           }
                                           onChange={(e) =>
-                                            (EditData.ValueAddedVerified =
-                                              e.target.value)
+                                          (EditData.ValueAddedVerified =
+                                            e.target.value)
                                           }
                                         ></input>
                                         <span className="ps-1">Verified</span>
                                       </span>
                                       <textarea
                                         className="full_width"
-                                        defaultValue={EditData.ValueAdded}
+                                        defaultValue={EditData?.ValueAdded}
                                         onChange={(e) =>
                                           (EditData.ValueAdded = e.target.value)
                                         }
@@ -2655,7 +3634,7 @@ function EditInstitution(item: any) {
                                     data-bs-toggle="collapse"
                                   >
                                     <span className="sign">
-                                      {EditData.showm ? (
+                                      {EditData?.showm ? (
                                         <IoMdArrowDropdown />
                                       ) : (
                                         <IoMdArrowDropright />
@@ -2668,7 +3647,7 @@ function EditInstitution(item: any) {
                                   </button>
                                 </div>
                                 <div className="accordion-collapse collapse show">
-                                  {EditData.showm && (
+                                  {EditData?.showm && (
                                     <div
                                       className="accordion-body pt-1"
                                       id="testDiv1"
@@ -2677,7 +3656,7 @@ function EditInstitution(item: any) {
                                         <input
                                           type="checkbox"
                                           defaultChecked={
-                                            EditData.DeliverablesVerified ===
+                                            EditData?.DeliverablesVerified ===
                                             true
                                           }
                                         ></input>
@@ -2685,8 +3664,8 @@ function EditInstitution(item: any) {
                                       </span>
                                       <HtmlEditorCard
                                         editorValue={
-                                          EditData.Deliverables != undefined
-                                            ? EditData.Deliverables
+                                          EditData?.Deliverables != undefined
+                                            ? EditData?.Deliverables
                                             : ""
                                         }
                                         HtmlEditorStateChange={
@@ -2702,7 +3681,31 @@ function EditInstitution(item: any) {
                         </section>
                       </div>
                     </div>
-                    <div className="col-sm-5"></div>
+                    <div className="col-sm-5 ps-0">
+                      {EditData.Id != null ?
+                        <>
+                          {SiteTypes != undefined && SiteTypes.length > 0 ?
+                            <SiteCompositionComponent
+                              AllListId={RequireData}
+                              ItemId={item.Id}
+                              siteUrls={RequireData.siteUrl}
+                              SiteTypes={SiteTypes}
+                              ClientTime={EditData.siteCompositionData != undefined ? EditData.siteCompositionData : []}
+                              SiteCompositionSettings={EditData.SiteCompositionSettings}
+                              // SmartTotalTimeData={SmartTotalTimeData}
+                              currentListName={EditData.siteType}
+                              callBack={SiteCompositionCallBack}
+                              isServiceTask={EditData?.Portfolio_x0020_Type == "Service" ? true : false}
+                              SelectedClientCategory={selectedClientCategory}
+                            // isPortfolioConncted={ComponentTaskCheck || ServicesTaskCheck ? true : false}
+                            // SitesTaggingData={SitesTaggingData}
+                            /> : null
+                          }
+                        </>
+                        : null
+                      }
+
+                    </div>
                   </div>
                 </div>
                 <div
@@ -2752,7 +3755,7 @@ function EditInstitution(item: any) {
                                 <input
                                   type="checkbox"
                                   defaultValue={
-                                    EditData.TechnicalExplanationsVerified
+                                    EditData?.TechnicalExplanationsVerified
                                   }
                                 />
                                 <span className="ps-1">Verified</span>
@@ -2760,8 +3763,8 @@ function EditInstitution(item: any) {
 
                               <HtmlEditorCard
                                 editorValue={
-                                  EditData.TechnicalExplanations != undefined
-                                    ? EditData.TechnicalExplanations
+                                  EditData?.TechnicalExplanations != undefined
+                                    ? EditData?.TechnicalExplanations
                                     : ""
                                 }
                                 HtmlEditorStateChange={
@@ -2782,7 +3785,7 @@ function EditInstitution(item: any) {
                   aria-labelledby="image-tab"
                 >
                   <div className="col-sm-12">
-                    <ImagesC />
+                    <ImagesC EditdocumentsData={EditData} setData={setEditData} AllListId={RequireData} Context={RequireData.Context} callBack={imageTabCallBack} />
                   </div>
                 </div>
               </div>
@@ -2792,30 +3795,30 @@ function EditInstitution(item: any) {
                 <div>
                   <div className="text-left">
                     Created{" "}
-                    <span ng-bind="EditData.Created | date:'dd/MM/yyyy'">
+                    <span ng-bind="EditData?.Created | date:'MM-DD-YYYY'">
                       {" "}
-                      {EditData.Created != null
-                        ? moment(EditData.Created).format("DD/MM/YYYY MM:SS")
+                      {EditData?.Created != null
+                        ? moment(EditData?.Created).format("MM-DD-YYYY MM:SS")
                         : ""}
                     </span>{" "}
                     by
                     <span className="panel-title ps-1">
-                      {EditData.Author?.Title != undefined
-                        ? EditData.Author?.Title
+                      {EditData?.Author?.Title != undefined
+                        ? EditData?.Author?.Title
                         : ""}
                     </span>
                   </div>
                   <div className="text-left">
                     Last modified{" "}
                     <span>
-                      {EditData.Modified != null
-                        ? moment(EditData.Modified).format("DD/MM/YYYY MM:SS")
+                      {EditData?.Modified != null
+                        ? moment(EditData?.Modified).format("MM-DD-YYYY MM:SS")
                         : ""}
                     </span>{" "}
                     by{" "}
                     <span className="panel-title">
-                      {EditData.Editor.Title != undefined
-                        ? EditData.Editor.Title
+                      {EditData?.Editor.Title != undefined
+                        ? EditData?.Editor.Title
                         : ""}
                     </span>
                   </div>
@@ -2838,10 +3841,11 @@ function EditInstitution(item: any) {
                     </a>
                     <span>
                       {" "}
-                      {EditData.ID ? (
+                      {EditData?.ID ? (
                         <VersionHistoryPopup
-                          taskId={EditData.ID}
-                          listId={listID}
+                          taskId={EditData?.ID}
+                          listId={RequireData.MasterTaskListID}
+                          siteUrls={RequireData?.siteUrl}
                         />
                       ) : (
                         ""
@@ -2854,7 +3858,7 @@ function EditInstitution(item: any) {
                     <span>
                       <a
                         target="_blank"
-                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${EditData.Id}&name=${EditData.Title}`}
+                        href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${EditData?.Id}`}
                       >
                         <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" />{" "}
                         Go to Profile page
@@ -2865,9 +3869,8 @@ function EditInstitution(item: any) {
                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_maill.png"
                       />
                       <a
-                        href={`mailto:?subject=${"Test"}&body=${
-                          EditData.component_x0020_link
-                        }`}
+                        href={`mailto:?subject=${"Test"}&body=${EditData?.component_x0020_link
+                          }`}
                       >
                         {" "}
                         Share this task ||
@@ -2876,8 +3879,9 @@ function EditInstitution(item: any) {
                     <span className="p-1">|</span>
                     <a
                       className="p-1"
-                      href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/Master%20Tasks/EditForm.aspx?ID=${EditData.Id}`}
+                      href={`${RequireData.siteUrl}/Lists/Master%20Tasks/EditForm.aspx?ID=${EditData?.Id}`}
                       target="_blank"
+                      data-interception="off"
                     >
                       Open out-of-the-box form
                     </a>
@@ -2900,20 +3904,39 @@ function EditInstitution(item: any) {
               </div>
             </footer>
 
-            {IsComponent && item.props.Portfolio_x0020_Type == "Component" && (
+            {/* {IsComponent && item.Portfolio_x0020_Type == "Component" && (
               <LinkedComponent
                 props={SharewebComponent}
+                Dynamic={RequireData}
                 Call={Call}
               ></LinkedComponent>
             )}
-            {IsComponent && item.props.Portfolio_x0020_Type == "Service" && (
+            {IsComponent && item.Portfolio_x0020_Type == "Service" && (
               <ComponentPortPolioPopup
                 props={SharewebComponent}
+                Dynamic={RequireData}
                 Call={Call}
               ></ComponentPortPolioPopup>
-            )}
+            )} */}
+            {IsComponent ?
+              <ServiceComponentPortfolioPopup
+                props={SharewebComponent}
+                Dynamic={RequireData}
+                Call={Call}
+                ComponentType={"Service"}
+              ></ServiceComponentPortfolioPopup> : null
+            }
+            {IsService ?
+              <ServiceComponentPortfolioPopup
+                props={SharewebComponent}
+                Dynamic={RequireData}
+                Call={Call}
+                ComponentType={"Component"}
+              ></ServiceComponentPortfolioPopup> : null
+            }
             {IsComponentPicker && (
-              <Picker props={SharewebCategory} Call={Call}></Picker>
+              <Picker props={SharewebCategory} Call={Call}
+                usedFor="Task-Footertable" selectedCategoryData={CategoriesData} AllListId={RequireData}></Picker>
             )}
           </div>
         )}

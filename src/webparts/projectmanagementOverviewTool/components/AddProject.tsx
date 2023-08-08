@@ -6,7 +6,9 @@ import ComponentPortPolioPopup from '../../EditPopupFiles/ComponentPortfolioSele
 import Button from 'react-bootstrap/Button';
 import LinkedComponent from '../../../globalComponents/EditTaskPopup/LinkedComponent';
 import PortfolioTagging from './PortfolioTagging';
-let portfolioType = ''
+import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
+let portfolioType = '';
+let AllListId:any={};
 const AddProject = (props: any) => {
     const [title, settitle] = React.useState('')
     const [lgShow, setLgShow] = useState(false);
@@ -33,8 +35,8 @@ const AddProject = (props: any) => {
                     selectedService.push(smart?.Id);
                 })
             }
-            let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
-            await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items.add({
+            let web = new Web(props?.AllListId?.siteUrl);
+            await web.lists.getById(props?.AllListId?.MasterTaskListID).items.add({
                 Title: `${title}`,
                 Item_x0020_Type: "Project",
                 ComponentId: { "results": (selectedComponent !== undefined && selectedComponent?.length > 0) ? selectedComponent : [] },
@@ -56,6 +58,24 @@ const AddProject = (props: any) => {
         setLgShow(false)
 
     }
+      const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
+        if (functionType == 'close') {
+            setIsComponent(false);
+            setIsPortfolio(false);
+          } else {
+            if (Type === "Service") {
+              if (DataItem?.length > 0) {
+                setLinkedComponentData(DataItem);
+            }
+          }
+            if (Type === "Component") {
+              if (DataItem?.length > 0) {
+                  setSmartComponentData(DataItem);
+              }
+            }
+            setIsPortfolio(false);
+          }
+  }, [])
     const Call = (propsItems: any, type: any) => {
         setIsPortfolio(false);
         if (type === "Service") {
@@ -81,6 +101,27 @@ const AddProject = (props: any) => {
         setIsComponent(!IsComponent);
     }
     const EditPortfolio = (item: any, type: any) => {
+        if (type == "Component") {
+            item.smartComponent = [];
+            if (item.smartComponent != undefined) {
+              smartComponentData?.map((com: any) => {
+                item.smartComponent.push({ Title: com?.Title, Id: com?.Id });
+              });
+            }
+        } else if (type == "Service") {
+            item.smartComponent = [];
+            if (item.smartComponent != undefined) {
+              linkedComponentData?.map((com: any) => {
+                item.smartComponent.push({ Title: com?.Title, Id: com?.Id });
+              });
+            }
+        }
+    
+        portfolioType = type;
+        setIsPortfolio(true);
+        setShareWebComponent(item);
+      };
+    const EditPortfolio1 = (item: any, type: any) => {
         if (type == 'Component') {
             item.smartComponent = [];
             if (item.smartComponent != undefined) {
@@ -102,18 +143,7 @@ const AddProject = (props: any) => {
         setIsPortfolio(true);
         setShareWebComponent(item);
     }
-    const onRenderCustomFooterMain = () => {
-        return (
-
-
-            <footer className='text-end'>
-                <Button type="button" className="me-2" variant="secondary" onClick={() => closePopup()}>Cancel</Button>
-                <Button type="button" variant="primary" onClick={() => addFunction()}>Create</Button>
-            </footer>
-
-
-        )
-    }
+    
     return (
         <>
             <button type="button" className='btn btn-primary mb-2' onClick={() => OpenCreateTaskPopup()}>Create Project</button>
@@ -123,10 +153,9 @@ const AddProject = (props: any) => {
                 type={PanelType.medium}
                 isOpen={lgShow}
                 onDismiss={() => closePopup()}
-                isBlocking={false}
-                onRenderFooter={onRenderCustomFooterMain}>
+                isBlocking={false}>
 
-                <div className={IsComponent ? 'card-body' : 'card-body'}>
+                <div className={IsComponent ? 'Create-Projectpoup border mb-2 mt-2 p-2' : 'Create-Projectpoup  border mb-2 mt-2 p-2'}>
                     <span >
                         <div>
                             <span>
@@ -135,8 +164,6 @@ const AddProject = (props: any) => {
                         </div>
                     </span>
                     <div className="row">
-                        <div className='row pe-0'>
-
                             <div className="col-sm-12 input-group full-width">
                                 <div className="input-group full-width">
                                     <label className="form-label full-width">
@@ -156,10 +183,10 @@ const AddProject = (props: any) => {
                                             smartComponentData?.map((com: any, index: any) => {
                                                 return (
                                                     <>
-                                                        <span className="d-flex full-width Component-container-edit-task" >
-                                                            <a style={{ color: "#fff !important" }} target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                                        <span className="Component-container-edit-task block d-flex justify-content-between" >
+                                                            <a style={{ color: "#fff !important" }} target="_blank" href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                             <a>
-                                                                <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => unTagComponent(smartComponentData, index)} />
+                                                            <span style={{ marginLeft: "6px" }}onClick={() => unTagComponent(smartComponentData, index)} className="bg-light svg__icon--cross svg__iconbox"></span>
                                                             </a>
                                                         </span>
                                                     </>
@@ -188,32 +215,43 @@ const AddProject = (props: any) => {
                                 </div>
                                 {
                                     linkedComponentData?.length > 0 ?
-                                        <span className="full-width">
+                                        <div className="full-width serviepannelgreena">
                                             {linkedComponentData?.map((com: any, index: any) => {
                                                 return (
                                                     <>
-                                                        <span className="d-flex Component-container-edit-task" >
+                                                        <span className="Component-container-edit-task block d-flex justify-content-between " >
 
-                                                            <a className="hreflink " target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
+                                                            <a className="hreflink " target="_blank" href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                 {com.Title}
                                                             </a>
-                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => unTagService(linkedComponentData, index)} />
+                                                            <span style={{ marginLeft: "6px" }}onClick={() => unTagService(linkedComponentData, index)} className="bg-light svg__icon--cross svg__iconbox"></span>
 
                                                         </span>
                                                     </>
                                                 )
                                             })}
-                                        </span> : ""
+                                        </div> : ""
                                 }
 
                             </div>
-
-                        </div>
                     </div>
                 </div>
+                <footer className='text-end'>
+                <Button type="button" variant="primary" className='me-1' onClick={() => addFunction()}>Create</Button>
+                <Button type="button" className="btn btn-default" variant="secondary" onClick={() => closePopup()}>Cancel</Button>
+           
+            </footer>
             </Panel>
-
-            {IsPortfolio && <PortfolioTagging props={ShareWebComponent} type={portfolioType} Call={Call}></PortfolioTagging>}
+            {IsPortfolio && (
+            <ServiceComponentPortfolioPopup
+              props={ShareWebComponent}
+              Dynamic={props?.AllListId}
+              ComponentType={portfolioType}
+              Call={ComponentServicePopupCallBack}
+              selectionType={"Multi"}
+            ></ServiceComponentPortfolioPopup>
+          )}
+            {/* {IsPortfolio && <PortfolioTagging props={ShareWebComponent} AllListId={props?.AllListId} type={portfolioType} Call={Call}></PortfolioTagging>} */}
         </>
     )
 }
