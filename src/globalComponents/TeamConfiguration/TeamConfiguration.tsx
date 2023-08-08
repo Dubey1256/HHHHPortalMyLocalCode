@@ -428,7 +428,8 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                 <a target="_blank " className="text-end siteColor mx-1" href={`${this.props.AllListId?.siteUrl}/SitePages/TaskUser-Management.aspx`} data-interception="off">
                                     Task User Management
                                 </a>
-                                <Tooltip ComponentId="1745" />
+                                <Tooltip ComponentId="1745"/>
+                              
                             </span>
                         </div>
                     </div>
