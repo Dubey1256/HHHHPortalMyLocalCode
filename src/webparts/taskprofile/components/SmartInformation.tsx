@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Tooltip from '../../../globalComponents/Tooltip';
-import { useState, useEffect } from 'react';
+import { useState, useEffect,forwardRef,useImperativeHandle } from 'react';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { Button, Tabs, Tab, Col, Nav, Row } from 'react-bootstrap';
 
@@ -22,7 +22,7 @@ let hhhsmartinfoId: any = [];
 let taskUser: any = [];
 let mastertaskdetails: any;
 let MovefolderItemUrl2 = "";
-const SmartInformation = (props: any) => {
+const SmartInformation = (props: any,ref:any) => {
   const [show, setShow] = useState(false);
   const [popupEdit, setpopupEdit] = useState(false);
   const [smartInformationArrow, setsmartInformationArrow] = useState(true);
@@ -99,6 +99,9 @@ const SmartInformation = (props: any) => {
     GetResult();
     LoadMasterTaskList();
   }, [show])
+  useImperativeHandle(ref,()=>({
+    GetResult
+}))
 
   //=========== TaskUser Management=====================
   const GetTaskUsers = async () => {
@@ -1490,6 +1493,6 @@ const SmartInformation = (props: any) => {
 
   )
 }
-export default SmartInformation;
+export default forwardRef(SmartInformation);
 
 
