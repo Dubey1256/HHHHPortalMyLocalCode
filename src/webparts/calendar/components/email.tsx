@@ -20,6 +20,7 @@ interface NameIdData {
 }
 
 let count:any=1;
+let totalmemebet:any;
 const EmailComponenet = (props: any) => {
   const [AllTaskuser, setAllTaskuser] = React.useState([]);
   const [leaveData, setleaveData] = React.useState([]);
@@ -86,9 +87,9 @@ const loadleave = async () =>  {
   const SendEmail = () => {
     let sp = spfi().using(spSPFx(props.Context));
     let totalteammemberonleave:any;
-    if(AllTaskuser?.length != 0){
+    
       totalteammemberonleave = (AllTaskuser?.length || 0) - (Object?.keys(nameidTotals)?.length || 0);
-    } 
+    
     sp.utility
       .sendEmail({
         //Body of Email
@@ -123,7 +124,7 @@ const loadleave = async () =>  {
       .get()
       .then((Data: any[]) => {
         console.log(Data);
-
+        
         setAllTaskuser(Data);
       })
       .catch((err:any) => {

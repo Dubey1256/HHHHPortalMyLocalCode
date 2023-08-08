@@ -247,7 +247,10 @@ if(fieldName =="PercentComplete"){
     if (editing) {
       return (
         <div className="editcolumn ">
-          <span> <input type={type} value={fieldValue} onChange={handleInputChange} /></span>
+          <span> <input type={type}
+          defaultValue={fieldValue != undefined ? fieldValue.split('/').reverse().join('-') : ""} 
+              // value={fieldValue}
+              style={{fontSize:"11px"}}onChange={handleInputChange} /></span>
         <span><a onClick={handleSave}><span className="svg__iconbox svg__icon--Save "></span></a>
           <a onClick={handleCancel}><span className="svg__iconbox svg__icon--cross "></span></a></span>
           
