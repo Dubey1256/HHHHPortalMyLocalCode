@@ -19,6 +19,7 @@ const BackgroundCommentComponent = (Props: any) => {
 
     const currentUserData: any = Props.CurrentUser;
     var BackgroundImageData: any = Props.TaskData?.BackgroundImages != undefined ? Props.TaskData?.BackgroundImages : [];
+    const [BackgroundImageJSON, setBackgroundImageJSON] = useState(BackgroundImageData)
     const Context = Props.Context;
     const siteUrls = Props.siteUrls;
     // This is used for Upload Background Images section and callback functions
@@ -45,8 +46,6 @@ const BackgroundCommentComponent = (Props: any) => {
         const web = new Web(siteUrls);
         const folder = web.getFolderByServerRelativeUrl(`PublishingImages/Covers`);
         folder.files.add(Data.fileName, data).then(async (item: any) => {
-            console.log(item)
-            // let hostWebURL = Context.pageContext._site.absoluteUrl.replace(Context.pageContext._site.absoluteUrl,"");
             let imageURL: string = `${Context._pageContext._web.absoluteUrl.split(Context.pageContext._web.serverRelativeUrl)[0]}${item.data.ServerRelativeUrl}`;
             await web.getFileByServerRelativeUrl(`${Context?._pageContext?._web?.serverRelativeUrl}/PublishingImages/Covers/${Data.fileName}`).getItem()
                 .then(async (res: any) => {
@@ -59,11 +58,13 @@ const BackgroundCommentComponent = (Props: any) => {
                         "UploadeDate": Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY'),
                         "UserName": Context._pageContext._user.displayName,
                         "ImageName": Data.fileName,
-
+                        "UserImage": currentUserData?.length > 0 ? currentUserData[0].Item_x0020_Cover?.Url : ""
                     }
                     console.log(obj)
                     BackgroundImageData.push(obj);
-                    updateCommentFunction(BackgroundImageData, "OffshoreImageUrl")
+                    setBackgroundImageJSON(BackgroundImageData);
+                    updateCommentFunction(BackgroundImageData, "OffshoreImageUrl");
+                    setuploadImageContainer(false);
 
                 }).catch((error: any) => {
                     console.log(error)
@@ -117,6 +118,39 @@ const BackgroundCommentComponent = (Props: any) => {
         updateCommentFunction(tempArray, "OffshoreComments");
         tempArray = [];
     }
+
+    const deletebackgroundImageFunction = async (ItemData: any) => {
+    
+        let tempArray: any = [];
+        const web = new Web(Props.Context.pageContext.web.absoluteUrl);
+        var text: any = "Are you sure want to delete this image";
+        if (confirm(text) == true) {
+            web.getFileByServerRelativeUrl(`${Props?.Context?._pageContext?.web?.serverRelativeUrl}/PublishingImages/${ItemData.ImageName}`)
+                .recycle()
+                .then((res: any) => {
+                    console.log(res);
+                    if (BackgroundImageData?.length > 0) {
+                        BackgroundImageData.map((ImageData: any) => {
+                            if (ImageData.ImageName != ItemData.ImageName) {
+                                tempArray.push(ImageData);
+                            }
+                        })
+                        updateCommentFunction(tempArray, "OffshoreImageUrl");
+                        setBackgroundImageJSON(tempArray);
+                        BackgroundImageData = tempArray;
+                    } else {
+                        updateCommentFunction([], "OffshoreImageUrl");
+                        setBackgroundImageJSON([]);
+                        BackgroundImageData = []
+                    }
+
+                }).catch((error: any) => {
+                    console.log(error)
+                })
+        }
+    }
+
+
     // This is common function for  Update Commnent on Backend Side 
     const updateCommentFunction = async (UpdateData: any, columnName: any) => {
         try {
@@ -157,8 +191,8 @@ const BackgroundCommentComponent = (Props: any) => {
     return (
         <div className="d-flex justify-content-between">
             <div className="Background_Image col-4">
-                {BackgroundImageData != undefined && BackgroundImageData.length > 0 ?
-                    <div> {BackgroundImageData.map((ImageDtl: any, index: number) => {
+                {BackgroundImageJSON != undefined && BackgroundImageJSON.length > 0 ?
+                    <div> {BackgroundImageJSON.map((ImageDtl: any, index: number) => {
                         return (
                             <div key={index} className="image-item">
                                 <div className="my-1">
@@ -173,10 +207,13 @@ const BackgroundCommentComponent = (Props: any) => {
                                     <div className="card-footer d-flex justify-content-between">
                                         <div>
                                             <span className="fw-semibold">{ImageDtl.UploadeDate ? ImageDtl.UploadeDate : ''}</span>
+                                            <span className="mx-1">
+                                                <img className="imgAuthor" title={ImageDtl.UserName} src={ImageDtl.UserImage ? ImageDtl.UserImage : ''} />
+                                            </span>
                                         </div>
                                         <div>
                                             <span className="mx-1" title="Delete"
-                                                onClick={() => alert("We are working on it. This feature will be live soon ....")}
+                                                onClick={() => deletebackgroundImageFunction(ImageDtl)}
                                             ><RiDeleteBin6Line /> | </span>
                                             <span title="Open Image In Another Tab">
                                                 <a href={ImageDtl.Url} target="_blank" data-interception="off">
@@ -196,10 +233,9 @@ const BackgroundCommentComponent = (Props: any) => {
                 }
                 {uploadImageContainer ? <FlorarImageUploadComponent callBack={FlorarImageReplaceComponentCallBack} /> : null}
                 <div className="Background_Image_footer d-flex justify-content-between my-1 ">
-                    {BackgroundImageData != undefined && BackgroundImageData.length > 0 ?
+                    {BackgroundImageJSON != undefined && BackgroundImageJSON.length > 0 ?
                         <span className="hreflink ms-0 ps-0 siteColor" onClick={() => setuploadImageContainer(true)}>Add New Image</span> : null
                     }
-
                 </div>
             </div>
             <div className="Background_Comment col-8 ps-3">
@@ -208,10 +244,10 @@ const BackgroundCommentComponent = (Props: any) => {
                     return (
                         <div className={`col-12 d-flex float-end add_cmnt my-1 `}>
                             <div className="">
-                                <img 
-                                style={{ width: "40px", borderRadius: "50%", height: "40px", margin: "5px" }}
-                                 src={dataItem.AuthorImage != undefined && dataItem.AuthorImage != '' ?
-                                    dataItem.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
+                                <img
+                                    style={{ width: "40px", borderRadius: "50%", height: "40px", margin: "5px" }}
+                                    src={dataItem.AuthorImage != undefined && dataItem.AuthorImage != '' ?
+                                        dataItem.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
                             </div>
                             <div className="col-11 pe-0 mt-2 ms-1" >
                                 <div className='d-flex justify-content-between align-items-center'>
@@ -241,14 +277,12 @@ const BackgroundCommentComponent = (Props: any) => {
                 }) :
                     <div
                         className="commented-data-sections my-2 p-1"
-                        // style={{ width: "100%", height: "150px", border: "2px dotted #ccc" }}
                     >
                         There is no comments
                     </div>
                 }
                 <div className="enter-comment-data-section">
                     <textarea
-                        // style={{ width: "100%", height: "100px", border: "2px solid #ccc" }}
                         value={BackgroundComment}
                         onChange={(e) => setBackgroundComment(e.target.value)}
                         placeholder="Enter Your Comment Here"
@@ -268,15 +302,13 @@ const BackgroundCommentComponent = (Props: any) => {
                     customWidth="500px"
                 >
                     <div className="parentDiv">
-                        <div 
-                        // style={{ width: '99%', marginTop: '2%', padding: '2%' }}
+                        <div
                         >
                             <textarea
                                 id="txtUpdateComment"
                                 rows={6}
                                 defaultValue={UpdateCommentData}
                                 onChange={(e) => setUpdateCommentData(e.target.value)}
-                                // style={{ width: '100%', marginLeft: '3px' }}
                             >
                             </textarea>
                         </div>
