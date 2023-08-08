@@ -745,7 +745,7 @@ const SiteCompositionComponent = (Props: any) => {
                         Select Client Category
                     </span>
                 </div>
-                <Tooltip ComponentId="1626" isServiceTask ={ServicesTaskCheck} />
+                <Tooltip ComponentId="1626" isServiceTask={ServicesTaskCheck} />
             </div>
         )
     }
@@ -894,7 +894,8 @@ const SiteCompositionComponent = (Props: any) => {
                                                                 <> {EIClientCategory?.map((dataItem: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
                                                                         return (
-                                                                            <div className="bg-69 selected-CC d-flex full-width justify-content-between p-1 ps-2" title={dataItem.Title ? dataItem.Title : null}>{dataItem.Title ? dataItem.Title : null}
+                                                                            <div className="bg-69 d-flex full-width justify-content-between p-1 ps-2" title={dataItem.Title ? dataItem.Title : null}>
+                                                                                {dataItem.Title ? dataItem.Title.substring(0, 14) + "..." : null}
                                                                                 <a className=""
                                                                                     onClick={() => removeSelectedClientCategory("EI")}
                                                                                 >
@@ -956,7 +957,8 @@ const SiteCompositionComponent = (Props: any) => {
                                                                 <> {EPSClientCategory?.map((dataItem: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
                                                                         return (
-                                                                            <div className="bg-69 selected-CC d-flex full-width justify-content-between p-1 ps-2" title={dataItem.Title ? dataItem.Title : null}> {dataItem.Title ? dataItem.Title : null}
+                                                                            <div className="bg-69 d-flex full-width justify-content-between p-1 ps-2" title={dataItem.Title ? dataItem.Title : null}>
+                                                                                 {dataItem.Title ? dataItem.Title.substring(0, 14) + "..." : null}
                                                                                 <a className=""
                                                                                     onClick={() => removeSelectedClientCategory("EPS")}
                                                                                 >
@@ -1021,8 +1023,8 @@ const SiteCompositionComponent = (Props: any) => {
                                                                 <> {EducationClientCategory?.map((dataItem: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
                                                                         return (
-                                                                            <div className="bg-69 selected-CC d-flex full-width justify-content-between p-1 ps-2" title={dataItem.Title ? dataItem.Title : null}>
-                                                                                {dataItem.Title ? dataItem.Title : null}
+                                                                            <div className="bg-69 d-flex full-width justify-content-between p-1 ps-2" title={dataItem.Title ? dataItem.Title : null}>
+                                                                                 {dataItem.Title ? dataItem.Title.substring(0, 14) + "..." : null}
                                                                                 <a className=""
                                                                                     onClick={() => removeSelectedClientCategory("Education")}
                                                                                 >
@@ -1085,7 +1087,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
                                                                         return (
                                                                             <div className="bg-69 selected-CC d-flex full-width justify-content-between p-1 ps-2" title={dataItem.Title ? dataItem.Title : null}>
-                                                                                {dataItem.Title ? dataItem.Title : null}
+                                                                                {dataItem.Title ? dataItem.Title.substring(0, 14) + "..." : null}
                                                                                 <a className=""
                                                                                     onClick={() => removeSelectedClientCategory("Migration")}
                                                                                 >
@@ -1236,12 +1238,12 @@ const SiteCompositionComponent = (Props: any) => {
                                     {ClientCategoryPopupSiteName == "EPS" ?
                                         <>
                                             {EPSClientCategory != undefined && EPSClientCategory.length > 0 ?
-                                                <span className="bg-69 p-1 ps-2">
+                                                <span className="bg-69 d-inline-flex p-1 ps-2">
                                                     {EPSClientCategory != undefined && EPSClientCategory.length > 0 ? EPSClientCategory[0].Title : null}
-                                                    <a className=""
+                                                    <a className="ms-1"
                                                         onClick={() => removeSelectedClientCategory("EPS")}
                                                     >
-                                                        <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
+                                                        <span className="bg-light svg__icon--cross svg__iconbox"></span>
                                                     </a>
                                                 </span>
                                                 : null}
@@ -1250,12 +1252,12 @@ const SiteCompositionComponent = (Props: any) => {
                                     {ClientCategoryPopupSiteName == "EI" ?
                                         <>
                                             {EIClientCategory != undefined && EIClientCategory.length > 0 ?
-                                                <span className="bg-69 p-1 ps-2">
+                                                <span className="bg-69 d-inline-flex p-1 ps-2">
                                                     {EIClientCategory[0].Title}
-                                                    <a className=""
+                                                    <a className="ms-1"
                                                         onClick={() => removeSelectedClientCategory("EI")}
                                                     >
-                                                        <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
+                                                        <span className="bg-light svg__icon--cross svg__iconbox"></span>
                                                     </a>
                                                 </span>
                                                 : null}
@@ -1264,12 +1266,12 @@ const SiteCompositionComponent = (Props: any) => {
                                     {ClientCategoryPopupSiteName == "Education" ?
                                         <>
                                             {EducationClientCategory != undefined && EducationClientCategory.length > 0 ?
-                                                <span className="bg-69 p-1 ps-2">
+                                                <span className="bg-69 d-inline-flex p-1 ps-2">
                                                     {EducationClientCategory[0].Title}
-                                                    <a className=""
+                                                    <a className="ms-1"
                                                         onClick={() => removeSelectedClientCategory("Education")}
                                                     >
-                                                        <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
+                                                        <span className="bg-light svg__icon--cross svg__iconbox"></span>
                                                     </a>
                                                 </span>
                                                 : null}
@@ -1278,15 +1280,14 @@ const SiteCompositionComponent = (Props: any) => {
                                     {ClientCategoryPopupSiteName == "Migration" ?
                                         <>
                                             {MigrationClientCategory != undefined && MigrationClientCategory.length > 0 ?
-                                                <span className="bg-69 p-1 ps-2">
+                                                <span className="bg-69 d-inline-flex p-1 ps-2">
 
                                                     {MigrationClientCategory[0].Title}
-                                                    <a className=""
+                                                    <a className="ms-1"
                                                         onClick={() => removeSelectedClientCategory("Migration")}
                                                     >
-                                                        <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
+                                                        <span className="bg-light svg__icon--cross svg__iconbox"></span>
                                                     </a>
-
                                                 </span> : null}
                                         </>
                                         : null}
@@ -1307,7 +1308,6 @@ const SiteCompositionComponent = (Props: any) => {
                                                                 </div>
                                                             </div> : null}
                                                         </a>
-
                                                         <ul className="sub-menu clr">
                                                             {item.Child?.map(function (child1: any) {
                                                                 return (
@@ -1330,7 +1330,6 @@ const SiteCompositionComponent = (Props: any) => {
                                                                                         </div>
                                                                                     </div> : null}
                                                                                 </a>
-
                                                                                 <ul className="sub-menu clr">
                                                                                     {child1.Child?.map(function (child2: any) {
                                                                                         return (
@@ -1374,7 +1373,6 @@ const SiteCompositionComponent = (Props: any) => {
                                     : null}
                             </div>
                         </div>
-
                     </div>
                 </Panel>
             </div >
@@ -1385,4 +1383,4 @@ const SiteCompositionComponent = (Props: any) => {
         </div >
     )
 }
-export default SiteCompositionComponent;
+export default SiteCompositionComponent; 
