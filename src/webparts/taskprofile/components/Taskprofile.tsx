@@ -16,7 +16,7 @@ import VersionHistoryPopup from '../../../globalComponents/VersionHistroy/Versio
 import TasksTable from './TaskfooterTable';
 import EmailComponenet from './emailComponent';
 import EditSiteComposition from './EditSiteComposition'
-import AncTool from '../../../globalComponents/AncTool/AncTool';
+import AncTool from '../../../globalComponents/AncTool/AncTool'
 
 import Tooltip from '../../../globalComponents/Tooltip'
 import ApprovalHistoryPopup from '../../../globalComponents/EditTaskPopup/ApprovalHistoryPopup';
@@ -1728,7 +1728,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   </dl>
                   <dl>
                     <dt className='bg-Fa'>Estimated Time</dt>
-                    <dd className='bg-Ff position-relative' ><span className='tooltipbox' title="hours">{this.state.Result["EstimatedTime"] != undefined ? this.state.Result["EstimatedTime"].toFixed(1) : "0.0"} </span>
+                    <dd className='bg-Ff position-relative' ><span className='tooltipbox' title="hours">{this.state.Result["EstimatedTime"] != undefined ? this.state.Result["EstimatedTime"].toFixed(1)+"hours" : "0.0 hour"} </span>
                     </dd>
                   </dl>
                   {isShowTimeEntry && <dl>
@@ -1980,10 +1980,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                             userdisplay.push({ Title: this.props?.userDisplayName })
 
 
-                            if (fbData != null && fbData != undefined) {
+                            if (fbData != null && fbData != undefined &&fbData?.Title!="") {
 
                               try {
-                                if (fbData?.Title != undefined) {
+                                if (fbData?.Title != undefined ) {
                                   fbData.Title = fbData?.Title?.replace(/\n/g, '<br/>');
 
                                 }
