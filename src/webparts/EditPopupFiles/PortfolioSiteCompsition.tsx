@@ -1004,7 +1004,7 @@ const SiteCompositionComponent = (Props: any) => {
                         Select Client Category
                     </span>
                 </div>
-                <Tooltip ComponentId="1626" />
+                <Tooltip ComponentId="1626" isServiceTask={ServicesTaskCheck}/>
             </div>
         )
     }
@@ -1148,7 +1148,7 @@ const SiteCompositionComponent = (Props: any) => {
                         Select Item
                     </span>
                 </div>
-                <Tooltip ComponentId="1263" />
+                <Tooltip ComponentId="1626" isServiceTask={ServicesTaskCheck}/>
             </div>
         )
     }

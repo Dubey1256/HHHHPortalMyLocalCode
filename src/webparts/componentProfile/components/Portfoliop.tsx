@@ -2197,7 +2197,7 @@ const [Item,setItem]=React.useState("")
                           <div className="card-header">
                             <div className="card-actions float-end">
                               {" "}
-                              <Tooltip ComponentId="1748" />
+                              <Tooltip ComponentId="1748" IsServiceTask={TypeSite == "Service" ? true : false} />
                             </div>
                             <div className="mb-0 card-title h5">
                               Main Folder

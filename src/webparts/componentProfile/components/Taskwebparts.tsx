@@ -611,7 +611,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
             }
           </span>
         </div>
-        <Tooltip ComponentId={1272} />
+        <Tooltip ComponentId={1272}  IsServiceTask={IsUpdated == "Service" ? true : false} />
       </div>
     );
   };
@@ -657,7 +657,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         >
           <span>{`Create  ${IsUpdated} item in ${MeetingItems[0]?.PortfolioStructureID} ${MeetingItems[0]?.Title}`}</span>
         </div>
-        <Tooltip ComponentId="1746" />
+        <Tooltip ComponentId="1746" IsServiceTask={IsUpdated == "Service" ? true : false} />
       </div>
     );
   };
@@ -5381,7 +5381,7 @@ var PortfolioLevelNum: any = 0;
               <ExpndTable prop={expndpopup} prop1={tablecontiner} />
             </a>
             <a>
-              <Tooltip ComponentId="5756" />
+              <Tooltip ComponentId="5756" IsServiceTask={IsUpdated == "Service" ? true : false} />
             </a>
           </span>
 
