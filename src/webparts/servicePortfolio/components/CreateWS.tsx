@@ -22,7 +22,7 @@ var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
 var dynamicList: any = {}
 var TeamMemberIds: any = [];
-
+let InheritClientCategory:any=[];
 //var checkedWS:boolean=true;
 const CreateWS = (props: any) => {
     if (props.SelectedProp != undefined && props.SelectedProp.SelectedProp != undefined) {
@@ -33,9 +33,11 @@ const CreateWS = (props: any) => {
     SelectedTasks = []
     if (props != undefined) {
         var AllItems = props.props
+       
         SelectedTasks.push(AllItems)
         console.log(props)
     }
+
     const [TaskStatuspopup, setTaskStatuspopup] = React.useState(true);
 
     const [isDropItem, setisDropItem] = React.useState(false);
@@ -63,7 +65,6 @@ const CreateWS = (props: any) => {
     const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
     const [showChildData, setShowChildData] = React.useState(false);
     const [childItem, setChildItem] = React.useState(false);
-    const [trgetValue, setTrgetValue] = React.useState({ Title: '', Description: '' });
 
 
 
@@ -75,27 +76,68 @@ const CreateWS = (props: any) => {
     React.useEffect(() => {
 
         selectType('Workstream');
-        var Parent: any = []
-        props.data.forEach((val: any) => {
+        GetParentHierarchy(props.props)
+        // .then((data:any)=>{
+        //   console.log(data)
+        //   setParentArray(data)
+        // }).catch((error:any)=>{
+        //     console.log(error)
+        // })
+        // var Parent: any = []
+        // props.data.forEach((val: any) => {
 
-            if (val.Id == AllItems.Id) {
-                Parent.push(val);
-            }
-            if (val.childs != undefined) {
-                val.child = []
-                val.childs.map((chi: any) => {
-                    if (chi.Id == AllItems.Id) {
-                        Parent.push(val);
-                        val.child.push(chi)
+        //     if (val.Id == AllItems.Id) {
+        //         Parent.push(val);
+        //     }
+        //     if (val.childs != undefined) {
+        //         val.child = []
+        //         val.childs.map((chi: any) => {
+        //             if (chi.Id == AllItems.Id) {
+        //                 Parent.push(val);
+        //                 val.child.push(chi)
 
-                    }
-                })
+        //             }
+        //         })
 
-            }
-        })
-        setParentArray(Parent)
+        //     }
+        // })
+        // setParentArray(Parent)
 
     }, [])
+    const GetParentHierarchy = async (Item: any) => {
+        const parentdata:any=[]
+        // parentdata.push()
+        // return new Promise((resolve, reject) => {
+        var filt = "Id eq " + ( Item.Parent!=null||undefined? Item?.Parent?.Id:Item.Component.length > 0 ? Item.Component[0].Id : Item.Services[0].Id) + "";
+        let web = new Web(dynamicList?.siteUrl);
+        let compo = [];
+        web.lists
+          .getById(dynamicList?.MasterTaskListID)
+          .items
+          .select("ID", "Id", "Title", "Mileage", "Portfolio_x0020_Type", "ItemType","Parent/Id","Parent/Title"
+          ).expand("Parent")
+    
+          .top(4999)
+          .filter(filt)
+          .get().then((comp:any)=>{
+           
+         console.log(comp)
+         parentdata.push(comp[0])
+           parentdata.push(Item)
+        //  if(comp[0].Parent!=undefined){
+            // GetParentHierarchy(comp[0])
+        //  }else{
+            setParentArray(parentdata)
+            // resolve(parentdata)
+        //  }
+        
+          }).catch((error: any) => {
+            console.log(error)
+            // reject(error)
+          });
+        // })
+   
+    }
     var ItemRankTitle: any = ''
     TaskItemRank.push([{ rankTitle: 'Select Item Rank', rank: null }, { rankTitle: '(8) Top Highlights', rank: 8 }, { rankTitle: '(7) Featured Item', rank: 7 }, { rankTitle: '(6) Key Item', rank: 6 }, { rankTitle: '(5) Relevant Item', rank: 5 }, { rankTitle: '(4) Background Item', rank: 4 }, { rankTitle: '(2) to be verified', rank: 2 }, { rankTitle: '(1) Archive', rank: 1 }, { rankTitle: '(0) No Show', rank: 0 }]);
     const DDComponentCallBack = (dt: any) => {
@@ -249,7 +291,229 @@ const CreateWS = (props: any) => {
 
 
     }
+    // const createMultiChildAsWorkStream = async (item: any, Type: any, index: any, WorstreamLatestId: any) => {
+    //     var NewDate = ''
+    //    var  clientcaterogiesdata2:any=[];
+    //    var AssignedToUser:any=[];
+    //    var AllTeamMembers:any=[];
+    //    var TeamLeaderws:any=[];
+    //     WorstreamLatestId += index;
+    //     var SharewebID = '';
+    //     if (Task == undefined || Task == '')
+    //         Task = SelectedTasks[0];
+    //     if (TaskprofileId == '' || SelectedTasks.length > 0) {
+    //         TaskprofileId = SelectedTasks[0].Id;
+    //     }
+    //     if (Task.Component != undefined && Task.Component.length > 0) {
+    //         SharewebID = 'CA' + Task.SharewebTaskLevel1No + '-W' + WorstreamLatestId;
+    //     }
+    //     if (Task.Services != undefined && Task.Services.length > 0) {
+    //         SharewebID = 'SA' + Task.SharewebTaskLevel1No + '-W' + WorstreamLatestId;
+    //     }
+    //     // if (Task.SharewebTaskType != undefined && Task.SharewebTaskType.Title != undefined) {
+    //     //     SharewebID = 'A' + Task.SharewebTaskLevel1No + '-W' + WorstreamLatestId;
+    //     // }
+    //     var Component: any = []
+    //     var RelevantPortfolioIds: any = []
+
+    //     // smartComponentData.forEach((com: any) => {
+    //     //     if (com != undefined) {
+    //     //         Component.push(com.Id)
+    //     //     }
+
+    //     // })
+    //     // if (myDate?.editDate != undefined && myDate?.editDate != null) {
+    //     //     var dateValue = myDate?.editDate?.split("/");
+    //     //     var dp = dateValue[1] + "/" + dateValue[0] + "/" + dateValue[2];
+    //     //     var Dateet = new Date(dp)
+    //     //     NewDate = Moment(Dateet).format("ddd, DD MMM yyyy")
+    //     // }
+    //     if (date != undefined) {
+    //         NewDate = new Date(date).toDateString();
+    //     }
+    //     if (AllItems.Component[0] != undefined && AllItems.Component.length > 0) {
+    //         Component.push(AllItems.Component[0].Id)
+    //     }
+    //     if (AllItems.Services[0] != undefined && AllItems.Services.length > 0) {
+    //         RelevantPortfolioIds.push(AllItems.Services[0].Id)
+    //     }
+    //     if (AllItems?.Portfolio_x0020_Type == undefined) {
+    //         if (AllItems.Component != undefined && AllItems.Component.length > 0) {
+    //             smartComponentData.push(AllItems.Component);
+    //         }
+
+    //         if (AllItems.Services != undefined && AllItems.Services.length > 0) {
+    //             linkedComponentData.push(AllItems);
+    //         }
+
+    //     }
+
+    //     var categoriesItem = '';
+    //     CategoriesData.map((category) => {
+    //         if (category.Title != undefined) {
+    //             categoriesItem = categoriesItem == "" ? category.Title : categoriesItem + ';' + category.Title;
+    //         }
+    //     })
+    //     smartComponentData.forEach((com: any) => {
+    //         if (com != undefined) {
+    //             Component.push(com[0].Id)
+    //         }
+
+    //     })
+    //     if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
+    //         linkedComponentData?.map((com: any) => {
+    //             if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
+    //                 $.each(linkedComponentData, function (index: any, smart: any) {
+    //                     RelevantPortfolioIds.push(smart.Id)
+    //                 })
+    //             }
+    //         })
+    //     }
+    //     var CategoryID: any = []
+    //     CategoriesData.map((category) => {
+    //         if (category.Id != undefined) {
+    //             CategoryID.push(category.Id)
+    //         }
+    //     })
+    //     if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length>0) {
+    //         AllItems.AssignedTo.forEach((obj: any) => {
+    //             AssignedToIds.push(obj.Id);
+    //             AssignedToUser.push(obj);
+              
+    //         })
+    //     }
+    //     if (isDropItemRes == true) {
+    //         if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
+    //             TaskAssignedTo.map((taskInfo) => {
+    //                 AssignedToIds.push(taskInfo.Id);
+    //                 AssignedToUser.push(taskInfo);
+    //             })
+    //         }
+    //     }
+    //     if (AllItems?.TeamMembers != undefined  && AllItems?.TeamMembers?.length>0) {
+    //         AllItems?.TeamMembers.forEach((obj: any) => {
+    //             TeamMemberIds.push(obj.Id);
+    //             AllTeamMembers.push(obj);
+    
+    //         })
+    //     }
+    //     if (isDropItem == true) {
+    //         if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
+    //             TaskTeamMembers?.map((taskInfo) => {
+    //                 TeamMemberIds.push(taskInfo.Id);
+    //                 AllTeamMembers.push(taskInfo);
+      
+    //             })
+    //         }
+    //     }
+    //     if (AllItems?.TeamLeader != undefined &&  AllItems?.TeamLeader?.length>0) {
+    //         AllItems?.TeamLeader?.forEach((obj: any) => {
+    //             ResponsibleTeamIds.push(obj.Id);
+    //              TeamLeaderws.push(obj)
+    //         })
+    //     }
+    //     if (isDropItem == true) {
+    //         if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
+    //             TaskResponsibleTeam?.map((taskInfo) => {
+    //                 ResponsibleTeamIds.push(taskInfo.Id);
+    //                 TeamLeaderws.push(taskInfo)
+    //             })
+    //         }
+    //     }
+    //     if(props?.props!=undefined && props?.props?.ClientCategory?.length>0){
+    //       if(props?.props?.ClientCategory2!=undefined && props?.props?.ClientCategory2?.results?.length>0){
+    //         props?.props?.ClientCategory2?.results?.map((items:any)=>{
+    //             InheritClientCategory.push(items.Id)
+    //             clientcaterogiesdata2.push(items)  
+    //         })
+    //       }else{
+    //         props.props.ClientCategory?.map((items:any)=>{
+    //             InheritClientCategory.push(items.Id) 
+    //             clientcaterogiesdata2.push(items)  
+    //         }) 
+    //       }
+
+           
+    //     }
+    //     let web = new Web(dynamicList.siteUrl);
+    //     // if(props?.props?.ClientTime?.length>0){
+    //     //     props.props.ClientTime=JSON.stringify(props?.props?.ClientTime) 
+    //     // }
+    //     await web.lists.getById(AllItems.listId).items.add({
+    //         Title: AllItems.Title,
+    //         ComponentId: { "results": Component },
+    //         Categories: categoriesItem ? categoriesItem : null,
+    //         SharewebCategoriesId: { "results": CategoryID },
+    //         Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
+    //         ParentTaskId: AllItems.Id,
+    //         ServicesId: { "results": RelevantPortfolioIds },
+    //         Priority: AllItems.Priority,
+    //         Body: AllItems.Description,
+    //         // DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
+    //         DueDate: myDate.editDate = myDate.editDate ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy"): '',
+    //         SharewebTaskTypeId: SharewebTasknewTypeId,
+    //         Shareweb_x0020_ID: SharewebID,
+    //         SharewebTaskLevel2No: WorstreamLatestId,
+    //         SharewebTaskLevel1No: AllItems.SharewebTaskLevel1No,
+    //         ClientCategoryId: { "results": InheritClientCategory },
+    //         SiteCompositionSettings:props?.props?.SiteCompositionSettings!=undefined?props?.props?.SiteCompositionSettings:"",
+    //         ClientTime:props?.props?.ClientTime!=null ?props?.props?.ClientTime:"",
+    //         AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
+    //         Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
+    //         Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
+
+    //     }).then((res: any) => {
+    //         console.log(res);
+    //         if (PopupType == 'CreatePopup') {
+    //             res.data['SiteIcon'] = AllItems.SiteIcon
+    //             res.data['listId'] = AllItems.listId
+    //             res.data['SharewebTaskType'] = { Title: 'Workstream' }
+    //             res.data.DueDate = res?.data?.DueDate ?  Moment(res?.data?.DueDate).format("DD-MM-YYYY"):'',
+    //                 res.data['siteType'] = AllItems.siteType
+    //             res.data['Shareweb_x0020_ID'] = SharewebID,
+    //             res.data.ClientCategory=clientcaterogiesdata2,
+    //             res.data.Created=new Date();
+    //             res.data.Author={
+    //                 Id: res?.data?.AuthorId
+    //             }
+    //             res.data.Team_x0020_Members=AllTeamMembers?.length>0?AllTeamMembers:[]
+    //             res.data.Responsible_x0020_Team=TeamLeaderws?.length>0?TeamLeaderws:[]
+    //             res.data.AssignedTo=AssignedToUser?.length>0?AssignedToUser:[]
+    //             res.Item_x0020_Type=""
+    //             setIsPopupComponent(true)
+    //             setSharewebTask(res.data)
+    //             closeTaskStatusUpdatePoup(res);
+    //         }
+    //         else {
+    //             res.data['SiteIcon'] = AllItems.SiteIcon
+    //             res.data['listId'] = AllItems.listId
+    //             res.data['SharewebTaskType'] = { Title: 'Workstream' }
+    //             res.data.DueDate = res?.data?.DueDate ?  Moment(res?.data?.DueDate).format("MM-DD-YYYY"):'',
+    //                 res.data['siteType'] = AllItems.siteType
+    //             res.data['Shareweb_x0020_ID'] = SharewebID
+    //             res.data.ClientCategory= clientcaterogiesdata2,
+    //             res.data.Created=new Date();
+    //             res.data.Author={
+    //                 Id: res?.data?.AuthorId
+    //             }
+    //             res.data.Team_x0020_Members=AllTeamMembers?.length>0?AllTeamMembers:[]
+    //             res.data.Responsible_x0020_Team=TeamLeaderws?.length>0?TeamLeaderws:[]
+    //             res.data.AssignedTo=AssignedToUser?.length>0?AssignedToUser:[]
+    //             res.Item_x0020_Type=""
+    //             setSharewebTask(res.data)
+    //             closeTaskStatusUpdatePoup(res);
+    //         }
+
+
+
+    //     })
+
+    // }
     const createMultiChildAsWorkStream = async (item: any, Type: any, index: any, WorstreamLatestId: any) => {
+        var  clientcaterogiesdata2:any=[];
+       var AssignedToUser:any=[];
+       var AllTeamMembers:any=[];
+       var TeamLeaderws:any=[];
         var NewDate = ''
         WorstreamLatestId += index;
         var SharewebID = '';
@@ -392,7 +656,7 @@ const CreateWS = (props: any) => {
             Priority: item.Priority,
             Body: item?.Description != undefined ? item?.Description : AllItems.Description,
             // DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
-            DueDate: item.editDate = item.editDate ? Moment(item?.editDate).format("ddd, DD MMM yyyy") : '',
+            DueDate: item.editDate !=null  ? Moment(item?.editDate).format("ddd, DD MMM yyyy") : null,
             SharewebTaskTypeId: SharewebTasknewTypeId,
             FeedBack: FeedBackItemArrayNew.length ===0 ?'' :JSON.stringify(FeedBackItemArrayNew),
             Shareweb_x0020_ID: SharewebID,
@@ -453,11 +717,21 @@ const CreateWS = (props: any) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
-                res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : '',
+                res.data.DueDate = res?.data?.DueDate ?  Moment(res?.data?.DueDate).format("MM-DD-YYYY"):null,
                     res.data['siteType'] = AllItems.siteType
                 res.data['Shareweb_x0020_ID'] = SharewebID
+                res.data.ClientCategory= clientcaterogiesdata2,
+                res.data.Created=new Date();
+                res.data.Author={
+                    Id: res?.data?.AuthorId
+                }
+                res.data.Team_x0020_Members=AllTeamMembers?.length>0?AllTeamMembers:[]
+                res.data.Responsible_x0020_Team=TeamLeaderws?.length>0?TeamLeaderws:[]
+                res.data.AssignedTo=AssignedToUser?.length>0?AssignedToUser:[]
+                res.Item_x0020_Type=""
                 setSharewebTask(res.data)
                 closeTaskStatusUpdatePoup(res);
+               
             }
 
 
@@ -467,6 +741,10 @@ const CreateWS = (props: any) => {
     }
     const createChildAsWorkStream = async (item: any, Type: any, index: any, WorstreamLatestId: any) => {
         var NewDate = ''
+       var  clientcaterogiesdata2:any=[];
+       var AssignedToUser:any=[];
+       var AllTeamMembers:any=[];
+       var TeamLeaderws:any=[];
         WorstreamLatestId += index;
         var SharewebID = '';
         if (Task == undefined || Task == '')
@@ -545,59 +823,72 @@ const CreateWS = (props: any) => {
                 CategoryID.push(category.Id)
             }
         })
-        if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length > 0) {
+        if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length>0) {
             AllItems.AssignedTo.forEach((obj: any) => {
                 AssignedToIds.push(obj.Id);
+                AssignedToUser.push(obj);
+              
             })
         }
         if (isDropItemRes == true) {
             if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
                 TaskAssignedTo.map((taskInfo) => {
                     AssignedToIds.push(taskInfo.Id);
+                    AssignedToUser.push(taskInfo);
                 })
             }
         }
-        if (AllItems?.TeamMembers != undefined && AllItems?.TeamMembers?.length > 0) {
-            AllItems.TeamMembers.forEach((obj: any) => {
+        if (AllItems?.TeamMembers != undefined  && AllItems?.TeamMembers?.length>0) {
+            AllItems?.TeamMembers.forEach((obj: any) => {
                 TeamMemberIds.push(obj.Id);
+                AllTeamMembers.push(obj);
+    
             })
         }
         if (isDropItem == true) {
             if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
-                TaskTeamMembers.map((taskInfo) => {
+                TaskTeamMembers?.map((taskInfo) => {
                     TeamMemberIds.push(taskInfo.Id);
+                    AllTeamMembers.push(taskInfo);
+      
                 })
             }
         }
-        if (AllItems?.TeamLeader != undefined && AllItems?.TeamLeader?.length > 0) {
-            AllItems.TeamLeader.forEach((obj: any) => {
+        if (AllItems?.TeamLeader != undefined &&  AllItems?.TeamLeader?.length>0) {
+            AllItems?.TeamLeader?.forEach((obj: any) => {
                 ResponsibleTeamIds.push(obj.Id);
+                 TeamLeaderws.push(obj)
             })
         }
         if (isDropItem == true) {
             if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
-                TaskResponsibleTeam.map((taskInfo) => {
+                TaskResponsibleTeam?.map((taskInfo) => {
                     ResponsibleTeamIds.push(taskInfo.Id);
+                    TeamLeaderws.push(taskInfo)
                 })
             }
         }
-        let FeedBackItemArrayNew:any =[];
-        if(AllItems.Description !=undefined){
-        let param: any = Moment(new Date().toLocaleString())
-        let FeedBackItem:any ={};
-        FeedBackItem['Title'] = "FeedBackPicture" + param;
-        FeedBackItem['FeedBackDescriptions'] = [];
-        FeedBackItem.FeedBackDescriptions = [{
-            'Title': item.Description
-        }]
-        FeedBackItem['ImageDate'] = "" + param;
-        FeedBackItem['Completed'] = '';
-        if(FeedBackItem !=undefined && FeedBackItem.length >1)
-        FeedBackItemArrayNew.push(FeedBackItem)
-    }
+        if(props?.props!=undefined && props?.props?.ClientCategory?.length>0){
+          if(props?.props?.ClientCategory2!=undefined && props?.props?.ClientCategory2?.results?.length>0){
+            props?.props?.ClientCategory2?.results?.map((items:any)=>{
+                InheritClientCategory.push(items.Id)
+                clientcaterogiesdata2.push(items)  
+            })
+          }else{
+            props.props.ClientCategory?.map((items:any)=>{
+                InheritClientCategory.push(items.Id) 
+                clientcaterogiesdata2.push(items)  
+            }) 
+          }
+
+           
+        }
         let web = new Web(dynamicList.siteUrl);
+        // if(props?.props?.ClientTime?.length>0){
+        //     props.props.ClientTime=JSON.stringify(props?.props?.ClientTime) 
+        // }
         await web.lists.getById(AllItems.listId).items.add({
-            Title: trgetValue?.Title != undefined ? trgetValue?.Title : AllItems.Title,
+            Title: AllItems.Title,
             ComponentId: { "results": Component },
             Categories: categoriesItem ? categoriesItem : null,
             SharewebCategoriesId: { "results": CategoryID },
@@ -605,14 +896,16 @@ const CreateWS = (props: any) => {
             ParentTaskId: AllItems.Id,
             ServicesId: { "results": RelevantPortfolioIds },
             Priority: AllItems.Priority,
-            Body: trgetValue?.Description != undefined ? trgetValue?.Description : AllItems.Description,
-            FeedBack: FeedBackItemArrayNew.length ===0 ?'' :JSON.stringify(FeedBackItemArrayNew),
+            Body: AllItems.Description,
             // DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
-            DueDate: myDate.editDate = myDate.editDate ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy") : '',
+            DueDate: myDate.editDate = myDate.editDate ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy"): null,
             SharewebTaskTypeId: SharewebTasknewTypeId,
             Shareweb_x0020_ID: SharewebID,
             SharewebTaskLevel2No: WorstreamLatestId,
             SharewebTaskLevel1No: AllItems.SharewebTaskLevel1No,
+            ClientCategoryId: { "results": InheritClientCategory },
+            SiteCompositionSettings:props?.props?.SiteCompositionSettings!=undefined?props?.props?.SiteCompositionSettings:"",
+            ClientTime:props?.props?.ClientTime!=null ?props?.props?.ClientTime:"",
             AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
             Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
             Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
@@ -623,44 +916,19 @@ const CreateWS = (props: any) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
-                res.data.AssignedTo = []
-                res.data.Responsible_x0020_Team = []
-                res.data.Team_x0020_Members = []
-                if (res?.data?.Team_x0020_MembersId?.length > 0) {
-                    res.data?.Team_x0020_MembersId?.map((teamUser: any) => {
-                        let elementFound = props?.TaskUsers?.filter((User: any) => {
-                            if (User?.AssingedToUser?.Id == teamUser) {
-                                res.data.Team_x0020_Members.push(User?.AssingedToUser)
-                            }
-                        })
-
-                    })
-                }
-                if (res?.data?.Responsible_x0020_TeamId?.length > 0) {
-                    res.data?.Responsible_x0020_TeamId?.map((teamUser: any) => {
-                        let elementFound = props?.TaskUsers?.filter((User: any) => {
-                            if (User?.AssingedToUser?.Id == teamUser) {
-                                res.data.Responsible_x0020_Team.push(User?.AssingedToUser);
-                            }
-                        })
-
-                    })
-                }
-                if (res?.data?.AssignedToId?.length > 0) {
-                    res.data?.AssignedToId?.map((teamUser: any) => {
-                        let elementFound = props?.TaskUsers?.filter((User: any) => {
-                            if (User?.AssingedToUser?.Id == teamUser) {
-                                res.data.AssignedTo.push(User?.AssingedToUser)
-                            }
-                        })
-
-                    })
-                }
-                res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("DD-MM-YYYY") : '',
+                res.data.DueDate = res?.data?.DueDate!=null ?  Moment(res?.data?.DueDate).format("DD-MM-YYYY"):null,
                     res.data['siteType'] = AllItems.siteType
-                res.data['Shareweb_x0020_ID'] = SharewebID
-                if (SelectedTasks != undefined && SelectedTasks.length > 0)
-                    setIsPopupComponent(true)
+                res.data['Shareweb_x0020_ID'] = SharewebID,
+                res.data.ClientCategory=clientcaterogiesdata2,
+                res.data.Created=new Date();
+                res.data.Author={
+                    Id: res?.data?.AuthorId
+                }
+                res.data.Team_x0020_Members=AllTeamMembers?.length>0?AllTeamMembers:[]
+                res.data.Responsible_x0020_Team=TeamLeaderws?.length>0?TeamLeaderws:[]
+                res.data.AssignedTo=AssignedToUser?.length>0?AssignedToUser:[]
+                res.Item_x0020_Type=""
+                setIsPopupComponent(true)
                 setSharewebTask(res.data)
                 closeTaskStatusUpdatePoup(res);
             }
@@ -668,9 +936,18 @@ const CreateWS = (props: any) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
-                res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : '',
+                res.data.DueDate = res?.data?.DueDate!=null ?  Moment(res?.data?.DueDate).format("MM-DD-YYYY"):null,
                     res.data['siteType'] = AllItems.siteType
                 res.data['Shareweb_x0020_ID'] = SharewebID
+                res.data.ClientCategory= clientcaterogiesdata2,
+                res.data.Created=new Date();
+                res.data.Author={
+                    Id: res?.data?.AuthorId
+                }
+                res.data.Team_x0020_Members=AllTeamMembers?.length>0?AllTeamMembers:[]
+                res.data.Responsible_x0020_Team=TeamLeaderws?.length>0?TeamLeaderws:[]
+                res.data.AssignedTo=AssignedToUser?.length>0?AssignedToUser:[]
+                res.Item_x0020_Type=""
                 setSharewebTask(res.data)
                 closeTaskStatusUpdatePoup(res);
             }
@@ -746,6 +1023,10 @@ const CreateWS = (props: any) => {
     const createChildAsTask = async (item: any, Type: any, index: any) => {
         let NewDate = ''
         var RelevantPortfolioIds: any = []
+        var clientcaterogiesdata2:any=[];
+        var AssignedToUser:any=[];
+        var AllTeamMembers:any=[];
+        var TeamLeaderws:any=[];
         let web = new Web(dynamicList.siteUrl);
         let componentDetails: any = [];
         componentDetails = await web.lists
@@ -847,59 +1128,64 @@ const CreateWS = (props: any) => {
                     CategoryID.push(category.Id)
                 }
             })
-            if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length > 0) {
+            if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length>0) {
                 AllItems.AssignedTo.forEach((obj: any) => {
                     AssignedToIds.push(obj.Id);
+                    AssignedToUser.push(obj)
                 })
             }
             if (isDropItemRes == true) {
                 if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
                     TaskAssignedTo.map((taskInfo) => {
                         AssignedToIds.push(taskInfo.Id);
+                        AssignedToUser.push(taskInfo);
                     })
                 }
             }
-            if (AllItems?.TeamMembers != undefined && AllItems?.TeamMembers?.length > 0) {
+            if (AllItems?.TeamMembers != undefined  && AllItems?.TeamMembers?.length>0) {
                 AllItems.TeamMembers.forEach((obj: any) => {
                     TeamMemberIds.push(obj.Id);
+                    AllTeamMembers.push(obj)
                 })
             }
             if (isDropItem == true) {
                 if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
                     TaskTeamMembers.map((taskInfo) => {
                         TeamMemberIds.push(taskInfo.Id);
+                        AllTeamMembers.push(taskInfo)
                     })
                 }
             }
-            if (AllItems?.TeamLeader != undefined && AllItems?.TeamLeader?.length > 0) {
+            if (AllItems?.TeamLeader != undefined &&  AllItems?.TeamLeader?.length>0) {
                 AllItems.TeamLeader.forEach((obj: any) => {
                     ResponsibleTeamIds.push(obj.Id);
+                    TeamLeaderws.push(obj)
                 })
             }
             if (isDropItem == true) {
                 if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
                     TaskResponsibleTeam.map((taskInfo) => {
                         ResponsibleTeamIds.push(taskInfo.Id);
+                        TeamLeaderws.push(taskInfo)
                     })
                 }
             }
-            let FeedBackItemArrayNew:any =[];
-            if(AllItems.Description !=undefined){
-                let param: any = Moment(new Date().toLocaleString())
-                let FeedBackItem:any ={};
-                FeedBackItem['Title'] = "FeedBackPicture" + param;
-                FeedBackItem['FeedBackDescriptions'] = [];
-                FeedBackItem.FeedBackDescriptions = [{
-                    'Title': item.Description
-                }]
-                FeedBackItem['ImageDate'] = "" + param;
-                FeedBackItem['Completed'] = '';
-                if(FeedBackItem !=undefined && FeedBackItem.length >1)
-                FeedBackItemArrayNew.push(FeedBackItem)
+            if(props?.props!=undefined && props?.props?.ClientCategory?.length>0){
+                if(props?.props?.ClientCategory2!=undefined && props?.props?.ClientCategory2?.results?.length>0){
+                  props?.props?.ClientCategory2?.results?.map((items:any)=>{
+                      InheritClientCategory.push(items.Id)
+                      clientcaterogiesdata2.push(items)  
+                  })
+                }else{
+                  props.props.ClientCategory?.map((items:any)=>{
+                      InheritClientCategory.push(items.Id) 
+                      clientcaterogiesdata2.push(items)  
+                  }) 
+                }
             }
             let web = new Web(dynamicList.siteUrl);
             await web.lists.getById(AllItems.listId).items.add({
-                Title: trgetValue.Title != undefined ? trgetValue.Title : AllItems.Title,
+                Title: AllItems.Title,
                 ComponentId: { "results": Component },
                 Categories: categoriesItem ? categoriesItem : null,
                 Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
@@ -907,60 +1193,37 @@ const CreateWS = (props: any) => {
                 ParentTaskId: AllItems.Id,
                 ServicesId: { "results": RelevantPortfolioIds },
                 SharewebTaskTypeId: SharewebTasknewTypeId,
-                Body: trgetValue.Description != undefined ? trgetValue.Description : AllItems.Description,
-                FeedBack: FeedBackItemArrayNew.length ===0 ?'' :JSON.stringify(FeedBackItemArrayNew),
+                Body: AllItems.Description,
                 // DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
-                DueDate: myDate.editDate = myDate.editDate ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy") : '',
+                DueDate: myDate.editDate = myDate.editDate ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy"): '',
                 Shareweb_x0020_ID: SharewebID,
                 Priority: AllItems.Priority,
                 //SharewebTaskLevel2No: WorstreamLatestId,
                 SharewebTaskLevel1No: AllItems.SharewebTaskLevel1No,
                 AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
                 Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
-                Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
-
+                Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] },
+                ClientCategoryId: { "results": InheritClientCategory },
+                SiteCompositionSettings:props?.props?.SiteCompositionSettings!=undefined?props?.props?.SiteCompositionSettings:"",
+                ClientTime:props?.props?.ClientTime!=null ?props?.props?.ClientTime:"",
             }).then((res: any) => {
                 console.log(res);
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
-                res.data.AssignedTo = []
-                res.data.Responsible_x0020_Team = []
-                res.data.Team_x0020_Members = []
-                if (res?.data?.Team_x0020_MembersId?.length > 0) {
-                    res.data?.Team_x0020_MembersId?.map((teamUser: any) => {
-                        let elementFound = props?.TaskUsers?.filter((User: any) => {
-                            if (User?.AssingedToUser?.Id == teamUser) {
-                                res.data.Team_x0020_Members.push(User?.AssingedToUser)
-                            }
-                        })
-
-                    })
-                }
-                if (res?.data?.Responsible_x0020_TeamId?.length > 0) {
-                    res.data?.Responsible_x0020_TeamId?.map((teamUser: any) => {
-                        let elementFound = props?.TaskUsers?.filter((User: any) => {
-                            if (User?.AssingedToUser?.Id == teamUser) {
-                                res.data.Responsible_x0020_Team.push(User?.AssingedToUser);
-                            }
-                        })
-
-                    })
-                }
-                if (res?.data?.AssignedToId?.length > 0) {
-                    res.data?.AssignedToId?.map((teamUser: any) => {
-                        let elementFound = props?.TaskUsers?.filter((User: any) => {
-                            if (User?.AssingedToUser?.Id == teamUser) {
-                                res.data.AssignedTo.push(User?.AssingedToUser)
-                            }
-                        })
-
-                    })
-                }
                 // res.DueDate = NewDate != '' && NewDate != undefined ? NewDate : undefined,
-                res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : '',
+                res.data.DueDate = res?.data?.DueDate ?  Moment(res?.data?.DueDate).format("MM-DD-YYYY"):'',
                     res.data['siteType'] = AllItems.siteType
                 res.data['Shareweb_x0020_ID'] = SharewebID
+                res.data.Created=new Date();
+                res.data.Author={
+                    Id: res?.data?.AuthorId
+                }
+                res.data.ClientCategory=clientcaterogiesdata2,
+                res.data.Team_x0020_Members=AllTeamMembers?.length>0?AllItems?.AllTeamMembers:[]
+                res.data.Responsible_x0020_Team=TeamLeaderws.length>0?TeamLeaderws:[]
+                res.data.AssignedTo= AssignedToUser?.length>0?AssignedToUser:[]
+                res.Item_x0020_Type=""
                 closeTaskStatusUpdatePoup(res);
             })
         }
@@ -991,7 +1254,7 @@ const CreateWS = (props: any) => {
         TaskTypeItems = await web.lists
             .getById(dynamicList?.TaskTypeID)
             .items
-            .select("Id,Title,Prefix,Level")
+            .select("Id,Title,Shareweb_x0020_Edit_x0020_Column,Prefix,Level")
             .top(4999)
             .get()
         console.log(TaskTypeItems)
@@ -1017,13 +1280,13 @@ const CreateWS = (props: any) => {
     // };
     const onRenderCustomHeaderMain = () => {
         return (
-            <div className={AllItems?.Portfolio_x0020_Type == 'Service' ? "serviepannelgreena d-flex full-width pb-1" : "d-flex full-width pb-1"} >
+            <div className={AllItems?.Portfolio_x0020_Type == 'Service'|| AllItems?.Services?.length>0? "serviepannelgreena d-flex full-width pb-1" : "d-flex full-width pb-1"} >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <h2 className='heading'>
                         {`Create Item`}
                     </h2>
                 </div>
-                <Tooltip ComponentId={AllItems?.Id} />
+                <Tooltip ComponentId='1710'  />
             </div>
         );
     };
@@ -1065,19 +1328,23 @@ const CreateWS = (props: any) => {
         if (item == 'Today') {
             setMyDate({ ...myDate, editDate: dates, selectDateName: item });
         }
-        if (item == 'Tomorrow') {
+         if (item == 'Tomorrow') {
             setMyDate({ ...myDate, editDate: dates.setDate(dates.getDate() + 1), selectDateName: item })
         }
-        if (item == 'This Week') {
+         if (item == 'This Week') {
             setMyDate({ ...myDate, editDate: new Date(dates.setDate(dates.getDate() - dates.getDay() + 7)), selectDateName: item });
         }
-        if (item == 'This Month') {
+         if (item == 'This Month') {
             let lastDay = new Date(dates.getFullYear(), dates.getMonth() + 1, 0);
-            setMyDate({ ...myDate, editDate: lastDay, selectDateName: item });
+            setMyDate({ ...myDate, editDate: lastDay, selectDateName: item  });
         }
     }
     const SelectChildDate = (Value: any, item: any) => {
         let dates = new Date();
+        if(Value!==null && item===null){
+            Value.editDate = item;
+            Value.selectDateName = item;  
+        }
         if (item == 'Today') {
             Value.editDate = dates;
             Value.selectDateName = item;
@@ -1103,18 +1370,17 @@ const CreateWS = (props: any) => {
 
         setInputFields((inputFields: any) => [...inputFields]);
     }
-
-    React.useEffect(() => {
-        if (myDate?.editDate == undefined || myDate.editDate == null) {
-            let dates = new Date();
-            setMyDate({ ...myDate, editDate: dates, selectDateName: "Today" });
-        }
-    })
+    // React.useEffect(()=>{
+    //     if(myDate?.editDate == undefined || myDate.editDate == null){
+    //         let dates = new Date();
+    //         setMyDate({ ...myDate, editDate: dates, selectDateName: "Today" });
+    //     }
+    // })
 
     const AddchildItem = () => {
         setShowChildData(true)
         setInputFields([...inputFields, {
-            Title: '',
+            Title:'',
             ItemRank: '',
             Priority: '',
             DueDate: '',
@@ -1263,54 +1529,49 @@ const CreateWS = (props: any) => {
                 isOpen={TaskStatuspopup}
                 onDismiss={closeTaskStatusUpdatePoup}
                 isBlocking={false}
-                className={AllItems?.Portfolio_x0020_Type == 'Service' ? "serviepannelgreena" : ""}
+                className={AllItems?.Portfolio_x0020_Type == 'Service'|| AllItems?.Services?.length>0 ? "serviepannelgreena" : ""}
             >
-                <div className="modal-body border p-3 bg-f5f5 active">
+                <div className="modal-body border p-3 active Create-Item">
                     <div className='row'>
                         {
-                            ParentArray?.map((pare: any) => {
-                                return (
-                                    <>
+                            // ParentArray?.map((pare: any) => {
+                            //     return (
+                            //         <>
                                         <tr className='d-flex'>
                                             <td className='list-none mx-2'><b>Parent</b></td>
-                                            <td className='list-none mx-2'>{`${pare.Title} >`}</td>
+                                            {/* <td className='list-none mx-2'>{`${pare.Title} >`}</td> */}
                                             {
-                                                pare.child?.map((childsitem: any) => {
+                                                ParentArray?.map((childsitem: any,index:any) => {
                                                     return (
                                                         <>
-                                                            <td className='list-none'>{childsitem.Title}</td>
+                                                            <td className='list-none'>{ParentArray.length-1==index?`${childsitem?.Title}`:`${childsitem?.Title}>`}</td>
                                                         </>
                                                     )
                                                 })
                                             }
                                         </tr>
-                                    </>
-                                )
-                            })
+                                //     </>
+                                // )
+                            // })
                         }
                     </div>
-                    <div className='row mt-2'>
-
-                        <span className="col-sm-2 padL-0 ">
-                            <label>
-                                <input type="radio" checked={checkedWS} onClick={() => selectType('Workstream')} className="me-1" />Workstream
-                            </label>
+                    <div className='row'>
+                        <span className="col-sm-3 rediobutton ">
+                            <span className='SpfxCheckRadio'>
+                                <input type="radio" checked={checkedWS} onClick={() => selectType('Workstream')} className="radio" /> Workstream
+                            </span>
+                            <span className='SpfxCheckRadio'>
+                                <input type="radio" checked={checkedTask} onClick={() => selectType('Task')} className="radio" />Task
+                            </span>
                         </span>
-                        <span className="col-sm-2" >
-                            <label>
-                                <input type="radio" checked={checkedTask} onClick={() => selectType('Task')} className="me-1" />Task
-                            </label>
-                        </span>
-
                     </div>
                     <div className='row'>
-                        <div className="col-sm-8 pad0">
-                            <label className="full-width"></label>
+                        <div className="col-md-8">
                             <input className="full-width" type="text"
-                                placeholder="Enter Child Item Title" defaultValue={AllItems?.Title} onChange={(e: any) => setTrgetValue({ ...trgetValue, Title: e.target.value })}
+                                placeholder="Enter Child Item Title" defaultValue={AllItems?.Title} onChange={(e: any) => AllItems.Title = e.target.value}
                             />
                         </div>
-                        <div className="col-sm-4">
+                        <div className="col-md-4">
                             {AllItems?.Portfolio_x0020_Type == 'Component'
                                 &&
                                 <div className="">
@@ -1319,8 +1580,8 @@ const CreateWS = (props: any) => {
                                         <input type="text" id="txtSharewebComponentcrt"
                                         /><span role="status" aria-live="polite" title="Edit Component" data-toggle="modal"
                                             onClick={(e) => EditComponent(AllItems)}
-                                            className="input-group-text">
-                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png" />
+                                            className="full-width">
+                                            <span className="input-group-text" title="Status Popup"><span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span></span>
                                         </span>
                                     </div>
                                     <div className="col-sm-12 padL-0 PadR0">
@@ -1354,7 +1615,7 @@ const CreateWS = (props: any) => {
                         </div>
 
                     </div>
-                    <div className='row mt-4'>
+                    <div className='row mt-2'>
                         <div className='col-sm-4'>
                             <div className="input-group">
                                 <label className="full-width">Item Rank</label>
@@ -1387,52 +1648,50 @@ const CreateWS = (props: any) => {
                             </div>
                         </div>
                         <div className='col-sm-4'>
-                            <fieldset>
-                                <label className="full-width">Priority
-                                    <span>
-                                        <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
-
-                                            <div className="popover__content">
-                                                <span>
-
+                            <div className='Create-Priority'>
+                                <label className="full-width">
+                           
+                                     <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                     Priority  <span title="Edit" className="svg__iconbox svg__icon--info "></span>
+                                          <div className="popover__content">
                                                     8-10 = High Priority,<br />
                                                     4-7 = Normal Priority,<br />
-                                                    1-3 = Low Priority
-                                                </span>
-
+                                                    1-3 = Low Priority      
                                             </div>
 
                                         </div>
-                                    </span></label>
+                               
+                                    </label>
 
-                                <input type="text" className="full-width" placeholder="Priority"
+                                <input type="text" className="full-width" placeholder="Priority" ng-model="PriorityRank"
                                     defaultValue={selectPriority} onChange={(e: any) => Priority(e)} />
-                                <div className="mt-2">
-                                    <label>
-                                        <input className="form-check-input  me-1" name="radioPriority"
+                                    <dl className='mt-1'>
+                                <dt>
+                                    <label className='SpfxCheckRadio'>
+                                        <input className="radio" name="radioPriority"
                                             type="radio" value="(1) High"
                                             defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(1) High', e)} />High
                                     </label>
-                                </div>
-                                <div className="">
-                                    <label>
-                                        <input className="form-check-input me-1" name="radioPriority"
+                                </dt>
+                                <dt>
+                                    <label className='SpfxCheckRadio'>
+                                        <input className="radio" name="radioPriority"
                                             type="radio" value="(2) Normal"
                                             defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(2) Normal', e)} />Normal
                                     </label>
-                                </div>
-                                <div className="">
-                                    <label>
-                                        <input className="form-check-input me-1" name="radioPriority"
+                                </dt>
+                                <dt>
+                                    <label className='SpfxCheckRadio'>
+                                        <input className="radio" name="radioPriority"
                                             type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(3) Low', e)} />Low
                                     </label>
-                                </div>
-                            </fieldset>
+                                </dt>
+                                </dl>
+                            </div>
 
                         </div>
-                        <div className='col-sm-4'>
-                            <label className="full_width ng-binding" ng-bind-html="GetColumnDetails('dueDate') | trustedHTML">Due Date</label>
+                        <div className='col-sm-4 position-relative'>
+                            <label className="full_width" ng-bind-html="GetColumnDetails('dueDate') | trustedHTML">Due Date</label>
                             <input className="form-control"
                                 type="date"
                                 // value={myDate != null ? Moment(new Date(myDate)).format('YYYY-MM-DD') : ''}
@@ -1440,43 +1699,45 @@ const CreateWS = (props: any) => {
                                 // dateFormat="dd/MM/yyyy"
                                 value={myDate.editDate != null ? Moment(new Date(myDate.editDate)).format('YYYY-MM-DD') : ""}
                                 onChange={(e: any) => setMyDate({ ...myDate, editDate: e.target.value })} />
-
-                            <div className="">
-                                <label>
-                                    <input className="form-check-input me-1" name="radioPriority"
+                                {myDate.editDate != null &&<div className="input-close"><span className="svg__iconbox svg__icon--cross" onClick={()=> setMyDate({ ...myDate, editDate:null,selectDateName:""})}></span></div>}
+                       <dl className='mt-1'>
+                            <dt className="">
+                                <label className='SpfxCheckRadio'>
+                                    <input className="radio" name="radioPriority2"
                                         type="radio" value="(3) Low" checked={myDate.selectDateName == 'Today'} onClick={(e: any) => SelectDate('Today')} />Today
                                 </label>
-                            </div>
-                            <div className="">
-                                <label>
-                                    <input className="form-check-input me-1" name="radioPriority"
+                            </dt>
+                            <dt>
+                                <label className='SpfxCheckRadio'>
+                                    <input className="radio" name="radioPriority2"
                                         type="radio" value="(3) Low" checked={myDate.selectDateName == 'Tomorrow'} onClick={(e: any) => SelectDate('Tomorrow')} />Tomorrow
                                 </label>
-                            </div>
-                            <div className="">
-                                <label>
-                                    <input className="form-check-input me-1" name="radioPriority"
+                            </dt>
+                            <dt>
+                                <label className='SpfxCheckRadio'>
+                                    <input className="radio" name="radioPriority2"
                                         type="radio" value="(3) Low" checked={myDate.selectDateName == 'This Week'} onClick={(e: any) => SelectDate('This Week')} />This Week
                                 </label>
-                            </div>
-                            <div className="">
-                                <label>
-                                    <input className="form-check-input me-1" name="radioPriority"
+                            </dt>
+                             <dt>
+                                <label className='SpfxCheckRadio'>
+                                    <input className="radio" name="radioPriority2"
                                         type="radio" value="(3) Low" checked={myDate.selectDateName == 'This Month'} onClick={(e: any) => SelectDate('This Month')} />This Month
                                 </label>
-                            </div>
+                             </dt>
+                            </dl>
                         </div>
 
 
 
                     </div>
                     <div className='row mt-2'>
-                        {AllItems != undefined && dynamicList != undefined && <TeamConfigurationCard ItemInfo={AllItems} AllListId={dynamicList} parentCallback={DDComponentCallBack}></TeamConfigurationCard>}
+                      {AllItems!=undefined && dynamicList!=undefined && <TeamConfigurationCard ItemInfo={AllItems} AllListId={dynamicList} parentCallback={DDComponentCallBack}></TeamConfigurationCard>}
                     </div>
                     <div className='row'>
                         <div className='col-sm-12 mt-1'>
                             <label className='full_width'>Description</label>
-                            <textarea rows={4} className="ng-pristine ng-valid ng-empty ng-touched full_width" onChange={(e: any) => setTrgetValue({ ...trgetValue, Description: e.target.value })}></textarea>
+                            <textarea rows={4} className="ng-pristine ng-valid ng-empty ng-touched full_width" onChange={(e: any) => AllItems.Description = e.target.value}></textarea>
                         </div>
                     </div>
 
@@ -1573,7 +1834,7 @@ const CreateWS = (props: any) => {
                                             </fieldset>
                                         </div>
 
-                                        <div className='col-sm-4'>
+                                        <div className='col-sm-4 position-relative'>
                                             <label className="full_width ng-binding" >Due Date</label>
                                             <input className="form-control"
                                                 // selected={date}
@@ -1582,6 +1843,7 @@ const CreateWS = (props: any) => {
                                                 // onChange={(e) => setMyDate(`${e.target.value}`)}
                                                 value={data.editDate != null ? Moment(new Date(data.editDate)).format('YYYY-MM-DD') : ''}
                                                 onChange={(e: any) => clickonDate(data, e)} />
+                                                 {data.editDate != null &&<div className="input-close"><span className="svg__iconbox svg__icon--cross" onClick={(e: any) => SelectChildDate(data, null)} ></span></div>}
                                             <div className="">
                                                 <label>
                                                     <input className="form-check-input me-1" name={'radioPriority1' + index}
@@ -1612,6 +1874,11 @@ const CreateWS = (props: any) => {
 
                                     </div>
                                     <div className='row'>
+                                    <div className='col-sm-12 mt-1'>
+                                    {AllItems!=undefined && dynamicList!=undefined && <TeamConfigurationCard ItemInfo={AllItems} AllListId={dynamicList} parentCallback={DDComponentCallBack}></TeamConfigurationCard>} 
+                                        </div>
+                                        </div>
+                                    <div className='row'>
                                         <div className='col-sm-12 mt-1'>
                                             <label className='full_width'>Description</label>
                                             <textarea rows={4} className="ng-pristine ng-valid ng-empty ng-touched full_width" onChange={(e: any) => data.Description = e.target.value}></textarea>
@@ -1628,7 +1895,6 @@ const CreateWS = (props: any) => {
                             )
                         })
                     }
-
 
 
                 </div>
