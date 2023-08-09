@@ -132,7 +132,8 @@ const App = (props: any) => {
   //let saveE:any=[]
   const [email, setEmail]: any = React.useState(false);
   const [todayEvent, setTodayEvent]: any = React.useState(false);
-  const [peopleName, setPeopleName]: any = React.useState([]);
+  // Change here array
+  const [peopleName, setPeopleName]: any = React.useState();
   const [isChecked, setIsChecked] = React.useState(false);
   const [disableTime, setDisableTime] = React.useState(false);
   //const [maxD, setMaxD] = React.useState(new Date(8640000000000000));
@@ -598,14 +599,20 @@ const App = (props: any) => {
             setSelectedTimeEnd(selectedTimeEnd);
             return;
           }
-
-          if (
-            peopleName == props.props.context._pageContext._user.displayName
-          ) {
+          if (peopleName === props.props.context._pageContext._user.displayName) {
+            // If the condition is true, update the peopleName to match the display name
             setPeopleName(props.props.context._pageContext._user.displayName);
           } else {
+            // If the condition is false, set the peopleName to the default value (title_people)
             setPeopleName(title_people);
           }
+          // if (
+          //   peopleName == props.props.context._pageContext._user.displayName
+          // ) {
+          //   setPeopleName(props.props.context._pageContext._user.displayName);
+          // } else {
+          //   setPeopleName(title_people);
+          // }
           const newEvent = {
             name: peopleName,
             nameId:title_Id,
@@ -1353,6 +1360,8 @@ const App = (props: any) => {
       title_Id = userId;
       title_people = userTitle;
       setPeopleName(userTitle);
+    }else{
+      setPeopleName(props.props.context._pageContext._user.displayName)
     }
   };
 

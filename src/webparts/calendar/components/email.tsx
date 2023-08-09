@@ -20,7 +20,6 @@ interface NameIdData {
 }
 
 let count:any=1;
-let totalmemebet:any;
 const EmailComponenet = (props: any) => {
   const [AllTaskuser, setAllTaskuser] = React.useState([]);
   const [leaveData, setleaveData] = React.useState([]);
@@ -86,10 +85,8 @@ const loadleave = async () =>  {
 
   const SendEmail = () => {
     let sp = spfi().using(spSPFx(props.Context));
-    let totalteammemberonleave:any;
-    
-      totalteammemberonleave = (AllTaskuser?.length || 0) - (Object?.keys(nameidTotals)?.length || 0);
-    
+    let totalteammemberonleave=AllTaskuser?.length-Object?.keys(nameidTotals)?.length ;
+       
     sp.utility
       .sendEmail({
         //Body of Email
@@ -97,10 +94,10 @@ const loadleave = async () =>  {
         Body: BindHtmlBody(),
         //Subject of Email
         //   Subject: emailprops.Subject,
-        Subject: "HHHH - Team Attendance- "+formattedDate +" - "+ totalteammemberonleave+" - "+Object?.keys(nameidTotals)?.length ,
+        Subject: "HHHH - Team Attendance- "+formattedDate +"-"+ totalteammemberonleave+" - "+Object?.keys(nameidTotals)?.length ,
         //Array of string for To of Email
         //   To: emailprops.To,
-        To: ["abhishek.tiwari@hochhuth-consulting.de"],
+        To: ["abhishek.tiwari@hochhuth-consulting.de","ranu.trivedi@hochhuth-consulting.de"],
         AdditionalHeaders: {
           "content-type": "text/html",
         },
@@ -121,10 +118,11 @@ const loadleave = async () =>  {
     await web.lists
       .getById(props.Listdata.TaskUsertListID)
       .items.orderBy("Created", true)
+      .filter("UserGroupId ne 295")
       .get()
       .then((Data: any[]) => {
         console.log(Data);
-        
+
         setAllTaskuser(Data);
       })
       .catch((err:any) => {
@@ -213,10 +211,19 @@ const data = props.data;
 {data?.map((item:any,index:any)=>{
   let condate = new Date(item.end);
   item.enddate = condate.toLocaleDateString()
+  // For the Team of leave
+  item.Juniordev = AllTaskuser.filter((Junior:any)=>(Junior?.UserGroupId===8 && Junior?.AssingedToUserId===item?.NameId))
+  item.smalsuslead = AllTaskuser.filter((smallead:any)=>(smallead?.UserGroupId===216 && smallead?.AssingedToUserId===item?.NameId))
+  item.hhhhteam = AllTaskuser.filter((hhhteam:any)=>(hhhteam.UserGroupId === 7  && hhhteam?.AssingedToUserId===item?.NameId))
+  item.seniordev = AllTaskuser.filter((seniodev:any)=>(seniodev?.UserGroupId===9 && seniodev?.AssingedToUserId===item?.NameId))
+  item.qateam = AllTaskuser.filter((qaleave:any)=>(qaleave?.UserGroupId===11 && qaleave?.AssingedToUserId===item?.NameId))
+  item.designteam = AllTaskuser.filter((designt:any)=>(designt?.UserGroupId===10 && designt?.AssingedToUserId===item?.NameId))
+
   {Object.keys(nameidTotals).map((key) => {
     const data = nameidTotals[parseInt(key)];
     if(data.NameId === item.NameId){
       item.TotalLeave = data.TotalLeaved;
+      
     }
   })}
    
@@ -237,6 +244,50 @@ const data = props.data;
       
 
       <div>
+      <table data-border="1" cellSpacing={0}>
+          <thead>
+            <tr style={{textAlign:"center", padding:"5px",background:"#c5d9f1"}}>
+                <th style={{border:"1px solid #000"}} colSpan={8} >{formattedDate}</th>
+            </tr>
+            <tr style={{textAlign:"center", padding:"5px",background:"#fcd5b4"}}>
+                
+                <th style={{borderBottom:"1px solid #000"}}>HHHH Team</th>
+                {/* <th style={{border:"1px solid #000",borderTop:"0px"}}>Designation</th> */}
+                <th style={{borderBottom:"1px solid #000"}}>Smalsus Lead Team</th>
+                <th style={{border:"1px solid #000",borderTop:"0px"}}>Senior Developer Team</th>
+                <th style={{border:"1px solid #000",borderTop:"0px"}}>Junior Developer Team</th>
+                <th style={{border:"1px solid #000",borderTop:"0px"}}>Design Team</th>
+                <th style={{border:"1px solid #000",borderTop:"0px"}}>QA Team</th>
+
+               
+            </tr>
+            {data?.map((item:any,index:any)=>{
+                return(
+                    <tr style={{textAlign:"center", padding:"5px",background:"#fff"}}>
+                        
+                        <td style={{borderBottom:"1px solid #000",borderTop:"0px"}}>{item?.hhhhteam != null?item?.hhhhteam.map((hhhte:any)=>{
+                          return hhhte.Title;
+                        }):""}</td>
+                        <td style={{border:"1px solid #000",borderTop:"0px"}}>{item?.smalsuslead != (null || undefined)?item?.smalsuslead.map((smalslead:any)=>{
+                          return smalslead.Title;
+                        }):""}</td>
+                        <td style={{border:"1px solid #000",borderTop:"0px"}} >{item?.seniordev != (null || undefined)?item?.seniordev.map((seniord:any)=>{
+                          return seniord.Title;}):""}</td>
+                        <td style={{borderBottom:"1px solid #000",borderTop:"0px"}}>{item?.Juniordev != (null || undefined)?item?.Juniordev.map((juniiord:any)=>{
+                          return juniiord.Title;
+                        }):""}</td>
+                        <td style={{border:"1px solid #000",borderTop:"0px"}}>{item?.designteam != (null || undefined)?item?.designteam.map((designord:any)=>{
+                          return designord.Title;
+                        }):""}</td>
+                        <td style={{border:"1px solid #000",borderTop:"0px"}} >{item?.qateam != (null || undefined)?item?.qateam.map((qaord:any)=>{
+                          return qaord.Title;
+                        }):""}</td>
+                        
+                    </tr>
+                )})}
+                
+          </thead>
+        </table>
         <table data-border="1" cellSpacing={0}>
           <thead>
             <tr style={{textAlign:"center", padding:"5px",background:"#c5d9f1"}}>
