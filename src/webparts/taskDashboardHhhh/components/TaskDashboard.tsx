@@ -944,7 +944,7 @@ const TaskDashboard = (props: any) => {
                                 </a>
                             </>
 
-                            : <span title={row?.original?.Author?.Title} className="svg__iconbox svg__icon--defaultUser "></span>}
+                            : <span title={row?.original?.Author?.Title} className="svg__iconbox svg__icon--defaultUser grey "></span>}
 
                     </span>
                 ),
@@ -1097,7 +1097,7 @@ const TaskDashboard = (props: any) => {
                                     <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} />
                                 </a>
                             </>
-                            : <span title={row?.original?.Author?.Title} className="svg__iconbox svg__icon--defaultUser "></span>}
+                            : <span title={row?.original?.Author?.Title} className="svg__iconbox svg__icon--defaultUser grey "></span>}
                     </span>
                 ),
             },
@@ -2488,7 +2488,7 @@ const TaskDashboard = (props: any) => {
                                     <summary>  Bottleneck Tasks {'(' + pageBottleneck?.length + ')'} </summary>
                                     <div className='AccordionContent mx-height'  >
                                         {bottleneckTasks?.length > 0 ?
-                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover  {...getTablePropsBottleneck()}>
+                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"}  hover  {...getTablePropsBottleneck()}>
                                                 <thead className="fixed-Header">
                                                     {headerGroupsBottleneck?.map((headerGroup: any) => (
                                                         <tr {...headerGroup.getHeaderGroupProps()}>
