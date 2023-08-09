@@ -1,10 +1,15 @@
 import * as React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import InlineEditingcolumns from "../../projectmanagementOverviewTool/components/inlineEditingcolumns";
-import { FaChevronDown, FaChevronRight, FaSort, FaSortDown, FaSortUp, } from "react-icons/fa";
+import { Button, Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
+import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaCaretDown, FaCaretRight, FaChevronDown, FaChevronRight, FaSort, FaSortDown, FaSortUp, } from "react-icons/fa";
+import { useTable, useSortBy, useFilters, useExpanded, usePagination, HeaderGroup, } from "react-table";
+import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewTool/components/filters";
+import { FaAngleDown, FaAngleUp, FaHome } from "react-icons/fa";
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import { Web } from "sp-pnp-js";
 import EditProjectPopup from "../../projectmanagementOverviewTool/components/EditProjectPopup";
+import { IoMdArrowDropright, IoMdArrowDropdown } from "react-icons/io";
 import * as Moment from "moment";
 import {
   ColumnDef,
@@ -582,8 +587,13 @@ const ProjectManagementMain = (props: any) => {
             }
             items.AllTeamMember = [];
             items.HierarchyData = [];
+            items.descriptionsSearch='';
             items.siteType = config.Title;
             items.bodys = items.Body != null && items.Body.split('<p><br></p>').join('');
+            if (items?.Body != undefined && items?.Body != null) {
+              items.descriptionsSearch =items?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
+          }
+            items.commentsSearch = items?.Comments!=null&& items?.Comments!=undefined ? items.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, ''):'';
             items.listId = config.listId;
             items.siteUrl = config.siteUrl.Url;
             items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
@@ -1055,7 +1065,7 @@ const ProjectManagementMain = (props: any) => {
         accessorFn: (row) => row?.Title,
         cell: ({ row, column, getValue }) => (
           <>
-            <span className='d-flex'>
+            <span >
               {row.original.Services.length >= 1 ? (
                 <a
                   className="hreflink text-success"
@@ -1171,6 +1181,22 @@ const ProjectManagementMain = (props: any) => {
         header: "",
         size: 80
       },
+      {
+        accessorKey: "descriptionsSearch",
+        placeholder: "descriptionsSearch",
+        header: "",
+        resetColumnFilters: false,
+        size: 100,
+        id: "descriptionsSearch",
+    },
+    {
+        accessorKey: "commentsSearch",
+        placeholder: "commentsSearch",
+        header: "",
+        resetColumnFilters: false,
+        size: 100,
+        id: "commentsSearch",
+    },
       {
         accessorFn: (row) => row?.PercentComplete,
         cell: ({ row }) => (

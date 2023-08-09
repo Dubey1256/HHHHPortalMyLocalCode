@@ -16,6 +16,7 @@ import { IList } from "@pnp/sp/lists";
 import pptxgen from 'pptxgenjs';
 import { Button, Modal } from "react-bootstrap";
 import * as GlobalFunction from '../globalCommon';
+import SmartInformation from '../../webparts/taskprofile/components/SmartInformation';
 // import { Document, Paragraph, Packer, IRunPropertiesOptions } from 'docx';
 // import officegen from 'officegen';
 import ExcelJS from 'exceljs';
@@ -28,7 +29,6 @@ let AllFilesAndFolderBackup: any = [];
 let folders: any = [];
 let rootSiteName = '';
 let TaskTypes: any = [];
-let createNewDocType: any = '';
 let siteName: any = '';
 let generatedLocalPath = '';
 const itemRanks: any[] = [
@@ -48,13 +48,18 @@ const AncTool = (props: any) => {
     const [choosePathPopup, setChoosePathPopup] = React.useState(false);
     const [FileNamePopup, setFileNamePopup] = React.useState(false);
     const [ServicesTaskCheck, setServicesTaskCheck] = React.useState(false);
+    // const [smartInfoModalIsOpen, setSmartInfoModalIsOpen] = React.useState(false);
+    const [remark, setRemark] = React.useState(false)
+    const [editSmartInfo, setEditSmartInfo] = React.useState(false)
     const [folderExist, setFolderExist] = React.useState(false);
     const [Item, setItem]: any = React.useState({});
     const [renamedFileName, setRenamedFileName]: any = React.useState('');
+    const [createNewDocType, setCreateNewDocType]: any = React.useState('');
     const [newSubFolderName, setNewSubFolderName]: any = React.useState('');
     const [selectPathFromPopup, setSelectPathFromPopup]: any = React.useState('');
     const [selectedFile, setSelectedFile] = React.useState(null);
     const [ShowConfirmation, setShowConfirmation]: any = React.useState(false);
+    const [ShowConfirmationInside, setShowConfirmationInside]: any = React.useState(false);
     const [UploadedDocDetails, setUploadedDocDetails] = React.useState(null);
     const [newlyCreatedFile, setNewlyCreatedFile]: any = React.useState(null);
     const [itemRank, setItemRank] = React.useState(5);
@@ -91,7 +96,7 @@ const AncTool = (props: any) => {
         Href = Href.toLowerCase().split('?')[0]
         Href = Href.split('#')[0];
         siteName = params.get("Site");
-     
+
         if (siteName?.length > 0) {
             if (siteName === "Offshore Tasks") {
                 siteName = "OffShoreTask";
@@ -117,12 +122,12 @@ const AncTool = (props: any) => {
         setAllFoldersGrouped(groupedFolders);
         setAllFilesAndFolder(allFiles);
         AllFilesAndFolderBackup = allFiles;
-        checkFolderExistence(siteName,displayUrl);
+        checkFolderExistence(siteName, displayUrl);
     }
-    const checkFolderExistence = (title: any,path:any) => {
-       let currentPath:any=`${rootSiteName}${path}`;
+    const checkFolderExistence = (title: any, path: any) => {
+        let currentPath: any = `${rootSiteName}${path}`;
         AllFilesAndFolderBackup?.map((File: any) => {
-            if (File?.FileLeafRef == title && File?.FileSystemObjectType == 1 && File?.EncodedAbsUrl?.toLowerCase()==currentPath?.toLowerCase()) {
+            if (File?.FileLeafRef == title && File?.FileSystemObjectType == 1 && File?.EncodedAbsUrl?.toLowerCase() == currentPath?.toLowerCase()) {
                 setFolderExist(true)
             }
         })
@@ -180,10 +185,10 @@ const AncTool = (props: any) => {
     async function getExistingUploadedDocuments(): Promise<any[]> {
         try {
             let alreadyTaggedFiles: any = [];
-            let selectQuery = 'Id,SharewebId,Title,Url,FileSystemObjectType,ItemRank,Author/Id,Author/Title,Editor/Id,Editor/Title,FileDirRef,FileLeafRef,File_x0020_Type,Year,EncodedAbsUrl,Created,Modified&$expand=Author,Editor'
+            let selectQuery = 'Id,Title,Url,FileSystemObjectType,ItemRank,Author/Id,Author/Title,Editor/Id,Editor/Title,FileDirRef,FileLeafRef,File_x0020_Type,Year,EncodedAbsUrl,Created,Modified&$expand=Author,Editor'
 
             if (siteName?.length > 0) {
-                selectQuery = `Id,SharewebId,Title,Url,FileSystemObjectType,ItemRank,Author/Id,Author/Title,${siteName}/Id,${siteName}/Title,Editor/Id,Editor/Title,FileDirRef,FileLeafRef,File_x0020_Type,Year,EncodedAbsUrl,Created,Modified&$expand=Author,Editor,${siteName}`
+                selectQuery = `Id,Title,Url,FileSystemObjectType,ItemRank,Author/Id,Author/Title,${siteName}/Id,${siteName}/Title,Editor/Id,Editor/Title,FileDirRef,FileLeafRef,File_x0020_Type,Year,EncodedAbsUrl,Created,Modified&$expand=Author,Editor,${siteName}`
             }
             // const files = await folder.files.get();
             const files = await sp.web.lists.getByTitle('Documents').items.select(selectQuery).getAll();
@@ -314,12 +319,12 @@ const AncTool = (props: any) => {
             uploaded: false,
             tagged: false,
             link: '',
-            size:''
+            size: ''
         }
-        if(renamedFileName?.length > 0){
-            fileName=renamedFileName;
-        }else{
-            fileName=selectedFile?.name;
+        if (renamedFileName?.length > 0) {
+            fileName = renamedFileName;
+        } else {
+            fileName = selectedFile?.name;
         }
         if (isFolderAvailable == false) {
             try {
@@ -338,7 +343,7 @@ const AncTool = (props: any) => {
                 const reader = new FileReader();
                 reader.onloadend = async () => {
                     const fileContent = reader.result as ArrayBuffer;
-                   
+                    setCreateNewDocType(getFileType(selectedFile?.name))
                     // Upload the file
                     await sp.web
                         .getFolderByServerRelativeUrl(uploadPath)
@@ -351,27 +356,30 @@ const AncTool = (props: any) => {
                                         let resultArray: any = [];
                                         resultArray.push(props?.item?.Id)
                                         let siteColName = `${siteName}Id`
-                                        let fileSize=getSizeString(newlyCreatedFile?.byteLength)
+                                        let fileSize = getSizeString(fileContent?.byteLength)
                                         taggedDocument = {
                                             ...taggedDocument,
                                             fileName: fileName,
                                             docType: createNewDocType,
                                             uploaded: true,
                                             link: `${rootSiteName}${selectedPath.displayPath}/${fileName}`,
-                                            size:fileSize
+                                            size: fileSize
                                         }
+                                        taggedDocument.link = file?.EncodedAbsUrl;
                                         // Update the document file here
                                         let postData = {
                                             [siteColName]: { "results": resultArray },
                                             ItemRank: itemRank,
-                                            Title:fileName 
+                                            Title: fileName
                                         }
                                         await sp.web.lists.getByTitle('Documents').items.getById(file.Id)
                                             .update(postData).then((updatedFile: any) => {
                                                 file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
                                                 setDocsToTag([...DocsToTag, ...[file]])
-                                                pathGenerator()
+                                                pathGenerator();
+                                                props?.callBack()
                                                 taggedDocument.tagged = true;
+                                                setUploadedDocDetails(taggedDocument);
                                                 setRenamedFileName('')
                                                 return file;
                                             })
@@ -381,8 +389,8 @@ const AncTool = (props: any) => {
                             }, 2000);
 
                         });
-                        setUploadedDocDetails(taggedDocument);
-                        setShowConfirmation(true)
+                    setUploadedDocDetails(taggedDocument);
+                    setShowConfirmation(true)
 
                 };
 
@@ -392,6 +400,7 @@ const AncTool = (props: any) => {
             }
         }
         setSelectedFile(null);
+        cancelNewCreateFile()
         setItemRank(5);
     };
     //End //
@@ -413,7 +422,8 @@ const AncTool = (props: any) => {
                 .update({ [siteColName]: { "results": resultArray } }).then((updatedFile: any) => {
                     file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
                     setDocsToTag([...DocsToTag, ...[file]])
-                    alert(`The file '${file?.Title}' has been successfully tagged to the task '${props?.item?.TaskId}'. Please refresh the page to get the changes.`);
+                    props?.callBack()
+                    alert(`The file '${file?.Title}' has been successfully tagged to the task '${props?.item?.TaskId}'.`);
                     return file;
                 })
 
@@ -430,7 +440,8 @@ const AncTool = (props: any) => {
                             return item.Id != file.Id
                         });
                     });
-                    alert(`The file '${file?.Title}' has been successfully untagged from the task '${props?.item?.TaskId}'. Please refresh the page to get the changes.`);
+                    props?.callBack()
+                    alert(`The file '${file?.Title}' has been successfully untagged from the task '${props?.item?.TaskId}'.`);
                     return file;
                 })
 
@@ -441,22 +452,20 @@ const AncTool = (props: any) => {
     //End //
     // Create Files direct From Code And Tag
     async function createBlankWordDocx() {
-        createNewDocType = 'docx'
+        setCreateNewDocType('docx')
         let jsonResult = await GlobalFunction.docxUint8Array();
         setNewlyCreatedFile(jsonResult)
-        setFileNamePopup(true)
     }
     async function createBlankExcelXlsx() {
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet('Sheet1');
         worksheet.addRow([]);
         const buffer = await workbook.xlsx.writeBuffer();
-        createNewDocType = 'xlsx'
+        setCreateNewDocType('xlsx')
         setNewlyCreatedFile(buffer)
-        setFileNamePopup(true)
     }
     async function createBlankPowerPointPptx() {
-        createNewDocType = 'pptx'
+        setCreateNewDocType('pptx')
         const pptx = new pptxgen();
         pptx.addSlide();
 
@@ -472,7 +481,7 @@ const AncTool = (props: any) => {
             uploaded: false,
             tagged: false,
             link: '',
-            size:''
+            size: ''
         }
         let isFolderAvailable = folderExist;
         let fileName = ''
@@ -497,22 +506,23 @@ const AncTool = (props: any) => {
                 await sp.web
                     .getFolderByServerRelativeUrl(selectedPath.displayPath)
                     .files.add(fileName, newlyCreatedFile, true).then(async (uploadedFile: any) => {
-                        let fileSize=getSizeString(newlyCreatedFile?.byteLength)
+                        let fileSize = getSizeString(newlyCreatedFile?.byteLength)
                         taggedDocument = {
                             ...taggedDocument,
                             fileName: fileName,
                             docType: createNewDocType,
                             uploaded: true,
                             link: `${rootSiteName}${selectedPath.displayPath}/${fileName}`,
-                            size:fileSize
+                            size: fileSize
                         }
                         setTimeout(async () => {
                             const fileItems = await getExistingUploadedDocuments()
                             fileItems?.map(async (file: any) => {
                                 if (file?.FileDirRef != undefined && file?.FileDirRef?.toLowerCase() == selectedPath?.displayPath?.toLowerCase() && file?.FileSystemObjectType == 0 && file?.FileLeafRef == fileName) {
                                     let resultArray: any = [];
-                                    resultArray.push(props?.item?.Id)
-                                    let siteColName = `${siteName}Id`
+                                    resultArray.push(props?.item?.Id);
+                                    let siteColName = `${siteName}Id`;
+                                    taggedDocument.link = file.EncodedAbsUrl;
                                     // Update the document file here
                                     let postData = {
                                         [siteColName]: { "results": resultArray },
@@ -526,6 +536,7 @@ const AncTool = (props: any) => {
                                             taggedDocument.tagged = true;
                                             pathGenerator()
                                             cancelNewCreateFile()
+                                            props?.callBack();
                                             return file;
                                         })
                                     console.log("File uploaded successfully.", file);
@@ -539,28 +550,28 @@ const AncTool = (props: any) => {
             } catch (error) {
                 console.log("File upload failed:", error);
             }
-        }
+        } cancelNewCreateFile
     }
     const getSizeString = (sizeInBytes: number): string => {
         const kbThreshold = 1024;
         const mbThreshold = kbThreshold * 1024;
-      
+
         if (sizeInBytes < kbThreshold) {
-          return `${sizeInBytes} KB`;
+            return `${sizeInBytes} KB`;
         } else if (sizeInBytes < mbThreshold) {
-          const sizeInKB = (sizeInBytes / kbThreshold).toFixed(2);
-          return `${sizeInKB} KB`;
+            const sizeInKB = (sizeInBytes / kbThreshold).toFixed(2);
+            return `${sizeInKB} KB`;
         } else {
-          const sizeInMB = (sizeInBytes / mbThreshold).toFixed(2);
-          return `${sizeInMB} MB`;
+            const sizeInMB = (sizeInBytes / mbThreshold).toFixed(2);
+            return `${sizeInMB} MB`;
         }
-      };
+    };
     //File Name Popup
     const cancelNewCreateFile = () => {
         setFileNamePopup(false);
         setNewlyCreatedFile(null);
         setRenamedFileName('');
-        createNewDocType = '';
+        setCreateNewDocType('');
     }
     // Choose Path Folder
     const cancelPathFolder = () => {
@@ -716,6 +727,7 @@ const AncTool = (props: any) => {
     // Confirmation Popup Functions//
     const cancelConfirmationPopup = () => {
         setShowConfirmation(false)
+        setShowConfirmationInside(false)
         setUploadedDocDetails(undefined);
     }
 
@@ -723,31 +735,18 @@ const AncTool = (props: any) => {
         <>
             <div className={ServicesTaskCheck ? "serviepannelgreena mb-3 card commentsection" : "mb-3 card commentsection"}>
                 <div className='card-header'>
-
                     <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Add & Connect Tool<span><Tooltip ComponentId='324' /></span></div>
-
                 </div>
                 <div className='card-body'>
                     <div className="row">
                         <div className="comment-box hreflink mb-2 col-sm-12">
-                            <span onClick={() => { setModalIsOpen(true) }}> Click here to add more content</span>
+                            <span onClick={() => { setModalIsOpen(true) }}> Upload Documents</span>
                         </div>
-                        <div className="col-sm-4">
-                            <span onClick={() => createBlankWordDocx()} >
-                                <span className='svg__iconbox svg__icon--docx hreflink' title='Word'></span>
-
-                            </span>
+                        <div className="comment-box hreflink mb-2 col-sm-12">
+                            <span onClick={() => { setFileNamePopup(true) }}> Create New Item</span>
                         </div>
-                        <div className="col-sm-4">
-                            <span onClick={() => createBlankExcelXlsx()} >
-                                <span className='svg__iconbox svg__icon--xlsx hreflink' title='Excel'></span>
-
-                            </span>
-                        </div>
-                        <div className="col-sm-4">
-                            <span onClick={() => createBlankPowerPointPptx()}>
-                                <span className='svg__iconbox svg__icon--ppt hreflink' title='Presentation'></span>
-                            </span>
+                        <div className="comment-box hreflink mb-2 col-sm-12">
+                            <span onClick={() => { setRemark(true) }}> Add SmartNote</span>
                         </div>
                     </div>
                 </div>
@@ -922,7 +921,7 @@ const AncTool = (props: any) => {
 
 
 
-                                                    <button onClick={handleUpload} className="btn btn-primary mt-2 my-1  float-end px-3">Upload</button>
+                                                    <button onClick={handleUpload} disabled={selectedFile?.name?.length>0?false:true} className="btn btn-primary mt-2 my-1  float-end px-3">Upload</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -937,6 +936,11 @@ const AncTool = (props: any) => {
                         </div>
                     </div>
                 </div>
+
+
+
+
+
             </Panel>
             <Panel
                 type={PanelType.medium}
@@ -958,14 +962,25 @@ const AncTool = (props: any) => {
             </Panel>
 
 
-            <Modal show={FileNamePopup} isOpen={FileNamePopup} size='sm' isBlocking={FileNamePopup} containerClassName="custommodalpopup p-2">
+            <Modal show={FileNamePopup} isOpen={FileNamePopup} size='mg' isBlocking={FileNamePopup} backdrop={true} >
                 <div className="modal-content rounded-0">
                     <div className="modal-header">
-                        <h5 className="modal-title">Create New File</h5>
+                        <h5 className="modal-title">Create New File {createNewDocType?.length > 0 ? ` - ${createNewDocType}` : ''}</h5>
                         <span onClick={() => cancelNewCreateFile()}><i className="svg__iconbox svg__icon--cross crossBtn"></i></span>
                     </div>
-                    <div className="modal-body p-2">
-                        <div className="col-sm-12">
+                    <div className="modal-body p-2 row">
+                        <div className="AnC-CreateDoc-Icon">
+                            <div className={createNewDocType == 'docx' ? 'selected' : ''}>
+                                <span onClick={() => createBlankWordDocx()} className='svg__iconbox svg__icon--docx hreflink' title='Word'></span>
+                            </div>
+                            <div className={createNewDocType == 'xlsx' ? 'selected' : ''}>
+                                <span onClick={() => createBlankExcelXlsx()} className='svg__iconbox svg__icon--xlsx hreflink' title='Excel'></span>
+                            </div>
+                            <div className={createNewDocType == 'pptx' ? 'selected' : ''}>
+                                <span onClick={() => createBlankPowerPointPptx()} className='svg__iconbox svg__icon--ppt hreflink' title='Presentation'></span>
+                            </div>
+                        </div>
+                        <div className="col-sm-12 mt-2">
                             <input type="text" onChange={(e) => { setRenamedFileName(e.target.value) }} value={renamedFileName} placeholder='Enter File Name' className='full-width' />
                         </div>
                     </div>
@@ -975,8 +990,56 @@ const AncTool = (props: any) => {
                     </footer>
                 </div>
             </Modal>
+            {ShowConfirmation ?
+                <div className="modal Anc-Confirmation-modal" >
+                    <div className="modal-dialog modal-mg rounded-0 ">
+                        <div className="modal-content rounded-0">
+                            <div className="modal-header">
+                                <h5 className="modal-title">Upload Documents - Confirmation</h5>
+                                <span onClick={() => cancelConfirmationPopup()}><i className="svg__iconbox svg__icon--cross crossBtn"></i></span>
+                            </div>
+                            <div className="modal-body p-2">
+                                <div><strong>Folder :</strong> <a href={`${rootSiteName}${selectedPath?.displayPath}`} target="_blank" data-interception="off" className='hreflink'> {selectedPath?.displayPath} <span className="svg__iconbox svg__icon--folder ms-1"></span></a></div>
+                                <div><strong>Metadat-Tag :</strong> <span>{props?.item?.Title}</span></div>
+                                <div className="row">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>&nbsp;</th>
+                                                <th>File Name</th>
+                                                <th>Uploaded</th>
+                                                <th>Tagged</th>
+                                                <th>Share Link</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><span className={`svg__iconbox svg__icon--${UploadedDocDetails?.docType}`}></span></td>
+                                                <td><a href={UploadedDocDetails?.link} target="_blank" data-interception="off" className='hreflink'>{UploadedDocDetails?.fileName}</a>{`(${UploadedDocDetails?.size})`}</td>
+                                                <td>{UploadedDocDetails?.uploaded == true ? <span className='svg__iconbox svg__icon--Completed'></span> : <span className='svg__iconbox svg__icon--cross'></span>}</td>
+                                                <td>{UploadedDocDetails?.tagged == true ? <span className='svg__iconbox svg__icon--Completed'></span> : <span className='svg__iconbox svg__icon--cross'></span>}</td>
+                                                <td>{UploadedDocDetails?.uploaded == true ? <>
+                                                    <span className='svg__iconbox svg__icon--link hreflink' title='Copy Link' data-bs-toggle="popover" data-bs-content="Link Copied" onClick={() => { navigator.clipboard.writeText(UploadedDocDetails?.link); }}></span>
+                                                    <span className='svg__iconbox svg__icon--mail hreflink' title='Share In Mail' onClick={() => { window.open(`mailto:?&subject=${props?.item?.Title}&body=${UploadedDocDetails?.link}`) }}></span>
+                                                </> : <></>}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <footer className='text-end p-2'>
+                                <button className="btn btnPrimary" onClick={() => cancelConfirmationPopup()}>Ok</button>
+                            </footer>
+                        </div>
+                    </div>
+                </div> : ''
+            }
 
-            <Modal show={ShowConfirmation} isOpen={ShowConfirmation} size='mg' isBlocking={ShowConfirmation} className={ServicesTaskCheck ? "serviepannelgreena " : ""} containerClassName="custommodalpopup p-2">
+
+            {/* <Modal show={ShowConfirmation} isOpen={ShowConfirmation} backdrop={true} size='mg'
+                isBlocking={ShowConfirmation}
+                className={ServicesTaskCheck ? "serviepannelgreena " : ""}
+                containerClassName="custommodalpopup p-2">
                 <div className="modal-content rounded-0">
                     <div className="modal-header">
                         <h5 className="modal-title">Upload Documents - Confirmation</h5>
@@ -997,7 +1060,7 @@ const AncTool = (props: any) => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                <tr>
+                                    <tr>
                                         <td><span className={`svg__iconbox svg__icon--${UploadedDocDetails?.docType}`}></span></td>
                                         <td><a href={UploadedDocDetails?.link} target="_blank" data-interception="off" className='hreflink'>{UploadedDocDetails?.fileName}</a>{`(${UploadedDocDetails?.size})`}</td>
                                         <td>{UploadedDocDetails?.uploaded == true ? <span className='svg__iconbox svg__icon--Completed'></span> : <span className='svg__iconbox svg__icon--cross'></span>}</td>
@@ -1015,9 +1078,18 @@ const AncTool = (props: any) => {
                         <button className="btn btnPrimary" onClick={() => cancelConfirmationPopup()}>Ok</button>
                     </footer>
                 </div>
-            </Modal>
+            </Modal> */}
 
-
+            {remark && <SmartInformation Id={props?.item?.Id}
+                AllListId={props.AllListId}
+                Context={props?.Context}
+                taskTitle={props?.item?.Title}
+                listName={props?.item?.siteType}
+                showHide={"projectManagement"}
+                setRemark={setRemark}
+                editSmartInfo={editSmartInfo}
+            //   RemarkData={modalIsOpen}
+            />}
         </>
     )
 }

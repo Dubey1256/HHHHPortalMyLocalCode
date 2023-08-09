@@ -5,10 +5,9 @@ import TeamConfigurationCard from '../../../globalComponents/TeamConfiguration/T
 import FroalaImageUploadComponent from '../../../globalComponents/FlorarComponents/FlorarImageUploadComponent';
 //import FroalaCommentBox from '../../../globalComponents/FlorarComponents/FroalaCommentBoxComponent';
 import HtmlEditorCard from '../../../globalComponents/HtmlEditor/HtmlEditor';
-import ComponentPortPolioPopup from '../../EditPopupFiles/ComponentPortfolioSelection';
 import * as Moment from 'moment';
 import Picker from '../../../globalComponents/EditTaskPopup/SmartMetaDataPicker';
-import DatePicker from "react-datepicker";
+
 import ClientCategoryPupup from '../../../globalComponents/ClientCategoryPopup';
 import Tooltip from '../../../globalComponents/Tooltip';
 import "react-datepicker/dist/react-datepicker.css";
@@ -324,15 +323,15 @@ const CreateActivity = (props: any) => {
             })
 
         }
-        else if (AllItems != undefined && AllItems.Sitestaggingbackup != undefined && AllItems.Sitestaggingbackup.length === 0) {
-            SiteTypeBackupArray.forEach((site: any) => {
+        // else if (AllItems != undefined && AllItems.Sitestaggingbackup != undefined && AllItems.Sitestaggingbackup.length === 0) {
+        //     SiteTypeBackupArray.forEach((site: any) => {
 
-                if (site.Title != undefined && site.Title === 'HHHH')
+        //         if (site.Title != undefined && site.Title === 'HHHH')
 
-                    setActiveTile("siteType", "siteType", site)
+        //             setActiveTile("siteType", "siteType", site)
 
-            })
-        }
+        //     })
+        // }
 
 
     }
@@ -771,7 +770,7 @@ const CreateActivity = (props: any) => {
 
     }, [])
     const saveNoteCall = () => {
-        if(save?.IsShowSelectedSite ===false)
+        if(save?.IsShowSelectedSite ===false&& AllItems?.NoteCall !== 'Task')
         alert("Please select the site")
         else{
        FeedBackItemArray.push(FeedBackItem?.FeedBackDescriptions!=undefined?FeedBackItem:"")
