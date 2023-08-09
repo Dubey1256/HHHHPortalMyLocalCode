@@ -730,6 +730,12 @@ const AncTool = (props: any) => {
         setShowConfirmationInside(false)
         setUploadedDocDetails(undefined);
     }
+    const smartnotecall=()=>{
+        setRemark(false)
+        props?.callBack();
+     
+                
+    }
 
     return (
         <>
@@ -1088,6 +1094,7 @@ const AncTool = (props: any) => {
                 showHide={"projectManagement"}
                 setRemark={setRemark}
                 editSmartInfo={editSmartInfo}
+                callback={smartnotecall}
             //   RemarkData={modalIsOpen}
             />}
         </>
