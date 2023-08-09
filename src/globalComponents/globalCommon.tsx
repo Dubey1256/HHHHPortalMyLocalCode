@@ -1602,7 +1602,7 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
             .select("ID", "Title", "DueDate", "Status", "Portfolio_x0020_Type", "Sitestagging",
                 "ItemRank", "Item_x0020_Type", 'PortfolioStructureID', 'ClientTime', 'SiteCompositionSettings', "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "SharewebCategories/Id", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title")
             .expand("Team_x0020_Members", "Author", "ClientCategory", "Parent", "SharewebCategories", "AssignedTo", "ClientCategory")
-            .top(4999)
+            .top(4999).filter(`Portfolio_x0020_Type eq '${Props?.ComponentType}'`)
             .get();
         // console.log("all Service and Coponent data form global Call=======", componentDetails);
         TaskUsers = await AllTaskUsers(Props.siteUrl, Props.TaskUserListId);

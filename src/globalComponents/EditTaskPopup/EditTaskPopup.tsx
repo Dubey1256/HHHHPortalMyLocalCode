@@ -4280,7 +4280,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}>
                                                                                 {ProjectData.Title}
                                                                             </a>
-                                                                            <span onClick={() => setSelectedProject([])} className="svg__iconbox svg__icon--editBox"></span>
+                                                                            <span onClick={() => setSelectedProject([])} className="bg-light svg__icon--cross svg__iconbox"></span>
 
                                                                         </div>
                                                                     </div>
@@ -4332,9 +4332,9 @@ const EditTaskPopup = (Items: any) => {
                                                                                     <div>
                                                                                         {SiteDtls.ClientCategory?.map((ClData: any) => {
                                                                                             return (
-                                                                                                <p className="mx-2 mb-0">
+                                                                                                <span className="mx-2 mb-0">
                                                                                                     {ClData.Title}
-                                                                                                </p>
+                                                                                                </span>
                                                                                             )
                                                                                         })}
                                                                                     </div>
@@ -5436,9 +5436,9 @@ const EditTaskPopup = (Items: any) => {
                                                                                                 <div>
                                                                                                     {SiteDtls.ClientCategory?.map((ClData: any) => {
                                                                                                         return (
-                                                                                                            <p className="mx-2 mb-0">
+                                                                                                            <span className="mx-2 mb-0">
                                                                                                                 {ClData.Title}
-                                                                                                            </p>
+                                                                                                            </span>
                                                                                                         )
                                                                                                     })}
                                                                                                 </div>
