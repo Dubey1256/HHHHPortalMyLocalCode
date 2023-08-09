@@ -16,7 +16,7 @@ import VersionHistoryPopup from '../../../globalComponents/VersionHistroy/Versio
 import TasksTable from './TaskfooterTable';
 import EmailComponenet from './emailComponent';
 import EditSiteComposition from './EditSiteComposition'
-import AncTool from '../../../globalComponents/AncTool/AncTool';
+import AncTool from '../../../globalComponents/AncTool/AncTool'
 
 import Tooltip from '../../../globalComponents/Tooltip'
 import ApprovalHistoryPopup from '../../../globalComponents/EditTaskPopup/ApprovalHistoryPopup';
@@ -71,6 +71,8 @@ export interface ITaskprofileState {
 }
 
 export default class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> {
+  private relevantDocRef: any;
+  private smartInfoRef: any;
   private taskUsers: any = [];
   private smartMetaDataIcon: any;
   private currentUser: any;
@@ -84,6 +86,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   this: any;
   public constructor(props: ITaskprofileProps, state: ITaskprofileState) {
     super(props);
+    this.relevantDocRef = React.createRef();
+    this.smartInfoRef = React.createRef();
     const params = new URLSearchParams(window.location.search);
     console.log(params.get('taskId'));
     console.log(params.get('Site'));
@@ -468,7 +472,23 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   }
 
   private sortAlphaNumericAscending = (a: any, b: any) => a.FileName.localeCompare(b.FileName, 'en', { numeric: true });
-
+  private AncCallback = (type: any) => {
+    switch (type) {
+      case 'anc': {
+        this?.relevantDocRef?.current?.loadAllSitesDocuments()
+        break
+      }
+      case 'smartInfo': {
+        this?.smartInfoRef?.current?.GetResult();
+        break
+      }
+      default: {
+        this?.relevantDocRef?.current?.loadAllSitesDocuments()
+        this?.smartInfoRef?.current?.GetResult();
+        break
+      }
+    }
+  }
   private GetAllImages(BasicImageInfo: any, AttachmentFiles: any, Attachments: any) {
     let ImagesInfo: any = [];
 
@@ -1728,7 +1748,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   </dl>
                   <dl>
                     <dt className='bg-Fa'>Estimated Time</dt>
-                    <dd className='bg-Ff position-relative' ><span className='tooltipbox' title="hours">{this.state.Result["EstimatedTime"] != undefined ? this.state.Result["EstimatedTime"].toFixed(1) : "0.0"} </span>
+                    <dd className='bg-Ff position-relative' ><span className='tooltipbox' title="hours">{this.state.Result["EstimatedTime"] != undefined ? this.state.Result["EstimatedTime"].toFixed(1)+"hours" : "0.0 hour"} </span>
                     </dd>
                   </dl>
                   {isShowTimeEntry && <dl>
@@ -1980,10 +2000,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                             userdisplay.push({ Title: this.props?.userDisplayName })
 
 
-                            if (fbData != null && fbData != undefined) {
+                            if (fbData != null && fbData != undefined &&fbData?.Title!="") {
 
                               try {
-                                if (fbData?.Title != undefined) {
+                                if (fbData?.Title != undefined ) {
                                   fbData.Title = fbData?.Title?.replace(/\n/g, '<br/>');
 
                                 }
@@ -2329,11 +2349,11 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
               <div>
                 {this.state.Result != undefined && AllListId != undefined && <CommentCard siteUrl={this.props.siteUrl} AllListId={AllListId} Context={this.props.Context}></CommentCard>}
                 {this.state.Result?.Id != undefined && AllListId != undefined && <>
-                  <AncTool item={this?.state?.Result} AllListId={AllListId} Context={this.props.Context} />
+                  <AncTool item={this?.state?.Result} callBack={this.AncCallback} AllListId={AllListId} Context={this.props.Context} />
                 </>}
               </div>
-              <div>{this.state.Result.Id && <SmartInformation Id={this.state.Result.Id} AllListId={AllListId} Context={this.props?.Context} taskTitle={this.state.Result?.Title} listName={this.state.Result?.listName} />}</div>
-              <div> {this.state.Result != undefined && <RelevantDocuments siteUrl={this.props.siteUrl} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments>}</div>
+              <div>{this.state.Result.Id && <SmartInformation ref={this.smartInfoRef} Id={this.state.Result.Id} AllListId={AllListId} Context={this.props?.Context} taskTitle={this.state.Result?.Title} listName={this.state.Result?.listName} />}</div>
+              <div> {this.state.Result != undefined && <RelevantDocuments ref={this?.relevantDocRef} siteUrl={this.props.siteUrl} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments>}</div>
 
             </div>
 
@@ -2370,9 +2390,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} context={this.props.Context} AllListId={AllListId} Call={(Type: any) => { this.CallBack(Type) }} /> : ''}
         {/* {this.state.isTimeEntry ? <TimeEntry props={this.state.Result} isopen={this.state.isTimeEntry} CallBackTimesheet={() => { this.CallBackTimesheet() }} /> : ''} */}
         {this.state.EditSiteCompositionStatus ? <EditSiteComposition EditData={this.state.Result} context={this.props.Context} ServicesTaskCheck={this.state.Result["Services"] != undefined && this.state.Result["Services"].length > 0 ? true : false} AllListId={AllListId} Call={(Type: any) => { this.CallBack(Type) }} /> : ''}
-        { this.state?.emailcomponentopen && countemailbutton==0 &&<EmailComponenet approvalcallback={() => { this.approvalcallback() }}  Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus}  currentUser={this?.currentUser} items={this.state?.Result} />}
+        {this.state?.emailcomponentopen && countemailbutton == 0 && <EmailComponenet approvalcallback={() => { this.approvalcallback() }} Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus} currentUser={this?.currentUser} items={this.state?.Result} />}
       </div>
     );
   }
 }
-

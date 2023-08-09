@@ -136,12 +136,12 @@ const EditSiteComposition = (Props: any) => {
 
     const closeEditSiteCompositionModel = () => {
         setEditSiteCompositionStatus(false);
-        callBack();
+        callBack("Close");
     }
 
     const closePopupCallBack = React.useCallback(() => {
         setEditSiteCompositionStatus(false);
-        callBack();
+        callBack("Close");
     }, [])
 
     return (

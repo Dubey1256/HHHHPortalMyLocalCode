@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Tooltip from '../../../globalComponents/Tooltip';
-import { useState, useEffect } from 'react';
+import { useState, useEffect,forwardRef,useImperativeHandle } from 'react';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { Button, Tabs, Tab, Col, Nav, Row } from 'react-bootstrap';
 
@@ -8,7 +8,6 @@ import HtmlEditorCard from '../../../globalComponents/./HtmlEditor/HtmlEditor'
 import pnp, { sp, Web } from "sp-pnp-js";
 import * as moment from "moment-timezone";
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
-import { SlArrowRight, SlArrowLeft, SlArrowUp, SlArrowDown } from "react-icons/sl";
 import { DragDropFiles } from "@pnp/spfx-controls-react/lib/DragDropFiles";
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 // import ComponentPortPolioPopup from "../../EditPopupFiles/ComponentPortfolioSelection"
@@ -22,7 +21,7 @@ let hhhsmartinfoId: any = [];
 let taskUser: any = [];
 let mastertaskdetails: any;
 let MovefolderItemUrl2 = "";
-const SmartInformation = (props: any) => {
+const SmartInformation = (props: any,ref:any) => {
   const [show, setShow] = useState(false);
   const [popupEdit, setpopupEdit] = useState(false);
   const [smartInformationArrow, setsmartInformationArrow] = useState(true);
@@ -62,7 +61,7 @@ const SmartInformation = (props: any) => {
     setShow(false);
     seteditvalue(null);
     setallSetValue({ ...allValue, Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [] });
-    if(props.showHide==="projectManagement"){
+    if(props.showHide==="projectManagement"||props.showHide ==="ANCTaskProfile"){
       console.log(props.remarkData)
       props.setRemark(false)
      }
@@ -83,22 +82,31 @@ const SmartInformation = (props: any) => {
       setShow(true);
     } else {
       setallSetValue({ ...allValue, Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [] });
-      setallSetValue({...allValue,InfoType:"Remarks"})
+      if(props.showHide==="projectManagement"){
+        setallSetValue({...allValue,InfoType:"Remarks"})
+        // props.setRemark(false)
+       }else{
+        setallSetValue({ ...allValue, Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [] });
+       }
+     
       setShow(true);
     }
 
   }
 
   useEffect(() => {
-    if(props?.showHide=="projectManagement"&&props.editSmartInfo){
+    if((props?.showHide=="projectManagement")&&props.editSmartInfo){
       handleShow(props.RemarkData.SmartInformation[0],"edit")
-    }if(props?.showHide=="projectManagement"&&props.editSmartInfo==false){
+    }if((props?.showHide=="projectManagement")&&props.editSmartInfo==false){
       handleShow(null,"add")
     }
     GetTaskUsers()
     GetResult();
     LoadMasterTaskList();
   }, [show])
+  useImperativeHandle(ref,()=>({
+    GetResult
+}))
 
   //=========== TaskUser Management=====================
   const GetTaskUsers = async () => {
@@ -482,7 +490,10 @@ const SmartInformation = (props: any) => {
               restdata.Acronym=postdata.Acronym;
               // backupremarkdata?.SmartInformation[0]?.push(res?.data)
               backupremarkdata?.SmartInformation.splice(0, 1,restdata);
-              props.setRemark(false)
+              if(props?.setRemark!=undefined){
+                props.setRemark(false)
+              }
+              
    
              }
             // if ((MovefolderItemUrl == "/Memberarea" || MovefolderItemUrl == "/EDA Only" || MovefolderItemUrl == "/Only For Me") && editvalue.SelectedFolder == "Public") {
@@ -586,12 +597,22 @@ const SmartInformation = (props: any) => {
                 let backupremarkdata=props?.RemarkData
                res.data.InfoType={}
                res.data.InfoType=infotypeSelectedData;
+               if(backupremarkdata?.SmartInformation!=undefined){
                 backupremarkdata?.SmartInformation?.push(res?.data)
-                props.setRemark(false)
+               }
+               if(props?.callback!=undefined||null){
+                props?.callback()
+              }
+                if(  props.setRemark!=undefined||null){
+                  props.setRemark(false)
+                }
+             
+               
+             
                }
                 GetResult();
                 handleClose();
-
+               
 
               }).catch((err) => {
                 console.log(err.message);
@@ -629,24 +650,32 @@ const SmartInformation = (props: any) => {
 
   const deleteSmartinfoData = async (DeletItemId: any) => {
     console.log(DeletItemId);
-    const web = new Web(props?.AllListId?.siteUrl);
-    // await web.lists.getByTitle("SmartInformation")
-    await web.lists.getById(props?.AllListId?.SmartInformationListID)
-      .items.getById(DeletItemId).recycle()
-      .then((res: any) => {
-        console.log(res);
-        if(props.showHide==="projectManagement"){
-          console.log(props.RemarkData)
-          let backupremarkdata=props?.RemarkData
-           backupremarkdata.SmartInformation=[];
-          props.setRemark(false)
-         }
-        handleClose();
-
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
+    if (confirm("Are you sure, you want to delete this?")) {
+      const web = new Web(props?.AllListId?.siteUrl);
+      // await web.lists.getByTitle("SmartInformation")
+      await web.lists.getById(props?.AllListId?.SmartInformationListID)
+        .items.getById(DeletItemId).recycle()
+        .then((res: any) => {
+          console.log(res);
+          if(props.showHide==="projectManagement"){
+            console.log(props.RemarkData)
+            let backupremarkdata=props?.RemarkData
+            if(backupremarkdata.SmartInformation!==undefined||null){
+              backupremarkdata.SmartInformation=[];
+            }
+             if(props.setRemark!=undefined||null){
+              props.setRemark(false)
+             }
+          
+           }
+          handleClose();
+  
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
+    }
+   
   };
 
   //========delete function documents  list items ==================
@@ -1060,100 +1089,102 @@ const SmartInformation = (props: any) => {
   return (
     <div>
       {console.log(masterTaskdetails)}
-     { props.showHide!="projectManagement"&&<div className='mb-3 card commentsection'>
+     { (props?.showHide!="projectManagement" && SmartInformation?.length > 0) &&<div className='mb-3 card commentsection'>
         <div className='card-header'>
-          <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">SmartInformation<span><Tooltip ComponentId='993' /></span></div>
+          <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">SmartInformation
+          <span className='alignCenter'>
+         <span onClick={() => handleShow(null, "add")} className='svg__iconbox svg__icon--Plus mini hreflink' title="Add SmartInformation"></span>
+            <Tooltip ComponentId='993' /></span></div>
         </div>
 
-        {SmartInformation != null && SmartInformation.length > 0 && <div className="Sitecomposition p-1">{SmartInformation?.map((SmartInformation: any, i: any) => {
-          return (
-            <>
-              <div className='border dropdown mt-2'>
-                <div className='bg-ee d-flex'>
-                  <span className='full-width'>
-                    <a onClick={() => showhideComposition(SmartInformation)}>
-                      <span className='px-1'>{smartInformationArrow ? <SlArrowDown/> : <SlArrowRight/>}</span >
-                      <span className="pe-3">{SmartInformation?.Title != undefined ? SmartInformation?.Title : ""}</span>
-                    </a>
-
-                  </span>
-                  <span className='d-flex'>
-                    <a style={{ cursor: "pointer" }}
-                      onClick={() => handleShow(SmartInformation, "edit")}>
-                        <span className="svg__iconbox svg__icon--editBox"></span>
-                        </a>
-                        
-                    <a style={{ cursor: "pointer" }} onClick={() => addDocument("AddDocument", SmartInformation)}>
-                    <span className="svg__iconbox svg__icon--Plus"></span>
-                    </a>
-                  </span>
+        {SmartInformation != null && SmartInformation.length > 0 && <div className="Sitecomposition p-2">{SmartInformation?.map((SmartInformation: any, i: any) => {
+          if((props?.Context?.pageContext?.legacyPageContext?.userId==SmartInformation?.Author?.Id && SmartInformation?.SelectedFolder=="Only For Me")||SmartInformation.SelectedFolder=="Public"){
+            return (
+              <>
+               <div className='border dropdown mt-2 shadow'>
+                  <div className='bg-ee d-flex py-1 '>
+                    <span className='full-width'>
+                      <a onClick={() => showhideComposition(SmartInformation)}>
+                        <span >{smartInformationArrow ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span >
+                        <span className="pe-3">{SmartInformation?.Title != undefined ? SmartInformation?.Title : ""}</span>
+                      </a>
+  
+                    </span>
+                    <span className='alignCenter'>
+                      <a style={{ cursor: "pointer" }}
+                        onClick={() => handleShow(SmartInformation, "edit")}>
+                          <span className='svg__iconbox svg__icon--editBox hreflink' title="Edit SmartInformation"></span></a>
+                      <a style={{ cursor: "pointer" }} onClick={() => addDocument("AddDocument", SmartInformation)}>
+                        <span className='svg__iconbox svg__icon--Plus mini hreflink' title="Add Document"></span>
+                      </a>
+                    </span>
+                  </div>
+  
+                  <div className="border-0 border-bottom m-0 spxdropdown-menu" style={{ display: smartInformationArrow ? 'block' : 'none', fontSize: "small" }}>
+                    <div className="p-1 px-2" style={{ fontSize: "small" }} dangerouslySetInnerHTML={{ __html: SmartInformation?.Description != null ? SmartInformation?.Description : "No description available" }}></div>
+                    {SmartInformation?.TagDocument != undefined && SmartInformation?.TagDocument?.length > 0 && SmartInformation?.TagDocument?.map((item: any, index: any) => {
+                      return (
+                        <div className='card-body p-1 bg-ee mt-1'>
+                          <ul className='alignCenter list-none'>
+                            <li>
+                              <span><a href={item?.EncodedAbsUrl}>
+                                {item?.File_x0020_Type == "pdf" && <span className='svg__iconbox svg__icon--pdf' title="pdf"></span>}
+                                {item?.File_x0020_Type == "docx" && <span className='svg__iconbox svg__icon--docx' title="docx"></span>}
+                                {item?.File_x0020_Type == "csv" || item?.File_x0020_Type == "xlsx" && <span className='svg__iconbox svg__icon--csv' title="csv"></span>}
+                                {item?.File_x0020_Type == "jpeg" || item?.File_x0020_Type == "jpg " && <span className='svg__iconbox svg__icon--jpeg' title="jpeg"></span>}
+                                {item?.File_x0020_Type == "ppt" || item?.File_x0020_Type == "pptx" && <span className='svg__iconbox svg__icon--ppt' title="ppt"></span>}
+                                {item?.File_x0020_Type == "svg" && <span className='svg__iconbox svg__icon--svg' title="svg"></span>}
+                                {item?.File_x0020_Type == "zip" && <span className='svg__iconbox svg__icon--zip' title="zip"></span>}
+                                {item?.File_x0020_Type == "png" && <span className='svg__iconbox svg__icon--png' title="png"></span>}
+                                {item?.File_x0020_Type == "txt" && <span className='svg__iconbox svg__icon--txt' title="txt"></span>}
+                                {item?.File_x0020_Type == "smg" && <span className='svg__iconbox svg__icon--smg' title="smg"></span>}
+                                {item.Url != null && <span className='svg__iconbox svg__icon--link' title="smg"></span>}
+                              </a></span>
+                            </li>
+                            <li>
+                              {item.Url == null && <span><a className='px-2' href={`${item?.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off"> <span>{item?.Title}</span></a></span>}
+                              {item.Url != null && <span><a className='px-2' href={`${item?.Url?.Url}`} target="_blank" data-interception="off"> <span>{item?.Title}</span></a></span>}
+                            </li>
+                            <li className='d-end'>
+                              <span title="Edit" className="svg__iconbox svg__icon--edit hreflink" onClick={() => editDocumentsLink(item)}></span>
+                            </li>
+  
+                          </ul>
+                        </div>
+                      )
+                    })}
+                    {SmartInformation.TagTask != undefined && SmartInformation?.TagTask?.length > 0 && SmartInformation?.TagTask?.map((tagtask: any) => {
+                      return (
+                        <div className='card-body p-0 bg-ee mt-1'>
+                          <ul className='alignCenter list-none'>
+                            <li>
+                              <span><a href={`${props.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${tagtask?.Id}&Site=${props?.listName}`}><span className='bg-secondary svg__iconbox svg__icon--Task'></span></a></span>
+                            </li>
+                            <li>
+                              <span className='px-2'><a href={`${props?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${tagtask?.Id}&Site=${props?.listName}`}>{tagtask?.Title}</a></span>
+                            </li>
+                            <li className='d-end'>
+                              <span title="Edit" className="svg__iconbox svg__icon--edit hreflink" onClick={(e) => edittaskpopup(tagtask)}></span>
+                            </li>
+                          </ul>
+                        </div>
+                      )
+                    })}
+                  </div>
+                  <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Created By</span><span className='pe-2'>{SmartInformation?.Created != undefined ? moment(SmartInformation?.Created).format("DD/MM/YYYY") : ""}</span><span className='round px-1'>{SmartInformation?.Author?.AuthorImage != undefined ? <img className='align-self-start' title={SmartInformation?.Author?.Title} src={SmartInformation?.Author?.AuthorImage?.Url} /> : ""}</span></div>
+                  <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Modified By</span><span className='pe-2'>{SmartInformation?.Modified != undefined ? moment(SmartInformation?.Modified).format("DD/MM/YYYY") : ""}</span><span className='round px-1'>{SmartInformation?.Editor?.EditorImage != undefined ? <img className='align-self-start' title={SmartInformation?.Editor?.Title} src={SmartInformation?.Editor?.EditorImage?.Url} /> : ""}</span></div>
                 </div>
-
-                <div className="border-0 border-bottom m-0 spxdropdown-menu " style={{ display: smartInformationArrow ? 'block' : 'none', fontSize: "small" }}>
-                  <div className="ps-2 p-massage"  dangerouslySetInnerHTML={{ __html: SmartInformation?.Description != null ? SmartInformation?.Description : "No description available" }}></div>
-                  {SmartInformation?.TagDocument != undefined && SmartInformation?.TagDocument?.length > 0 && SmartInformation?.TagDocument?.map((item: any, index: any) => {
-                    return (
-                      <div className='card-body p-1 bg-ee mt-1'>
-                        <ul className='alignCenter list-none'>
-                          <li>
-                            <span><a href={item?.EncodedAbsUrl}>
-                              {item?.File_x0020_Type == "pdf" && <span className='svg__iconbox svg__icon--pdf' title="pdf"></span>}
-                              {item?.File_x0020_Type == "docx" && <span className='svg__iconbox svg__icon--docx' title="docx"></span>}
-                              {item?.File_x0020_Type == "csv" || item?.File_x0020_Type == "xlsx" && <span className='svg__iconbox svg__icon--csv' title="csv"></span>}
-                              {item?.File_x0020_Type == "jpeg" || item?.File_x0020_Type == "jpg " && <span className='svg__iconbox svg__icon--jpeg' title="jpeg"></span>}
-                              {item?.File_x0020_Type == "ppt" || item?.File_x0020_Type == "pptx" && <span className='svg__iconbox svg__icon--ppt' title="ppt"></span>}
-                              {item?.File_x0020_Type == "svg" && <span className='svg__iconbox svg__icon--svg' title="svg"></span>}
-                              {item?.File_x0020_Type == "zip" && <span className='svg__iconbox svg__icon--zip' title="zip"></span>}
-                              {item?.File_x0020_Type == "png" && <span className='svg__iconbox svg__icon--png' title="png"></span>}
-                              {item?.File_x0020_Type == "txt" && <span className='svg__iconbox svg__icon--txt' title="txt"></span>}
-                              {item?.File_x0020_Type == "smg" && <span className='svg__iconbox svg__icon--smg' title="smg"></span>}
-                              {item.Url != null && <span className='svg__iconbox svg__icon--link' title="smg"></span>}
-                            </a></span>
-                          </li>
-                          <li>
-                            {item.Url == null && <span><a className='px-2' href={`${item?.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off"> <span>{item?.Title}</span></a></span>}
-                            {item.Url != null && <span><a className='px-2' href={`${item?.Url?.Url}`} target="_blank" data-interception="off"> <span>{item?.Title}</span></a></span>}
-                          </li>
-                          <li className='d-end'>
-                            <span title="Edit" className="svg__iconbox svg__icon--edit hreflink" onClick={() => editDocumentsLink(item)}></span>
-                          </li>
-
-                        </ul>
-                      </div>
-                    )
-                  })}
-                  {SmartInformation.TagTask != undefined && SmartInformation?.TagTask?.length > 0 && SmartInformation?.TagTask?.map((tagtask: any) => {
-                    return (
-                      <div className='card-body p-1 bg-ee mt-1'>
-                        <ul className='alignCenter list-none'>
-                          <li>
-                            <span><a href={`${props.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${tagtask?.Id}&Site=${props?.listName}`}><span className='bg-secondary svg__iconbox svg__icon--Task'></span></a></span>
-                          </li>
-                          <li>
-                            <span className='px-2'><a href={`${props?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${tagtask?.Id}&Site=${props?.listName}`}>{tagtask?.Title}</a></span>
-                          </li>
-                          <li className='d-end'>
-                            <span title="Edit" className="svg__iconbox svg__icon--edit hreflink" onClick={(e) => edittaskpopup(tagtask)}></span>
-                          </li>
-                        </ul>
-                      </div>
-                    )
-                  })}
-                </div>
-                <div className='commentuser'>
-                <div className="p-1" style={{ fontSize: "x-small" }}><span className='px-1'> Created By </span><span className='px-1'>{SmartInformation?.Created != undefined ? moment(SmartInformation?.Created).format("DD/MM/YYYY") : ""} </span><span className='round px-1'>{SmartInformation?.Author?.AuthorImage != undefined ? <img className='align-self-start' title={SmartInformation?.Author?.Title} src={SmartInformation?.Author?.AuthorImage?.Url} /> : ""}</span></div>
-                <div className="p-1" style={{ fontSize: "x-small" }}><span className='px-1'> Modified By </span><span className='px-1'>{SmartInformation?.Modified != undefined ? moment(SmartInformation?.Modified).format("DD/MM/YYYY") : ""} </span><span className='round px-1'>{SmartInformation?.Editor?.EditorImage != undefined ? <img className='align-self-start' title={SmartInformation?.Editor?.Title} src={SmartInformation?.Editor?.EditorImage?.Url} /> : ""}</span></div>
-                </div>
-              </div>
-       
-            </>)
+                <div></div>
+              </>)
+          }
+          
         })}
 
         </div>}
 
-        <div className='border card-body p-1 mx-1 my-1 text-end'>
-          <a className='hyperlink' style={{ cursor: "pointer" }} onClick={() => handleShow(null, "add")}><span>+ Add SmartInformation</span></a>
-        </div>
+        {/* <div className='border card-body p-1 text-end'>
+          <a style={{ cursor: "pointer" }} onClick={() => handleShow(null, "add")}><span>+ Add SmartInformation</span></a>
+        </div> */}
 
 
       </div>}
@@ -1171,8 +1202,8 @@ const SmartInformation = (props: any) => {
                 Select
                 Permission:
               </dt>
-              <dt><label className='SpfxCheckRadio'><input className='radio' type="radio" checked={allValue?.SelectedFolder == "Public"} value="Public" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /> Global </label></dt>
-              <dt><label className='SpfxCheckRadio'><input className='radio' type="radio" checked={allValue?.SelectedFolder == "Only For Me"} value="Only For Me" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /> Only for me </label></dt>
+              <dt><input type="radio" checked={allValue?.SelectedFolder == "Public"} value="Public" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>Global</label></dt>
+              <dt><input type="radio" checked={allValue?.SelectedFolder == "Only For Me"} value="Only For Me" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>Only for me</label></dt>
 
               {/* <dt><input type="radio" checked={allValue?.SelectedFolder == "Memberarea"} value="Memberarea" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>Memberarea</label></dt> */}
               {/* <dt><input type="radio" checked={allValue?.SelectedFolder == "EDA"} value="EDA" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>EDA Only</label></dt>
@@ -1184,7 +1215,7 @@ const SmartInformation = (props: any) => {
             <div className='col-md-6'>
               <label htmlFor="Title" className='full-width'>Title
                 <span className='ml-1 mr-1 text-danger'>*</span>
-                {popupEdit != true && <span className='mx-2'><input className='form-check-input' type="checkbox" onClick={(e) => checkboxFunction(e)} /></span>}</label>
+                {popupEdit != true && <span className='mx-2'><input type="checkbox" className="form-check-input" onClick={(e) => checkboxFunction(e)} /></span>}</label>
               <input type="text" className="full-width" value={allValue?.Title} id="Title" onChange={(e) => changeInputField(e.target.value, "Title")} />
               {/* {allValue.AstricMesaage &&<span className='ml-1 mr-1 text-danger'>Please enter your Title !</span>} */}
               {filterSmartinfo != undefined && filterSmartinfo.length > 0 && <div className='bg-Fa border overflow-auto'><ul className='list-group mx-2 tex'> {filterSmartinfo.map((smartinfofilter: any) => {
@@ -1222,25 +1253,24 @@ const SmartInformation = (props: any) => {
         <div className='mt-3'> <HtmlEditorCard editorValue={allValue?.Description != null ? allValue?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>
         <footer className='text-end mt-2'>
           <div className='col-sm-12 row m-0'>
-            <div className="col-sm-6 text-lg-start">
+            <div className="col-sm-6 text-lg-start ps-1">
               {popupEdit && <div><div><span className='pe-2'>Created</span><span className='pe-2'>{editvalue?.Created !== null ? moment(editvalue?.Created).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{editvalue?.Author?.Title}</a></span></div>
                 <div><span className='pe-2'>Last modified</span><span className='pe-2'>{editvalue?.Modified !== null ? moment(editvalue?.Modified).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{editvalue?.Editor?.Title}</a></span></div>
-                <div><span className="svg__iconbox svg__icon--trash" onClick={() => deleteSmartinfoData(editvalue.Id)}> </span>Delete this item</div>
+                <div className='alignCenter'>Delete this item<span className="svg__iconbox svg__icon--trash" onClick={() => deleteSmartinfoData(editvalue.Id)}> </span></div>
               </div>}
             </div>
 
             <div className='col-sm-6 mt-2 p-0'>
               {popupEdit && <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/Lists/SmartInformation/EditForm.aspx?ID=${editvalue?.Id != null ? editvalue?.Id : null}`}>Open out-of-the-box form |</a></span>}
-              <span><a title='Add Link / Document' style={{ cursor: "pointer" }} onClick={() => addDocument("popupaddDocument", editvalue)}>Add Link / Document</a></span>
-              <Button className='btn btn-default' onClick={() => handleClose()}>
+              <span><a title='Add Link/ Document' style={{ cursor: "pointer" }} onClick={() => addDocument("popupaddDocument", editvalue)}>Add Link/ Document</a></span>
+              <Button className='btn btn-default mx-1' onClick={() => handleClose()}>
                 Cancel
               </Button>
-              <Button className='btn btn-primary ms-1  mx-2' onClick={saveSharewebItem}>
+              <Button className='btn btn-primary ms-1 me-1' onClick={saveSharewebItem}>
                 Save
               </Button>
-            </div>
-             
               
+            </div>
           </div>
         </footer>
       </Panel>
@@ -1311,9 +1341,10 @@ const SmartInformation = (props: any) => {
               <div className='col-md-6'><input type="text" className="full-width mt-3" placeholder='Rename your document' value={allValue?.fileupload != "" ? allValue?.fileupload : ""}></input></div>
             </div>
             <div className='mt-2 text-end' >
-            <Button className='btn btn-default text-end  btn btn-primary' onClick={() => handleClose()}>  Cancel </Button>
-            <button className='btn btn-primary mx-3 text-end ' onClick={(e) => onUploadDocumentFunction("uploadFile", "UploadDocument")}>upload</button>
-               </div>
+              <button className='btn btn-primary mx-3 text-end ' onClick={(e) => onUploadDocumentFunction("uploadFile", "UploadDocument")}>upload</button>
+              <Button className='btn btn-default text-end  btn btn-primary' onClick={() => handleClose()}>
+                Cancel
+              </Button> </div>
           </div>}
           {SelectedTilesTitle === "UploadEmail" && <div>
             <div className='mt-2 emailupload'>Email</div>
@@ -1490,6 +1521,6 @@ const SmartInformation = (props: any) => {
 
   )
 }
-export default SmartInformation;
+export default forwardRef(SmartInformation);
 
 
