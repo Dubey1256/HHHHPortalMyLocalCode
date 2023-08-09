@@ -871,7 +871,7 @@ const inlineEditingcolumns = (props: any) => {
                                                             >
                                                                 {user?.Item_x0020_Cover?.Url != undefined ?
                                                                     <img className="workmember ms-1" title={user?.Title} src={user?.Item_x0020_Cover?.Url}></img> :
-                                                                    <span title={user?.Title} className="svg__iconbox svg__icon--defaultUser ms-1 "></span>}
+                                                                    <span title={user?.Title} className="svg__iconbox svg__icon--defaultUser grey ms-1 "></span>}
 
                                                             </a>
                                                         )
