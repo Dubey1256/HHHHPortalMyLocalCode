@@ -125,12 +125,12 @@ const BackgroundCommentComponent = (Props: any) => {
         const web = new Web(Props.Context.pageContext.web.absoluteUrl);
         var text: any = "Are you sure want to delete this image";
         if (confirm(text) == true) {
-            web.getFileByServerRelativeUrl(`${Props?.Context?._pageContext?.web?.serverRelativeUrl}/PublishingImages/${ItemData.ImageName}`)
+            web.getFileByServerRelativeUrl(`${Props?.Context?._pageContext?.web?.serverRelativeUrl}/PublishingImages/Covers/${ItemData.ImageName}`)
                 .recycle()
                 .then((res: any) => {
                     console.log(res);
-                    if (BackgroundImageData?.length > 0) {
-                        BackgroundImageData.map((ImageData: any) => {
+                    if (BackgroundImageJSON?.length > 0) {
+                        BackgroundImageJSON.map((ImageData: any) => {
                             if (ImageData.ImageName != ItemData.ImageName) {
                                 tempArray.push(ImageData);
                             }
