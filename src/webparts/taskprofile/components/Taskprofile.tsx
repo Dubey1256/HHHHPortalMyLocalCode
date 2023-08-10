@@ -1933,8 +1933,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
               </div>
               <div className='row url'>
                 <div className="d-flex p-0">
-                  <div className='bg-Fa p-2'><label>Url</label></div>
-                  <div className='bg-Ff p-2 text-break full-width'>
+                  <div className='bg-Fa p-1'><label>Url</label></div>
+                  <div className='bg-Ff p-1 text-break full-width'>
                     {this.state.Result["component_url"] != null &&
                       <a target="_blank" data-interception="off" href={this.state.Result["component_url"].Url}>{this.state.Result["component_url"].Url}</a>
                     }
