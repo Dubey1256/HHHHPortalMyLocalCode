@@ -329,6 +329,7 @@ function TeamPortlioTable(SelectedProp: any) {
                         item.listId = config.listId;
                         item.siteUrl = ContextValue.siteUrl;
                         item["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
+                        item.fontColorTask = "#000"
                         // if (item.SharewebCategories.results != undefined) {
                         //     if (item.SharewebCategories.results.length > 0) {
                         //         $.each(
@@ -437,10 +438,13 @@ function TeamPortlioTable(SelectedProp: any) {
                             AllTasksData.push(result)
                         });
                         setAllSiteTasksData(AllTasksData);
+                        // GetComponents();
                     }
                 }
             });
+            GetComponents();
         }
+
     };
     const GetComponents = async () => {
         if (portfolioTypeData.length > 0) {
@@ -594,7 +598,7 @@ function TeamPortlioTable(SelectedProp: any) {
         setAllMasterTasks(componentDetails)
         AllComponetsData = componentDetails;
         ComponetsData["allComponets"] = componentDetails;
-        LoadAllSiteTasks();
+        // LoadAllSiteTasks();
     };
 
     // React.useEffect(() => {
@@ -621,13 +625,24 @@ function TeamPortlioTable(SelectedProp: any) {
     }, [])
 
     React.useEffect(() => {
-        if (portfolioTypeData.length > 0) {
-            portfolioTypeData?.map((elem: any) => {
-                if (elem.Title === isUpdated || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) {
-                    portfolioColor = elem.Color;
-                }
-            })
+        if (isUpdated != "") {
+            if (portfolioTypeData.length > 0) {
+                portfolioTypeData?.map((elem: any) => {
+                    if (elem.Title === isUpdated || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) {
+                        portfolioColor = elem.Color;
+                    }
+                })
+            }
+        } else {
+            if (portfolioTypeData.length > 0) {
+                portfolioTypeData?.map((elem: any) => {
+                    if (elem.Title === "Component") {
+                        portfolioColor = elem.Color;
+                    }
+                })
+            }
         }
+
     }, [AllSiteTasksData])
 
     React.useEffect(() => {
@@ -640,7 +655,8 @@ function TeamPortlioTable(SelectedProp: any) {
 
     React.useEffect(() => {
         if (AllMetadata.length > 0 && portfolioTypeData.length > 0) {
-            GetComponents();
+            // GetComponents();
+            LoadAllSiteTasks()
         }
     }, [AllMetadata.length > 0 && portfolioTypeData.length > 0])
 
@@ -657,6 +673,36 @@ function TeamPortlioTable(SelectedProp: any) {
         setAllSmartFilterData(filterDataBackup);
     }, []);
 
+    // React.useEffect(() => {
+    //     if (smartAllFilterData?.length > 0 && updatedSmartFilter === false) {
+    //         setLoaded(false);
+    //         componentData = [];
+    //         setAllSmartFilterDataBackup(structuredClone(smartAllFilterData));
+    //         if (IsUpdated === "") {
+    //             portfolioTypeData?.map((port: any) => {
+    //                 componentGrouping(port?.Id);
+    //             })
+    //         } else if (IsUpdated.length) {
+    //             portfolioTypeData?.map((port: any) => {
+    //                 componentGrouping(port?.Id);
+    //             })
+    //         }
+    //     }
+    //     if (smartAllFilterData?.length > 0 && updatedSmartFilter === true) {
+    //         // updatedSmartFilterGrouping()
+    //         setLoaded(false);
+    //         filterCount = 0;
+    //         componentDataCopyBackup = [];
+    //         setDataBackup([]);
+    //         let AllSmartFilterDataBackupCopy = AllSmartFilterDataBackup?.filter((elem: any) => elem.PortfolioType != undefined);
+    //         setDataBackup(structuredClone(AllSmartFilterDataBackupCopy));
+    //         componentDataCopyBackup = structuredClone(componentData);
+    //         filterDataAfterUpdate();
+    //         // portfolioTypeData?.map((port: any) => {
+    //         //     updatedSmartFilterGrouping(port?.Id);
+    //         // })
+    //     }
+    // }, [smartAllFilterData])
     React.useEffect(() => {
         if (smartAllFilterData?.length > 0 && updatedSmartFilter === false) {
             setLoaded(false);
@@ -668,12 +714,13 @@ function TeamPortlioTable(SelectedProp: any) {
                 })
             } else if (IsUpdated.length) {
                 portfolioTypeData?.map((port: any) => {
-                    componentGrouping(port?.Id);
+                    if (IsUpdated.toLowerCase() === port?.Title?.toLowerCase()) {
+                        componentGrouping(port?.Id);
+                    }
                 })
             }
         }
         if (smartAllFilterData?.length > 0 && updatedSmartFilter === true) {
-            // updatedSmartFilterGrouping()
             setLoaded(false);
             filterCount = 0;
             componentDataCopyBackup = [];
@@ -682,11 +729,8 @@ function TeamPortlioTable(SelectedProp: any) {
             setDataBackup(structuredClone(AllSmartFilterDataBackupCopy));
             componentDataCopyBackup = structuredClone(componentData);
             filterDataAfterUpdate();
-            // portfolioTypeData?.map((port: any) => {
-            //     updatedSmartFilterGrouping(port?.Id);
-            // })
         }
-    }, [smartAllFilterData])
+    }, [smartAllFilterData]);
 
     function structuredClone(obj: any): any {
         return JSON.parse(JSON.stringify(obj));
@@ -1167,18 +1211,19 @@ function TeamPortlioTable(SelectedProp: any) {
                     <div className="d-flex">
                         <span className="column-description2">
                             {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== "Others" && (
-                                <a className="text-content hreflink" title={row?.original?.Title} data-interception="off" target="_blank" style={{ color: `${row?.original?.PortfolioType?.Color}` }} href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.ID} >
+                                <a className="text-content hreflink" title={row?.original?.Title} data-interception="off" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
+                                    href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.ID} >
                                     <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : globalFilterHighlited} />
                                 </a>
                             )}
                             {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== "Others" && (
-                                <a className="text-content hreflink" title={row?.original?.Title} data-interception="off" target="_blank" style={{ color: `${row?.original?.PortfolioType?.Color}` }}
+                                <a className="text-content hreflink" title={row?.original?.Title} data-interception="off" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
                                     href={ContextValue.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + row?.original?.ID + "&Site=" + row?.original?.siteType} >
                                     <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : globalFilterHighlited} />
                                 </a>
                             )}
                             {row?.original.Title === "Others" ? (
-                                <span className="text-content" title={row?.original?.Title} style={{ color: `${row?.original?.PortfolioType?.Color}` }}>{row?.original?.Title}</span>
+                                <span className="text-content" title={row?.original?.Title} style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}>{row?.original?.Title}</span>
                             ) : (
                                 ""
                             )}
@@ -1392,8 +1437,6 @@ function TeamPortlioTable(SelectedProp: any) {
             setCheckedList({});
         }
     }, []);
-
-
     //// popup Edit Task And Component///
     const EditComponentPopup = (item: any) => {
         item["siteUrl"] = ContextValue.siteUrl;
@@ -1411,7 +1454,7 @@ function TeamPortlioTable(SelectedProp: any) {
     };
     const TimeEntryCallBack = React.useCallback((item1) => {
         setIsTimeEntry(false);
-      }, []);
+    }, []);
     ///////////////////////////////////
 
     // Code Write by RanuSir ////
@@ -1435,7 +1478,6 @@ function TeamPortlioTable(SelectedProp: any) {
             </div>
         );
     };
-
     let isOpenPopup = false;
     const AddStructureCallBackCall = React.useCallback((item) => {
         //  setRowSelection({});
@@ -1629,8 +1671,6 @@ function TeamPortlioTable(SelectedProp: any) {
         );
     };
     //-------------------------------------------------------------End---------------------------------------------------------------------------------
-
-
     return (
         <div id="ExandTableIds" style={{}}>
 
