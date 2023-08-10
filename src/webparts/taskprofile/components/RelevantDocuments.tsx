@@ -75,12 +75,16 @@ const RelevantDocuments = (props: any,ref:any) => {
                                     {item?.File_x0020_Type=="png"&&<span className='svg__iconbox svg__icon--png'title="png"></span>}
                                     {item?.File_x0020_Type=="txt"&&<span className='svg__iconbox svg__icon--txt'title="txt"></span>}
                                     {item?.File_x0020_Type=="smg"&&<span className='svg__iconbox svg__icon--smg'title="smg"></span>}
+                                    {item?.File_x0020_Type=="aspx"&&<span className='svg__iconbox svg__icon--link'title="Link"></span>}
                                     
                                     </a>
                                 
                                 </li>
                                 <li>
-                                   <a className='px-2' href={`${item?.EncodedAbsUrl}?web=1`}target="_blank" data-interception="off"> <span>{item?.Title}</span></a>
+                                    {item?.File_x0020_Type=="aspx"?
+                                    <a className='px-2' href={`${item?.Url?.Url}`}target="_blank" data-interception="off"> <span>{item?.Title}</span></a>:
+                                    <a className='px-2' href={`${item?.EncodedAbsUrl}?web=1`}target="_blank" data-interception="off"> <span>{item?.Title}</span></a>}
+                                   
                                 </li>
 
                             </ul>

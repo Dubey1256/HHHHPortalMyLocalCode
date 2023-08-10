@@ -340,7 +340,7 @@ const CreateActivity = (props: any) => {
             TaskTypeItems = await web.lists
                 .getById(dynamicList.TaskTypeID)
                 .items
-                .select("Id,Title,Shareweb_x0020_Edit_x0020_Column,Prefix,Level")
+                .select("Id,Title,Prefix,Level")
                 .top(4999)
                 .get()
             console.log(TaskTypeItems)
