@@ -2,11 +2,25 @@ import * as React from "react";
 import { useState, useEffect } from 'react';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { ImPriceTags } from 'react-icons/im';
+import { SlCalender } from 'react-icons/sl'
 import Tooltip from "../../globalComponents/Tooltip";
 import { Web } from "sp-pnp-js";
 import * as Moment from 'moment';
 import * as globalCommon from "../../globalComponents/globalCommon";
+import {
+    mergeStyleSets,
+    FocusTrapCallout,
+    FocusZone,
+    FocusZoneTabbableElements,
+    FontWeights,
+    Stack,
+    Text,
+} from '@fluentui/react';
+import { useBoolean, useId } from '@fluentui/react-hooks';
+import { DefaultButton, PrimaryButton } from '@fluentui/react/lib/Button';
+import { TooltipHost, ITooltipHostStyles } from '@fluentui/react/lib/Tooltip';
 import { FaChevronDown, FaChevronRight } from "react-icons/fa";
+import { Modal } from "react-bootstrap";
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import HighlightableCell from "../../globalComponents/GroupByReactTableComponents/highlight";
 
@@ -63,6 +77,15 @@ const SiteCompositionComponent = (Props: any) => {
     const [EducationClientCategory, setEducationClientCategory] = useState([]);
     const [MigrationClientCategory, setMigrationClientCategory] = useState([]);
     const [ComponentChildrenData, setComponentChildrenData] = useState([]);
+    const [IsOpenDateModal, setIsOpenDateModal] = useState<any>(false);
+    const [isCalloutVisible, { toggle: toggleIsCalloutVisible }] = useBoolean(false);
+    const [currentDataIndex, setCurrentDataIndex] = useState<any>(0);
+    const buttonId = useId(`callout-button`);
+    const calloutProps = { gapSpace: 0 };
+
+    const hostStyles: Partial<ITooltipHostStyles> = { root: { display: 'inline-block' } };
+
+
     // const [SelectedClieantCategoryGlobal, setSelectedClieantCategoryGlobal] = useState<any>([]);
 
     // const [SitesTaggingData, setSitesTaggingData] = useState([]);
@@ -253,7 +276,7 @@ const SiteCompositionComponent = (Props: any) => {
         callBack(SiteCompositionObject, "dataExits");
     }
     // ########### this is used for changing the Date of slected Site Composition ######################
-    const ChangeDateManuallyFunction = (e: any, SiteName: any, Type: any) => {
+    const ChangeDateManuallyFunction = (e: any, SiteName: any, Type: any, PropertyName: any) => {
         let TempArray: any = [];
         let TempSiteTaggingData: any = [];
         if (BackupSiteTypeData != undefined && BackupSiteTypeData) {
@@ -266,8 +289,11 @@ const SiteCompositionComponent = (Props: any) => {
                             SiteData.readOnly = true;
                         }
                     }
-                    if (Type == "ChangeDate") {
+                    if (Type == "ChangeDate" && PropertyName == "StartDate") {
                         SiteData.Date = Moment(e.target.value).format('DD/MM/YYYY');
+                    }
+                    if (Type == "ChangeDate" && PropertyName == "EndDate") {
+                        SiteData.EndDate = Moment(e.target.value).format('DD/MM/YYYY');
                     }
                     TempArray.push(SiteData);
                 } else {
@@ -284,7 +310,8 @@ const SiteCompositionComponent = (Props: any) => {
                         Title: TempData.Title,
                         localSiteComposition: true,
                         SiteImages: TempData.Item_x005F_x0020_Cover?.Url,
-                        Date: TempData.Date
+                        Date: TempData.Date,
+                        EndDate:TempData.EndDate
                     }
                     TempSiteTaggingData.push(object)
                 }
@@ -297,6 +324,8 @@ const SiteCompositionComponent = (Props: any) => {
         setSiteTypes(TempArray);
         callBack(SiteCompositionObject, "dataExits");
     }
+
+    
 
     const ChangeSiteCompositionSettings = (Type: any) => {
 
@@ -549,8 +578,6 @@ const SiteCompositionComponent = (Props: any) => {
         setSearchedClientCategoryData([]);
         setSearchedClientCategoryDataForInput([]);
         SelectedClientCategoryFromDataList(selectedCategory, Type);
-
-
     }
 
     const SelectedClientCategoryFromDataList = (selectedCategory: any, Type: any) => {
@@ -583,7 +610,7 @@ const SiteCompositionComponent = (Props: any) => {
 
     }
 
-    const saveSelectedClientCategoryData = (usedFor:any) => {
+    const saveSelectedClientCategoryData = (usedFor: any) => {
         let TempArray: any = [];
         if (EPSClientCategory != undefined && EPSClientCategory.length > 0) {
             EPSClientCategory?.map((EPSData: any) => {
@@ -669,6 +696,7 @@ const SiteCompositionComponent = (Props: any) => {
                         ClienTimeDescription: ClientTimeItems.ClienTimeDescription,
                         Selected: true,
                         Date: ClientTimeItems.Date,
+                        EndDate:ClientTimeItems.EndDate,
                         Available: true,
                         SiteImages: ClientTimeItems.siteIcons
                     }
@@ -1004,7 +1032,7 @@ const SiteCompositionComponent = (Props: any) => {
                         Select Client Category
                     </span>
                 </div>
-                <Tooltip ComponentId="1626" />
+                <Tooltip ComponentId="1626" isServiceTask={ServicesTaskCheck}/>
             </div>
         )
     }
@@ -1148,7 +1176,7 @@ const SiteCompositionComponent = (Props: any) => {
                         Select Item
                     </span>
                 </div>
-                <Tooltip ComponentId="1263" />
+                <Tooltip ComponentId="1626" isServiceTask={ServicesTaskCheck}/>
             </div>
         )
     }
@@ -1178,12 +1206,42 @@ const SiteCompositionComponent = (Props: any) => {
                         Manage Smart Taxonomy
                     </a>
                 </span>
-                <button type="button" className="btn btn-primary px-3 mx-1" onClick={()=>saveSelectedClientCategoryData("Popup")} >
+                <button type="button" className="btn btn-primary px-3 mx-1" onClick={() => saveSelectedClientCategoryData("Popup")} >
                     Save
                 </button>
             </footer>
         )
     }
+
+    // this is used for Change Start and End Date model 
+
+    const closeDateModelFunction = () => {
+        setIsOpenDateModal(false);
+    }
+
+    const SaveDateButtonFunction = () => {
+        setIsOpenDateModal(false);
+    }
+
+    const OpenCallOutFunction = (IndexData: any) => {
+        setCurrentDataIndex(IndexData);
+        toggleIsCalloutVisible();
+    }
+    const styles = mergeStyleSets({
+        callout: {
+            width: 320,
+            padding: '20px 24px',
+        },
+        title: {
+            marginBottom: 12,
+            fontWeight: FontWeights.semilight,
+        },
+        buttons: {
+            display: 'flex',
+            justifyContent: 'flex-end',
+            marginTop: 20,
+        },
+    });
 
     let TotalPercent: any = 0;
     return (
@@ -1223,7 +1281,7 @@ const SiteCompositionComponent = (Props: any) => {
                         type="checkbox"
                         className="form-check-input mb-0 ms-2 mt-1 mx-1 rounded-0"
                         defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0].Protected : false}
-                        onChange={() => ChangeSiteCompositionSettings("Overridden")}
+                        onChange={() => ChangeSiteCompositionSettings("Protected")}
                     />
                     <label data-toggle="tooltip" data-placement="bottom">
                         Protected
@@ -1288,19 +1346,33 @@ const SiteCompositionComponent = (Props: any) => {
                                             <td className="m-0 p-1 align-middle" style={{ width: "3%" }}>
                                                 <span>{siteData.BtnStatus ? "%" : ''}</span>
                                             </td>
-                                            <td className="m-0 p-1 align-middle" style={checkBoxStatus ? { width: "25%", cursor: "not-allowed", pointerEvents: "none" } : { width: "20%" }}>
+                                            <td className="m-0 p-1 align-middle" style={checkBoxStatus ? { width: "5%", cursor: "not-allowed", pointerEvents: "none" } : { width: "5%" }}>
                                                 {siteData.BtnStatus ?
-                                                    <div className="d-flex" style={{ width: "85%" }}>
-                                                        {siteData.readOnly == false ? <input type="date" className="border-secondary form-control p-0 py-1"
-                                                            defaultValue={siteData.Date != undefined ? siteData.Date.split('/').reverse().join('-') : ""} onChange={(e) => ChangeDateManuallyFunction(e, siteData.Title, "ChangeDate")} /> : <span className="form-control border-secondary p-0 px-2">{siteData.Date ? siteData.Date : ''}</span>}
-                                                        <a className="bg-white border border-secondary" onClick={(e) => ChangeDateManuallyFunction(e, siteData.Title, "readOnlyStatus")}
+                                                    // <div className="d-flex" style={{ width: "85%" }}>
+                                                    //     {siteData.readOnly == false ? <input type="date" className="border-secondary form-control p-0 py-1"
+                                                    //         defaultValue={siteData.Date != undefined ? siteData.Date.split('/').reverse().join('-') : ""} onChange={(e) => ChangeDateManuallyFunction(e, siteData.Title, "ChangeDate")} /> : <span className="form-control border-secondary p-0 px-2">{siteData.Date ? siteData.Date : ''}</span>}
+                                                    //     <a className="bg-white border border-secondary" onClick={(e) => ChangeDateManuallyFunction(e, siteData.Title, "readOnlyStatus")}
+                                                    //     >
+                                                    //         {siteData.readOnly == true ? <span className="border svg__icon--editBox svg__iconbox"></span> : <span className="border svg__icon--cross svg__iconbox"></span>}
+                                                    //     </a>
+                                                    // </div>
+                                                    <div data-toggle="tooltip" id={buttonId + "-" + index}
+                                                        onClick={() => OpenCallOutFunction(index)}
+                                                        data-placement="bottom"
+                                                    // title={"Edit Date"}
+                                                    >
+                                                        <TooltipHost
+                                                            content={`Start Date : ${siteData.Date} |  End Date : ${siteData.EndDate != undefined ? siteData.EndDate : "NA"}`}
+                                                            id={buttonId + "-" + index}
+                                                            calloutProps={calloutProps}
+                                                            styles={hostStyles}
                                                         >
-                                                            {siteData.readOnly == true ? <span className="border svg__icon--editBox svg__iconbox"></span> : <span className="border svg__icon--cross svg__iconbox"></span>}
-                                                        </a>
+                                                            <span aria-describedby={buttonId + "-" + index}><SlCalender /></span>
+                                                        </TooltipHost>
                                                     </div>
                                                     : null}
                                             </td>
-                                            <td className="m-0 p-1 align-middle" style={{ width: "28%" }}>
+                                            <td className="m-0 p-1 align-middle" style={{ width: "38%" }}>
                                                 {siteData.Title == "EI" ?
                                                     <>
                                                         <div className="input-group block justify-content-between">
@@ -1308,30 +1380,59 @@ const SiteCompositionComponent = (Props: any) => {
                                                                 <> {EIClientCategory?.map((dataItem: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
                                                                         return (
-                                                                            <div className="bg-69 p-1 ps-2"> {dataItem.Title ? dataItem.Title : null}
+                                                                            <div className="bg-69 d-flex full-width justify-content-between p-1 ps-2" title={dataItem.Title ? dataItem.Title : null}>
+                                                                                {dataItem.Title ? dataItem.Title.substring(0, 24) + "..." : null}
                                                                                 <a className=""
                                                                                     onClick={() => removeSelectedClientCategory("EI")}
                                                                                 >
-                                                                                    <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
+                                                                                    <span className="bg-light svg__icon--cross svg__iconbox"></span>
                                                                                 </a>
                                                                             </div>
                                                                         )
                                                                     } else {
                                                                         return (
-                                                                            <input type="text" value={SearchedKeyForEI} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EI", 340)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
+                                                                            <>
+                                                                                <input type="text"
+                                                                                    value={SearchedKeyForEI}
+                                                                                    onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EI", 340)}
+                                                                                    style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }}
+                                                                                    className="border-secondary form-control"
+                                                                                    placeholder="Search Client Category Here!"
+                                                                                    readOnly={siteData.BtnStatus ? false : true} />
+                                                                                {
+                                                                                    siteData.BtnStatus ?
+                                                                                        <a className="bg-white border border-secondary"
+                                                                                            onClick={() => openClientCategoryModel(340, 'EI')}
+                                                                                        >
+                                                                                            <span title="Edit Client Category" className="svg__iconbox svg__icon--editBox hreflink"></span>
+                                                                                        </a>
+                                                                                        : null
+                                                                                }
+                                                                            </>
                                                                         )
                                                                     }
                                                                 })}
-                                                                </> : <input type="text" value={SearchedKeyForEI} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EI", 340)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />}
-                                                            {
-                                                                siteData.BtnStatus ?
-                                                                    <a className="bg-white border border-secondary"
-                                                                        onClick={() => openClientCategoryModel(340, 'EI')}
-                                                                    >
-                                                                        <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
-                                                                    </a>
-                                                                    : null
-                                                            }
+                                                                </> :
+                                                                <>
+                                                                    <input type="text"
+                                                                        value={SearchedKeyForEI}
+                                                                        onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EI", 340)}
+                                                                        style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }}
+                                                                        className="border-secondary form-control"
+                                                                        placeholder="Search Client Category Here!"
+                                                                        readOnly={siteData.BtnStatus ? false : true}
+                                                                    />
+                                                                    {
+                                                                        siteData.BtnStatus ?
+                                                                            <a className="bg-white border border-secondary"
+                                                                                onClick={() => openClientCategoryModel(340, 'EI')}
+                                                                            >
+                                                                                <span title="Edit Client Category" className="svg__iconbox svg__icon--editBox hreflink"></span>
+                                                                            </a>
+                                                                            : null
+                                                                    }
+                                                                </>}
+
                                                         </div>
                                                         {SearchedClientCategoryDataForInput?.length > 0 && ClientCategoryPopupSiteName == "EI" ? (
                                                             <div className="SearchTableClientCategoryComponent">
@@ -1355,30 +1456,60 @@ const SiteCompositionComponent = (Props: any) => {
                                                                 <> {EPSClientCategory?.map((dataItem: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
                                                                         return (
-                                                                            <div className="bg-69 p-1 ps-2"> {dataItem.Title ? dataItem.Title : null}
+                                                                            <div className="bg-69 d-flex full-width justify-content-between p-1 ps-2" title={dataItem.Title ? dataItem.Title : null}>
+                                                                                {dataItem.Title ? dataItem.Title.substring(0, 24) + "..." : null}
                                                                                 <a className=""
                                                                                     onClick={() => removeSelectedClientCategory("EPS")}
                                                                                 >
-                                                                                    <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
+                                                                                    <span className="bg-light svg__icon--cross svg__iconbox"></span>
                                                                                 </a>
                                                                             </div>
                                                                         )
                                                                     } else {
                                                                         return (
-                                                                            <input type="text" value={SearchedKeyForEPS} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EPS", 341)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
+                                                                            <>
+                                                                                <input type="text"
+                                                                                    value={SearchedKeyForEPS}
+                                                                                    onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EPS", 341)}
+                                                                                    style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }}
+                                                                                    className="border-secondary form-control"
+                                                                                    placeholder="Search Client Category Here!"
+                                                                                    readOnly={siteData.BtnStatus ? false : true}
+                                                                                />
+                                                                                {
+                                                                                    siteData.BtnStatus ?
+                                                                                        <a className="bg-white border border-secondary"
+                                                                                            onClick={() => openClientCategoryModel(341, "EPS")}
+                                                                                        >
+                                                                                            <span title="Edit Client Category" className="svg__iconbox svg__icon--editBox hreflink"></span>
+                                                                                        </a>
+                                                                                        : null
+                                                                                }
+                                                                            </>
                                                                         )
                                                                     }
                                                                 })}
-                                                                </> : <input type="text" value={SearchedKeyForEPS} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EPS", 341)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />}
-                                                            {
-                                                                siteData.BtnStatus ?
-                                                                    <a className="bg-white border border-secondary"
-                                                                        onClick={() => openClientCategoryModel(341, "EPS")}
-                                                                    >
-                                                                        <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
-                                                                    </a>
-                                                                    : null
+                                                                </> :
+                                                                <>
+                                                                    <input type="text"
+                                                                        value={SearchedKeyForEPS}
+                                                                        onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EPS", 341)}
+                                                                        style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }}
+                                                                        className="border-secondary form-control"
+                                                                        placeholder="Search Client Category Here!"
+                                                                        readOnly={siteData.BtnStatus ? false : true} />
+                                                                    {
+                                                                        siteData.BtnStatus ?
+                                                                            <a className="bg-white border border-secondary"
+                                                                                onClick={() => openClientCategoryModel(341, "EPS")}
+                                                                            >
+                                                                                <span title="Edit Client Category" className="svg__iconbox svg__icon--editBox hreflink"></span>
+                                                                            </a>
+                                                                            : null
+                                                                    }
+                                                                </>
                                                             }
+
                                                         </div>
                                                         {SearchedClientCategoryDataForInput?.length > 0 && ClientCategoryPopupSiteName == "EPS" ? (
                                                             <div className="SearchTableClientCategoryComponent">
@@ -1402,31 +1533,61 @@ const SiteCompositionComponent = (Props: any) => {
                                                                 <> {EducationClientCategory?.map((dataItem: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
                                                                         return (
-                                                                            <div className="bg-69 p-1 ps-2"> {dataItem.Title ? dataItem.Title : null}
+                                                                            <div className="bg-69 d-flex full-width justify-content-between p-1 ps-2" title={dataItem.Title ? dataItem.Title : null}>
+                                                                                {dataItem.Title ? dataItem.Title.substring(0, 24) + "..." : null}
                                                                                 <a className=""
                                                                                     onClick={() => removeSelectedClientCategory("Education")}
                                                                                 >
-                                                                                    <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
+                                                                                    <span className="bg-light svg__icon--cross svg__iconbox"></span>
                                                                                 </a>
                                                                             </div>
                                                                         )
                                                                     } else {
                                                                         return (
-                                                                            <input type="text" value={SearchedKeyForEducation} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Education", 344)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
+                                                                            <>
+                                                                                <input type="text"
+                                                                                    value={SearchedKeyForEducation}
+                                                                                    onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Education", 344)}
+                                                                                    style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }}
+                                                                                    className="border-secondary form-control"
+                                                                                    placeholder="Search Client Category Here!"
+                                                                                    readOnly={siteData.BtnStatus ? false : true}
+                                                                                />
+                                                                                {
+                                                                                    siteData.BtnStatus ?
+                                                                                        <a className="bg-white border border-secondary"
+                                                                                            onClick={() => openClientCategoryModel(344, "Education")}
+                                                                                        >
+                                                                                            <span title="Edit Client Category" className="svg__iconbox svg__icon--editBox hreflink"></span>
+                                                                                        </a>
+                                                                                        : null
+                                                                                }
+                                                                            </>
                                                                         )
                                                                     }
                                                                 })}
-                                                                </> : <input type="text" value={SearchedKeyForEducation} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Education", 344)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />}
-
-                                                            {
-                                                                siteData.BtnStatus ?
-                                                                    <a className="bg-white border border-secondary"
-                                                                        onClick={() => openClientCategoryModel(344, "Education")}
-                                                                    >
-                                                                        <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
-                                                                    </a>
-                                                                    : null
+                                                                </> :
+                                                                <>
+                                                                    <input type="text"
+                                                                        value={SearchedKeyForEducation}
+                                                                        onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Education", 344)}
+                                                                        style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }}
+                                                                        className="border-secondary form-control" placeholder="Search Client Category Here!"
+                                                                        readOnly={siteData.BtnStatus ? false : true}
+                                                                    />
+                                                                    {
+                                                                        siteData.BtnStatus ?
+                                                                            <a className="bg-white border border-secondary"
+                                                                                onClick={() => openClientCategoryModel(344, "Education")}
+                                                                            >
+                                                                                <span title="Edit Client Category" className="svg__iconbox svg__icon--editBox hreflink"></span>
+                                                                            </a>
+                                                                            : null
+                                                                    }
+                                                                </>
                                                             }
+
+
                                                         </div>
                                                         {SearchedClientCategoryDataForInput?.length > 0 && ClientCategoryPopupSiteName == "Education" ? (
                                                             <div className="SearchTableClientCategoryComponent">
@@ -1450,31 +1611,57 @@ const SiteCompositionComponent = (Props: any) => {
                                                                 <> {MigrationClientCategory?.map((dataItem: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
                                                                         return (
-                                                                            <div className="bg-69 p-1 ps-2"> {dataItem.Title ? dataItem.Title : null}
+                                                                            <div className="bg-69 d-flex full-width justify-content-between p-1 ps-2" title={dataItem.Title ? dataItem.Title : null}>
+                                                                                {dataItem.Title ? dataItem.Title.substring(0, 24) + "..." : null}
                                                                                 <a className=""
                                                                                     onClick={() => removeSelectedClientCategory("Migration")}
                                                                                 >
-                                                                                    <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
+
+                                                                                    <span className="bg-light svg__icon--cross svg__iconbox"></span>
                                                                                 </a>
                                                                             </div>
                                                                         )
                                                                     } else {
                                                                         return (
-                                                                            <input type="text" value={SearchedKeyForMigration} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Migration", 569)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
+                                                                            <>
+                                                                                <input
+                                                                                    type="text"
+                                                                                    value={SearchedKeyForMigration}
+                                                                                    onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Migration", 569)}
+                                                                                    style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }}
+                                                                                    className="border-secondary form-control"
+                                                                                    placeholder="Search Client Category Here!"
+                                                                                    readOnly={siteData.BtnStatus ? false : true}
+                                                                                />
+                                                                                {
+                                                                                    siteData.BtnStatus ?
+                                                                                        <a className="bg-white border border-secondary"
+                                                                                            onClick={() => openClientCategoryModel(569, 'Migration')}
+                                                                                        >
+                                                                                            <span title="Edit Client Category" className="svg__iconbox svg__icon--editBox hreflink"></span>
+                                                                                        </a>
+                                                                                        : null
+                                                                                }
+                                                                            </>
                                                                         )
                                                                     }
                                                                 })}
-                                                                </> : <input type="text" value={SearchedKeyForMigration} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Migration", 569)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />}
-
-                                                            {
-                                                                siteData.BtnStatus ?
-                                                                    <a className="bg-white border border-secondary"
-                                                                        onClick={() => openClientCategoryModel(569, 'Migration')}
-                                                                    >
-                                                                        <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
-                                                                    </a>
-                                                                    : null
+                                                                </> :
+                                                                <>
+                                                                    <input type="text" value={SearchedKeyForMigration} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Migration", 569)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
+                                                                    {
+                                                                        siteData.BtnStatus ?
+                                                                            <a className="bg-white border border-secondary"
+                                                                                onClick={() => openClientCategoryModel(569, 'Migration')}
+                                                                            >
+                                                                                <span title="Edit Client Category" className="svg__iconbox svg__icon--editBox hreflink"></span>
+                                                                            </a>
+                                                                            : null
+                                                                    }
+                                                                </>
                                                             }
+
+
                                                         </div>
                                                         {SearchedClientCategoryDataForInput?.length > 0 && ClientCategoryPopupSiteName == "Migration" ? (
                                                             <div className="SearchTableClientCategoryComponent">
@@ -1537,7 +1724,7 @@ const SiteCompositionComponent = (Props: any) => {
 
                                 </div>
                                 <div className="d-end">
-                                    <button type="button" className="btn btn-primary" onClick={()=>saveSelectedClientCategoryData("Popup")}>
+                                    <button type="button" className="btn btn-primary" onClick={() => saveSelectedClientCategoryData("Popup")}>
                                         OK
                                     </button>
                                 </div>
@@ -1569,7 +1756,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                 <a className=""
                                                     onClick={() => removeSelectedClientCategory("EPS")}
                                                 >
-                                                    <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
+                                                    <span className="bg-light svg__icon--cross svg__iconbox"></span>
                                                 </a>
                                             </span>
                                             : null}
@@ -1583,7 +1770,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                 <a className=""
                                                     onClick={() => removeSelectedClientCategory("EI")}
                                                 >
-                                                    <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
+                                                    <span className="bg-light svg__icon--cross svg__iconbox"></span>
                                                 </a>
                                             </span>
                                             : null}
@@ -1597,7 +1784,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                 <a className=""
                                                     onClick={() => removeSelectedClientCategory("Education")}
                                                 >
-                                                    <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
+                                                    <span className="bg-light svg__icon--cross svg__iconbox"></span>
                                                 </a>
                                             </span>
                                             : null}
@@ -1612,7 +1799,8 @@ const SiteCompositionComponent = (Props: any) => {
                                                 <a className=""
                                                     onClick={() => removeSelectedClientCategory("Migration")}
                                                 >
-                                                    <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
+                                                    <span className="bg-light svg__icon--cross svg__iconbox"></span>
+
                                                 </a>
 
                                             </span> : null}
@@ -1698,6 +1886,83 @@ const SiteCompositionComponent = (Props: any) => {
                     </div>
                 </Panel>
                 : null
+            }
+            {/* {IsOpenDateModal ?
+                <Modal
+                    show={IsOpenDateModal}
+                    isOpen={IsOpenDateModal}
+                    size='sm'
+                    isBlocking={IsOpenDateModal}
+                    containerClassName="custommodalpopup p-2"
+                >
+                    <div className="modal-content rounded-0">
+                        <div className="modal-header">
+                            <h5 className="modal-title">Edit Date</h5>
+                            <span onClick={() => closeDateModelFunction()}><i className="svg__iconbox svg__icon--cross crossBtn"></i></span>
+                        </div>
+                        <div className="modal-body p-2">
+                            <div>
+                                <input type="date" />
+                            </div>
+                            <div>
+                                <input type="date" />
+                            </div>
+                        </div>
+                        <footer className='text-end p-2'>
+                            <button className="btn btnPrimary" onClick={SaveDateButtonFunction}>Save</button>
+                            <button className='btn btn-default ms-1' onClick={() => closeDateModelFunction()}>Cancel</button>
+                        </footer>
+                    </div>
+                </Modal> : null
+            } */}
+            {isCalloutVisible ? (
+                <FocusTrapCallout
+                    role="alertdialog"
+                    className={styles.callout}
+                    gapSpace={0}
+                    target={`#${buttonId}-${currentDataIndex}`}
+                    onDismiss={toggleIsCalloutVisible}
+                    setInitialFocus
+                >
+                    <Text block variant="xLarge" className={styles.title}>
+                        Edit Date
+                    </Text>
+                    <Text block variant="small">
+                        <div className="full-width d-flex">
+                            {SiteTypes?.length > 0 ? SiteTypes?.map((DataItem: any, DataIndex: any) => {
+                                if (DataIndex == currentDataIndex) {
+                                    return (
+                                        <>
+                                            <div className="me-2">
+                                                <label className="form-label full-width">Start Date</label>
+                                                <input type="date" className="border-secondary form-control p-1"
+                                                    defaultValue={DataItem.Date != undefined ? DataItem.Date.split('/').reverse().join('-') : ""}
+                                                    onChange={(e) => ChangeDateManuallyFunction(e, DataItem.Title, "ChangeDate", "StartDate")}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="form-label full-width">End Date</label>
+                                                <input type="date" className="border-secondary form-control p-1"
+                                                    defaultValue={DataItem.EndDate != undefined ? DataItem.EndDate.split('/').reverse().join('-') : ""}
+                                                    onChange={(e) => ChangeDateManuallyFunction(e, DataItem.Title, "ChangeDate", "EndDate")}
+                                                />
+                                            </div>
+                                        </>
+                                    )
+                                }
+                            }) : null}
+
+                        </div>
+
+                    </Text>
+                    <FocusZone handleTabKey={FocusZoneTabbableElements.all} isCircularNavigation>
+                        <Stack className={styles.buttons} gap={8} horizontal>
+                            <PrimaryButton onClick={toggleIsCalloutVisible}>Save</PrimaryButton>
+                            <DefaultButton onClick={toggleIsCalloutVisible}>Cancel</DefaultButton>
+                        </Stack>
+                    </FocusZone>
+                </FocusTrapCallout>
+            ) : null
             }
         </div >
     )

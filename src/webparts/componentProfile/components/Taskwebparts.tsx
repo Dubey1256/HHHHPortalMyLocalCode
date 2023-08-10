@@ -611,7 +611,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
             }
           </span>
         </div>
-        <Tooltip ComponentId={1272} />
+        <Tooltip ComponentId={1272}  IsServiceTask={IsUpdated == "Service" ? true : false} />
       </div>
     );
   };
@@ -657,7 +657,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         >
           <span>{`Create  ${IsUpdated} item in ${MeetingItems[0]?.PortfolioStructureID} ${MeetingItems[0]?.Title}`}</span>
         </div>
-        <Tooltip ComponentId="1746" />
+        <Tooltip ComponentId="1746" IsServiceTask={IsUpdated == "Service" ? true : false} />
       </div>
     );
   };
@@ -2589,8 +2589,8 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       }
 
     });
-    if (props.ClientCategory.results.length != 0) {
-      props.ClientCategory.results.map((terms: any) => {
+    if (props?.ClientCategory?.results?.length != 0) {
+      props?.ClientCategory?.results.map((terms: any) => {
 
         myarray2.push(terms);
       });
@@ -5381,12 +5381,12 @@ var PortfolioLevelNum: any = 0;
               <ExpndTable prop={expndpopup} prop1={tablecontiner} />
             </a>
             <a>
-              <Tooltip ComponentId="5756" />
+              <Tooltip ComponentId="5756" IsServiceTask={IsUpdated == "Service" ? true : false} />
             </a>
           </span>
 
         </div>
-        <div className="col-sm-12 p-0 smart mt-1 ">
+        <div className="col-sm-12 p-0 smart ">
           <div className="wrapper">
             <table
               className="SortingTable searchCrossIcon groupTable  table table-hover"
