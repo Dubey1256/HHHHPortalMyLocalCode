@@ -992,7 +992,7 @@ const TimeReport = (props:any) => {
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + QATime.toFixed(2) + '</td>'
         + '</tr>'
         + '<tr>'
-        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Users on leave' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Users on leaves' + '</td>'
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + leaveUsers.toFixed(2) + '</td>'
         + '</tr>'
         + '<tr>'

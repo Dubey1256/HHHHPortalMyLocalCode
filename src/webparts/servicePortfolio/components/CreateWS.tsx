@@ -401,7 +401,7 @@ const CreateWS = (props: any) => {
             Priority: AllItems.Priority,
             Body: AllItems.Description,
             // DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
-            DueDate: myDate.editDate = myDate.editDate ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy"): '',
+            DueDate: myDate.editDate = myDate.editDate != null ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy"): null,
             SharewebTaskTypeId: SharewebTasknewTypeId,
             Shareweb_x0020_ID: SharewebID,
             SharewebTaskLevel2No: WorstreamLatestId,
@@ -419,7 +419,7 @@ const CreateWS = (props: any) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
-                res.data.DueDate = res?.data?.DueDate ?  Moment(res?.data?.DueDate).format("DD-MM-YYYY"):'',
+                res.data.DueDate = res?.data?.DueDate != null ?  Moment(res?.data?.DueDate).format("DD-MM-YYYY"):null,
                     res.data['siteType'] = AllItems.siteType
                 res.data['Shareweb_x0020_ID'] = SharewebID,
                 res.data.ClientCategory=clientcaterogiesdata2,
@@ -439,7 +439,7 @@ const CreateWS = (props: any) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
-                res.data.DueDate = res?.data?.DueDate ?  Moment(res?.data?.DueDate).format("MM-DD-YYYY"):'',
+                res.data.DueDate = res?.data?.DueDate != null ?  Moment(res?.data?.DueDate).format("MM-DD-YYYY"):null,
                     res.data['siteType'] = AllItems.siteType
                 res.data['Shareweb_x0020_ID'] = SharewebID
                 res.data.ClientCategory= clientcaterogiesdata2,

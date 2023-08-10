@@ -4,8 +4,10 @@ import "react-popper-tooltip/dist/styles.css";
 import { ColumnDef, } from "@tanstack/react-table";
 import { FaChevronDown, FaChevronRight } from "react-icons/fa";
 import GlobalCommanTable from "../GroupByReactTableComponents/GlobalCommanTable";
+import CreateActivity from "../../webparts/servicePortfolio/components/CreateActivity";
 let AllMatsterAndTaskData: any = [];
 let counterAllTaskCount: any = 0;
+let checkedData=''
 
 // export const getTooltiphierarchyWithoutGroupByTable = (row: any) => {
 //     AllMatsterAndTaskData.map((Object: any) => {
@@ -62,12 +64,13 @@ export const getTooltiphierarchyWithoutGroupByTable = (row: any): any[] => {
 
 let scrollToolitem: any = false
 let pageName: any = 'hierarchyPopperToolTip'
-export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterTaskData, AllSitesTaskData }: any) {
+export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterTaskData, AllSitesTaskData, AllListId }: any) {
     AllMatsterAndTaskData = [...masterTaskData];
     AllMatsterAndTaskData = AllMatsterAndTaskData?.concat(AllSitesTaskData);
 
     const [controlledVisible, setControlledVisible] = React.useState(false);
     const [action, setAction] = React.useState("");
+    const [openActivity, setOpenActivity] = React.useState(false);
 
     const {
         getArrowProps,
@@ -97,6 +100,13 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
         scrollToolitem = false;
     };
 
+    const openActivityPopup = (row:any) => {
+        setOpenActivity(true)
+        checkedData=row;
+    }
+    const Call=()=>{
+        setOpenActivity(false)
+    }
     const tooltiphierarchy = React.useMemo(() => {
         if (action === "click") {
             return getTooltiphierarchyWithoutGroupByTable(row);
@@ -157,7 +167,28 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                 placeholder: "",
                 header: "",
                 size: 15,
-            }
+            },
+            {
+                accessorKey: "",
+                size: 7,
+                canSort: false,
+                header: "",
+                placeholder: "",
+                id: 'Shareweb_x0020_ID',
+                cell: ({ row, getValue }) => (
+                    <div
+                        style={row.getCanExpand() ? {
+                            paddingLeft: `${0}px`,
+                        } : {
+                            paddingLeft: "18px",
+                        }}
+                    >
+                        <>
+                          <span onClick={()=>openActivityPopup(row.original)}>+</span>
+                        </>
+                    </div>
+                ),
+            },
         ],
         [tooltiphierarchy]
     );
@@ -193,6 +224,13 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                     <div {...getArrowProps({ className: "tooltip-arrow" })} />
                 </div>
             )}
+            {openActivity && (
+        <CreateActivity
+          props={checkedData}
+          Call={Call}
+          SelectedProp={AllListId.AllListId}
+        ></CreateActivity>
+      )}
         </>
     );
 }
