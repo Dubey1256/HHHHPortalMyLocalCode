@@ -48,6 +48,7 @@ const CreateWS = (props: any) => {
     const [smartComponentData, setSmartComponentData] = React.useState([]);
     const [inputFields, setInputFields] = React.useState([]);
     const [ParentArray, setParentArray] = React.useState([]);
+    const [postData, setPostData] = React.useState({ Title: '' })
     const [linkedComponentData, setLinkedComponentData] = React.useState([]);
     const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
     const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
@@ -110,7 +111,7 @@ const CreateWS = (props: any) => {
         const parentdata: any = []
         // parentdata.push()
         // return new Promise((resolve, reject) => {
-        var filt = "Id eq " + (Item.Parent != null || undefined ? Item?.Parent?.Id : Item.Component.length > 0 ? Item.Component[0].Id : Item.Services[0].Id) + "";
+        var filt = "Id eq " + (Item.Parent != null || undefined ? Item?.Parent?.Id : Item?.Component?.length > 0 ? Item?.Component[0]?.Id : Item?.Services[0]?.Id) + "";
         let web = new Web(dynamicList?.siteUrl);
         let compo = [];
         web.lists
@@ -925,13 +926,13 @@ const CreateWS = (props: any) => {
         //     props.props.ClientTime=JSON.stringify(props?.props?.ClientTime) 
         // }
         await web.lists.getById(AllItems.listId).items.add({
-            Title: AllItems.Title,
+            Title: postData.Title != '' && postData.Title != undefined ?postData.Title:AllItems.Title,
             ComponentId: { "results": Component },
             Categories: categoriesItem ? categoriesItem : null,
             SharewebCategoriesId: { "results": CategoryID },
             Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
             PortfolioId: portFolio,
-            PortfolioTypeId: portFolioTypeId[0]?.Id,
+            PortfolioTypeId: portFolioTypeId == undefined?null:portFolioTypeId[0]?.Id,
             ParentTaskId: AllItems.Id,
             ServicesId: { "results": RelevantPortfolioIds },
             TaskTypeId: SharewebTasknewTypeId,
@@ -957,7 +958,7 @@ const CreateWS = (props: any) => {
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
                 res.data['listId'] = AllItems.listId
                 res.data['Shareweb_x0020_ID'] = SharewebID;
-                res.data['PortfolioType'] = portFolioTypeId[0];
+                res.data['PortfolioType'] = portFolioTypeId == undefined?null:portFolioTypeId[0]?.Id,
                 res.data['Portfolio'] = { 'Id': portFolio };
                 res.data.DueDate = res?.data?.DueDate != null ? Moment(res?.data?.DueDate).format("DD-MM-YYYY") : null,
                     res.data['siteType'] = AllItems.siteType
@@ -980,7 +981,7 @@ const CreateWS = (props: any) => {
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
                 res.data['Shareweb_x0020_ID'] = SharewebID;
-                res.data['PortfolioType'] = portFolioTypeId[0];
+                res.data['PortfolioType'] =  portFolioTypeId == undefined?null:portFolioTypeId[0]?.Id
                 res.data['Portfolio'] = { 'Id': portFolio };
                 res.data.DueDate = res?.data?.DueDate != null ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : null;
                 res.data['siteType'] = AllItems.siteType
@@ -1232,12 +1233,12 @@ const CreateWS = (props: any) => {
 
             let web = new Web(dynamicList.siteUrl);
             await web.lists.getById(AllItems.listId).items.add({
-                Title: AllItems.Title,
+                Title: postData.Title != '' && postData.Title != undefined ?postData.Title:AllItems.Title,
                 ComponentId: { "results": Component },
                 Categories: categoriesItem ? categoriesItem : null,
                 Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
                 PortfolioId: portFolio,
-                PortfolioTypeId: portFolioTypeId[0]?.Id,
+                PortfolioTypeId: portFolioTypeId == undefined ?null:portFolioTypeId[0]?.Id,
                 TaskTypeId: SharewebTasknewTypeId,
                 SharewebCategoriesId: { "results": CategoryID },
                 ParentTaskId: AllItems.Id,
@@ -1245,7 +1246,7 @@ const CreateWS = (props: any) => {
                 SharewebTaskTypeId: SharewebTasknewTypeId,
                 Body: AllItems.Description,
                 // DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
-                DueDate: myDate.editDate = myDate.editDate ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy") : '',
+                DueDate: myDate.editDate = myDate.editDate != null ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy") : null,
                 Priority: AllItems.Priority,
                 //SharewebTaskLevel2No: WorstreamLatestId,
                 SharewebTaskLevel1No: AllItems.SharewebTaskLevel1No,
@@ -1260,7 +1261,7 @@ const CreateWS = (props: any) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['Shareweb_x0020_ID'] = SharewebID;
-                res.data['PortfolioType'] = portFolioTypeId[0];
+                res.data['PortfolioType'] = portFolioTypeId == undefined?null:portFolioTypeId[0]?.Id,
                 res.data['Portfolio'] = { 'Id': portFolio };
                 res.data['TaskType'] = { 'Id': res.data.TaskTypeId };
                 // res.DueDate = NewDate != '' && NewDate != undefined ? NewDate : undefined,
@@ -1620,7 +1621,7 @@ const CreateWS = (props: any) => {
                     <div className='row'>
                         <div className="col-md-8">
                             <input className="full-width" type="text"
-                                placeholder="Enter Child Item Title" defaultValue={AllItems?.Title} onChange={(e: any) => AllItems.Title = e.target.value}
+                                placeholder="Enter Child Item Title" defaultValue={AllItems?.Title}  onChange={(e) => setPostData({ ...postData, Title: e.target.value })}
                             />
                         </div>
                         <div className="col-md-4">

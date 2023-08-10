@@ -164,7 +164,7 @@ const CreateActivity = (props: any) => {
                 return array.indexOf(val) == id;
             })
 
-            if (AllItems?.Portfolio_x0020_Type == 'Service' || (AllItems.Service != undefined && AllItems.Service.length > 0)) {
+            if (AllItems?.Portfolio_x0020_Type?.toLowerCase() == 'service' || (AllItems.Service != undefined && AllItems.Service.length > 0)) {
                 linkedComponentData.push(AllItems);
             }
             linkedComponentData = linkedComponentData?.filter((val: any, id: any, array: any) => {
@@ -340,7 +340,7 @@ const CreateActivity = (props: any) => {
             TaskTypeItems = await web.lists
                 .getById(dynamicList.TaskTypeID)
                 .items
-                .select("Id,Title,Prefix,Level")
+                .select("Id,Title,Shareweb_x0020_Edit_x0020_Column,Prefix,Level")
                 .top(4999)
                 .get()
             console.log(TaskTypeItems)
@@ -783,12 +783,16 @@ const CreateActivity = (props: any) => {
             }
             var RelevantPortfolioIds: any = []
             var Component: any = []
+            if(smartComponentData != undefined && smartComponentData.length > 0){
+                
+            }
             smartComponentData?.forEach((com: any) => {
                 if (smartComponentData[0] != undefined && smartComponentData[0].SharewebTaskType != undefined && smartComponentData[0].SharewebTaskType.Title == 'Workstream') {
                     $.each(com.Component, function (index: any, smart: any) {
                         Component.push(smart.Id)
                     })
                 }
+            })
                 var RelevantPortfolioIds: any = []
                 var Component: any = []
                 smartComponentData?.forEach((com: any) => {
@@ -840,12 +844,15 @@ const CreateActivity = (props: any) => {
                     }
                 })
                 var ClientCategory: any = []
-                if (ClientCategoriesData != undefined && ClientCategoriesData.length > 0)
+                if (ClientCategoriesData != undefined && ClientCategoriesData.length > 0){
+
+                
                     ClientCategoriesData.map((val: any) => {
                         if (val.Id != undefined) {
                             ClientCategory.push(val.Id)
                         }
                     })
+                }
                 if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length > 0) {
                     AllItems.AssignedTo.forEach((obj: any) => {
                         AssignedToIds.push(obj.Id);
@@ -945,7 +952,7 @@ const CreateActivity = (props: any) => {
                                 SharewebTasknewTypeId = 2;
                                 WorstreamLatestId = undefined;
                             }
-
+                   
 
                             await web.lists.getById(value.listId).items.add({
                                 Title: Title != undefined && Title != '' ? Title : post.Title,
@@ -957,7 +964,7 @@ const CreateActivity = (props: any) => {
                                 ClientCategoryId: { "results": ClientCategory },
                                 ServicesId: { "results": RelevantPortfolioIds },
                                 PortfolioId: portFolio,
-                                PortfolioTypeId: portFolioTypeId[0]?.Id,
+                                PortfolioTypeId: portFolioTypeId == undefined?null:portFolioTypeId[0]?.Id,
                                 TaskTypeId: 1,
                                 SharewebTaskTypeId: 1,
                                 Body: AllItems.Body,
@@ -975,7 +982,7 @@ const CreateActivity = (props: any) => {
                                 res.data['listId'] = value?.listId
                                 res.data['SharewebTaskType'] = { Title: 'Activities' }
                                 res.data['Shareweb_x0020_ID'] = SharewebID;
-                                res.data['PortfolioType'] = portFolioTypeId[0];
+                                res.data['PortfolioType'] = portFolioTypeId == undefined?null:portFolioTypeId[0]?.Id,
                                 res.data['Portfolio'] = { 'Id': portFolio };
                                 res.data['TaskType'] = { 'Id': res.data.TaskTypeId };
                                 // res.data['TaskType'] =
@@ -1082,10 +1089,17 @@ const CreateActivity = (props: any) => {
                                     }
                                 }
 
-
+                             if(AllItems.PageType == 'ProjectManagement'){
+                                props.Call();
+                                let url = `${dynamicList.siteUrl}/SitePages/Task-Profile.aspx?taskId=${res.data.Id}&Site=${res.data.siteType}`
+                                window.location.href = url;
+                             }
+                             else{
                                 console.log(res);
                                 closeTaskStatusUpdatePoup(res);
                                 console.log(res);
+                             }
+                                
                                 //closeTaskStatusUpdatePoup(res);
 
 
@@ -1112,12 +1126,15 @@ const CreateActivity = (props: any) => {
                             if (SharewebTasknewTypeId == 2 || SharewebTasknewTypeId == 6) {
                                 var SharewebID = '';
                                 if (Task?.Portfolio_x0020_Type != undefined && Task?.Portfolio_x0020_Type == 'Component' || Task?.Component != undefined && Task?.Component?.length > 0) {
-                                    SharewebID = 'A' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
+                                    SharewebID = 'A' + AllItems.SharewebTaskLevel1No + '-W' + WorstreamLatestId + '-T' + LatestId;
                                 }
-                                if (Task?.Services != undefined && Task?.Portfolio_x0020_Type.toLowerCase() == 'service' || Task?.Services != undefined && Task?.Services?.length > 0) {
-                                    SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
+                                // if (Task?.Services != undefined && Task?.Portfolio_x0020_Type?.toLowerCase() == 'service' || Task?.Services != undefined && Task?.Services?.length > 0) {
+                                //     SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
+                                // }
+                                if ((Task?.Services != undefined && Task?.Services?.length > 0) && (Task.SharewebTaskType.Title == "Workstream" || Task.SharewebTaskType == 'Workstream')) {
+                                    SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-W' + WorstreamLatestId + '-T' + LatestId;
                                 }
-                                if ((Task?.Services != undefined && Task?.Portfolio_x0020_Type == 'Service') || (Task?.Services != undefined && Task?.Services?.length > 0) && (Task.SharewebTaskType.Title == "Workstream" || Task.SharewebTaskType == 'Workstream')) {
+                                if ((Task?.Services == undefined) && (Task.SharewebTaskType.Title == "Workstream" || Task.SharewebTaskType == 'Workstream')) {
                                     SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-W' + WorstreamLatestId + '-T' + LatestId;
                                 }
 
@@ -1138,6 +1155,7 @@ const CreateActivity = (props: any) => {
                                 Portfolio.push(RelevantPortfolioIds[0])
                                 PortfolioType.push(2)
                             }
+                            var arrayy=[]
                             web = new Web(dynamicList.siteUrl);
                             await web.lists.getById(value.listId).items.add({
                                 Title: save.Title != undefined && save.Title != '' ? save.Title : post.Title,
@@ -1149,7 +1167,7 @@ const CreateActivity = (props: any) => {
                                 ServicesId: { "results": RelevantPortfolioIds },
                                 SharewebCategoriesId: { "results": CategoryID },
                                 PortfolioId: portFolio,
-                                PortfolioTypeId: portFolioTypeId[0]?.Id,
+                                PortfolioTypeId: portFolioTypeId == undefined?null:portFolioTypeId[0]?.Id,
                                 TaskTypeId: SharewebTasknewTypeId,
                                 ParentTaskId: AllItems.Id,
                                 ClientCategoryId: { "results": ClientCategory },
@@ -1172,7 +1190,7 @@ const CreateActivity = (props: any) => {
                                 data['SiteIcon'] = value.Item_x005F_x0020_Cover?.Url
                                 data['SharewebTaskType'] = { Title: 'Task' }
                                 res.data['Shareweb_x0020_ID'] = SharewebID;
-                                res.data['PortfolioType'] = portFolioTypeId[0];
+                                res.data['PortfolioType'] =portFolioTypeId == undefined?null:portFolioTypeId[0]?.Id,
                                 res.data['Portfolio'] = { 'Id': portFolio };
                                 res.data['TaskType'] = { 'Id': res.data.TaskTypeId };
                                 data.DueDate = date ? Moment(date).format("MM-DD-YYYY") : null,
@@ -1231,10 +1249,10 @@ const CreateActivity = (props: any) => {
                         }
                     }
                 })
-            })
+            }
     }
 
-    }
+    
     const UpdateBasicImageInfoJSON = async (tempArray: any, item: any) => {
         var UploadImageArray: any = []
         if (tempArray != undefined && tempArray.length > 0) {
@@ -1262,7 +1280,7 @@ const CreateActivity = (props: any) => {
             }
         }
     }
-    const DDComponentCallBack = (dt: any) => {
+    function DDComponentCallBack (dt: any) {
         // setTeamConfig(dt)
         setisDropItem(dt.isDrop)
         setisDropItemRes(dt.isDropRes)
