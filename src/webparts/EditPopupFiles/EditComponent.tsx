@@ -1553,7 +1553,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
             </li>
           </ul></div>
 
-          <div className="feedbkicon"> <Tooltip /> </div>
+          <div className="feedbkicon"> <Tooltip  ComponentId="1258" IsServiceTask={EditData?.Portfolio_x0020_Type == "Service" ? true : false} /> </div>
         </div>
       </>
     );

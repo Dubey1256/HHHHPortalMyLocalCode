@@ -910,6 +910,7 @@ const TimeReport = (props:any) => {
         var body1:any=[]
         var body2:any=[]
         var To:any=[]
+        var MyDate:any=''
         var ApprovalId:any = []
         var TotlaTime = QATime + DevloperTime + DesignTime
 
@@ -953,8 +954,9 @@ const TimeReport = (props:any) => {
             if (item.PercentComplete == undefined || item.PercentComplete == '') {
                 item.PercentComplete = '';
             }
-            if (item.Date == undefined || item.Date == '') {
-                item.Date = '';
+           
+            if (item.Date != undefined) {
+                MyDate = item.Date;
             }
            var text = '<tr>' +
             '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item.Date + '</td>'
@@ -1008,7 +1010,7 @@ const TimeReport = (props:any) => {
     '</tbody>' +
     '</table>'
 var pageurl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TimeReport.aspx";
-var ReportDate = new Date()
+var ReportDate = new Date(MyDate)
  var ReportDatetime =Moment(ReportDate).format('DD/MM/YYYY')
     var body:any =
                 '<p style="text-align: center;margin-bottom: 1px;">' + 'TimeSheet of  date' + '&nbsp;' + '<strong>' + ReportDatetime + '</strong>' + '</p>' +
