@@ -16,7 +16,7 @@ import {
     getPaginationRowModel
 } from "@tanstack/react-table";
 import { RankingInfo, rankItem, compareItems } from "@tanstack/match-sorter-utils";
-import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp, FaInfoCircle, FaChevronRight, FaChevronDown, FaChevronLeft, FaAngleDoubleRight, FaAngleDoubleLeft } from 'react-icons/fa';
+import { FaSearch, FaSort, FaSortDown, FaSortUp, FaChevronRight, FaChevronLeft, FaAngleDoubleRight, FaAngleDoubleLeft, FaInfoCircle } from 'react-icons/fa';
 import { HTMLProps } from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -131,14 +131,14 @@ export function IndeterminateCheckbox(
         <input
             type="checkbox"
             ref={ref}
-            className={className + " cursor-pointer"}
+            className={className + "form-check-input cursor-pointer"}
             {...rest}
         />
     );
 }
 
 // ReactTable Part end/////
-
+let isShowingDataAll: any = false;
 const GlobalCommanTable = (items: any) => {
     let expendedTrue = items?.expendedTrue
     let data = items?.data;
@@ -153,7 +153,8 @@ const GlobalCommanTable = (items: any) => {
     let portfolioColor = items?.portfolioColor;
     let expandIcon = items?.expandIcon;
     let fixedWidth = items?.fixedWidth;
-    // let portfolioTypeData = items?.portfolioTypeData;
+    let portfolioTypeData = items?.portfolioTypeData;
+    let showingAllPortFolioCount = items?.showingAllPortFolioCount
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
         []
     );
@@ -196,17 +197,21 @@ const GlobalCommanTable = (items: any) => {
             const cellValue: any = String(row.getValue(id)).toLowerCase();
 
             if (globalSearchType === "ALL") {
-                return (
-                    cellValue.split(" ").sort().join(" ") ===
-                    query.split(" ").sort().join(" ")
-                );
+                let found = true;
+                let a = query?.split(" ")
+                for (let item of a) {
+                    if (!cellValue.split(" ").some((elem: any) => elem === item)) {
+                        found = false;
+                    }
+                }
+                return found
             } else if (globalSearchType === "ANY") {
                 for (let item of query.split(" ")) {
                     if (cellValue.includes(item)) return true;
                 }
                 return false;
             } else if (globalSearchType === "EXACT") {
-                return cellValue === query;
+                return cellValue.includes(query);
             }
         };
     };
@@ -270,53 +275,71 @@ const GlobalCommanTable = (items: any) => {
     let FilterShowhideShwingData: any = false;
     let AfterSearch = table?.getRowModel()?.rows;
     React.useEffect(() => {
-        if (AfterSearch != undefined && AfterSearch.length > 0) {
-            AfterSearch?.map((Comp: any) => {
-                if (Comp.columnFilters.Title == true || Comp.columnFilters.PortfolioStructureID == true || Comp.columnFilters.ClientCategory == true || Comp.columnFilters.TeamLeaderUser == true || Comp.columnFilters.PercentComplete == true || Comp.columnFilters.ItemRank == true || Comp.columnFilters.DueDate == true) {
-                    FilterShowhideShwingData = true;
-                }
-                if (Comp.original != undefined) {
-                    if (Comp?.original?.Item_x0020_Type == "Component") {
-                        ComponentCopy = ComponentCopy + 1
+        if (columnFilters.length > 0 || globalFilter.length > 0) {
+            if (AfterSearch != undefined && AfterSearch.length > 0) {
+                AfterSearch?.map((Comp: any) => {
+                    if (Comp.columnFilters.Title == true || Comp.columnFilters.PortfolioStructureID == true || Comp.columnFilters.ClientCategory == true || Comp.columnFilters.TeamLeaderUser == true || Comp.columnFilters.PercentComplete == true || Comp.columnFilters.ItemRank == true || Comp.columnFilters.DueDate == true) {
+                        FilterShowhideShwingData = true;
                     }
-                    if (Comp?.original?.Item_x0020_Type == "SubComponent") {
-                        SubComponentCopy = SubComponentCopy + 1;
+                    if (Comp.original != undefined) {
+                        if (Comp?.original?.Item_x0020_Type == "Component") {
+                            ComponentCopy = ComponentCopy + 1
+                        }
+                        if (Comp?.original?.Item_x0020_Type == "SubComponent") {
+                            SubComponentCopy = SubComponentCopy + 1;
+                        }
+                        if (Comp?.original?.Item_x0020_Type == "Feature") {
+                            FeatureCopy = FeatureCopy + 1;
+                        }
                     }
-                    if (Comp?.original?.Item_x0020_Type == "Feature") {
-                        FeatureCopy = FeatureCopy + 1;
-                    }
-                }
-            })
+                })
+            }
+            let ShowingData = { ComponentCopy: ComponentCopy, SubComponentCopy: SubComponentCopy, FeatureCopy: FeatureCopy, FilterShowhideShwingData: FilterShowhideShwingData }
+            callBackData(item, ShowingData)
         }
-        let ShowingData = { ComponentCopy: ComponentCopy, SubComponentCopy: SubComponentCopy, FeatureCopy: FeatureCopy, FilterShowhideShwingData: FilterShowhideShwingData }
-        callBackData(item, ShowingData)
     }, [table?.getRowModel()?.rows])
 
-    // React.useEffect(() => {
-    //     if (AfterSearch != undefined && AfterSearch.length > 0) {
-    //         AfterSearch?.map((Comp: any) => {
-    //             if (Comp.columnFilters.Title == true || Comp.columnFilters.Shareweb_x0020_ID == true || Comp.columnFilters.ClientCategory == true ||
-    //                 Comp.columnFilters.TeamLeaderUser == true || Comp.columnFilters.PercentComplete == true || Comp.columnFilters.ItemRank == true ||
-    //                 Comp.columnFilters.DueDate == true || Comp?.columnFilters?.__global__ === true) {
-
-    //                 portfolioTypeData?.map((type: any) => {
-    //                     if (Comp?.original?.Item_x0020_Type === type.Title) {
-    //                         type[type.Title + 'numberCopy'] += 1;
-    //                     }
-    //                 })
-    //                 FilterShowhideShwingData = true;
-    //             }else {
-    //                 portfolioTypeData?.map((type: any) => {
-    //                     if (type.Title + 'numberCopy' !=undefined) {
-    //                         type[type.Title + 'numberCopy']= 0;
-    //                     }
-    //                 })
-    //                 FilterShowhideShwingData = false;
-    //             }
-    //             console.log("portfolioTypeData", portfolioTypeData)
-    //         })
-    //     }
-    // }, [table?.getRowModel()?.rows])
+    React.useEffect(() => {
+        if (AfterSearch != undefined && AfterSearch.length > 0) {
+            portfolioTypeData?.filter((count: any) => { count[count.Title + 'numberCopy'] = 0 })
+            items?.taskTypeDataItem?.filter((taskLevelcount: any) => { taskLevelcount[taskLevelcount.Title + 'numberCopy'] = 0 })
+            AfterSearch?.map((Comp: any) => {
+                if (columnFilters.length > 0 || globalFilter.length > 0) {
+                    isShowingDataAll = true;
+                    portfolioTypeData?.map((type: any) => {
+                        if (Comp?.original?.Item_x0020_Type === type.Title) {
+                            type[type.Title + 'numberCopy'] += 1;
+                            type.FilterShowhideShwingData = true;
+                        }
+                    })
+                    items?.taskTypeDataItem?.map((taskLevel: any) => {
+                        if (Comp?.original?.TaskType?.Title === taskLevel.Title) {
+                            taskLevel[taskLevel.Title + 'numberCopy'] += 1;
+                            taskLevel.FilterShowhideShwingData = true;
+                        }
+                    })
+                } else {
+                    isShowingDataAll = false;
+                    portfolioTypeData?.map((type: any) => {
+                        if (type.Title + 'numberCopy' != undefined) {
+                            type[type.Title + 'numberCopy'] = 0;
+                            type.FilterShowhideShwingData = false;
+                        }
+                    })
+                    items?.taskTypeDataItem?.map((taskLevel: any) => {
+                        if (taskLevel.Title + 'numberCopy' != undefined) {
+                            taskLevel[taskLevel.Title + 'numberCopy'] = 0;
+                            taskLevel.FilterShowhideShwingData = false;
+                        }
+                    })
+                }
+            })
+        } else {
+            portfolioTypeData?.filter((count: any) => { count[count.Title + 'numberCopy'] = 0 })
+            items?.taskTypeDataItem?.filter((taskLevelcount: any) => { taskLevelcount[taskLevelcount.Title + 'numberCopy'] = 0 })
+            isShowingDataAll = true;
+        }
+    }, [table?.getRowModel()?.rows])
 
 
 
@@ -336,31 +359,31 @@ const GlobalCommanTable = (items: any) => {
                         parentDataCopy = elem?.getParentRows()[0]?.original;
                         // if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                        //   parentData = elem?.parentRow?.parentRow
-                        //   parentDataCopy = elem?.parentRow?.parentRow?.original
+                        //     parentData = elem?.parentRow?.parentRow
+                        //     parentDataCopy = elem?.parentRow?.parentRow?.original
 
-                        //   if (parentData != undefined && parentData?.parentRow != undefined) {
+                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                        //     parentData = elem?.parentRow?.parentRow?.parentRow
-                        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
-                        //   }
-                        //   if (parentData != undefined && parentData?.parentRow != undefined) {
+                        //         parentData = elem?.parentRow?.parentRow?.parentRow
+                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
+                        //     }
+                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
-                        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                        //   }
-                        //   if (parentData != undefined && parentData?.parentRow != undefined) {
+                        //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
+                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                        //     }
+                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-                        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                        //   }
-                        //   if (parentData != undefined && parentData?.parentRow != undefined) {
-                        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-                        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                        //   }
+                        //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                        //     }
+                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                        //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                        //     }
                         // }
                     }
-                    if(parentDataCopy){
+                    if (parentDataCopy) {
                         elem.original.parentDataId = parentDataCopy
                     }
                     elem.original.Id = elem.original.ID
@@ -397,14 +420,14 @@ const GlobalCommanTable = (items: any) => {
         })
     }
     React.useEffect(() => {
-        if (expendedTrue === false) {
-            if (table.getState().columnFilters.length) {
+        if (expendedTrue != true) {
+            if (table.getState().columnFilters.length || table.getState()?.globalFilter?.length > 0) {
                 setExpanded(true);
             } else {
                 setExpanded({});
             }
         }
-    }, [table.getState().columnFilters]);
+    }, [table.getState().columnFilters, table.getState().globalFilter]);
 
 
     React.useEffect(() => {
@@ -501,11 +524,59 @@ const GlobalCommanTable = (items: any) => {
         settablecontiner(e);
     };
 
+    //// open All Header Model Like add Structure Activity/////
+    const openCreationAllStructure = (eventValue: any) => {
+        if (eventValue === "Add Structure") {
+            items?.OpenAddStructureModal();
+        } else if (eventValue === "Add Activity-Task") {
+            items?.addActivity();
+        }
+    }
     return (
         <>
             {showHeader === true && <div className='tbl-headings justify-content-between mb-1'>
                 <span className='leftsec'>
-                    <span style={{ color: `${portfolioColor}` }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} out of ${data?.length}`}</span>
+                    {showingAllPortFolioCount === true ? <div>
+                        <label style={{ color: `${portfolioColor}` }}>
+                            Showing
+                        </label>
+                        {portfolioTypeData.map((type: any, index: any) => {
+                            return (
+                                <>
+                                    {isShowingDataAll === true ? <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</> :
+                                        <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'number']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</>}
+                                </>
+                            )
+                        })}
+
+
+
+                        <span className="popover__wrapper ms-1" style={{ position: "unset" }} data-bs-toggle="tooltip" data-bs-placement="auto">
+                            <FaInfoCircle style={{ color: `${portfolioColor}` }} />
+                            <span className="popover__content mt-3 m-3 mx-3" style={{ zIndex: 100 }}>
+                                <label style={{ color: `${portfolioColor}` }}>
+                                    Showing
+                                </label>
+                                {portfolioTypeData.map((type: any, index: any) => {
+                                    return (
+                                        <>
+                                            {isShowingDataAll === true ? <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label><label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label></> :
+                                                <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'number']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label><label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label></>}
+                                        </>
+                                    )
+                                })}
+                                {items?.taskTypeDataItem?.map((type: any, index: any) => {
+                                    return (
+                                        <>
+                                            {isShowingDataAll === true ? <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</> :
+                                                <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'number']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</>}
+                                        </>
+                                    )
+                                })}
+                            </span>
+                        </span>
+                    </div> :
+                        <span style={{ color: `${portfolioColor}` }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} out of ${data?.length}`}</span>}
                     <DebouncedInput
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}
@@ -515,7 +586,7 @@ const GlobalCommanTable = (items: any) => {
                     <span className="svg__iconbox svg__icon--setting" style={{ backgroundColor: `${portfolioColor}` }} onClick={() => setSelectedFilterPanelIsOpen(true)}></span>
                     <span>
                         <select style={{ height: "30px", color: `${portfolioColor}` }}
-                            className=""
+                            className="w80"
                             aria-label="Default select example"
                             value={globalSearchType}
                             onChange={(e) => {
@@ -530,6 +601,18 @@ const GlobalCommanTable = (items: any) => {
                     </span>
                 </span>
                 <span className="toolbox">
+                    {items?.showCreationAllButton === true && <>
+                        {table?.getSelectedRowModel()?.flatRows?.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Feature" &&
+                            table?.getSelectedRowModel()?.flatRows[0]?.original?.SharewebTaskType?.Title != "Activities" && table?.getSelectedRowModel()?.flatRows[0]?.original?.SharewebTaskType?.Title != "Workstream" &&
+                            table?.getSelectedRowModel()?.flatRows[0]?.original?.SharewebTaskType?.Title != "Task" || table?.getSelectedRowModel()?.flatRows?.length === 0 ? (
+                            <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }} title=" Add Structure" onClick={() => openCreationAllStructure("Add Structure")}> Add Structure </button>
+                        ) : (
+                            <button type="button" disabled className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }} title=" Add Structure"> Add Structure </button>
+                        )}
+                        {table?.getSelectedRowModel()?.flatRows.length === 1 ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }} onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
+                            <button type="button" className="btn btn-primary" disabled={true} > Add Activity-Task</button>}
+                    </>
+                    }
                     {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--team teamIcon"></span></a>
                     </span> : <span><a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team teamIcon"></span></a></span>}
                     {table?.getSelectedRowModel()?.rows?.length > 0 ? <span>

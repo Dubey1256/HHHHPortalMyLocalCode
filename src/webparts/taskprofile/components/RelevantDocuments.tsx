@@ -2,8 +2,8 @@ import * as React from 'react';
 import Tooltip from '../../../globalComponents/Tooltip';
 import { Web } from "sp-pnp-js";
 import moment from 'moment';
-import { useState, useEffect } from 'react';
-const RelevantDocuments = (props: any) => {
+import { useState, useEffect,forwardRef,useImperativeHandle } from 'react';
+const RelevantDocuments = (props: any,ref:any) => {
     const [documentData, setDocumentData] = useState([]);
     // const [FileName, setFileName] = useState(props?.folderName);
     const [Fileurl, setFileurl] = useState("");
@@ -12,6 +12,9 @@ const RelevantDocuments = (props: any) => {
     useEffect(() => {
         loadAllSitesDocuments();
     }, [])
+    useImperativeHandle(ref,()=>({
+        loadAllSitesDocuments
+    }))
     const loadAllSitesDocuments = async () => {
         if(props.siteName=="Offshore Tasks"){
             props.siteName="OffShoreTask"  
@@ -72,12 +75,16 @@ const RelevantDocuments = (props: any) => {
                                     {item?.File_x0020_Type=="png"&&<span className='svg__iconbox svg__icon--png'title="png"></span>}
                                     {item?.File_x0020_Type=="txt"&&<span className='svg__iconbox svg__icon--txt'title="txt"></span>}
                                     {item?.File_x0020_Type=="smg"&&<span className='svg__iconbox svg__icon--smg'title="smg"></span>}
+                                    {item?.File_x0020_Type=="aspx"&&<span className='svg__iconbox svg__icon--link'title="Link"></span>}
                                     
                                     </a>
                                 
                                 </li>
                                 <li>
-                                   <a className='px-2' href={`${item?.EncodedAbsUrl}?web=1`}target="_blank" data-interception="off"> <span>{item?.Title}</span></a>
+                                    {item?.File_x0020_Type=="aspx"?
+                                    <a className='px-2' href={`${item?.Url?.Url}`}target="_blank" data-interception="off"> <span>{item?.Title}</span></a>:
+                                    <a className='px-2' href={`${item?.EncodedAbsUrl}?web=1`}target="_blank" data-interception="off"> <span>{item?.Title}</span></a>}
+                                   
                                 </li>
 
                             </ul>
@@ -103,4 +110,4 @@ const RelevantDocuments = (props: any) => {
         </div>
     )
 }
-export default RelevantDocuments;
+export default forwardRef(RelevantDocuments);

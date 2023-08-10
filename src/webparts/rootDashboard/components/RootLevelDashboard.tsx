@@ -278,9 +278,7 @@ const RootLevelDashboard = (props: any) => {
         console.log(error)
 
       }
-    } else {
-      alert('Site Config Length less than 0')
-    }
+    } 
   };
   const getComponentasString = function (results: any) {
     var component = "";
@@ -570,7 +568,7 @@ const RootLevelDashboard = (props: any) => {
                 </a>
               </>
             ) : (
-              <span className='svg__iconbox svg__icon--defaultUser' title={row?.original?.Author?.Title}></span>
+              <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
             )}
           </span>
         ),

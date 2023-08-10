@@ -3771,12 +3771,15 @@ function ComponentTable(SelectedProp: any) {
     Ids = newItemBackUp.Id;
     let Title: any = newItemBackUp.Title;
     let PortfolioStructureID = newItemBackUp.PortfolioStructureID;
-    let ServicesId: any = newItemBackUp?.Services[0]?.Id;
+    let ServicesId: any ;
     let SharewebTaskType: any = RestructureChecked[0].SharewebTaskType?.Title;
     let Item_x0020_Type = RestructureChecked[0].Item_x0020_Type;
     let Shareweb_x0020_ID: any;
     let ShowTooltipSharewebId: any;
     let siteIcon: any = RestructureChecked[0].Item_x0020_Type;
+    ServicesId = (newItemBackUp?.Services[0]?.length > 0 ? "Service" : (newItemBackUp?.Component[0]?.length > 0 ? "Component" : newItemBackUp?.Portfolio_x0020_Type));
+
+
 
 
 
@@ -3807,11 +3810,11 @@ function ComponentTable(SelectedProp: any) {
         .items.getById(checkedList[0].Id)
         .update({
           ServicesId:
-            checkedList[0].Services?.length > 0
+          ServicesId === "Service"
               ? { results: [Ids] }
               : { results: [] },
           ComponentId:
-            checkedList[0].Component?.length > 0
+          ServicesId === "Component"
               ? { results: [Ids] }
               : { results: [] },
           ParentTaskId: null,
@@ -4011,11 +4014,11 @@ function ComponentTable(SelectedProp: any) {
         .items.getById(checkedList[0].Id)
         .update({
           ServicesId:
-            checkedList[0].Services?.length > 0
+          ServicesId === "Service"
               ? { results: [Ids] }
               : { results: [] },
           ComponentId:
-            checkedList[0].Component?.length > 0
+          ServicesId === "Component"
               ? { results: [Ids] }
               : { results: [] },
           Shareweb_x0020_ID: Shareweb_x0020_ID,

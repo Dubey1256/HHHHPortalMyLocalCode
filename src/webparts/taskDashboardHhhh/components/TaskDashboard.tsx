@@ -944,7 +944,7 @@ const TaskDashboard = (props: any) => {
                                 </a>
                             </>
 
-                            : <span title={row?.original?.Author?.Title} className="svg__iconbox svg__icon--defaultUser "></span>}
+                            : <span title={row?.original?.Author?.Title} className="svg__iconbox svg__icon--defaultUser grey "></span>}
 
                     </span>
                 ),
@@ -1097,7 +1097,7 @@ const TaskDashboard = (props: any) => {
                                     <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} />
                                 </a>
                             </>
-                            : <span title={row?.original?.Author?.Title} className="svg__iconbox svg__icon--defaultUser "></span>}
+                            : <span title={row?.original?.Author?.Title} className="svg__iconbox svg__icon--defaultUser grey "></span>}
                     </span>
                 ),
             },
@@ -2488,7 +2488,7 @@ const TaskDashboard = (props: any) => {
                                     <summary>  Bottleneck Tasks {'(' + pageBottleneck?.length + ')'} </summary>
                                     <div className='AccordionContent mx-height'  >
                                         {bottleneckTasks?.length > 0 ?
-                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover  {...getTablePropsBottleneck()}>
+                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"}  hover  {...getTablePropsBottleneck()}>
                                                 <thead className="fixed-Header">
                                                     {headerGroupsBottleneck?.map((headerGroup: any) => (
                                                         <tr {...headerGroup.getHeaderGroupProps()}>
@@ -2669,23 +2669,23 @@ const TaskDashboard = (props: any) => {
                                     <>
                                         <div className='workrTimeReport'>
                                             <dl>
-                                                <dt className='form-check l-radio'>
-                                                    <input className='form-check-input' type="radio" value="Yesterday" name="date" checked={selectedTimeReport == 'Yesterday'} onClick={() => currentUserTimeEntry('Yesterday')} /> Yesterday
+                                                <dt className='SpfxCheckRadio'>
+                                                    <input className='radio' type="radio" value="Yesterday" name="date" checked={selectedTimeReport == 'Yesterday'} onClick={() => currentUserTimeEntry('Yesterday')} /> Yesterday
                                                 </dt>
-                                                <dt className='form-check l-radio'>
-                                                    <input className='form-check-input' type="radio" value="Today" name="date" checked={selectedTimeReport == 'Today'} onClick={() => currentUserTimeEntry('Today')} /> Today
+                                                <dt className='SpfxCheckRadio'>
+                                                    <input className='radio' type="radio" value="Today" name="date" checked={selectedTimeReport == 'Today'} onClick={() => currentUserTimeEntry('Today')} /> Today
                                                 </dt>
-                                                <dt className='form-check l-radio'>
-                                                    <input className='form-check-input' type="radio" value="This Week" name="date" checked={selectedTimeReport == 'This Week'} onClick={() => currentUserTimeEntry('This Week')} /> This Week
+                                                <dt className='SpfxCheckRadio'>
+                                                    <input className='radio' type="radio" value="This Week" name="date" checked={selectedTimeReport == 'This Week'} onClick={() => currentUserTimeEntry('This Week')} /> This Week
                                                 </dt>
-                                                <dt className='form-check l-radio'>
-                                                    <input className='form-check-input' type="radio" value="Last Week" name="date" checked={selectedTimeReport == 'Last Week'} onClick={() => currentUserTimeEntry('Last Week')} /> Last Week
+                                                <dt className='SpfxCheckRadio'>
+                                                    <input className='radio' type="radio" value="Last Week" name="date" checked={selectedTimeReport == 'Last Week'} onClick={() => currentUserTimeEntry('Last Week')} /> Last Week
                                                 </dt>
-                                                <dt className='form-check l-radio'>
-                                                    <input className='form-check-input' type="radio" value="This Month" name="date" checked={selectedTimeReport == 'This Month'} onClick={() => currentUserTimeEntry('This Month')} /> This Month
+                                                <dt className='SpfxCheckRadio'>
+                                                    <input className='radio' type="radio" value="This Month" name="date" checked={selectedTimeReport == 'This Month'} onClick={() => currentUserTimeEntry('This Month')} /> This Month
                                                 </dt>
-                                                <dt className='form-check l-radio'>
-                                                    <input className='form-check-input' type="radio" value="Last Month" name="date" checked={selectedTimeReport == 'Last Month'} onClick={() => currentUserTimeEntry('Last Month')} /> Last Month
+                                                <dt className='SpfxCheckRadio'>
+                                                    <input className='radio' type="radio" value="Last Month" name="date" checked={selectedTimeReport == 'Last Month'} onClick={() => currentUserTimeEntry('Last Month')} /> Last Month
                                                 </dt>
                                             </dl>
                                         </div>

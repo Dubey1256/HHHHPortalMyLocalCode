@@ -3,7 +3,7 @@ import { Input } from 'reactstrap';
 
 export const Filter = ({ column } : any) => {
   return (
-    <div style={{ marginTop: 5 }}>
+    <div>
       {column.canFilter && column.render('Filter')}
     </div>
   );
