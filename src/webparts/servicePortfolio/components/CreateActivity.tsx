@@ -1128,9 +1128,9 @@ const CreateActivity = (props: any) => {
                                 if (Task?.Portfolio_x0020_Type != undefined && Task?.Portfolio_x0020_Type == 'Component' || Task?.Component != undefined && Task?.Component?.length > 0) {
                                     SharewebID = 'A' + AllItems.SharewebTaskLevel1No + '-W' + WorstreamLatestId + '-T' + LatestId;
                                 }
-                                // if (Task?.Services != undefined && Task?.Portfolio_x0020_Type?.toLowerCase() == 'service' || Task?.Services != undefined && Task?.Services?.length > 0) {
-                                //     SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
-                                // }
+                                if (Task?.Services != undefined && Task?.Portfolio_x0020_Type?.toLowerCase() == 'service' || Task?.Services != undefined && Task?.Services?.length > 0) {
+                                    SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
+                                }
                                 if ((Task?.Services != undefined && Task?.Services?.length > 0) && (Task.SharewebTaskType.Title == "Workstream" || Task.SharewebTaskType == 'Workstream')) {
                                     SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-W' + WorstreamLatestId + '-T' + LatestId;
                                 }
