@@ -68,7 +68,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
             webServerRelativeUrl: this.props.PropsValue.siteUrl.toLowerCase().split('.com')[1],
             PortfolioTypeArray: [],
             PortfolioTypeId: 1,
-            defaultPortfolioType: (this.props.PortfolioType === undefined || this.props.PortfolioType === '') ? 'Component' : this.props.PortfolioType,
+            defaultPortfolioType: (this.props.PortfolioType === undefined || this.props.PortfolioType === '') ? (this.props?.SelectedItem?.PortfolioType?.Id !=undefined ?this.props?.SelectedItem?.PortfolioType?.Title: 'Component') : this.props.PortfolioType,
         }
         this.getPortfolioType();
         this.LoadSPComponents();
