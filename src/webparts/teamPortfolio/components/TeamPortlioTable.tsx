@@ -1657,12 +1657,12 @@ const closeActivity = () => {
     setActivityPopup(false)
 }
 const addActivity = (type: any) => {
-    if (checkedList?.TaskType === undefined) {
+    if (checkedList?.TaskType?.Title === 3 || checkedList?.TaskType == undefined) {
     checkedList.NoteCall = type
     setActivityPopup(true);
     }
     else{
-        checkedList.NoteCall = type
+        checkedList.NoteCall = 'Workstream'
         setIsOpenWorkstream(true);
     }
    
