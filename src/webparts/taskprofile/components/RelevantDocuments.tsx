@@ -2,11 +2,17 @@ import * as React from 'react';
 import Tooltip from '../../../globalComponents/Tooltip';
 import { Web } from "sp-pnp-js";
 import moment from 'moment';
-import { useState, useEffect,forwardRef,useImperativeHandle } from 'react';
+import EditDocument from './EditDocunentPanel'
+import { useState, useEffect,forwardRef,useImperativeHandle,createContext } from 'react';
+
+const MyContext:any = createContext<any>(null);
 const RelevantDocuments = (props: any,ref:any) => {
     const [documentData, setDocumentData] = useState([]);
     // const [FileName, setFileName] = useState(props?.folderName);
     const [Fileurl, setFileurl] = useState("");
+    (true);
+    const [editdocpanel, setEditdocpanel] = useState(false);
+    const [EditdocData, setEditdocData] = useState({});
     // console.log(props?.folderName);
 
     useEffect(() => {
@@ -25,9 +31,12 @@ const RelevantDocuments = (props: any,ref:any) => {
         try{
             // await web.lists.getByTitle("Documents")
             await web.lists.getById(props.DocumentsListID)
-            .items.select("Id,Title,Priority_x0020_Rank,Year,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl")
-            .expand("Author,Editor").filter(`${props?.siteName}/Id eq ${props?.ID}`).top(4999)
-            .get()
+            // .items.select("Id,Title,Priority_x0020_Rank,Year,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl")
+            // .expand("Author,Editor").filter(`${props?.siteName}/Id eq ${props?.ID}`).top(4999)
+            // .get()
+            .items.select("Id,Title,Priority_x0020_Rank,Year,Item_x0020_Cover,SharewebTask/Id,SharewebTask/Title,SharewebTask/ItemType,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl")
+          .expand("Author,Editor,SharewebTask").filter(`${props?.siteName}/Id eq ${props?.ID}`).top(4999)
+          .get()
             .then((Data: any[]) => {
               
                 Data?.map((item: any, index: any) => {
@@ -50,8 +59,18 @@ const RelevantDocuments = (props: any,ref:any) => {
        
 
     }
+    const editDocumentsLink = (editData: any) => {
+        setEditdocpanel(true);
+        console.log(editData)
+        setEditdocData(editData)
+       
+      }
+      const callbackeditpopup=()=>{
+        loadAllSitesDocuments();
+      }
     return (
-        <div>
+        <>
+       <MyContext.Provider value={setDocumentData}>
             {documentData!=undefined&&documentData?.length>0 && <div className='mb-3 card commentsection'>
                 <div className='card-header'>
                     <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Relevant Documents<span><Tooltip /></span></div>
@@ -82,6 +101,10 @@ const RelevantDocuments = (props: any,ref:any) => {
                                 <li>
                                    <a className='px-2' href={`${item?.EncodedAbsUrl}?web=1`}target="_blank" data-interception="off"> <span>{item?.Title}</span></a>
                                 </li>
+                                <li className='d-end'>
+                              <span title="Edit" className="svg__iconbox svg__icon--edit hreflink" onClick={() => editDocumentsLink(item)}></span>
+                       
+                            </li>
 
                             </ul>
                         </div>
@@ -103,7 +126,14 @@ const RelevantDocuments = (props: any,ref:any) => {
                     </div>
                 </div>
               }
-        </div>
+
+              {editdocpanel &&<EditDocument editData={EditdocData} AllListId={props.AllListId}Context={props.Context}editdocpanel={editdocpanel}callbackeditpopup={callbackeditpopup}/>}       
+              </MyContext.Provider>
+        </>
+    
     )
+    
 }
+
 export default forwardRef(RelevantDocuments);
+export {MyContext}
