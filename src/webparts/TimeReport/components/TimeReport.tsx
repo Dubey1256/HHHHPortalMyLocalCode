@@ -955,7 +955,7 @@ const TimeReport = (props:any) => {
                 item.PercentComplete = '';
             }
            
-            if (item.Date != undefined) {
+            if (item.Date != undefined && item.Date != '') {
                 MyDate = item.Date;
             }
            var text = '<tr>' +
@@ -1011,7 +1011,7 @@ const TimeReport = (props:any) => {
     '</table>'
 var pageurl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TimeReport.aspx";
 var ReportDate = new Date(MyDate)
- var ReportDatetime =Moment(ReportDate).format('DD/MM/YYYY')
+ var ReportDatetime =Moment(ReportDate).format('MM/DD/YYYY')
     var body:any =
                 '<p style="text-align: center;margin-bottom: 1px;">' + 'TimeSheet of  date' + '&nbsp;' + '<strong>' + ReportDatetime + '</strong>' + '</p>' +
                 '<p style="text-align: center;margin: 0 auto;">' + '<a  href=' + pageurl + ' >' + 'Online version of timesheet' + '</a >' + '</p>' +

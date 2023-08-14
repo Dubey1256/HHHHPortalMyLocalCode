@@ -1657,13 +1657,17 @@ const closeActivity = () => {
     setActivityPopup(false)
 }
 const addActivity = (type: any) => {
-    if (checkedList?.TaskType?.Title === 3 || checkedList?.TaskType == undefined) {
+    if (checkedList?.TaskType?.Id === 3 || checkedList?.TaskType == undefined) {
     checkedList.NoteCall = type
     setActivityPopup(true);
     }
-    else{
+    if(checkedList?.TaskType?.Id == 1){
         checkedList.NoteCall = 'Workstream'
         setIsOpenWorkstream(true);
+    }
+    if (checkedList?.TaskType?.Id == 2) {
+
+        alert("You can not create ny item inside Task")
     }
    
 }
