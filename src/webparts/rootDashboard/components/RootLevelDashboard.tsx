@@ -302,7 +302,7 @@ const RootLevelDashboard = (props: any) => {
       <input
         type="checkbox"
         ref={ref}
-        className={className + "  cursor-pointer form-check-input rounded-0"}
+        className={className + "cursor-pointer form-check-input rounded-0"}
         {...rest}
       />
     );
@@ -324,7 +324,7 @@ const RootLevelDashboard = (props: any) => {
         ),
         cell: ({ row, getValue }) => (
           <>
-            <span className="d-flex">
+            <span>
               {row?.original?.Title != "Others" ? (
                 <IndeterminateCheckbox
                   {...{
@@ -687,7 +687,7 @@ const RootLevelDashboard = (props: any) => {
         <dl className='alignCenter gap-2 mb-0'>
           {dashboardConfigrations?.map((list: any) => {
             return (
-              <dt className='form-check l-radio'>
+              <dt className='form-check'>
                 <input className='form-check-input' type="checkbox" value={list?.siteUrl} name="date" checked={selectedSiteFilter?.includes(list?.siteUrl)} onClick={() => siteFilter(list)} /> {list?.siteName}
               </dt>
             )

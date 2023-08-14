@@ -54,6 +54,8 @@ const AncTool = (props: any) => {
     const [folderExist, setFolderExist] = React.useState(false);
     const [Item, setItem]: any = React.useState({});
     const [renamedFileName, setRenamedFileName]: any = React.useState('');
+    const [LinkToDocTitle, setLinkToDocTitle]: any = React.useState('');
+    const [LinkToDocUrl, setLinkToDocUrl]: any = React.useState('');
     const [createNewDocType, setCreateNewDocType]: any = React.useState('');
     const [newSubFolderName, setNewSubFolderName]: any = React.useState('');
     const [selectPathFromPopup, setSelectPathFromPopup]: any = React.useState('');
@@ -63,6 +65,7 @@ const AncTool = (props: any) => {
     const [UploadedDocDetails, setUploadedDocDetails] = React.useState(null);
     const [newlyCreatedFile, setNewlyCreatedFile]: any = React.useState(null);
     const [itemRank, setItemRank] = React.useState(5);
+    const [LinkDocitemRank, setLinkDocitemRank] = React.useState(5);
     const [selectedPath, setSelectedPath] = React.useState({
         displayPath: '',
         completePath: '',
@@ -72,7 +75,7 @@ const AncTool = (props: any) => {
     const [AllFoldersGrouped, setAllFoldersGrouped]: any = React.useState([]);
     const [currentFolderFiles, setCurrentFolderFiles]: any = React.useState([]);
     const [ExistingFiles, setExistingFiles]: any = React.useState([]);
-    const [DocsToTag, setDocsToTag]: any = React.useState([]);
+    const [AllReadytagged, setAllReadytagged]: any = React.useState([]);
     React.useEffect(() => {
         GetSmartMetadata();
         siteUrl = props?.Context?.pageContext?.web?.absoluteUrl;
@@ -185,19 +188,34 @@ const AncTool = (props: any) => {
     async function getExistingUploadedDocuments(): Promise<any[]> {
         try {
             let alreadyTaggedFiles: any = [];
-            let selectQuery = 'Id,Title,Url,FileSystemObjectType,ItemRank,Author/Id,Author/Title,Editor/Id,Editor/Title,FileDirRef,FileLeafRef,File_x0020_Type,Year,EncodedAbsUrl,Created,Modified&$expand=Author,Editor'
+            let selectQuery = 'Id,Title,Url,FileSystemObjectType,ItemRank,Author/Id,Author/Title,Editor/Id,Editor/Title,File_x0020_Type,FileDirRef,FileLeafRef,File_x0020_Type,Year,EncodedAbsUrl,Created,Modified&$expand=Author,Editor'
 
             if (siteName?.length > 0) {
-                selectQuery = `Id,Title,Url,FileSystemObjectType,ItemRank,Author/Id,Author/Title,${siteName}/Id,${siteName}/Title,Editor/Id,Editor/Title,FileDirRef,FileLeafRef,File_x0020_Type,Year,EncodedAbsUrl,Created,Modified&$expand=Author,Editor,${siteName}`
+                selectQuery = `Id,Title,Url,FileSystemObjectType,ItemRank,Author/Id,Author/Title,${siteName}/Id,${siteName}/Title,File_x0020_Type,Editor/Id,Editor/Title,FileDirRef,FileLeafRef,File_x0020_Type,Year,EncodedAbsUrl,Created,Modified&$expand=Author,Editor,${siteName}`
             }
             // const files = await folder.files.get();
             const files = await sp.web.lists.getByTitle('Documents').items.select(selectQuery).getAll();
             let newFilesArr: any = [];
             files?.map((file: any) => {
                 if (file?.Title != undefined && file?.File_x0020_Type != undefined) {
-                    file.docType = getFileType(file?.Name);
+                    file.docType = file?.File_x0020_Type
                     newFilesArr.push(file)
+                }else if (file?.Title != undefined && file?.FileSystemObjectType != 1){
+                    file.docType = getFileType(file?.Name);
                 }
+                if(file?.File_x0020_Type=='aspx'){
+                    file.docType ='link'
+                    file.EncodedAbsUrl=file?.Url?.Url
+                }
+                if(file?.File_x0020_Type=='rar'){
+                    file.docType ='zip'
+                    file.EncodedAbsUrl=file?.Url?.Url
+                }
+                if(file?.File_x0020_Type=='msg'){
+                    file.docType ='mail'
+                    file.EncodedAbsUrl=file?.Url?.Url
+                }
+                
                 if (file[siteName] != undefined && file[siteName].length > 0 && file[siteName].some((task: any) => task.Id == props?.item?.Id)) {
                     alreadyTaggedFiles.push(file);
                 }
@@ -210,7 +228,7 @@ const AncTool = (props: any) => {
             })
             backupExistingFiles = newFilesArr;
             setExistingFiles(newFilesArr)
-            setDocsToTag(alreadyTaggedFiles);
+            setAllReadytagged(alreadyTaggedFiles);
 
             return files
         } catch (error) {
@@ -305,9 +323,14 @@ const AncTool = (props: any) => {
         const file = event.target.files[0];
         setSelectedFile(file);
     };
-    const handleRankChange = (event: any) => {
+    const handleRankChange = (event: any,from:any) => {
         const rank = parseInt(event.target.value);
-        setItemRank(rank);
+        if(from=='Upload'){
+            setItemRank(rank);
+        }
+        if(from=='linkDoc'){
+            setLinkDocitemRank(rank);
+        }
     };
     const handleUpload = async () => {
         let isFolderAvailable = folderExist;
@@ -375,7 +398,7 @@ const AncTool = (props: any) => {
                                         await sp.web.lists.getByTitle('Documents').items.getById(file.Id)
                                             .update(postData).then((updatedFile: any) => {
                                                 file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
-                                                setDocsToTag([...DocsToTag, ...[file]])
+                                                setAllReadytagged([...AllReadytagged, ...[file]])
                                                 pathGenerator();
                                                 props?.callBack()
                                                 taggedDocument.tagged = true;
@@ -414,28 +437,28 @@ const AncTool = (props: any) => {
                 }
             })
         }
-        if (!DocsToTag?.some((doc: any) => file.Id == doc.Id) && !resultArray.some((taskID: any) => taskID == props?.item?.Id)) {
+        if (!AllReadytagged?.some((doc: any) => file.Id == doc.Id) && !resultArray.some((taskID: any) => taskID == props?.item?.Id)) {
             resultArray.push(props?.item?.Id)
             let siteColName = `${siteName}Id`
             // Update the document file here
             await sp.web.lists.getByTitle('Documents').items.getById(file.Id)
                 .update({ [siteColName]: { "results": resultArray } }).then((updatedFile: any) => {
                     file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
-                    setDocsToTag([...DocsToTag, ...[file]])
+                    setAllReadytagged([...AllReadytagged, ...[file]])
                     props?.callBack()
                     alert(`The file '${file?.Title}' has been successfully tagged to the task '${props?.item?.TaskId}'.`);
                     return file;
                 })
 
 
-        } else if (DocsToTag?.some((doc: any) => file.Id == doc.Id) && resultArray.some((taskID: any) => taskID == props?.item?.Id)) {
+        } else if (AllReadytagged?.some((doc: any) => file.Id == doc.Id) && resultArray.some((taskID: any) => taskID == props?.item?.Id)) {
             resultArray = resultArray.filter((taskID: any) => taskID != props?.item?.Id)
             let siteColName = `${siteName}Id`
             // Update the document file here
             await sp.web.lists.getByTitle('Documents').items.getById(file.Id)
                 .update({ [siteColName]: { "results": resultArray } }).then((updatedFile: any) => {
                     file[siteName] = file[siteName].filter((task: any) => task.Id != props?.item?.Id);
-                    setDocsToTag((prevFile: any) => {
+                    setAllReadytagged((prevFile: any) => {
                         return prevFile.filter((item: any) => {
                             return item.Id != file.Id
                         });
@@ -526,13 +549,13 @@ const AncTool = (props: any) => {
                                     // Update the document file here
                                     let postData = {
                                         [siteColName]: { "results": resultArray },
-                                        ItemRank: itemRank,
+                                        ItemRank: 5,
                                         Title: fileName
                                     }
                                     await sp.web.lists.getByTitle('Documents').items.getById(file.Id)
                                         .update(postData).then((updatedFile: any) => {
                                             file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
-                                            setDocsToTag([...DocsToTag, ...[file]])
+                                            setAllReadytagged([...AllReadytagged, ...[file]])
                                             taggedDocument.tagged = true;
                                             pathGenerator()
                                             cancelNewCreateFile()
@@ -572,6 +595,9 @@ const AncTool = (props: any) => {
         setNewlyCreatedFile(null);
         setRenamedFileName('');
         setCreateNewDocType('');
+        setLinkDocitemRank(5);
+        setLinkToDocTitle('');
+        setLinkToDocUrl('');
     }
     // Choose Path Folder
     const cancelPathFolder = () => {
@@ -730,6 +756,119 @@ const AncTool = (props: any) => {
         setShowConfirmationInside(false)
         setUploadedDocDetails(undefined);
     }
+    const smartnotecall = () => {
+        setRemark(false)
+        props?.callBack();
+    }
+    // Add Link to Document And tag//
+    const CreateLinkAndTag=async ()=>{
+        let taggedDocument = {
+            fileName: '',
+            docType: '',
+            uploaded: false,
+            tagged: false,
+            link: '',
+            size: ''
+        }
+        let isFolderAvailable = folderExist;
+        let fileName = ''
+        if (isFolderAvailable == false) {
+            try {
+                await CreateFolder(`${props?.Context?.pageContext?.web?.serverRelativeUrl}${generatedLocalPath?.split(siteName)[0]}`, siteName).then((data: any) => {
+                    isFolderAvailable = true
+                    setFolderExist(true)
+                })
+
+            } catch (error) {
+                console.log('An error occurred while creating the folder:', error);
+            }
+        }
+        if (isFolderAvailable == true) {
+            try {
+                if (LinkToDocTitle?.length > 0) {
+                    fileName = `${LinkToDocTitle}.aspx`
+                } else {
+                    fileName = `${props?.item?.Title}.aspx`
+                }
+                var vardata = '<%@ Page language="C#" %>' +
+                "<%@ Assembly Name='Microsoft.SharePoint, Version=15.0.0.0, Culture=neutral,   PublicKeyToken=71e9bce111e9429c' %>" +
+                "<%@ Register TagPrefix='SharePoint' Namespace='Microsoft.SharePoint.WebControls' Assembly='Microsoft.SharePoint' %>" +
+                "<%@ Import Namespace='System.IO' %>" +
+                "<%@ Import Namespace='Microsoft.SharePoint' %>" +
+                "<%@ Import Namespace='Microsoft.SharePoint.Utilities' %>" +
+                "<%@ Import Namespace='Microsoft.SharePoint.WebControls' %>" +
+                '<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882">' +
+                '<head>' +
+                "<meta name='WebPartPageExpansion' content='full' /> <meta name='progid' content='SharePoint.Link' />" +
+                '<!--[if gte mso 9]><SharePoint:CTFieldRefs runat=server Prefix="mso:" FieldList="FileLeafRef,URL,IconOverlay"><xml>' +
+                '<mso:CustomDocumentProperties>' +
+                '<mso:ContentTypeId msdt:dt="string">0x01010A00A9B5E70634EEA14BBCC80A59F37723F3</mso:ContentTypeId>' +
+                '<mso:IconOverlay msdt:dt="string">|docx?d=wb030a1c46dee4fd6ac9e319218f7b63b|linkoverlay.gif</mso:IconOverlay>' +
+                '<mso:Url msdt:dt="string">' + LinkToDocUrl + ', ' + LinkToDocUrl + '</mso:Url>' +
+                '</mso:CustomDocumentProperties>' +
+                '</xml></SharePoint:CTFieldRefs><![endif]-->' +
+                '</head>' +
+                '<body>' +
+                "<form id='Form1' runat='server'>" +
+                "<SharePoint:UrlRedirector id='Redirector1' runat='server' />" +
+                '</form>' +
+                '</body>' +
+                '</html>';
+                await sp.web
+                    .getFolderByServerRelativeUrl(selectedPath.displayPath)
+                    .files.add(fileName, vardata, true).then(async (uploadedFile: any) => {
+                        let fileSize = '10Kb'
+                        taggedDocument = {
+                            ...taggedDocument,
+                            fileName: fileName,
+                            docType: 'link',
+                            uploaded: true,
+                            link: LinkToDocUrl,
+                            size: fileSize
+                        }
+                        setTimeout(async () => {
+                            const fileItems = await getExistingUploadedDocuments()
+                            fileItems?.map(async (file: any) => {
+                                if (file?.FileDirRef != undefined && file?.FileDirRef?.toLowerCase() == selectedPath?.displayPath?.toLowerCase() && file?.FileSystemObjectType == 0 && file?.FileLeafRef == fileName) {
+                                    let resultArray: any = [];
+                                    resultArray.push(props?.item?.Id);
+                                    let siteColName = `${siteName}Id`;
+                                    taggedDocument.link = file.EncodedAbsUrl;
+                                    // Update the document file here
+                                    let postData = {
+                                        [siteColName]: { "results": resultArray },
+                                        ItemRank: 5,
+                                        Title: fileName,
+                                        Url: {
+                                            "__metadata": { type: "SP.FieldUrlValue" },
+                                            Description: LinkToDocUrl ? LinkToDocUrl : '',
+                                            Url: LinkToDocUrl ? LinkToDocUrl : ''
+                                        },
+                                        File_x0020_Type:'aspx'
+                                    }
+                                    await sp.web.lists.getByTitle('Documents').items.getById(file.Id)
+                                        .update(postData).then((updatedFile: any) => {
+                                            file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
+                                            setAllReadytagged([...AllReadytagged, ...[file]])
+                                            taggedDocument.tagged = true;
+                                            pathGenerator()
+                                            cancelNewCreateFile()
+                                            props?.callBack();
+                                            return file;
+                                        })
+                                    console.log("File uploaded successfully.", file);
+                                }
+                            })
+                        }, 2000);
+
+                    });
+                setUploadedDocDetails(taggedDocument);
+                setShowConfirmation(true)
+            } catch (error) {
+                console.log("File upload failed:", error);
+            }
+        } cancelNewCreateFile
+    }
 
     return (
         <>
@@ -764,10 +903,6 @@ const AncTool = (props: any) => {
                             <button className="nav-link active" id="Documnets-Tab" data-bs-toggle="tab" data-bs-target="#Documents" type="button" role="tab" aria-controls="Documents" aria-selected="true">
                                 Documents
                             </button>
-                            <button className="nav-link" id="Images-Tab" data-bs-toggle="tab" data-bs-target="#Images" type="button" role="tab" aria-controls="Images" aria-selected="false" >
-                                Images
-                            </button>
-
                         </ul>
                         <div className="border border-top-0 clearfix p-3 tab-content " id="myTabContent">
                             <div className="tab-pane  show active" id="Documents" role="tabpanel" aria-labelledby="Documents">
@@ -794,6 +929,7 @@ const AncTool = (props: any) => {
                                                                                     return (
                                                                                         <tr>
                                                                                             <td><span className={`svg__iconbox svg__icon--${file?.docType}`} title={file?.docType}></span></td>
+
                                                                                             <td><a href={file?.docType == 'pdf' ? file?.ServerRelativeUrl : file?.LinkingUri} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
                                                                                         </tr>
                                                                                     )
@@ -843,8 +979,9 @@ const AncTool = (props: any) => {
 
                                     </div>
 
-                                </div><div className="row form-group clearfix">
-                                    <div className="col-sm-6 padL-0">
+                                </div>
+                                <div className="row form-group clearfix">
+                                    <div className="col-sm-6 border">
                                         {/* <ConnectExistingDoc Context={props.Context} AllListId={props?.AllListId} item={Item} folderPath={selectedPath?.completePath} /> */}
                                         <div className="panel panel-default">
                                             <div className="panel-heading">
@@ -853,8 +990,8 @@ const AncTool = (props: any) => {
                                                 </h3>
                                             </div>
                                             <div className="panel-body h309">
-                                                <input id="searchinputCED" type="search" onChange={(e) => { searchExistingFile(e.target.value) }} placeholder="Search..." className="form-control " />
-                                                <div className="Alltable mt-10 mx-height">
+                                                <input id="searchinputCED" type="search" onChange={(e) => { searchExistingFile(e.target.value) }} placeholder="Search..." className="form-control mb-1 " />
+                                                <div className="Alltable mt-10 mx-height mb-1">
                                                     <div className="container-new b-none h212">
                                                         {/* <GlobalCommanTable headerOptions={headerOptions} paginatedTable={true} columns={columns} data={ExistingFiles} callBackData={callBackData} showHeader={true} /> */}
                                                         {ExistingFiles?.length > 0 ?
@@ -869,8 +1006,8 @@ const AncTool = (props: any) => {
                                                                     {ExistingFiles?.map((file: any) => {
                                                                         return (
                                                                             <tr>
-                                                                                <td><input type="checkbox" checked={DocsToTag?.some((doc: any) => file.Id == doc.Id)} onClick={() => { tagSelectedDoc(file) }} /></td>
-                                                                                <td><span className={`svg__iconbox svg__icon--${file?.File_x0020_Type}`} title={file?.File_x0020_Type}></span></td>
+                                                                                <td><input type="checkbox" className='form-check-input hreflink' checked={AllReadytagged?.some((doc: any) => file.Id == doc.Id)} onClick={() => { tagSelectedDoc(file) }} /></td>
+                                                                                <td><span className={`svg__iconbox svg__icon--${file?.docType}`} title={file?.File_x0020_Type}></span></td>
                                                                                 <td><a href={file?.EncodedAbsUrl} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
                                                                                 <td>{file?.ItemRank}</td>
                                                                             </tr>
@@ -888,7 +1025,7 @@ const AncTool = (props: any) => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="col-sm-6 pad0">
+                                    <div className="col-sm-6 border">
                                         <div className="panel panel-default add-connect">
                                             <div className="panel-heading ">
                                                 <h3 className="panel-title">
@@ -905,7 +1042,7 @@ const AncTool = (props: any) => {
                                                     </div>
                                                     <div className="row">
                                                         <div className="col-sm-6">
-                                                            <select value={itemRank} onChange={handleRankChange} className='full-width'>
+                                                            <select value={itemRank} onChange={(e:any)=>{handleRankChange(e,'Upload')}} className='full-width'>
                                                                 {itemRanks.map((rank) => (
                                                                     <option key={rank?.rank} value={rank?.rank}>{rank?.rankTitle}</option>
                                                                 ))}
@@ -921,15 +1058,83 @@ const AncTool = (props: any) => {
 
 
 
-                                                    <button onClick={handleUpload} disabled={selectedFile?.name?.length>0?false:true} className="btn btn-primary mt-2 my-1  float-end px-3">Upload</button>
+                                                    <button onClick={handleUpload} disabled={selectedFile?.name?.length > 0 ? false : true} className="btn btn-primary mt-2 my-1  float-end px-3">Upload</button>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="tab-pane " id="Images" role="tabpanel" aria-labelledby="Images">
-                                    <div className="d-flex justify-content-between">
+                                <div className="row form-group clearfix">
+                                    <div className="col-sm-6 padL-0">
+                                        {/* <ConnectExistingDoc Context={props.Context} AllListId={props?.AllListId} item={Item} folderPath={selectedPath?.completePath} /> */}
+                                        <div className="panel panel-default">
+                                            <div className="panel-heading">
+                                                <h3 className="panel-title">
+                                                    4. Already Tagged Documents
+                                                </h3>
+                                            </div>
+                                            <div className="panel-body h309">
 
+                                                {AllReadytagged?.length > 0 ?
+                                                    <div className='smart SearchTableCategoryComponent'>
+                                                        <table className='table '>
+                                                            <tr>
+                                                                <th>Type</th>
+                                                                <th>Title</th>
+                                                                <th>Item Rank</th>
+                                                                <th>&nbsp;</th>
+                                                            </tr>
+                                                            {AllReadytagged?.map((file: any) => {
+                                                                return (
+                                                                    <tr>
+                                                                        <td><span className={`svg__iconbox svg__icon--${file?.docType}`} title={file?.docType}></span></td>
+                                                                        <td><a href={file?.EncodedAbsUrl} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
+                                                                        <td>{file?.ItemRank}</td>
+                                                                        <td> <span
+                                                                            style={{ marginLeft: '6px' }}
+                                                                            title='Untag Document'
+                                                                            onClick={() => { tagSelectedDoc(file) }} 
+                                                                            className='svg__iconbox svg__icon--cross dark hreflink'
+                                                                        ></span></td>
+                                                                    </tr>
+                                                                )
+                                                            })}
+                                                        </table>
+                                                    </div>
+                                                    :
+                                                    <div className="current_commnet ">
+                                                        No Documents Tagged
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-sm-6 pad0">
+                                        <div className="panel panel-default add-connect">
+                                            <div className="panel-heading ">
+                                                <h3 className="panel-title">
+                                                    5. Add a link to a document
+                                                </h3>
+                                            </div>
+                                            <div className="panel-body">
+                                                <div className="row">
+                                                <div className="col-sm-6">
+                                                        <input type="text"placeholder='Title' onChange={(e) => { setLinkToDocTitle(e.target.value) }} value={LinkToDocTitle} className='full-width' />
+                                                    </div>
+                                                    <div className="col-sm-6">
+                                                        <select value={LinkDocitemRank}   onChange={(e:any)=>{handleRankChange(e,'linkDoc')}} className='full-width'>
+                                                            {itemRanks.map((rank) => (
+                                                                <option key={rank?.rank} value={rank?.rank}>{rank?.rankTitle}</option>
+                                                            ))}
+                                                        </select>
+                                                    </div>
+                                                    <div className="col-sm-12">
+                                                    <input type="text" onChange={(e) => { setLinkToDocUrl(e.target.value) }} value={LinkToDocUrl}  placeholder='Url' className='full-width' />
+                                                    </div>
+                                                </div>
+                                                <button disabled={(LinkToDocUrl?.length > 0 && LinkToDocTitle?.length > 0 )? false : true} className="btn btn-primary mt-2 my-1  float-end px-3"  onClick={() => { CreateLinkAndTag() }}>Create</button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1034,52 +1239,7 @@ const AncTool = (props: any) => {
                     </div>
                 </div> : ''
             }
-
-
-            {/* <Modal show={ShowConfirmation} isOpen={ShowConfirmation} backdrop={true} size='mg'
-                isBlocking={ShowConfirmation}
-                className={ServicesTaskCheck ? "serviepannelgreena " : ""}
-                containerClassName="custommodalpopup p-2">
-                <div className="modal-content rounded-0">
-                    <div className="modal-header">
-                        <h5 className="modal-title">Upload Documents - Confirmation</h5>
-                        <span onClick={() => cancelConfirmationPopup()}><i className="svg__iconbox svg__icon--cross crossBtn"></i></span>
-                    </div>
-                    <div className="modal-body p-2">
-                        <div><strong>Folder :</strong> <a href={`${rootSiteName}${selectedPath?.displayPath}`} target="_blank" data-interception="off" className='hreflink'> {selectedPath?.displayPath}</a><span className="svg__iconbox svg__icon--folder ms-1"></span></div>
-                        <div><strong>Metadat-Tag :</strong> <span>{props?.item?.Title}</span></div>
-                        <div className="row">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>&nbsp;</th>
-                                        <th>File Name</th>
-                                        <th>Uploaded</th>
-                                        <th>Tagged</th>
-                                        <th>Share Link</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><span className={`svg__iconbox svg__icon--${UploadedDocDetails?.docType}`}></span></td>
-                                        <td><a href={UploadedDocDetails?.link} target="_blank" data-interception="off" className='hreflink'>{UploadedDocDetails?.fileName}</a>{`(${UploadedDocDetails?.size})`}</td>
-                                        <td>{UploadedDocDetails?.uploaded == true ? <span className='svg__iconbox svg__icon--Completed'></span> : <span className='svg__iconbox svg__icon--cross'></span>}</td>
-                                        <td>{UploadedDocDetails?.tagged == true ? <span className='svg__iconbox svg__icon--Completed'></span> : <span className='svg__iconbox svg__icon--cross'></span>}</td>
-                                        <td>{UploadedDocDetails?.uploaded == true ? <>
-                                            <span className='svg__iconbox svg__icon--link hreflink' title='Copy Link' onClick={() => { navigator.clipboard.writeText(UploadedDocDetails?.link); }}></span>
-                                            <span className='svg__iconbox svg__icon--mail hreflink' title='Share In Mail' onClick={() => { window.open(`mailto:?&subject=${props?.item?.Title}&body=${UploadedDocDetails?.link}`) }}></span>
-                                        </> : <></>}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <footer className='text-end p-2'>
-                        <button className="btn btnPrimary" onClick={() => cancelConfirmationPopup()}>Ok</button>
-                    </footer>
-                </div>
-            </Modal> */}
-
+            
             {remark && <SmartInformation Id={props?.item?.Id}
                 AllListId={props.AllListId}
                 Context={props?.Context}
@@ -1088,7 +1248,7 @@ const AncTool = (props: any) => {
                 showHide={"projectManagement"}
                 setRemark={setRemark}
                 editSmartInfo={editSmartInfo}
-            //   RemarkData={modalIsOpen}
+                callback={smartnotecall}
             />}
         </>
     )
