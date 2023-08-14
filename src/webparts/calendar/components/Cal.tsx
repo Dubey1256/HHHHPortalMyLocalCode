@@ -44,6 +44,7 @@ import VersionHistoryPopup from "../../../globalComponents/VersionHistroy/Versio
 //import Modal from "react-bootstrap/Modal";
 //import MoreSlot from "./Slots";
 interface IEventData {
+  [x: string]: any;
   Event_x002d_Type?: string;
   Location?: string;
   Title?: string;
@@ -100,7 +101,8 @@ let startTime: any,
   eventPass: any = {},
   endTime: any,
   allDay: any = false,
-  title_people: any;
+  title_people: any,
+  title_Id: any;
 // endDateTime: any;
 //let dateTime:any,startDate:any,startTime:any,endtDate:any,endTime:any;
 let maxD = new Date(8640000000000000);
@@ -130,7 +132,8 @@ const App = (props: any) => {
   //let saveE:any=[]
   const [email, setEmail]: any = React.useState(false);
   const [todayEvent, setTodayEvent]: any = React.useState(false);
-  const [peopleName, setPeopleName]: any = React.useState([]);
+  // Change here array
+  const [peopleName, setPeopleName]: any = React.useState();
   const [isChecked, setIsChecked] = React.useState(false);
   const [disableTime, setDisableTime] = React.useState(false);
   //const [maxD, setMaxD] = React.useState(new Date(8640000000000000));
@@ -138,7 +141,7 @@ const App = (props: any) => {
   const [showRecurrence, setshowRecurrence] = React.useState(false);
   const [showRecurrenceSeriesInfo, setShowRecurrenceSeriesInfo] =
     React.useState(false);
-  const [peoplePickerShow, setPeoplePickerShow] = React.useState(false);
+  const [peoplePickerShow, setPeoplePickerShow] = React.useState(true);
   const [isOpen, setIsOpen] = React.useState(false);
   const [showM, setShowM] = React.useState([]);
 
@@ -207,7 +210,7 @@ const App = (props: any) => {
       const results = await web.lists
         .getById(props.props.SmalsusLeaveCalendar)
         .items.select(
-          "RecurrenceData,Duration,Author/Title,Editor/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type"
+          "RecurrenceData,Duration,Author/Title,Editor/Title,Name,NameId,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type"
         )
         .expand("Author,Editor")
         .top(500)
@@ -227,6 +230,7 @@ const App = (props: any) => {
             events.push({
               Id: event.ID,
               ID: event.ID,
+              NameId:event.NameId,
               EventType: event.EventType,
               title: event.Title ? await deCodeHtmlEntities(event.Title) : "",
               Description: event.Description,
@@ -378,7 +382,9 @@ const App = (props: any) => {
   ];
   const Designation = [
     { key: "SPFx", text: "SPFx" },
-    { key: "Share-Web", text: "Share-Web " },
+    { key: "Shareweb(Contact)", text: "Shareweb(Contact) " },
+    { key: "Shareweb(ANC)", text: "Shareweb(ANC) " },
+    { key: "Shareweb(Project)", text: "Shareweb(Project) " }
   ];
 
   const openm = () => {
@@ -441,6 +447,7 @@ const App = (props: any) => {
     const eventsFormatted: any[] = events.map((event) => ({
       iD: event.ID,
       title: event.title,
+      NameId:event.NameId,
       start: event.EventDate,
       end: event.EndDate,
       alldayevent: event.fAllDayEvent,
@@ -522,6 +529,7 @@ const App = (props: any) => {
           const dataEvent = {
             shortD: item.Title,
             iD: item.ID,
+            NameId:item.NameId,
             title: a,
             start: startdate,
             end: enddate,
@@ -591,16 +599,23 @@ const App = (props: any) => {
             setSelectedTimeEnd(selectedTimeEnd);
             return;
           }
-
-          if (
-            peopleName == props.props.context._pageContext._user.displayName
-          ) {
+          if (peopleName === props.props.context._pageContext._user.displayName) {
+            // If the condition is true, update the peopleName to match the display name
             setPeopleName(props.props.context._pageContext._user.displayName);
           } else {
+            // If the condition is false, set the peopleName to the default value (title_people)
             setPeopleName(title_people);
           }
+          // if (
+          //   peopleName == props.props.context._pageContext._user.displayName
+          // ) {
+          //   setPeopleName(props.props.context._pageContext._user.displayName);
+          // } else {
+          //   setPeopleName(title_people);
+          // }
           const newEvent = {
             name: peopleName,
+            nameId:title_Id,
             title: inputValueName,
             start: startDate,
             end: endDate,
@@ -616,6 +631,7 @@ const App = (props: any) => {
             Title: newEvent.title,
 
             Name: newEvent.name,
+            NameId:newEvent.nameId,
 
             Location: newEvent.loc,
 
@@ -1093,6 +1109,8 @@ const App = (props: any) => {
     let web = new Web(props.props.siteUrl);
     const newEvent = {
       title: inputValueName,
+      name: peopleName,
+      nameId:title_Id,
       start: startDate,
       end: endDate,
       reason: inputValueReason,
@@ -1114,7 +1132,8 @@ const App = (props: any) => {
       .items.getById(eventPass.iD)
       .update({
         Title: newEvent.title,
-
+        Name: newEvent.name,
+        NameId:newEvent.nameId,
         Location: newEvent.loc,
 
         Event_x002d_Type: newEvent.type,
@@ -1147,7 +1166,7 @@ const App = (props: any) => {
     console.log(event);
     setInputValueName(event.shortD);
     setshowRecurrence(false);
-    setPeoplePickerShow(false);
+    // setPeoplePickerShow(false);
     setShowRecurrenceSeriesInfo(false);
     setEditRecurrenceEvent(false);
 
@@ -1229,7 +1248,7 @@ const App = (props: any) => {
     setPeopleName(props.props.context._pageContext._user.displayName);
     setLocation("");
     setType("Un-Planned")
-    setPeoplePickerShow(true);
+    // setPeoplePickerShow(true);
     setshowRecurrence(true);
     setRecurrenceData(null);
     setNewRecurrenceEvent(false);
@@ -1338,9 +1357,11 @@ const App = (props: any) => {
         .split(" ")
         .map((i: any) => i.charAt(0))
         .join("");
-
+      title_Id = userId;
       title_people = userTitle;
       setPeopleName(userTitle);
+    }else{
+      setPeopleName(props.props.context._pageContext._user.displayName)
     }
   };
 
@@ -1398,6 +1419,9 @@ const App = (props: any) => {
     void getData();
   }, []);
 
+
+
+  
   return (
     <div>
       <div style={{ height: "500pt" }}>
@@ -1429,6 +1453,7 @@ const App = (props: any) => {
       {email ? (
         <EmailComponenet
           Context={props.props.context}
+          Listdata={props.props}
           data={todayEvent}
           data2={details}
           call={emailCallback}
@@ -1624,7 +1649,7 @@ const App = (props: any) => {
             onChange={(e, option) => setType(option.key)}
           />
           <Dropdown
-            label="Designation"
+            label="Team"
             options={Designation}
             selectedKey={dType}
             onChange={(e, option) => sedType(option.key)}

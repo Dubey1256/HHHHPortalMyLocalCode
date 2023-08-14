@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as moment from 'moment';
 import { ITaskprofileProps } from './ITaskprofileProps';
+
 import TaskFeedbackCard from './TaskFeedbackCard';
 import { Web } from "sp-pnp-js";
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
@@ -1933,8 +1934,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
               </div>
               <div className='row url'>
                 <div className="d-flex p-0">
-                  <div className='bg-Fa p-2'><label>Url</label></div>
-                  <div className='bg-Ff p-2 text-break full-width'>
+                  <div className='bg-Fa p-1'><label>Url</label></div>
+                  <div className='bg-Ff p-1 text-break full-width'>
                     {this.state.Result["component_url"] != null &&
                       <a target="_blank" data-interception="off" href={this.state.Result["component_url"].Url}>{this.state.Result["component_url"].Url}</a>
                     }
@@ -2094,6 +2095,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                                   <div className='d-flex justify-content-between align-items-center'>
                                                     {fbComment?.AuthorName} - {fbComment?.Created}
                                                     <span className='d-flex'>
+                                                
                                                       <a title='Edit'
                                                         onClick={() => this.openEditModal(fbComment, k, 0, false, i)}
                                                       >
@@ -2353,7 +2355,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                 </>}
               </div>
               <div>{this.state.Result.Id && <SmartInformation ref={this.smartInfoRef} Id={this.state.Result.Id} AllListId={AllListId} Context={this.props?.Context} taskTitle={this.state.Result?.Title} listName={this.state.Result?.listName} />}</div>
-              <div> {this.state.Result != undefined && <RelevantDocuments ref={this?.relevantDocRef} siteUrl={this.props.siteUrl} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments>}</div>
+              <div> {this.state.Result != undefined && <RelevantDocuments ref={this?.relevantDocRef} siteUrl={this.props.siteUrl}Context={this.props?.Context} AllListId={AllListId} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments>}</div>
 
             </div>
 

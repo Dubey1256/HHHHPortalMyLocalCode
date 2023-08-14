@@ -1056,7 +1056,7 @@ const ProjectManagementMain = (props: any) => {
         cell: ({ row, getValue }) => (
           <>
             <span className="d-flex">
-              <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />
+              <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} AllListId={AllListId}/>
             </span>
           </>
         ),
@@ -1296,7 +1296,7 @@ const ProjectManagementMain = (props: any) => {
                 </a>
               </>
             ) : (
-              <span className='svg__iconbox svg__icon--defaultUser' title={row?.original?.Author?.Title}></span>
+              <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
             )}
           </span>
         ),
@@ -1320,7 +1320,7 @@ const ProjectManagementMain = (props: any) => {
               style={{ marginLeft: '6px' }}
               title='Remove Task'
               onClick={() => untagTask(row?.original)}
-              className='svg__iconbox svg__icon--cross hreflink'
+              className='svg__iconbox svg__icon--cross dark hreflink'
             ></span>
           </span>
         ),
@@ -1791,7 +1791,7 @@ const ProjectManagementMain = (props: any) => {
                       </div>
                     </section>
                     <div>
-                      <div className="row px-2 pe-0">
+                      <div className="Alltable">
                         <div className="section-event ps-0">
                           <div className="wrapper project-management-Table">
                             {sidebarStatus.sideBarFilter ? (

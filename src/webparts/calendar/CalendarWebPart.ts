@@ -15,7 +15,9 @@ import { ICalendarProps } from './components/ICalendarProps';
 export interface ICalendarWebPartProps {
   description: string;
   siteUrl:string;
-  SmalsusLeaveCalendar:string
+  TaskUsertListID: 'b318ba84-e21d-4876-8851-88b94b9dc300';
+  SmalsusLeaveCalendar:string;
+  
 }
 
 export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebPartProps> {
@@ -29,6 +31,7 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
+        TaskUsertListID: this.properties.TaskUsertListID,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
@@ -119,7 +122,10 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
                 PropertyPaneTextField('SmalsusLeaveCalendar', {
                   label: "SmalsusLeaveCalendar"
 
-                })
+                }),
+                PropertyPaneTextField('TaskUsertListID', {
+                  label: 'Task User List'
+                }),
               ]
             }
           ]
