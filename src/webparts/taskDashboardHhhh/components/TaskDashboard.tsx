@@ -3460,7 +3460,20 @@ const TaskDashboard = (props: any) => {
                                                             </span>
                                                         </PaginationLink>
                                                     </PaginationItem>
-                            
+                                                    {/* <Col md={2}>
+                                                        <Input
+                                                            type='select'
+                                                            value={pageSizeAllEmail}
+                                                            onChange={onChangeInSelectAllEmail}
+                                                        >
+
+                                                            {[10, 20, 30, 40, 50].map((pageSizeAllEmail) => (
+                                                                <option key={pageSizeAllEmail} value={pageSizeAllEmail}>
+                                                                    Show {pageSizeAllEmail}
+                                                                </option>
+                                                            ))}
+                                                        </Input>
+                                                    </Col> */}
                                                 </Pagination>
                                             </nav>
                                         </>
@@ -3488,4 +3501,4 @@ const TaskDashboard = (props: any) => {
         </>
     )
 }
-export default React.memo(TaskDashboard) 
+export default React.memo(TaskDashboard)
