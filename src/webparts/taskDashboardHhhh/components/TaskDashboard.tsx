@@ -422,7 +422,7 @@ const TaskDashboard = (props: any) => {
                         let smartmeta = [];
                         await web.lists
                             .getById(config.listId)
-                            .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "EstimatedTimeDescription", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Body", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Modified")
+                            .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Body", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Modified")
                             .expand("Team_x0020_Members", "Approver", "ParentTask", "ClientCategory", "AssignedTo", "SharewebCategories", "Author", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services")
                             .getAll().then((data: any) => {
                                 smartmeta = data;
@@ -1804,10 +1804,7 @@ const TaskDashboard = (props: any) => {
                         item.TaskDueDatenew = '';
                     if (item.Categories == undefined || item.Categories == '')
                         item.Categories = '';
-                    if (item.EstimatedTimeDescription != undefined && item.EstimatedTimeDescription != '') {
-                        item['DescriptionaAndCategory'] = JSON.parse(item.EstimatedTimeDescription)
-                        item['shortDescription'] = item.DescriptionaAndCategory[0].shortDescription;
-                    }
+                   
                     if (item.EstimatedTime == undefined || item.EstimatedTime == '' || item.EstimatedTime == null) {
                         item.EstimatedTime = ''
                     }
@@ -2001,10 +1998,7 @@ const TaskDashboard = (props: any) => {
                                     item.TaskDueDatenew = '';
                                 if (item.Categories == undefined || item.Categories == '')
                                     item.Categories = '';
-                                if (item.EstimatedTimeDescription != undefined && item.EstimatedTimeDescription != '') {
-                                    item['DescriptionaAndCategory'] = JSON.parse(item.EstimatedTimeDescription)
-                                    item['shortDescription'] = item.DescriptionaAndCategory[0].shortDescription;
-                                }
+                               
                                 if (item.EstimatedTime == undefined || item.EstimatedTime == '' || item.EstimatedTime == null) {
                                     item.EstimatedTime = ''
                                 }
