@@ -1430,16 +1430,11 @@ export default function ProjectOverview(props: any) {
                 items.descriptionsSearch = items.Short_x0020_Description_x0020_On != undefined ? items?.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
                 items.commentsSearch = items?.Comments != null && items?.Comments != undefined ? items.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
                 items['Shareweb_x0020_ID'] = 'P' + items.Id
-                items['subRows'] = [];
-                allSitesTasks?.map((task: any) => {
-                    if (task?.IsTodaysTask == true && task?.Project?.Id == items?.Id) {
-                        items['subRows'].push(task);
-                    }
-                })
                 items.DisplayDueDate = items.DueDate != null ? Moment(items.DueDate).format('DD/MM/YYYY') : ""
             })
             Alltask = sortOnPriority(Alltask)
-            setFlatData([...Alltask])
+            let flatDataProjects=JSON.parse(JSON.stringify(Alltask))
+            setFlatData(flatDataProjects);
             Alltask.map((items: any) => {
                 items['subRows'] = [];
                 allSitesTasks?.map((task: any) => {
