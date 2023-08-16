@@ -179,7 +179,7 @@ export default function ProjectOverview(props: any) {
                         let smartmeta = [];
                         await web.lists
                             .getById(config.listId)
-                            .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "EstimatedTimeDescription", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Body", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Modified")
+                            .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Body", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Modified")
                             .expand("Team_x0020_Members", "Approver", "ParentTask", "ClientCategory", "AssignedTo", "SharewebCategories", "Author", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services")
                             .getAll().then((data: any) => {
                                 smartmeta = data;
@@ -443,18 +443,6 @@ export default function ProjectOverview(props: any) {
                 ),
                 id: "EstimatedTime",
                 placeholder: "Estimated Time",
-                resetColumnFilters: false,
-                resetSorting: false,
-                header: "",
-                size: 60,
-            },
-            {
-                accessorFn: (row) => row?.smartTime,
-                cell: ({ row, getValue }) => (
-                    <span>  {row?.original?.smartTime}</span>
-                ),
-                id: "smartTime",
-                placeholder: "Smart Time Total",
                 resetColumnFilters: false,
                 resetSorting: false,
                 header: "",
@@ -736,18 +724,6 @@ export default function ProjectOverview(props: any) {
                 ),
                 id: "EstimatedTime",
                 placeholder: "Estimated Time",
-                resetColumnFilters: false,
-                resetSorting: false,
-                header: "",
-                size: 60,
-            },
-            {
-                accessorFn: (row) => row?.smartTime,
-                cell: ({ row, getValue }) => (
-                    <span>  {row?.original?.smartTime}</span>
-                ),
-                id: "smartTime",
-                placeholder: "Smart Time Total",
                 resetColumnFilters: false,
                 resetSorting: false,
                 header: "",
@@ -1198,19 +1174,6 @@ export default function ProjectOverview(props: any) {
                 size: 60,
             },
             {
-                accessorFn: (row) => row?.smartTime,
-                cell: ({ row, getValue }) => (
-                    <span>  {row?.original?.smartTime}</span>
-                ),
-                id: "smartTime",
-                placeholder: "Smart Time Total",
-                resetColumnFilters: false,
-                resetSorting: false,
-                header: "",
-                size: 60,
-            },
-            {
-
                 cell: ({ row }) => (
                     <>
                         <span onClick={(e) => EditDataTimeEntry(e, row.original)}
@@ -1265,10 +1228,7 @@ export default function ProjectOverview(props: any) {
                             item.TaskDueDatenew = '';
                         if (item.Categories == undefined || item.Categories == '')
                             item.Categories = '';
-                        if (item.EstimatedTimeDescription != undefined && item.EstimatedTimeDescription != '') {
-                            item['DescriptionaAndCategory'] = JSON.parse(item.EstimatedTimeDescription)
-                            item['shortDescription'] = item.DescriptionaAndCategory[0].shortDescription;
-                        }
+                      
                         if (item.EstimatedTime == undefined || item.EstimatedTime == '' || item.EstimatedTime == null) {
                             item.EstimatedTime = ''
                         }
@@ -1430,16 +1390,12 @@ export default function ProjectOverview(props: any) {
                 items.descriptionsSearch = items.Short_x0020_Description_x0020_On != undefined ? items?.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
                 items.commentsSearch = items?.Comments != null && items?.Comments != undefined ? items.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
                 items['Shareweb_x0020_ID'] = 'P' + items.Id
-                items['subRows'] = [];
-                allSitesTasks?.map((task: any) => {
-                    if (task?.IsTodaysTask == true && task?.Project?.Id == items?.Id) {
-                        items['subRows'].push(task);
-                    }
-                })
+               
                 items.DisplayDueDate = items.DueDate != null ? Moment(items.DueDate).format('DD/MM/YYYY') : ""
             })
             Alltask = sortOnPriority(Alltask)
-            setFlatData([...Alltask])
+            let flatDataProjects=JSON.parse(JSON.stringify(Alltask))
+            setFlatData(flatDataProjects);
             Alltask.map((items: any) => {
                 items['subRows'] = [];
                 allSitesTasks?.map((task: any) => {
@@ -1540,14 +1496,6 @@ export default function ProjectOverview(props: any) {
                         items.AllTeamMember = [];
                         items.siteType = config.Title;
                         items.siteUrl = config.siteUrl.Url;
-                        SmartTimeData(items)
-                            .then((returnresult: any) => {
-                                items.smartTime = returnresult.toFixed(2);
-                                // console.log("Final Total Time:", returnresult);
-                            })
-                            .catch((error: any) => {
-                                console.error("Error:", error);
-                            });
                         items.bodys = items.Body != null && items.Body.split('<p><br></p>').join('');
                         if (items?.Body != undefined && items?.Body != null) {
                             items.descriptionsSearch = items?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
@@ -1683,104 +1631,7 @@ export default function ProjectOverview(props: any) {
             return b?.Priority_x0020_Rank - a?.Priority_x0020_Rank;
         })
     }
-    const SmartTimeData = async (items: any) => {
-        let FinalTotalTime: any = 0;
-        try {
-            let AllTimeSpentDetails: any = [];
-            let filteres: string;
-            let TimeSheetlistId: any;
-            let siteUrl: any;
-            let listName: any;
-            // Get the list Name
-            let TimesheetConfiguration: any = [];
-            if (siteConfig?.length > 0) {
-                siteConfig.forEach((itemss: any) => {
-                    if (itemss.Title == items.siteType && itemss.TaxType == 'Sites') {
-                        TimesheetConfiguration = JSON.parse(itemss.Configurations)
-                    }
-                })
-                TimesheetConfiguration?.forEach((val: any) => {
-                    TimeSheetlistId = val.TimesheetListId;
-                    siteUrl = val.siteUrl
-                    listName = val.TimesheetListName
-                })
-            }
-            if (items.siteType === "Offshore Tasks") {
-                const siteType = "OffshoreTasks";
-                filteres = `Task${siteType}/Id eq ${items.Id}`;
-            } else {
-                filteres = `Task${items.siteType}/Id eq ${items.Id}`;
-            }
-            const select = "Id,Title,TaskDate,Created,Modified,TaskTime,Description,SortOrder,AdditionalTimeEntry,Author/Id,Author/Title,Editor/Id,Editor/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title&$expand=Editor,Author,Category,TimesheetTitle&$filter=" + filteres;
-            let count = 0;
-            let allurls: { Url: string }[];
-            if (items.siteType === "Migration" || items.siteType === "ALAKDigital") {
-                allurls = [
-                    { Url: "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('9ed5c649-3b4e-42db-a186-778ba43c5c93')/items?$select=" + select }
-                ];
-            } else if (items.siteType === "SH") {
-                allurls = [
-                    { Url: `${items.siteUrl}/_api/web/lists/getbyTitle('TaskTimesheet')/items?$select=${select}` }
-                ];
-            } else {
-                if (listName != undefined) {
-                    allurls = [
-                        { Url: `${items.siteUrl}/_api/web/lists/getbyTitle('${listName}')/items?$select=${select}` }
-                    ];
-                }
-            }
-            for (const item of allurls) {
-
-                const response = await $.ajax({
-                    url: item.Url,
-                    method: "GET",
-                    headers: {
-                        "Accept": "application/json; odata=verbose"
-                    }
-                });
-                count++;
-                let tempArray: any = [];
-                if (response.d.results !== undefined && response.d.results.length > 0) {
-                    AllTimeSpentDetails = AllTimeSpentDetails.concat(response.d.results);
-                    AllTimeSpentDetails.forEach((item: any) => {
-                        if (item.AdditionalTimeEntry !== null) {
-                            const data = JSON.parse(item.AdditionalTimeEntry);
-
-                            if (data !== undefined && data.length > 0) {
-                                data.forEach((timeData: any) => {
-                                    tempArray.push(timeData);
-                                });
-                            }
-                        }
-                    });
-                }
-                let TotalTimeData: number = 0;
-                if (tempArray.length > 0) {
-                    tempArray.forEach((tempItem: any) => {
-                        if (typeof tempItem.TaskTimeInMin === 'string') {
-                            const timeValue = Number(tempItem.TaskTimeInMin);
-
-                            if (timeValue > 0) {
-                                TotalTimeData += timeValue;
-                            }
-                        } else {
-                            if (tempItem.TaskTimeInMin > 0) {
-                                TotalTimeData += tempItem.TaskTimeInMin;
-                            }
-                        }
-                    });
-                }
-                if (TotalTimeData > 0) {
-                    FinalTotalTime = TotalTimeData / 60;
-                }
-
-            }
-        } catch (error) {
-            // console.error("Error:", error);
-        }
-        // console.log(FinalTotalTime);
-        return FinalTotalTime;
-    };
+   
     return (
         <>
             <div>

@@ -517,9 +517,14 @@ const CreateWS = (props: any) => {
         var AssignedToUser: any = [];
         var AllTeamMembers: any = [];
         var TeamLeaderws: any = [];
+        let LetestLevelData:any=[]
+        let Tasklevel:any =''
+        let TaskID  = ''
         var NewDate = ''
+        let componentDetails:any=[]
         WorstreamLatestId += index;
         var SharewebID = '';
+        let web = new Web(dynamicList.siteUrl);
         if (Task == undefined || Task == '')
             Task = SelectedTasks[0];
         if (TaskprofileId == '' || SelectedTasks.length > 0) {
@@ -534,6 +539,16 @@ const CreateWS = (props: any) => {
         // if (Task.SharewebTaskType != undefined && Task.SharewebTaskType.Title != undefined) {
         //     SharewebID = 'A' + Task.SharewebTaskLevel1No + '-W' + WorstreamLatestId;
         // }
+        componentDetails = await web.lists
+        .getById(AllItems.listId)
+        .items
+        .select("Id,Title")
+        .orderBy("Id", false)
+        .top(1)
+        .get()
+    console.log(componentDetails)
+    var LatestId = componentDetails[0].Id + 1;
+    LatestId += index;
         var Component: any = []
         var RelevantPortfolioIds: any = []
 
@@ -590,6 +605,20 @@ const CreateWS = (props: any) => {
                 }
             })
         }
+        AllItems?.subRows?.forEach((vall: any) => {
+            if (vall?.TaskType?.Title == 'Task' || vall?.SharewebTaskType?.Title == 'Task') {
+                LetestLevelData.push(vall)
+            }
+
+        })
+        if (LetestLevelData.length == 0) {
+            Tasklevel = 1
+            TaskID = props?.props?.TaskID + '-T' + Tasklevel + LatestId;
+        }
+        else {
+            Tasklevel = LetestLevelData.length + 1
+            TaskID = props?.props?.TaskID + '-T' + Tasklevel + LatestId;
+        }
         var CategoryID: any = []
         CategoriesData.map((category) => {
             if (category.Id != undefined) {
@@ -633,7 +662,7 @@ const CreateWS = (props: any) => {
             }
         }
 
-        let web = new Web(dynamicList.siteUrl);
+       
         let FeedBackItemArrayNew: any = [];
         if (item.Description != undefined) {
             let param: any = Moment(new Date().toLocaleString())
@@ -654,6 +683,9 @@ const CreateWS = (props: any) => {
             Categories: categoriesItem ? categoriesItem : null,
             SharewebCategoriesId: { "results": CategoryID },
             Priority_x0020_Rank: item.selectPriority,
+            PortfolioId: portFolio,
+            PortfolioTypeId: portFolioTypeId == undefined?null:portFolioTypeId[0]?.Id,
+            TaskTypeId: SharewebTasknewTypeId,
             ParentTaskId: AllItems.Id,
             ServicesId: { "results": RelevantPortfolioIds },
             Priority: item.Priority,
@@ -667,14 +699,18 @@ const CreateWS = (props: any) => {
             SharewebTaskLevel1No: AllItems.SharewebTaskLevel1No,
             AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
             Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
-            Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
+            Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] },
+            TaskID :TaskID,
+            TaskLevel : Tasklevel
+
 
         }).then((res: any) => {
             console.log(res);
             if (PopupType == 'CreatePopup') {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
-                res.data['SharewebTaskType'] = { Title: 'Workstream' }
+                res.data['SharewebTaskType'] = { Title: 'Workstream' },
+                res.data['PortfolioType'] =  {'Id':portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id },
                 res.data.AssignedTo = []
                 res.data.Responsible_x0020_Team = []
                 res.data.Team_x0020_Members = []
@@ -718,7 +754,8 @@ const CreateWS = (props: any) => {
             }
             else {
                 res.data['SiteIcon'] = AllItems.SiteIcon
-                res.data['listId'] = AllItems.listId
+                res.data['listId'] = AllItems.listId,
+                res.data['PortfolioType'] =  {'Id':portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id },
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
                 res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : null,
                     res.data['siteType'] = AllItems.siteType
@@ -755,6 +792,9 @@ const CreateWS = (props: any) => {
         if (TaskprofileId == '' || SelectedTasks.length > 0) {
             TaskprofileId = SelectedTasks[0].Id;
         }
+        let LetestLevelData:any=[]
+        let Tasklevel:any =''
+        let TaskID  = ''
         // if (Task.Component != undefined && Task.Component.length > 0) {
         //     SharewebID = 'CA' + Task.SharewebTaskLevel1No + '-W' + WorstreamLatestId;
         // }
@@ -764,6 +804,22 @@ const CreateWS = (props: any) => {
         // if (Task.SharewebTaskType != undefined && Task.SharewebTaskType.Title != undefined) {
         //     SharewebID = 'A' + Task.SharewebTaskLevel1No + '-W' + WorstreamLatestId;
         // }
+
+        AllItems?.subRows?.forEach((vall:any)=>{
+            if(vall?.TaskType?.Title == 'Workstream'|| vall?.SharewebTaskType?.Title == 'Workstream'){
+                LetestLevelData.push(vall)
+            }
+              
+        })
+    if(LetestLevelData.length  ==  0){
+        Tasklevel = 1
+        TaskID = props?.props?.TaskID + '-W'+ Tasklevel;
+    }
+    else{
+        Tasklevel = LetestLevelData.length + 1
+         TaskID = props?.props?.TaskID + '-W'+ Tasklevel;
+    }
+
 
         if (SharewebTasknewTypeId == 3 || SharewebTasknewTypeId == 5) {
             var SharewebID = '';
@@ -911,16 +967,16 @@ const CreateWS = (props: any) => {
 
 
         }
-        var Portfolio: any = []
-        var PortfolioType: any = []
-        if (Component != undefined && Component.length > 0) {
-            Portfolio.push(Component[0])
-            PortfolioType.push(1)
-        }
-        if (RelevantPortfolioIds != undefined && RelevantPortfolioIds.length > 0) {
-            Portfolio.push(RelevantPortfolioIds[0])
-            PortfolioType.push(2)
-        }
+        // var Portfolio: any = []
+        // var PortfolioType: any = []
+        // if (Component != undefined && Component.length > 0) {
+        //     Portfolio.push(Component[0])
+        //     PortfolioType.push(1)
+        // }
+        // if (RelevantPortfolioIds != undefined && RelevantPortfolioIds.length > 0) {
+        //     Portfolio.push(RelevantPortfolioIds[0])
+        //     PortfolioType.push(2)
+        // }
         let web = new Web(dynamicList.siteUrl);
         // if(props?.props?.ClientTime?.length>0){
         //     props.props.ClientTime=JSON.stringify(props?.props?.ClientTime) 
@@ -936,6 +992,7 @@ const CreateWS = (props: any) => {
             ParentTaskId: AllItems.Id,
             ServicesId: { "results": RelevantPortfolioIds },
             TaskTypeId: SharewebTasknewTypeId,
+            //ParentTaskId :portFolio,
             Priority: AllItems.Priority,
             Body: AllItems.Description,
             // DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
@@ -948,7 +1005,9 @@ const CreateWS = (props: any) => {
             ClientTime: props?.props?.ClientTime != null ? props?.props?.ClientTime : "",
             AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
             Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
-            Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
+            Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] },
+            TaskID :TaskID,
+            TaskLevel : Tasklevel
 
         }).then((res: any) => {
             console.log(res);
@@ -958,7 +1017,7 @@ const CreateWS = (props: any) => {
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
                 res.data['listId'] = AllItems.listId
                 res.data['Shareweb_x0020_ID'] = SharewebID;
-                res.data['PortfolioType'] = portFolioTypeId == undefined?null:portFolioTypeId[0]?.Id,
+                res.data['PortfolioType'] =  {'Id':portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id },
                 res.data['Portfolio'] = { 'Id': portFolio };
                 res.data.DueDate = res?.data?.DueDate != null ? Moment(res?.data?.DueDate).format("DD-MM-YYYY") : null,
                     res.data['siteType'] = AllItems.siteType
@@ -981,7 +1040,7 @@ const CreateWS = (props: any) => {
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
                 res.data['Shareweb_x0020_ID'] = SharewebID;
-                res.data['PortfolioType'] =  portFolioTypeId == undefined?null:portFolioTypeId[0]?.Id
+                res.data['PortfolioType'] =  {'Id':portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id },
                 res.data['Portfolio'] = { 'Id': portFolio };
                 res.data.DueDate = res?.data?.DueDate != null ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : null;
                 res.data['siteType'] = AllItems.siteType
@@ -1074,6 +1133,9 @@ const CreateWS = (props: any) => {
         var AssignedToUser: any = [];
         var AllTeamMembers: any = [];
         var TeamLeaderws: any = [];
+        let LetestLevelData:any=[]
+        let Tasklevel:any =''
+        let TaskID  = ''
         let web = new Web(dynamicList.siteUrl);
         let componentDetails: any = [];
         componentDetails = await web.lists
@@ -1091,7 +1153,20 @@ const CreateWS = (props: any) => {
         if (TaskprofileId == '' || SelectedTasks.length > 0) {
             TaskprofileId = SelectedTasks[0].Id;
         }
+        AllItems?.subRows?.forEach((vall: any) => {
+            if (vall?.TaskType?.Title == 'Task' || vall?.SharewebTaskType?.Title == 'Task') {
+                LetestLevelData.push(vall)
+            }
 
+        })
+        if (LetestLevelData.length == 0) {
+            Tasklevel = 1
+            TaskID = props?.props?.TaskID + '-T' + Tasklevel + LatestId;
+        }
+        else {
+            Tasklevel = LetestLevelData.length + 1
+            TaskID = props?.props?.TaskID + '-T' + Tasklevel + LatestId;
+        }
         if (SharewebTasknewTypeId == 2 || SharewebTasknewTypeId == 6) {
             var SharewebID = '';
             if (Task?.Portfolio_x0020_Type != undefined && Task?.Portfolio_x0020_Type == 'Component') {
@@ -1104,7 +1179,7 @@ const CreateWS = (props: any) => {
                 SharewebID = 'EA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
             }
             if (Task?.Component != undefined && Task.Component.length > 0) {
-                SharewebID = 'CA' + Task.SharewebTaskLevel1No + 'T' + LatestId;
+                SharewebID = 'CA' + Task.SharewebTaskLevel1No + '-T' + LatestId;
             }
             if (Task?.Component == undefined && Task.Services == undefined) {
                 SharewebID = 'T' + LatestId;
@@ -1256,12 +1331,15 @@ const CreateWS = (props: any) => {
                 ClientCategoryId: { "results": InheritClientCategory },
                 SiteCompositionSettings: props?.props?.SiteCompositionSettings != undefined ? props?.props?.SiteCompositionSettings : "",
                 ClientTime: props?.props?.ClientTime != null ? props?.props?.ClientTime : "",
+                TaskID :TaskID,
+                TaskLevel : Tasklevel
+    
             }).then((res: any) => {
                 console.log(res);
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['Shareweb_x0020_ID'] = SharewebID;
-                res.data['PortfolioType'] = portFolioTypeId == undefined?null:portFolioTypeId[0]?.Id,
+                res.data['PortfolioType'] =  {'Id':portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id },
                 res.data['Portfolio'] = { 'Id': portFolio };
                 res.data['TaskType'] = { 'Id': res.data.TaskTypeId };
                 // res.DueDate = NewDate != '' && NewDate != undefined ? NewDate : undefined,
@@ -1646,7 +1724,7 @@ const CreateWS = (props: any) => {
                                                             ng-mouseleave="ComponentTitle.STRING='';" title="{{ComponentTitle.STRING}}">
 
                                                             <a className="hreflink" target="_blank"
-                                                                ng-href="{{CuurentSiteUrl}}/SitePages/Portfolio-Profile.aspx?taskId={{item.Id}}">{cat.Title}</a>
+                                                                href="{{CuurentSiteUrl}}/SitePages/Portfolio-Profile.aspx?taskId={{item.Id}}">{cat.Title}</a>
                                                             <a className="hreflink" ng-click="removeSmartComponent(item.Id)">
                                                                 <span className='svg__iconbox svg__icon--cross'></span>
                                                             </a>
@@ -1802,6 +1880,9 @@ const CreateWS = (props: any) => {
                             const { Priority, DueDate, ItemRank, Description } = data;
                             return (
                                 <div>
+                                     <div className="border-bottom clearfix">
+                                       {(inputFields.length > 0) ? <a className="d-flex justify-content-end" onClick={removeInputFields}><span className='svg__iconbox svg__icon--cross'></span><span>Clear section</span> </a> : ''}
+                                   </div>
 
                                     <div className="col-sm-8 pad0">
                                         <label className="full-width"></label>
@@ -1940,7 +2021,7 @@ const CreateWS = (props: any) => {
 
 
 
-                                    {(inputFields.length > 0) ? <a className="pull-left" onClick={removeInputFields}><span className='svg__iconbox svg__icon--cross'></span></a> : ''}
+                                    {/* {(inputFields.length > 0) ? <a className="pull-left" onClick={removeInputFields}><span className='svg__iconbox svg__icon--cross'></span></a> : ''} */}
 
 
 

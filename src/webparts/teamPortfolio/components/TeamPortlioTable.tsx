@@ -180,7 +180,7 @@ function TeamPortlioTable(SelectedProp: any) {
         let web = new Web(ContextValue.siteUrl);
         let PortFolioType = [];
         PortFolioType = await web.lists
-            .getById('c21ab0e4-4984-4ef7-81b5-805efaa3752e')
+            .getById(ContextValue.PortFolioTypeID)
             .items.select(
                 "Id",
                 "Title",
@@ -195,7 +195,7 @@ function TeamPortlioTable(SelectedProp: any) {
         let taskTypeData = [];
         let typeData: any = [];
         taskTypeData = await web.lists
-            .getById('21b55c7b-5748-483a-905a-62ef663972dc')
+            .getById(ContextValue.TaskTypeID)
             .items.select(
                 'Id',
                 'Level',
@@ -249,7 +249,7 @@ function TeamPortlioTable(SelectedProp: any) {
             console.log("Fetching portfolio icons...");
 
             // Fetching the field data
-            const field = await new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP")
+            const field = await new Web(ContextValue.siteUrl)
                 .lists.getById(ContextValue?.MasterTaskListID)
                 .fields.getByTitle(ItemTypeColumn)
                 .get();
@@ -1576,29 +1576,32 @@ function TeamPortlioTable(SelectedProp: any) {
     const Call = (res: any) => {
         setIsComponent(false);
         setIsTask(false);
+        setIsOpenActivity(false)
+        setIsOpenWorkstream(false)
+        setActivityPopup(false)
         copyDtaArray?.forEach((val: any) => {
-            if (res.data.PortfolioId == val.Id) {
+            if (res?.data?.PortfolioId == val.Id) {
                 val.subRows = val.subRows === undefined ? [] : val.subRows;
 
                 val.subRows.push(res.data)
             }
-            else if (val.subRows != undefined && val.subRows.length > 0) {
+            else if (val?.subRows != undefined && val?.subRows.length > 0) {
                 val.subRows?.forEach((ele: any) => {
-                    if (res.data.PortfolioId == ele.Id) {
+                    if (res?.data?.PortfolioId == ele?.Id) {
                         ele.subRows = ele.subRows === undefined ? [] : ele.subRows;
                         ele.subRows.push(res.data)
 
                     }
                     else {
                         ele.subRows?.forEach((elev: any) => {
-                            if (res.data.PortfolioId == elev.Id) {
+                            if (res?.data?.PortfolioId == elev.Id) {
                                 elev.subRows = elev.subRows === undefined ? [] : elev.subRows;
                                 elev.subRows.push(res.data)
 
                             }
                             else {
                                 elev.subRows?.forEach((child: any) => {
-                                    if (res.data.PortfolioId == child.Id) {
+                                    if (res?.data?.PortfolioId == child?.Id) {
                                         child.subRows = child.subRows === undefined ? [] : child.subRows;
 
                                         child.subRows.push(res.data)
@@ -1607,7 +1610,7 @@ function TeamPortlioTable(SelectedProp: any) {
                                     else {
                                         {
                                             child.subRows?.forEach((Sub: any) => {
-                                                if (res.data.PortfolioId == Sub.Id) {
+                                                if (res?.data?.PortfolioId == Sub.Id) {
                                                     Sub.subRows = Sub.subRows === undefined ? [] : Sub.subRows;
 
                                                     Sub.subRows.push(res.data)
@@ -1627,49 +1630,65 @@ function TeamPortlioTable(SelectedProp: any) {
         renderData = [];
         renderData = renderData.concat(copyDtaArray)
         refreshData();
-        setIsOpenActivity(false)
-        setIsOpenWorkstream(false)
-        setActivityPopup(false)
+       
     }
-    const addActivity = () => {
-        if (checkedList?.TaskType === undefined) {
-            setActivityPopup(true);
-        }
-        if (checkedList?.TaskType?.Id == 1) {
-            setIsOpenWorkstream(true);
-        }
-        if (checkedList?.TaskType?.Id == 3) {
-            setActivityPopup(true);
-
-        }
-        if (checkedList?.TaskType?.Id == 2) {
-
-            alert("You can not create ny item inside Task")
-        }
-    }
-    const closeActivity = () => {
-        setActivityPopup(false)
-    }
-    const CreateActivityPopup = (type: any) => {
+   // new change////
+   const CreateActivityPopup = (type: any) => {
+    if (checkedList?.TaskType === undefined) {
         checkedList.NoteCall = type
         setIsOpenActivity(true)
+       
     }
-    const onRenderCustomHeaderMain = () => {
-        return (
-            <div className="d-flex full-width pb-1">
-                <div
-                    style={{
-                        marginRight: "auto",
-                        fontSize: "20px",
-                        fontWeight: "600",
-                        marginLeft: "20px",
-                    }}
-                >
-                    <span>{`Create Component `}</span>
-                </div>
+    if (checkedList?.TaskType?.Id == 1) {
+        checkedList.NoteCall = type
+        setIsOpenWorkstream(true);
+    }
+    if (checkedList?.TaskType?.Id == 3) {
+        checkedList.NoteCall = type
+        setIsOpenActivity(true);
+
+    }
+    if (checkedList?.TaskType?.Id == 2) {
+
+        alert("You can not create ny item inside Task")
+    }
+}
+const closeActivity = () => {
+    setActivityPopup(false)
+}
+const addActivity = (type: any) => {
+    if (checkedList?.TaskType?.Id === 3 || checkedList?.TaskType == undefined) {
+    checkedList.NoteCall = type
+    setActivityPopup(true);
+    }
+    if(checkedList?.TaskType?.Id == 1){
+        checkedList.NoteCall = 'Workstream'
+        setIsOpenWorkstream(true);
+    }
+    if (checkedList?.TaskType?.Id == 2) {
+
+        alert("You can not create ny item inside Task")
+    }
+   
+}
+const onRenderCustomHeaderMain = () => {
+    return (
+        <div className="d-flex full-width pb-1">
+            <div
+                style={{
+                    marginRight: "auto",
+                    fontSize: "20px",
+                    fontWeight: "600",
+                    marginLeft: "20px",
+                }}
+            >
+                <span>{`Create Component `}</span>
             </div>
-        );
-    };
+        </div>
+    );
+};
+// new change end////
+//-------------------------------------------------------------End---------------------------------------------------------------------------------
     //-------------------------------------------------------------End---------------------------------------------------------------------------------
     return (
         <div id="ExandTableIds" style={{}}>

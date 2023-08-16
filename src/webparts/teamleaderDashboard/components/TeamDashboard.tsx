@@ -1,32 +1,25 @@
 import React from 'react'
 import $ from 'jquery';
-import axios from 'axios';
-import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import "@pnp/sp/sputilities";
-import { IEmailProperties } from "@pnp/sp/sputilities";
-import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
-import { Accordion, Card, Button } from "react-bootstrap";
-import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup";
 import * as Moment from "moment";
 import pnp, { sp, Web } from "sp-pnp-js";
 import * as globalCommon from "../../../globalComponents/globalCommon";
-import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
-import { Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input, } from "reactstrap";
-import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaCaretDown, FaCaretRight, FaSort, FaSortDown, FaSortUp, } from "react-icons/fa";
-import { useTable, useSortBy, useFilters, useExpanded, usePagination, HeaderGroup, } from "react-table";
-import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewTool/components/filters";
 import PageLoader from '../../../globalComponents/pageLoader';
 import TeamLeaderHeader from '../../../globalComponents/TeamLeaderHeaderSection/TeamLeaderHeader';
 import TeamLeaderPieChart from '../../../globalComponents/TeamLeaderHeaderSection/TeamLeaderPieChart';
 var taskUsers: any = [];
 var AllTeamLeadersGroup: any = [];
 var siteConfig: any = [];
-var isTeamLeader=false;
-var AllTaskTimeEntries: any = [];
+var AllteamMemberTask:any=[];
+var AllteamMemberTaskPieChart:any=[]
+var allTaskteamleader:any=[];
+var allTaskteamleaderPieChart:any=[];
+
 var AllTasks: any = [];
 var timesheetListConfig: any = [];
 var currentUserId: '';var currentUser: any = [];
-var today: any = [];
+
+var currentuserdatabackup:any;
 var backupTaskArray: any = {
     AllAssignedTasks: [],
     workingTodayTasks: [],
@@ -36,17 +29,18 @@ var backupTaskArray: any = {
     allTasks: []
 };
 var AllListId: any = {}
-var selectedInlineTask: any = {};
+
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
-var selectedLead:any={};
+
+const mycontext:any = React.createContext({AllListId:{},context:{}});
 function TeamDashboard(props:any) {
-  const [currentUserData, setCurrentUserData]: any = React.useState({});
-  const [AllTeamMembers, setAllTeamMembers] = React.useState([]);
-  const [AllTeamLeaders, setAllTeamLeaders] = React.useState([]);
-  const [selectedTeamLeader, setSelectedTeamLeader] = React.useState({});
-  const [showContent, setShowContent] = React.useState(false);
-  const [pageLoaderActive, setPageLoader] = React.useState(false)
+  const [currentUserData, setCurrentUserData]: any = React.useState<any>({});
+  const [currentUserTask,setcurrentUserTask]=React.useState([])
+  const [pieChartData, setPieChartData] = React.useState([]);
+const [selectedMember, setSelectedMember] :any= React.useState();
+const [pageLoaderActive, setPageLoader] = React.useState(false)
+
 
   React.useEffect(() => {
     try {
@@ -82,13 +76,14 @@ function TeamDashboard(props:any) {
     }
 
 }, []);
-// Current User ,Task User and Grouped User
+
 const getCurrentUserDetails = async () => {
     try {
         currentUserId = props?.props?.pageContext?.legacyPageContext?.userId
         taskUsers = await loadTaskUsers();
         let TeamLeaders: any=[];
-       
+    //    var currentUser= taskUsers?.filter((item:any)=>item.Id==currentUserId)
+
         taskUsers?.map((item: any) => {
             item.isAdmin = false;
               if(item?.TeamLeader!=undefined){
@@ -104,7 +99,9 @@ const getCurrentUserDetails = async () => {
               }
             if (currentUserId == item?.AssingedToUser?.Id) {
                 currentUser = item;
+                currentUser.isLead=false;
                 setCurrentUserData(item);
+                currentuserdatabackup=item
             }
             item.expanded = false;
         })
@@ -123,66 +120,114 @@ const getCurrentUserDetails = async () => {
                 return 0;
             });
             if(Leader?.Id==currentUser?.Id){
-                isTeamLeader=true;
+                currentUser.isLead=true;
+                // isTeamLeader=true;
+                Leader.isLead=true;
                 Leader={...currentUser,...Leader}
-                selectedLead=Leader;
-                setSelectedTeamLeader(Leader);
-                setPageLoader(true);
+                let leadercOPY={...Leader}
+                // selectedLead=Leader;
+                setCurrentUserData(leadercOPY);
+                currentuserdatabackup=leadercOPY
+                // setSelectedTeamLeader(Leader);
+                // setPageLoader(true);
             }
         })
-        setShowContent(isTeamLeader)
-        if(isTeamLeader==false){
-          alert("You are not authorized to visit this page.")
-          setPageLoader(false);
-        }
+        // setShowContent(isTeamLeader)
+        // if(isTeamLeader==false){
+        //   alert("You are not authorized to visit this page.")
+        //   setPageLoader(false);
+        // }
         
         GetMetaData();
     } catch (error) {
         console.log(error)
     }
     console.log(AllTeamLeadersGroup);
-    console.log(selectedTeamLeader);
+   
+    // console.log(selectedLead);
   }
-const getTeamLeadsMember=(TeamLead:any)=>{
-    let completeTeam: any=[];
-    if(TeamLead?.Id!=undefined){
-        completeTeam.push(TeamLead?.AssingedToUser?.Id);
-        if(TeamLead?.childs?.length>0){
-            TeamLead?.childs?.map((child:any)=>{
-                completeTeam.push(child?.AssingedToUser?.Id)
-            }) 
-        }
-    }
-    let teamsTask:any={};
-    console.log(completeTeam);
-    setAllTeamMembers(completeTeam);
-    if(AllTasks?.length>0 && completeTeam?.length>0&& isTeamLeader==true){
-        AllTasks?.map((task:any)=>{
-            let isTeamsTask =false;
-            completeTeam?.map((teamMemberId:any)=>{
-                let userAssigned= task?.AssignedToIds?.includes(teamMemberId);
-                if(userAssigned){
-                    if(teamsTask[teamMemberId]==undefined){
-                        teamsTask[teamMemberId]=[task];
-                    }else{
-                        teamsTask[teamMemberId].push(task);
-                    }
-                }
-                isTeamsTask=userAssigned;
-            })
-            if(isTeamsTask){
-                if(teamsTask["AllTasks"]==undefined){
-                    teamsTask["AllTasks"]=[task];
-                }else{
-                    teamsTask["AllTasks"].push(task);
-                }
-            }
-        })
-    }
-    setPageLoader(false);
-    console.log(teamsTask);
+// const getTeamLeadsMember=(TeamLead:any)=>{
+//     let completeTeam: any=[];
+//     if(TeamLead?.Id!=undefined){
+//         completeTeam.push(TeamLead?.AssingedToUser?.Id);
+//         if(TeamLead?.childs?.length>0){
+//             TeamLead?.childs?.map((child:any)=>{
+//                 completeTeam.push(child?.AssingedToUser?.Id)
+//             }) 
+//         }
+//     }
+//     let teamsTask:any={};
+//     console.log(completeTeam);
+//     setAllTeamMembers(completeTeam);
+//     if(AllTasks?.length>0 && completeTeam?.length>0&& isTeamLeader==true){
+//         AllTasks?.map((task:any)=>{
+//             let isTeamsTask =false;
+//             completeTeam?.map((teamMemberId:any)=>{
+//                 let userAssigned= task?.AssignedToIds?.includes(teamMemberId);
+//                 if(userAssigned){
+//                     if(teamsTask[teamMemberId]==undefined){
+//                         teamsTask[teamMemberId]=[task];
+//                     }else{
+//                         teamsTask[teamMemberId].push(task);
+//                     }
+//                 }
+//                 isTeamsTask=userAssigned;
+//             })
+//             if(isTeamsTask){
+//                 if(teamsTask["AllTasks"]==undefined){
+//                     teamsTask["AllTasks"]=[task];
+//                 }else{
+//                     teamsTask["AllTasks"].push(task);
+//                 }
+//             }
+//         })
+//     }
+//     setPageLoader(false);
+//     console.log(teamsTask);
+// }
+const allCurrentUserTask=()=>{
+console.log(currentuserdatabackup)
+console.log(currentUserData)
+// let allTaskteamleader:any=[];
+// let AllteamMemberTask:any=[];
+let LoginUsertask=AllTasks.filter((items:any)=>items?.AssignedToIds?.find((id:any)=>id==currentuserdatabackup?.AssingedToUserId))
+let piechartloginUserDATA=AllTasks.filter((items:any)=>items?.AllTaskMember?.find((id:any)=>id==currentuserdatabackup?.AssingedToUserId))
+if(currentuserdatabackup.isLead){
+    currentuserdatabackup?.childs?.map((childdata:any)=>{
+     
+    let child=AllTasks.filter((items:any)=>items?.AssignedToIds?.find((id:any)=>id==childdata?.AssingedToUserId)) 
+    AllteamMemberTask=AllteamMemberTask.concat(child)
+
+    let childPieChart=AllTasks.filter((items:any)=>items?.AllTaskMember?.find((id:any)=>id==childdata?.AssingedToUserId))
+    AllteamMemberTaskPieChart=AllteamMemberTaskPieChart.concat(childPieChart)
+    })
 }
+console.log(AllteamMemberTask)
+console.log(LoginUsertask)
+allTaskteamleader=allTaskteamleader.concat(LoginUsertask,AllteamMemberTask)
+allTaskteamleaderPieChart=allTaskteamleaderPieChart.concat(piechartloginUserDATA,AllteamMemberTaskPieChart)
+    setcurrentUserTask(allTaskteamleader)
+    setPageLoader(false)
+    setPieChartData(allTaskteamleaderPieChart)
+}
+React.useMemo(()=>{
+console.log(selectedMember)
+if(selectedMember!=null||undefined){
+    if(selectedMember.isLead!=true){
+        let selectedteamMemberpieChart=AllteamMemberTaskPieChart?.filter((items:any)=>items?.AllTaskMember?.find((id:any)=>id==selectedMember?.AssingedToUserId))
+        let selectedmemberAllTask=AllteamMemberTask?.filter((items:any)=>items?.AssignedToIds?.find((id:any)=>id==selectedMember?.AssingedToUserId))
+       setcurrentUserTask(selectedmemberAllTask)
+    
+       setPieChartData(selectedteamMemberpieChart)
+    }else{
+        setcurrentUserTask(AllteamMemberTask) 
+        setPieChartData(AllteamMemberTaskPieChart) 
+    }
+}
+
+},[selectedMember])
 const loadTaskUsers = async () => {
+    setPageLoader(true)
   let taskUser;
   if (AllListId?.TaskUsertListID != undefined) {
       try {
@@ -260,19 +305,20 @@ const LoadAllSiteTasks = function () {
   let web = new Web(AllListId?.siteUrl);
   let arraycount = 0;
   try {
-      if (currentUserId != undefined && siteConfig?.length > 0&&showContent) {
+      if (currentUserId != undefined && siteConfig?.length > 0) {
 
           siteConfig.map(async (config: any) => {
               if (config.Title != "SDC Sites") {
                   let smartmeta = [];
                   await web.lists
                       .getById(config.listId)
-                      .items.select("ID", "Title", "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "EstimatedTimeDescription", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Body", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified")
+                      .items.select("ID", "Title", "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Body", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified")
                       .expand("Team_x0020_Members", "Approver", "ParentTask", "AssignedTo", "SharewebCategories", "Author", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor")
                       .getAll().then((data: any) => {
                           smartmeta = data;
                           smartmeta.map((task: any) => {
                               task.AllTeamMember = [];
+                              task.AllTaskMember=[];
                               task.siteType = config.Title;
                               task.bodys = task.Body != null && task.Body.split('<p><br></p>').join('');
                               task.listId = config.listId;
@@ -309,6 +355,7 @@ const LoadAllSiteTasks = function () {
                               task.AssignedToIds = [];
                               task?.AssignedTo?.map((assignedUser: any) => {
                                   task.AssignedToIds.push(assignedUser.Id)
+                                  task.AllTaskMember.push(assignedUser.Id)
                                   taskUsers?.map((user: any) => {
                                       if (user.AssingedToUserId == assignedUser.Id) {
                                           if (user?.Title != undefined) {
@@ -329,8 +376,10 @@ const LoadAllSiteTasks = function () {
                                   }
                               })
 
+
                               task?.Team_x0020_Members?.map((taskUser: any) => {
                                   task.TeamMembersId.push(taskUser.Id);
+                                  task.AllTaskMember.push(taskUser.Id)
                                   var newuserdata: any = {};
                                   taskUsers?.map((user: any) => {
                                       if (user.AssingedToUserId == taskUser.Id) {
@@ -347,6 +396,11 @@ const LoadAllSiteTasks = function () {
                                       }
                                   });
                               });
+                              task.ResponsibleTeamMember=[]
+                              task.Responsible_x0020_Team?.map((items:any)=>{
+                                task.ResponsibleTeamMember.push( items.Id)
+                                task.AllTaskMember.push(items.Id)
+                              })
 
                               AllSiteTasks.push(task)
                           });
@@ -355,8 +409,10 @@ const LoadAllSiteTasks = function () {
                   let currentCount = siteConfig?.length;
                   if (arraycount === currentCount) {
                       AllTasks = AllSiteTasks;
-                      backupTaskArray.assignedApproverTasks = approverTask;
-                      getTeamLeadsMember(selectedLead);
+                    
+                    //   backupTaskArray.assignedApproverTasks = approverTask;
+                      allCurrentUserTask()
+                    //   getTeamLeadsMember(selectedLead);
                       // setAllPriorityTasks(sortOnCreated(AllPriority))
                       // setAllImmediateTasks(sortOnCreated(AllImmediates));
                       // setAssignedApproverTasks(sortOnCreated(approverTask));
@@ -393,19 +449,19 @@ const LoadAllSiteTasks = function () {
       console.log(e)
   }
 };
-const sortOnCreated = (Array: any) => {
-  Array.sort((a: any, b: any) => new Date(b.Created).getTime() - new Date(a.Created).getTime());
-  return Array;
-}
-const checkUserExistence = (item: any, Array: any) => {
-  let result = false;
-  Array?.map((checkItem: any) => {
-      if (checkItem?.Title == item) {
-          result = true;
-      }
-  })
-  return result;
-}
+// const sortOnCreated = (Array: any) => {
+//   Array.sort((a: any, b: any) => new Date(b.Created).getTime() - new Date(a.Created).getTime());
+//   return Array;
+// }
+// const checkUserExistence = (item: any, Array: any) => {
+//   let result = false;
+//   Array?.map((checkItem: any) => {
+//       if (checkItem?.Title == item) {
+//           result = true;
+//       }
+//   })
+//   return result;
+// }
 const getComponentasString = function (results: any) {
   var component = "";
   $.each(results, function (cmp: any) {
@@ -416,16 +472,28 @@ const getComponentasString = function (results: any) {
 // Region End
   return (
 <>
-{showContent?   <div className="Dashboardsecrtion">
+<mycontext.Provider value={{...mycontext,AllListId:AllListId,context:props?.props?.Context}}>
+  <div className="Dashboardsecrtion">
             <div className="dashboard-colm">
               <aside className="sidebar">
                 <section className="sidebar__section sidebar__section--menu">
                   <nav className="nav__item">
                     <ul className="nav__list">
                       <li id="DefaultViewSelectId" className="nav__item ">
-                      <div className="nav__text">
-                         Test
+                      <div className="nav__text" onClick={()=>setSelectedMember(currentUserData)}>
+                    {currentUserData.Title}
+                    </div>
+                    
+                    {currentUserData?.isLead && currentUserData?.childs?.length>0 && currentUserData?.childs?.map((teammember:any)=>{
+                       return(
+                        <div onClick={()=>setSelectedMember(teammember)}>
+                            {teammember.Title}
                         </div>
+                       ) 
+                    })
+                    
+                    }
+                 
                       </li>
                      
                     </ul>
@@ -436,20 +504,21 @@ const getComponentasString = function (results: any) {
               <div className="dashboard-content ps-2 full-width">
                 <article className="row">
                <div className="col-md-12">
-                <TeamLeaderHeader/>
+                <TeamLeaderHeader allTaskData={currentUserTask}selectedMember={selectedMember} AllListId={AllListId}taskUsers={taskUsers}/>
                </div>
                <div className="col-md-12">
-                <TeamLeaderPieChart />
+                <TeamLeaderPieChart allTaskData={pieChartData}/>
                </div>
                 </article>
               </div>
              
             </div>
-          </div>:
-          <div>Access Denied</div>        }
+          </div>      
           {pageLoaderActive ? <PageLoader /> : ''}
+          </mycontext.Provider>
           </>
   )
 }
 
 export default TeamDashboard
+export  {mycontext}
