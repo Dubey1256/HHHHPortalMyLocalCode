@@ -1080,7 +1080,7 @@ const CreateActivity = (props: any) => {
                             res.data['listId'] = value?.listId
                             res.data['SharewebTaskType'] = { Title: 'Activities' }
                             res.data['Shareweb_x0020_ID'] = SharewebID;
-                            res.data['PortfolioType'] = portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
+                            res.data['PortfolioType'] =  {'Id':portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id },
                                 res.data['Portfolio'] = { 'Id': portFolio };
                             res.data['TaskType'] = { 'Id': res.data.TaskTypeId };
                             // res.data['TaskType'] =
@@ -1305,7 +1305,7 @@ const CreateActivity = (props: any) => {
                             data['SiteIcon'] = value.Item_x005F_x0020_Cover?.Url
                             data['SharewebTaskType'] = { Title: 'Task' }
                             res.data['Shareweb_x0020_ID'] = SharewebID;
-                            res.data['PortfolioType'] = portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
+                            res.data['PortfolioType'] =  {'Id':portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id },
                                 res.data['Portfolio'] = { 'Id': portFolio };
                             res.data['TaskType'] = { 'Id': res.data.TaskTypeId };
                             data.DueDate = date ? Moment(date).format("MM-DD-YYYY") : null,
