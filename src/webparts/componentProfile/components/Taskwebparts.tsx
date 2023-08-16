@@ -191,7 +191,7 @@ let workstrim = 0;
 let task = 0;
 let AllActivitysData: any = [];
 let AllWorkStreamData: any = [];
-
+let ProjectData: any = [];
 export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   if (countaa == 0) {
     ParentDs = props?.Id
@@ -611,7 +611,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
             }
           </span>
         </div>
-        <Tooltip ComponentId={1272} />
+        <Tooltip ComponentId={1272}  IsServiceTask={IsUpdated == "Service" ? true : false} />
       </div>
     );
   };
@@ -657,7 +657,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         >
           <span>{`Create  ${IsUpdated} item in ${MeetingItems[0]?.PortfolioStructureID} ${MeetingItems[0]?.Title}`}</span>
         </div>
-        <Tooltip ComponentId="1746" />
+        <Tooltip ComponentId="1746" IsServiceTask={IsUpdated == "Service" ? true : false} />
       </div>
     );
   };
@@ -845,6 +845,23 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     }
     makeFinalgrouping();
   };
+  const getProjectData = async () => {
+    let web = new Web(NextProp.siteUrl);
+    ProjectData = await web.lists
+      .getById(NextProp.MasterTaskListID)
+      .items.select(
+        "Item_x0020_Type",
+        "Title",
+        "Id",
+        "DueDate",
+        "WebpartId",
+        "Body"
+      )
+      .filter("Item_x0020_Type  eq 'Project'")
+      .get();
+  };
+
+
 
   const LoadAllSiteTasks = function () {
     var Response: any = [];
@@ -974,6 +991,31 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
             map(AllTasks, (result: any) => {
               result.Id = result.Id != undefined ? result.Id : result.ID;
               result.TeamLeaderUser = [];
+              if (ProjectData.length !== 0) {
+                ProjectData.forEach((project:any) => {
+                  if (project?.Id === result?.Project?.Id) {
+                    let ProjectTitles = result?.Project?.Title;
+                    result.ProjectTitle = ProjectTitles.split(' ')[0];
+
+                    result.ProjectId = result?.Project?.Id;
+              
+                    result.joinedData = ProjectData
+                      .filter((elem:any) => elem?.Id === result?.Project?.Id)
+                      .map((elem:any) => {
+                        const title = elem.Title || '';
+                        const body = elem.Body ? elem.Body.replace(/<[^>]+>/g, '') : '';
+                        const dueDate = elem.DueDate ? new Date(elem.DueDate).toLocaleDateString() : '';              
+                        const formattedData = [];
+                        if (title) formattedData.push(`Title: ${title}`);
+                        if (body) formattedData.push(`Description: ${body}`);
+                         if (dueDate) formattedData.push(`Due Date: ${dueDate}`);
+              
+                        return formattedData.join('\n');
+                      })
+                      .join('\n\n');
+                  }
+                });
+              }
               result.AllTeamName =
                 result.AllTeamName === undefined ? "" : result.AllTeamName;
               result.chekbox = false;
@@ -1413,7 +1455,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       }
       // do whatever
     }
-
+    await getProjectData();
     LoadAllSiteTasks();
   };
   //const [IsUpdated, setIsUpdated] = React.useState(SelectedProp.SelectedProp);
@@ -2589,8 +2631,8 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       }
 
     });
-    if (props.ClientCategory.results.length != 0) {
-      props.ClientCategory.results.map((terms: any) => {
+    if (props?.ClientCategory?.results?.length != 0) {
+      props?.ClientCategory?.results.map((terms: any) => {
 
         myarray2.push(terms);
       });
@@ -4869,6 +4911,21 @@ var PortfolioLevelNum: any = 0;
         header: "",
       },
       {
+        accessorFn: (row) => row?.ProjectTitle,
+        cell: ({ row }) => (
+          <>
+            {row?.original?.ProjectTitle != (null || undefined) ?
+              <span ><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${NextProp.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
+                 <ReactPopperTooltip ShareWebId={row?.original?.ProjectTitle} projectToolShow={true} row={row}/></a></span>
+              : ""}
+          </>
+        ),
+        id: 'ProjectTitle',
+        placeholder: "Project",
+        header: "",
+        size: 100,
+      },
+      {
         accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title).join("-"),
         cell: ({ row }) => (
           <>
@@ -5381,12 +5438,12 @@ var PortfolioLevelNum: any = 0;
               <ExpndTable prop={expndpopup} prop1={tablecontiner} />
             </a>
             <a>
-              <Tooltip ComponentId="5756" />
+              <Tooltip ComponentId="5756" IsServiceTask={IsUpdated == "Service" ? true : false} />
             </a>
           </span>
 
         </div>
-        <div className="col-sm-12 p-0 smart mt-1 ">
+        <div className="col-sm-12 p-0 smart ">
           <div className="wrapper">
             <table
               className="SortingTable searchCrossIcon groupTable  table table-hover"

@@ -1056,7 +1056,7 @@ const ProjectManagementMain = (props: any) => {
         cell: ({ row, getValue }) => (
           <>
             <span className="d-flex">
-              <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />
+              <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} AllListId={AllListId}/>
             </span>
           </>
         ),

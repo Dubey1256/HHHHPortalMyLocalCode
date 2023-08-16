@@ -68,11 +68,10 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
             webServerRelativeUrl: this.props.PropsValue.siteUrl.toLowerCase().split('.com')[1],
             PortfolioTypeArray: [],
             PortfolioTypeId: 1,
-            defaultPortfolioType: (this.props.PortfolioType === undefined || this.props.PortfolioType === '') ? 'Component' : this.props.PortfolioType,
+            defaultPortfolioType: (this.props.PortfolioType === undefined || this.props.PortfolioType === '') ? (this.props?.SelectedItem?.PortfolioType?.Id !=undefined ?this.props?.SelectedItem?.PortfolioType?.Title: 'Component') : this.props.PortfolioType,
         }
         this.getPortfolioType();
         this.LoadSPComponents();
-        this.Load();
 
     }
 
@@ -80,19 +79,19 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
         let SPDetails: any = [];
         let filtertitle = this.state.PortfolioType.split(' ')[0];
         this.Portfolio_x0020_Type = filtertitle;
-        var select: any = "Title,Id,PortfolioType&$filter=Portfolio_x0020_Type eq '" + filtertitle + "'"
-        SPDetails = await globalCommon.getData(this.state.PropValue.siteUrl, this.state.PropValue.MasterTaskListID, select);
-        console.log(SPDetails);
-        var tets: any = [];
-        SPDetails.forEach((obj: any) => {
-            tets.push(obj.Title);
-        })
+        // var select: any = "Title,Id,PortfolioType&$filter=Portfolio_x0020_Type eq '" + filtertitle + "'"
+        // SPDetails = await globalCommon.getData(this.state.PropValue.siteUrl, this.state.PropValue.MasterTaskListID, select);
+        // console.log(SPDetails);
+        // var tets: any = [];
+        // SPDetails.forEach((obj: any) => {
+        //     tets.push(obj.Title);
+        // })
 
-        this.setState({
-            tempr: tets,
-            AllComponents: SPDetails,
+        // this.setState({
+        //     tempr: tets,
+        //     AllComponents: SPDetails,
 
-        }, () => console.log(this.state.AllComponents))
+        // }, () => console.log(this.state.AllComponents))
     }
     // private.CheckPortfolioType () =>{
 
@@ -159,6 +158,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
 
         }
         this.setState({ PortfolioTypeArray: PortFolioType });
+        this.Load();
     };
 
     // private closeModal(e: any) {

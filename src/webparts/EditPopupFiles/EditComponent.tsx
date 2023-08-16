@@ -23,9 +23,10 @@ import { EditorState } from "draft-js";
 import HtmlEditorCard from "../../globalComponents/HtmlEditor/HtmlEditor";
 import TeamConfigurationCard from "./TeamConfigurationPortfolio";
 import Tooltip from "../../globalComponents/Tooltip";
-import ImagesC from "./ImageInformation";
+// import ImagesC from "./ImageInformation";
 import VersionHistoryPopup from "../../globalComponents/VersionHistroy/VersionHistory";
 import SiteCompositionComponent from "./PortfolioSiteCompsition";
+import ImagesC from "./ImageInformation";
 var PostTechnicalExplanations = "";
 var PostDeliverables = "";
 var PostShort_x0020_Description_x0020_On = "";
@@ -104,6 +105,12 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
   const [AllCategoryData, setAllCategoryData] = React.useState([]);
   const [categorySearchKey, setCategorySearchKey] = React.useState('');
   const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
+  const[imagetab,setImagetab]=React.useState(false);
+
+
+  function imageta(){
+    setImagetab(true);
+  }
   // End of Status
   const setModalIsOpenToTrue = (e: any) => {
     setModalIsOpen(true);
@@ -1553,7 +1560,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
             </li>
           </ul></div>
 
-          <div className="feedbkicon"> <Tooltip /> </div>
+          <div className="feedbkicon"> <Tooltip  ComponentId="1258" IsServiceTask={EditData?.Portfolio_x0020_Type == "Service" ? true : false} /> </div>
         </div>
       </>
     );
@@ -2321,6 +2328,10 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                     role="tab"
                     aria-controls="image"
                     aria-selected="false"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      imageta()
+                    }}
                   >
                     IMAGE INFORMATION
                   </button>
@@ -3779,15 +3790,24 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                   </div>
                 </div>
                 <div
-                  className="tab-pane"
-                  id="image"
-                  role="tabpanel"
-                  aria-labelledby="image-tab"
-                >
-                  <div className="col-sm-12">
-                    <ImagesC EditdocumentsData={EditData} setData={setEditData} AllListId={RequireData} Context={RequireData.Context} callBack={imageTabCallBack} />
-                  </div>
-                </div>
+  className="tab-pane"
+  id="image"
+  role="tabpanel"
+  aria-labelledby="image-tab"
+>
+  <div className="col-sm-12">
+    {imagetab && (
+      <ImagesC
+        EditdocumentsData={EditData}
+        setData={setEditData}
+        AllListId={RequireData}
+        Context={RequireData.Context}
+        callBack={imageTabCallBack}
+      />
+    )}
+  </div>
+</div>
+
               </div>
             </div>
             <footer className="mt-2">
