@@ -709,7 +709,8 @@ const CreateWS = (props: any) => {
             if (PopupType == 'CreatePopup') {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
-                res.data['SharewebTaskType'] = { Title: 'Workstream' }
+                res.data['SharewebTaskType'] = { Title: 'Workstream' },
+                res.data['PortfolioType'] =  {'Id':portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id },
                 res.data.AssignedTo = []
                 res.data.Responsible_x0020_Team = []
                 res.data.Team_x0020_Members = []
@@ -753,7 +754,8 @@ const CreateWS = (props: any) => {
             }
             else {
                 res.data['SiteIcon'] = AllItems.SiteIcon
-                res.data['listId'] = AllItems.listId
+                res.data['listId'] = AllItems.listId,
+                res.data['PortfolioType'] =  {'Id':portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id },
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
                 res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : null,
                     res.data['siteType'] = AllItems.siteType
@@ -1015,7 +1017,7 @@ const CreateWS = (props: any) => {
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
                 res.data['listId'] = AllItems.listId
                 res.data['Shareweb_x0020_ID'] = SharewebID;
-                res.data['PortfolioType'] = portFolioTypeId == undefined?null:portFolioTypeId[0]?.Id,
+                res.data['PortfolioType'] =  {'Id':portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id },
                 res.data['Portfolio'] = { 'Id': portFolio };
                 res.data.DueDate = res?.data?.DueDate != null ? Moment(res?.data?.DueDate).format("DD-MM-YYYY") : null,
                     res.data['siteType'] = AllItems.siteType
@@ -1038,7 +1040,7 @@ const CreateWS = (props: any) => {
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
                 res.data['Shareweb_x0020_ID'] = SharewebID;
-                res.data['PortfolioType'] =  portFolioTypeId == undefined?null:portFolioTypeId[0]?.Id
+                res.data['PortfolioType'] =  {'Id':portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id },
                 res.data['Portfolio'] = { 'Id': portFolio };
                 res.data.DueDate = res?.data?.DueDate != null ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : null;
                 res.data['siteType'] = AllItems.siteType
@@ -1337,7 +1339,7 @@ const CreateWS = (props: any) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['Shareweb_x0020_ID'] = SharewebID;
-                res.data['PortfolioType'] = portFolioTypeId == undefined?null:portFolioTypeId[0]?.Id,
+                res.data['PortfolioType'] =  {'Id':portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id },
                 res.data['Portfolio'] = { 'Id': portFolio };
                 res.data['TaskType'] = { 'Id': res.data.TaskTypeId };
                 // res.DueDate = NewDate != '' && NewDate != undefined ? NewDate : undefined,
