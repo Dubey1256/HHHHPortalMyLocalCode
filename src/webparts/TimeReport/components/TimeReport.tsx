@@ -955,7 +955,7 @@ const TimeReport = (props:any) => {
                 item.PercentComplete = '';
             }
            
-            if (item.Date != undefined) {
+            if (item.Date != undefined && item.Date != '') {
                 MyDate = item.Date;
             }
            var text = '<tr>' +
@@ -994,7 +994,7 @@ const TimeReport = (props:any) => {
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + QATime.toFixed(2) + '</td>'
         + '</tr>'
         + '<tr>'
-        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Users on leave' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Users on leaves' + '</td>'
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + leaveUsers.toFixed(2) + '</td>'
         + '</tr>'
         + '<tr>'
@@ -1011,7 +1011,7 @@ const TimeReport = (props:any) => {
     '</table>'
 var pageurl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TimeReport.aspx";
 var ReportDate = new Date(MyDate)
- var ReportDatetime =Moment(ReportDate).format('DD/MM/YYYY')
+ var ReportDatetime =Moment(ReportDate).format('MM/DD/YYYY')
     var body:any =
                 '<p style="text-align: center;margin-bottom: 1px;">' + 'TimeSheet of  date' + '&nbsp;' + '<strong>' + ReportDatetime + '</strong>' + '</p>' +
                 '<p style="text-align: center;margin: 0 auto;">' + '<a  href=' + pageurl + ' >' + 'Online version of timesheet' + '</a >' + '</p>' +
