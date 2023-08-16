@@ -238,6 +238,7 @@ const GlobalCommanTable = (items: any) => {
             columnVisibility,
         },
         onSortingChange: setSorting,
+        enableMultiRowSelection: items?.multiSelect === false ? items?.multiSelect : true,
         onColumnFiltersChange: setColumnFilters,
         onExpandedChange: setExpanded,
         onGlobalFilterChange: setGlobalFilter,
