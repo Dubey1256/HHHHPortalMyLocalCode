@@ -180,7 +180,7 @@ function TeamPortlioTable(SelectedProp: any) {
         let web = new Web(ContextValue.siteUrl);
         let PortFolioType = [];
         PortFolioType = await web.lists
-            .getById('c21ab0e4-4984-4ef7-81b5-805efaa3752e')
+            .getById(ContextValue.PortFolioTypeID)
             .items.select(
                 "Id",
                 "Title",
@@ -195,7 +195,7 @@ function TeamPortlioTable(SelectedProp: any) {
         let taskTypeData = [];
         let typeData: any = [];
         taskTypeData = await web.lists
-            .getById('21b55c7b-5748-483a-905a-62ef663972dc')
+            .getById(ContextValue.TaskTypeID)
             .items.select(
                 'Id',
                 'Level',
@@ -249,7 +249,7 @@ function TeamPortlioTable(SelectedProp: any) {
             console.log("Fetching portfolio icons...");
 
             // Fetching the field data
-            const field = await new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP")
+            const field = await new Web(ContextValue.siteUrl)
                 .lists.getById(ContextValue?.MasterTaskListID)
                 .fields.getByTitle(ItemTypeColumn)
                 .get();
