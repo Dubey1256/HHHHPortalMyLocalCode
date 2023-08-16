@@ -141,7 +141,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
         let web = new Web(this.state.PropValue.siteUrl);
         let PortFolioType = [];
         PortFolioType = await web.lists
-            .getById('c21ab0e4-4984-4ef7-81b5-805efaa3752e')
+            .getById(this.state?.PropValue?.PortFolioTypeID)
             .items.select(
                 "Id",
                 "Title",
