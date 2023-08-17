@@ -1966,7 +1966,7 @@ callBackData = (elem: any, ShowingData: any) =>{
            
           </div>
           </details>
-          <div className="row my-2 p-0">          
+          <Row className="my-2 p-0">          
             <div className="col-sm-1 ps-0">
                <label ng-required="true" className="full_width ng-binding" ng-bind-html="GetColumnDetails('StartDate') | trustedHTML">Start Date</label>
                <DatePicker selected={this.state.startdate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setStartDate(date)} className="form-control ng-pristine ng-valid ng-touched ng-not-empty"/>
@@ -2033,16 +2033,16 @@ callBackData = (elem: any, ShowingData: any) =>{
                </div>
             </div>
             <div className="clearfix"></div>
-          </div>
+          </Row>
 
-          <div id="showFilterBox" className="col">
+          <div id="showFilterBox" className="col p-0">
             <div className="togglebox">
-              <span>
-                <label className="toggler full_width" ng-click="filtershowHide()">
-                  <span className="pull-left">
-                      <img className="hreflink wid22" title="Filter" style={{width:'22px'}} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Filter-12-WF.png"/>
+              <details>
+                <summary  ng-click="filtershowHide()">
+                  <label>
+                      {/* <img className="hreflink wid22" title="Filter" style={{width:'22px'}} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Filter-12-WF.png"/> */}
                       SmartSearch – Filters
-                  </span>
+                  </label>
 
                   <span>
                   {this.state.checkedAll && this.state.filterItems != null && this.state.filterItems.length > 0 &&
@@ -2074,12 +2074,12 @@ callBackData = (elem: any, ShowingData: any) =>{
                   }
                    </span>
 
-                  <span className="pull-right">
+                  {/* <span className="pull-right">
                     <span className="hreflink ng-scope" ng-if="!smartfilter2.expanded">
                       <img className="hreflink wid10" style={{width:'10px'}} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/sub_icon.png"/>
                     </span>
-                  </span>
-                </label>
+                  </span> */}
+                </summary>
 
                 <div className="togglecontent" style={{display:"block"}}>
                   <div className="smartSearch-Filter-Section">
@@ -2145,11 +2145,9 @@ callBackData = (elem: any, ShowingData: any) =>{
                      
                 </div>
 
-              </span>
+              </details>
             </div>
           </div>
-        
-        
         </Row>
 
         {this.state.AllTimeEntry != undefined && this.state.AllTimeEntry.length > 0 &&        
