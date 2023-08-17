@@ -160,7 +160,7 @@ export default function ReactPopperTooltip({ ShareWebId, row, projectToolShow }:
                     </div>
 
                     <div className={scrollToolitem === true ? "tool-Wrapper scroll-toolitem" : "tool-Wrapper"}  >
-                        <GlobalCommanTable columns={columns} data={tooltiphierarchy} callBackDataToolTip={callBackDataToolTip} callBackData={callBackData} pageName={pageName} />
+                        <GlobalCommanTable columns={columns} data={tooltiphierarchy} callBackDataToolTip={callBackDataToolTip} callBackData={callBackData} pageName={pageName} expendedTrue={true}/>
                     </div>
                     <div {...getArrowProps({ className: "tooltip-arrow" })} />
                 </div>
@@ -179,17 +179,17 @@ export default function ReactPopperTooltip({ ShareWebId, row, projectToolShow }:
             {action === "hover" && visible && projectToolShow === true && (
                 <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container" })}>
                     <span>
-                        {projectToolShow != true? <span>
+                        {projectToolShow != true ? <span>
                             {row?.original?.joinedData}
                         </span>
-                        :
-                        <>
-                        {row?.original?.joinedData.split('\n').map((line:any, index:any) => (
-        <span key={index}>
-          {line}
-          <br />
-        </span>
-      ))}</>
+                            :
+                            <>
+                                {row?.original?.joinedData.split('\n').map((line: any, index: any) => (
+                                    <span key={index}>
+                                        {line}
+                                        <br />
+                                    </span>
+                                ))}</>
                         }
                     </span>
                     <div {...getArrowProps({ className: "tooltip-arrow" })} />

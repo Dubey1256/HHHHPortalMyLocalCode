@@ -274,12 +274,473 @@ const CreateWS = (props: any) => {
                     }
                 } else {
                     createChildAsTask(item, Type, index);
+                    if (inputFields != undefined && inputFields.length > 0) {
+                        inputFields.forEach((obj: any) => {
+                            if (obj.Title != undefined && obj.Title != "") {
+                                index++
+                                createMultiChildAsTask(obj, Type, index);
+                            }
+                        })
+                    }
                 }
             }
         })
 
     }
+    // const createMultiChildAsWorkStream = async (item: any, Type: any, index: any, WorstreamLatestId: any) => {
+    //     var NewDate = ''
+    //    var  clientcaterogiesdata2:any=[];
+    //    var AssignedToUser:any=[];
+    //    var AllTeamMembers:any=[];
+    //    var TeamLeaderws:any=[];
+    //     WorstreamLatestId += index;
+    //     var SharewebID = '';
+    //     if (Task == undefined || Task == '')
+    //         Task = SelectedTasks[0];
+    //     if (TaskprofileId == '' || SelectedTasks.length > 0) {
+    //         TaskprofileId = SelectedTasks[0].Id;
+    //     }
+    //     if (Task.Component != undefined && Task.Component.length > 0) {
+    //         SharewebID = 'CA' + Task.SharewebTaskLevel1No + '-W' + WorstreamLatestId;
+    //     }
+    //     if (Task.Services != undefined && Task.Services.length > 0) {
+    //         SharewebID = 'SA' + Task.SharewebTaskLevel1No + '-W' + WorstreamLatestId;
+    //     }
+    //     // if (Task.SharewebTaskType != undefined && Task.SharewebTaskType.Title != undefined) {
+    //     //     SharewebID = 'A' + Task.SharewebTaskLevel1No + '-W' + WorstreamLatestId;
+    //     // }
+    //     var Component: any = []
+    //     var RelevantPortfolioIds: any = []
+
+    //     // smartComponentData.forEach((com: any) => {
+    //     //     if (com != undefined) {
+    //     //         Component.push(com.Id)
+    //     //     }
+
+    //     // })
+    //     // if (myDate?.editDate != undefined && myDate?.editDate != null) {
+    //     //     var dateValue = myDate?.editDate?.split("/");
+    //     //     var dp = dateValue[1] + "/" + dateValue[0] + "/" + dateValue[2];
+    //     //     var Dateet = new Date(dp)
+    //     //     NewDate = Moment(Dateet).format("ddd, DD MMM yyyy")
+    //     // }
+    //     if (date != undefined) {
+    //         NewDate = new Date(date).toDateString();
+    //     }
+    //     if (AllItems.Component[0] != undefined && AllItems.Component.length > 0) {
+    //         Component.push(AllItems.Component[0].Id)
+    //     }
+    //     if (AllItems.Services[0] != undefined && AllItems.Services.length > 0) {
+    //         RelevantPortfolioIds.push(AllItems.Services[0].Id)
+    //     }
+    //     if (AllItems?.Portfolio_x0020_Type == undefined) {
+    //         if (AllItems.Component != undefined && AllItems.Component.length > 0) {
+    //             smartComponentData.push(AllItems.Component);
+    //         }
+
+    //         if (AllItems.Services != undefined && AllItems.Services.length > 0) {
+    //             linkedComponentData.push(AllItems);
+    //         }
+
+    //     }
+
+    //     var categoriesItem = '';
+    //     CategoriesData.map((category) => {
+    //         if (category.Title != undefined) {
+    //             categoriesItem = categoriesItem == "" ? category.Title : categoriesItem + ';' + category.Title;
+    //         }
+    //     })
+    //     smartComponentData.forEach((com: any) => {
+    //         if (com != undefined) {
+    //             Component.push(com[0].Id)
+    //         }
+
+    //     })
+    //     if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
+    //         linkedComponentData?.map((com: any) => {
+    //             if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
+    //                 $.each(linkedComponentData, function (index: any, smart: any) {
+    //                     RelevantPortfolioIds.push(smart.Id)
+    //                 })
+    //             }
+    //         })
+    //     }
+    //     var CategoryID: any = []
+    //     CategoriesData.map((category) => {
+    //         if (category.Id != undefined) {
+    //             CategoryID.push(category.Id)
+    //         }
+    //     })
+    //     if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length>0) {
+    //         AllItems.AssignedTo.forEach((obj: any) => {
+    //             AssignedToIds.push(obj.Id);
+    //             AssignedToUser.push(obj);
+
+    //         })
+    //     }
+    //     if (isDropItemRes == true) {
+    //         if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
+    //             TaskAssignedTo.map((taskInfo) => {
+    //                 AssignedToIds.push(taskInfo.Id);
+    //                 AssignedToUser.push(taskInfo);
+    //             })
+    //         }
+    //     }
+    //     if (AllItems?.TeamMembers != undefined  && AllItems?.TeamMembers?.length>0) {
+    //         AllItems?.TeamMembers.forEach((obj: any) => {
+    //             TeamMemberIds.push(obj.Id);
+    //             AllTeamMembers.push(obj);
+
+    //         })
+    //     }
+    //     if (isDropItem == true) {
+    //         if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
+    //             TaskTeamMembers?.map((taskInfo) => {
+    //                 TeamMemberIds.push(taskInfo.Id);
+    //                 AllTeamMembers.push(taskInfo);
+
+    //             })
+    //         }
+    //     }
+    //     if (AllItems?.TeamLeader != undefined &&  AllItems?.TeamLeader?.length>0) {
+    //         AllItems?.TeamLeader?.forEach((obj: any) => {
+    //             ResponsibleTeamIds.push(obj.Id);
+    //              TeamLeaderws.push(obj)
+    //         })
+    //     }
+    //     if (isDropItem == true) {
+    //         if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
+    //             TaskResponsibleTeam?.map((taskInfo) => {
+    //                 ResponsibleTeamIds.push(taskInfo.Id);
+    //                 TeamLeaderws.push(taskInfo)
+    //             })
+    //         }
+    //     }
+    //     if(props?.props!=undefined && props?.props?.ClientCategory?.length>0){
+    //       if(props?.props?.ClientCategory2!=undefined && props?.props?.ClientCategory2?.results?.length>0){
+    //         props?.props?.ClientCategory2?.results?.map((items:any)=>{
+    //             InheritClientCategory.push(items.Id)
+    //             clientcaterogiesdata2.push(items)  
+    //         })
+    //       }else{
+    //         props.props.ClientCategory?.map((items:any)=>{
+    //             InheritClientCategory.push(items.Id) 
+    //             clientcaterogiesdata2.push(items)  
+    //         }) 
+    //       }
+
+
+    //     }
+    //     let web = new Web(dynamicList.siteUrl);
+    //     // if(props?.props?.ClientTime?.length>0){
+    //     //     props.props.ClientTime=JSON.stringify(props?.props?.ClientTime) 
+    //     // }
+    //     await web.lists.getById(AllItems.listId).items.add({
+    //         Title: AllItems.Title,
+    //         ComponentId: { "results": Component },
+    //         Categories: categoriesItem ? categoriesItem : null,
+    //         SharewebCategoriesId: { "results": CategoryID },
+    //         Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
+    //         ParentTaskId: AllItems.Id,
+    //         ServicesId: { "results": RelevantPortfolioIds },
+    //         Priority: AllItems.Priority,
+    //         Body: AllItems.Description,
+    //         // DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
+    //         DueDate: myDate.editDate = myDate.editDate ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy"): '',
+    //         SharewebTaskTypeId: SharewebTasknewTypeId,
+    //         Shareweb_x0020_ID: SharewebID,
+    //         SharewebTaskLevel2No: WorstreamLatestId,
+    //         SharewebTaskLevel1No: AllItems.SharewebTaskLevel1No,
+    //         ClientCategoryId: { "results": InheritClientCategory },
+    //         SiteCompositionSettings:props?.props?.SiteCompositionSettings!=undefined?props?.props?.SiteCompositionSettings:"",
+    //         ClientTime:props?.props?.ClientTime!=null ?props?.props?.ClientTime:"",
+    //         AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
+    //         Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
+    //         Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
+
+    //     }).then((res: any) => {
+    //         console.log(res);
+    //         if (PopupType == 'CreatePopup') {
+    //             res.data['SiteIcon'] = AllItems.SiteIcon
+    //             res.data['listId'] = AllItems.listId
+    //             res.data['SharewebTaskType'] = { Title: 'Workstream' }
+    //             res.data.DueDate = res?.data?.DueDate ?  Moment(res?.data?.DueDate).format("DD-MM-YYYY"):'',
+    //                 res.data['siteType'] = AllItems.siteType
+    //             res.data['Shareweb_x0020_ID'] = SharewebID,
+    //             res.data.ClientCategory=clientcaterogiesdata2,
+    //             res.data.Created=new Date();
+    //             res.data.Author={
+    //                 Id: res?.data?.AuthorId
+    //             }
+    //             res.data.Team_x0020_Members=AllTeamMembers?.length>0?AllTeamMembers:[]
+    //             res.data.Responsible_x0020_Team=TeamLeaderws?.length>0?TeamLeaderws:[]
+    //             res.data.AssignedTo=AssignedToUser?.length>0?AssignedToUser:[]
+    //             res.Item_x0020_Type=""
+    //             setIsPopupComponent(true)
+    //             setSharewebTask(res.data)
+    //             closeTaskStatusUpdatePoup(res);
+    //         }
+    //         else {
+    //             res.data['SiteIcon'] = AllItems.SiteIcon
+    //             res.data['listId'] = AllItems.listId
+    //             res.data['SharewebTaskType'] = { Title: 'Workstream' }
+    //             res.data.DueDate = res?.data?.DueDate ?  Moment(res?.data?.DueDate).format("MM-DD-YYYY"):'',
+    //                 res.data['siteType'] = AllItems.siteType
+    //             res.data['Shareweb_x0020_ID'] = SharewebID
+    //             res.data.ClientCategory= clientcaterogiesdata2,
+    //             res.data.Created=new Date();
+    //             res.data.Author={
+    //                 Id: res?.data?.AuthorId
+    //             }
+    //             res.data.Team_x0020_Members=AllTeamMembers?.length>0?AllTeamMembers:[]
+    //             res.data.Responsible_x0020_Team=TeamLeaderws?.length>0?TeamLeaderws:[]
+    //             res.data.AssignedTo=AssignedToUser?.length>0?AssignedToUser:[]
+    //             res.Item_x0020_Type=""
+    //             setSharewebTask(res.data)
+    //             closeTaskStatusUpdatePoup(res);
+    //         }
+
+
+
+    //     })
+
+    // }
   
+    const createMultiChildAsTask = async (item: any, Type: any, index: any) => {
+        let NewDate = ''
+        var RelevantPortfolioIds: any = []
+        var clientcaterogiesdata2: any = [];
+        var AssignedToUser: any = [];
+        var AllTeamMembers: any = [];
+        var TeamLeaderws: any = [];
+        let LetestLevelData:any=[]
+        let Tasklevel:any =''
+        let TaskID  = ''
+        let web = new Web(dynamicList.siteUrl);
+        let componentDetails: any = [];
+        componentDetails = await web.lists
+            .getById(AllItems.listId)
+            .items
+            .select("Id,Title")
+            .orderBy("Id", false)
+            .top(1)
+            .get()
+        console.log(componentDetails)
+        var LatestId = componentDetails[0].Id + 1;
+        LatestId += index;
+        if (Task == undefined || Task == '')
+            Task = SelectedTasks[0];
+        if (TaskprofileId == '' || SelectedTasks.length > 0) {
+            TaskprofileId = SelectedTasks[0].Id;
+        }
+        AllItems?.subRows?.forEach((vall: any) => {
+            if (vall?.TaskType?.Title == 'Task' || vall?.SharewebTaskType?.Title == 'Task') {
+                LetestLevelData.push(vall)
+            }
+
+        })
+        if (LetestLevelData.length == 0) {
+            Tasklevel = 1
+            TaskID = props?.props?.TaskID + '-T' + Tasklevel + LatestId;
+        }
+        else {
+            Tasklevel = LetestLevelData.length + 1
+            TaskID = props?.props?.TaskID + '-T' + Tasklevel + LatestId;
+        }
+        if (SharewebTasknewTypeId == 2 || SharewebTasknewTypeId == 6) {
+            var SharewebID = '';
+            if (Task?.Portfolio_x0020_Type != undefined && Task?.Portfolio_x0020_Type == 'Component') {
+                SharewebID = 'A' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
+            }
+            if (Task?.Services != undefined && Task.Services.length > 0 || Task?.Portfolio_x0020_Type == 'Service') {
+                SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
+            }
+            if (Task?.Events != undefined && Task.Events.length > 0 || Task?.Portfolio_x0020_Type == 'Events') {
+                SharewebID = 'EA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
+            }
+            if (Task?.Component != undefined && Task.Component.length > 0) {
+                SharewebID = 'CA' + Task.SharewebTaskLevel1No + '-T' + LatestId;
+            }
+            if (Task?.Component == undefined && Task.Services == undefined) {
+                SharewebID = 'T' + LatestId;
+            }
+            if (AllItems?.Portfolio_x0020_Type == undefined) {
+                if (AllItems.Component != undefined && AllItems.Component.length > 0) {
+                    smartComponentData.push(AllItems.Component);
+                }
+
+                if (AllItems.Services != undefined && AllItems.Services.length > 0) {
+                    linkedComponentData.push(AllItems);
+                }
+
+            }
+            if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
+                linkedComponentData?.map((com: any) => {
+                    if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
+                        $.each(linkedComponentData, function (index: any, smart: any) {
+                            RelevantPortfolioIds.push(smart.Id)
+                        })
+                    }
+                })
+            }
+            var Component: any = []
+            smartComponentData.forEach((com: any) => {
+                if (com != undefined) {
+                    Component.push(com[0].Id)
+                }
+
+            })
+            // smartComponentData.forEach((com: any) => {
+            //     if (com != undefined) {
+            //         Component.push(com.Id)
+            //     }
+
+            // })
+            // if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
+            //     linkedComponentData?.map((com: any) => {
+            //         if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
+            //             $.each(linkedComponentData, function (index: any, smart: any) {
+            //                 RelevantPortfolioIds.push(smart.Id)
+            //             })
+            //         }
+            //     })
+            // }
+
+            // if (myDate?.editDate != undefined && myDate?.editDate != null) {
+            //     // var dateValue = myDate?.editDate.split("/");
+            //     // var dp = dateValue[1] + "/" + dateValue[0] + "/" + dateValue[2];
+            //     // var Dateet = new Date(dp)
+            //     NewDate = Moment(myDate?.editDate).format("ddd, DD MMM yyyy")
+            // }
+            if (AllItems?.Component != undefined && AllItems?.Component.length > 0) {
+                Component.push(AllItems.Component[0].Id)
+            }
+            if (AllItems?.Services != undefined && AllItems?.Services.length > 0) {
+                RelevantPortfolioIds.push(AllItems.Services[0].Id)
+            }
+            var categoriesItem = '';
+            CategoriesData.map((category) => {
+                if (category.Title != undefined) {
+                    categoriesItem = categoriesItem == "" ? category.Title : categoriesItem + ';' + category.Title;
+                }
+            })
+            var CategoryID: any = []
+            CategoriesData.map((category) => {
+                if (category.Id != undefined) {
+                    CategoryID.push(category.Id)
+                }
+            })
+            if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length > 0) {
+                AllItems.AssignedTo.forEach((obj: any) => {
+                    AssignedToIds.push(obj.Id);
+                    AssignedToUser.push(obj)
+                })
+            }
+            if (isDropItemRes == true) {
+                if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
+                    TaskAssignedTo.map((taskInfo) => {
+                        AssignedToIds.push(taskInfo.Id);
+                        AssignedToUser.push(taskInfo);
+                    })
+                }
+            }
+            if (AllItems?.TeamMembers != undefined && AllItems?.TeamMembers?.length > 0) {
+                AllItems.TeamMembers.forEach((obj: any) => {
+                    TeamMemberIds.push(obj.Id);
+                    AllTeamMembers.push(obj)
+                })
+            }
+            if (isDropItem == true) {
+                if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
+                    TaskTeamMembers.map((taskInfo) => {
+                        TeamMemberIds.push(taskInfo.Id);
+                        AllTeamMembers.push(taskInfo)
+                    })
+                }
+            }
+            if (AllItems?.TeamLeader != undefined && AllItems?.TeamLeader?.length > 0) {
+                AllItems.TeamLeader.forEach((obj: any) => {
+                    ResponsibleTeamIds.push(obj.Id);
+                    TeamLeaderws.push(obj)
+                })
+            }
+            if (isDropItem == true) {
+                if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
+                    TaskResponsibleTeam.map((taskInfo) => {
+                        ResponsibleTeamIds.push(taskInfo.Id);
+                        TeamLeaderws.push(taskInfo)
+                    })
+                }
+            }
+            if (props?.props != undefined && props?.props?.ClientCategory?.length > 0) {
+                if (props?.props?.ClientCategory2 != undefined && props?.props?.ClientCategory2?.results?.length > 0) {
+                    props?.props?.ClientCategory2?.results?.map((items: any) => {
+                        InheritClientCategory.push(items.Id)
+                        clientcaterogiesdata2.push(items)
+                    })
+                } else {
+                    props.props.ClientCategory?.map((items: any) => {
+                        InheritClientCategory.push(items.Id)
+                        clientcaterogiesdata2.push(items)
+                    })
+                }
+            }
+
+            let web = new Web(dynamicList.siteUrl);
+            await web.lists.getById(AllItems.listId).items.add({
+                Title: item?.Title != undefined ? item?.Title : AllItems.Title,
+                ComponentId: { "results": Component },
+                Categories: categoriesItem ? categoriesItem : null,
+                Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
+                PortfolioId: portFolio,
+                PortfolioTypeId: portFolioTypeId == undefined ?null:portFolioTypeId[0]?.Id,
+                TaskTypeId: SharewebTasknewTypeId,
+                SharewebCategoriesId: { "results": CategoryID },
+                ParentTaskId: AllItems.Id,
+                ServicesId: { "results": RelevantPortfolioIds },
+                SharewebTaskTypeId: SharewebTasknewTypeId,
+                Body:  item?.Description != undefined ? item?.Description : AllItems.Description,
+                // DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
+                DueDate: myDate.editDate = myDate.editDate != null ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy") : null,
+                Priority: AllItems.Priority,
+                //SharewebTaskLevel2No: WorstreamLatestId,
+                SharewebTaskLevel1No: AllItems.SharewebTaskLevel1No,
+                AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
+                Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
+                Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] },
+                ClientCategoryId: { "results": InheritClientCategory },
+                SiteCompositionSettings: props?.props?.SiteCompositionSettings != undefined ? props?.props?.SiteCompositionSettings : "",
+                ClientTime: props?.props?.ClientTime != null ? props?.props?.ClientTime : "",
+                TaskID :TaskID,
+                TaskLevel : Tasklevel
+    
+            }).then((res: any) => {
+                console.log(res);
+                res.data['SiteIcon'] = AllItems.SiteIcon
+                res.data['listId'] = AllItems.listId
+                res.data['Shareweb_x0020_ID'] = SharewebID;
+                res.data['PortfolioType'] =  {'Id':portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id },
+                res.data['Portfolio'] = { 'Id': portFolio };
+                res.data['TaskType'] = { 'Id': res.data.TaskTypeId };
+                // res.DueDate = NewDate != '' && NewDate != undefined ? NewDate : undefined,
+                res.data.DueDate = res?.data?.DueDate !=null? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : null,
+                    res.data['siteType'] = AllItems.siteType
+
+                res.data.Created = new Date();
+                res.data.Author = {
+                    Id: res?.data?.AuthorId
+                }
+                res.data.ClientCategory = clientcaterogiesdata2,
+                    res.data.Team_x0020_Members = AllTeamMembers?.length > 0 ? AllItems?.AllTeamMembers : []
+                res.data.Responsible_x0020_Team = TeamLeaderws.length > 0 ? TeamLeaderws : []
+                res.data.AssignedTo = AssignedToUser?.length > 0 ? AssignedToUser : []
+                res.Item_x0020_Type = ""
+                closeTaskStatusUpdatePoup(res);
+            })
+        }
+
+    }
+    
     const createMultiChildAsWorkStream = async (item: any, Type: any, index: any, WorstreamLatestId: any) => {
         var clientcaterogiesdata2: any = [];
         var AssignedToUser: any = [];
@@ -1111,7 +1572,7 @@ const CreateWS = (props: any) => {
                 res.data['Portfolio'] = { 'Id': portFolio };
                 res.data['TaskType'] = { 'Id': res.data.TaskTypeId };
                 // res.DueDate = NewDate != '' && NewDate != undefined ? NewDate : undefined,
-                res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : '',
+                res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : null,
                     res.data['siteType'] = AllItems.siteType
 
                 res.data.Created = new Date();
