@@ -19,14 +19,15 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [data, setData] = React.useState([]);
     const [CheckBoxData, setCheckBoxData] = React.useState([]);
-    const [selectedComponent, setSelectedComponent] = React.useState('');
+    const [selectedComponent, setSelectedComponent] = React.useState([]);
     const [AllUsers, setTaskUser] = React.useState([]);
     const [ShowingAllData, setShowingData] = React.useState([])
     const PopupType: any = props?.PopupType;
+    let selectedDataArray: any = [];
     let GlobalArray: any = [];
     React.useEffect(() => {
         if (props.smartComponent != undefined && props.smartComponent.length > 0)
-            setSelectedComponent(props?.smartComponent[0]);
+            setSelectedComponent(props?.smartComponent);
         GetComponents();
 
     },
@@ -36,7 +37,6 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     }
     const setModalIsOpenToFalse = () => {
         Example([], ComponentType, "Close");
-        setModalIsOpen(false);
     }
     const setModalIsOpenToOK = () => {
         if (props.linkedComponent != undefined && props?.linkedComponent.length == 0)
@@ -58,14 +58,19 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
         setData(data => ([...data]));
     };
     const GetComponents = async () => {
+
+        if (props?.smartComponent != undefined && props?.smartComponent?.length > 0) {
+            selectedDataArray = props?.smartComponent;
+        }
         let PropsObject: any = {
             MasterTaskListID: Dynamic.MasterTaskListID,
             siteUrl: Dynamic.siteUrl,
             ComponentType: ComponentType,
-            TaskUserListId: Dynamic.TaskUsertListID
+            TaskUserListId: Dynamic.TaskUsertListID,
+            selectedItems: selectedDataArray
         }
         GlobalArray = await globalCommon.GetServiceAndComponentAllData(PropsObject);
-        if (GlobalArray.GroupByData != undefined && GlobalArray.GroupByData.length > 0) {
+        if (GlobalArray?.GroupByData != undefined && GlobalArray?.GroupByData?.length > 0) {
             setData(GlobalArray.GroupByData);
             LinkedServicesBackupArray = GlobalArray.GroupByData;
         }
@@ -73,14 +78,9 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     }
 
 
-    const callBackData = React.useCallback((elem: any, ShowingData: any) => {
+    const callBackData = React.useCallback((elem: any, ShowingData: any, selectedArray: any) => {
         if (selectionType == "Multi") {
-            if (elem != undefined) {
-                MultiSelectedData.push(elem);
-            } else {
-                console.log("elem", elem);
-            }
-
+            MultiSelectedData = selectedArray;
         } else {
             if (elem != undefined) {
                 setCheckBoxData([elem])
@@ -92,7 +92,6 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 setShowingData([ShowingData])
             }
         }
-
     }, []);
 
 
@@ -100,12 +99,12 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     ) => {
         return (
             <div className="d-flex full-width pb-1" >
-                <div className="subheading">
+                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <span>
                         {`Select ${ComponentType}`}
                     </span>
                 </div>
-                <Tooltip ComponentId={ComponentType == "Service" ? "1667" : "1666"} isServiceTask={ComponentType == "Service" ? true : false} />
+                <Tooltip ComponentId="1667" />
             </div>
         );
     };
@@ -129,7 +128,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
             {
                 accessorKey: "PortfolioStructureID",
                 placeholder: "ID",
-                size: 175,
+                size: 15,
                 header: ({ table }: any) => (
                     <>
                         <button className='border-0 bg-Ff'
@@ -139,11 +138,12 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                         >
                             {table.getIsAllRowsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
                         </button>{" "}
-                        <IndeterminateCheckbox {...{
+                        {selectionType == "Multi" ? <IndeterminateCheckbox {...{
                             checked: table.getIsAllRowsSelected(),
                             indeterminate: table.getIsSomeRowsSelected(),
                             onChange: table.getToggleAllRowsSelectedHandler(),
-                        }} />{" "}
+                        }} /> : ''}
+                        {" "}
                     </>
                 ),
                 cell: ({ row, getValue }) => (
@@ -167,14 +167,11 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                             ) : (
                                 ""
                             )}{" "}
-                            {row?.original.Title != 'Others' ? <IndeterminateCheckbox
-                                {...{
-                                    checked: row.getIsSelected(),
-                                    indeterminate: row.getIsSomeSelected(),
-                                    onChange: row.getToggleSelectedHandler(),
-
-                                }}
-                            /> : ""}{" "}
+                            <IndeterminateCheckbox {...{
+                                checked: row.getIsSelected(),
+                                indeterminate: row.getIsSomeSelected(),
+                                onChange: row.getToggleSelectedHandler(),
+                            }} />{" "}
                             {row?.original?.SiteIcon != undefined ?
                                 <a className="hreflink" title="Show All Child" data-toggle="modal">
                                     <img className="icon-sites-img ml20 me-1" src={row?.original?.SiteIcon}></img>
@@ -207,6 +204,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 id: "Title",
                 placeholder: "Title",
                 header: "",
+                size: 27,
             },
             {
                 accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title).join("-"),
@@ -222,25 +220,37 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 id: 'ClientCategory',
                 placeholder: "Client Category",
                 header: "",
-                size: 200,
+                size: 15,
+            },
+            {
+                accessorFn: (row) => row?.TeamLeaderUser?.map((val: any) => val.Title).join("-"),
+                cell: ({ row }) => (
+                    <div>
+                        <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={AllUsers} />
+                    </div>
+                ),
+                id: 'TeamLeaderUser',
+                placeholder: "Team",
+                header: "",
+                size: 15,
             },
             {
                 accessorKey: "PercentComplete",
                 placeholder: "Status",
                 header: "",
-                size: 70,
+                size: 7,
             },
             {
                 accessorKey: "ItemRank",
                 placeholder: "Item Rank",
                 header: "",
-                size: 60,
+                size: 7,
             },
             {
                 accessorKey: "DueDate",
                 placeholder: "Due Date",
                 header: "",
-                size: 90,
+                size: 9,
             },
         ],
         [data]
@@ -282,12 +292,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     })
 
     return (
-        <Panel
-            type={PanelType.custom}
-            customWidth="1100px"
-            isOpen={modalIsOpen}
-            onDismiss={setModalIsOpenToFalse}
-            onRenderHeader={onRenderCustomHeader}
+        <Panel type={PanelType.custom} customWidth="1100px" isOpen={modalIsOpen} onDismiss={setModalIsOpenToFalse} onRenderHeader={onRenderCustomHeader}
             isBlocking={modalIsOpen}
             onRenderFooter={CustomFooter}
         >
@@ -321,7 +326,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                         </div>
                         <div className="col-sm-12 p-0 smart">
                             <div className="wrapper">
-                                <GlobalCommanTable columns={columns} data={data} callBackData={callBackData} />
+                                <GlobalCommanTable columns={columns} data={data} selectedData={selectedDataArray} callBackData={callBackData} multiSelect={selectionType == 'Multi' ? true : false} />
                             </div>
                         </div>
                     </div>
