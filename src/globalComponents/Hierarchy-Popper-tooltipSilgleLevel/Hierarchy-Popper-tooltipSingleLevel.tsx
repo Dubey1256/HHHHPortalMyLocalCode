@@ -122,11 +122,13 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
         }
        
     }
+    /// Code bye santosh///
     const Call=(childItem:any)=>{
         setOpenActivity(false)
         setOpenWS(false)
        
     }
+    /// end////
     const tooltiphierarchy = React.useMemo(() => {
         if (action === "click") {
             return getTooltiphierarchyWithoutGroupByTable(row);
@@ -239,7 +241,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                     </div>
 
                     <div className={scrollToolitem === true ? "tool-Wrapper toolWrapper-Th scroll-toolitem" : "tool-Wrapper toolWrapper-Th"}  >
-                        <GlobalCommanTable columns={columns} data={tooltiphierarchy} callBackDataToolTip={callBackDataToolTip} callBackData={callBackData} pageName={pageName} />
+                        <GlobalCommanTable columns={columns} data={tooltiphierarchy} callBackDataToolTip={callBackDataToolTip} callBackData={callBackData} pageName={pageName} expendedTrue={true}/>
                     </div>
                     <div {...getArrowProps({ className: "tooltip-arrow" })} />
                 </div>
