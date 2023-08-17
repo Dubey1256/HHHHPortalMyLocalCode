@@ -4,6 +4,10 @@ import "react-popper-tooltip/dist/styles.css";
 import { ColumnDef, } from "@tanstack/react-table";
 import { FaChevronDown, FaChevronRight } from "react-icons/fa";
 import GlobalCommanTable from "./GroupByReactTableComponents/GlobalCommanTable";
+import CreateActivity from "../webparts/servicePortfolio/components/CreateActivity";
+import CreateWS from "../webparts/servicePortfolio/components/CreateWS";
+
+let checkedData=''
 export const getTooltiphierarchy = (row: any) => {
     let rowOrg = { ...row.original };
     rowOrg.subRows = [];
@@ -24,9 +28,11 @@ export const getTooltiphierarchy = (row: any) => {
 };
 let scrollToolitem: any = false
 let pageName: any = 'hierarchyPopperToolTip'
-export default function ReactPopperTooltip({ ShareWebId, row }: any) {
+export default function ReactPopperTooltip({ ShareWebId, row, AllListId }: any) {
     const [controlledVisible, setControlledVisible] = React.useState(false);
     const [action, setAction] = React.useState("");
+    const [openActivity, setOpenActivity] = React.useState(false);
+    const [openWS, setOpenWS] = React.useState(false);
 
     const {
         getArrowProps,
@@ -67,7 +73,31 @@ export default function ReactPopperTooltip({ ShareWebId, row }: any) {
         }
         return [];
     }, [action]);
-
+    const openActivityPopup = (row:any) => {
+        if(row.SharewebTaskType == undefined){
+            setOpenActivity(true)
+            row['NoteCall'] = 'Task'
+            row['PageType'] = 'ProjectManagement'
+            checkedData=row;
+        }
+        if(row?.SharewebTaskType?.Title == 'Activities'){
+            setOpenWS(true)
+            row['NoteCall'] = 'Task'
+            checkedData=row;
+        }
+        if(row?.SharewebTaskType?.Title == 'Workstream'){
+            setOpenActivity(true)
+            row['NoteCall'] = 'Task'
+            row['PageType'] = 'ProjectManagement'
+            checkedData=row;
+        }
+       
+    }
+    const Call=(childItem:any)=>{
+        setOpenActivity(false)
+        setOpenWS(false)
+     
+    }
     const columns = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
@@ -103,6 +133,7 @@ export default function ReactPopperTooltip({ ShareWebId, row }: any) {
                                     <img className="icon-sites-img ml20 me-1" src={row?.original?.SiteIcon}></img>
                                 </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</>}
                                 <span>{row?.original?.Shareweb_x0020_ID}</span>
+                                
                             </>
                             {getValue()}
                         </>
@@ -120,7 +151,27 @@ export default function ReactPopperTooltip({ ShareWebId, row }: any) {
                 placeholder: "",
                 header: "",
                 size: 15,
-            }
+            },   {
+                accessorKey: "",
+                size: 7,
+                canSort: false,
+                header: "",
+                placeholder: "",
+                id: 'Shareweb_x0020_ID',
+                cell: ({ row, getValue }) => (
+                    <div
+                        style={row.getCanExpand() ? {
+                            paddingLeft: `${0}px`,
+                        } : {
+                            paddingLeft: "18px",
+                        }}
+                    >
+                        <>
+                          <span onClick={()=>openActivityPopup(row.original)}>+</span>
+                        </>
+                    </div>
+                ),
+            },
         ],
         [tooltiphierarchy]
     );
@@ -173,6 +224,20 @@ export default function ReactPopperTooltip({ ShareWebId, row }: any) {
                     <div {...getArrowProps({ className: "tooltip-arrow" })} />
                 </div>
             )}
+             {openActivity && (
+        <CreateActivity
+          props={checkedData}
+          Call={Call}
+          SelectedProp={AllListId}
+        ></CreateActivity>
+      )}
+       {openWS && (
+        <CreateWS
+          props={checkedData}
+          Call={Call}
+          SelectedProp={AllListId}
+        ></CreateWS>
+      )}
         </>
     );
 }

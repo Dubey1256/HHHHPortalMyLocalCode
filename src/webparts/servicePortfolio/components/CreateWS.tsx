@@ -1880,7 +1880,7 @@ const CreateWS = (props: any) => {
                             const { Priority, DueDate, ItemRank, Description } = data;
                             return (
                                 <div>
-                                     <div className="border-bottom clearfix">
+                                     <div className="border-bottom border-dark clearfix mt-3">
                                        {(inputFields.length > 0) ? <a className="d-flex justify-content-end" onClick={removeInputFields}><span className='svg__iconbox svg__icon--cross'></span><span>Clear section</span> </a> : ''}
                                    </div>
 
