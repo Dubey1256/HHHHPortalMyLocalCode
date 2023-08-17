@@ -1166,7 +1166,7 @@ const App = (props: any) => {
     console.log(event);
     setInputValueName(event.shortD);
     setshowRecurrence(false);
-    // setPeoplePickerShow(false);
+    setPeoplePickerShow(false);
     setShowRecurrenceSeriesInfo(false);
     setEditRecurrenceEvent(false);
 
@@ -1248,7 +1248,7 @@ const App = (props: any) => {
     setPeopleName(props.props.context._pageContext._user.displayName);
     setLocation("");
     setType("Un-Planned")
-    // setPeoplePickerShow(true);
+    setPeoplePickerShow(true);
     setshowRecurrence(true);
     setRecurrenceData(null);
     setNewRecurrenceEvent(false);
