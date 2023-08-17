@@ -365,7 +365,7 @@ const SmartInformation = (props: any,ref:any) => {
     return (
       <>
 
-        <div className='ps-4' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+        <div className='subheading'>
           {popupEdit ? `Add SmartInformation - ${allValue?.Title}` : `Add SmartInformation - ${taskInfo?.Title}`}
         </div>
         <Tooltip ComponentId='3299' />
@@ -378,7 +378,7 @@ const SmartInformation = (props: any,ref:any) => {
     return (
       <>
 
-        <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+        <div className='subheading' >
           {Editdocpanel ? `Edit Document Metadata - ${EditdocumentsData?.FileLeafRef}` : null}
         </div>
         <Tooltip ComponentId='3300' />

@@ -238,6 +238,7 @@ const GlobalCommanTable = (items: any) => {
             columnVisibility,
         },
         onSortingChange: setSorting,
+        enableMultiRowSelection: items?.multiSelect === false ? items?.multiSelect : true,
         onColumnFiltersChange: setColumnFilters,
         onExpandedChange: setExpanded,
         onGlobalFilterChange: setGlobalFilter,
@@ -584,7 +585,7 @@ const GlobalCommanTable = (items: any) => {
                         portfolioColor={portfolioColor}
                     />
                     <span className="svg__iconbox svg__icon--setting" style={{ backgroundColor: `${portfolioColor}` }} onClick={() => setSelectedFilterPanelIsOpen(true)}></span>
-                    <span>
+                    <span className='ms-1'>
                         <select style={{ height: "30px", color: `${portfolioColor}` }}
                             className="w80"
                             aria-label="Default select example"

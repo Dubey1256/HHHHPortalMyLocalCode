@@ -736,7 +736,7 @@ const CreateActivity = (props: any) => {
             LatestTaskNumber = 1;
             item.LatestTaskNumber = LatestTaskNumber
         } else {
-            LatestTaskNumber = componentDetails[0].SharewebTaskLevel1No;
+            LatestTaskNumber = componentDetails[0]?.SharewebTaskLevel1No;
             LatestTaskNumber += 1;
             item.LatestTaskNumber = LatestTaskNumber
         }
@@ -775,7 +775,7 @@ const CreateActivity = (props: any) => {
                     if (componentDetails.length == 0) {
                         WorstreamLatestId = 1;
                     } else {
-                        WorstreamLatestId = componentDetails[0].SharewebTaskLevel2No + 1;
+                        WorstreamLatestId = componentDetails[0]?.SharewebTaskLevel2No + 1;
                     }
                     getTasktype();
                 }
@@ -1013,7 +1013,11 @@ const CreateActivity = (props: any) => {
                             .top(1)
                             .get()
                         console.log(componentDetails)
-                        var LatestId = componentDetails[0].Id + 1;
+                        if(componentDetails.length === 0){
+                            var LatestId:any  =1
+                        }else{
+                            var LatestId:any = componentDetails[0]?.Id + 1;
+                        }
                         LatestId += newIndex;
                         if (Task == undefined || Task == '')
                             Task = SelectedTasks[0];
@@ -1080,7 +1084,7 @@ const CreateActivity = (props: any) => {
                             res.data['listId'] = value?.listId
                             res.data['SharewebTaskType'] = { Title: 'Activities' }
                             res.data['Shareweb_x0020_ID'] = SharewebID;
-                            res.data['PortfolioType'] = portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
+                            res.data['PortfolioType'] =  {'Id':portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id },
                                 res.data['Portfolio'] = { 'Id': portFolio };
                             res.data['TaskType'] = { 'Id': res.data.TaskTypeId };
                             // res.data['TaskType'] =
@@ -1214,7 +1218,7 @@ const CreateActivity = (props: any) => {
                             .top(1)
                             .get()
                         console.log(componentDetails)
-                        var LatestId = componentDetails[0].Id + 1;
+                        var LatestId = componentDetails[0]?.Id + 1;
                         LatestId += newIndex;
                         if (Task == undefined || Task == '')
                             Task = SelectedTasks[0];
@@ -1305,7 +1309,7 @@ const CreateActivity = (props: any) => {
                             data['SiteIcon'] = value.Item_x005F_x0020_Cover?.Url
                             data['SharewebTaskType'] = { Title: 'Task' }
                             res.data['Shareweb_x0020_ID'] = SharewebID;
-                            res.data['PortfolioType'] = portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
+                            res.data['PortfolioType'] =  {'Id':portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id },
                                 res.data['Portfolio'] = { 'Id': portFolio };
                             res.data['TaskType'] = { 'Id': res.data.TaskTypeId };
                             data.DueDate = date ? Moment(date).format("MM-DD-YYYY") : null,
