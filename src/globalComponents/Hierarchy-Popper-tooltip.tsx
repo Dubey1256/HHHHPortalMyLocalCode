@@ -28,11 +28,11 @@ export const getTooltiphierarchy = (row: any) => {
 };
 let scrollToolitem: any = false
 let pageName: any = 'hierarchyPopperToolTip'
-export default function ReactPopperTooltip({ ShareWebId, row, AllListId }: any) {
+export default function ReactPopperTooltip({ ShareWebId, row, projectToolShow, AllListId }: any) {
     const [controlledVisible, setControlledVisible] = React.useState(false);
-    const [action, setAction] = React.useState("");
     const [openActivity, setOpenActivity] = React.useState(false);
     const [openWS, setOpenWS] = React.useState(false);
+    const [action, setAction] = React.useState("");
 
     const {
         getArrowProps,
@@ -73,6 +73,7 @@ export default function ReactPopperTooltip({ ShareWebId, row, AllListId }: any) 
         }
         return [];
     }, [action]);
+
     const openActivityPopup = (row:any) => {
         if(row.SharewebTaskType == undefined){
             setOpenActivity(true)
@@ -133,7 +134,6 @@ export default function ReactPopperTooltip({ ShareWebId, row, AllListId }: any) 
                                     <img className="icon-sites-img ml20 me-1" src={row?.original?.SiteIcon}></img>
                                 </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</>}
                                 <span>{row?.original?.Shareweb_x0020_ID}</span>
-                                
                             </>
                             {getValue()}
                         </>
@@ -151,7 +151,8 @@ export default function ReactPopperTooltip({ ShareWebId, row, AllListId }: any) 
                 placeholder: "",
                 header: "",
                 size: 15,
-            },   {
+            },
+            {
                 accessorKey: "",
                 size: 7,
                 canSort: false,
@@ -187,14 +188,21 @@ export default function ReactPopperTooltip({ ShareWebId, row, AllListId }: any) 
     }, []);
     return (
         <>
-            <span
+            {projectToolShow != true ? <span
                 ref={setTriggerRef}
                 onClick={() => handlAction("click")}
                 onMouseEnter={() => handlAction("hover")}
                 onMouseLeave={() => handleMouseLeave()}
             >
                 {ShareWebId}
-            </span>
+            </span> :
+                <span
+                    ref={setTriggerRef}
+                    onMouseEnter={() => handlAction("hover")}
+                    onMouseLeave={() => handleMouseLeave()}
+                >
+                    {ShareWebId}
+                </span>}
 
             {action === "click" && visible && (
                 <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container p-0 m-0" })}>
@@ -204,22 +212,37 @@ export default function ReactPopperTooltip({ ShareWebId, row, AllListId }: any) 
                     </div>
 
                     <div className={scrollToolitem === true ? "tool-Wrapper scroll-toolitem" : "tool-Wrapper"}  >
-                        <GlobalCommanTable columns={columns} data={tooltiphierarchy} callBackDataToolTip={callBackDataToolTip} callBackData={callBackData} pageName={pageName} />
+                        <GlobalCommanTable columns={columns} data={tooltiphierarchy} callBackDataToolTip={callBackDataToolTip} callBackData={callBackData} pageName={pageName} expendedTrue={true}/>
                     </div>
                     <div {...getArrowProps({ className: "tooltip-arrow" })} />
                 </div>
             )}
-            {action === "hover" && visible && (
+            {action === "hover" && visible && projectToolShow != true && (
                 <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container" })}>
-                    {/* <span>
-                   {row.original.Item_x0020_Type == "Component" || row.original.Item_x0020_Type == "SubComponent" || row.original.Item_x0020_Type == "Feature"  ? <span>{row.original.PortfolioStructureID}</span>: 
-                   row.original.SharewebTaskType?.Title == "Activities" ? <span>{row.original.ShowTooltipSharewebId}</span> : 
-                   row.original.SharewebTaskType?.Title == "Workstream" ? <span>{row?.parentRow?.original?.ShowTooltipSharewebId + '-' + row.original.Shareweb_x0020_ID.slice(-2)}</span>: ''} :- {row.original.toolTitle}
-                   </span> */}
                     <span>
                         <span>
                             <a>{row.original.toolSharewebId} : </a></span><span><a>{row.original.toolTitle}</a>
                         </span>
+                    </span>
+                    <div {...getArrowProps({ className: "tooltip-arrow" })} />
+                </div>
+            )}
+
+            {action === "hover" && visible && projectToolShow === true && (
+                <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container" })}>
+                    <span>
+                        {projectToolShow != true ? <span>
+                            {row?.original?.joinedData}
+                        </span>
+                            :
+                            <>
+                                {row?.original?.joinedData.split('\n').map((line: any, index: any) => (
+                                    <span key={index}>
+                                        {line}
+                                        <br />
+                                    </span>
+                                ))}</>
+                        }
                     </span>
                     <div {...getArrowProps({ className: "tooltip-arrow" })} />
                 </div>

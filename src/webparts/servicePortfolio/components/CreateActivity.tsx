@@ -719,6 +719,13 @@ const CreateActivity = (props: any) => {
     var SharewebID: any = ''
 
     const getActivitiesDetails = async (item: any) => {
+
+        siteTypess?.forEach((ba:any)=>{
+            if(item.Title == ba.Title){
+                ba.IscreateTask = true;
+                ba.isSiteSelect = true;
+            }
+        })
         console.log(item)
         let web = new Web(dynamicList.siteUrl);
         let componentDetails = [];
@@ -736,7 +743,7 @@ const CreateActivity = (props: any) => {
             LatestTaskNumber = 1;
             item.LatestTaskNumber = LatestTaskNumber
         } else {
-            LatestTaskNumber = componentDetails[0].SharewebTaskLevel1No;
+            LatestTaskNumber = componentDetails[0]?.SharewebTaskLevel1No;
             LatestTaskNumber += 1;
             item.LatestTaskNumber = LatestTaskNumber
         }
@@ -775,7 +782,7 @@ const CreateActivity = (props: any) => {
                     if (componentDetails.length == 0) {
                         WorstreamLatestId = 1;
                     } else {
-                        WorstreamLatestId = componentDetails[0].SharewebTaskLevel2No + 1;
+                        WorstreamLatestId = componentDetails[0]?.SharewebTaskLevel2No + 1;
                     }
                     getTasktype();
                 }
@@ -1013,7 +1020,11 @@ const CreateActivity = (props: any) => {
                             .top(1)
                             .get()
                         console.log(componentDetails)
-                        var LatestId = componentDetails[0].Id + 1;
+                        if(componentDetails.length === 0){
+                            var LatestId:any  =1
+                        }else{
+                            var LatestId:any = componentDetails[0]?.Id + 1;
+                        }
                         LatestId += newIndex;
                         if (Task == undefined || Task == '')
                             Task = SelectedTasks[0];
@@ -1214,7 +1225,7 @@ const CreateActivity = (props: any) => {
                             .top(1)
                             .get()
                         console.log(componentDetails)
-                        var LatestId = componentDetails[0].Id + 1;
+                        var LatestId = componentDetails[0]?.Id + 1;
                         LatestId += newIndex;
                         if (Task == undefined || Task == '')
                             Task = SelectedTasks[0];
@@ -1358,7 +1369,16 @@ const CreateActivity = (props: any) => {
                             data.Clientcategories = data.ClientCategory;
                             res.data = data;
                             console.log(res);
-                            closeTaskStatusUpdatePoup(res);
+
+                            if (AllItems.PageType == 'ProjectManagement') {
+                                props.Call();
+                                let url = `${dynamicList.siteUrl}/SitePages/Task-Profile.aspx?taskId=${res.data.Id}&Site=${res.data.siteType}`
+                                window.location.href = url;
+                            }
+                            else {
+                                closeTaskStatusUpdatePoup(res);
+                            }
+                           
                         })
                         // }
                     }
