@@ -1944,7 +1944,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
               </div>
               <section>
                 <div className="col mt-2">
-                  <div className="Taskaddcomment row border-top">
+                  <div className="Taskaddcomment row">
                     {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"].length > 0 &&
                       <div className="bg-white col-sm-4 mt-2 p-0">
                         {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.map((imgData: any, i: any) => {
@@ -2279,7 +2279,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
                 {/*===================Backgroundimage code and comment========== */}
 
-                {this.backGroundComment ? <div className="col mt-2">
+                {this.backGroundComment  && this.state.Result["OffshoreImageUrl"].length>0 ? <div className="col mt-2">
                   <div className="Taskaddcomment row border-top">
                     {this.state.Result["OffshoreImageUrl"] != null && this.state.Result["OffshoreImageUrl"].length > 0 &&
                       <div className="bg-white col-sm-4 mt-2 p-0">
