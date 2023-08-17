@@ -5,7 +5,18 @@ import * as Moment from 'moment';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import ApprovalHistoryPopup from "./ApprovalHistoryPopup";
 import Tooltip from '../Tooltip';
-
+import { ImReply } from 'react-icons/im';
+import {
+    mergeStyleSets,
+    FocusTrapCallout,
+    FocusZone,
+    FocusZoneTabbableElements,
+    FontWeights,
+    Stack,
+    Text,
+} from '@fluentui/react';
+import { useBoolean, useId } from '@fluentui/react-hooks';
+import { DefaultButton, PrimaryButton } from '@fluentui/react/lib/Button';
 
 const AddCommentComponent = (FbData: any) => {
     const FeedBackData = FbData.Data;
@@ -16,16 +27,22 @@ const AddCommentComponent = (FbData: any) => {
     const [currentUserData, setCurrentUserData] = useState<any>([]);
     const [editPostPanel, setEditPostPanel] = useState(false);
     const [MarkAsApproval, setMarkAsApproval] = useState(false);
-    const [updateComment, setUpdateComment] = useState({
+    const [updateComment, setUpdateComment] = useState<any>({
         Title: "",
         Index: "",
         SubTextIndex: "",
         isApprovalComment: false,
+        ReplyMessages: []
     });
     const [ApprovalPointUserData, setApprovalPointUserData] = useState<any>([]);
     const [ApprovalPointCurrentIndex, setApprovalPointCurrentIndex] = useState('');
     const [ApprovalPointHistoryStatus, setApprovalPointHistoryStatus] = useState(false);
     const ApprovalStatus = FbData.ApprovalStatus;
+    const [isCalloutVisible, { toggle: toggleIsCalloutVisible }] = useBoolean(false);
+    const [currentDataIndex, setCurrentDataIndex] = useState<any>(0);
+    const [ReplyMessageText, setReplyMessageText] = useState('');
+    const buttonId = useId(`callout-button`);
+    const [EditModelUsedFor, setEditModelUsedFor] = useState('')
     var Array: any = [];
     useEffect(() => {
         console.log(FeedBackData);
@@ -34,6 +51,7 @@ const AddCommentComponent = (FbData: any) => {
             FeedBackData.map((dataItem: any) => {
                 if (dataItem.ApproverData == undefined) {
                     dataItem.ApproverData = [];
+
                 }
                 Array.push(dataItem);
                 tempArray.push(dataItem);
@@ -43,15 +61,16 @@ const AddCommentComponent = (FbData: any) => {
         getCurrentUserDetails();
     }, [])
 
-    const openEditModal = (comment: any, indexOfUpdateElement: any, indexOfSubtext: any, isSubtextComment: any) => {
+    const openEditModal = (comment: any, indexOfUpdateElement: any, indexOfSubtext: any, isSubtextComment: any, usedFor: any) => {
         const commentDetails: any = {
             Title: comment,
             Index: indexOfUpdateElement,
             SubTextIndex: indexOfSubtext,
-            isApprovalComment: false,
+            isApprovalComment: false
         }
         setUpdateComment(commentDetails);
         setEditPostPanel(true);
+        setEditModelUsedFor(usedFor)
     }
     const clearComment = (isSubtextComment: any, indexOfDeleteElement: any, indexOfSubtext: any) => {
         let tempArray: any = [];
@@ -91,7 +110,7 @@ const AddCommentComponent = (FbData: any) => {
         let date = new Date()
         let timeStamp = date.getTime()
         if (txtComment != '') {
-            let temp = {
+            let temp: any = {
                 AuthorImage: currentUserData != undefined ? currentUserData.ImageUrl : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
                 AuthorName: currentUserData != null && currentUserData.length > 0 ? currentUserData.Title : Context.pageContext._user.displayName,
                 Created: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
@@ -100,6 +119,7 @@ const AddCommentComponent = (FbData: any) => {
                 editableItem: false,
                 isApprovalComment: MarkAsApproval,
                 isShowLight: '',
+                ReplyMessages: []
             };
             FeedBackArray.unshift(temp);
         }
@@ -109,9 +129,16 @@ const AddCommentComponent = (FbData: any) => {
     const editPostCloseFunction = () => {
         setEditPostPanel(false);
     }
-    const updateCommentFunction = (e: any, CommentData: any) => {
-        FeedBackArray[CommentData.Index].Title = e.target.value;
-        FbData.callBack(true, FeedBackArray, 0);
+    const updateCommentFunction = (e: any, CommentData: any, usedFor: any) => {
+        if (usedFor == "ParentComment"){
+            FeedBackArray[CommentData.Index].Title = e.target.value;
+            FbData.callBack(true, FeedBackArray, 0);
+        }
+        if(usedFor == "ReplyComment"){
+            FeedBackArray[CommentData.SubTextIndex].ReplyMessages[CommentData.Index].Title = e.target.value;
+            FbData.callBack(true, FeedBackArray, 0);
+        }
+            
     }
     const cancelCommentBtn = () => {
         FbData.CancelCallback(true);
@@ -142,10 +169,6 @@ const AddCommentComponent = (FbData: any) => {
 
     // ********************* this is for the Approval Point History Popup ************************
 
-    // const ApprovalPointPopupClose = () => {
-    //     setApprovalPointHistoryStatus(false)
-    // }
-
     const ApprovalPopupOpenHandle = (index: any, data: any) => {
         setApprovalPointCurrentIndex(index);
         setApprovalPointHistoryStatus(true);
@@ -168,6 +191,62 @@ const AddCommentComponent = (FbData: any) => {
             </div>
         );
     }
+
+    // this is used for the Reply Comment Section 
+
+    const OpenCallOutFunction = (IndexData: any) => {
+        setCurrentDataIndex(IndexData);
+        toggleIsCalloutVisible();
+    }
+
+    const updateReplyMessagesFunction = (e: any) => {
+        setReplyMessageText(e.target.value);
+    }
+
+    const SaveReplyMessageFunction = () => {
+        let ReplyMessageObject: any = {
+            AuthorImage: currentUserData != undefined ? currentUserData.ImageUrl : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+            AuthorName: currentUserData != null && currentUserData.length > 0 ? currentUserData.Title : Context.pageContext._user.displayName,
+            Created: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+            Title: ReplyMessageText,
+        }
+        if (FeedBackArray[currentDataIndex].ReplyMessages == undefined) {
+            FeedBackArray[currentDataIndex].ReplyMessages = [];
+        }
+        FeedBackArray[currentDataIndex].ReplyMessages.push(ReplyMessageObject);
+        FbData.callBack(true, FeedBackArray, 0);
+        toggleIsCalloutVisible();
+    }
+
+    const DeleteReplyMessageFunction = (ReplyMsgIndex: any, ParentIndex: any) => {
+        let tempArray: any = [];
+        FeedBackArray?.map((item: any, index: any) => {
+            if (index == ParentIndex) {
+                item.ReplyMessages.splice(ReplyMsgIndex, 1);
+                tempArray.push(item)
+            } else {
+                tempArray.push(item)
+            }
+        })
+        setFeedBackArray(tempArray);
+        FbData.callBack(true, tempArray, 0);
+        // FbData.callBack(isSubtextComment, tempArray, indexOfSubtext);
+    }
+    const styles = mergeStyleSets({
+        callout: {
+            width: 700,
+            padding: '20px 24px',
+        },
+        title: {
+            marginBottom: 12,
+            fontWeight: FontWeights.semilight,
+        },
+        buttons: {
+            display: 'flex',
+            justifyContent: 'flex-end',
+            marginTop: 20,
+        },
+    });
 
     return (
         <div>
@@ -220,14 +299,52 @@ const AddCommentComponent = (FbData: any) => {
                                                     <span className="font-weight-normal">
                                                         {commentDtl.AuthorName} - {commentDtl.Created}
                                                     </span>
-                                                    <span>
-                                                        <a className="ps-1" title="Edit Comment" onClick={() => openEditModal(commentDtl.Title, index, FbData?.index, false)}><img src={require('../../Assets/ICON/edit_page.svg')} width="25" /></a>
-                                                        <a className="ps-1" title="Delete Comment" onClick={() => clearComment(true, index, FbData?.index)}><img src={require('../../Assets/ICON/cross.svg')} width="25"></img></a>
+                                                    <span className="align-baseline d-flex">
+                                                        <a className="ps-1" title="Comment Reply" >
+                                                            <div data-toggle="tooltip" id={buttonId + "-" + index}
+                                                                onClick={() => OpenCallOutFunction(index)}
+                                                                data-placement="bottom"
+                                                            >
+                                                                <ImReply />
+                                                            </div>
+                                                        </a>
+                                                        <a className="ps-1" title="Edit Comment" onClick={() => openEditModal(commentDtl.Title, index, FbData?.index, false, "ParentComment")}><span className="svg__iconbox svg__icon--editBox"></span></a>
+                                                        <a className="ps-1" title="Delete Comment" onClick={() => clearComment(true, index, FbData?.index)}><span className="svg__icon--cross svg__iconbox"></span></a>
                                                     </span>
                                                 </div>
                                                 <div>
                                                     <span dangerouslySetInnerHTML={{ __html: commentDtl.Title }}></span>
                                                 </div>
+                                                {commentDtl.ReplyMessages != undefined && commentDtl.ReplyMessages?.length > 0 ?
+                                                    <div>
+                                                        {commentDtl.ReplyMessages?.map((ReplyDtl: any, ReplyIndex: any) => {
+                                                            return (
+                                                                <div key={ReplyIndex} className="border d-flex my-2 p-1">
+                                                                    <div>
+                                                                        <img style={{ width: "40px", borderRadius: "50%", height: "40px", margin: "5px" }} src={ReplyDtl.AuthorImage != undefined && ReplyDtl.AuthorImage != '' ?
+                                                                            ReplyDtl.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
+                                                                        />
+                                                                    </div>
+                                                                    <div className="full-width">
+                                                                        <div className='d-flex justify-content-between align-items-center'>
+                                                                            <span className="font-weight-normal">
+                                                                                {ReplyDtl.AuthorName} - {ReplyDtl.Created}
+                                                                            </span>
+                                                                            <span className="align-baseline d-flex">
+                                                                                <a className="ps-1" title="Edit Comment" onClick={() => openEditModal(ReplyDtl.Title, ReplyIndex, index, false, "ReplyComment")}><span className="svg__iconbox svg__icon--editBox"></span></a>
+                                                                                <a className="ps-1" title="Delete Comment" onClick={() => DeleteReplyMessageFunction(ReplyIndex, index)}><span className="svg__icon--cross svg__iconbox"></span></a>
+                                                                            </span>
+                                                                        </div>
+                                                                        <div>
+                                                                            <span dangerouslySetInnerHTML={{ __html: ReplyDtl.Title }}></span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            )
+                                                        })}
+
+                                                    </div> : null
+                                                }
                                             </div>
                                         </div>
                                     </div>
@@ -265,16 +382,12 @@ const AddCommentComponent = (FbData: any) => {
                     >
                         <div className="parentDiv">
                             <div style={{ width: '99%', marginTop: '2%', padding: '2%' }}>
-                                <textarea id="txtUpdateComment" rows={6} onChange={(e) => updateCommentFunction(e, updateComment)} style={{ width: '100%', marginLeft: '3px' }} defaultValue={updateComment ? updateComment.Title : ''}>
+                                <textarea id="txtUpdateComment" rows={6} onChange={(e) => updateCommentFunction(e, updateComment, EditModelUsedFor)} style={{ width: '100%', marginLeft: '3px' }} defaultValue={updateComment ? updateComment.Title : ''}>
                                 </textarea>
                             </div>
                             <footer className="d-flex justify-content-between ms-3 mx-2 float-end">
-                                {/* <div className="d-flex">
-                                    <input type="checkbox" defaultChecked={updateComment ? (updateComment.isApprovalComment ? true : false) : false} className="form-check-input m-0 me-1 mt-1 rounded-0" />
-                                    <label className="siteColor">Mark as Approval Comment</label>
-                                </div> */}
                                 <div>
-                                <button className='btn btn-default mx-1 px-2' onClick={editPostCloseFunction}>
+                                    <button className='btn btn-default mx-1 px-2' onClick={editPostCloseFunction}>
                                         Cancel
                                     </button>
                                     <button className="btn btnPrimary" onClick={editPostCloseFunction}>
@@ -294,6 +407,33 @@ const AddCommentComponent = (FbData: any) => {
                     callBack={ApprovalHistoryPopupCallBack}
                 />
                 : null
+            }
+            {isCalloutVisible ? (
+                <FocusTrapCallout
+                    role="alertdialog"
+                    className={styles.callout}
+                    gapSpace={0}
+                    target={`#${buttonId}-${currentDataIndex}`}
+                    onDismiss={toggleIsCalloutVisible}
+                    setInitialFocus
+                >
+                    <Text block variant="xLarge" className={styles.title}>
+                        Comment Reply
+                    </Text>
+                    <Text block variant="small">
+                        <div className="d-flex">
+                            <textarea className="form-control" onChange={(e) => updateReplyMessagesFunction(e)}></textarea>
+                        </div>
+
+                    </Text>
+                    <FocusZone handleTabKey={FocusZoneTabbableElements.all} isCircularNavigation>
+                        <Stack className={styles.buttons} gap={8} horizontal>
+                            <PrimaryButton onClick={SaveReplyMessageFunction}>Save</PrimaryButton>
+                            <DefaultButton onClick={toggleIsCalloutVisible}>Cancel</DefaultButton>
+                        </Stack>
+                    </FocusZone>
+                </FocusTrapCallout>
+            ) : null
             }
         </div>
     )

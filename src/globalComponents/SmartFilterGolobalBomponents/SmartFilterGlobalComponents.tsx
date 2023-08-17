@@ -3,10 +3,6 @@ import { Web } from "sp-pnp-js";
 import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 import '../SmartFilterGolobalBomponents/Style.css'
-import { FaCheck } from 'react-icons/fa';
-import { map } from 'jquery';
-import * as Moment from 'moment';
-import * as globalCommon from '../globalCommon';
 let filterGroupsDataBackup: any = [];
 let filterGroupData1: any = [];
 const SmartFilterSearchGlobal = (item: any) => {
@@ -134,7 +130,7 @@ const SmartFilterSearchGlobal = (item: any) => {
         smartmetaDataDetails.forEach((element: any) => {
             element.label = element.Title;
             element.value = element.Id;
-            if (element.TaxType == 'Task Types') {
+            if (element.TaxType == 'Task Types' ) {
                 filterGroups[0].values.push(element);
                 filterGroups[0].checked.push(element.Id)
             }
@@ -342,7 +338,7 @@ const SmartFilterSearchGlobal = (item: any) => {
         if (typeSite.length === 0) {
             return false;
         } else {
-            return typeSite.some((value: any) => value.Title === data?.SharewebTaskType?.Title);
+            return typeSite.some((value: any) => value.Title === data?.TaskType?.Title);
         }
     };
 

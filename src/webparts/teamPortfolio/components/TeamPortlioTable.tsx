@@ -1,28 +1,14 @@
 import * as React from "react";
-import { Component } from "react";
 import * as $ from "jquery";
 import * as Moment from "moment";
-//import '../../cssFolder/foundation.scss';
-import { Modal, Panel, PanelType } from "office-ui-fabric-react";
-//import "bootstrap/dist/css/bootstrap.min.css";
-import {
-    FaChevronRight,
-    FaChevronDown,
-    FaMinus,
-    FaPlus,
-    FaCompressArrowsAlt,
-} from "react-icons/fa";
-import { SlArrowRight, SlArrowLeft, SlArrowUp, SlArrowDown } from "react-icons/sl";
-import { CSVLink } from "react-csv";
-import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
-//import SmartFilter from './SmartFilter';
-//import '../../cssFolder/foundation.scss';
+import { Panel, PanelType } from "office-ui-fabric-react";
+import { FaCompressArrowsAlt,} from "react-icons/fa";
+import { SlArrowRight,SlArrowDown } from "react-icons/sl";
+import pnp, { Web} from "sp-pnp-js";
 import { map } from "jquery";
 import EditInstituton from "../../EditPopupFiles/EditComponent";
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup";
-import ExpndTable from "../../../globalComponents/ExpandTable/Expandtable";
-import { GlobalConstants } from "../../../globalComponents/LocalCommon";
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
 import { PortfolioStructureCreationCard } from "../../../globalComponents/tableControls/PortfolioStructureCreation";
@@ -30,46 +16,26 @@ import CreateActivity from "../../servicePortfolio/components/CreateActivity";
 import CreateWS from "../../servicePortfolio/components/CreateWS";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Tooltip from "../../../globalComponents/Tooltip";
-import * as XLSX from "xlsx";
-import {
-    Column, Table,
-    ExpandedState, useReactTable, getCoreRowModel, getFilteredRowModel, getExpandedRowModel, ColumnDef, flexRender, getSortedRowModel, SortingState,
-    ColumnFiltersState, FilterFn, getFacetedUniqueValues, getFacetedRowModel
-} from "@tanstack/react-table";
-import { RankingInfo, rankItem, compareItems } from "@tanstack/match-sorter-utils";
+import {ColumnDef} from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { HTMLProps } from "react";
 import HighlightableCell from "../../componentPortfolio/components/highlight";
 import Loader from "react-loader";
-import ShowTeamMembers from "../../../globalComponents/ShowTeamMember";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
-
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 import SmartFilterSearchGlobal from "../../../globalComponents/SmartFilterGolobalBomponents/SmartFilterGlobalComponents";
-import { concat } from "lodash";
-import saveAs from "file-saver";
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
-// import Excel from 'exceljs';
 var filt: any = "";
 var ContextValue: any = {};
 let globalFilterHighlited: any;
 let forceExpanded: any = [];
-let activity = 0;
-let workstrim = 0;
-let task = 0;
 let isUpdated: any = "";
-let componentData: any = []; let subComponentData: any = []; let featureData: any = [];
-let activityData: any = []; let workstreamData: any = []; let tasksData: any = [];
+let componentData: any = [];
 let componentDataCopyBackup: any = []
 let filterCount: any = 0;
-let FinalFilterData: any = [];
 let portfolioColor: any = '';
 let copyDtaArray: any = [];
 let renderData: any = [];
-// ReactTable Part/////
-// ReactTable Part end/////
-
 function TeamPortlioTable(SelectedProp: any) {
     try {
         if (SelectedProp?.SelectedProp != undefined) {
@@ -85,26 +51,15 @@ function TeamPortlioTable(SelectedProp: any) {
         console.log(e);
     }
     ContextValue = SelectedProp?.SelectedProp;
-    const [sorting, setSorting] = React.useState<SortingState>([]);
-    const [expanded, setExpanded] = React.useState<ExpandedState>({});
-    const [rowSelection, setRowSelection] = React.useState({});
     const refreshData = () => setData(() => renderData);
     const [loaded, setLoaded] = React.useState(false);
-    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-    const [globalFilter, setGlobalFilter] = React.useState("");
-    globalFilterHighlited = globalFilter;
-    const [checkData, setcheckData] = React.useState([])
-    const [showTeamMemberOnCheck, setShowTeamMemberOnCheck] = React.useState(false)
-    const [ShowTeamPopup, setShowTeamPopup] = React.useState(false);
     const [siteConfig, setSiteConfig] = React.useState([]);
-    const [maidataBackup, setmaidataBackup] = React.useState([]);
     const [data, setData] = React.useState([]);
     copyDtaArray = data;
     const [AllUsers, setTaskUser] = React.useState([]);
     const [AllMetadata, setMetadata] = React.useState([])
     const [AllClientCategory, setAllClientCategory] = React.useState([])
     const [IsUpdated, setIsUpdated] = React.useState("");
-    const [tablecontiner, settablecontiner]: any = React.useState("hundred");
     const [checkedList, setCheckedList] = React.useState<any>({});
     const [AllSiteTasksData, setAllSiteTasksData] = React.useState([]);
     const [AllMasterTasksData, setAllMasterTasks] = React.useState([]);
@@ -128,29 +83,15 @@ function TeamPortlioTable(SelectedProp: any) {
     const [SharewebTask, setSharewebTask] = React.useState("");
     const [SharewebTimeComponent, setSharewebTimeComponent] = React.useState([]);
     const [IsTimeEntry, setIsTimeEntry] = React.useState(false);
-    const [AllCountItems, setAllCountItems] = React.useState({
-        AllComponentItems: [],
-        AllSubComponentItems: [],
-        AllFeaturesItems: [],
-        AfterSearchComponentItems: [],
-        AfterSearchSubComponentItems: [],
-        AfterSearchFeaturesItems: [],
-    });
     const [portfolioTypeConfrigration, setPortfolioTypeConfrigration] = React.useState<any>([{ Title: 'Component', Suffix: 'C', Level: 1 }, { Title: 'SubComponent', Suffix: 'S', Level: 2 }, { Title: 'Feature', Suffix: 'F', Level: 3 }]);
     let ComponetsData: any = {};
     let Response: any = [];
     let props = undefined;
     let AllTasks: any = [];
-    let CopyTaskData: any = [];
     let AllComponetsData: any = [];
     let TaskUsers: any = [];
     let TasksItem: any = [];
-
-
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
     const getTaskUsers = async () => {
         let web = new Web(ContextValue.siteUrl);
         let taskUsers = [];
@@ -180,7 +121,7 @@ function TeamPortlioTable(SelectedProp: any) {
         let web = new Web(ContextValue.siteUrl);
         let PortFolioType = [];
         PortFolioType = await web.lists
-            .getById('c21ab0e4-4984-4ef7-81b5-805efaa3752e')
+            .getById(ContextValue.PortFolioTypeID)
             .items.select(
                 "Id",
                 "Title",
@@ -195,7 +136,7 @@ function TeamPortlioTable(SelectedProp: any) {
         let taskTypeData = [];
         let typeData: any = [];
         taskTypeData = await web.lists
-            .getById('21b55c7b-5748-483a-905a-62ef663972dc')
+            .getById(ContextValue.TaskTypeID)
             .items.select(
                 'Id',
                 'Level',
@@ -247,9 +188,7 @@ function TeamPortlioTable(SelectedProp: any) {
             let newarray: any = [];
             const ItemTypeColumn = "Item Type";
             console.log("Fetching portfolio icons...");
-
-            // Fetching the field data
-            const field = await new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP")
+            const field = await new Web(ContextValue.siteUrl)
                 .lists.getById(ContextValue?.MasterTaskListID)
                 .fields.getByTitle(ItemTypeColumn)
                 .get();
@@ -286,7 +225,6 @@ function TeamPortlioTable(SelectedProp: any) {
 
 
     const LoadAllSiteTasks = function () {
-        let Response: any = [];
         let AllTasksData: any = [];
         let Counter = 0;
         if (siteConfig != undefined && siteConfig.length > 0) {
@@ -456,31 +394,11 @@ function TeamPortlioTable(SelectedProp: any) {
                 }
             })
         }
-
-        // if (isUpdated === "") {
-        //     filt = "(Item_x0020_Type eq 'Component') or (Item_x0020_Type eq 'SubComponent') or (Item_x0020_Type eq 'Feature') and ((Portfolio_x0020_Type eq 'Service') or (Portfolio_x0020_Type eq 'Component'))";
-        // }
-        // if (isUpdated != undefined && isUpdated.toLowerCase().indexOf("service") > -1)
-        //     filt =
-        //         "((Item_x0020_Type eq 'Component') or (Item_x0020_Type eq 'SubComponent') or (Item_x0020_Type eq 'Feature')) and ((Portfolio_x0020_Type eq 'Service'))";
-        // if (
-        //     isUpdated != undefined &&
-        //     isUpdated.toLowerCase().indexOf("event") > -1
-        // )
-        //     filt =
-        //         "((Item_x0020_Type eq 'Component') or (Item_x0020_Type eq 'SubComponent') or (Item_x0020_Type eq 'Feature')) and ((Portfolio_x0020_Type eq 'Events'))";
-        // if (
-        //     isUpdated != undefined &&
-        //     isUpdated.toLowerCase().indexOf("component") > -1
-        // )
-        //     filt =
-        //         "((Item_x0020_Type eq 'Component') or (Item_x0020_Type eq 'SubComponent') or (Item_x0020_Type eq 'Feature')) and ((Portfolio_x0020_Type eq 'Component'))";
         let web = new Web(ContextValue.siteUrl);
         let componentDetails = [];
         componentDetails = await web.lists
             .getById(ContextValue.MasterTaskListID)
-            //.getByTitle('Master Tasks')
-            .items//.getById(this.state.itemID)
+            .items
             .select("ID", "Id", "Title", "Mileage", "TaskListId",
                 "TaskListName", "WorkspaceType", "PortfolioLevel", "PortfolioStructureID", "component_x0020_link", "Package", "Comments",
                 "DueDate", "Sitestagging", "Body", "Deliverables", "SiteCompositionSettings", "StartDate", "Created", "Item_x0020_Type",
@@ -492,16 +410,12 @@ function TeamPortlioTable(SelectedProp: any) {
                 "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title",
                 "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange",
                 "Component/Title", "Component/ItemType", "Services/Id", "Services/Title", "Services/ItemType", "Events/Id", "Events/Title", "Events/ItemType", "AssignedTo/Id", "Component/Id",
-                // 'ClientCategory/Color_x0020_Tag',//"SharewebCategories/Id", "SharewebTaskType/Title","SharewebCategories/Title","Editor/Title",
             )
             .expand(
                 "Parent", "PortfolioType", "AssignedTo", "ClientCategory", "Author", "Team_x0020_Members", "Responsible_x0020_Team",
                 "Events",
                 "Services",
                 "Component",
-                // "SharewebTaskType",
-                // "SharewebCategories"
-                // "Editor",
             )
             .top(4999)
             .filter(filt)
@@ -600,21 +514,6 @@ function TeamPortlioTable(SelectedProp: any) {
         ComponetsData["allComponets"] = componentDetails;
         // LoadAllSiteTasks();
     };
-
-    // React.useEffect(() => {
-    //     const params = new URLSearchParams(window.location.search);
-    //     let query = params.get("PortfolioType");
-    //     if (query === 'Service' || query === 'service') {
-    //         let QueryPams = "Service Portfolio"
-    //         setIsUpdated(QueryPams);
-    //         isUpdated = query;
-    //     } else if (query === 'component' || query === 'component') {
-    //         let QueryPams = "Component Portfolio"
-    //         setIsUpdated(QueryPams);
-    //         isUpdated = query;
-
-    //     }
-    // }, [])
     React.useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         let query = params.get("PortfolioType");
@@ -672,37 +571,6 @@ function TeamPortlioTable(SelectedProp: any) {
         let filterDataBackup = JSON.parse(JSON.stringify(filterData));
         setAllSmartFilterData(filterDataBackup);
     }, []);
-
-    // React.useEffect(() => {
-    //     if (smartAllFilterData?.length > 0 && updatedSmartFilter === false) {
-    //         setLoaded(false);
-    //         componentData = [];
-    //         setAllSmartFilterDataBackup(structuredClone(smartAllFilterData));
-    //         if (IsUpdated === "") {
-    //             portfolioTypeData?.map((port: any) => {
-    //                 componentGrouping(port?.Id);
-    //             })
-    //         } else if (IsUpdated.length) {
-    //             portfolioTypeData?.map((port: any) => {
-    //                 componentGrouping(port?.Id);
-    //             })
-    //         }
-    //     }
-    //     if (smartAllFilterData?.length > 0 && updatedSmartFilter === true) {
-    //         // updatedSmartFilterGrouping()
-    //         setLoaded(false);
-    //         filterCount = 0;
-    //         componentDataCopyBackup = [];
-    //         setDataBackup([]);
-    //         let AllSmartFilterDataBackupCopy = AllSmartFilterDataBackup?.filter((elem: any) => elem.PortfolioType != undefined);
-    //         setDataBackup(structuredClone(AllSmartFilterDataBackupCopy));
-    //         componentDataCopyBackup = structuredClone(componentData);
-    //         filterDataAfterUpdate();
-    //         // portfolioTypeData?.map((port: any) => {
-    //         //     updatedSmartFilterGrouping(port?.Id);
-    //         // })
-    //     }
-    // }, [smartAllFilterData])
     React.useEffect(() => {
         if (smartAllFilterData?.length > 0 && updatedSmartFilter === false) {
             setLoaded(false);
@@ -738,14 +606,11 @@ function TeamPortlioTable(SelectedProp: any) {
 
     const DynamicSort = function (items: any, column: any) {
         items?.sort(function (a: any, b: any) {
-            // return   a[column] - b[column];
             var aID = a[column];
             var bID = b[column];
             return aID == bID ? 0 : aID > bID ? 1 : -1;
         });
-
     };
-
     const componentGrouping = (portId: any) => {
         let FinalComponent: any = []
         let AllProtFolioData = smartAllFilterData?.filter((comp: any) => comp?.PortfolioType?.Id === portId && comp.TaskType === undefined);
@@ -811,14 +676,12 @@ function TeamPortlioTable(SelectedProp: any) {
             let worstreamAndTask = smartAllFilterData?.filter((taskData: any) => taskData?.ParentTask?.Id === act?.Id && taskData?.siteType === act?.siteType)
             if (worstreamAndTask.length > 0) {
                 act.subRows = act?.subRows?.concat(worstreamAndTask);
-                // act.subRows.push(worstreamAndTask);
             }
             worstreamAndTask?.forEach((wrkst: any) => {
                 wrkst.subRows = wrkst.subRows === undefined ? [] : wrkst.subRows;
                 let allTasksData = smartAllFilterData?.filter((elem: any) => elem?.ParentTask?.Id === wrkst?.Id && elem?.siteType === wrkst?.siteType);
                 if (allTasksData.length > 0) {
                     wrkst.subRows = wrkst?.subRows?.concat(allTasksData)
-                    // wrkst.subRows.push(allTasksData);
                 }
             })
         })
@@ -912,98 +775,6 @@ function TeamPortlioTable(SelectedProp: any) {
             setData(finalDataCopyArray);
         }
     }
-    // const filterDataAfterUpdate = () => {
-    //     let AllsmartAllFilterData = smartAllFilterData?.filter((elemVal: any) => elemVal.PortfolioType != undefined);
-    //     const updatedRows = [];
-    //     for (let i = 0; i < AllsmartAllFilterData.length; i++) {
-    //         const row = AllsmartAllFilterData[i];
-    //         row.subRows=[];
-    //         const updatedRow = updatedSmartFilterGrouping(row);
-    //         updatedRows.push(...updatedRow);
-    //     }
-    //     FinalFilterData.push(updatedRows);
-    //     console.log(updatedRows);
-    // };
-
-    // const updatedSmartFilterGrouping = (row: any): any[] => {
-    //     for (let i = 0; i < allDataBackup.length; i++) {
-    //         const Object = allDataBackup[i];
-    //         if (Object.Id === row?.Portfolio?.Id) {
-    //             Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
-    //             Object.subRows.push(row);
-    //             return updatedSmartFilterGrouping(Object);
-    //         } else if (Object.Id === row?.Parent?.Id) {
-    //             Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
-    //             Object.subRows.push(row);
-    //             return updatedSmartFilterGrouping(Object);
-    //         } else if (row?.Component != undefined && row?.Component?.length > 0 && Object.Id === row?.Component[0]?.Id) {
-    //             Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
-    //             Object.subRows.push(row);
-    //             return updatedSmartFilterGrouping(Object);
-    //         } else if (row?.Services != undefined && row?.Services?.length > 0 && Object.Id === row?.Services[0]?.Id) {
-    //             Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
-    //             Object.subRows.push(row);
-    //             return updatedSmartFilterGrouping(Object);
-    //         }
-    //     }
-    //     if(row.subRows?.length>0){
-    //         row.subRows = row?.subRows?.filter((ele: any, ind: any) => ind === row?.subRows?.findIndex((elem: any) => elem.ID === ele.ID));
-    //     }
-    //     return [row];
-    // };
-
-
-
-
-
-
-
-    // const filterDataAfterUpdate = () => {
-    //     let AllsmartAllFilterData = smartAllFilterData?.filter((elemVal: any) => elemVal.PortfolioType != undefined);
-    //     let updatedRows = [];
-    //     for (let i = 0; i < AllsmartAllFilterData.length; i++) {
-    //         const row = AllsmartAllFilterData[i];
-    //         row.subRows = [];
-    //         const updatedRow = updatedSmartFilterGrouping(row);
-    //         updatedRows.push(updatedRow);
-    //     }
-    //     FinalFilterData.push(updatedRows);
-    //     console.log(updatedRows);
-    // };
-
-    // const updatedSmartFilterGrouping = (row: any): any => {
-    //     // for (let i = 0; i < allDataBackup.length; i++) {
-    //     const checkIfParentIsPersent = (parentRow: any) => {
-    //         for (let i = 0; i < allDataBackup.length; i++) {
-    //             let Object = allDataBackup[i];
-    //             if (Object.Id === parentRow?.Portfolio?.Id) {
-    //                 Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
-    //                 Object.subRows.push(parentRow);
-    //                 return Object
-    //             } else if (Object.Id === parentRow?.Parent?.Id) {
-    //                 Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
-    //                 Object.subRows.push(parentRow);
-    //                 return Object
-    //             } else if (parentRow?.Component != undefined && parentRow?.Component?.length > 0 && Object.Id === parentRow?.Component[0]?.Id) {
-    //                 Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
-    //                 Object.subRows.push(parentRow);
-    //                 return Object
-    //             } else if (parentRow?.Services != undefined && parentRow?.Services?.length > 0 && Object.Id === parentRow?.Services[0]?.Id) {
-    //                 Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
-    //                 Object.subRows.push(parentRow);
-    //                 return Object
-    //             }
-    //         }
-    //         return undefined;
-    //     }
-    //     let parentRows = checkIfParentIsPersent(row)
-    //     if (parentRows === undefined) {
-    //         return row;
-    //     }
-    //     return updatedSmartFilterGrouping(parentRows);
-    // };
-
-
 
     ///react table start function//////
     /////////////////////Table Column Start///////////////////////////////
@@ -1066,13 +837,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     <>
                         <span className="d-flex">
                             {row?.original?.Title != "Others" ? (
-                                <IndeterminateCheckbox
-                                    {...{
-                                        checked: row.getIsSelected(),
-                                        indeterminate: row.getIsSomeSelected(),
-                                        onChange: row.getToggleSelectedHandler(),
-                                    }}
-                                />
+                                <IndeterminateCheckbox {...{ checked: row.getIsSelected(), indeterminate: row.getIsSomeSelected(),onChange: row.getToggleSelectedHandler(), }}/>
                             ) : (
                                 ""
                             )}{" "}
@@ -1097,8 +862,6 @@ function TeamPortlioTable(SelectedProp: any) {
                                     )}
                                 </>
                             )}
-
-
                             {/* ////////// Plush Icons////// */}
                             {/* <span>
                                 {((row.getCanExpand() &&
@@ -1657,34 +1420,36 @@ const closeActivity = () => {
     setActivityPopup(false)
 }
 const addActivity = (type: any) => {
-    if (checkedList?.TaskType?.Title === 3 || checkedList?.TaskType == undefined) {
+    if (checkedList?.TaskType?.Id === 3 || checkedList?.TaskType == undefined) {
     checkedList.NoteCall = type
     setActivityPopup(true);
     }
-    else{
+    if(checkedList?.TaskType?.Id == 1){
         checkedList.NoteCall = 'Workstream'
         setIsOpenWorkstream(true);
     }
+    if (checkedList?.TaskType?.Id == 2) {
+
+        alert("You can not create ny item inside Task")
+    }
    
 }
-const onRenderCustomHeaderMain = () => {
-    return (
-        <div className="d-flex full-width pb-1">
-            <div
-                style={{
-                    marginRight: "auto",
-                    fontSize: "20px",
-                    fontWeight: "600",
-                    marginLeft: "20px",
-                }}
-            >
-                <span>{`Create Component `}</span>
+    const onRenderCustomHeaderMain = () => {
+        return (
+            <div className="d-flex full-width pb-1">
+                <div
+                    style={{
+                        marginRight: "auto",
+                        fontSize: "20px",
+                        fontWeight: "600",
+                        marginLeft: "20px",
+                    }}
+                >
+                    <span>{`Create Component `}</span>
+                </div>
             </div>
-        </div>
-    );
-};
-// new change end////
-//-------------------------------------------------------------End---------------------------------------------------------------------------------
+        );
+    };
     //-------------------------------------------------------------End---------------------------------------------------------------------------------
     return (
         <div id="ExandTableIds" style={{}}>
@@ -1727,7 +1492,7 @@ const onRenderCustomHeaderMain = () => {
                 </div>
             </section>
 
-            <section className="TableContentSection taskprofilepagegreen" id={tablecontiner} >
+            <section className="TableContentSection taskprofilepagegreen">
                 <div className="container-fluid">
                     <section className="TableSection">
                         <div className="container p-0">

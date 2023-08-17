@@ -2085,10 +2085,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                 </div>
               </div>
               <section>
-                <div className="col">
+                <div className="col mt-2">
                   <div className="Taskaddcomment row">
                     {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"].length > 0 &&
-                      <div className="col-sm-4 bg-white col-sm-4 pt-3 p-0">
+                      <div className="bg-white col-sm-4 mt-2 p-0">
                         {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.map((imgData: any, i: any) => {
                           return <div className="taskimage border mb-3">
                             {/*  <BannerImageCard imgData={imgData}></BannerImageCard> */}
@@ -2131,7 +2131,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                       </div>
                     }
                     {/*feedback comment section code */}
-                    <div className={this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.length > 0 ? "col-sm-8 pe-0 mt-2" : "col-sm-12 pe-0 ps-0 mt-2"}>
+                    <div className={this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.length > 0 ? "col-sm-8 pe-0 mt-2" : "col-sm-12 pe-0 mt-2"}>
                       {this.state.Result["SharewebTaskType"] != null && (this.state.Result["SharewebTaskType"] == '' ||
                         this.state.Result["SharewebTaskType"] == 'Task' || this.state.Result["SharewebTaskType"] == "Workstream" || this.state.Result["SharewebTaskType"] == "Activities") && this.state.Result["FeedBack"] != undefined && this.state.Result["FeedBack"].length > 0 && this.state.Result["FeedBack"][0].FeedBackDescriptions != undefined &&
                         this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
@@ -2515,10 +2515,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
                 {/*===================Backgroundimage code and comment========== */}
 
-                {this.backGroundComment ? <div className="col">
-                  <div className="Taskaddcomment row">
+                {this.backGroundComment  && this.state.Result["OffshoreImageUrl"].length>0 ? <div className="col mt-2">
+                  <div className="Taskaddcomment row border-top">
                     {this.state.Result["OffshoreImageUrl"] != null && this.state.Result["OffshoreImageUrl"].length > 0 &&
-                      <div className="col-sm-5 bg-white col-sm-5 pt-3 p-0">
+                      <div className="bg-white col-sm-4 mt-2 p-0">
                         {this.state.Result["OffshoreImageUrl"] != null && this.state.Result["OffshoreImageUrl"]?.map((imgData: any, i: any) => {
                           return <div className="taskimage border mb-3">
                             <a className='images' target="_blank" data-interception="off" href={imgData?.ImageUrl}>
@@ -2552,7 +2552,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                         })}
                       </div>
                     }
-                    {this.state.Result["OffshoreComments"] != null && this.state.Result["OffshoreComments"] != undefined && this.state.Result["OffshoreComments"].length > 0 && <div className="col-sm-7 pe-0 mt-2">
+                    {this.state.Result["OffshoreComments"] != null && this.state.Result["OffshoreComments"] != undefined && this.state.Result["OffshoreComments"].length > 0 && <div className="col-sm-8 pe-0 mt-2">
                       <fieldset className='border p-1'>
                         <legend className="border-bottom fs-6">Background Comments</legend>
                         {this.state.Result["OffshoreComments"] != null && this.state.Result["OffshoreComments"].length > 0 && this.state.Result["OffshoreComments"]?.map((item: any, index: any) => {
@@ -2589,7 +2589,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                 </>}
               </div>
               <div>{this.state.Result.Id && <SmartInformation ref={this.smartInfoRef} Id={this.state.Result.Id} AllListId={AllListId} Context={this.props?.Context} taskTitle={this.state.Result?.Title} listName={this.state.Result?.listName} />}</div>
-              <div> {this.state.Result != undefined && <RelevantDocuments ref={this?.relevantDocRef} siteUrl={this.props.siteUrl}Context={this.props?.Context} AllListId={AllListId} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments>}</div>
+              <div> {this.state.Result != undefined && <RelevantDocuments ref={this?.relevantDocRef} siteUrl={this.props.siteUrl} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments>}</div>
 
             </div>
 

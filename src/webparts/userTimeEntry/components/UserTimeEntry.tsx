@@ -17,6 +17,7 @@ import GlobalCommanTable from '../../../globalComponents/GroupByReactTableCompon
 import {
   ColumnDef,
 } from "@tanstack/react-table";
+import { Row } from 'react-bootstrap';
 
 export interface IUserTimeEntryState {  
   Result : any;  
@@ -1895,9 +1896,9 @@ callBackData = (elem: any, ShowingData: any) =>{
 
   public render(): React.ReactElement<IUserTimeEntryProps> {
 
-    SPComponentLoader.loadCss("https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
-    SPComponentLoader.loadCss("https://hhhhteams.sharepoint.com/sites/HHHH/Style%20Library/css/SPfoudationSupport.css");
-    SPComponentLoader.loadCss("https://hhhhteams.sharepoint.com/sites/HHHH/Style%20Library/css/SPfoundation.css");
+    //SPComponentLoader.loadCss("https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
+    //SPComponentLoader.loadCss("https://hhhhteams.sharepoint.com/sites/HHHH/Style%20Library/css/SPfoudationSupport.css");
+    //SPComponentLoader.loadCss("https://hhhhteams.sharepoint.com/sites/HHHH/Style%20Library/css/SPfoundation.css");
     const {
       description,
       isDarkTheme,
@@ -1910,40 +1911,41 @@ callBackData = (elem: any, ShowingData: any) =>{
     return (
       <div>
 <div className="p-0" style={{verticalAlign: "top"}}><h2 className="heading d-flex justify-content-between align-items-center"><span> <a>Timesheet</a> </span><span className="text-end fs-6"><a target="_blank" data-interception="off" href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/UserTimeEntry-Old.aspx`}>Old UserTimeEntry</a></span></h2></div>
-        <div className="col-sm-12 togglebox  tab-content bdrbox">
-          <div className="col-sm-12 pull-left mt-10 report-taskuser">
+        <Row>
+          <details open className='border p-0'>
             <span className="pull-right" style={{display:'none'}}>
-              <input type="checkbox" className="mt-10 mr-5 ng-pristine ng-untouched ng-valid ng-empty" onClick={(e)=>this.SelectAllGroupMember(e)} />
+              <input type="checkbox" className="" onClick={(e)=>this.SelectAllGroupMember(e)} />
               <label>Select All </label>
             </span>
-            <span className="plus-icon hreflink pl-10 pull-left ng-scope" >
+            {/* <span className="plus-icon hreflink pl-10 pull-left ng-scope" >
                 <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/24/list-icon.png" />
-            </span>
-            <a className="hreflink pull-left mr-5">Task User : </a>
+            </span> */}
+             <summary><a className="hreflink pull-left mr-5">Task User : </a>
             {this.state.ImageSelectedUsers != null && this.state.ImageSelectedUsers.length > 0 && this.state.ImageSelectedUsers.map((user:any,i:number)=> {
               return  <span className="ng-scope">  
                       <img className="AssignUserPhoto mr-5" title={user.AssingedToUser.Title}  src={user?.Item_x0020_Cover?.Url}/>
                       </span>
               })
             }                
-            <span className="ng-binding ng-hide">               
-            </span>
-          </div>
+            <span className="ng-binding ng-hide"> </span>
+            </summary> 
+      
 
-          <div className="col-sm-12 mb-10 padL-0 BdrBoxBlue" style={{display:"inline"}}>
-            <div className="taskTeamBox pl-10">
-                <div className="taskTeamBox mt-10">
+          <div style={{display:"inline"}}>
+                <div className="taskTeamBox p-2">
                   {this.state.taskUsers != null && this.state.taskUsers.length > 0 && this.state.taskUsers.map((user:any,i:number)=> {
-                    return <div className="top-assign ng-scope" ng-repeat="user in taskUsers">
-                            <fieldset className="team ng-scope">
-                            <legend className="ng-binding">
-                                <input style={{display:'none'}} className="no-padding mr-4 mb-5 ng-pristine ng-untouched ng-valid ng-empty" type="checkbox" ng-model="user.SelectedGroup" onClick={(e)=>this.SelectedGroup(e,user)}/>
+                    return <div className="top-assign " ng-repeat="user in taskUsers">
+                            <div className="team ">
+                            <label className="BdrBtm">
+                                <input style={{display:'none'}} className="" type="checkbox" ng-model="user.SelectedGroup" onClick={(e)=>this.SelectedGroup(e,user)}/>
                                 {user.Title}
+                                </label>
+                                <div className='d-flex'>
                                 {user.childs.length > 0 && user.childs.map((item:any,i:number)=> {
                                   return <div className="marginR41 ng-scope">
                                           {item.Item_x0020_Cover!=undefined && item.AssingedToUser !=undefined &&
-                                            <span className="ng-scope">                                              
-                                            <img id={"UserImg" + item.Id} className="AssignUserPhoto mr-5" onClick={(e)=>this.SelectUserImage(e,item)} style={{borderRadius:"0px", marginRight:'5px'}} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)" 
+                                            <span>                                              
+                                            <img id={"UserImg" + item.Id} className="ProirityAssignedUserPhoto" onClick={(e)=>this.SelectUserImage(e,item)}  ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)" 
                                               title={item.AssingedToUser.Title}  
                                               src={item.Item_x0020_Cover.Url}/>
                                           </span>
@@ -1951,8 +1953,9 @@ callBackData = (elem: any, ShowingData: any) =>{
                                           
                                         </div>
                                 })}
-                            </legend>
-                    </fieldset>
+                                </div>
+                            
+                    </div>         
                     </div>
                   })
                   
@@ -1960,91 +1963,92 @@ callBackData = (elem: any, ShowingData: any) =>{
                     
                   
                 </div>
-              </div>
+           
           </div>
-
-          <div className="col-sm-12 padL-0 PadR0 mt0 mb-20">          
-            <div className="col-sm-1 padL-0">
+          </details>
+          <Row className="my-2 p-0">          
+            <div className="col-sm-1 ps-0">
                <label ng-required="true" className="full_width ng-binding" ng-bind-html="GetColumnDetails('StartDate') | trustedHTML">Start Date</label>
                <DatePicker selected={this.state.startdate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setStartDate(date)} className="form-control ng-pristine ng-valid ng-touched ng-not-empty"/>
             </div>
-            <div className="col-sm-1 padL-0">
+            <div className="col-sm-1 ps-0 ">
                <label ng-required="true" className="full_width ng-binding" ng-bind-html="GetColumnDetails('EndDate') | trustedHTML" >End Date</label>
                <DatePicker selected={this.state.enddate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setEndDate(date)} className="form-control ng-pristine ng-valid ng-touched ng-not-empty"/>
             </div>
             <div className="col-sm-10">
-               <div className="col-sm-12 text-right" style={{borderBottom: '1px solid #ccc', paddingBottom: '5px'}}>                 
+            <div className='text-end'> <label className="me-1"> <input type="checkbox" className="form-check-input" ng-click="SelectedPortfolio('Component',PortfolioComponent)" /> Component</label><label > <input type="checkbox" className="form-check-input" ng-click="SelectedPortfolio('Component',PortfolioComponent)"/> Component</label></div>
+               <div className="col" style={{borderBottom: '1px solid #ccc', paddingBottom: '5px'}}>                 
                </div>
-               <div className="col-sm-12 Weekly-TimeReportDays">
-                  <span>
-                  <input type="radio" name="dateSelection" id="rdCustom" value="Custom" ng-checked="unSelectToday=='Custom'" onClick={()=>this.selectDate('Custom')} ng-model="unSelectCustom" className="ng-valid ng-not-empty ng-dirty ng-valid-parse ng-touched"/>
+               <div className="col TimeReportDays">
+                  <span className='SpfxCheckRadio me-2'>
+                  <input type="radio" className="radio" name="dateSelection" id="rdCustom" value="Custom" ng-checked="unSelectToday=='Custom'" onClick={()=>this.selectDate('Custom')} ng-model="radio"/>
                   <label>Custom</label>
                   </span>
-                  <span>
-                  <input type="radio" name="dateSelection" id="rdToday" value="Today" onClick={()=>this.selectDate('today')} ng-model="unSelectToday" className="ng-valid ng-not-empty ng-dirty ng-valid-parse ng-touched"/>
+                  <span className='SpfxCheckRadio me-2'>
+                  <input type="radio" name="dateSelection" id="rdToday" value="Today" onClick={()=>this.selectDate('today')} ng-model="unSelectToday" className="radio"/>
                   <label>Today</label>
                   </span>
-                  <span>
-                  <input type="radio" name="dateSelection" id="rdYesterday" value="Yesterday" onClick={()=>this.selectDate('yesterday')} ng-model="unSelectYesterday" className="ng-valid ng-not-empty ng-dirty ng-valid-parse ng-touched"/>
+                  <span className='SpfxCheckRadio me-2'>
+                  <input type="radio" name="dateSelection" id="rdYesterday" value="Yesterday" onClick={()=>this.selectDate('yesterday')} ng-model="unSelectYesterday" className="radio"/>
                   <label> Yesterday </label>
                   </span>
-                  <span>
-                  <input type="radio" name="dateSelection" defaultChecked={true} id="rdThisWeek" value="ThisWeek" onClick={()=>this.selectDate('ThisWeek')} ng-model="unThisWeek" className="ng-valid ng-not-empty ng-dirty ng-valid-parse ng-touched"/>
+                  <span className='SpfxCheckRadio me-2'>
+                  <input type="radio" name="dateSelection" defaultChecked={true} id="rdThisWeek" value="ThisWeek" onClick={()=>this.selectDate('ThisWeek')} ng-model="unThisWeek" className="radio"/>
                   <label> This Week</label>
                   </span>
-                  <span>
-                  <input type="radio" name="dateSelection" id="rdLastWeek" value="LastWeek" onClick={()=>this.selectDate('LastWeek')} ng-model="unLastWeek" className="ng-valid ng-not-empty ng-dirty ng-valid-parse ng-touched"/>
+                  <span className='SpfxCheckRadio me-2'>
+                  <input type="radio" name="dateSelection" id="rdLastWeek" value="LastWeek" onClick={()=>this.selectDate('LastWeek')} ng-model="unLastWeek" className="radio"/>
                   <label> Last Week</label>
                   </span>
-                  <span>
-                  <input type="radio" name="dateSelection" id="rdThisMonth" value="EntrieMonth" onClick={()=>this.selectDate('EntrieMonth')} ng-model="unEntrieMonth" className="ng-valid ng-not-empty ng-dirty ng-valid-parse ng-touched"/>
+                  <span className='SpfxCheckRadio me-2'>
+                  <input type="radio" name="dateSelection" id="rdThisMonth" value="EntrieMonth" onClick={()=>this.selectDate('EntrieMonth')} ng-model="unEntrieMonth" className="radio"/>
                   <label>This Month</label>
                   </span>
-                  <span>
-                  <input type="radio" name="dateSelection" id="rdLastMonth" value="LastMonth" onClick={()=>this.selectDate('LastMonth')} ng-model="unLastMonth" className="ng-valid ng-not-empty ng-dirty ng-valid-parse ng-touched"/>
+                  <span className='SpfxCheckRadio me-2'>
+                  <input type="radio" name="dateSelection" id="rdLastMonth" value="LastMonth" onClick={()=>this.selectDate('LastMonth')} ng-model="unLastMonth" className="radio"/>
                   <label>Last Month</label>
                   </span>
-                  <span>
-                  <input type="radio" name="dateSelection" value="rdLast3Month" onClick={()=>this.selectDate('Last3Month')} ng-model="unLast3Month" className="ng-pristine ng-untouched ng-valid ng-not-empty"/>
+                  <span className='SpfxCheckRadio me-2'>
+                  <input type="radio" name="dateSelection" value="rdLast3Month" onClick={()=>this.selectDate('Last3Month')} ng-model="unLast3Month" className="radio"/>
                   <label>Last 3 Months</label>
                   </span>
-                  <span>
-                  <input type="radio" name="dateSelection" value="rdEntrieYear" onClick={()=>this.selectDate('EntrieYear')} ng-model="unEntrieYear" className="ng-pristine ng-untouched ng-valid ng-empty"/>
+                  <span className='SpfxCheckRadio me-2'>
+                  <input type="radio" name="dateSelection" value="rdEntrieYear" onClick={()=>this.selectDate('EntrieYear')} ng-model="unEntrieYear" className="radio"/>
                   <label>This Year</label>
                   </span>
-                  <span>
-                  <input type="radio" name="dateSelection" value="rdLastYear" onClick={()=>this.selectDate('LastYear')} ng-model="unLastYear" className="ng-pristine ng-untouched ng-valid ng-empty"/>
+                  <span className='SpfxCheckRadio me-2'>
+                  <input type="radio" name="dateSelection" value="rdLastYear" onClick={()=>this.selectDate('LastYear')} ng-model="unLastYear" className="radio"/>
                   <label>Last Year</label>
                   </span>
-                  <span>
-                  <input type="radio" name="dateSelection" value="rdAllTime" onClick={()=>this.selectDate('AllTime')} ng-model="unAllTime" className="ng-pristine ng-untouched ng-valid ng-empty"/>
+                  <span className='SpfxCheckRadio me-2'>
+                  <input type="radio" name="dateSelection" value="rdAllTime" onClick={()=>this.selectDate('AllTime')} ng-model="unAllTime" className="radio"/>
                   <label>All Time</label>
                   </span>
-                  <span>
-                  <input type="radio" name="dateSelection" value="Presettime" onClick={()=>this.selectDate('Presettime')} ng-model="unAllTime" className="ng-pristine ng-untouched ng-valid ng-empty"/>
+                  <span className='SpfxCheckRadio me-2'>
+                  <input type="radio" name="dateSelection" value="Presettime" onClick={()=>this.selectDate('Presettime')} ng-model="unAllTime" className="radio"/>
                   <label>Pre-set</label>
-                  <img className="hreflink wid11 mr-5" title="open" ng-click="OpenPresetDatePopup('Presettime')" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png"/>
+                  <img className="hreflink " title="open" ng-click="OpenPresetDatePopup('Presettime')" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png"/>
                   </span>
                  
                </div>
             </div>
             <div className="clearfix"></div>
-          </div>
+          </Row>
 
-          <div id="showFilterBox" className="col-sm-12 tab-content mb-10 bdrbox pad10">
+          <div id="showFilterBox" className="col p-0">
             <div className="togglebox">
-              <span>
-                <label className="toggler full_width" ng-click="filtershowHide()">
-                  <span className="pull-left">
-                      <img className="hreflink wid22" title="Filter" style={{width:'22px'}} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Filter-12-WF.png"/>
+              <details>
+                <summary  ng-click="filtershowHide()">
+                  <label>
+                      {/* <img className="hreflink wid22" title="Filter" style={{width:'22px'}} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Filter-12-WF.png"/> */}
                       SmartSearch – Filters
-                  </span>
+                  </label>
 
-                  <span className="ml20">
+                  <span>
                   {this.state.checkedAll && this.state.filterItems != null && this.state.filterItems.length > 0 &&
                      this.state.filterItems.map((obj:any)=>{
-                      return <span className="ng-binding ng-scope"> {obj.Title}
-                              <span className="font-normal ng-binding">
+                      return <span> {obj.Title}
+                              <span>
                                     : ({this.getAllSubChildenCount(obj)})
                                 </span>
                               </span>
@@ -2052,8 +2056,8 @@ callBackData = (elem: any, ShowingData: any) =>{
                   }
                   {this.state.checkedAllSites && this.state.filterSites != null && this.state.filterSites.length > 0 &&
                      this.state.filterSites.map((obj:any)=>{
-                      return <span className="ng-binding ng-scope"> {obj.Title}
-                              <span className="font-normal ng-binding">
+                      return <span> {obj.Title}
+                              <span>
                                     : ({this.getAllSubChildenCount(obj)})
                                 </span>
                               </span>
@@ -2061,37 +2065,36 @@ callBackData = (elem: any, ShowingData: any) =>{
                   }
                   {this.state.checkedParentNode != null && !this.state.checkedAll && this.state.checkedParentNode.length > 0 &&
                      this.state.checkedParentNode.map((obj:any)=>{
-                      return <span className="ng-binding ng-scope"> {obj.Title}
-                              <span className="font-normal ng-binding">
+                      return <span> {obj.Title}
+                              <span>
                                     : ({this.getAllSubChildenCount(obj)})
                                 </span>
                               </span>
                      }) 
                   }
+                   </span>
 
-                  
-                  </span>
-
-                  <span className="pull-right">
+                  {/* <span className="pull-right">
                     <span className="hreflink ng-scope" ng-if="!smartfilter2.expanded">
                       <img className="hreflink wid10" style={{width:'10px'}} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/sub_icon.png"/>
                     </span>
-                  </span>
-                </label>
+                  </span> */}
+                </summary>
 
                 <div className="togglecontent" style={{display:"block"}}>
-                  <div className="container p0 mt-10 smartSearch-Filter-Section">
-                    <table width="95%" className="indicator_search mt-10">
+                  <div className="smartSearch-Filter-Section">
+                    <table width="100%" className="indicator_search">
                         <tbody>
                           <tr>
-                          <td valign="top" ng-repeat="item in filterGroups" className="ng-scope">
-                              <fieldset>
-                                <legend>
+                          <td valign="top" ng-repeat="item in filterGroups">
+                              <div>
+                                <label>
                                   <span className="ng-binding">
-                                    <input id='chkAllCategory' defaultChecked={this.state.checkedAll} onClick={(e)=>this.SelectAllCategories(e)} type="checkbox" ng-model="item.Selected" className="icon-input mt-0 ml2 ng-pristine ng-untouched ng-valid ng-empty" ng-click="getMoreFilterTask(item,item.Selected,Item.Id,'SelectAll')" />
-                                    Client Category
+                                    <input id='chkAllCategory' defaultChecked={this.state.checkedAll} onClick={(e)=>this.SelectAllCategories(e)} type="checkbox" ng-model="item.Selected" className="form-check-input me-1"/>
+                                      Client Category
                                     </span>
-                                </legend>
+                                    <hr></hr>
+                                </label>
                                 <CheckboxTree
                                     nodes={this.state.filterItems}
                                     checked={this.state.checked}
@@ -2102,16 +2105,17 @@ callBackData = (elem: any, ShowingData: any) =>{
                                     showNodeIcon={false}
                                     checkModel={'all'}
                                 />
-                              </fieldset>
+                              </div>
                             </td>
                           <td valign="top" ng-repeat="item in filterGroups" className="ng-scope">
-                              <fieldset>
-                                <legend>
-                                  <span className="ng-binding">
-                                    <input type="checkbox" id='chkAllSites'  defaultChecked={this.state.checkedAllSites} onClick={(e)=>this.SelectAllSits(e)} ng-model="item.Selected" className="icon-input mt-0 ml2 ng-pristine ng-untouched ng-valid ng-empty" ng-click="getMoreFilterTask(item,item.Selected,Item.Id,'SelectAll')" />
-                                    Sites
+                              <div>
+                                <label>
+                                  <span>
+                                    <input type="checkbox" id='chkAllSites'  defaultChecked={this.state.checkedAllSites} onClick={(e)=>this.SelectAllSits(e)} ng-model="item.Selected" className="form-check-input me-1"  />
+                                      Sites
                                     </span>
-                                </legend>
+                                    <hr></hr>
+                                </label>
                                 <CheckboxTree
                                     nodes={this.state.filterSites}
                                     checked={this.state.checkedSites}
@@ -2122,7 +2126,7 @@ callBackData = (elem: any, ShowingData: any) =>{
                                     showNodeIcon={false}
                                     checkModel={'all'}
                                 />
-                              </fieldset>
+                              </div>
                             </td>
                             
                           </tr>
@@ -2130,30 +2134,24 @@ callBackData = (elem: any, ShowingData: any) =>{
                     </table>
                   
                   </div>
-
-                  <div className="col-sm-12 padL-0 PadR0 mt-10 valign-middle">
-                            <div className="col-sm-6"></div>
-                            <div className="col-sm-3"></div>
-                            <div className="col-sm-3 padL-0">
-                                <button type="button" className="btn btn-default ml5 pull-right" onClick={()=>this.ClearFilters()}>
+                            <div className="col text-end mb-2 ">
+                                <button type="button" className="btn btn-default me-1" onClick={()=>this.ClearFilters()}>
                                     Clear Filters
                                 </button>
-                                <button type="button" className="btn btn-primary pull-right" onClick={(e)=>this.updatefilter()}>
+                                <button type="button" className="btn btn-primary" onClick={(e)=>this.updatefilter()}>
                                     Update Filters
                                 </button>
                             </div>
-                        </div>
+                     
                 </div>
 
-              </span>
+              </details>
             </div>
           </div>
-        
-        
-        </div>
+        </Row>
 
         {this.state.AllTimeEntry != undefined && this.state.AllTimeEntry.length > 0 &&        
-        <div className="col-sm-12 p-0 smart">
+        <div className="Alltable ">
             <div className="wrapper">
                 <GlobalCommanTable showHeader={true} showDateTime={' | Time: '+this.state.resultSummary.totalTime + ' | Days: ('+this.state.resultSummary.totalDays+')'} columns={this.state.columns} data={this.state.AllTimeEntry} callBackData={this.callBackData} />
             </div>
