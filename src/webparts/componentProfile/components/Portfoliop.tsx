@@ -2258,28 +2258,30 @@ const [Item,setItem]=React.useState("")
           </section>
         </div>
       </section>
-      <div className="col-sm-12 pad0">
+      <footer className="float-start full_width mt-2 ">
+      <div className="d-flex justify-content-between me-3 p-2">
         {data.map((item: any) => {
           return (
-            <div
-              className="col-sm-6 padL-0 ItemInfo mb-20"
-              style={{ paddingTop: "15px" }}
-            >
+            <div>
               <div>
                 Created{" "}
                 <span>{Moment(item.Created).format("DD/MM/YYYY hh:mm")}</span>{" "}
-                by <span className="footerUsercolor">{item.Author.Title}</span>
+                by <span className="hyperlink">{item.Author.Title}</span>
               </div>
               <div>
                 Last modified{" "}
                 <span>{Moment(item.Modified).format("DD/MM/YYYY hh:mm")}</span>{" "}
-                by <span className="footerUsercolor">{item.Editor.Title}</span>
+                by <span className="hyperlink">{item.Editor.Title}</span>
                
               </div>
             </div>
+  
+           
           );
         })}
       </div>
+      </footer>
+ 
       {IsComponent && (
         <EditInstituton item={SharewebComponent} SelectD={SelectedProp} Calls={Call}></EditInstituton>
       )}

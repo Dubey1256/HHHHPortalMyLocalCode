@@ -1202,7 +1202,7 @@ export default function ProjectOverview(props: any) {
 
 
         let text = '';
-        let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "abhishek.tiwari@hochhuth-consulting.de"];
+        let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "abhishek.tiwari@hochhuth-consulting.de", "deepak@hochhuth-consulting.de"];
         let finalBody: any = [];
         let userApprover = '';
         let groupedData = data;
@@ -1390,7 +1390,6 @@ export default function ProjectOverview(props: any) {
                 items.descriptionsSearch = items.Short_x0020_Description_x0020_On != undefined ? items?.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
                 items.commentsSearch = items?.Comments != null && items?.Comments != undefined ? items.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
                 items['Shareweb_x0020_ID'] = 'P' + items.Id
-               
                 items.DisplayDueDate = items.DueDate != null ? Moment(items.DueDate).format('DD/MM/YYYY') : ""
             })
             Alltask = sortOnPriority(Alltask)
@@ -1665,7 +1664,7 @@ export default function ProjectOverview(props: any) {
 
                                     </dl>
                                     <div className="text-end">
-                                        {currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" ?
+                                        {currentUserData?.Title == "Deepak Trivedi" || currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" ?
                                             <a className="hreflink" onClick={() => { sendAllWorkingTodayTasks() }}>Share Working Todays's Task</a>
                                             : ''}
                                     </div>
