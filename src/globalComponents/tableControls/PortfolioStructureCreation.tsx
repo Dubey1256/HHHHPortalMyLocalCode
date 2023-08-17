@@ -68,7 +68,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
             webServerRelativeUrl: this.props.PropsValue.siteUrl.toLowerCase().split('.com')[1],
             PortfolioTypeArray: [],
             PortfolioTypeId: 1,
-            defaultPortfolioType: (this.props.PortfolioType === undefined || this.props.PortfolioType === '') ? 'Component' : this.props.PortfolioType,
+            defaultPortfolioType: (this.props.PortfolioType === undefined || this.props.PortfolioType === '') ? (this.props?.SelectedItem?.PortfolioType?.Id !=undefined ?this.props?.SelectedItem?.PortfolioType?.Title: 'Component') : this.props.PortfolioType,
         }
         this.getPortfolioType();
         this.LoadSPComponents();
@@ -141,7 +141,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
         let web = new Web(this.state.PropValue.siteUrl);
         let PortFolioType = [];
         PortFolioType = await web.lists
-            .getById('c21ab0e4-4984-4ef7-81b5-805efaa3752e')
+        .getById(this.state?.PropValue?.PortFolioTypeID !=undefined ? this.state?.PropValue?.PortFolioTypeID :'c21ab0e4-4984-4ef7-81b5-805efaa3752e')
             .items.select(
                 "Id",
                 "Title",
