@@ -6,7 +6,6 @@ import Example from "./SubCommentComponent";
 import pnp from 'sp-pnp-js';
 import * as Moment from 'moment';
 import ApprovalHistoryPopup from "./ApprovalHistoryPopup";
-// import FroalaCommentBox from '../FlorarComponents/FroalaCommentBoxComponent';
 
 const CommentBoxComponent = (commentData: any) => {
     const Context = commentData.Context;
@@ -20,7 +19,7 @@ const CommentBoxComponent = (commentData: any) => {
     const [ApprovalPointUserData, setApprovalPointUserData] = useState<any>([]);
     const [ApprovalPointCurrentIndex, setApprovalPointCurrentIndex] = useState('');
     const [ApprovalPointHistoryStatus, setApprovalPointHistoryStatus] = useState(false);
-
+    let [IndexCount, setIndexCount] = useState(1);
     var Array: any = [];
     let ApprovalStatus: any = commentData.ApprovalStatus;
     let SmartLightPercentStatus: any = commentData.SmartLightPercentStatus;
@@ -37,6 +36,7 @@ const CommentBoxComponent = (commentData: any) => {
                     data.push(tempItem);
                     Array.push(tempItem);
                     FirstFeedBackArray.push(tempItem);
+                    IndexCount = IndexCount + 1;
                 }
             })
         } else {
@@ -54,13 +54,15 @@ const CommentBoxComponent = (commentData: any) => {
             Array.push(object);
             FirstFeedBackArray.push(object);
         }
-        setCommentArray(data);
+        // setCommentArray(data);
+        setCommentArray((prev: any) => data);
         setFirstFeedBackArray(data);
         if (SmartLightStatus) {
             setIsCurrentUserApprover(true);
         }
         getCurrentUserDetails();
-    }, [])
+        setIndexCount(commentData.data?.length)
+    }, [commentData.data?.length > 0 ? commentData.data[0]?.Title?.length : commentData.data?.length])
 
     const getCurrentUserDetails = async () => {
         let currentUserId: number;
@@ -177,136 +179,137 @@ const CommentBoxComponent = (commentData: any) => {
 
     return (
         <div>
-            <div>
-                {
-                    commentArray?.map((obj, i) => {
-                        return (
-                            <div className="row">
-                                <div
-                                    data-id={i}
-                                    className="col"
-                                    onChange={handleChangeComment}
-                                >
-                                    <div className="Task-panel d-flex justify-content-between">
-                                        <div className="d-flex">
-                                            {ApprovalStatus ?
-                                                <div>
-                                                    {/* {isCurrentUserApprover ? */}
-                                                    <div className={isCurrentUserApprover ? "alignCenter mt-1" : "alignCenter Disabled-Link mt-1"}>
-                                                        <span className="MR5">
-                                                            <span title="Rejected" onClick={() => SmartLightUpdate(i, "Reject")}
-                                                                className={obj.isShowLight == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
-                                                            >
+            {commentData.data?.length > 0 ?
+                <div className={IndexCount % 2 == 0 ? "add-text-box" : "add-text-box"}>
+                    {
+                        commentArray?.map((obj, i) => {
+                            return (
+                                <div className="row">
+                                    <div
+                                        data-id={i}
+                                        className="col"
+                                        onChange={handleChangeComment}
+                                    >
+                                        <div className="Task-panel d-flex justify-content-between">
+                                            <div className="d-flex">
+                                                {ApprovalStatus ?
+                                                    <div>
+                                                        {/* {isCurrentUserApprover ? */}
+                                                        <div className={isCurrentUserApprover ? "alignCenter mt-1" : "alignCenter Disabled-Link mt-1"}>
+                                                            <span className="MR5">
+                                                                <span title="Rejected" onClick={() => SmartLightUpdate(i, "Reject")}
+                                                                    className={obj.isShowLight == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
+                                                                >
+                                                                </span>
+                                                                <span title="Maybe" onClick={() => SmartLightUpdate(i, "Maybe")} className={obj.isShowLight == "Maybe" ? "circlelight br_yellow pull-left yellow" : "circlelight br_yellow pull-left"}>
+                                                                </span>
+                                                                <span title="Approved" onClick={() => SmartLightUpdate(i, "Approve")} className={obj.isShowLight == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
+                                                                </span>
                                                             </span>
-                                                            <span title="Maybe" onClick={() => SmartLightUpdate(i, "Maybe")} className={obj.isShowLight == "Maybe" ? "circlelight br_yellow pull-left yellow" : "circlelight br_yellow pull-left"}>
-                                                            </span>
-                                                            <span title="Approved" onClick={() => SmartLightUpdate(i, "Approve")} className={obj.isShowLight == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
-                                                            </span>
-                                                        </span>
+                                                        </div>
+                                                        {/* : null } */}
                                                     </div>
-                                                    {/* : null } */}
-                                                </div>
-                                                : null
-                                            }
-                                            {obj.ApproverData != undefined && obj.ApproverData.length > 0 ?
-                                                <span className="siteColor ms-2 hreflink" title="Approval-History Popup" onClick={() => ApprovalPopupOpenHandle(i, obj)}>
-                                                    Pre-approved by - <span className="ms-1"><a title={obj.ApproverData[obj.ApproverData.length - 1]?.Title}><img className='imgAuthor' src={obj.ApproverData[obj.ApproverData.length - 1]?.ImageUrl} /></a></span>
-                                                </span> :
-                                                null
-                                            }
-                                        </div>
+                                                    : null
+                                                }
+                                                {obj.ApproverData != undefined && obj.ApproverData.length > 0 ?
+                                                    <span className="siteColor ms-2 hreflink" title="Approval-History Popup" onClick={() => ApprovalPopupOpenHandle(i, obj)}>
+                                                        Pre-approved by - <span className="ms-1"><a title={obj.ApproverData[obj.ApproverData.length - 1]?.Title}><img className='imgAuthor' src={obj.ApproverData[obj.ApproverData.length - 1]?.ImageUrl} /></a></span>
+                                                    </span> :
+                                                    null
+                                                }
+                                            </div>
 
-                                        <div>
-                                            <span className="mx-1">
-                                                <input className="form-check-input m-0 rounded-0 commentSectionLabel " type="checkbox"
-                                                    checked={obj.Phone}
-                                                    value={obj.Phone}
-                                                    name='Phone'
-                                                />
-                                                <label className="commentSectionLabel ms-1">Phone</label>
-                                            </span>
-                                            <span> | </span>
-                                            <span className="mx-1">
-                                                <input type="checkbox" name='LowImportance' checked={obj.LowImportance} value={obj.LowImportance} className="form-check-input m-0 rounded-0 commentSectionLabel "
-                                                />
-                                                <label className="commentSectionLabel ms-1">
-                                                    Low Importance
-                                                </label>
-                                            </span>
-                                            <span> | </span>
-                                            <span className="mx-1">
-                                                <input type="checkbox" name='HighImportance' checked={obj.HighImportance}
-                                                    value={obj.HighImportance} className="form-check-input m-0 rounded-0 commentSectionLabel "
-                                                />
-                                                <label className="commentSectionLabel ms-1">
-                                                    High Importance
-                                                </label>
-                                            </span>
-                                            <span> | </span>
-                                            <span className="mx-1">
-                                                <input type="checkbox" id="" className="form-check-input m-0 rounded-0 commentSectionLabel "
-                                                    name='Completed' checked={obj.Completed} value={obj.Completed} />
-                                                <label className="commentSectionLabel ms-1">
-                                                    Mark As Completed
-                                                </label>
-                                            </span>
-                                            <span> | </span>
-                                            <span className="mx-1">
-                                                <span className="hreflink siteColor commentSectionLabel" onClick={() => postBtnHandle(i)}>Add Comment </span>
-                                            </span>
+                                            <div>
+                                                <span className="mx-1">
+                                                    <input className="form-check-input m-0 rounded-0 commentSectionLabel " type="checkbox"
+                                                        checked={obj.Phone}
+                                                        value={obj.Phone}
+                                                        name='Phone'
+                                                    />
+                                                    <label className="commentSectionLabel ms-1">Phone</label>
+                                                </span>
+                                                <span> | </span>
+                                                <span className="mx-1">
+                                                    <input type="checkbox" name='LowImportance' checked={obj.LowImportance} value={obj.LowImportance} className="form-check-input m-0 rounded-0 commentSectionLabel "
+                                                    />
+                                                    <label className="commentSectionLabel ms-1">
+                                                        Low Importance
+                                                    </label>
+                                                </span>
+                                                <span> | </span>
+                                                <span className="mx-1">
+                                                    <input type="checkbox" name='HighImportance' checked={obj.HighImportance}
+                                                        value={obj.HighImportance} className="form-check-input m-0 rounded-0 commentSectionLabel "
+                                                    />
+                                                    <label className="commentSectionLabel ms-1">
+                                                        High Importance
+                                                    </label>
+                                                </span>
+                                                <span> | </span>
+                                                <span className="mx-1">
+                                                    <input type="checkbox" id="" className="form-check-input m-0 rounded-0 commentSectionLabel "
+                                                        name='Completed' checked={obj.Completed} value={obj.Completed} />
+                                                    <label className="commentSectionLabel ms-1">
+                                                        Mark As Completed
+                                                    </label>
+                                                </span>
+                                                <span> | </span>
+                                                <span className="mx-1">
+                                                    <span className="hreflink siteColor commentSectionLabel" onClick={() => postBtnHandle(i)}>Add Comment </span>
+                                                </span>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className={`d-flex`} title={obj.isShowLight}>
-                                        <span className="SubTestBorder p-1 me-1">{i + 1}</span>
-                                        <HtmlEditorCard
-                                            editorValue={obj.Title != undefined ? obj.Title : ''}
-                                            HtmlEditorStateChange={HtmlEditorCallBack}
-                                        >
-                                        </HtmlEditorCard>
-                                        {/* <FroalaCommentBox
+                                        <div className={`d-flex`} title={obj.isShowLight}>
+                                            <span className="SubTestBorder p-1 me-1">{i + 1}</span>
+                                            <HtmlEditorCard
+                                                editorValue={obj.Title != undefined ? obj.Title : ''}
+                                                HtmlEditorStateChange={HtmlEditorCallBack}
+                                            >
+                                            </HtmlEditorCard>
+                                            {/* <FroalaCommentBox
                                             EditorValue={obj.Title != undefined ? obj.Title : ''}
                                             callBack={HtmlEditorCallBack}
                                         >
                                         </FroalaCommentBox> */}
-                                    </div>
-                                </div>
-                                <div>
-                                    <div>
-                                        <AddCommentComponent
-                                            Data={obj.Comments != null ? obj.Comments : []}
-                                            allFbData={commentArray}
-                                            index={currentIndex}
-                                            postStatus={postBtnStatus}
-                                            allUsers={commentData.allUsers}
-                                            callBack={postBtnHandleCallBack}
-                                            CancelCallback={postBtnHandleCallBackCancel}
-                                            Context={Context}
-                                            ApprovalStatus={ApprovalStatus}
-                                            isCurrentUserApprover={isCurrentUserApprover}
-                                        />
+                                        </div>
                                     </div>
                                     <div>
-                                        <Example
-                                            SubTextItemsArray={obj.Subtext ? obj.Subtext : []}
-                                            index={0}
-                                            commentId={obj.Id}
-                                            callBack={subTextCallBack}
-                                            currentIndex={0}
-                                            allUsers={commentData.allUsers}
-                                            ApprovalStatus={ApprovalStatus}
-                                            SmartLightStatus={SmartLightStatus}
-                                            SmartLightPercentStatus={SmartLightPercentStatus}
-                                            Context={Context}
-                                            isCurrentUserApprover={isCurrentUserApprover}
-                                            isFirstComment = {true}
-                                        />
+                                        <div>
+                                            <AddCommentComponent
+                                                Data={obj.Comments != null ? obj.Comments : []}
+                                                allFbData={commentArray}
+                                                index={currentIndex}
+                                                postStatus={postBtnStatus}
+                                                allUsers={commentData.allUsers}
+                                                callBack={postBtnHandleCallBack}
+                                                CancelCallback={postBtnHandleCallBackCancel}
+                                                Context={Context}
+                                                ApprovalStatus={ApprovalStatus}
+                                                isCurrentUserApprover={isCurrentUserApprover}
+                                            />
+                                        </div>
+                                        <div>
+                                            <Example
+                                                SubTextItemsArray={obj.Subtext ? obj.Subtext : []}
+                                                index={0}
+                                                commentId={obj.Id}
+                                                callBack={subTextCallBack}
+                                                currentIndex={0}
+                                                allUsers={commentData.allUsers}
+                                                ApprovalStatus={ApprovalStatus}
+                                                SmartLightStatus={SmartLightStatus}
+                                                SmartLightPercentStatus={SmartLightPercentStatus}
+                                                Context={Context}
+                                                isCurrentUserApprover={isCurrentUserApprover}
+                                                isFirstComment={true}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        )
-                    })
-                }
-            </div>
+                            )
+                        })
+                    }
+                </div> : null}
             {ApprovalPointHistoryStatus ? <ApprovalHistoryPopup
                 ApprovalPointUserData={ApprovalPointUserData}
                 ApprovalPointCurrentIndex={ApprovalPointCurrentIndex}
