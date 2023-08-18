@@ -5,7 +5,6 @@ import { usePopperTooltip } from "react-popper-tooltip";
 import { FaChevronDown, FaChevronRight } from 'react-icons/fa';
 import { SlArrowRight, SlArrowLeft, SlArrowUp, SlArrowDown } from "react-icons/sl";
 import { Card, CardBody, CardFooter, CardHeader, CardTitle, Col, CustomInput, Pagination, PaginationItem, PaginationLink, Progress, Row, Table } from "reactstrap";
-import MsgReader from "@kenjiuno/msgreader"
 import "react-popper-tooltip/dist/styles.css";
 import Tooltip from '../Tooltip';
 import { sp } from 'sp-pnp-js'
@@ -379,12 +378,7 @@ const AncTool = (props: any) => {
                 const reader = new FileReader();
                 reader.onloadend = async () => {
                     const fileContent = reader.result as ArrayBuffer;
-                    setCreateNewDocType(getFileType(selectedFile?.name))
-                    if (getFileType(selectedFile?.name) == 'msg') {
-                        const testMsg = new MsgReader(fileContent)
-                        const testMsgInfo = testMsg.getFileData()
-                        console.log(testMsgInfo);
-                    }
+                    setCreateNewDocType(getFileType(selectedFile?.name));
                     // Upload the file
                     await sp.web
                         .getFolderByServerRelativeUrl(uploadPath)
@@ -904,13 +898,13 @@ const AncTool = (props: any) => {
                 <CardBody>
                     <Row>
                         <div className="comment-box hreflink mb-2 col-sm-12">
-                            <span onClick={() => { setModalIsOpen(true) }}> Upload Documents</span>
+                            <a className='siteColor' onClick={() => { setModalIsOpen(true) }}> Upload Documents</a>
                         </div>
                         <div className="comment-box hreflink mb-2 col-sm-12">
-                            <span onClick={() => { setFileNamePopup(true) }}> Create New Item</span>
+                            <a className='siteColor' onClick={() => { setFileNamePopup(true) }}> Create New Item</a>
                         </div>
                         <div className="comment-box hreflink mb-2 col-sm-12">
-                            <span onClick={() => { setRemark(true) }}> Add SmartNote</span>
+                            <a className='siteColor' onClick={() => { setRemark(true) }}> Add SmartNote</a>
                         </div>
                     </Row>
                 </CardBody>

@@ -1,6 +1,17 @@
 import * as React from 'react';
 import * as moment from 'moment';
 import { ITaskprofileProps } from './ITaskprofileProps';
+import {
+  mergeStyleSets,
+  FocusTrapCallout,
+  FocusZone,
+  FocusZoneTabbableElements,
+  FontWeights,
+  Stack,
+  Text,
+} from '@fluentui/react';
+import { useBoolean, useId } from '@fluentui/react-hooks';
+import { DefaultButton, PrimaryButton } from '@fluentui/react/lib/Button';
 import TaskFeedbackCard from './TaskFeedbackCard';
 import { Web } from "sp-pnp-js";
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
@@ -20,7 +31,8 @@ import AncTool from '../../../globalComponents/AncTool/AncTool'
 
 import Tooltip from '../../../globalComponents/Tooltip'
 import ApprovalHistoryPopup from '../../../globalComponents/EditTaskPopup/ApprovalHistoryPopup';
-import { Modal } from 'office-ui-fabric-react';
+import { Modal, Panel, PanelType } from 'office-ui-fabric-react';
+import { ImReply } from 'react-icons/im';
 var ClientTimeArray: any = [];
 var TaskIdCSF: any = "";
 var TaskIdAW = "";
@@ -30,12 +42,16 @@ var isShowSiteCompostion: any;
 var subchildcomment: any;
 let countemailbutton: number;
 var changespercentage = false;
+var buttonId: any;
+
 export interface ITaskprofileState {
   Result: any;
   listName: string;
   itemID: number;
   isModalOpen: boolean;
   isEditModalOpen: boolean
+  isEditReplyModalOpen: boolean
+  ReplyCommenttoUpdate: string;
   imageInfo: any;
   Display: string;
   showcomment: string;
@@ -62,15 +78,37 @@ export interface ITaskprofileState {
   ApprovalStatus: boolean;
   EditSiteCompositionStatus: any
   CommenttoUpdate: string;
+
   updateCommentText: any;
+  updateReplyCommentText: any
   emailComponentstatus: any;
   ApprovalHistoryPopup: boolean;
   ApprovalPointUserData: any;
   ApprovalPointCurrentParentIndex: number;
   currentArraySubTextIndex: number;
+  isCalloutVisible: boolean
+  currentDataIndex: any
+  buttonIdCounter: number
+  replyTextComment: any;
 }
 
 export default class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> {
+  //   private styles = mergeStyleSets({
+  //     callout: {
+  //         width: 700,
+  //         padding: '20px 24px',
+  //     },
+  //     title: {
+  //         marginBottom: 12,
+  //         fontWeight: FontWeights.semilight,
+  //     },
+  //     buttons: {
+  //         display: 'flex',
+  //         justifyContent: 'flex-end',
+  //         marginTop: 20,
+  //     },
+  // });
+
   private relevantDocRef: any;
   private smartInfoRef: any;
   private taskUsers: any = [];
@@ -96,6 +134,11 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     this.oldTaskLink = `${props.siteUrl}/SitePages/Task-Profile-Old.aspx?taskId=` + params.get('taskId') + "&Site=" + params.get('Site');
     this.state = {
       Result: {},
+      isEditReplyModalOpen: false,
+      replyTextComment: "",
+      currentDataIndex: 0,
+      buttonIdCounter: null,
+      isCalloutVisible: false,
       currentArraySubTextIndex: null,
       ApprovalPointUserData: null,
       ApprovalPointCurrentParentIndex: null,
@@ -107,9 +150,11 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       subchildcomment: null,
       showhideCommentBoxIndex: null,
       CommenttoUpdate: '',
+      ReplyCommenttoUpdate: '',
       ApprovalCommentcheckbox: false,
       CommenttoPost: '',
       updateCommentText: {},
+      updateReplyCommentText: {},
       listName: params.get('Site'),
       itemID: Number(params.get('taskId')),
       isModalOpen: false,
@@ -186,6 +231,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       })
     }
   }
+  private generateButtonId = () => {
+
+    return `callout-button`;
+  };
 
   private async loadComponentsDataForTasks(Items: any) {
     let DataForQuery = [];
@@ -768,7 +817,20 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     e.preventDefault();
     this.setState({
       isModalOpen: false,
+      isEditModalOpen:false,
+      isEditReplyModalOpen: false,
       imageInfo: {},
+
+      showPopup: 'none'
+    });
+  }
+  private Closecommentpopup=()=>{
+    this.setState({
+      isModalOpen: false,
+      isEditModalOpen:false,
+      isEditReplyModalOpen: false,
+      imageInfo: {},
+
       showPopup: 'none'
     });
   }
@@ -1273,27 +1335,42 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         Created: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
         Title: txtComment
       };
-      if (this.state?.updateCommentText?.data?.isApprovalComment) {
-        temp.isApprovalComment = this.state?.updateCommentText?.data?.isApprovalComment;
-        temp.isShowLight = this.state?.updateCommentText?.data?.isShowLight
-        temp.ApproverData = this.state?.updateCommentText?.data?.ApproverData;
-      }
-      if (this.state?.updateCommentText?.isSubtextComment) {
-        // this.props.feedback.Subtext[this.state.updateCommentText['indexOfSubtext']]['Comments'][this.state.updateCommentText['indexOfUpdateElement']] = temp;
-        this.state.Result["FeedBack"][0].FeedBackDescriptions[this.state?.updateCommentText?.parentIndexOpeneditModal].Subtext[this.state.updateCommentText['indexOfSubtext']]['Comments'][this.state.updateCommentText['indexOfUpdateElement']] = temp
 
-      }
-      else {
-        // this.props.feedback["Comments"][this.state.updateCommentText['indexOfUpdateElement']] = temp;
-        this.state.Result["FeedBack"][0].FeedBackDescriptions[this.state?.updateCommentText?.parentIndexOpeneditModal]["Comments"][this.state?.updateCommentText['indexOfUpdateElement']] = temp
-      }
+      if (this?.state?.isEditReplyModalOpen) {
+        var EditReplyData = this?.state?.updateReplyCommentText;
+        if (EditReplyData?.isSubtextComment) {
+          let feedback = this.state.Result["FeedBack"][0]?.FeedBackDescriptions[EditReplyData?.parentIndexOpeneditModal].Subtext[EditReplyData?.indexOfSubtext].Comments[EditReplyData?.indexOfUpdateElement].ReplyMessages[EditReplyData?.replyIndex];
+          feedback.Title = this.state?.CommenttoUpdate;
+        } else {
+          let feedback = this.state.Result["FeedBack"][0]?.FeedBackDescriptions[EditReplyData?.parentIndexOpeneditModal].Comments[EditReplyData?.indexOfUpdateElement].ReplyMessages[EditReplyData?.replyIndex];
+          feedback.Title = this.state?.CommenttoUpdate;
+        }
+      } else {
+        if (this.state?.updateCommentText?.data?.isApprovalComment) {
+          temp.isApprovalComment = this.state?.updateCommentText?.data?.isApprovalComment;
+          temp.isShowLight = this.state?.updateCommentText?.data?.isShowLight
+          temp.ApproverData = this.state?.updateCommentText?.data?.ApproverData;
+        }
+        if (this.state?.updateCommentText?.isSubtextComment) {
+          // this.props.feedback.Subtext[this.state.updateCommentText['indexOfSubtext']]['Comments'][this.state.updateCommentText['indexOfUpdateElement']] = temp;
+          this.state.Result["FeedBack"][0].FeedBackDescriptions[this.state?.updateCommentText?.parentIndexOpeneditModal].Subtext[this.state.updateCommentText['indexOfSubtext']]['Comments'][this.state.updateCommentText['indexOfUpdateElement']].Title = temp.Title
 
+        }
+        else {
+          // this.props.feedback["Comments"][this.state.updateCommentText['indexOfUpdateElement']] = temp;
+          this.state.Result["FeedBack"][0].FeedBackDescriptions[this.state?.updateCommentText?.parentIndexOpeneditModal]["Comments"][this.state?.updateCommentText['indexOfUpdateElement']].Title = temp.Title
+        }
+      }
       this.onPost();
     }
     this.setState({
       isEditModalOpen: false,
       updateCommentText: {},
-      CommenttoUpdate: ''
+      CommenttoUpdate: '',
+      isEditReplyModalOpen: false,
+      currentDataIndex: 0,
+      replyTextComment: '',
+      updateReplyCommentText: {}
     });
   }
 
@@ -1582,42 +1659,129 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
     })
   }
-  // private showhideapprovalMailcheck() {
+  /// ==============reply comment function ====================
+  private updateReplyMessagesFunction = (e: any) => {
+    console.log(e.target.value)
+    this.setState({
+      replyTextComment: e.target.value
+    })
 
-  //   if (this.state.Result?.FeedBack != null || this.state.Result?.FeedBack != undefined) {
-  //     let isShowLight = 0;
-  //     let NotisShowLight = 0
-  //     this.state.Result?.FeedBack?.map((item: any) => {
-  //       if (item?.FeedBackDescriptions != undefined) {
-  //         item?.FeedBackDescriptions?.map((feedback: any) => {
-  //           if (feedback != null && feedback != undefined) {
-  //             if (feedback?.Subtext != undefined && feedback?.Subtext.length > 0) {
-  //               feedback?.Subtext?.map((subtextitem: any) => {
-  //                 if (subtextitem?.isShowLight != "" && subtextitem?.isShowLight != undefined) {
-  //                   // count=1
-  //                   isShowLight = isShowLight + 1;
+  }
+  private openReplycommentPopup = (i: any, k: any) => {
+    this.setState({
+      currentDataIndex: i + "" + k,
+      isCalloutVisible: true
+    })
+  }
+  private openReplySubcommentPopup = (i: any, j: any, k: any) => {
+    this.setState({
+      currentDataIndex: +i + '' + j + k,
+      isCalloutVisible: true
+    })
+  }
+  ///// ==========save reeply comment=======================
+  private SaveReplyMessageFunction = () => {
+    let txt: any = this.state.replyTextComment;
+    console.log(this.state.currentDataIndex)
+    let txtComment: any = this.state.replyTextComment;
+    if (txtComment != '') {
+      //  var date= moment(new Date()).format('dd MMM yyyy HH:mm')
+      var temp: any =
+      {
+        AuthorImage: this.currentUser != null && this.currentUser?.length > 0 ? this.currentUser[0]['userImage'] : "",
+        AuthorName: this.currentUser != null && this.currentUser.length > 0 ? this.currentUser[0]['Title'] : "",
+        Created: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+        Title: txtComment,
 
-  //                 }
-  //               })
-  //             }
-  //             if (isShowLight == 0) {
-  //               if (feedback?.isShowLight != "" && feedback?.isShowLight != undefined) {
-  //                 // count=1
-  //                 isShowLight = isShowLight + 1;
-  //               }
-  //             }
-  //           }
-  //         })
-  //       }
-  //     })
-  //     if (isShowLight > NotisShowLight) {
-  //       this.countemailbutton = 1;
-  //     }
-  //   }
-  // }
+      };
+      let index: any = this.state.currentDataIndex.split('');
 
+      if (index.length == 2) {
+        let parentIndex = parseInt(index[0])
+        let commentIndex = parseInt(index[1])
+        let feedback = this.state.Result["FeedBack"][0]?.FeedBackDescriptions[parentIndex].Comments[commentIndex];
+
+        if (feedback.ReplyMessages == undefined) {
+          feedback.ReplyMessages = []
+          feedback.ReplyMessages.push(temp)
+        } else {
+          feedback.ReplyMessages.push(temp)
+        }
+
+      }
+      if (index.length == 3) {
+        let parentIndex = parseInt(index[0])
+        let subcomentIndex = parseInt(index[1])
+        let commentIndex = parseInt(index[2])
+        let feedback = this.state.Result["FeedBack"][0]?.FeedBackDescriptions[parentIndex].Subtext[subcomentIndex].Comments[commentIndex];
+
+        if (feedback.ReplyMessages == undefined) {
+          feedback.ReplyMessages = []
+          feedback.ReplyMessages.push(temp)
+        } else {
+          feedback.ReplyMessages.push(temp)
+        }
+
+      }
+      console.log(temp)
+      this.onPost();
+
+      this.setState({
+        isCalloutVisible: false,
+        replyTextComment: "",
+        currentDataIndex: 0
+      })
+
+
+    } else {
+      alert('Please input some text.')
+    }
+
+  }
+  // =========clearReplycomment===========
+  private clearReplycomment(isSubtextComment: any, indexOfDeleteElement: any, indexOfSubtext: any, parentindex: any, replyIndex: any) {
+    if (confirm("Are you sure, you want to delete this?")) {
+      if (isSubtextComment) {
+        this.state.Result["FeedBack"][0]?.FeedBackDescriptions[parentindex]["Subtext"][indexOfSubtext]?.Comments[indexOfDeleteElement]?.ReplyMessages?.splice(replyIndex, 1)
+      } else {
+        this.state.Result["FeedBack"][0]?.FeedBackDescriptions[parentindex]["Comments"][indexOfDeleteElement]?.ReplyMessages?.splice(replyIndex, 1);
+      }
+      this.onPost();
+    }
+
+  }
+  //===========EditReplyComment===============
+
+  private EditReplyComment(comment: any, indexOfUpdateElement: any, indexOfSubtext: any, isSubtextComment: any, parentIndex: any, replyIndex: any) {
+    this.setState({
+      isEditReplyModalOpen: true,
+      CommenttoUpdate: comment?.Title,
+      // replyTextComment:comment?.Title,
+      updateReplyCommentText: {
+        'comment': comment?.Title,
+        'indexOfUpdateElement': indexOfUpdateElement,
+        'indexOfSubtext': indexOfSubtext,
+        'isSubtextComment': isSubtextComment,
+        'replyIndex': replyIndex,
+        "data": comment,
+        "parentIndexOpeneditModal": parentIndex
+      }
+    })
+  }
+  private onRenderCustomHeadereditcomment = () => {
+    return (
+      <>
+
+        <div className='ps-4 siteColor subheading' >
+          Update Comment
+        </div>
+        <Tooltip ComponentId='1683' />
+      </>
+    );
+  };
 
   public render(): React.ReactElement<ITaskprofileProps> {
+    buttonId = this.generateButtonId();
     const {
       description,
       isDarkTheme,
@@ -1748,7 +1912,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   </dl>
                   <dl>
                     <dt className='bg-Fa'>Estimated Time</dt>
-                    <dd className='bg-Ff position-relative' ><span className='tooltipbox' title="hours">{this.state.Result["EstimatedTime"] != undefined ? this.state.Result["EstimatedTime"].toFixed(1)+"hours" : "0.0 hour"} </span>
+                    <dd className='bg-Ff position-relative' ><span className='tooltipbox' title="hours">{this.state.Result["EstimatedTime"] != undefined ? this.state.Result["EstimatedTime"].toFixed(1) + "hours" : "0.0 hour"} </span>
                     </dd>
                   </dl>
                   {isShowTimeEntry && <dl>
@@ -1944,7 +2108,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
               </div>
               <section>
                 <div className="col mt-2">
-                  <div className="Taskaddcomment row border-top">
+                  <div className="Taskaddcomment row">
                     {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"].length > 0 &&
                       <div className="bg-white col-sm-4 mt-2 p-0">
                         {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.map((imgData: any, i: any) => {
@@ -2000,10 +2164,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                             userdisplay.push({ Title: this.props?.userDisplayName })
 
 
-                            if (fbData != null && fbData != undefined &&fbData?.Title!="") {
+                            if (fbData != null && fbData != undefined && fbData?.Title != "") {
 
                               try {
-                                if (fbData?.Title != undefined ) {
+                                if (fbData?.Title != undefined) {
                                   fbData.Title = fbData?.Title?.replace(/\n/g, '<br/>');
 
                                 }
@@ -2085,31 +2249,80 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                           <span dangerouslySetInnerHTML={{ __html: fbData.Title.replace(/\n/g, "<br />") }}></span>
                                           <div className="col">
                                             {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments']?.map((fbComment: any, k: any) => {
-                                              return <div className={fbComment.isShowLight != undefined && fbComment.isApprovalComment ? `col d-flex add_cmnt my-1 ${fbComment.isShowLight}` : "col d-flex add_cmnt my-1"}>
-                                                <div className="col-1 p-0">
-                                                  <img className="workmember" src={fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ?
-                                                    fbComment.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
-                                                </div>
-                                                <div className="col-11 pe-0" >
-                                                  <div className='d-flex justify-content-between align-items-center'>
-                                                    {fbComment?.AuthorName} - {fbComment?.Created}
-                                                    <span className='d-flex'>
-                                                      <a title='Edit'
-                                                        onClick={() => this.openEditModal(fbComment, k, 0, false, i)}
-                                                      >
-                                                        <span className='svg__iconbox svg__icon--edit'></span>
-                                                      </a>
-                                                      <a title='Delete'
-                                                        onClick={() => this.clearComment(false, k, 0, i)}
-                                                      >
-                                                        <span className='svg__iconbox svg__icon--trash'></span></a>
-                                                    </span>
+                                              return <div className={fbComment.isShowLight != undefined && fbComment.isApprovalComment ? `col add_cmnt my-1 ${fbComment.isShowLight}` : "col add_cmnt my-1"}>
+                                                <div className="">
+                                                  <div className="alignCenter p-0">
+                                                    <div className="col-1 p-0">
+                                                      <img className="workmember" src={fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ?
+                                                        fbComment.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
+                                                    </div>
+                                                    <div className="col-11 pe-0" >
+                                                      <div className='d-flex justify-content-between align-items-center'>
+                                                        {fbComment?.AuthorName} - {fbComment?.Created}
+                                                        <span className='d-flex'>
+                                                          <a className="ps-1" title="Comment Reply" >
+                                                            <div data-toggle="tooltip" id={buttonId + "-" + i + k}
+                                                              onClick={() => this.openReplycommentPopup(i, k)}
+                                                              data-placement="bottom"
+                                                            >
+                                                              <ImReply />
+                                                            </div>
+                                                          </a>
+                                                          <a title='Edit'
+                                                            onClick={() => this.openEditModal(fbComment, k, 0, false, i)}
+                                                          >
+                                                            <span className='svg__iconbox svg__icon--edit'></span>
+                                                          </a>
+                                                          <a title='Delete'
+                                                            onClick={() => this.clearComment(false, k, 0, i)}
+                                                          >
+                                                            <span className='svg__iconbox svg__icon--trash'></span></a>
+                                                        </span>
+                                                      </div>
+                                                      <div><span dangerouslySetInnerHTML={{ __html: fbComment?.Title.replace(/\n/g, "<br />") }}></span></div>
+                                                    </div>
                                                   </div>
-                                                  <div><span dangerouslySetInnerHTML={{ __html: fbComment?.Title.replace(/\n/g, "<br />") }}></span></div>
+                                                  <div className="col-12 ps-3 pe-0">
+                                                    {fbComment?.ReplyMessages != undefined && fbComment?.ReplyMessages.length > 0 && fbComment?.ReplyMessages?.map((replymessage: any, index: any) => {
+                                                      return (
+                                                        <div className="alignCenter border ms-3 p-2  mb-1">
+                                                          <div className="col-1 p-0 mx-1">
+                                                            <img className="workmember" src={replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != '' ?
+                                                              replymessage.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
+                                                          </div>
+                                                          <div className="col-11 pe-0" >
+                                                            <div className='d-flex justify-content-between align-items-center'>
+                                                              {replymessage?.AuthorName} - {replymessage?.Created}
+                                                              <span className='d-flex'>
+                                                                <a title='Edit'
+                                                                  onClick={() => this.EditReplyComment(replymessage, k, 0, false, i, index)
+                                                                  }
+                                                                >
+                                                                  <span className='svg__iconbox svg__icon--edit'></span>
+                                                                </a>
+                                                                <a title='Delete'
+                                                                  onClick={() => this.clearReplycomment(false, k, 0, i, index)
+                                                                  }
+                                                                >
+                                                                  <span className='svg__iconbox svg__icon--trash'></span></a>
+                                                              </span>
+                                                            </div>
+                                                            <div><span dangerouslySetInnerHTML={{ __html: replymessage?.Title.replace(/\n/g, "<br />") }}></span></div>
+                                                          </div>
+                                                        </div>
+
+                                                      )
+                                                    })}
+                                                  </div>
                                                 </div>
+
+
                                               </div>
+
+
                                             })}
                                           </div>
+
                                         </div>
                                       </div>
                                       {this.state.showhideCommentBoxIndex == i && <div className='SpfxCheckRadio'>
@@ -2197,27 +2410,72 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                             <span ><span dangerouslySetInnerHTML={{ __html: fbSubData?.Title?.replace(/\n/g, "<br />") }}></span></span>
                                             <div className="feedbackcomment col-sm-12 PadR0 mt-10">
                                               {fbSubData?.Comments != null && fbSubData.Comments.length > 0 && fbSubData?.Comments?.map((fbComment: any, k: any) => {
-                                                return <div className={fbComment?.isShowLight != undefined && fbComment.isApprovalComment ? `col-sm-12 d-flex mb-2 add_cmnt my-1 ${fbComment?.isShowLight}` : "col-sm-12 d-flex mb-2 add_cmnt my-1 "}>
-                                                  <div className="col-sm-1 padL-0 wid35">
-                                                    <img className="workmember" src={fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ?
-                                                      fbComment.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
-                                                  </div>
-                                                  <div className="col-sm-11 pad0" key={k}>
-                                                    <div className="d-flex justify-content-between align-items-center">
-                                                      {fbComment?.AuthorName} - {fbComment?.Created}
-                                                      <span className='d-flex'>
-                                                        <a title="Edit"
-                                                          onClick={() => this.openEditModal(fbComment, k, j, true, i)}
-                                                        >
+                                                return <div className={fbComment?.isShowLight != undefined && fbComment.isApprovalComment ? `col-sm-12  mb-2 add_cmnt my-1 ${fbComment?.isShowLight}` : "col-sm-12  mb-2 add_cmnt my-1 "}>
+                                                  <div className="">
+                                                    <div className="alignCenter p-0">
+                                                      <div className="col-sm-1 padL-0 wid35">
+                                                        <img className="workmember" src={fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ?
+                                                          fbComment.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
+                                                      </div>
+                                                      <div className="col-sm-11 pad0" key={k}>
+                                                        <div className="d-flex justify-content-between align-items-center">
+                                                          {fbComment?.AuthorName} - {fbComment?.Created}
+                                                          <span className='d-flex'>
+                                                            <a className="ps-1" title="Comment Reply" >
+                                                              <div data-toggle="tooltip" id={buttonId + "-" + i + j + k}
+                                                                onClick={() => this.openReplySubcommentPopup(i, j, k)}
+                                                                data-placement="bottom"
+                                                              >
+                                                                <ImReply />
+                                                              </div>
+                                                            </a>
+                                                            <a title="Edit"
+                                                              onClick={() => this.openEditModal(fbComment, k, j, true, i)}
+                                                            >
 
-                                                          <span className='svg__iconbox svg__icon--edit'></span>
-                                                        </a>
-                                                        <a title='Delete'
-                                                          onClick={() => this.clearComment(true, k, j, i)}
-                                                        ><span className='svg__iconbox svg__icon--trash'></span></a>
-                                                      </span>
+                                                              <span className='svg__iconbox svg__icon--edit'></span>
+                                                            </a>
+                                                            <a title='Delete'
+                                                              onClick={() => this.clearComment(true, k, j, i)}
+                                                            ><span className='svg__iconbox svg__icon--trash'></span></a>
+                                                          </span>
+                                                        </div>
+                                                        <div ><span dangerouslySetInnerHTML={{ __html: fbComment?.Title.replace(/\n/g, "<br />") }}></span></div>
+                                                      </div>
                                                     </div>
-                                                    <div ><span dangerouslySetInnerHTML={{ __html: fbComment?.Title.replace(/\n/g, "<br />") }}></span></div>
+                                                    <div className="col-12 ps-3 pe-0">
+                                                      {fbComment?.ReplyMessages != undefined && fbComment?.ReplyMessages.length > 0 && fbComment?.ReplyMessages?.map((replymessage: any, ReplyIndex: any) => {
+                                                        return (
+                                                          <div className="alignCenter border ms-3 p-2  mb-1">
+                                                            <div className="col-1 p-0 mx-1">
+                                                              <img className="workmember" src={replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != '' ?
+                                                                replymessage.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
+                                                            </div>
+                                                            <div className="col-11 pe-0" >
+                                                              <div className='d-flex justify-content-between align-items-center'>
+                                                                {replymessage?.AuthorName} - {replymessage?.Created}
+                                                                <span className='d-flex'>
+                                                                  <a title='Edit'
+
+                                                                    onClick={() => this.EditReplyComment(replymessage, k, 0, true, i, ReplyIndex)
+                                                                    }
+                                                                  >
+                                                                    <span className='svg__iconbox svg__icon--edit'></span>
+                                                                  </a>
+                                                                  <a title='Delete'
+                                                                    onClick={() => this.clearReplycomment(true, k, j, i, ReplyIndex)}
+
+                                                                  >
+                                                                    <span className='svg__iconbox svg__icon--trash'></span></a>
+                                                                </span>
+                                                              </div>
+                                                              <div><span dangerouslySetInnerHTML={{ __html: replymessage?.Title.replace(/\n/g, "<br />") }}></span></div>
+                                                            </div>
+                                                          </div>
+
+                                                        )
+                                                      })}
+                                                    </div>
                                                   </div>
                                                 </div>
                                               })}
@@ -2241,21 +2499,24 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
                                       </div>
                                     })}
-                                    <Modal isOpen={this.state.isEditModalOpen} isBlocking={false} containerClassName="custommodalpopup p-2">
 
-                                      <div className="modal-header mb-1">
-                                        <h5 className="modal-title">Update Comment</h5>
-                                        <span className='mx-1'> <Tooltip ComponentId='1683' /></span>
-                                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={(e) => this.CloseModal(e)}></button>
-                                      </div>
+                                    <Panel
+                                      onRenderHeader={this.onRenderCustomHeadereditcomment}
+                                      isOpen={this.state.isEditModalOpen ? this.state.isEditModalOpen : this.state.isEditReplyModalOpen}
+                                      onDismiss={this.Closecommentpopup}
+                                      isBlocking={this.state.isEditModalOpen ? !this.state.isEditModalOpen : !this.state.isEditReplyModalOpen}>
                                       <div className="modal-body">
                                         <div className='col'><textarea id="txtUpdateComment" rows={6} className="full-width" onChange={(e) => this.handleUpdateComment(e)}  >{this.state?.CommenttoUpdate}</textarea></div>
                                       </div>
-                                      <footer className='text-end mt-2'>
-                                        <button className="btn btnPrimary " onClick={(e) => this.updateComment()}>Save</button>
-                                        <button className='btn btn-default ms-1' onClick={(e) => this.CloseModal(e)}>Cancel</button>
+                                      <footer className='modal-footer'>
+                                        <button className='btn btn-default ms-1' onClick={this.Closecommentpopup}>Cancel</button>
+                                        <button className="btn btn-primary ms-1" onClick={(e) => this.updateComment()}>Save</button>
+
                                       </footer>
-                                    </Modal>
+
+
+                                    </Panel>
+
                                     {this.state.ApprovalHistoryPopup ? <ApprovalHistoryPopup
                                       ApprovalPointUserData={this.state.ApprovalPointUserData}
                                       ApprovalPointCurrentIndex={this.state.ApprovalPointCurrentParentIndex}
@@ -2279,7 +2540,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
                 {/*===================Backgroundimage code and comment========== */}
 
-                {this.backGroundComment ? <div className="col mt-2">
+                {this.backGroundComment && this.state.Result["OffshoreImageUrl"].length > 0 ? <div className="col mt-2">
                   <div className="Taskaddcomment row border-top">
                     {this.state.Result["OffshoreImageUrl"] != null && this.state.Result["OffshoreImageUrl"].length > 0 &&
                       <div className="bg-white col-sm-4 mt-2 p-0">
@@ -2387,6 +2648,51 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
             </div>
           </div>
         </div>
+        {this?.state?.isCalloutVisible ? (
+
+          <FocusTrapCallout
+            className='p-2 replyTooltip'
+            role="alertdialog"
+            // className={this.styles.callout}
+            gapSpace={0}
+            target={`#${buttonId}-${this.state.currentDataIndex}`}
+            onDismiss={() => this.setState({
+              isCalloutVisible: false
+            })}
+            setInitialFocus
+          >
+            <Text block variant="xLarge" className='subheading m-0 f-15'
+            //  className={this.styles.title}
+            >
+              Comment Reply
+            </Text>
+            <Text block variant="small">
+              <div className="d-flex my-2">
+                <textarea className="form-control" value={this?.state?.replyTextComment}
+                  onChange={(e) => this.updateReplyMessagesFunction(e)}
+                ></textarea>
+              </div>
+
+            </Text>
+            <FocusZone handleTabKey={FocusZoneTabbableElements.all} isCircularNavigation>
+              <Stack
+                className='modal-footer'
+                gap={8} horizontal>
+
+                <button className='btn btn-default'
+                  onClick={() => this.setState({
+                    isCalloutVisible: false
+                  })}
+                >Cancel</button>
+                <button className='btn btn-primary'
+                  onClick={this.SaveReplyMessageFunction}
+                >Save</button>
+              </Stack>
+            </FocusZone>
+          </FocusTrapCallout>
+
+        ) : null
+        }
         {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} context={this.props.Context} AllListId={AllListId} Call={(Type: any) => { this.CallBack(Type) }} /> : ''}
         {/* {this.state.isTimeEntry ? <TimeEntry props={this.state.Result} isopen={this.state.isTimeEntry} CallBackTimesheet={() => { this.CallBackTimesheet() }} /> : ''} */}
         {this.state.EditSiteCompositionStatus ? <EditSiteComposition EditData={this.state.Result} context={this.props.Context} ServicesTaskCheck={this.state.Result["Services"] != undefined && this.state.Result["Services"].length > 0 ? true : false} AllListId={AllListId} Call={(Type: any) => { this.CallBack(Type) }} /> : ''}
