@@ -1967,7 +1967,7 @@ callBackData = (elem: any, ShowingData: any) =>{
           </div>
           </details>
           <Row className="my-2 p-0">          
-            <div className="col-sm-1 ps-0">
+            <div className="col-sm-1">
                <label ng-required="true" className="full_width ng-binding" ng-bind-html="GetColumnDetails('StartDate') | trustedHTML">Start Date</label>
                <DatePicker selected={this.state.startdate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setStartDate(date)} className="form-control ng-pristine ng-valid ng-touched ng-not-empty"/>
             </div>
@@ -2035,9 +2035,9 @@ callBackData = (elem: any, ShowingData: any) =>{
             <div className="clearfix"></div>
           </Row>
 
-          <div id="showFilterBox" className="col p-0">
+          <div id="showFilterBox" className="col mb-2 p-0 border">
             <div className="togglebox">
-              <details>
+              <details open>
                 <summary  ng-click="filtershowHide()">
                   <label>
                       {/* <img className="hreflink wid22" title="Filter" style={{width:'22px'}} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Filter-12-WF.png"/> */}
@@ -2138,7 +2138,7 @@ callBackData = (elem: any, ShowingData: any) =>{
                                 <button type="button" className="btn btn-default me-1" onClick={()=>this.ClearFilters()}>
                                     Clear Filters
                                 </button>
-                                <button type="button" className="btn btn-primary" onClick={(e)=>this.updatefilter()}>
+                                <button type="button" className="btn btn-primary me-1" onClick={(e)=>this.updatefilter()}>
                                     Update Filters
                                 </button>
                             </div>
@@ -2151,10 +2151,12 @@ callBackData = (elem: any, ShowingData: any) =>{
         </Row>
 
         {this.state.AllTimeEntry != undefined && this.state.AllTimeEntry.length > 0 &&        
-        <div className="Alltable ">
+        <div className='row'>
+        <div className="Alltable p-0">
             <div className="wrapper">
                 <GlobalCommanTable showHeader={true} showDateTime={' | Time: '+this.state.resultSummary.totalTime + ' | Days: ('+this.state.resultSummary.totalDays+')'} columns={this.state.columns} data={this.state.AllTimeEntry} callBackData={this.callBackData} />
             </div>
+        </div>
         </div>
       }
       </div>

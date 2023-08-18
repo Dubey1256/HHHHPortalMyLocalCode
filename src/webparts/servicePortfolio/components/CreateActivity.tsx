@@ -719,6 +719,13 @@ const CreateActivity = (props: any) => {
     var SharewebID: any = ''
 
     const getActivitiesDetails = async (item: any) => {
+
+        siteTypess?.forEach((ba:any)=>{
+            if(item.Title == ba.Title){
+                ba.IscreateTask = true;
+                ba.isSiteSelect = true;
+            }
+        })
         console.log(item)
         let web = new Web(dynamicList.siteUrl);
         let componentDetails = [];
@@ -1084,8 +1091,8 @@ const CreateActivity = (props: any) => {
                             res.data['listId'] = value?.listId
                             res.data['SharewebTaskType'] = { Title: 'Activities' }
                             res.data['Shareweb_x0020_ID'] = SharewebID;
-                            res.data['PortfolioType'] =  {'Id':portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id },
-                                res.data['Portfolio'] = { 'Id': portFolio };
+                            res.data['PortfolioType'] =  {'Id':portFolioTypeId == undefined ? null : portFolioTypeId[0] },
+                            res.data['Portfolio'] = { 'Id': portFolio };
                             res.data['TaskType'] = { 'Id': res.data.TaskTypeId };
                             // res.data['TaskType'] =
                             res.data.DueDate = date ? Moment(date).format("MM-DD-YYYY") : null,
@@ -1362,7 +1369,16 @@ const CreateActivity = (props: any) => {
                             data.Clientcategories = data.ClientCategory;
                             res.data = data;
                             console.log(res);
-                            closeTaskStatusUpdatePoup(res);
+
+                            if (AllItems.PageType == 'ProjectManagement') {
+                                props.Call();
+                                let url = `${dynamicList.siteUrl}/SitePages/Task-Profile.aspx?taskId=${res.data.Id}&Site=${res.data.siteType}`
+                                window.location.href = url;
+                            }
+                            else {
+                                closeTaskStatusUpdatePoup(res);
+                            }
+                           
                         })
                         // }
                     }
