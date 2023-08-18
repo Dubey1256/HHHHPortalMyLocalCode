@@ -84,6 +84,7 @@ var selectedClientCategoryData: any = [];
 var GlobalServiceAndComponentData: any = [];
 var timesheetData: any = [];
 var AddImageDescriptionsIndex: any;
+
 const EditTaskPopup = (Items: any) => {
     const Context = Items.context;
     const AllListIdData = Items.AllListId;
@@ -177,7 +178,7 @@ const EditTaskPopup = (Items: any) => {
     const [EnableSiteCompositionValidation, setEnableSiteCompositionValidation] = React.useState(false);
     // const [ShareWebConfigData, setShareWebConfigData] = React.useState<any>([]);
 
-
+    let FeedBackCount:any = 0;
     const StatusArray = [
         { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
         { value: 2, status: "2% Follow Up", taskStatusComment: "Follow Up" },
@@ -217,15 +218,17 @@ const EditTaskPopup = (Items: any) => {
         siteUrls = AllListIdData.siteUrl
     }
     React.useEffect(() => {
-        loadTaskUsers();
-        GetExtraLookupColumnData();
-        getAllSitesData();
-        // getCurrentUserDetails();
-        loadAllCategoryData("Categories");
-        loadAllClientCategoryData("Client Category");
-        GetMasterData();
-        AddImageDescriptionsIndex = undefined;
-    }, [])
+        if(FeedBackCount == 0){
+            loadTaskUsers();
+            GetExtraLookupColumnData();
+            getAllSitesData();
+            // getCurrentUserDetails();
+            loadAllCategoryData("Categories");
+            loadAllClientCategoryData("Client Category");
+            GetMasterData();
+            AddImageDescriptionsIndex = undefined;
+        }
+    }, [FeedBackCount])
 
 
 
@@ -2863,7 +2866,76 @@ const EditTaskPopup = (Items: any) => {
         setImageCustomizePopup(true)
     }
     const ImageCustomizeFunctionClosePopup = () => {
-        setImageCustomizePopup(false)
+        setImageCustomizePopup(false);
+        if (CommentBoxData?.length > 0 || SubCommentBoxData?.length > 0) {
+            if (CommentBoxData?.length == 0 && SubCommentBoxData?.length > 0) {
+                let message = JSON.parse(EditData.FeedBack);
+                let feedbackArray: any = [];
+                if (message != null) {
+                    feedbackArray = message[0]?.FeedBackDescriptions
+                }
+                let tempArray: any = [];
+                if (feedbackArray[0] != undefined) {
+                    tempArray.push(feedbackArray[0])
+                } else {
+                    let tempObject: any =
+                    {
+                        "Title": '<p> </p>',
+                        "Completed": false,
+                        "isAddComment": false,
+                        "isShowComment": false,
+                        "isPageType": '',
+                    }
+                    tempArray.push(tempObject);
+                }
+
+                CommentBoxData = tempArray;
+                let result: any = [];
+                if (SubCommentBoxData == "delete") {
+                    result = tempArray
+                } else {
+                    result = tempArray.concat(SubCommentBoxData);
+                }
+                updateFeedbackArray[0].FeedBackDescriptions = result;
+            }
+            if (CommentBoxData?.length > 0 && SubCommentBoxData?.length == 0) {
+                let result: any = [];
+                if (SubCommentBoxData == "delete") {
+                    result = CommentBoxData;
+                } else {
+                    let message = JSON.parse(EditData.FeedBack);
+                    if (message != null) {
+                        let feedbackArray = message[0]?.FeedBackDescriptions;
+                        feedbackArray?.map((array: any, index: number) => {
+                            if (index > 0) {
+                                SubCommentBoxData.push(array);
+                            }
+                        })
+                        result = CommentBoxData.concat(SubCommentBoxData);
+                    } else {
+                        result = CommentBoxData;
+                    }
+                }
+                updateFeedbackArray[0].FeedBackDescriptions = result;
+            }
+            if (CommentBoxData?.length > 0 && SubCommentBoxData?.length > 0) {
+                let result: any = [];
+                if (SubCommentBoxData == "delete") {
+                    result = CommentBoxData
+                } else {
+                    result = CommentBoxData.concat(SubCommentBoxData)
+                }
+                updateFeedbackArray[0].FeedBackDescriptions = result;
+            }
+        } else {
+            updateFeedbackArray = JSON.parse(EditData.FeedBack);
+        }
+        let AllEditData: any = updateFeedbackArray[0].FeedBackDescriptions
+        // AllEditData.FeedBackArray = updateFeedbackArray;
+        FeedBackCount++;
+        console.log(updateFeedbackArray)
+        setEditData((prev:any)=>({...prev,FeedBackArray:AllEditData}))
+        console.log(EditData)
     }
 
     const CommonClosePopupFunction = () => {
@@ -3356,7 +3428,7 @@ const EditTaskPopup = (Items: any) => {
                         {`${EditData.TaskId != undefined || EditData.TaskId != null ? EditData.TaskId : ""} ${EditData.Title != undefined || EditData.Title != null ? EditData.Title : ""}`}
                     </span>
                 </div>
-                <Tooltip ComponentId="1683" isServiceTask ={ServicesTaskCheck} />
+                <Tooltip ComponentId="1683" isServiceTask={ServicesTaskCheck} />
             </div>
         );
     };
@@ -3368,7 +3440,7 @@ const EditTaskPopup = (Items: any) => {
                         Update Task Status
                     </span>
                 </div>
-                <Tooltip ComponentId="1683" isServiceTask ={ServicesTaskCheck}/>
+                <Tooltip ComponentId="1683" isServiceTask={ServicesTaskCheck} />
             </div>
         );
     };
@@ -3382,7 +3454,7 @@ const EditTaskPopup = (Items: any) => {
                         Select Site
                     </span>
                 </div>
-                <Tooltip ComponentId="1683" isServiceTask ={ServicesTaskCheck}/>
+                <Tooltip ComponentId="1683" isServiceTask={ServicesTaskCheck} />
             </div>
         );
     };
@@ -3394,7 +3466,7 @@ const EditTaskPopup = (Items: any) => {
                         Replace Image
                     </span>
                 </div>
-                <Tooltip ComponentId="756" isServiceTask ={ServicesTaskCheck}/>
+                <Tooltip ComponentId="756" isServiceTask={ServicesTaskCheck} />
             </div>
         )
     }
@@ -3406,7 +3478,7 @@ const EditTaskPopup = (Items: any) => {
                         Select Project
                     </span>
                 </div>
-                <Tooltip ComponentId="1608" isServiceTask ={ServicesTaskCheck}/>
+                <Tooltip ComponentId="1608" isServiceTask={ServicesTaskCheck} />
             </div>
         )
     }
@@ -3418,7 +3490,7 @@ const EditTaskPopup = (Items: any) => {
                         Select Approver
                     </span>
                 </div>
-                <Tooltip ComponentId="1683" isServiceTask ={ServicesTaskCheck}/>
+                <Tooltip ComponentId="1683" isServiceTask={ServicesTaskCheck} />
             </div>
         )
     }
@@ -5742,7 +5814,7 @@ const EditTaskPopup = (Items: any) => {
             <Modal isOpen={AddImageDescriptions} isBlocking={AddImageDescriptions} containerClassName="custommodalpopup p-2">
                 <div className="modal-header mb-1">
                     <h5 className="modal-title">Add Image Description</h5>
-                    <span className='mx-1'> <Tooltip ComponentId='5669' isServiceTask ={ServicesTaskCheck} /></span>
+                    <span className='mx-1'> <Tooltip ComponentId='5669' isServiceTask={ServicesTaskCheck} /></span>
                     <button type="button"
                         className="btn-close"
                         data-bs-dismiss="modal"
