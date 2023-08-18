@@ -234,7 +234,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           display: this.taskUsers[index].Title
         });
   
-        if (this.taskUsers[index].Title == "Deepak Trivedi" || this.taskUsers[index].Title == "Stefan Hochhuth" || this.taskUsers[index].Title == "Robert Ungethuem" || this.taskUsers[index].Title == "Mattis Hahn"||this.taskUsers[index].Title=="Ksenia Kozhukhar"||this.taskUsers[index].Title=="Mayank Pal") {
+        if (this.taskUsers[index].Title == "Deepak Trivedi" || this.taskUsers[index].Title == "Stefan Hochhuth" || this.taskUsers[index].Title == "Robert Ungethuem" || this.taskUsers[index].Title == "Mattis Hahn"||this.taskUsers[index].Title=="Prashant Kumar") {
           this.topCommenters.push({
             id: this.taskUsers[index].Title + "{" + this.taskUsers[index].Email + "}",
             display: this.taskUsers[index].Title,
@@ -532,6 +532,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       this.setState({
         mentionValue: this.state.mentionValue + '@[' + e.currentTarget?.title + '](' + e.currentTarget?.id + ') '
       }, () => { console.log(this.state.mentionValue) })
+      e.currentTarget?.classList?.remove('active');
     }
 
   }

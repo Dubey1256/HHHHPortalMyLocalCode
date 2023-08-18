@@ -7,7 +7,10 @@ import * as globalCommon from "../../../globalComponents/globalCommon";
 import PageLoader from '../../../globalComponents/pageLoader';
 import TeamLeaderHeader from '../../../globalComponents/TeamLeaderHeaderSection/TeamLeaderHeader';
 import TeamLeaderPieChart from '../../../globalComponents/TeamLeaderHeaderSection/TeamLeaderPieChart';
+import TaskDistribution from './TaskDistribution'
+import TimeSummary from './TimeSummary';
 var taskUsers: any = [];
+// var TaskDistributionArray:any=[];
 var AllTeamLeadersGroup: any = [];
 var siteConfig: any = [];
 var AllteamMemberTask:any=[];
@@ -33,13 +36,14 @@ var AllListId: any = {}
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
 
-const mycontext:any = React.createContext({AllListId:{},context:{}});
+const mycontext:any = React.createContext({AllListId:{},context:{},AllTasks:[],currentUserId:{},taskUsers:[]});
 function TeamDashboard(props:any) {
-  const [currentUserData, setCurrentUserData]: any = React.useState<any>({});
+  const [currentUserData, setCurrentUserData]:any = React.useState({});
   const [currentUserTask,setcurrentUserTask]=React.useState([])
   const [pieChartData, setPieChartData] = React.useState([]);
 const [selectedMember, setSelectedMember] :any= React.useState();
 const [pageLoaderActive, setPageLoader] = React.useState(false)
+const[TaskDistributionArray,setTaskDistributionArray]=React.useState([])
 
 
   React.useEffect(() => {
@@ -187,10 +191,13 @@ const getCurrentUserDetails = async () => {
 // }
 const allCurrentUserTask=()=>{
 console.log(currentuserdatabackup)
-console.log(currentUserData)
+console.log(currentUserData) 
 // let allTaskteamleader:any=[];
 // let AllteamMemberTask:any=[];
+
 let LoginUsertask=AllTasks.filter((items:any)=>items?.AssignedToIds?.find((id:any)=>id==currentuserdatabackup?.AssingedToUserId))
+let TaskDistributionArray:any=AllTasks.filter((items:any)=>items?.ResponsibleTeamMember?.find((id:any)=>id==currentuserdatabackup?.AssingedToUserId))
+setTaskDistributionArray(TaskDistributionArray)
 let piechartloginUserDATA=AllTasks.filter((items:any)=>items?.AllTaskMember?.find((id:any)=>id==currentuserdatabackup?.AssingedToUserId))
 if(currentuserdatabackup.isLead){
     currentuserdatabackup?.childs?.map((childdata:any)=>{
@@ -202,6 +209,7 @@ if(currentuserdatabackup.isLead){
     AllteamMemberTaskPieChart=AllteamMemberTaskPieChart.concat(childPieChart)
     })
 }
+console.log(TaskDistributionArray)
 console.log(AllteamMemberTask)
 console.log(LoginUsertask)
 allTaskteamleader=allTaskteamleader.concat(LoginUsertask,AllteamMemberTask)
@@ -312,13 +320,14 @@ const LoadAllSiteTasks = function () {
                   let smartmeta = [];
                   await web.lists
                       .getById(config.listId)
-                      .items.select("ID", "Title", "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Body", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified")
+                      .items.select("ID", "Title", "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "EstimatedTimeDescription", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Body", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified")
                       .expand("Team_x0020_Members", "Approver", "ParentTask", "AssignedTo", "SharewebCategories", "Author", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor")
                       .getAll().then((data: any) => {
                           smartmeta = data;
                           smartmeta.map((task: any) => {
                               task.AllTeamMember = [];
                               task.AllTaskMember=[];
+                              task.TaskDistribution=[];
                               task.siteType = config.Title;
                               task.bodys = task.Body != null && task.Body.split('<p><br></p>').join('');
                               task.listId = config.listId;
@@ -356,6 +365,7 @@ const LoadAllSiteTasks = function () {
                               task?.AssignedTo?.map((assignedUser: any) => {
                                   task.AssignedToIds.push(assignedUser.Id)
                                   task.AllTaskMember.push(assignedUser.Id)
+                                  task.TaskDistribution.push(assignedUser.Id)
                                   taskUsers?.map((user: any) => {
                                       if (user.AssingedToUserId == assignedUser.Id) {
                                           if (user?.Title != undefined) {
@@ -380,6 +390,7 @@ const LoadAllSiteTasks = function () {
                               task?.Team_x0020_Members?.map((taskUser: any) => {
                                   task.TeamMembersId.push(taskUser.Id);
                                   task.AllTaskMember.push(taskUser.Id)
+                                  task.TaskDistribution.push(taskUser.Id)
                                   var newuserdata: any = {};
                                   taskUsers?.map((user: any) => {
                                       if (user.AssingedToUserId == taskUser.Id) {
@@ -472,7 +483,7 @@ const getComponentasString = function (results: any) {
 // Region End
   return (
 <>
-<mycontext.Provider value={{...mycontext,AllListId:AllListId,context:props?.props?.Context}}>
+<mycontext.Provider value={{...mycontext,AllListId:AllListId,context:props?.props?.Context,AllTasks:AllTasks,currentUserId:currentUserData,taskUsers:taskUsers}}>
   <div className="Dashboardsecrtion">
             <div className="dashboard-colm">
               <aside className="sidebar">
@@ -493,6 +504,7 @@ const getComponentasString = function (results: any) {
                     })
                     
                     }
+
                  
                       </li>
                      
@@ -503,13 +515,17 @@ const getComponentasString = function (results: any) {
               </aside>
               <div className="dashboard-content ps-2 full-width">
                 <article className="row">
-               <div className="col-md-12">
+               <div className="col-sm-12">
                 <TeamLeaderHeader allTaskData={currentUserTask}selectedMember={selectedMember} AllListId={AllListId}taskUsers={taskUsers}/>
                </div>
-               <div className="col-md-12">
+               <div className="col-sm-12">
                 <TeamLeaderPieChart allTaskData={pieChartData}/>
                </div>
+               <div className='col-sm-12'>
+           {currentUserData.Title!=undefined&& <TimeSummary selectedMember={selectedMember}/>}
+               </div>
                 </article>
+                {currentUserData.isLead &&TaskDistributionArray.length>0&&<TaskDistribution TaskDistributionArray={TaskDistributionArray}/>}
               </div>
              
             </div>
