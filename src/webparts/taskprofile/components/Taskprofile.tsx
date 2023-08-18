@@ -817,6 +817,17 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     e.preventDefault();
     this.setState({
       isModalOpen: false,
+      isEditModalOpen:false,
+      isEditReplyModalOpen: false,
+      imageInfo: {},
+
+      showPopup: 'none'
+    });
+  }
+  private Closecommentpopup=()=>{
+    this.setState({
+      isModalOpen: false,
+      isEditModalOpen:false,
       isEditReplyModalOpen: false,
       imageInfo: {},
 
@@ -2492,14 +2503,14 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                     <Panel
                                       onRenderHeader={this.onRenderCustomHeadereditcomment}
                                       isOpen={this.state.isEditModalOpen ? this.state.isEditModalOpen : this.state.isEditReplyModalOpen}
-                                      onDismiss={this.CloseModal}
+                                      onDismiss={this.Closecommentpopup}
                                       isBlocking={this.state.isEditModalOpen ? !this.state.isEditModalOpen : !this.state.isEditReplyModalOpen}>
                                       <div className="modal-body">
                                         <div className='col'><textarea id="txtUpdateComment" rows={6} className="full-width" onChange={(e) => this.handleUpdateComment(e)}  >{this.state?.CommenttoUpdate}</textarea></div>
                                       </div>
-                                      <footer>
-                                        <button className='btn btn-default ms-1' onClick={(e) => this.CloseModal(e)}>Cancel</button>
-                                        <button className="btn btnPrimary " onClick={(e) => this.updateComment()}>Save</button>
+                                      <footer className='modal-footer'>
+                                        <button className='btn btn-default ms-1' onClick={this.Closecommentpopup}>Cancel</button>
+                                        <button className="btn btn-primary ms-1" onClick={(e) => this.updateComment()}>Save</button>
 
                                       </footer>
 
@@ -2668,7 +2679,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                 className='modal-footer'
                 gap={8} horizontal>
 
-                <button className='btn btn-deafult'
+                <button className='btn btn-default'
                   onClick={() => this.setState({
                     isCalloutVisible: false
                   })}
