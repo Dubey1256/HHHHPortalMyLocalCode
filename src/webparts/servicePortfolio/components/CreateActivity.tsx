@@ -719,6 +719,13 @@ const CreateActivity = (props: any) => {
     var SharewebID: any = ''
 
     const getActivitiesDetails = async (item: any) => {
+
+        siteTypess?.forEach((ba:any)=>{
+            if(item.Title == ba.Title){
+                ba.IscreateTask = true;
+                ba.isSiteSelect = true;
+            }
+        })
         console.log(item)
         let web = new Web(dynamicList.siteUrl);
         let componentDetails = [];
@@ -1362,7 +1369,16 @@ const CreateActivity = (props: any) => {
                             data.Clientcategories = data.ClientCategory;
                             res.data = data;
                             console.log(res);
-                            closeTaskStatusUpdatePoup(res);
+
+                            if (AllItems.PageType == 'ProjectManagement') {
+                                props.Call();
+                                let url = `${dynamicList.siteUrl}/SitePages/Task-Profile.aspx?taskId=${res.data.Id}&Site=${res.data.siteType}`
+                                window.location.href = url;
+                            }
+                            else {
+                                closeTaskStatusUpdatePoup(res);
+                            }
+                           
                         })
                         // }
                     }

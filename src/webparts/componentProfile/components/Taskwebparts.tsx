@@ -4217,7 +4217,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         accessorFn: (row) => row?.Shareweb_x0020_ID,
         cell: ({ row, getValue }) => (
           <>
-            <ReactPopperTooltip ShareWebId={getValue()} row={row} />
+            <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={NextProp}/>
           </>
         ),
         id: "Shareweb_x0020_ID",
@@ -4271,7 +4271,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
           <>
             {row?.original?.ProjectTitle != (null || undefined) ?
               <span ><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${NextProp.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
-                 <ReactPopperTooltip ShareWebId={row?.original?.ProjectTitle} projectToolShow={true} row={row}/></a></span>
+                 <ReactPopperTooltip ShareWebId={row?.original?.ProjectTitle} projectToolShow={true} row={row} AllListId={NextProp}/></a></span>
               : ""}
           </>
         ),
