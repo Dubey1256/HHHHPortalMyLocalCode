@@ -1477,60 +1477,7 @@ function TimeEntryPopup(item: any) {
 
     }
 
-    // const UpdateAdditionaltime = async (child: any) => {
-    //     var Dateee = ''
-    //     if (editeddata != undefined) {
-    //         var a = Moment(editeddata).format()
-    //         Dateee = Moment(a).format('DD/MM/YYYY')
-    //     }
-    //     else {
-    //         Dateee = Moment(changeEdited).format('DD/MM/YYYY')
-    //     }
-
-    //     var DateFormate = new Date(Eyd)
-    //     var UpdatedData: any = []
-    //     $.each(saveEditTaskTime, function (index: any, update: any) {
-    //         $.each(update.AdditionalTime, function (index: any, updateitem: any) {
-    //             if (updateitem.ID === child.ID && updateitem.ParentID === child.ParentID) {
-
-    //                 updateitem.Id = child.ID;
-    //                 updateitem.TaskTime = TimeInHours != undefined && TimeInHours != 0 ? TimeInHours : child.TaskTime;
-    //                 updateitem.TaskTimeInMin = TimeInMinutes != undefined && TimeInMinutes != 0 ? TimeInMinutes : child.TaskTimeInMin;
-    //                 updateitem.TaskDate = Dateee != "Invalid date" ? Dateee : Moment(DateFormate).format('DD/MM/YYYY');
-
-    //                 updateitem.Description = postData != undefined && postData.Description != undefined && postData.Description != '' ? postData.Description : child.Description;
-
-
-    //             }
-    //             UpdatedData.push(updateitem)
-    //         })
-    //     });
-    //     setTaskStatuspopup2(false)
-    //     if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
-
-    //         var ListId = '9ed5c649-3b4e-42db-a186-778ba43c5c93'
-
-
-    //     }
-    //     else {
-    //         var ListId = '464fb776-e4b3-404c-8261-7d3c50ff343f'
-
-    //     }
-    //     let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
-
-    //     await web.lists.getById(ListId).items.getById(child.ParentID).update({
-
-    //         AdditionalTimeEntry: JSON.stringify(UpdatedData),
-
-    //     }).then((res: any) => {
-
-    //         console.log(res);
-
-    //         closeTaskStatusUpdatePoup2();
-
-    //     })
-
-    // }
+    
     var isTimes = false;
     const UpdateAdditionaltime = async (child: any) => {
         var Dateee = ''
@@ -2863,7 +2810,7 @@ function TimeEntryPopup(item: any) {
         <div className={PortfolioType == 'Service' ? 'serviepannelgreena' : ''}>
             <div>
                 <div className="col-sm-12 p-0">
-                    <span ng-if="Item!=undefined">
+                    <span>
 
                     </span>
                     <div className="col-sm-12 p-0 mt-10">
@@ -2894,248 +2841,7 @@ function TimeEntryPopup(item: any) {
                         <div className="col-sm-12 p-0 smart">
                             <div>
                                 <div className="wrapper AllTime">
-                                    {/* <table className="table table-hover TimeSheet" id="EmpTable" style={{ width: "100%" }}>
-                                        <thead>
-                                            <tr>
-                                                <th style={{ width: "2%" }}>
-                                                    <div></div>
-                                                </th>
-                                                <th style={{ width: "20%" }}>
-                                                    <div style={{ width: "19%" }} className="smart-relative">
-                                                        <input type="search" placeholder="AuthorName" className="full_width searchbox_height" aria-label="Search" aria-describedby="search-addon"
-                                                            onChange={event => handleChange(event, 'Time')} />
-
-                                                        <span className="sorticon">
-                                                            <span className="up" onClick={()=>sortBy('Name')}>< FaAngleUp /></span>
-                                                            <span className="down" onClick={()=>sortByDng('Name')}>< FaAngleDown /></span>
-                                                        </span>
-
-
-                                                    </div>
-                                                </th>
-                                                <th style={{ width: "15%" }}>
-                                                    <div style={{ width: "14%" }} className="smart-relative">
-                                                        <input id="searchClientCategory" type="search" placeholder="Date"
-                                                            title="Client Category" className="full_width searchbox_height"
-                                                            onChange={event => handleChange(event, 'Date')} />
-                                                        <span className="sorticon">
-                                                            <span className="up" onClick={()=>sortBy('Date')}>< FaAngleUp /></span>
-                                                            <span className="down" onClick={()=>sortByDng('Date')}>< FaAngleDown /></span>
-                                                        </span>
-                                                    </div>
-                                                </th>
-                                                <th style={{ width: "15%" }}>
-                                                    <div style={{ width: "14%" }} className="smart-relative">
-                                                        <input id="searchClientCategory" type="search" placeholder="Time"
-                                                            title="Client Category" className="full_width searchbox_height"
-                                                            onChange={event => handleChange(event, 'Time')} />
-                                                        <span className="sorticon">
-                                                            <span className="up" onClick={()=>sortBy('Time')}>< FaAngleUp /></span>
-                                                            <span className="down" onClick={()=>sortByDng('Time')}>< FaAngleDown /></span>
-                                                        </span>
-
-                                                    </div>
-                                                </th>
-                                                <th style={{ width: "48%" }}>
-                                                    <div style={{ width: "43%" }} className="smart-relative">
-                                                        <input id="searchClientCategory" type="search" placeholder="Description"
-                                                            title="Client Category" className="full_width searchbox_height"
-                                                            onChange={event => handleChange(event, 'Description')} />
-                                                        <span className="sorticon">
-                                                            <span className="up" onClick={()=>sortBy('Description')}>< FaAngleUp /></span>
-                                                            <span className="down" onClick={()=>sortByDng('Description')}>< FaAngleDown /></span>
-                                                        </span>
-
-                                                    </div>
-                                                </th>
-                                                <th style={{ width: "2%" }}></th>
-                                                <th style={{ width: "2%" }}></th>
-                                                <th style={{ width: "2%" }}></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {AllTimeSheetDataNew != undefined && AllTimeSheetDataNew.length > 0 && AllTimeSheetDataNew.map(function (item, index) {
-                                                <div id="SpfxProgressbar" style={{ display: "none" }}>
-                                                    <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
-                                                </div>
-                                                if (item.subRows != undefined && item.subRows.length > 0) {
-
-                                                    return (
-                                                        <>
-
-                                                            {item.subRows != undefined && item.subRows.length > 0 && (
-                                                                <>
-
-                                                                    {item.subRows.map(function (childitem: any) {
-
-                                                                        return (
-
-                                                                            <>
-                                                                            {
-                                                                                flatview == false &&
-                                                                                <tr >
-
-                                                                                <td className="p-0" colSpan={9}>
-                                                                                    <table className="table m-0" style={{ width: "100%" }}>
-                                                                                        <tr className="for-c02 AddTime">
-                                                                                            <td style={{ width: "2%" }}>
-
-                                                                                                <div className="sign" onClick={() => handleTimeOpen(childitem)}>{childitem.AdditionalTime.length > 0 && childitem.show ? <span className='svg__iconbox svg__icon--GroupDown '></span>
-                                                                                                    :<span className='svg__iconbox svg__icon--GroupRight '></span>}
-                                                                                                </div>
-                                                                                            </td>
-
-                                                                                            <td colSpan={6} style={{ width: "90%" }}>
-                                                                                                <span className='d-flex'>{item.Title} - {childitem.Title}    <span className="svg__iconbox svg__icon--edit" onClick={() => Editcategorypopup(childitem)}></span>    <span className="svg__iconbox svg__icon--cross" onClick={() => deleteCategory(childitem)}></span></span>
-
-                                                                                            </td>
-                                                                                            <td style={{ width: "7.7%" }}>
-                                                                                                <button type="button" className="btn btn-primary me-1 d-flex " onClick={() => openAddTasktimepopup(childitem)} >
-                                                                                                    Add Time <span className="bg-light m-0  ms-1 p-0 svg__icon--Plus svg__iconbox"></span>
-
-                                                                                                </button>
-                                                                                            </td>
-
-                                                                                        </tr>
-                                                                                    </table>
-                                                                                </td>
-                                                                            </tr>
-                                                                            }
-                                                                               
-
-                                                                                {childitem.AdditionalTime != undefined && childitem.show && childitem.AdditionalTime.length > 0 && (
-                                                                                    <>
-                                                                                        {childitem.AdditionalTime.map(function (childinew: any) {
-                                                                                            if ((search == "" || childinew.AuthorName?.toLowerCase().includes(search.toLowerCase())) || (search == "" || childinew.Description?.toLowerCase().includes(search.toLowerCase()))
-                                                                                                || (search == "" || childinew.TaskDate?.includes(search))) {
-                                                                                                return (
-                                                                                                    <>
-                                                                                                        <tr >
-                                                                                                            <td className="p-0" colSpan={10}>
-                                                                                                                <table className="table m-0" style={{ width: "100%" }}>
-                                                                                                                    <tr className="tdrow">
-
-                                                                                                                        <td colSpan={2} style={{ width: "22%" }}>{
-                                                                                                                            (childinew.AuthorImage != '' && childinew.AuthorImage != null) ?
-                                                                                                                                <>
-
-                                                                                                                                    <img className="AssignUserPhoto1 wid29 bdrbox"
-                                                                                                                                        title={childinew.AuthorName}
-                                                                                                                                        data-toggle="popover"
-                                                                                                                                        data-trigger="hover"
-                                                                                                                                        src={childinew.AuthorImage}></img>
-                                                                                                                                    <span className="ml5"> {childinew.AuthorName}</span>
-                                                                                                                                </> : <> <img className="AssignUserPhoto1 wid29 bdrbox"
-                                                                                                                                    title={childinew.AuthorName}
-                                                                                                                                    data-toggle="popover"
-                                                                                                                                    data-trigger="hover"
-                                                                                                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"></img><span className="ml5"> {childinew.AuthorName}</span></>}
-                                                                                                                        </td>
-
-                                                                                                                        <td style={{ width: "15%" }}>
-
-                                                                                                                            {childinew.TaskDate}
-                                                                                                                        </td>
-                                                                                                                        <td style={{ width: "15%" }}>
-                                                                                                                            {childinew.TaskTime}
-                                                                                                                        </td>
-                                                                                                                        <td style={{ width: "42%" }}>
-                                                                                                                            {childinew.Description}
-                                                                                                                        </td>
-                                                                                                                        <td style={{ width: "2%" }}>  <a title="Copy" className="hreflink">
-                                                                                                                            <img
-                                                                                                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_copy.png" onClick={() => openCopyTaskpopup(childitem, childinew)}></img>
-                                                                                                                        </a></td>
-
-                                                                                                                        <td style={{ width: "2%" }}>  <a className="hreflink"
-                                                                                                                        >
-                                                                                                                            <span className="svg__iconbox svg__icon--edit" onClick={() => openTaskStatusUpdatePoup2(childitem, childinew)}></span>
-
-                                                                                                                        </a></td>
-                                                                                                                        <td style={{ width: "2%" }}>  <a title="Delete" className="hreflink">
-                                                                                                                            <span className="svg__icon--trash  svg__iconbox" onClick={() => deleteTaskTime(childinew)}></span>
-
-                                                                                                                        </a></td>
-                                                                                                                    </tr>
-                                                                                                                </table>
-                                                                                                            </td>
-                                                                                                        </tr>
-                                                                                                        {childinew.AdditionalTime != undefined && childinew.AdditionalTime.length > 0 && (
-                                                                                                            <>
-                                                                                                                {childinew.AdditionalTime.map(function (subchilditem: any) {
-
-                                                                                                                    return (
-
-                                                                                                                        <>
-                                                                                                                            <tr >
-                                                                                                                                <td className="p-0" colSpan={9}>
-                                                                                                                                    <table className="table m-0" style={{ width: "100%" }}>
-
-                                                                                                                                        <tr className="for-c02">
-
-                                                                                                                                            <td colSpan={2} style={{ width: "22%" }}>
-                                                                                                                                                <img className="AssignUserPhoto1  bdrbox"
-                                                                                                                                                    title="{subchilds.AuthorName}"
-                                                                                                                                                    data-toggle="popover"
-                                                                                                                                                    data-trigger="hover"
-                                                                                                                                                    src={subchilditem.AuthorImage}></img>
-                                                                                                                                                <span
-                                                                                                                                                    className="ml5">{subchilditem.AuthorName}</span>
-                                                                                                                                            </td>
-
-                                                                                                                                            <td style={{ width: "15%" }}>
-                                                                                                                                                {subchilditem.TaskDate}
-                                                                                                                                            </td>
-                                                                                                                                            <td style={{ width: "15%" }}>
-                                                                                                                                                {subchilditem.TaskTime}
-                                                                                                                                            </td>
-                                                                                                                                            <td style={{ width: "42%" }}>
-                                                                                                                                                {subchilditem.Description}</td>
-                                                                                                                                            <td style={{ width: "2%" }}><a title="Copy" className="hreflink"
-                                                                                                                                            >
-                                                                                                                                                <img
-                                                                                                                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_copy.png"></img>
-                                                                                                                                            </a></td>
-                                                                                                                                            <td style={{ width: "2%" }}>
-                                                                                                                                                <a className="hreflink"
-                                                                                                                                                >
-
-                                                                                                                                                    <span className="svg__iconbox svg__icon--edit"></span>
-                                                                                                                                                </a></td>
-                                                                                                                                            <td style={{ width: "2%" }}><a title="Copy" className="hreflink"
-                                                                                                                                            >
-                                                                                                                                                <span className="svg__icon--trash  svg__iconbox"></span>
-
-                                                                                                                                            </a></td>
-                                                                                                                                        </tr>
-                                                                                                                                    </table>
-                                                                                                                                </td>
-                                                                                                                            </tr>
-                                                                                                                        </>
-                                                                                                                    )
-                                                                                                                })}
-                                                                                                            </>
-                                                                                                        )}
-
-
-                                                                                                    </>
-                                                                                                )
-                                                                                            }
-                                                                                        })}</>
-                                                                                )}</>
-                                                                        )
-                                                                    })}
-                                                                </>
-                                                            )}
-                                                        </>
-
-
-                                                    )
-                                                }
-
-                                            })}
-                                        </tbody>
-                                    </table> */}
+                                 
                                     {data && <GlobalCommanTable columns={column} data={data} callBackData={callBackData} expendedTrue={expendedTrue} />}
 
                                     {TaskCate.length === 0 && <div className="text-center pb-3"
@@ -3217,27 +2923,14 @@ function TimeEntryPopup(item: any) {
                                                     Date
 
                                                 </label>
-                                                {/* <DatePicker selected={date}  value={Moment(myDatee).format("ddd, DD MMM yyyy")} 
-                                                 minDate={new Date("ddd, DD MMM yyyy")}
-                                                 maxDate={new Date("ddd, DD MMM yyyy")}
-                                                 onChange={date => setDate(date)} />     */}
+                                               
                                                 <DatePicker className="form-control"
                                                     selected={myDatee}
                                                     onChange={handleDatedue}
                                                     dateFormat="EEE, dd MMM yyyy"
 
                                                 />
-                                                {/* <DatePicker
-
-                                                    label="Start Date"
-
-                                                    styles={{ root: { width: "70%" } }}
-
-                                                    value={date == undefined || date == null?Moment(myDatee).format("ddd, DD MMM yyyy")}
-
-                                                    onSelectDate={(date) => setDate(date)}
-
-                                                /> */}
+                                                
 
                                             </div>
                                         </div>
@@ -3297,9 +2990,9 @@ function TimeEntryPopup(item: any) {
                                     </div>
                                     <div className="row">
                                         <div className="col-sm-3 pe-0">
-                                            <label ng-bind-html="GetColumnDetails('TimeSpent') | trustedHTML"></label>
+                                            <label></label>
                                             <input type="text"
-                                                ng-model="TimeSpentInMinutes" ng-change="getInHours(TimeSpentInMinutes)" className="form-control"
+                                               
                                                 value={TimeInMinutes}
                                                 onChange={(e) => changeTimeFunction(e, 'Add')} />
 
@@ -3402,7 +3095,7 @@ function TimeEntryPopup(item: any) {
 
                 </div>
                 <div className={PortfolioType == "Service" ? "modal-footer mt-2 serviepannelgreena" : "modal-footer mt-2"}>
-                    <button type="button" className="btn btn-primary" disabled={TimeInMinutes == 0 ? true : false} onClick={saveTimeSpent}>
+                    <button type="button" className="btn btn-primary" disabled={TimeInMinutes < 0 ? true : false} onClick={saveTimeSpent}>
                         Submit
                     </button>
 
@@ -3472,15 +3165,7 @@ function TimeEntryPopup(item: any) {
                                                         Date
 
                                                     </label>
-                                                    {/* <input type="text"
-                                                                    autoComplete="off"
-                                                                    id="AdditionalNewDatePicker"
-                                                                    className="form-control"
-                                                                    ng-required="true"
-                                                                    placeholder="DD/MM/YYYY"
-                                                                    ng-model="AdditionalnewDate"
-                                                                    value={editeddata}
-                                                                    onChange={(e) => setNewData({ ...newData, TaskDate: e.target.value })} /> */}
+                                                   
                                                     <DatePicker className="form-control"
                                                         selected={editeddata}
                                                         onChange={handleDatedue}
@@ -3549,7 +3234,7 @@ function TimeEntryPopup(item: any) {
                                         <div className="row mb-2">
                                             <div className="col-sm-3 pe-0">
                                                 <label
-                                                    ng-bind-html="GetColumnDetails('TimeSpent') | trustedHTML"></label>
+                                                  ></label>
                                                 <input type="text"
                                                     className="form-control"
                                                     value={(TimeInMinutes > 0 || TimeInMinutes == undefined) ? TimeInMinutes : child.TaskTimeInMin} onChange={(e) => changeTimeFunction(e, 'Edit')} />
@@ -3629,20 +3314,15 @@ function TimeEntryPopup(item: any) {
                                                 </div>
                                             </div>
                                             <div className="col-sm-6 text-end">
-                                                {/* <a target="_blank"
-                                                                        ng-if="AdditionalTaskTime.siteListName != 'SP.Data.TasksTimesheet2ListItem'"
-                                                                        ng-href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TaskTimeSheetListNew/EditForm.aspx?ID={{AdditionalTaskTime.ParentID}}">
-                                                                        Open out-of-the-box
-                                                                        form
-                                                                    </a> */}
+                                               
                                                 <a target="_blank"
-                                                    ng-if="AdditionalTaskTime.siteListName === 'SP.Data.TasksTimesheet2ListItem'"
+                                                   
                                                     href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TaskTimeSheetListNew/EditForm.aspx?ID=${child.ParentID}`}>
                                                     Open out-of-the-box
                                                     form
                                                 </a>
                                                 <button type="button" className="btn btn-primary ms-2"
-                                                    onClick={(e) => UpdateAdditionaltime(child)}>
+                                                   disabled={TimeInMinutes < 0 ? true : false} onClick={(e) => UpdateAdditionaltime(child)}>
                                                     Save
                                                 </button>
                                             </div>
@@ -3731,15 +3411,7 @@ function TimeEntryPopup(item: any) {
                                                                     Date
 
                                                                 </label>
-                                                                {/* <input type="text"
-                                                                    autoComplete="off"
-                                                                    id="AdditionalNewDatePicker"
-                                                                    className="form-control"
-                                                                    ng-required="true"
-                                                                    placeholder="DD/MM/YYYY"
-                                                                    ng-model="AdditionalnewDate"
-                                                                    value={Moment(myDatee).format('ddd, DD MMM yyyy')}
-                                                                    onChange={(e) => setNewData({ ...newData, TaskDate: e.target.value })} /> */}
+                                                              
                                                                 <DatePicker className="form-control"
                                                                     selected={editeddata}
                                                                     onChange={handleDatedue}
@@ -3805,11 +3477,10 @@ function TimeEntryPopup(item: any) {
                                                     <div className="row mb-2">
                                                         <div className="col-sm-3 pe-0">
                                                             <label
-                                                                ng-bind-html="GetColumnDetails('TimeSpent') | trustedHTML"></label>
+                                                               ></label>
                                                             <input type="text"
                                                                 className='form-control'
                                                                 name="timeSpent"
-                                                                ng-model="TimeSpentInMinutes" ng-change="getInHours(TimeSpentInMinutes)"
                                                                 value={(TimeInMinutes > 0 || TimeInMinutes == undefined) ? TimeInMinutes : child.TaskTimeInMin} onChange={(e) => changeTimeFunction(e, 'Edit')} />
 
                                                         </div>
@@ -3889,19 +3560,14 @@ function TimeEntryPopup(item: any) {
                                                             </div>
                                                         </div>
                                                         <div className="col-sm-6 text-end">
-                                                            {/* <a target="_blank"
-                                                                        ng-if="AdditionalTaskTime.siteListName != 'SP.Data.TasksTimesheet2ListItem'"
-                                                                        ng-href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TaskTimeSheetListNew/EditForm.aspx?ID={{AdditionalTaskTime.ParentID}}">
-                                                                        Open out-of-the-box
-                                                                        form
-                                                                    </a> */}
+                                                           
                                                             <a target="_blank"
-                                                                ng-if="AdditionalTaskTime.siteListName === 'SP.Data.TasksTimesheet2ListItem'"
+                                                               
                                                                 href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TaskTimeSheetListNew/EditForm.aspx?ID=${child.ParentID}`}>
                                                                 Open out-of-the-box
                                                                 form
                                                             </a>
-                                                            <button type="button" className="btn btn-primary ms-2"
+                                                            <button type="button" className="btn btn-primary ms-2" disabled={TimeInMinutes < 0 ? true : false}
                                                                 onClick={() => SaveCopytime(child)}>
                                                                 Save
                                                             </button>
@@ -3974,15 +3640,7 @@ function TimeEntryPopup(item: any) {
                                             Date
 
                                         </label>
-                                        {/* <input type="text"
-                                            autoComplete="off"
-                                            id="AdditionalNewDatePicker"
-                                            className="form-control"
-                                            ng-required="true"
-                                            placeholder="DD/MM/YYYY"
-
-                                            value={Moment(myDatee).format('ddd, DD MMM yyyy')}
-                                            onChange={(e) => setPostData({ ...postData, TaskDate: e.target.value })} /> */}
+                                       
                                         <DatePicker className="form-control"
                                             selected={myDatee}
                                             onChange={handleDatedue}
@@ -4050,7 +3708,7 @@ function TimeEntryPopup(item: any) {
                             <div className="row mb-2">
                                 <div className="col-sm-3 pe-0">
                                     <label
-                                        ng-bind-html="GetColumnDetails('TimeSpent') | trustedHTML"></label>
+                                      ></label>
                                     <input type="text"
                                         autoComplete="off"
                                         className="form-control"
@@ -4135,7 +3793,7 @@ function TimeEntryPopup(item: any) {
             </div> */}
                                 <div className="col-sm-12 text-end mt-2">
 
-                                    <button disabled={TimeInMinutes == 0 ? true : false} type="button" className="btn btn-primary ms-2"
+                                    <button disabled={TimeInMinutes < 0 ? true : false} type="button" className="btn btn-primary ms-2"
                                         onClick={AddTaskTime}>
                                         Save
                                     </button>
@@ -4197,7 +3855,7 @@ function TimeEntryPopup(item: any) {
 
                             <div className="col mb-2">
                                 <div className='mb-1'>
-                                    <a className='hreflink' target="_blank" ng-href="{{pageContext}}/SitePages/SmartMetadata.aspx?TabName=Timesheet">
+                                    <a className='hreflink' target="_blank">
                                         Manage Categories
                                     </a>
                                 </div>

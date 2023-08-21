@@ -135,7 +135,7 @@ export default class TeamPortfolioWebPart extends BaseClientSideWebPart<ITeamPor
                   label: "Task Type List",
                 }),
                 PropertyPaneTextField("PortFolioTypeID", {
-                  label: "Portfolio Type ID",
+                  label: "Portfolio Type List",
                 }),
                 PropertyPaneTextField("TimeEntry", {
                   label: "TimeEntry",

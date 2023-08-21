@@ -233,22 +233,14 @@ function TeamPortlioTable(SelectedProp: any) {
                 let AllTasksMatches = [];
                 AllTasksMatches = await web.lists
                     .getById(config.listId)
-                    .items.select("ParentTask/Title", "ParentTask/Id", "ClientTime",
-                        "ItemRank", "Portfolio_x0020_Type", "SiteCompositionSettings", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "TimeSpent", "BasicImageInfo", "OffshoreComments", "OffshoreImageUrl", "CompletedDate",
-                        "Shareweb_x0020_ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "ParentTask/Shareweb_x0020_ID",
-                        "SharewebTaskType/Id", "SharewebTaskType/Title", "SharewebTaskType/Level", "Priority_x0020_Rank", "Team_x0020_Members/Title",
-                        "Team_x0020_Members/Id", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Id", "ClientCategory/Id", "ClientCategory/Title",
-                        "FileLeafRef", "FeedBack", "Title", "Id", "ID", "PercentComplete", "StartDate", "DueDate", "Comments", "Categories", "Status", "Body", "Mileage",
-                        "PercentComplete", "ClientCategory", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "TaskType/Id", "TaskType/Title", "Portfolio/Id",
-                        "Services/Id", "Events/Id", "Events/Title", "Services/Title", "Component/Id", "Component/Title", "Component/ItemType", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange",
-                        // "SharewebCategories/Id", "SharewebCategories/Title",  "Team_x0020_Members/Name","AssignedTo/Name","Editor/Id", "Editor/Title",
+                    .items.select("ParentTask/Title", "ParentTask/Id","ItemRank", "TaskLevel", "OffshoreComments","TeamMembers/Id", "ClientCategory/Id", "ClientCategory/Title",
+                        "TaskID", "ResponsibleTeam/Id", "ResponsibleTeam/Title", "ParentTask/TaskID", "TaskType/Level", "PriorityRank", "TeamMembers/Title","FeedBack", "Title", "Id", "ID", "DueDate", "Comments", "Categories", "Status", "Body",
+                        "PercentComplete", "ClientCategory", "Priority", "TaskType/Id", "TaskType/Title", "Portfolio/Id","Portfolio/ItemType","Portfolio/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange","PortfolioType/Title",
+                        "TaskCategories/Id", "TaskCategories/Title",  "TeamMembers/Name",
                     )
                     .expand(
-                        "ParentTask", "PortfolioType", "Portfolio", "TaskType", "SharewebTaskType", "AssignedTo", "ClientCategory", "Author", "Team_x0020_Members", "Responsible_x0020_Team",
-                        "Component",
-                        "Events",
-                        "Services",
-                        // "SharewebCategories","Editor",
+                        "ParentTask", "PortfolioType", "Portfolio", "TaskType", "ClientCategory", "TeamMembers", "ResponsibleTeam",
+                        "TaskCategories"
                     )
                     .filter("Status ne 'Completed'")
                     .orderBy("orderby", false)
@@ -268,10 +260,10 @@ function TeamPortlioTable(SelectedProp: any) {
                         item.siteUrl = ContextValue.siteUrl;
                         item["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
                         item.fontColorTask = "#000"
-                        // if (item.SharewebCategories.results != undefined) {
-                        //     if (item.SharewebCategories.results.length > 0) {
+                        // if (item.TaskCategories.results != undefined) {
+                        //     if (item.TaskCategories.results.length > 0) {
                         //         $.each(
-                        //             item.SharewebCategories.results,
+                        //             item.TaskCategories.results,
                         //             function (ind: any, value: any) {
                         //                 if (value.Title.toLowerCase() == "draft") {
                         //                     item.isDrafted = true;
@@ -326,8 +318,8 @@ function TeamPortlioTable(SelectedProp: any) {
                                     }
                                 });
                             }
-                            if (result.Responsible_x0020_Team != undefined && result.Responsible_x0020_Team.length > 0) {
-                                map(result.Responsible_x0020_Team, (Assig: any) => {
+                            if (result.ResponsibleTeam != undefined && result.ResponsibleTeam.length > 0) {
+                                map(result.ResponsibleTeam, (Assig: any) => {
                                     if (Assig.Id != undefined) {
                                         map(AllUsers, (users: any) => {
                                             if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
@@ -340,10 +332,10 @@ function TeamPortlioTable(SelectedProp: any) {
                                 });
                             }
                             if (
-                                result.Team_x0020_Members != undefined &&
-                                result.Team_x0020_Members.length > 0
+                                result.TeamMembers != undefined &&
+                                result.TeamMembers.length > 0
                             ) {
-                                map(result.Team_x0020_Members, (Assig: any) => {
+                                map(result.TeamMembers, (Assig: any) => {
                                     if (Assig.Id != undefined) {
                                         map(AllUsers, (users: any) => {
                                             if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
@@ -361,9 +353,9 @@ function TeamPortlioTable(SelectedProp: any) {
                                 result.ClientCategorySearch = ''
                             }
                             if (result.Id === 1441) console.log(result);
-                            result["Shareweb_x0020_ID"] = globalCommon.getTaskId(result);
-                            if (result["Shareweb_x0020_ID"] == undefined) {
-                                result["Shareweb_x0020_ID"] = "";
+                            result["TaskID"] = globalCommon.getTaskId(result);
+                            if (result["TaskID"] == undefined) {
+                                result["TaskID"] = "";
                             }
 
                             taskTypeDataItem?.map((type: any) => {
@@ -399,23 +391,13 @@ function TeamPortlioTable(SelectedProp: any) {
         componentDetails = await web.lists
             .getById(ContextValue.MasterTaskListID)
             .items
-            .select("ID", "Id", "Title", "Mileage", "TaskListId",
-                "TaskListName", "WorkspaceType", "PortfolioLevel", "PortfolioStructureID", "component_x0020_link", "Package", "Comments",
-                "DueDate", "Sitestagging", "Body", "Deliverables", "SiteCompositionSettings", "StartDate", "Created", "Item_x0020_Type",
-                "Help_x0020_Information", "Background", "Categories", "Short_x0020_Description_x0020_On", "TechnicalExplanations", "Idea",
-                "ValueAdded", "CategoryItem", "Priority_x0020_Rank", "Priority", "TaskDueDate", "PercentComplete",
-                "Modified", "CompletedDate", "ItemRank", "Portfolio_x0020_Type", "ClientTime", "Parent/Id", "Parent/Title",
-
-                "Author/Title",
-                "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title",
-                "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange",
-                "Component/Title", "Component/ItemType", "Services/Id", "Services/Title", "Services/ItemType", "Events/Id", "Events/Title", "Events/ItemType", "AssignedTo/Id", "Component/Id",
+            .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title",
+                "DueDate", "Body", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
+                "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title","PercentComplete",
+                "ResponsibleTeam/Id", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange","PortfolioType/Title","AssignedTo/Id",
             )
             .expand(
-                "Parent", "PortfolioType", "AssignedTo", "ClientCategory", "Author", "Team_x0020_Members", "Responsible_x0020_Team",
-                "Events",
-                "Services",
-                "Component",
+                "Parent", "PortfolioType", "AssignedTo", "ClientCategory", "TeamMembers", "ResponsibleTeam"
             )
             .top(4999)
             .filter(filt)
@@ -441,7 +423,7 @@ function TeamPortlioTable(SelectedProp: any) {
             if (result?.Item_x0020_Type != undefined) {
                 result.SiteIconTitle = result?.Item_x0020_Type?.charAt(0);
             }
-            result["Shareweb_x0020_ID"] = result?.PortfolioStructureID;
+            result["TaskID"] = result?.PortfolioStructureID;
 
             result.DueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
             if (result.DueDate == "Invalid date" || "") {
@@ -469,10 +451,10 @@ function TeamPortlioTable(SelectedProp: any) {
                 });
             }
             if (
-                result.Responsible_x0020_Team != undefined &&
-                result.Responsible_x0020_Team.length > 0
+                result.ResponsibleTeam != undefined &&
+                result.ResponsibleTeam.length > 0
             ) {
-                map(result.Responsible_x0020_Team, (Assig: any) => {
+                map(result.ResponsibleTeam, (Assig: any) => {
                     if (Assig.Id != undefined) {
                         map(AllUsers, (users: any) => {
                             if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
@@ -484,8 +466,8 @@ function TeamPortlioTable(SelectedProp: any) {
                     }
                 });
             }
-            if (result.Team_x0020_Members != undefined && result.Team_x0020_Members.length > 0) {
-                map(result.Team_x0020_Members, (Assig: any) => {
+            if (result.TeamMembers != undefined && result.TeamMembers.length > 0) {
+                map(result.TeamMembers, (Assig: any) => {
                     if (Assig.Id != undefined) {
                         map(AllUsers, (users: any) => {
                             if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
@@ -843,8 +825,8 @@ function TeamPortlioTable(SelectedProp: any) {
                             )}{" "}
                             {row?.original?.SiteIcon != undefined ? (
                                 <a className="hreflink" title="Show All Child" data-toggle="modal" >
-                                    <img className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 workmember ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 workmember ml20 me-1" : row?.original?.SharewebTaskType?.Title == "Activities" ? "ml-36 workmember ml20 me-1" :
-                                        row?.original?.SharewebTaskType?.Title == "Workstream" ? "ml-48 workmember ml20 me-1" : row?.original?.SharewebTaskType?.Title == "Task" || row?.original?.Item_x0020_Type === "Task" && row?.original?.SharewebTaskType == undefined ? "ml-60 workmember ml20 me-1" : "workmember ml20 me-1"
+                                    <img className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 workmember ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 workmember ml20 me-1" :
+                                        row?.original?.TaskType?.Title == "Workstream" ? "ml-48 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Task" || row?.original?.Item_x0020_Type === "Task" && row?.original?.TaskType == undefined ? "ml-60 workmember ml20 me-1" : "workmember ml20 me-1"
                                     }
                                         src={row?.original?.SiteIcon}>
                                     </img>
@@ -852,8 +834,8 @@ function TeamPortlioTable(SelectedProp: any) {
                             ) : (
                                 <>
                                     {row?.original?.Title != "Others" ? (
-                                        <div style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons" : row?.original?.SharewebTaskType?.Title == "Activities" ? "ml-36 Dyicons" :
-                                            row?.original?.SharewebTaskType?.Title == "Workstream" ? "ml-48 Dyicons" : row?.original?.SharewebTaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons"
+                                        <div style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 Dyicons" :
+                                            row?.original?.TaskType?.Title == "Workstream" ? "ml-48 Dyicons" : row?.original?.TaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons"
                                         }>
                                             {row?.original?.SiteIconTitle}
                                         </div>
@@ -927,13 +909,13 @@ function TeamPortlioTable(SelectedProp: any) {
                 size: 145,
             },
             {
-                accessorFn: (row) => row?.Shareweb_x0020_ID,
+                accessorFn: (row) => row?.TaskID,
                 cell: ({ row, getValue }) => (
                     <>
                         <ReactPopperTooltip ShareWebId={getValue()} row={row} />
                     </>
                 ),
-                id: "Shareweb_x0020_ID",
+                id: "TaskID",
                 placeholder: "ID",
                 header: "",
                 size: 130,
@@ -1252,7 +1234,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 obj.data.TitleNew = obj.data.Title;
                 obj.data.siteType = "Master Tasks";
                 obj.data.SiteIconTitle = obj?.data?.Item_x0020_Type?.charAt(0);
-                obj.data["Shareweb_x0020_ID"] = obj.data.PortfolioStructureID;
+                obj.data["TaskID"] = obj.data.PortfolioStructureID;
                 if (
                     item.props != undefined &&
                     item.props.SelectedItem != undefined &&
@@ -1323,7 +1305,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 })
             }
             item.data.SiteIconTitle = item?.data?.Item_x0020_Type?.charAt(0);
-            item.data["Shareweb_x0020_ID"] = item.data.PortfolioStructureID;
+            item.data["TaskID"] = item.data.PortfolioStructureID;
             copyDtaArray.unshift(item.data);
             renderData = [];
             renderData = renderData.concat(copyDtaArray)
@@ -1555,7 +1537,7 @@ const addActivity = (type: any) => {
                     >
                         <div id="portfolio" className="section-event pt-0">
                             {checkedList != undefined &&
-                                checkedList?.SharewebTaskType?.Title == "Workstream" ? (
+                                checkedList?.TaskType?.Title == "Workstream" ? (
                                 <ul className="quick-actions">
                                     <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
                                         <div onClick={(e) => CreateActivityPopup("Task")}>

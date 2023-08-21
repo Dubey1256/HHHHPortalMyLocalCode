@@ -1335,7 +1335,7 @@ function TasksTable(props: any) {
   }, [table.getState().columnFilters]);
   return (
 
-    <div className={IsUpdated === 'Events' ? 'app component eventpannelorange' : (IsUpdated == 'Service' ? 'app component serviepannelgreena' : 'app component')}>
+    <div className={IsUpdated === 'Events' ? 'app component eventpannelorange ps-0' : (IsUpdated == 'Service' ? 'app component serviepannelgreena ps-0' : 'app component ps-0')}>
       <div className="Alltable mt-10">
         <div className="tbl-headings">
           <span className="leftsec">
