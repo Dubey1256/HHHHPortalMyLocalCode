@@ -10,10 +10,6 @@ import { v4 as uuidv4 } from "uuid";
 import EmailComponenet from "./email";
 import { SPHttpClient } from "@microsoft/sp-http";
 import { FaPaperPlane } from "react-icons/fa";
-import {
-  PeoplePicker,
-  PrincipalType,
-} from "@pnp/spfx-controls-react/lib/PeoplePicker";
 import "./style.css";
 // import { Component } from 'react';
 // import MyModal from "./MyModal";
@@ -43,6 +39,21 @@ import Tooltip from "../../../globalComponents/Tooltip";
 import VersionHistoryPopup from "../../../globalComponents/VersionHistroy/VersionHistory";
 //import Modal from "react-bootstrap/Modal";
 //import MoreSlot from "./Slots";
+
+import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/PeoplePicker";
+
+interface IPeoplePickerComponentProps {
+  context: any; // Your SPFx context
+  listId: string; // ID of the SharePoint list
+  itemId: number; // ID of the item you want to update
+  columnName: string; // Name of the people and group column
+}
+
+
+
+
+
+
 interface IEventData {
   [x: string]: any;
   Event_x002d_Type?: string;
@@ -150,6 +161,67 @@ const App = (props: any) => {
   const [returnedRecurrenceInfo, setReturnedRecurrenceInfo] =
     React.useState(null);
   const [recurrenceData, setRecurrenceData] = React.useState(null);
+
+
+
+// People picker function start 
+const [selectedUsers, setSelectedUsers] = React.useState([]);
+
+const handlePeoplePickerChange = (items: any[]): void => {
+  setSelectedUsers(items);
+};
+
+
+
+
+
+// const handleSave = async (): Promise<void> => {
+//   try {
+//       const web = new Web(props.props.siteUrl);
+
+//     const users = selectedUsers.map(item => item.id);
+
+//     await web.lists.getById(props.props.SmalsusLeaveCalendar).items.getById(709).update({
+//       Employee: {Email:"anubhav.shukla@hochhuth-consulting.de"} 
+//     });
+
+//     console.log("Item updated successfully!");
+//   } catch (error) {
+//     console.log("Error updating item:", error);
+//   }
+// };
+
+const handleSave = async (): Promise<void> => {
+  try {
+    const web = new Web(props.props.siteUrl);
+    const userIDs = selectedUsers.map(item => item.secondaryText);
+
+    web.lists.getById(props.props.SmalsusLeaveCalendar).items.getById(716).update({
+      EmployeeId:188
+    })
+    .then(result => {
+      console.log("Item added successfully:", result);
+    })
+    .catch(error => {
+      console.log("Error adding item:", error);
+    });
+    // const itemToUpdate = web.lists.getById(props.props.SmalsusLeaveCalendar).items.getById(709);
+
+    // await itemToUpdate.update({
+    //   Employee: { results: 188 }
+    // });
+
+  //   console.log("Item updated successfully!");
+  } catch (error) {
+    console.log("Error updating item:", error);
+  }
+  
+};
+
+
+
+//  People Picker Function close
+
   const returnRecurrenceInfo = (startDate: Date, recurrenceData: string) => {
     const returnedRecurrenceInfo = {
       recurrenceData: recurrenceData,
@@ -210,9 +282,9 @@ const App = (props: any) => {
       const results = await web.lists
         .getById(props.props.SmalsusLeaveCalendar)
         .items.select(
-          "RecurrenceData,Duration,Author/Title,Editor/Title,Name,NameId,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type"
+          "RecurrenceData,Duration,Author/Title,Editor/Title,NameId,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type"
         )
-        .expand("Author,Editor")
+        .expand("Author,Editor,Employee")
         .top(500)
         .getAll();
 
@@ -230,7 +302,7 @@ const App = (props: any) => {
             events.push({
               Id: event.ID,
               ID: event.ID,
-              NameId:event.NameId,
+              NameId:event?.Employee?.Id,
               EventType: event.EventType,
               title: event.Title ? await deCodeHtmlEntities(event.Title) : "",
               Description: event.Description,
@@ -470,10 +542,10 @@ const App = (props: any) => {
     const web = new Web(props.props.siteUrl);
     await web.lists
       .getById(props.props.SmalsusLeaveCalendar)
-      .items.select("*", "fAllDayEvent", "Author/Title", "Editor/Title")
+      .items.select("*", "fAllDayEvent", "Author/Title", "Editor/Title","Employee/Id","Employee/Title")
       .top(4999)
       .orderBy("Created", false)
-      .expand("Author", "Editor")
+      .expand("Author", "Editor","Employee")
       .get()
       .then((dataaa: any[]) => {
         console.log("datata----", dataaa);
@@ -520,8 +592,8 @@ const App = (props: any) => {
             enddate.setMinutes(enddate.getMinutes() - 30);
           }
           let a;
-          if (item.Name != undefined && item.Event_x002d_Type != undefined) {
-            a = item.Name + "-" + item.Event_x002d_Type + "-" + item.Title;
+          if (item?.Employee?.Title != undefined && item.Event_x002d_Type != undefined) {
+            a = item?.Employee?.Title + "-" + item.Event_x002d_Type + "-" + item.Title;
           } else {
             a = item.Title;
           }
@@ -529,7 +601,7 @@ const App = (props: any) => {
           const dataEvent = {
             shortD: item.Title,
             iD: item.ID,
-            NameId:item.NameId,
+            NameId:item?.Employee?.Id,
             title: a,
             start: startdate,
             end: enddate,
@@ -541,7 +613,7 @@ const App = (props: any) => {
             modify: item.Editor.Title,
             cTime: createdAt,
             mTime: modifyAt,
-            Name: item.Name,
+            Name: item.Employee?.Title,
             Designation: item.Designation,
           };
           // const create ={
@@ -561,7 +633,7 @@ const App = (props: any) => {
       });
   };
 
-  const deleteElement = async () => {
+  const deleteElement = async (eventids:any) => {
     const confirmed = window.confirm(
       "Are you sure you want to delete this item?"
     );
@@ -570,13 +642,14 @@ const App = (props: any) => {
 
       await web.lists
         .getById(props.props.SmalsusLeaveCalendar)
-        .items.getById(eventPass.iD)
+        .items.getById(eventids)
         .delete()
 
         .then((i: any) => {
           //console.log(i);
           void getData();
           closem();
+          closeModal()
           void getData();
         });
     }
@@ -630,8 +703,8 @@ const App = (props: any) => {
           let eventData = {
             Title: newEvent.title,
 
-            Name: newEvent.name,
-            NameId:newEvent.nameId,
+            // Name: newEvent.name,
+            EmployeeId:newEvent.nameId,
 
             Location: newEvent.loc,
 
@@ -1132,8 +1205,8 @@ const App = (props: any) => {
       .items.getById(eventPass.iD)
       .update({
         Title: newEvent.title,
-        Name: newEvent.name,
-        NameId:newEvent.nameId,
+        // Name: newEvent.name,
+        EmployeeId:newEvent.nameId,
         Location: newEvent.loc,
 
         Event_x002d_Type: newEvent.type,
@@ -1244,8 +1317,8 @@ const App = (props: any) => {
   console.log(CTime, MTime, "faees");
 
   const handleSelectSlot = (slotInfo: any) => {
-    setSelectedPeople(props.props.context._pageContext._user.loginName);
-    setPeopleName(props.props.context._pageContext._user.displayName);
+    let yname;
+    people(yname);
     setLocation("");
     setType("Un-Planned")
     setPeoplePickerShow(true);
@@ -1348,7 +1421,7 @@ const App = (props: any) => {
     let userTitle: any;
     let userSuffix: string = undefined;
 
-    if (people.length > 0) {
+    if (people?.length > 0) {
       let userMail = people[0].id.split("|")[2];
       let userInfo = await getUserInfo(userMail);
       userId = userInfo.Id;
@@ -1361,7 +1434,16 @@ const App = (props: any) => {
       title_people = userTitle;
       setPeopleName(userTitle);
     }else{
-      setPeopleName(props.props.context._pageContext._user.displayName)
+      let userInfo = await getUserInfo(props.props.context._pageContext._legacyPageContext.userPrincipalName );
+      userId = userInfo.Id;
+      userTitle = userInfo.Title;
+      userSuffix = userTitle
+        .split(" ")
+        .map((i: any) => i.charAt(0))
+        .join("");
+      title_Id = userId;
+      title_people = userTitle;
+      setPeopleName(userTitle);
     }
   };
 
@@ -1491,7 +1573,7 @@ const App = (props: any) => {
                       </a>
                     </td>
                     <td>
-                      <a href="#" onClick={deleteElement}>
+                      <a href="#" onClick={()=>deleteElement(item?.iD)}>
                         <span className="svg__iconbox svg__icon--trash"></span>
                       </a>
                     </td>
@@ -1523,8 +1605,8 @@ const App = (props: any) => {
                 onChange={people}
                 showtooltip={true}
                 required={true}
-                defaultSelectedUsers={selectedPeople}
               ></PeoplePicker>
+
             </div>
           ) : (
             ""
@@ -1532,6 +1614,7 @@ const App = (props: any) => {
           <div className="col-md-12">
             <TextField
               label="Short Description"
+              required
               value={inputValueName}
               onChange={handleInputChangeName}
             />
@@ -1642,17 +1725,20 @@ const App = (props: any) => {
             />
           </div>{" "}
           <Dropdown
-            label="Leave Type"
-            options={leaveTypes}
-            selectedKey={type}
-            // defaultSelectedKey="Un-Planned" // Set the defaultSelectedKey to the key of "Planned Leave"
-            onChange={(e, option) => setType(option.key)}
-          />
+  label="Leave Type"
+  options={leaveTypes}
+  selectedKey={type}
+  // defaultSelectedKey="Un-Planned" // Set the defaultSelectedKey to the key of "Planned Leave"
+  onChange={(e, option) => setType(option.key)}
+  required // Add the "required" attribute
+  errorMessage={type ? "" : "Please select a leave type"} // Display an error message if no type is selected
+/>
           <Dropdown
             label="Team"
             options={Designation}
             selectedKey={dType}
             onChange={(e, option) => sedType(option.key)}
+            required 
           />
           <div className="col-md-12">
             <ReactQuill
@@ -1715,7 +1801,7 @@ const App = (props: any) => {
                           siteUrls={props.props.siteUrl} />
                 </div>
                 <div>
-                  <a href="#" onClick={deleteElement}>
+                  <a href="#" onClick={()=>deleteElement(vId)}>
                     <span className="svg__iconbox svg__icon--trash"></span>{" "}
                     Delete this Item
                   </a>

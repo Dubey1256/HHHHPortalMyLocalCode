@@ -869,7 +869,7 @@ const TaskDashboard = (props: any) => {
                 Cell: ({ row }: any) => (
                     <span>
 
-                        <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesTask} AllListId={AllListId}/>
+                        <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesTask} AllListId={ props?.props}/>
 
                     </span>
                 ),
