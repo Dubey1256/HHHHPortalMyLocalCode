@@ -18,7 +18,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Tooltip from "../../../globalComponents/Tooltip";
 import {ColumnDef} from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
-import HighlightableCell from "../../componentPortfolio/components/highlight";
+import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 import Loader from "react-loader";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
@@ -230,7 +230,7 @@ function TeamPortlioTable(SelectedProp: any) {
         if (siteConfig != undefined && siteConfig.length > 0) {
             map(siteConfig, async (config: any) => {
                 let web = new Web(ContextValue.siteUrl);
-                let AllTasksMatches = [];
+                let AllTasksMatches:any = [];
                 AllTasksMatches = await web.lists
                     .getById(config.listId)
                     .items.select("ParentTask/Title", "ParentTask/Id","ItemRank", "TaskLevel", "OffshoreComments","TeamMembers/Id", "ClientCategory/Id", "ClientCategory/Title",
@@ -352,11 +352,11 @@ function TeamPortlioTable(SelectedProp: any) {
                             } else {
                                 result.ClientCategorySearch = ''
                             }
-                            if (result.Id === 1441) console.log(result);
-                            result["TaskID"] = globalCommon.getTaskId(result);
-                            if (result["TaskID"] == undefined) {
-                                result["TaskID"] = "";
-                            }
+                            // if (result.Id === 1441) console.log(result);
+                            // result["TaskID"] = globalCommon.getTaskId(result);
+                            // if (result["TaskID"] == undefined) {
+                            //     result["TaskID"] = "";
+                            // }
 
                             taskTypeDataItem?.map((type: any) => {
                                 if (result?.TaskType?.Title === type.Title && result.PortfolioType != undefined) {
@@ -605,7 +605,7 @@ function TeamPortlioTable(SelectedProp: any) {
             })
             let subComFeat = AllProtFolioData?.filter((comp: any) => comp?.Parent?.Id === masterTask?.Id)
             masterTask.subRows = masterTask?.subRows?.concat(subComFeat);
-            subComFeat?.forEach((subComp) => {
+            subComFeat?.forEach((subComp:any) => {
                 subComp.subRows = [];
                 taskTypeData?.map((levelType: any) => {
                     if (levelType.Level === 1)
@@ -1402,11 +1402,15 @@ const closeActivity = () => {
     setActivityPopup(false)
 }
 const addActivity = (type: any) => {
-    if (checkedList?.TaskType?.Id === 3 || checkedList?.TaskType == undefined) {
+    if (checkedList?.TaskType?.Id == undefined || checkedList?.TaskTypeId == undefined) {
     checkedList.NoteCall = type
     setActivityPopup(true);
     }
-    if(checkedList?.TaskType?.Id == 1){
+    if (checkedList?.TaskTypeId === 3 || checkedList?.TaskType?.Id === 3) {
+        checkedList.NoteCall = 'Task'
+        setIsOpenActivity(true);
+        }
+    if(checkedList?.TaskType?.Id == 1 || checkedList?.TaskTypeId == 1){
         checkedList.NoteCall = 'Workstream'
         setIsOpenWorkstream(true);
     }
@@ -1419,18 +1423,19 @@ const addActivity = (type: any) => {
     const onRenderCustomHeaderMain = () => {
         return (
             <div className="d-flex full-width pb-1">
-                <div
-                    style={{
-                        marginRight: "auto",
-                        fontSize: "20px",
-                        fontWeight: "600",
-                        marginLeft: "20px",
-                    }}
-                >
-                    <span>{`Create Component `}</span>
-                </div>
+              <div
+                style={{
+                  marginRight: "auto",
+                  fontSize: "20px",
+                  fontWeight: "600",
+                  marginLeft: "20px",
+                }}
+              >
+                <span>{`Create Item`}</span>
+              </div>
+              <Tooltip ComponentId={1746} />
             </div>
-        );
+          );
     };
     //-------------------------------------------------------------End---------------------------------------------------------------------------------
     return (
@@ -1482,7 +1487,7 @@ const addActivity = (type: any) => {
                                 <div className="col-sm-12 p-0 smart">
                                     <div className="">
                                         <div className="wrapper">
-                                            <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1}
+                                            {/* <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1}
                                                 color={`${portfolioColor ? portfolioColor : "#000069"}`}
                                                 speed={2}
                                                 trail={60}
@@ -1494,7 +1499,7 @@ const addActivity = (type: any) => {
                                                 left="50%"
                                                 scale={1.0}
                                                 loadedClassName="loadedContent"
-                                            />
+                                            /> */}
                                             <GlobalCommanTable AllListId={ContextValue} columns={columns} data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity} />
                                         </div>
                                     </div>
@@ -1612,6 +1617,12 @@ const addActivity = (type: any) => {
                                         <div onClick={() => CreateActivityPopup("Activities")}>
                                             <span className="icon-sites"></span>
                                             Activity
+                                        </div>
+                                    </li>
+                                    <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                        <div onClick={() => CreateActivityPopup("Task")}>
+                                            <span className="icon-sites"></span>
+                                            Task
                                         </div>
                                     </li>
 
