@@ -1423,18 +1423,19 @@ const addActivity = (type: any) => {
     const onRenderCustomHeaderMain = () => {
         return (
             <div className="d-flex full-width pb-1">
-                <div
-                    style={{
-                        marginRight: "auto",
-                        fontSize: "20px",
-                        fontWeight: "600",
-                        marginLeft: "20px",
-                    }}
-                >
-                    <span>{`Create Component `}</span>
-                </div>
+              <div
+                style={{
+                  marginRight: "auto",
+                  fontSize: "20px",
+                  fontWeight: "600",
+                  marginLeft: "20px",
+                }}
+              >
+                <span>{`Create Item`}</span>
+              </div>
+              <Tooltip ComponentId={1746} />
             </div>
-        );
+          );
     };
     //-------------------------------------------------------------End---------------------------------------------------------------------------------
     return (
