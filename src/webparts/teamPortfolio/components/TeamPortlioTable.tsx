@@ -1402,11 +1402,15 @@ const closeActivity = () => {
     setActivityPopup(false)
 }
 const addActivity = (type: any) => {
-    if (checkedList?.TaskType?.Id === 3 || checkedList?.TaskType == undefined) {
+    if (checkedList?.TaskType?.Id == undefined || checkedList?.TaskTypeId == undefined) {
     checkedList.NoteCall = type
     setActivityPopup(true);
     }
-    if(checkedList?.TaskType?.Id == 1){
+    if (checkedList?.TaskTypeId === 3 || checkedList?.TaskType?.Id === 3) {
+        checkedList.NoteCall = 'Task'
+        setIsOpenActivity(true);
+        }
+    if(checkedList?.TaskType?.Id == 1 || checkedList?.TaskTypeId == 1){
         checkedList.NoteCall = 'Workstream'
         setIsOpenWorkstream(true);
     }
