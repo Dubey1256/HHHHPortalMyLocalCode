@@ -4597,6 +4597,7 @@ const EditTaskPopup = (Items: any) => {
                                                         className="form-control p-1" name="Description"
                                                         defaultValue={EstimatedDescription}
                                                         value={EstimatedDescription}
+                                                        rows={1}
                                                         placeholder="Estimated Time Description"
 
                                                     >
@@ -5737,12 +5738,28 @@ const EditTaskPopup = (Items: any) => {
                                                     </div>
                                                     <div className="col-12 mb-2">
                                                         <div className="input-group ">
-                                                            <label className="form-label full-width">Estimated Time In Hours</label>
-                                                            <input type="text" className="form-control"
-                                                                defaultValue={EditData.EstimatedTime}
-                                                                placeholder="Enter Estimated Time In Hours"
-                                                                onChange={(e) => setEditData({ ...EditData, EstimatedTime: Number(e.target.value) })}
-                                                            />
+                                                            <label className="form-label full-width">Estimated Task Time Details</label>
+                                                            <div onChange={UpdateEstimatedTimeDescriptions} className="full-width">
+                                                                <textarea
+                                                                    className="form-control p-1" name="Description"
+                                                                    defaultValue={EstimatedDescription}
+                                                                    value={EstimatedDescription}
+                                                                    rows={1}
+                                                                    placeholder="Estimated Time Description"
+
+                                                                >
+                                                                </textarea>
+                                                                <div className="gap-2 my-1 d-flex">
+                                                                    <input type="number" className="col-6 my-1 p-1" name="Time"
+                                                                        defaultValue={EstimatedTime}
+                                                                        value={EstimatedTime}
+                                                                        placeholder="Estimated Hours"
+                                                                    />
+                                                                    <button className="btn btn-primary full-width my-1" onClick={SaveEstimatedTimeDescription}>
+                                                                        Submit
+                                                                    </button>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
