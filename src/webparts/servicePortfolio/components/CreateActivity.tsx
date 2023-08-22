@@ -1288,11 +1288,11 @@ const CreateActivity = (props: any) => {
                             data['SharewebTaskType'] = { Title: 'Task' }
                             res.data['Shareweb_x0020_ID'] = SharewebID;
 
-                            if (AllItems.PageType != 'ProjectManagement') {
-                                res.data['PortfolioType'] =  portFolioTypeId[0]
+                           
+                                res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0]:null
                                 res.data['Portfolio'] = {'Id': portFolio };
                                 res.data['TaskType'] = { 'Id': res.data.TaskTypeId };
-                            }
+                            
                            
                             data.DueDate = date ? Moment(date).format("MM-DD-YYYY") : null,
 
