@@ -1582,7 +1582,7 @@ function EditProjectPopup(item: any) {
 
           <div className="feedbkicon">
             {" "}
-            <Tooltip />{" "}
+            <Tooltip ComponentId='6490'/>{" "}
           </div>
         </div>
       </>
