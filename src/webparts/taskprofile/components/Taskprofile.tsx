@@ -2281,10 +2281,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
                 {/*===================Backgroundimage code and comment========== */}
 
-                {this.backGroundComment ? <div className="col">
-                  <div className="Taskaddcomment row">
+                {this.backGroundComment ? <div className="col mt-2">
+                  <div className="Taskaddcomment row border-top">
                     {this.state.Result["OffshoreImageUrl"] != null && this.state.Result["OffshoreImageUrl"].length > 0 &&
-                      <div className="col-sm-5 bg-white col-sm-5 pt-3 p-0">
+                      <div className="bg-white col-sm-4 mt-2 p-0">
                         {this.state.Result["OffshoreImageUrl"] != null && this.state.Result["OffshoreImageUrl"]?.map((imgData: any, i: any) => {
                           return <div className="taskimage border mb-3">
                             <a className='images' target="_blank" data-interception="off" href={imgData?.ImageUrl}>
@@ -2318,7 +2318,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                         })}
                       </div>
                     }
-                    {this.state.Result["OffshoreComments"] != null && this.state.Result["OffshoreComments"] != undefined && this.state.Result["OffshoreComments"].length > 0 && <div className="col-sm-7 pe-0 mt-2">
+                    {this.state.Result["OffshoreComments"] != null && this.state.Result["OffshoreComments"] != undefined && this.state.Result["OffshoreComments"].length > 0 && <div className="col-sm-8 pe-0 mt-2">
                       <fieldset className='border p-1'>
                         <legend className="border-bottom fs-6">Background Comments</legend>
                         {this.state.Result["OffshoreComments"] != null && this.state.Result["OffshoreComments"].length > 0 && this.state.Result["OffshoreComments"]?.map((item: any, index: any) => {
