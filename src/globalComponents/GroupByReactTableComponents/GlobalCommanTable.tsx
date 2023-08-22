@@ -26,6 +26,7 @@ import { RiFileExcel2Fill } from 'react-icons/ri';
 import ShowTeamMembers from '../ShowTeamMember';
 import SelectFilterPanel from './selectFilterPannel';
 import ExpndTable from '../ExpandTable/Expandtable';
+import RestructuringCom from '../Restructuring/RestructuringCom';
 
 // ReactTable Part/////
 declare module "@tanstack/table-core" {
@@ -139,7 +140,13 @@ export function IndeterminateCheckbox(
 
 // ReactTable Part end/////
 let isShowingDataAll: any = false;
-const GlobalCommanTable = (items: any) => {
+const GlobalCommanTable = (items: any,ref:any) => {
+    let childRefdata: any ;
+    const childRef =React.useRef<any>();
+    if(childRef!=null){
+        childRefdata={...childRef};
+        
+    }
     let expendedTrue = items?.expendedTrue
     let data = items?.data;
     let columns = items?.columns;
@@ -532,6 +539,27 @@ const GlobalCommanTable = (items: any) => {
             items?.addActivity();
         }
     }
+
+
+
+    const callChildFunction = (items: any) => {
+        if (childRef.current) {
+          childRef.current.OpenModal(items);
+        }
+      };
+    
+      const trueTopIcon = (items: any) => {
+        if (childRef.current) {
+          childRef.current.trueTopIcon(items);
+        }
+      };
+
+      React.useImperativeHandle(ref, () => ({
+        callChildFunction,trueTopIcon
+      
+      
+      }));
+
     return (
         <>
             {showHeader === true && <div className='tbl-headings justify-content-between mb-1'>
@@ -612,7 +640,17 @@ const GlobalCommanTable = (items: any) => {
                         {table?.getSelectedRowModel()?.flatRows.length === 1 ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
                             <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} > Add Activity-Task</button>}
                     </>
+                     
                     }
+                    {table?.getSelectedRowModel()?.flatRows.length > 0 ? <RestructuringCom ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={[table?.getSelectedRowModel()?.flatRows[0].original]} /> : <button
+                     type="button" title="Restructure"
+                     disabled={true}
+                     className="btn btn-primary"
+                   >
+                     Restructure
+                   </button> 
+                    }
+
                     {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--team teamIcon"></span></a>
                     </span> : <span><a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team teamIcon"></span></a></span>}
                     {table?.getSelectedRowModel()?.rows?.length > 0 ? <span>
@@ -749,4 +787,5 @@ const GlobalCommanTable = (items: any) => {
         </>
     )
 }
-export default GlobalCommanTable;
+
+export default React.forwardRef(GlobalCommanTable);    
