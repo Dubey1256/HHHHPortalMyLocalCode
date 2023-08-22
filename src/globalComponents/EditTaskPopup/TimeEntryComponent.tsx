@@ -137,10 +137,11 @@ function TimeEntryPopup(item: any) {
 
     }
     const getAllTime = async () => {
+        CurntUserId = '278'
         $.each(AllUsers, async function (index: any, taskUser: any) {
             if (taskUser.AssingedToUserId === CurntUserId) {
-                if(CurntUserId == '133'){
-                    UserName = 'Mayank Pal'
+                if(CurntUserId == '278'){
+                    UserName = 'mobile'
                 }
               
                 else{

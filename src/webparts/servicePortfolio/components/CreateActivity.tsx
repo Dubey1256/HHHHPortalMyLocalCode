@@ -1307,9 +1307,13 @@ const CreateActivity = (props: any) => {
                             data['SiteIcon'] = value.Item_x005F_x0020_Cover?.Url
                             data['SharewebTaskType'] = { Title: 'Task' }
                             res.data['Shareweb_x0020_ID'] = SharewebID;
-                            res.data['PortfolioType'] =  portFolioTypeId[0],
+
+                            if (AllItems.PageType != 'ProjectManagement') {
+                                res.data['PortfolioType'] =  portFolioTypeId[0]
                                 res.data['Portfolio'] = {'Id': portFolio };
-                            res.data['TaskType'] = { 'Id': res.data.TaskTypeId };
+                                res.data['TaskType'] = { 'Id': res.data.TaskTypeId };
+                            }
+                           
                             data.DueDate = date ? Moment(date).format("MM-DD-YYYY") : null,
 
                                 data['siteType'] = value?.siteName
