@@ -31,18 +31,18 @@ const SelectFilterPanel = (props: any) => {
         props?.selectedFilterCallBack(props?.selectedFilterPannelData);
     };
 
-    const CustomFooter = () => {
-        return (
-            <div>
-                <button type="button" className="btn btn-default mx-1 me-2 pull-right" style={{backgroundColor: `${props?.portfolioColor}`}} onClick={setModalIsOpenToFalse}>
-                    Cancel
-                </button>
-                <button type="button" className="btn btn-primary pull-right" style={{backgroundColor: `${props?.portfolioColor}`}} onClick={() => handleChangeData()}>
-                    Apply
-                </button>
-            </div>
-        );
-    };
+    // const CustomFooter = () => {
+    //     return (
+    //         <div>
+    //             <button type="button" className="btn btn-default mx-1 me-2 pull-right" style={{backgroundColor: `${props?.portfolioColor}`}} onClick={setModalIsOpenToFalse}>
+    //                 Cancel
+    //             </button>
+    //             <button type="button" className="btn btn-primary pull-right" style={{backgroundColor: `${props?.portfolioColor}`}} onClick={() => handleChangeData()}>
+    //                 Apply
+    //             </button>
+    //         </div>
+    //     );
+    // };
 
     const onRenderCustomHeader = () => {
         return (
@@ -62,7 +62,7 @@ const SelectFilterPanel = (props: any) => {
             onDismiss={setModalIsOpenToFalse}
             onRenderHeader={onRenderCustomHeader}
             isBlocking={props?.isOpen}
-            onRenderFooter={CustomFooter}
+            // onRenderFooter={CustomFooter}
         >
             <div className="modal-body p-0 mt-2">
                 <div className="col-sm-12 p-0 smart">
@@ -111,6 +111,14 @@ const SelectFilterPanel = (props: any) => {
                     </div>
                 </div>
             </div>
+            <footer>
+                <button type="button" className="btn btn-default mx-1 me-2 pull-right" style={{backgroundColor: `${props?.portfolioColor}`}} onClick={setModalIsOpenToFalse}>
+                    Cancel
+                </button>
+                <button type="button" className="btn btn-primary pull-right" style={{backgroundColor: `${props?.portfolioColor}`}} onClick={() => handleChangeData()}>
+                    Apply
+                </button>
+            </footer>
         </Panel>
     );
 };
