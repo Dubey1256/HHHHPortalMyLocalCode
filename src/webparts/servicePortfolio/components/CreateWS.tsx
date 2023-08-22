@@ -24,10 +24,13 @@ var dynamicList: any = {}
 var TeamMemberIds: any = [];
 let InheritClientCategory: any = [];
 let AllItems: any = {};
+
 //var checkedWS:boolean=true;
 const CreateWS = (props: any) => {
+
     let portFolioTypeId = props?.portfolioTypeData?.filter((elem: any) => elem?.Id === props?.props?.PortfolioType?.Id)
     let portFolio = props?.props?.Id
+
     if (props.SelectedProp != undefined && props.SelectedProp.SelectedProp != undefined) {
         dynamicList = props.SelectedProp.SelectedProp;
     } else {
@@ -221,6 +224,19 @@ const CreateWS = (props: any) => {
 
             }
         }
+
+        // if (CategoriesData != undefined){
+        //     CategoriesData.forEach(function(type:any){
+        //     CheckCategory.forEach(function(val:any){
+        //         if(type.Id == val.Id){
+        //         BackupCat = type.Id
+        //         setcheckedCat(true)
+        //         }
+        //       })
+
+        //   })
+        //   setUpdate(update+2)
+        // }
         setIsComponentPicker(false);
         setIsComponent(false);
     }, []);
@@ -278,13 +294,15 @@ const CreateWS = (props: any) => {
                         inputFields.forEach((obj: any) => {
                             if (obj.Title != undefined && obj.Title != "") {
                                 index++
-                                createMultiChildAsTask(obj, Type, index);
+                                createMultiChildTask(obj, Type, index, WorstreamLatestId);
                             }
                         })
                     }
                 }
             }
         })
+
+
 
     }
     // const createMultiChildAsWorkStream = async (item: any, Type: any, index: any, WorstreamLatestId: any) => {
@@ -505,242 +523,6 @@ const CreateWS = (props: any) => {
     //     })
 
     // }
-  
-    const createMultiChildAsTask = async (item: any, Type: any, index: any) => {
-        let NewDate = ''
-        var RelevantPortfolioIds: any = []
-        var clientcaterogiesdata2: any = [];
-        var AssignedToUser: any = [];
-        var AllTeamMembers: any = [];
-        var TeamLeaderws: any = [];
-        let LetestLevelData:any=[]
-        let Tasklevel:any =''
-        let TaskID  = ''
-        let web = new Web(dynamicList.siteUrl);
-        let componentDetails: any = [];
-        componentDetails = await web.lists
-            .getById(AllItems.listId)
-            .items
-            .select("Id,Title")
-            .orderBy("Id", false)
-            .top(1)
-            .get()
-        console.log(componentDetails)
-        var LatestId = componentDetails[0].Id + 1;
-        LatestId += index;
-        if (Task == undefined || Task == '')
-            Task = SelectedTasks[0];
-        if (TaskprofileId == '' || SelectedTasks.length > 0) {
-            TaskprofileId = SelectedTasks[0].Id;
-        }
-        AllItems?.subRows?.forEach((vall: any) => {
-            if (vall?.TaskType?.Title == 'Task' || vall?.SharewebTaskType?.Title == 'Task') {
-                LetestLevelData.push(vall)
-            }
-
-        })
-        if (LetestLevelData.length == 0) {
-            Tasklevel = 1
-            TaskID = props?.props?.TaskID + '-T' + Tasklevel + LatestId;
-        }
-        else {
-            Tasklevel = LetestLevelData.length + 1
-            TaskID = props?.props?.TaskID + '-T' + Tasklevel + LatestId;
-        }
-        if (SharewebTasknewTypeId == 2 || SharewebTasknewTypeId == 6) {
-            var SharewebID = '';
-            if (Task?.Portfolio_x0020_Type != undefined && Task?.Portfolio_x0020_Type == 'Component') {
-                SharewebID = 'A' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
-            }
-            if (Task?.Services != undefined && Task.Services.length > 0 || Task?.Portfolio_x0020_Type == 'Service') {
-                SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
-            }
-            if (Task?.Events != undefined && Task.Events.length > 0 || Task?.Portfolio_x0020_Type == 'Events') {
-                SharewebID = 'EA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
-            }
-            if (Task?.Component != undefined && Task.Component.length > 0) {
-                SharewebID = 'CA' + Task.SharewebTaskLevel1No + '-T' + LatestId;
-            }
-            if (Task?.Component == undefined && Task.Services == undefined) {
-                SharewebID = 'T' + LatestId;
-            }
-            if (AllItems?.Portfolio_x0020_Type == undefined) {
-                if (AllItems.Component != undefined && AllItems.Component.length > 0) {
-                    smartComponentData.push(AllItems.Component);
-                }
-
-                if (AllItems.Services != undefined && AllItems.Services.length > 0) {
-                    linkedComponentData.push(AllItems);
-                }
-
-            }
-            if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
-                linkedComponentData?.map((com: any) => {
-                    if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
-                        $.each(linkedComponentData, function (index: any, smart: any) {
-                            RelevantPortfolioIds.push(smart.Id)
-                        })
-                    }
-                })
-            }
-            var Component: any = []
-            smartComponentData.forEach((com: any) => {
-                if (com != undefined) {
-                    Component.push(com[0].Id)
-                }
-
-            })
-            // smartComponentData.forEach((com: any) => {
-            //     if (com != undefined) {
-            //         Component.push(com.Id)
-            //     }
-
-            // })
-            // if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
-            //     linkedComponentData?.map((com: any) => {
-            //         if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
-            //             $.each(linkedComponentData, function (index: any, smart: any) {
-            //                 RelevantPortfolioIds.push(smart.Id)
-            //             })
-            //         }
-            //     })
-            // }
-
-            // if (myDate?.editDate != undefined && myDate?.editDate != null) {
-            //     // var dateValue = myDate?.editDate.split("/");
-            //     // var dp = dateValue[1] + "/" + dateValue[0] + "/" + dateValue[2];
-            //     // var Dateet = new Date(dp)
-            //     NewDate = Moment(myDate?.editDate).format("ddd, DD MMM yyyy")
-            // }
-            if (AllItems?.Component != undefined && AllItems?.Component.length > 0) {
-                Component.push(AllItems.Component[0].Id)
-            }
-            if (AllItems?.Services != undefined && AllItems?.Services.length > 0) {
-                RelevantPortfolioIds.push(AllItems.Services[0].Id)
-            }
-            var categoriesItem = '';
-            CategoriesData.map((category) => {
-                if (category.Title != undefined) {
-                    categoriesItem = categoriesItem == "" ? category.Title : categoriesItem + ';' + category.Title;
-                }
-            })
-            var CategoryID: any = []
-            CategoriesData.map((category) => {
-                if (category.Id != undefined) {
-                    CategoryID.push(category.Id)
-                }
-            })
-            if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length > 0) {
-                AllItems.AssignedTo.forEach((obj: any) => {
-                    AssignedToIds.push(obj.Id);
-                    AssignedToUser.push(obj)
-                })
-            }
-            if (isDropItemRes == true) {
-                if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
-                    TaskAssignedTo.map((taskInfo) => {
-                        AssignedToIds.push(taskInfo.Id);
-                        AssignedToUser.push(taskInfo);
-                    })
-                }
-            }
-            if (AllItems?.TeamMembers != undefined && AllItems?.TeamMembers?.length > 0) {
-                AllItems.TeamMembers.forEach((obj: any) => {
-                    TeamMemberIds.push(obj.Id);
-                    AllTeamMembers.push(obj)
-                })
-            }
-            if (isDropItem == true) {
-                if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
-                    TaskTeamMembers.map((taskInfo) => {
-                        TeamMemberIds.push(taskInfo.Id);
-                        AllTeamMembers.push(taskInfo)
-                    })
-                }
-            }
-            if (AllItems?.TeamLeader != undefined && AllItems?.TeamLeader?.length > 0) {
-                AllItems.TeamLeader.forEach((obj: any) => {
-                    ResponsibleTeamIds.push(obj.Id);
-                    TeamLeaderws.push(obj)
-                })
-            }
-            if (isDropItem == true) {
-                if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
-                    TaskResponsibleTeam.map((taskInfo) => {
-                        ResponsibleTeamIds.push(taskInfo.Id);
-                        TeamLeaderws.push(taskInfo)
-                    })
-                }
-            }
-            if (props?.props != undefined && props?.props?.ClientCategory?.length > 0) {
-                if (props?.props?.ClientCategory2 != undefined && props?.props?.ClientCategory2?.results?.length > 0) {
-                    props?.props?.ClientCategory2?.results?.map((items: any) => {
-                        InheritClientCategory.push(items.Id)
-                        clientcaterogiesdata2.push(items)
-                    })
-                } else {
-                    props.props.ClientCategory?.map((items: any) => {
-                        InheritClientCategory.push(items.Id)
-                        clientcaterogiesdata2.push(items)
-                    })
-                }
-            }
-
-            let web = new Web(dynamicList.siteUrl);
-            await web.lists.getById(AllItems.listId).items.add({
-                Title: item?.Title != undefined ? item?.Title : AllItems.Title,
-                ComponentId: { "results": Component },
-                Categories: categoriesItem ? categoriesItem : null,
-                Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
-                PortfolioId: portFolio,
-                PortfolioTypeId: portFolioTypeId == undefined ?null:portFolioTypeId[0]?.Id,
-                TaskTypeId: SharewebTasknewTypeId,
-                SharewebCategoriesId: { "results": CategoryID },
-                ParentTaskId: AllItems.Id,
-                ServicesId: { "results": RelevantPortfolioIds },
-                SharewebTaskTypeId: SharewebTasknewTypeId,
-                Body:  item?.Description != undefined ? item?.Description : AllItems.Description,
-                // DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
-                DueDate: myDate.editDate = myDate.editDate != null ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy") : null,
-                Priority: AllItems.Priority,
-                //SharewebTaskLevel2No: WorstreamLatestId,
-                SharewebTaskLevel1No: AllItems.SharewebTaskLevel1No,
-                AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
-                Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
-                Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] },
-                ClientCategoryId: { "results": InheritClientCategory },
-                SiteCompositionSettings: props?.props?.SiteCompositionSettings != undefined ? props?.props?.SiteCompositionSettings : "",
-                ClientTime: props?.props?.ClientTime != null ? props?.props?.ClientTime : "",
-                TaskID :TaskID,
-                TaskLevel : Tasklevel
-    
-            }).then((res: any) => {
-                console.log(res);
-                res.data['SiteIcon'] = AllItems.SiteIcon
-                res.data['listId'] = AllItems.listId
-                res.data['Shareweb_x0020_ID'] = SharewebID;
-                res.data['PortfolioType'] =  {'Id':portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id },
-                res.data['Portfolio'] = { 'Id': portFolio };
-                res.data['TaskType'] = { 'Id': res.data.TaskTypeId };
-                // res.DueDate = NewDate != '' && NewDate != undefined ? NewDate : undefined,
-                res.data.DueDate = res?.data?.DueDate !=null? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : null,
-                    res.data['siteType'] = AllItems.siteType
-
-                res.data.Created = new Date();
-                res.data.Author = {
-                    Id: res?.data?.AuthorId
-                }
-                res.data.ClientCategory = clientcaterogiesdata2,
-                    res.data.Team_x0020_Members = AllTeamMembers?.length > 0 ? AllItems?.AllTeamMembers : []
-                res.data.Responsible_x0020_Team = TeamLeaderws.length > 0 ? TeamLeaderws : []
-                res.data.AssignedTo = AssignedToUser?.length > 0 ? AssignedToUser : []
-                res.Item_x0020_Type = ""
-                closeTaskStatusUpdatePoup(res);
-            })
-        }
-
-    }
-    
     const createMultiChildAsWorkStream = async (item: any, Type: any, index: any, WorstreamLatestId: any) => {
         var clientcaterogiesdata2: any = [];
         var AssignedToUser: any = [];
@@ -938,8 +720,8 @@ const CreateWS = (props: any) => {
             if (PopupType == 'CreatePopup') {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
-                res.data['SharewebTaskType'] = { Title: 'Workstream' },
-                res.data['PortfolioType'] =  {'Id':portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id },
+                res.data['SharewebTaskType'] = { Title: 'Workstream' }
+                res.data['PortfolioType'] =  portFolioTypeId[0]
                 res.data.AssignedTo = []
                 res.data.Responsible_x0020_Team = []
                 res.data.Team_x0020_Members = []
@@ -983,9 +765,278 @@ const CreateWS = (props: any) => {
             }
             else {
                 res.data['SiteIcon'] = AllItems.SiteIcon
-                res.data['listId'] = AllItems.listId,
-                res.data['PortfolioType'] =  {'Id':portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id },
+                res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
+                res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : null,
+                res.data['PortfolioType'] =  portFolioTypeId[0]
+                    res.data['siteType'] = AllItems.siteType
+                res.data['Shareweb_x0020_ID'] = SharewebID
+                res.data.ClientCategory = clientcaterogiesdata2,
+                    res.data.Created = new Date();
+                res.data.Author = {
+                    Id: res?.data?.AuthorId
+                }
+                res.data.Team_x0020_Members = AllTeamMembers?.length > 0 ? AllTeamMembers : []
+                res.data.Responsible_x0020_Team = TeamLeaderws?.length > 0 ? TeamLeaderws : []
+                res.data.AssignedTo = AssignedToUser?.length > 0 ? AssignedToUser : []
+                res.Item_x0020_Type = ""
+                setSharewebTask(res.data)
+                closeTaskStatusUpdatePoup(res);
+
+            }
+
+
+
+        })
+
+    }
+
+    const createMultiChildTask = async (item: any, Type: any, index: any, WorstreamLatestId: any) => {
+        var clientcaterogiesdata2: any = [];
+        var AssignedToUser: any = [];
+        var AllTeamMembers: any = [];
+        var TeamLeaderws: any = [];
+        let LetestLevelData:any=[]
+        let Tasklevel:any =''
+        let TaskID  = ''
+        var NewDate = ''
+        let componentDetails:any=[]
+        WorstreamLatestId += index;
+        var SharewebID = '';
+        let web = new Web(dynamicList.siteUrl);
+        if (Task == undefined || Task == '')
+            Task = SelectedTasks[0];
+        if (TaskprofileId == '' || SelectedTasks.length > 0) {
+            TaskprofileId = SelectedTasks[0].Id;
+        }
+      
+        // if (Task.SharewebTaskType != undefined && Task.SharewebTaskType.Title != undefined) {
+        //     SharewebID = 'A' + Task.SharewebTaskLevel1No + '-W' + WorstreamLatestId;
+        // }
+        componentDetails = await web.lists
+        .getById(AllItems.listId)
+        .items
+        .select("Id,Title")
+        .orderBy("Id", false)
+        .top(1)
+        .get()
+    console.log(componentDetails)
+    var LatestId = componentDetails[0].Id + 1;
+    LatestId += index;
+    if (Task.Component != undefined && Task.Component.length > 0) {
+        SharewebID = 'CA' + Task.SharewebTaskLevel1No + '-T' + LatestId;
+    }
+    if (Task.Services != undefined && Task.Services.length > 0) {
+        SharewebID = 'SA' + Task.SharewebTaskLevel1No + '-T' + LatestId;
+    }
+        var Component: any = []
+        var RelevantPortfolioIds: any = []
+
+        // smartComponentData.forEach((com: any) => {
+        //     if (com != undefined) {
+        //         Component.push(com.Id)
+        //     }
+
+        // })
+        // if (myDate?.editDate != undefined && myDate?.editDate != null) {
+        //     var dateValue = myDate?.editDate?.split("/");
+        //     var dp = dateValue[1] + "/" + dateValue[0] + "/" + dateValue[2];
+        //     var Dateet = new Date(dp)
+        //     NewDate = Moment(Dateet).format("ddd, DD MMM yyyy")
+        // }
+        if (date != undefined) {
+            NewDate = new Date(date).toDateString();
+        }
+        if (AllItems?.Component[0] != undefined && AllItems?.Component.length > 0) {
+            Component.push(AllItems.Component[0].Id)
+        }
+        if (AllItems?.Services[0] != undefined && AllItems?.Services?.length > 0) {
+            RelevantPortfolioIds.push(AllItems.Services[0].Id)
+        }
+        if (AllItems?.Portfolio_x0020_Type == undefined) {
+            if (AllItems?.Component != undefined && AllItems?.Component?.length > 0) {
+                smartComponentData.push(AllItems.Component);
+            }
+
+            if (AllItems?.Services != undefined && AllItems?.Services?.length > 0) {
+                linkedComponentData.push(AllItems);
+            }
+
+        }
+
+        var categoriesItem = '';
+        CategoriesData.map((category) => {
+            if (category.Title != undefined) {
+                categoriesItem = categoriesItem == "" ? category.Title : categoriesItem + ';' + category.Title;
+            }
+        })
+        smartComponentData.forEach((com: any) => {
+            if (com != undefined) {
+                Component.push(com[0].Id)
+            }
+
+        })
+        if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
+            linkedComponentData?.map((com: any) => {
+                if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
+                    $.each(linkedComponentData, function (index: any, smart: any) {
+                        RelevantPortfolioIds.push(smart.Id)
+                    })
+                }
+            })
+        }
+        AllItems?.subRows?.forEach((vall: any) => {
+            if (vall?.TaskType?.Title == 'Task' || vall?.SharewebTaskType?.Title == 'Task') {
+                LetestLevelData.push(vall)
+            }
+
+        })
+        if (LetestLevelData.length == 0) {
+            Tasklevel = 1
+            TaskID = props?.props?.TaskID + '-T' + Tasklevel + LatestId;
+        }
+        else {
+            Tasklevel = LetestLevelData.length + 1
+            TaskID = props?.props?.TaskID + '-T' + Tasklevel + LatestId;
+        }
+        var CategoryID: any = []
+        CategoriesData.map((category) => {
+            if (category.Id != undefined) {
+                CategoryID.push(category.Id)
+            }
+        })
+        if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length > 0) {
+            AllItems.AssignedTo.forEach((obj: any) => {
+                AssignedToIds.push(obj.Id);
+            })
+        }
+        if (isDropItemRes == true) {
+            if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
+                TaskAssignedTo.map((taskInfo) => {
+                    AssignedToIds.push(taskInfo.Id);
+                })
+            }
+        }
+        if (AllItems?.TeamMembers != undefined && AllItems?.TeamMembers?.length > 0) {
+            AllItems.TeamMembers.forEach((obj: any) => {
+                TeamMemberIds.push(obj.Id);
+            })
+        }
+        if (isDropItem == true) {
+            if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
+                TaskTeamMembers.map((taskInfo) => {
+                    TeamMemberIds.push(taskInfo.Id);
+                })
+            }
+        }
+        if (AllItems?.TeamLeader != undefined && AllItems?.TeamLeader?.length > 0) {
+            AllItems.TeamLeader.forEach((obj: any) => {
+                ResponsibleTeamIds.push(obj.Id);
+            })
+        }
+        if (isDropItem == true) {
+            if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
+                TaskResponsibleTeam.map((taskInfo) => {
+                    ResponsibleTeamIds.push(taskInfo.Id);
+                })
+            }
+        }
+
+       
+        let FeedBackItemArrayNew: any = [];
+        if (item.Description != undefined) {
+            let param: any = Moment(new Date().toLocaleString())
+            let FeedBackItem: any = {};
+            FeedBackItem['Title'] = "FeedBackPicture" + param;
+            FeedBackItem['FeedBackDescriptions'] = [];
+            FeedBackItem.FeedBackDescriptions = [{
+                'Title': item.Description
+            }]
+            FeedBackItem['ImageDate'] = "" + param;
+            FeedBackItem['Completed'] = '';
+            if (FeedBackItem != undefined && FeedBackItem.length > 1)
+                FeedBackItemArrayNew.push(FeedBackItem)
+        }
+        await web.lists.getById(AllItems.listId).items.add({
+            Title: item?.Title != undefined ? item?.Title : AllItems.Title,
+            ComponentId: { "results": Component },
+            Categories: categoriesItem ? categoriesItem : null,
+            SharewebCategoriesId: { "results": CategoryID },
+            Priority_x0020_Rank: item.selectPriority,
+            PortfolioId: portFolio,
+            PortfolioTypeId: portFolioTypeId == undefined?null:portFolioTypeId[0]?.Id,
+            TaskTypeId: SharewebTasknewTypeId,
+            ParentTaskId: AllItems.Id,
+            ServicesId: { "results": RelevantPortfolioIds },
+            Priority: item.Priority,
+            Body: item?.Description != undefined ? item?.Description : AllItems.Description,
+            // DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
+            DueDate: item.editDate != null ? Moment(item?.editDate).format("ddd, DD MMM yyyy") : null,
+            SharewebTaskTypeId: SharewebTasknewTypeId,
+            FeedBack: FeedBackItemArrayNew.length === 0 ? '' : JSON.stringify(FeedBackItemArrayNew),
+            Shareweb_x0020_ID: SharewebID,
+            SharewebTaskLevel2No: WorstreamLatestId,
+            SharewebTaskLevel1No: AllItems.SharewebTaskLevel1No,
+            AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
+            Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
+            Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] },
+            TaskID :TaskID,
+            TaskLevel : Tasklevel
+
+
+        }).then((res: any) => {
+            console.log(res);
+            if (PopupType == 'CreatePopup') {
+                res.data['SiteIcon'] = AllItems.SiteIcon
+                res.data['listId'] = AllItems.listId
+                res.data['SharewebTaskType'] = { Title: 'Task' }
+                res.data['PortfolioType'] =   portFolioTypeId[0]
+                res.data.AssignedTo = []
+                res.data.Responsible_x0020_Team = []
+                res.data.Team_x0020_Members = []
+                if (res?.data?.Team_x0020_MembersId?.length > 0) {
+                    res.data?.Team_x0020_MembersId?.map((teamUser: any) => {
+                        let elementFound = props?.TaskUsers?.filter((User: any) => {
+                            if (User?.AssingedToUser?.Id == teamUser) {
+                                res.data.Team_x0020_Members.push(User?.AssingedToUser)
+                            }
+                        })
+
+                    })
+                }
+                if (res?.data?.Responsible_x0020_TeamId?.length > 0) {
+                    res.data?.Responsible_x0020_TeamId?.map((teamUser: any) => {
+                        let elementFound = props?.TaskUsers?.filter((User: any) => {
+                            if (User?.AssingedToUser?.Id == teamUser) {
+                                res.data.Responsible_x0020_Team.push(User?.AssingedToUser);
+                            }
+                        })
+
+                    })
+                }
+                if (res?.data?.AssignedToId?.length > 0) {
+                    res.data?.AssignedToId?.map((teamUser: any) => {
+                        let elementFound = props?.TaskUsers?.filter((User: any) => {
+                            if (User?.AssingedToUser?.Id == teamUser) {
+                                res.data.AssignedTo.push(User?.AssingedToUser)
+                            }
+                        })
+
+                    })
+                }
+                res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("DD-MM-YYYY") : '',
+                    res.data['siteType'] = AllItems.siteType
+                res.data['Shareweb_x0020_ID'] = SharewebID
+                if (SelectedTasks != undefined && SelectedTasks.length > 0)
+                    setIsPopupComponent(true)
+                setSharewebTask(res.data)
+                closeTaskStatusUpdatePoup(res);
+            }
+            else {
+                res.data['SiteIcon'] = AllItems.SiteIcon
+                res.data['listId'] = AllItems.listId
+                res.data['SharewebTaskType'] = { Title: 'Task' }
+                res.data['PortfolioType'] =  portFolioTypeId[0],
                 res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : null,
                     res.data['siteType'] = AllItems.siteType
                 res.data['Shareweb_x0020_ID'] = SharewebID
@@ -1042,11 +1093,11 @@ const CreateWS = (props: any) => {
         })
     if(LetestLevelData.length  ==  0){
         Tasklevel = 1
-        TaskID = props?.props?.TaskID + '-W'+ Tasklevel;
+        TaskID = props?.props?.TaskID + '-W'+ WorstreamLatestId;
     }
     else{
         Tasklevel = LetestLevelData.length + 1
-         TaskID = props?.props?.TaskID + '-W'+ Tasklevel;
+         TaskID = props?.props?.TaskID + '-W'+ WorstreamLatestId;
     }
 
 
@@ -1216,7 +1267,7 @@ const CreateWS = (props: any) => {
             Categories: categoriesItem ? categoriesItem : null,
             SharewebCategoriesId: { "results": CategoryID },
             Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
-            PortfolioId: portFolio,
+            PortfolioId: AllItems.Id,
             PortfolioTypeId: portFolioTypeId == undefined?null:portFolioTypeId[0]?.Id,
             ParentTaskId: AllItems.Id,
             ServicesId: { "results": RelevantPortfolioIds },
@@ -1246,7 +1297,7 @@ const CreateWS = (props: any) => {
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
                 res.data['listId'] = AllItems.listId
                 res.data['Shareweb_x0020_ID'] = SharewebID;
-                res.data['PortfolioType'] =  {'Id':portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id },
+                res.data['PortfolioType'] =  portFolioTypeId[0],
                 res.data['Portfolio'] = { 'Id': portFolio };
                 res.data.DueDate = res?.data?.DueDate != null ? Moment(res?.data?.DueDate).format("DD-MM-YYYY") : null,
                     res.data['siteType'] = AllItems.siteType
@@ -1269,7 +1320,7 @@ const CreateWS = (props: any) => {
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
                 res.data['Shareweb_x0020_ID'] = SharewebID;
-                res.data['PortfolioType'] =  {'Id':portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id },
+                res.data['PortfolioType'] =   portFolioTypeId[0]
                 res.data['Portfolio'] = { 'Id': portFolio };
                 res.data.DueDate = res?.data?.DueDate != null ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : null;
                 res.data['siteType'] = AllItems.siteType
@@ -1390,11 +1441,11 @@ const CreateWS = (props: any) => {
         })
         if (LetestLevelData.length == 0) {
             Tasklevel = 1
-            TaskID = props?.props?.TaskID + '-T' + Tasklevel + LatestId;
+            TaskID = props?.props?.TaskID + '-T' + Tasklevel + '-' + LatestId;
         }
         else {
             Tasklevel = LetestLevelData.length + 1
-            TaskID = props?.props?.TaskID + '-T' + Tasklevel + LatestId;
+            TaskID = props?.props?.TaskID + '-T' + Tasklevel + '-' + LatestId;;
         }
         if (SharewebTasknewTypeId == 2 || SharewebTasknewTypeId == 6) {
             var SharewebID = '';
@@ -1541,7 +1592,7 @@ const CreateWS = (props: any) => {
                 ComponentId: { "results": Component },
                 Categories: categoriesItem ? categoriesItem : null,
                 Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
-                PortfolioId: portFolio,
+                PortfolioId: AllItems.Id,
                 PortfolioTypeId: portFolioTypeId == undefined ?null:portFolioTypeId[0]?.Id,
                 TaskTypeId: SharewebTasknewTypeId,
                 SharewebCategoriesId: { "results": CategoryID },
@@ -1568,11 +1619,11 @@ const CreateWS = (props: any) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['Shareweb_x0020_ID'] = SharewebID;
-                res.data['PortfolioType'] =  {'Id':portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id },
+                res.data['PortfolioType'] =  portFolioTypeId[0],
                 res.data['Portfolio'] = { 'Id': portFolio };
                 res.data['TaskType'] = { 'Id': res.data.TaskTypeId };
                 // res.DueDate = NewDate != '' && NewDate != undefined ? NewDate : undefined,
-                res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : null,
+                res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : '',
                     res.data['siteType'] = AllItems.siteType
 
                 res.data.Created = new Date();
@@ -1650,6 +1701,37 @@ const CreateWS = (props: any) => {
             </div>
         );
     };
+    // const SelectDate = (Date: any) => {
+    //     if (Date == 'Today') {
+
+    //         let change = moment().format('YYYY-MM-DD hh:mm:ss')
+    //         let NewDate = new window.Date().toString()
+    //         let FinalDate = moment(NewDate).format("DD/MM/YYYY")
+
+    //     }
+    //     if (Date == 'Tomorrow') {
+    //         let Tommorrow = new window.Date();
+    //         Tommorrow.setDate(Tommorrow.getDate() + 1);
+    //         let FinalDate = moment(Tommorrow).format("DD/MM/YYYY")
+    //         console.log(FinalDate)
+    //     }
+    //     if (Date == 'This Week') {
+    //         let ThisWeek = new window.Date();
+    //         ThisWeek.setDate(ThisWeek.getDate());
+    //         let getdayitem = ThisWeek.getDay();
+    //         let dayscount = 7 - getdayitem
+    //         ThisWeek.setDate(ThisWeek.getDate() + dayscount);
+    //         let FinalDate = moment(ThisWeek).format("DD/MM/YYYY")
+    //     }
+    //     if (Date == 'This Month') {
+    //         let ThisMonth = new window.Date();
+    //         let year = ThisMonth.getFullYear();
+    //         let month = ThisMonth.getMonth();
+    //         let lastday = new window.Date(year, month + 1, 0);
+    //         var FinalDate = moment(lastday).format("DD/MM/YYYY")
+    //     }
+    //     setMyDate(FinalDate)
+    // }
 
 
     const SelectDate = (item: any) => {
@@ -1722,7 +1804,133 @@ const CreateWS = (props: any) => {
         setInputFields(rows);
     }
 
-  
+    // const Addchild =()=>{
+    //     return(
+    //         <>
+    //         <div className='row mt-4'>
+    //            <div className='col-sm-4'>
+    //                <div className="input-group">
+    //                    <label className="full-width">Item Rank</label>
+    //                    <select
+    //                        className="full_width searchbox_height"
+    //                        defaultValue={AllItems?.ItemRankTitle}
+    //                        onChange={(e) =>
+    //                            (AllItems.ItemRankTitle = e.target.value)
+    //                        }
+    //                    >
+    //                        <option>
+    //                            {AllItems?.ItemRankTitle == undefined
+    //                                ? "select Item Rank"
+    //                                : AllItems.ItemRankTitle}
+    //                        </option>
+    //                        {TaskItemRank &&
+    //                            TaskItemRank[0].map(function (h: any, i: any) {
+    //                                return (
+    //                                    <option
+    //                                        key={i}
+    //                                        defaultValue={AllItems?.ItemRankTitle}
+    //                                    >
+    //                                        {AllItems?.ItemRankTitle == h.rankTitle
+    //                                            ? AllItems.ItemRankTitle
+    //                                            : h.rankTitle}
+    //                                    </option>
+    //                                );
+    //                            })}
+    //                    </select>
+    //                </div>
+    //            </div>
+    //            <div className='col-sm-4'>
+    //                <fieldset>
+    //                    <label className="full-width">Priority
+    //                    <span>
+    //                        <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+    //                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+
+    //                        <div className="popover__content">
+    //                            <span>
+
+    //                                    8-10 = High Priority,<br/>
+    //                                    4-7 = Normal Priority,<br/>
+    //                                        1-3 = Low Priority
+    //                                        </span>
+
+    //                                </div>
+
+    //                        </div>
+    //                        </span></label>
+
+    //                    <input type="text" className="full-width" placeholder="Priority" ng-model="PriorityRank"
+    //                        defaultValue={selectPriority} onChange={(e: any) => Priority(e)} />
+    //                    <div className="mt-2">
+    //                        <label>
+    //                            <input className="form-check-input  me-1" name="radioPriority"
+    //                                type="radio" value="(1) High"
+    //                                defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(1) High', e)} />High
+    //                        </label>
+    //                    </div>
+    //                    <div className="">
+    //                        <label>
+    //                            <input className="form-check-input me-1" name="radioPriority"
+    //                                type="radio" value="(2) Normal"
+    //                                defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(2) Normal', e)} />Normal
+    //                        </label>
+    //                    </div>
+    //                    <div className="">
+    //                        <label>
+    //                            <input className="form-check-input me-1" name="radioPriority"
+    //                                type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(3) Low', e)} />Low
+    //                        </label>
+    //                    </div>
+    //                </fieldset>
+
+    //            </div>
+    //            <div className='col-sm-4'>
+    //                <label className="full_width ng-binding" ng-bind-html="GetColumnDetails('dueDate') | trustedHTML">Due Date</label>
+    //                <DatePicker className="form-control"
+    //                    selected={date}
+    //                    value={date}
+    //                    onChange={handleDatedue}
+    //                    dateFormat="dd/MM/yyyy"
+
+
+    //                />
+    //                 <div className="">
+    //                        <label>
+    //                            <input className="form-check-input me-1" name="radioPriority"
+    //                                type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('Today')} />Today
+    //                        </label>
+    //                    </div>
+    //                    <div className="">
+    //                        <label>
+    //                            <input className="form-check-input me-1" name="radioPriority"
+    //                                type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('Tomorrow')} />Tomorrow
+    //                        </label>
+    //                    </div>
+    //                    <div className="">
+    //                        <label>
+    //                            <input className="form-check-input me-1" name="radioPriority"
+    //                                type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('This Week')} />This Week
+    //                        </label>
+    //                    </div>
+    //                    <div className="">
+    //                        <label>
+    //                            <input className="form-check-input me-1" name="radioPriority"
+    //                                type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('This Month')} />This Month
+    //                        </label>
+    //                    </div>
+    //            </div>
+
+    //        </div>
+    //        <div className='row'>
+    //            <div className='col-sm-12 mt-1'>
+    //                <label className='full_width'>Description</label>
+    //                <textarea rows={4} className="ng-pristine ng-valid ng-empty ng-touched full_width" onChange={(e: any) => AllItems.Description = e.target.value}></textarea>
+    //            </div>
+    //        </div>
+
+    //        </>
+    //     )
+    // }
     return (
         <>
             <Panel
@@ -1741,7 +1949,7 @@ const CreateWS = (props: any) => {
                             //     return (
                             //         <>
                             <tr className='d-flex'>
-                                <td className='list-none me-2'><b>Parent</b></td>
+                                <td className='list-none mx-2'><b>Parent</b></td>
                                 {/* <td className='list-none mx-2'>{`${pare.Title} >`}</td> */}
                                 {
                                     ParentArray?.map((childsitem: any, index: any) => {
@@ -1770,10 +1978,9 @@ const CreateWS = (props: any) => {
                     </div>
                     <div className='row'>
                         <div className="col-md-8">
-                            <div className='input-group'>
-                            <input className="form-control" type="text"
+                            <input className="full-width" type="text"
                                 placeholder="Enter Child Item Title" defaultValue={AllItems?.Title}  onChange={(e) => setPostData({ ...postData, Title: e.target.value })}
-                            /></div>
+                            />
                         </div>
                         <div className="col-md-4">
                             {AllItems?.Portfolio_x0020_Type == 'Component'
@@ -1781,7 +1988,7 @@ const CreateWS = (props: any) => {
                                 <div className="">
                                     <div ng-show="smartComponent.length==0" className="input-group">
                                         <label ng-show="!IsShowComSerBoth" className="full-width">Component</label>
-                                        <input type="text" id="txtSharewebComponentcrt" className='form-control'
+                                        <input type="text" id="txtSharewebComponentcrt"
                                         /><span role="status" aria-live="polite" title="Edit Component" data-toggle="modal"
                                             onClick={(e) => EditComponent(AllItems)}
                                             className="full-width">
@@ -1799,7 +2006,7 @@ const CreateWS = (props: any) => {
                                                             <a className="hreflink" target="_blank"
                                                                 href="{{CuurentSiteUrl}}/SitePages/Portfolio-Profile.aspx?taskId={{item.Id}}">{cat.Title}</a>
                                                             <a className="hreflink" ng-click="removeSmartComponent(item.Id)">
-                                                                <span className='svg__iconbox svg__icon--cross dark'></span>
+                                                                <span className='svg__iconbox svg__icon--cross'></span>
                                                             </a>
                                                         </div>
                                                     </>
@@ -1824,7 +2031,7 @@ const CreateWS = (props: any) => {
                             <div className="input-group">
                                 <label className="full-width">Item Rank</label>
                                 <select
-                                    className="form-control"
+                                    className="full_width searchbox_height"
                                     defaultValue={AllItems?.ItemRankTitle}
                                     onChange={(e) =>
                                         (AllItems.ItemRankTitle = e.target.value)
@@ -1853,10 +2060,10 @@ const CreateWS = (props: any) => {
                         </div>
                         <div className='col-sm-4'>
                             <div className='Create-Priority'>
-                                <label className="full-width mt--5"> Priority
-                                <span>
-                                    <div className='popover__wrapper ms-1 alignIcon' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                        <span title="Priority Info" className="svg__iconbox svg__icon--info dark"></span>
+                                <label className="full-width">
+
+                                    <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                        Priority  <span title="Edit" className="svg__iconbox svg__icon--info "></span>
                                         <div className="popover__content">
                                             8-10 = High Priority,<br />
                                             4-7 = Normal Priority,<br />
@@ -1864,13 +2071,11 @@ const CreateWS = (props: any) => {
                                         </div>
 
                                     </div>
-                                    </span>
+
                                 </label>
-                                <div className='input-group'>
-                                    <input type="text" className="form-control" placeholder="Priority" ng-model="PriorityRank"
-                                        defaultValue={selectPriority} onChange={(e: any) => Priority(e)} />
-                                </div>
-                               
+
+                                <input type="text" className="full-width" placeholder="Priority" ng-model="PriorityRank"
+                                    defaultValue={selectPriority} onChange={(e: any) => Priority(e)} />
                                 <dl className='mt-1'>
                                     <dt>
                                         <label className='SpfxCheckRadio'>
@@ -1897,7 +2102,6 @@ const CreateWS = (props: any) => {
 
                         </div>
                         <div className='col-sm-4 position-relative'>
-                        <div className='input-group'>
                             <label className="full_width" ng-bind-html="GetColumnDetails('dueDate') | trustedHTML">Due Date</label>
                             <input className="form-control"
                                 type="date"
@@ -1906,8 +2110,7 @@ const CreateWS = (props: any) => {
                                 // dateFormat="dd/MM/yyyy"
                                 value={myDate.editDate != null ? Moment(new Date(myDate.editDate)).format('YYYY-MM-DD') : ""}
                                 onChange={(e: any) => setMyDate({ ...myDate, editDate: e.target.value })} />
-                            {myDate.editDate != null && <div className="input-close"><span className="svg__iconbox svg__icon--cross dark" onClick={() => setMyDate({ ...myDate, editDate: null, selectDateName: "" })}></span></div>}
-                        </div>
+                            {myDate.editDate != null && <div className="input-close"><span className="svg__iconbox svg__icon--cross" onClick={() => setMyDate({ ...myDate, editDate: null, selectDateName: "" })}></span></div>}
                             <dl className='mt-1'>
                                 <dt className="">
                                     <label className='SpfxCheckRadio'>
@@ -1934,7 +2137,6 @@ const CreateWS = (props: any) => {
                                     </label>
                                 </dt>
                             </dl>
-                           
                         </div>
 
 
@@ -1958,24 +2160,22 @@ const CreateWS = (props: any) => {
                             const { Priority, DueDate, ItemRank, Description } = data;
                             return (
                                 <div>
-                                     <div className="border-bottom border-dark clearfix mt-3 mb-3">
+                                     <div className="border-bottom clearfix">
                                        {(inputFields.length > 0) ? <a className="d-flex justify-content-end" onClick={removeInputFields}><span className='svg__iconbox svg__icon--cross'></span><span>Clear section</span> </a> : ''}
                                    </div>
 
                                     <div className="col-sm-8 pad0">
-                                    <div className='input-group'>
                                         <label className="full-width"></label>
-                                        <input className="form-control" type="text"
+                                        <input className="full-width" type="text"
                                             placeholder="Enter Child Item Title" onChange={(e: any) => data.Title = e.target.value}
                                         />
-                                    </div>
                                     </div>
                                     <div className="row my-3" key={index}>
                                         <div className='col-sm-4'>
                                             <div className="input-group">
                                                 <label className="full-width">Item Rank</label>
                                                 <select
-                                                    className="form-control"
+                                                    className="full_width searchbox_height"
                                                     defaultValue={data?.ItemRankTitle}
                                                     onChange={(e) =>
                                                         (data.ItemRankTitle = e.target.value)
@@ -2004,53 +2204,51 @@ const CreateWS = (props: any) => {
                                         </div>
 
                                         <div className="col-sm-4">
-                                            <div className='input-group'>
-                                                    <label className="full-width mt--5">Priority
-                                                        <span>
-                                                            <div className='popover__wrapper ms-1 alignIcon' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                            <span title="Priority Info" className="svg__iconbox svg__icon--info dark"></span>
+                                            <fieldset>
+                                                <label className="full-width">Priority
+                                                    <span>
+                                                        <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
 
-                                                                <div className="popover__content">
-                                                                    <span>
+                                                            <div className="popover__content">
+                                                                <span>
 
-                                                                        8-10 = High Priority,<br />
-                                                                        4-7 = Normal Priority,<br />
-                                                                        1-3 = Low Priority
-                                                                    </span>
-
-                                                                </div>
+                                                                    8-10 = High Priority,<br />
+                                                                    4-7 = Normal Priority,<br />
+                                                                    1-3 = Low Priority
+                                                                </span>
 
                                                             </div>
-                                                        </span></label>
 
-                                                    <input type="text" className="form-control" placeholder="Priority"
-                                                        defaultValue={data.selectPriority} onClick={(e: any) => PriorityArray(data, e)} />
+                                                        </div>
+                                                    </span></label>
+
+                                                <input type="text" className="full-width" placeholder="Priority"
+                                                    defaultValue={data.selectPriority} onClick={(e: any) => PriorityArray(data, e)} />
+                                                <div className="mt-2">
+                                                    <label>
+                                                        <input className="form-check-input  me-1" name={'radioPriority' + index}
+                                                            type="radio" value="(1) High"
+                                                            defaultChecked={data.Priorityy === "(1) High"} onClick={(e: any) => SelectPriorityArray(data, e)} />High
+                                                    </label>
                                                 </div>
-                                                    <div className="mt-2">
-                                                        <label>
-                                                            <input className="form-check-input  me-1" name={'radioPriority' + index}
-                                                                type="radio" value="(1) High"
-                                                                defaultChecked={data.Priorityy === "(1) High"} onClick={(e: any) => SelectPriorityArray(data, e)} />High
-                                                        </label>
-                                                    </div>
-                                                    <div className="">
-                                                        <label>
-                                                            <input className="form-check-input me-1" name={'radioPriority' + index}
-                                                                type="radio" value="(2) Normal"
-                                                                defaultChecked={data.Priorityy === "(2) Normal"} onClick={(e: any) => SelectPriorityArray(data, e)} />Normal
-                                                        </label>
-                                                    </div>
-                                                    <div className="">
-                                                        <label>
-                                                            <input className="form-check-input me-1" name={'radioPriority' + index}
-                                                                type="radio" value="(3) Low" defaultChecked={data.Priorityy === "(3) Low"} onClick={(e: any) => SelectPriorityArray(data, e)} />Low
-                                                        </label>
-                                                    </div>
-                                            
+                                                <div className="">
+                                                    <label>
+                                                        <input className="form-check-input me-1" name={'radioPriority' + index}
+                                                            type="radio" value="(2) Normal"
+                                                            defaultChecked={data.Priorityy === "(2) Normal"} onClick={(e: any) => SelectPriorityArray(data, e)} />Normal
+                                                    </label>
+                                                </div>
+                                                <div className="">
+                                                    <label>
+                                                        <input className="form-check-input me-1" name={'radioPriority' + index}
+                                                            type="radio" value="(3) Low" defaultChecked={data.Priorityy === "(3) Low"} onClick={(e: any) => SelectPriorityArray(data, e)} />Low
+                                                    </label>
+                                                </div>
+                                            </fieldset>
                                         </div>
 
                                         <div className='col-sm-4 position-relative'>
-                                        <div className='input-group'>
                                             <label className="full_width ng-binding" >Due Date</label>
                                             <input className="form-control"
                                                 // selected={date}
@@ -2059,8 +2257,7 @@ const CreateWS = (props: any) => {
                                                 // onChange={(e) => setMyDate(`${e.target.value}`)}
                                                 value={data.editDate != null ? Moment(new Date(data.editDate)).format('YYYY-MM-DD') : ''}
                                                 onChange={(e: any) => clickonDate(data, e)} />
-                                            {data.editDate != null && <div className="input-close"><span className="svg__iconbox svg__icon--cross dark" onClick={(e: any) => SelectChildDate(data, null)} ></span></div>}
-                                            </div>
+                                            {data.editDate != null && <div className="input-close"><span className="svg__iconbox svg__icon--cross" onClick={(e: any) => SelectChildDate(data, null)} ></span></div>}
                                             <div className="">
                                                 <label>
                                                     <input className="form-check-input me-1" name={'radioPriority1' + index}
@@ -2085,7 +2282,6 @@ const CreateWS = (props: any) => {
                                                         type="radio" value="This Month" checked={data.selectDateName == "This Month"} onClick={(e: any) => SelectChildDate(data, 'This Month')} />This Month
                                                 </label>
                                             </div>
-                                           
                                         </div>
 
 
@@ -2105,7 +2301,7 @@ const CreateWS = (props: any) => {
 
 
 
-                                    {/* {(inputFields.length > 0) ? <a className="pull-left" onClick={removeInputFields}><span className='svg__iconbox svg__icon--cross dark'></span></a> : ''} */}
+                                    {/* {(inputFields.length > 0) ? <a className="pull-left" onClick={removeInputFields}><span className='svg__iconbox svg__icon--cross'></span></a> : ''} */}
 
 
 
