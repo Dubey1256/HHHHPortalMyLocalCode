@@ -4556,7 +4556,7 @@ function ComponentTable(SelectedProp: any) {
         accessorFn: (row) => row?.Shareweb_x0020_ID,
         cell: ({ row, getValue }) => (
           <>
-            <ReactPopperTooltip ShareWebId={getValue()} row={row} />
+            <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={ContextValue}/>
           </>
         ),
         id: "Shareweb_x0020_ID",

@@ -80,7 +80,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
 
     const callBackData = React.useCallback((elem: any, ShowingData: any, selectedArray: any) => {
         if (selectionType == "Multi") {
-            MultiSelectedData = selectedArray;
+            MultiSelectedData = elem;
         } else {
             if (elem != undefined) {
                 setCheckBoxData([elem])

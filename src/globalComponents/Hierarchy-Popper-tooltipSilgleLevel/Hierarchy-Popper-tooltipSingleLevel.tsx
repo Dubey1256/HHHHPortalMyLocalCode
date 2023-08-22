@@ -105,13 +105,13 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
     const openActivityPopup = (row:any) => {
         if(row.SharewebTaskType == undefined){
             setOpenActivity(true)
-            row['NoteCall'] = 'Activities'
+            row['NoteCall'] = 'Task'
             row['PageType'] = 'ProjectManagement'
             checkedData=row;
         }
         if(row?.SharewebTaskType?.Title == 'Activities'){
             setOpenWS(true)
-            row['NoteCall'] = 'Workstream'
+            row['NoteCall'] = 'Task'
             checkedData=row;
         }
         if(row?.SharewebTaskType?.Title == 'Workstream'){
@@ -126,6 +126,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
     const Call=(childItem:any)=>{
         setOpenActivity(false)
         setOpenWS(false)
+       
     }
     /// end////
     const tooltiphierarchy = React.useMemo(() => {
