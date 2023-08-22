@@ -31,18 +31,18 @@ const SelectFilterPanel = (props: any) => {
         props?.selectedFilterCallBack(props?.selectedFilterPannelData);
     };
 
-    const CustomFooter = () => {
-        return (
-            <div>
-                <button type="button" className="btn btn-default mx-1 me-2 pull-right" style={{backgroundColor: `${props?.portfolioColor}`}} onClick={setModalIsOpenToFalse}>
-                    Cancel
-                </button>
-                <button type="button" className="btn btn-primary pull-right" style={{backgroundColor: `${props?.portfolioColor}`}} onClick={() => handleChangeData()}>
-                    Apply
-                </button>
-            </div>
-        );
-    };
+    // const CustomFooter = () => {
+    //     return (
+    //         <div>
+    //             <button type="button" className="btn btn-default mx-1 me-2 pull-right" style={{backgroundColor: `${props?.portfolioColor}`}} onClick={setModalIsOpenToFalse}>
+    //                 Cancel
+    //             </button>
+    //             <button type="button" className="btn btn-primary pull-right" style={{backgroundColor: `${props?.portfolioColor}`}} onClick={() => handleChangeData()}>
+    //                 Apply
+    //             </button>
+    //         </div>
+    //     );
+    // };
 
     const onRenderCustomHeader = () => {
         return (
@@ -62,14 +62,14 @@ const SelectFilterPanel = (props: any) => {
             onDismiss={setModalIsOpenToFalse}
             onRenderHeader={onRenderCustomHeader}
             isBlocking={props?.isOpen}
-            onRenderFooter={CustomFooter}
+            // onRenderFooter={CustomFooter}
         >
             <div className="modal-body p-0 mt-2">
                 <div className="col-sm-12 p-0 smart">
                     <div className="">
                         <div>
                             <label>
-                                <input style={{marginRight: '6px', marginBottom: '6px', color: `${props?.portfolioColor}`}} className="cursor-pointer form-check-input rounded-0"
+                                <input style={{marginRight: '6px', marginBottom: '6px', backgroundColor: `${props?.portfolioColor}`, borderColor:`${props?.portfolioColor}`}} className="cursor-pointer form-check-input rounded-0"
                                     type="checkbox"
                                     name="selectAll"
                                     checked={props?.selectedFilterPannelData.Title.Selected && props?.selectedFilterPannelData.commentsSearch.Selected && props?.selectedFilterPannelData.descriptionsSearch.Selected}
@@ -79,7 +79,7 @@ const SelectFilterPanel = (props: any) => {
                             </label>
                             <br />
                             <label>
-                                <input className="cursor-pointer form-check-input rounded-0" style={{marginRight: '6px', marginBottom: '6px', color: `${props?.portfolioColor}`}}
+                                <input className="cursor-pointer form-check-input rounded-0" style={{marginRight: '6px', marginBottom: '6px', backgroundColor: `${props?.portfolioColor}`,borderColor:`${props?.portfolioColor}`}}
                                     type="checkbox"
                                     name="Title"
                                     checked={props?.selectedFilterPannelData.Title.Selected}
@@ -89,7 +89,7 @@ const SelectFilterPanel = (props: any) => {
                             </label>
                             <br />
                             <label>
-                                <input className="cursor-pointer form-check-input rounded-0" style={{marginRight: '6px', marginBottom: '6px', color: `${props?.portfolioColor}`}}
+                                <input className="cursor-pointer form-check-input rounded-0" style={{marginRight: '6px', marginBottom: '6px', backgroundColor: `${props?.portfolioColor}`, borderColor:`${props?.portfolioColor}`}}
                                     type="checkbox"
                                     name="commentsSearch"
                                     checked={props?.selectedFilterPannelData.commentsSearch.Selected}
@@ -99,7 +99,7 @@ const SelectFilterPanel = (props: any) => {
                             </label>
                             <br />
                             <label>
-                                <input className="cursor-pointer form-check-input rounded-0" style={{marginRight: '6px', marginBottom: '6px', color: `${props?.portfolioColor}`}}
+                                <input className="cursor-pointer form-check-input rounded-0" style={{marginRight: '6px', marginBottom: '6px', backgroundColor: `${props?.portfolioColor}`,borderColor:`${props?.portfolioColor}`}}
                                     type="checkbox"
                                     name="descriptionsSearch"
                                     checked={props?.selectedFilterPannelData.descriptionsSearch.Selected}
@@ -111,6 +111,14 @@ const SelectFilterPanel = (props: any) => {
                     </div>
                 </div>
             </div>
+            <footer>
+                <button type="button" className="btn btn-default mx-1 me-2 pull-right" style={{backgroundColor: `${props?.portfolioColor}`}} onClick={setModalIsOpenToFalse}>
+                    Cancel
+                </button>
+                <button type="button" className="btn btn-primary pull-right" style={{backgroundColor: `${props?.portfolioColor}`}} onClick={() => handleChangeData()}>
+                    Apply
+                </button>
+            </footer>
         </Panel>
     );
 };

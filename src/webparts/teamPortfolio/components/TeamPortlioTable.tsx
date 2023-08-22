@@ -770,7 +770,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: ({ table }: any) => (
                     <>
                         <button
-                            className="border-0 bg-Ff"
+                            className="border-0 bg-Ff mb-3"
                             {...{
                                 onClick: table.getToggleAllRowsExpandedHandler(),
                             }}
@@ -953,7 +953,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 // ),
 
                 cell: ({ row, column, getValue }) => (
-                    <div className="d-flex">
+                    <div className="alignCenter">
                         <span className="column-description2">
                             {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== "Others" && (
                                 <a className="text-content hreflink" title={row?.original?.Title} data-interception="off" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
@@ -976,7 +976,7 @@ function TeamPortlioTable(SelectedProp: any) {
                         {row?.original?.Categories == 'Draft' ?
                             <FaCompressArrowsAlt style={{ height: '11px', width: '20px', color: `${row?.original?.PortfolioType?.Color}` }} /> : ''}
                         {row?.original?.subRows?.length > 0 ?
-                            <span className='ms-1 mt-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
+                            <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
                         {row?.original?.descriptionsSearch != null && row?.original?.descriptionsSearch != '' && (
                             <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />
                         )}
@@ -1064,8 +1064,8 @@ function TeamPortlioTable(SelectedProp: any) {
                                 data-bs-placement="auto"
                                 title="Click To Edit Timesheet"
                             >
-                                <span style={{ backgroundColor: `${portfolioColor}` }}
-                                    className="svg__iconbox svg__icon--clock"
+                                <span
+                                    className="svg__iconbox svg__icon--clock dark"
                                     data-bs-toggle="tooltip"
                                     data-bs-placement="bottom"
                                     title="Click To Edit Timesheet"
