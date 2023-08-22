@@ -39,6 +39,7 @@ export default function ProjectOverview(props: any) {
     const [TableProperty, setTableProperty] = React.useState([]);
     const [openTimeEntryPopup, setOpenTimeEntryPopup] = React.useState(false);
     const [currentUserData, setCurrentUserData]: any = React.useState({});
+    const [onLeaveEmployees, setOnLeaveEmployees] = React.useState([]);
     const [CheckBoxData, setCheckBoxData] = React.useState([]);
     const [ShowTeamPopup, setShowTeamPopup] = React.useState(false);
     const [checkData, setcheckData] = React.useState([])
@@ -80,8 +81,10 @@ export default function ProjectOverview(props: any) {
             AdminConfigrationListID: props?.props?.AdminConfigrationListID,
             siteUrl: props?.props?.siteUrl,
             isShowTimeEntry: isShowTimeEntry,
-            isShowSiteCompostion: isShowSiteCompostion
+            isShowSiteCompostion: isShowSiteCompostion,
+            SmalsusLeaveCalendar: props?.props?.SmalsusLeaveCalendar,
         }
+        loadTodaysLeave();
         setPageLoader(true);
         LoadAllSiteAllTasks()
         TaskUser()
@@ -1217,35 +1220,43 @@ export default function ProjectOverview(props: any) {
                 tasksCopy = group?.subRows
                 if (tasksCopy?.length > 0) {
                     tasksCopy?.map((item: any) => {
-                        let teamUsers: any = [];
-                        item?.AssignedTo?.map((item1: any) => {
-                            teamUsers.push(item1?.Title)
+                        let memberOnLeave = false;
+                        item?.AssignedTo?.map((user: any) => {
+                            memberOnLeave = onLeaveEmployees.some((emp: any) => emp == user?.Id)
                         });
-                        if (item.DueDate != undefined) {
-                            item.TaskDueDatenew = Moment(item.DueDate).format("DD/MM/YYYY");
-                        }
-                        if (item.TaskDueDatenew == undefined || item.TaskDueDatenew == '')
-                            item.TaskDueDatenew = '';
-                        if (item.Categories == undefined || item.Categories == '')
-                            item.Categories = '';
-                      
-                        if (item.EstimatedTime == undefined || item.EstimatedTime == '' || item.EstimatedTime == null) {
-                            item.EstimatedTime = ''
-                        }
+                        if (!memberOnLeave) {
+                            let teamUsers: any = [];
+                            if (item?.AssignedTo?.length > 0) {
+                                item.AssignedTitle = item?.AssignedTo?.map((elem: any) => elem?.Title).join(" ")
+                            } else {
+                                item.AssignedTitle = ''
+                            }
+                            if (item.DueDate != undefined) {
+                                item.TaskDueDatenew = Moment(item.DueDate).format("DD/MM/YYYY");
+                            }
+                            if (item.TaskDueDatenew == undefined || item.TaskDueDatenew == '')
+                                item.TaskDueDatenew = '';
+                            if (item.Categories == undefined || item.Categories == '')
+                                item.Categories = '';
+
+                            if (item.EstimatedTime == undefined || item.EstimatedTime == '' || item.EstimatedTime == null) {
+                                item.EstimatedTime = ''
+                            }
 
 
-                        text =
-                            '<tr>' +
-                            '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.siteType + '</td>'
-                            + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Shareweb_x0020_ID + '</td>'
-                            + '<td style="line-height:24px;font-size:13px;padding:15px;">' + '<p style="margin-top:0px; margin-bottom:2px;font-size:14px; color:#333;">' + '<a href =' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item.Id + '&Site=' + item.siteType + '><span style="font-size:13px; font-weight:600">' + item.Title + '</span></a>' + '</p>' + '</td>'
-                            + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Categories + '</td>'
-                            + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.PercentComplete + '</td>'
-                            + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Priority_x0020_Rank + '</td>'
-                            + '<td style="line-height:24px;font-size:13px;padding:15px;">' + teamUsers + '</td>'
-                            + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.TaskDueDatenew + '</td>'
-                            + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.EstimatedTime + '</td>'
-                        body1.push(text);
+                            text =
+                                '<tr>' +
+                                '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.siteType + '</td>'
+                                + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Shareweb_x0020_ID + '</td>'
+                                + '<td style="line-height:24px;font-size:13px;padding:15px;">' + '<p style="margin-top:0px; margin-bottom:2px;font-size:14px; color:#333;">' + '<a href =' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item.Id + '&Site=' + item.siteType + '><span style="font-size:13px; font-weight:600">' + item.Title + '</span></a>' + '</p>' + '</td>'
+                                + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Categories + '</td>'
+                                + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.PercentComplete + '</td>'
+                                + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Priority_x0020_Rank + '</td>'
+                                + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item?.AssignedTitle + '</td>'
+                                + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.TaskDueDatenew + '</td>'
+                                + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.EstimatedTime + '</td>'
+                            body1.push(text);
+                        }
                     })
                     body =
                         '<h3 style="background: #ffff00;">'
@@ -1393,7 +1404,7 @@ export default function ProjectOverview(props: any) {
                 items.DisplayDueDate = items.DueDate != null ? Moment(items.DueDate).format('DD/MM/YYYY') : ""
             })
             Alltask = sortOnPriority(Alltask)
-            let flatDataProjects=JSON.parse(JSON.stringify(Alltask))
+            let flatDataProjects = JSON.parse(JSON.stringify(Alltask))
             setFlatData(flatDataProjects);
             Alltask.map((items: any) => {
                 items['subRows'] = [];
@@ -1630,7 +1641,35 @@ export default function ProjectOverview(props: any) {
             return b?.Priority_x0020_Rank - a?.Priority_x0020_Rank;
         })
     }
-   
+    // People on Leave Today //
+    const loadTodaysLeave = async () => {
+        if (AllListId?.SmalsusLeaveCalendar?.length > 0) {
+            let startDate: any = new Date();
+            startDate = startDate.setHours(0, 0, 0, 0);
+            const web = new Web(AllListId?.siteUrl);
+            const results = await web.lists
+                .getById(AllListId?.SmalsusLeaveCalendar)
+                .items.select(
+                    "RecurrenceData,Duration,Author/Title,Editor/Title,Name,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type"
+                )
+                .expand("Author,Editor,Employee")
+                .top(5000)
+                .getAll();
+            let peopleOnLeave: any = [];
+            results?.map((emp: any) => {
+                emp.leaveStart = new Date(emp.EventDate).setHours(0, 0, 0, 0);
+                emp.leaveEnd = new Date(emp.EndDate).setHours(0, 0, 0, 0);
+                if (startDate >= emp.leaveStart && startDate <= emp.leaveEnd) {
+                    peopleOnLeave.push(emp?.Employee?.Id);
+                }
+            })
+            setOnLeaveEmployees(peopleOnLeave)
+            console.log(peopleOnLeave);
+        }
+    }
+    //End
+
+
     return (
         <>
             <div>

@@ -355,7 +355,7 @@ const GlobalCommanTable = (items: any,ref:any) => {
         let itrm: any;
         let parentData: any;
         let parentDataCopy: any;
-        if (usedFor == "SiteComposition") {
+        if (usedFor == "SiteComposition"||items?.multiSelect === true) {
             let finalData: any = table?.getSelectedRowModel()?.flatRows;
             callBackData(finalData);
         } else {
@@ -401,7 +401,6 @@ const GlobalCommanTable = (items: any,ref:any) => {
             } else {
                 callBackData(item)
             }
-            console.log("itrm", item)
         }
     }
     const ShowTeamFunc = () => {

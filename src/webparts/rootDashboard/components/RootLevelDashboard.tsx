@@ -102,7 +102,7 @@ const RootLevelDashboard = (props: any) => {
         smartmeta?.map((item: any) => {
           if (item?.Title == 'RootDashboardConfig') {
             dashboardConfig = JSON.parse(item?.Configurations);
-            if(dashboardConfig?.length>0){
+            if (dashboardConfig?.length > 0) {
               setDashboardConfigrations(dashboardConfig)
             }
             dashboardConfig?.map(async (config: any) => {
@@ -278,7 +278,7 @@ const RootLevelDashboard = (props: any) => {
         console.log(error)
 
       }
-    } 
+    }
   };
   const getComponentasString = function (results: any) {
     var component = "";
@@ -388,7 +388,7 @@ const RootLevelDashboard = (props: any) => {
         accessorKey: "Shareweb_x0020_ID",
         placeholder: "Task Id",
         header: "",
-        id:'Shareweb_x0020_ID',
+        id: 'Shareweb_x0020_ID',
         resetColumnFilters: false,
         resetSorting: false,
         size: 140,
@@ -645,7 +645,7 @@ const RootLevelDashboard = (props: any) => {
         }
       });
     });
-    
+
 
   }, []);
   const sortOnCreated = (Array: any) => {
@@ -657,32 +657,37 @@ const RootLevelDashboard = (props: any) => {
     setAllTasks(AllTasksBackup);
   }
   const siteFilter = (item: any) => {
-    let selectedSites:any=[];
-    selectedSites=selectedSiteFilter;
-    if(!selectedSites?.includes(item?.siteUrl)){
+    let selectedSites: any = [];
+    selectedSites = selectedSiteFilter;
+    if (!selectedSites?.includes(item?.siteUrl)) {
       selectedSites.push(item?.siteUrl);
-    }else{
+    } else {
       var indexToRemove = selectedSites.indexOf(item?.siteUrl);
       selectedSites?.splice(indexToRemove, 1)
     }
     setSelectedSiteFilter(selectedSites);
     filterData();
   }
-  const filterData =()=>{
-    if(selectedSiteFilter?.length>0){
+  const filterData = () => {
+    if (selectedSiteFilter?.length > 0) {
       setAllTasks(prevState => {
         return AllTasksBackup?.filter(item => {
-          if(selectedSiteFilter?.includes(item?.siteUrl)){
+          if (selectedSiteFilter?.includes(item?.siteUrl)) {
             return item
           }
         });
       });
-    }else{
+    } else {
       setAllTasks(AllTasksBackup);
     }
   }
   return (
     <>
+      <div className='header-section justify-content-between row'>
+        <div className="col-sm-8">
+          <h2 style={{ color: "#000066", fontWeight: "600" }}>All Sites Tasks</h2>
+        </div>
+      </div>
       <div className='AllTaskSiteRadio d-flex justify-content-between'>
         <dl className='alignCenter gap-2 mb-0'>
           {dashboardConfigrations?.map((list: any) => {
@@ -699,7 +704,7 @@ const RootLevelDashboard = (props: any) => {
         </div>
       </div>
       <div className="Alltable">
-      <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} columns={column2} data={AllTasks} pageSize={100} callBackData={callBackData} showPagination={true} showHeader={true} />
+        <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} columns={column2} data={AllTasks} pageSize={100} callBackData={callBackData} showPagination={true} showHeader={true} />
       </div>
       {IsTimeEntry && (
         <DisplayTimeEntry

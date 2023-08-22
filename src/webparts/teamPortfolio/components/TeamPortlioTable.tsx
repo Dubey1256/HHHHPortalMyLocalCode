@@ -18,7 +18,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Tooltip from "../../../globalComponents/Tooltip";
 import {ColumnDef} from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
-import HighlightableCell from "../../componentPortfolio/components/highlight";
+import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 import Loader from "react-loader";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
@@ -239,7 +239,7 @@ function TeamPortlioTable(SelectedProp: any) {
         if (siteConfig != undefined && siteConfig.length > 0) {
             map(siteConfig, async (config: any) => {
                 let web = new Web(ContextValue.siteUrl);
-                let AllTasksMatches = [];
+                let AllTasksMatches:any = [];
                 AllTasksMatches = await web.lists
                     .getById(config.listId)
                     .items.select("ParentTask/Title", "ParentTask/Id","ItemRank", "TaskLevel", "OffshoreComments","TeamMembers/Id", "ClientCategory/Id", "ClientCategory/Title",
@@ -614,7 +614,7 @@ function TeamPortlioTable(SelectedProp: any) {
             })
             let subComFeat = AllProtFolioData?.filter((comp: any) => comp?.Parent?.Id === masterTask?.Id)
             masterTask.subRows = masterTask?.subRows?.concat(subComFeat);
-            subComFeat?.forEach((subComp) => {
+            subComFeat?.forEach((subComp:any) => {
                 subComp.subRows = [];
                 taskTypeData?.map((levelType: any) => {
                     if (levelType.Level === 1)
@@ -779,7 +779,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: ({ table }: any) => (
                     <>
                         <button
-                            className="border-0 bg-Ff"
+                            className="border-0 bg-Ff mb-3"
                             {...{
                                 onClick: table.getToggleAllRowsExpandedHandler(),
                             }}
@@ -962,7 +962,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 // ),
 
                 cell: ({ row, column, getValue }) => (
-                    <div className="d-flex">
+                    <div className="alignCenter">
                         <span className="column-description2">
                             {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== "Others" && (
                                 <a className="text-content hreflink" title={row?.original?.Title} data-interception="off" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
@@ -985,7 +985,7 @@ function TeamPortlioTable(SelectedProp: any) {
                         {row?.original?.Categories == 'Draft' ?
                             <FaCompressArrowsAlt style={{ height: '11px', width: '20px', color: `${row?.original?.PortfolioType?.Color}` }} /> : ''}
                         {row?.original?.subRows?.length > 0 ?
-                            <span className='ms-1 mt-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
+                            <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
                         {row?.original?.descriptionsSearch != null && row?.original?.descriptionsSearch != '' && (
                             <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />
                         )}
@@ -1073,8 +1073,8 @@ function TeamPortlioTable(SelectedProp: any) {
                                 data-bs-placement="auto"
                                 title="Click To Edit Timesheet"
                             >
-                                <span style={{ backgroundColor: `${portfolioColor}` }}
-                                    className="svg__iconbox svg__icon--clock"
+                                <span
+                                    className="svg__iconbox svg__icon--clock dark"
                                     data-bs-toggle="tooltip"
                                     data-bs-placement="bottom"
                                     title="Click To Edit Timesheet"
@@ -1482,19 +1482,19 @@ const addActivity = (type: any) => {
     const onRenderCustomHeaderMain = () => {
         return (
             <div className="d-flex full-width pb-1">
-                <div
-                    style={{
-                        marginRight: "auto",
-                        fontSize: "20px",
-                        fontWeight: "600",
-                        marginLeft: "20px",
-                    }}
-                >
-                    <span>{`Create Component `}</span>
-                </div>
-                <Tooltip ComponentId={checkedList?.Id} />
+              <div
+                style={{
+                  marginRight: "auto",
+                  fontSize: "20px",
+                  fontWeight: "600",
+                  marginLeft: "20px",
+                }}
+              >
+                <span>{`Create Item`}</span>
+              </div>
+              <Tooltip ComponentId={1746} />
             </div>
-        );
+          );
     };
     //-------------------------------------------------------------End---------------------------------------------------------------------------------
     return (
@@ -1547,7 +1547,7 @@ const addActivity = (type: any) => {
                                 <div className="col-sm-12 p-0 smart">
                                     <div className="">
                                         <div className="wrapper">
-                                            <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1}
+                                            {/* <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1}
                                                 color={`${portfolioColor ? portfolioColor : "#000069"}`}
                                                 speed={2}
                                                 trail={60}
@@ -1559,8 +1559,8 @@ const addActivity = (type: any) => {
                                                 left="50%"
                                                 scale={1.0}
                                                 loadedClassName="loadedContent"
-                                            />
-                                            <GlobalCommanTable ref={childRef} callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1} data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity} />
+                                            /> */}
+                                            <GlobalCommanTable AllListId={ContextValue} columns={columns} data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity} />
                                         </div>
                                     </div>
                                 </div>
