@@ -59,6 +59,7 @@ export interface ITaskprofileState {
   subchildcomment: any,
   updateComment: boolean;
   showComposition: boolean;
+  ShowEstimatedTimeDescription: boolean;
   isOpenEditPopup: boolean;
   TaskDeletedStatus: boolean;
   isTimeEntry: boolean,
@@ -164,6 +165,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       showcomment: 'none',
       updateComment: false,
       showComposition: true,
+      ShowEstimatedTimeDescription:false,
       isOpenEditPopup: false,
       TaskDeletedStatus: false,
       isopenversionHistory: false,
@@ -442,6 +444,19 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         console.log(e)
       }
     }
+    let tempEstimatedArrayData: any;
+    let TotalEstimatedTime: any = 0;
+    if (taskDetails['EstimatedTimeDescription']?.length > 0) {
+      tempEstimatedArrayData = JSON.parse(taskDetails['EstimatedTimeDescription']);
+      if (tempEstimatedArrayData?.length > 0) {
+        tempEstimatedArrayData?.map((TimeDetails: any) => {
+          TotalEstimatedTime = TotalEstimatedTime + Number(TimeDetails.EstimatedTime);
+        })
+      }
+    } else {
+      tempEstimatedArrayData = [];
+    }
+
     let tempTask = {
       SiteIcon: this.GetSiteIcon(this.state?.listName),
       sitePage: this.props.Context?._pageContext?._web?.title,
@@ -478,7 +493,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       BasicImageInfo: this.GetAllImages(JSON.parse(taskDetails["BasicImageInfo"]), taskDetails["AttachmentFiles"], taskDetails["Attachments"]),
       FeedBack: JSON.parse(taskDetails["FeedBack"]),
       SharewebTaskType: taskDetails["SharewebTaskType"] != null ? taskDetails["SharewebTaskType"]?.Title : '',
-
+      EstimatedTimeDescriptionArray: tempEstimatedArrayData,
+      TotalEstimatedTime: TotalEstimatedTime,
       Component: taskDetails["Component"],
       Services: taskDetails["Services"],
       Creation: taskDetails["Created"],
@@ -858,6 +874,18 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     } else {
       this.setState({
         showComposition: true
+      });
+    }
+
+  }
+  private showhideEstimatedTime() {
+    if (this.state.ShowEstimatedTimeDescription) {
+      this.setState({
+        ShowEstimatedTimeDescription: false
+      });
+    } else {
+      this.setState({
+        ShowEstimatedTimeDescription: true
       });
     }
 
@@ -2092,6 +2120,40 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                       </div>
                     }
                   </dl>}
+                  {this.state.Result?.EstimatedTimeDescriptionArray?.length > 0 &&
+                    <dl className="Sitecomposition my-2">
+                      <div className='dropdown'>
+                        <a className="sitebutton bg-fxdark d-flex">
+                          <span className="arrowicons" onClick={() => this.showhideEstimatedTime()}>{this.state.ShowEstimatedTimeDescription ? <SlArrowDown /> : <SlArrowRight />}</span>
+                          <div className="d-flex justify-content-between full-width">
+                            <p className="pb-0 mb-0 ">Estimated Task Time Details</p>
+                          </div>
+                        </a>
+                        <div className="spxdropdown-menu" style={{ display: this.state.ShowEstimatedTimeDescription ? 'block' : 'none' }}>
+                          <div className="col-12" style={{ fontSize: "14px" }}>
+                            {this.state.Result?.EstimatedTimeDescriptionArray != null && this.state.Result?.EstimatedTimeDescriptionArray?.length > 0 ?
+                              <div className="p-1">
+                                {this.state.Result?.EstimatedTimeDescriptionArray?.map((EstimatedTimeData: any, Index: any) => {
+                                  return (
+                                    <div className={this.state.Result?.EstimatedTimeDescriptionArray?.length == Index + 1 ? "align-content-center d-flex justify-content-between p-1 px-2" : "align-content-center border-bottom d-flex justify-content-between p-1 px-2"}>
+                                      <img className="ProirityAssignedUserPhoto m-0" title={EstimatedTimeData.UserName} src={EstimatedTimeData.UserImage != undefined && EstimatedTimeData.UserImage?.length > 0 ? EstimatedTimeData.UserImage : ''} />
+                                      <span>{EstimatedTimeData.Team ? EstimatedTimeData.Team : null}</span> |
+                                      <span>Time : {EstimatedTimeData.EstimatedTime ? (EstimatedTimeData.EstimatedTime > 1 ? EstimatedTimeData.EstimatedTime + " hours" : EstimatedTimeData.EstimatedTime + " hour") : "0 hour"}</span>
+                                      <span className="svg__iconbox svg__icon--info" title={EstimatedTimeData.EstimatedTimeDescription} ></span>
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                              : null
+                            }
+                          </div>
+                        </div>
+                        <div className="boldClable border border-top-0 ps-2 py-1">
+                          <span>Total Estimated Time : </span><span className="mx-1">{this.state.Result.TotalEstimatedTime > 1 ? this.state.Result.TotalEstimatedTime + " hours" : this.state.Result.TotalEstimatedTime + " hour"} </span>
+                        </div>
+                      </div>
+                    </dl>
+                  }
 
                 </div>
               </div>
