@@ -555,7 +555,7 @@ const TimeSummary = (props: any) => {
     <>
 
      
-      <h2 className='heading'>This Week Timesheet Summary</h2>
+      <h2 className='heading'>Team Timesheet Summary</h2>
       
       <div>
         <div className="text-end">
