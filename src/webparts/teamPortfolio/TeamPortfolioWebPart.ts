@@ -20,6 +20,7 @@ export interface ITeamPortfolioWebPartProps {
   TaskUsertListID: "b318ba84-e21d-4876-8851-88b94b9dc300";
   TaskTypeID: "21b55c7b-5748-483a-905a-62ef663972dc";
   SmartMetadataListID: "01a34938-8c7e-4ea6-a003-cee649e8c67a";
+  PortFolioTypeID: "c21ab0e4-4984-4ef7-81b5-805efaa3752e";
   // dropdownvalue: string;
   TimeEntry: any;
   SiteCompostion: any;
@@ -44,6 +45,7 @@ export default class TeamPortfolioWebPart extends BaseClientSideWebPart<ITeamPor
         TaskTypeID: this.properties.TaskTypeID,
         TaskUsertListID: this.properties.TaskUsertListID,
         SmartMetadataListID: this.properties.SmartMetadataListID,
+        PortFolioTypeID:this.properties.PortFolioTypeID,
         Context: this.context,
         // dropdownvalue: this.properties.dropdownvalue,
         TimeEntry: this.properties.TimeEntry,
@@ -131,6 +133,9 @@ export default class TeamPortfolioWebPart extends BaseClientSideWebPart<ITeamPor
                 }),
                 PropertyPaneTextField("TaskTypeID", {
                   label: "Task Type List",
+                }),
+                PropertyPaneTextField("PortFolioTypeID", {
+                  label: "Portfolio Type List",
                 }),
                 PropertyPaneTextField("TimeEntry", {
                   label: "TimeEntry",

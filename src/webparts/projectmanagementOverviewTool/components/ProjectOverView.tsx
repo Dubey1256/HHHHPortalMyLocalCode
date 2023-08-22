@@ -39,6 +39,7 @@ export default function ProjectOverview(props: any) {
     const [TableProperty, setTableProperty] = React.useState([]);
     const [openTimeEntryPopup, setOpenTimeEntryPopup] = React.useState(false);
     const [currentUserData, setCurrentUserData]: any = React.useState({});
+    const [onLeaveEmployees, setOnLeaveEmployees] = React.useState([]);
     const [CheckBoxData, setCheckBoxData] = React.useState([]);
     const [ShowTeamPopup, setShowTeamPopup] = React.useState(false);
     const [checkData, setcheckData] = React.useState([])
@@ -80,8 +81,10 @@ export default function ProjectOverview(props: any) {
             AdminConfigrationListID: props?.props?.AdminConfigrationListID,
             siteUrl: props?.props?.siteUrl,
             isShowTimeEntry: isShowTimeEntry,
-            isShowSiteCompostion: isShowSiteCompostion
+            isShowSiteCompostion: isShowSiteCompostion,
+            SmalsusLeaveCalendar: props?.props?.SmalsusLeaveCalendar,
         }
+        loadTodaysLeave();
         setPageLoader(true);
         LoadAllSiteAllTasks()
         TaskUser()
@@ -179,7 +182,7 @@ export default function ProjectOverview(props: any) {
                         let smartmeta = [];
                         await web.lists
                             .getById(config.listId)
-                            .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "EstimatedTimeDescription", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Body", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Modified")
+                            .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Body", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Modified")
                             .expand("Team_x0020_Members", "Approver", "ParentTask", "ClientCategory", "AssignedTo", "SharewebCategories", "Author", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services")
                             .getAll().then((data: any) => {
                                 smartmeta = data;
@@ -443,18 +446,6 @@ export default function ProjectOverview(props: any) {
                 ),
                 id: "EstimatedTime",
                 placeholder: "Estimated Time",
-                resetColumnFilters: false,
-                resetSorting: false,
-                header: "",
-                size: 60,
-            },
-            {
-                accessorFn: (row) => row?.smartTime,
-                cell: ({ row, getValue }) => (
-                    <span>  {row?.original?.smartTime}</span>
-                ),
-                id: "smartTime",
-                placeholder: "Smart Time Total",
                 resetColumnFilters: false,
                 resetSorting: false,
                 header: "",
@@ -736,18 +727,6 @@ export default function ProjectOverview(props: any) {
                 ),
                 id: "EstimatedTime",
                 placeholder: "Estimated Time",
-                resetColumnFilters: false,
-                resetSorting: false,
-                header: "",
-                size: 60,
-            },
-            {
-                accessorFn: (row) => row?.smartTime,
-                cell: ({ row, getValue }) => (
-                    <span>  {row?.original?.smartTime}</span>
-                ),
-                id: "smartTime",
-                placeholder: "Smart Time Total",
                 resetColumnFilters: false,
                 resetSorting: false,
                 header: "",
@@ -1198,19 +1177,6 @@ export default function ProjectOverview(props: any) {
                 size: 60,
             },
             {
-                accessorFn: (row) => row?.smartTime,
-                cell: ({ row, getValue }) => (
-                    <span>  {row?.original?.smartTime}</span>
-                ),
-                id: "smartTime",
-                placeholder: "Smart Time Total",
-                resetColumnFilters: false,
-                resetSorting: false,
-                header: "",
-                size: 60,
-            },
-            {
-
                 cell: ({ row }) => (
                     <>
                         <span onClick={(e) => EditDataTimeEntry(e, row.original)}
@@ -1239,7 +1205,7 @@ export default function ProjectOverview(props: any) {
 
 
         let text = '';
-        let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "abhishek.tiwari@hochhuth-consulting.de"];
+        let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "abhishek.tiwari@hochhuth-consulting.de", "deepak@hochhuth-consulting.de"];
         let finalBody: any = [];
         let userApprover = '';
         let groupedData = data;
@@ -1254,38 +1220,43 @@ export default function ProjectOverview(props: any) {
                 tasksCopy = group?.subRows
                 if (tasksCopy?.length > 0) {
                     tasksCopy?.map((item: any) => {
-                        let teamUsers: any = [];
-                        item?.AssignedTo?.map((item1: any) => {
-                            teamUsers.push(item1?.Title)
+                        let memberOnLeave = false;
+                        item?.AssignedTo?.map((user: any) => {
+                            memberOnLeave = onLeaveEmployees.some((emp: any) => emp == user?.Id)
                         });
-                        if (item.DueDate != undefined) {
-                            item.TaskDueDatenew = Moment(item.DueDate).format("DD/MM/YYYY");
-                        }
-                        if (item.TaskDueDatenew == undefined || item.TaskDueDatenew == '')
-                            item.TaskDueDatenew = '';
-                        if (item.Categories == undefined || item.Categories == '')
-                            item.Categories = '';
-                        if (item.EstimatedTimeDescription != undefined && item.EstimatedTimeDescription != '') {
-                            item['DescriptionaAndCategory'] = JSON.parse(item.EstimatedTimeDescription)
-                            item['shortDescription'] = item.DescriptionaAndCategory[0].shortDescription;
-                        }
-                        if (item.EstimatedTime == undefined || item.EstimatedTime == '' || item.EstimatedTime == null) {
-                            item.EstimatedTime = ''
-                        }
+                        if (!memberOnLeave) {
+                            let teamUsers: any = [];
+                            if (item?.AssignedTo?.length > 0) {
+                                item.AssignedTitle = item?.AssignedTo?.map((elem: any) => elem?.Title).join(" ")
+                            } else {
+                                item.AssignedTitle = ''
+                            }
+                            if (item.DueDate != undefined) {
+                                item.TaskDueDatenew = Moment(item.DueDate).format("DD/MM/YYYY");
+                            }
+                            if (item.TaskDueDatenew == undefined || item.TaskDueDatenew == '')
+                                item.TaskDueDatenew = '';
+                            if (item.Categories == undefined || item.Categories == '')
+                                item.Categories = '';
+
+                            if (item.EstimatedTime == undefined || item.EstimatedTime == '' || item.EstimatedTime == null) {
+                                item.EstimatedTime = ''
+                            }
 
 
-                        text =
-                            '<tr>' +
-                            '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.siteType + '</td>'
-                            + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Shareweb_x0020_ID + '</td>'
-                            + '<td style="line-height:24px;font-size:13px;padding:15px;">' + '<p style="margin-top:0px; margin-bottom:2px;font-size:14px; color:#333;">' + '<a href =' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item.Id + '&Site=' + item.siteType + '><span style="font-size:13px; font-weight:600">' + item.Title + '</span></a>' + '</p>' + '</td>'
-                            + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Categories + '</td>'
-                            + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.PercentComplete + '</td>'
-                            + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Priority_x0020_Rank + '</td>'
-                            + '<td style="line-height:24px;font-size:13px;padding:15px;">' + teamUsers + '</td>'
-                            + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.TaskDueDatenew + '</td>'
-                            + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.EstimatedTime + '</td>'
-                        body1.push(text);
+                            text =
+                                '<tr>' +
+                                '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.siteType + '</td>'
+                                + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Shareweb_x0020_ID + '</td>'
+                                + '<td style="line-height:24px;font-size:13px;padding:15px;">' + '<p style="margin-top:0px; margin-bottom:2px;font-size:14px; color:#333;">' + '<a href =' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item.Id + '&Site=' + item.siteType + '><span style="font-size:13px; font-weight:600">' + item.Title + '</span></a>' + '</p>' + '</td>'
+                                + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Categories + '</td>'
+                                + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.PercentComplete + '</td>'
+                                + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Priority_x0020_Rank + '</td>'
+                                + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item?.AssignedTitle + '</td>'
+                                + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.TaskDueDatenew + '</td>'
+                                + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.EstimatedTime + '</td>'
+                            body1.push(text);
+                        }
                     })
                     body =
                         '<h3 style="background: #ffff00;">'
@@ -1430,16 +1401,11 @@ export default function ProjectOverview(props: any) {
                 items.descriptionsSearch = items.Short_x0020_Description_x0020_On != undefined ? items?.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
                 items.commentsSearch = items?.Comments != null && items?.Comments != undefined ? items.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
                 items['Shareweb_x0020_ID'] = 'P' + items.Id
-                items['subRows'] = [];
-                allSitesTasks?.map((task: any) => {
-                    if (task?.IsTodaysTask == true && task?.Project?.Id == items?.Id) {
-                        items['subRows'].push(task);
-                    }
-                })
                 items.DisplayDueDate = items.DueDate != null ? Moment(items.DueDate).format('DD/MM/YYYY') : ""
             })
             Alltask = sortOnPriority(Alltask)
-            setFlatData([...Alltask])
+            let flatDataProjects = JSON.parse(JSON.stringify(Alltask))
+            setFlatData(flatDataProjects);
             Alltask.map((items: any) => {
                 items['subRows'] = [];
                 allSitesTasks?.map((task: any) => {
@@ -1540,14 +1506,6 @@ export default function ProjectOverview(props: any) {
                         items.AllTeamMember = [];
                         items.siteType = config.Title;
                         items.siteUrl = config.siteUrl.Url;
-                        SmartTimeData(items)
-                            .then((returnresult: any) => {
-                                items.smartTime = returnresult.toFixed(2);
-                                // console.log("Final Total Time:", returnresult);
-                            })
-                            .catch((error: any) => {
-                                console.error("Error:", error);
-                            });
                         items.bodys = items.Body != null && items.Body.split('<p><br></p>').join('');
                         if (items?.Body != undefined && items?.Body != null) {
                             items.descriptionsSearch = items?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
@@ -1683,104 +1641,35 @@ export default function ProjectOverview(props: any) {
             return b?.Priority_x0020_Rank - a?.Priority_x0020_Rank;
         })
     }
-    const SmartTimeData = async (items: any) => {
-        let FinalTotalTime: any = 0;
-        try {
-            let AllTimeSpentDetails: any = [];
-            let filteres: string;
-            let TimeSheetlistId: any;
-            let siteUrl: any;
-            let listName: any;
-            // Get the list Name
-            let TimesheetConfiguration: any = [];
-            if (siteConfig?.length > 0) {
-                siteConfig.forEach((itemss: any) => {
-                    if (itemss.Title == items.siteType && itemss.TaxType == 'Sites') {
-                        TimesheetConfiguration = JSON.parse(itemss.Configurations)
-                    }
-                })
-                TimesheetConfiguration?.forEach((val: any) => {
-                    TimeSheetlistId = val.TimesheetListId;
-                    siteUrl = val.siteUrl
-                    listName = val.TimesheetListName
-                })
-            }
-            if (items.siteType === "Offshore Tasks") {
-                const siteType = "OffshoreTasks";
-                filteres = `Task${siteType}/Id eq ${items.Id}`;
-            } else {
-                filteres = `Task${items.siteType}/Id eq ${items.Id}`;
-            }
-            const select = "Id,Title,TaskDate,Created,Modified,TaskTime,Description,SortOrder,AdditionalTimeEntry,Author/Id,Author/Title,Editor/Id,Editor/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title&$expand=Editor,Author,Category,TimesheetTitle&$filter=" + filteres;
-            let count = 0;
-            let allurls: { Url: string }[];
-            if (items.siteType === "Migration" || items.siteType === "ALAKDigital") {
-                allurls = [
-                    { Url: "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('9ed5c649-3b4e-42db-a186-778ba43c5c93')/items?$select=" + select }
-                ];
-            } else if (items.siteType === "SH") {
-                allurls = [
-                    { Url: `${items.siteUrl}/_api/web/lists/getbyTitle('TaskTimesheet')/items?$select=${select}` }
-                ];
-            } else {
-                if (listName != undefined) {
-                    allurls = [
-                        { Url: `${items.siteUrl}/_api/web/lists/getbyTitle('${listName}')/items?$select=${select}` }
-                    ];
+    // People on Leave Today //
+    const loadTodaysLeave = async () => {
+        if (AllListId?.SmalsusLeaveCalendar?.length > 0) {
+            let startDate: any = new Date();
+            startDate = startDate.setHours(0, 0, 0, 0);
+            const web = new Web(AllListId?.siteUrl);
+            const results = await web.lists
+                .getById(AllListId?.SmalsusLeaveCalendar)
+                .items.select(
+                    "RecurrenceData,Duration,Author/Title,Editor/Title,Name,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type"
+                )
+                .expand("Author,Editor,Employee")
+                .top(5000)
+                .getAll();
+            let peopleOnLeave: any = [];
+            results?.map((emp: any) => {
+                emp.leaveStart = new Date(emp.EventDate).setHours(0, 0, 0, 0);
+                emp.leaveEnd = new Date(emp.EndDate).setHours(0, 0, 0, 0);
+                if (startDate >= emp.leaveStart && startDate <= emp.leaveEnd) {
+                    peopleOnLeave.push(emp?.Employee?.Id);
                 }
-            }
-            for (const item of allurls) {
-
-                const response = await $.ajax({
-                    url: item.Url,
-                    method: "GET",
-                    headers: {
-                        "Accept": "application/json; odata=verbose"
-                    }
-                });
-                count++;
-                let tempArray: any = [];
-                if (response.d.results !== undefined && response.d.results.length > 0) {
-                    AllTimeSpentDetails = AllTimeSpentDetails.concat(response.d.results);
-                    AllTimeSpentDetails.forEach((item: any) => {
-                        if (item.AdditionalTimeEntry !== null) {
-                            const data = JSON.parse(item.AdditionalTimeEntry);
-
-                            if (data !== undefined && data.length > 0) {
-                                data.forEach((timeData: any) => {
-                                    tempArray.push(timeData);
-                                });
-                            }
-                        }
-                    });
-                }
-                let TotalTimeData: number = 0;
-                if (tempArray.length > 0) {
-                    tempArray.forEach((tempItem: any) => {
-                        if (typeof tempItem.TaskTimeInMin === 'string') {
-                            const timeValue = Number(tempItem.TaskTimeInMin);
-
-                            if (timeValue > 0) {
-                                TotalTimeData += timeValue;
-                            }
-                        } else {
-                            if (tempItem.TaskTimeInMin > 0) {
-                                TotalTimeData += tempItem.TaskTimeInMin;
-                            }
-                        }
-                    });
-                }
-                if (TotalTimeData > 0) {
-                    FinalTotalTime = TotalTimeData / 60;
-                }
-
-            }
-        } catch (error) {
-            // console.error("Error:", error);
+            })
+            setOnLeaveEmployees(peopleOnLeave)
+            console.log(peopleOnLeave);
         }
-        // console.log(FinalTotalTime);
-        return FinalTotalTime;
-    };
+    }
+    //End
+
+
     return (
         <>
             <div>
@@ -1814,7 +1703,7 @@ export default function ProjectOverview(props: any) {
 
                                     </dl>
                                     <div className="text-end">
-                                        {currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" ?
+                                        {currentUserData?.Title == "Deepak Trivedi" || currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" ?
                                             <a className="hreflink" onClick={() => { sendAllWorkingTodayTasks() }}>Share Working Todays's Task</a>
                                             : ''}
                                     </div>

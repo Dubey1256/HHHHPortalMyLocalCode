@@ -24,10 +24,13 @@ var dynamicList: any = {}
 var TeamMemberIds: any = [];
 let InheritClientCategory: any = [];
 let AllItems: any = {};
+
 //var checkedWS:boolean=true;
 const CreateWS = (props: any) => {
+
     let portFolioTypeId = props?.portfolioTypeData?.filter((elem: any) => elem?.Id === props?.props?.PortfolioType?.Id)
     let portFolio = props?.props?.Id
+
     if (props.SelectedProp != undefined && props.SelectedProp.SelectedProp != undefined) {
         dynamicList = props.SelectedProp.SelectedProp;
     } else {
@@ -287,6 +290,14 @@ const CreateWS = (props: any) => {
                     }
                 } else {
                     createChildAsTask(item, Type, index);
+                    if (inputFields != undefined && inputFields.length > 0) {
+                        inputFields.forEach((obj: any) => {
+                            if (obj.Title != undefined && obj.Title != "") {
+                                index++
+                                createMultiChildTask(obj, Type, index, WorstreamLatestId);
+                            }
+                        })
+                    }
                 }
             }
         })
@@ -710,6 +721,7 @@ const CreateWS = (props: any) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
+                res.data['PortfolioType'] =  portFolioTypeId[0]
                 res.data.AssignedTo = []
                 res.data.Responsible_x0020_Team = []
                 res.data.Team_x0020_Members = []
@@ -755,6 +767,276 @@ const CreateWS = (props: any) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
+                res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : null,
+                res.data['PortfolioType'] =  portFolioTypeId[0]
+                    res.data['siteType'] = AllItems.siteType
+                res.data['Shareweb_x0020_ID'] = SharewebID
+                res.data.ClientCategory = clientcaterogiesdata2,
+                    res.data.Created = new Date();
+                res.data.Author = {
+                    Id: res?.data?.AuthorId
+                }
+                res.data.Team_x0020_Members = AllTeamMembers?.length > 0 ? AllTeamMembers : []
+                res.data.Responsible_x0020_Team = TeamLeaderws?.length > 0 ? TeamLeaderws : []
+                res.data.AssignedTo = AssignedToUser?.length > 0 ? AssignedToUser : []
+                res.Item_x0020_Type = ""
+                setSharewebTask(res.data)
+                closeTaskStatusUpdatePoup(res);
+
+            }
+
+
+
+        })
+
+    }
+
+    const createMultiChildTask = async (item: any, Type: any, index: any, WorstreamLatestId: any) => {
+        var clientcaterogiesdata2: any = [];
+        var AssignedToUser: any = [];
+        var AllTeamMembers: any = [];
+        var TeamLeaderws: any = [];
+        let LetestLevelData:any=[]
+        let Tasklevel:any =''
+        let TaskID  = ''
+        var NewDate = ''
+        let componentDetails:any=[]
+        WorstreamLatestId += index;
+        var SharewebID = '';
+        let web = new Web(dynamicList.siteUrl);
+        if (Task == undefined || Task == '')
+            Task = SelectedTasks[0];
+        if (TaskprofileId == '' || SelectedTasks.length > 0) {
+            TaskprofileId = SelectedTasks[0].Id;
+        }
+      
+        // if (Task.SharewebTaskType != undefined && Task.SharewebTaskType.Title != undefined) {
+        //     SharewebID = 'A' + Task.SharewebTaskLevel1No + '-W' + WorstreamLatestId;
+        // }
+        componentDetails = await web.lists
+        .getById(AllItems.listId)
+        .items
+        .select("Id,Title")
+        .orderBy("Id", false)
+        .top(1)
+        .get()
+    console.log(componentDetails)
+    var LatestId = componentDetails[0].Id + 1;
+    LatestId += index;
+    if (Task.Component != undefined && Task.Component.length > 0) {
+        SharewebID = 'CA' + Task.SharewebTaskLevel1No + '-T' + LatestId;
+    }
+    if (Task.Services != undefined && Task.Services.length > 0) {
+        SharewebID = 'SA' + Task.SharewebTaskLevel1No + '-T' + LatestId;
+    }
+        var Component: any = []
+        var RelevantPortfolioIds: any = []
+
+        // smartComponentData.forEach((com: any) => {
+        //     if (com != undefined) {
+        //         Component.push(com.Id)
+        //     }
+
+        // })
+        // if (myDate?.editDate != undefined && myDate?.editDate != null) {
+        //     var dateValue = myDate?.editDate?.split("/");
+        //     var dp = dateValue[1] + "/" + dateValue[0] + "/" + dateValue[2];
+        //     var Dateet = new Date(dp)
+        //     NewDate = Moment(Dateet).format("ddd, DD MMM yyyy")
+        // }
+        if (date != undefined) {
+            NewDate = new Date(date).toDateString();
+        }
+        if (AllItems?.Component[0] != undefined && AllItems?.Component.length > 0) {
+            Component.push(AllItems.Component[0].Id)
+        }
+        if (AllItems?.Services[0] != undefined && AllItems?.Services?.length > 0) {
+            RelevantPortfolioIds.push(AllItems.Services[0].Id)
+        }
+        if (AllItems?.Portfolio_x0020_Type == undefined) {
+            if (AllItems?.Component != undefined && AllItems?.Component?.length > 0) {
+                smartComponentData.push(AllItems.Component);
+            }
+
+            if (AllItems?.Services != undefined && AllItems?.Services?.length > 0) {
+                linkedComponentData.push(AllItems);
+            }
+
+        }
+
+        var categoriesItem = '';
+        CategoriesData.map((category) => {
+            if (category.Title != undefined) {
+                categoriesItem = categoriesItem == "" ? category.Title : categoriesItem + ';' + category.Title;
+            }
+        })
+        smartComponentData.forEach((com: any) => {
+            if (com != undefined) {
+                Component.push(com[0].Id)
+            }
+
+        })
+        if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
+            linkedComponentData?.map((com: any) => {
+                if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
+                    $.each(linkedComponentData, function (index: any, smart: any) {
+                        RelevantPortfolioIds.push(smart.Id)
+                    })
+                }
+            })
+        }
+        AllItems?.subRows?.forEach((vall: any) => {
+            if (vall?.TaskType?.Title == 'Task' || vall?.SharewebTaskType?.Title == 'Task') {
+                LetestLevelData.push(vall)
+            }
+
+        })
+        if (LetestLevelData.length == 0) {
+            Tasklevel = 1
+            TaskID = props?.props?.TaskID + '-T' + Tasklevel + LatestId;
+        }
+        else {
+            Tasklevel = LetestLevelData.length + 1
+            TaskID = props?.props?.TaskID + '-T' + Tasklevel + LatestId;
+        }
+        var CategoryID: any = []
+        CategoriesData.map((category) => {
+            if (category.Id != undefined) {
+                CategoryID.push(category.Id)
+            }
+        })
+        if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length > 0) {
+            AllItems.AssignedTo.forEach((obj: any) => {
+                AssignedToIds.push(obj.Id);
+            })
+        }
+        if (isDropItemRes == true) {
+            if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
+                TaskAssignedTo.map((taskInfo) => {
+                    AssignedToIds.push(taskInfo.Id);
+                })
+            }
+        }
+        if (AllItems?.TeamMembers != undefined && AllItems?.TeamMembers?.length > 0) {
+            AllItems.TeamMembers.forEach((obj: any) => {
+                TeamMemberIds.push(obj.Id);
+            })
+        }
+        if (isDropItem == true) {
+            if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
+                TaskTeamMembers.map((taskInfo) => {
+                    TeamMemberIds.push(taskInfo.Id);
+                })
+            }
+        }
+        if (AllItems?.TeamLeader != undefined && AllItems?.TeamLeader?.length > 0) {
+            AllItems.TeamLeader.forEach((obj: any) => {
+                ResponsibleTeamIds.push(obj.Id);
+            })
+        }
+        if (isDropItem == true) {
+            if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
+                TaskResponsibleTeam.map((taskInfo) => {
+                    ResponsibleTeamIds.push(taskInfo.Id);
+                })
+            }
+        }
+
+       
+        let FeedBackItemArrayNew: any = [];
+        if (item.Description != undefined) {
+            let param: any = Moment(new Date().toLocaleString())
+            let FeedBackItem: any = {};
+            FeedBackItem['Title'] = "FeedBackPicture" + param;
+            FeedBackItem['FeedBackDescriptions'] = [];
+            FeedBackItem.FeedBackDescriptions = [{
+                'Title': item.Description
+            }]
+            FeedBackItem['ImageDate'] = "" + param;
+            FeedBackItem['Completed'] = '';
+            if (FeedBackItem != undefined && FeedBackItem.length > 1)
+                FeedBackItemArrayNew.push(FeedBackItem)
+        }
+        await web.lists.getById(AllItems.listId).items.add({
+            Title: item?.Title != undefined ? item?.Title : AllItems.Title,
+            ComponentId: { "results": Component },
+            Categories: categoriesItem ? categoriesItem : null,
+            SharewebCategoriesId: { "results": CategoryID },
+            Priority_x0020_Rank: item.selectPriority,
+            PortfolioId: portFolio,
+            PortfolioTypeId: portFolioTypeId == undefined?null:portFolioTypeId[0]?.Id,
+            TaskTypeId: SharewebTasknewTypeId,
+            ParentTaskId: AllItems.Id,
+            ServicesId: { "results": RelevantPortfolioIds },
+            Priority: item.Priority,
+            Body: item?.Description != undefined ? item?.Description : AllItems.Description,
+            // DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
+            DueDate: item.editDate != null ? Moment(item?.editDate).format("ddd, DD MMM yyyy") : null,
+            SharewebTaskTypeId: SharewebTasknewTypeId,
+            FeedBack: FeedBackItemArrayNew.length === 0 ? '' : JSON.stringify(FeedBackItemArrayNew),
+            Shareweb_x0020_ID: SharewebID,
+            SharewebTaskLevel2No: WorstreamLatestId,
+            SharewebTaskLevel1No: AllItems.SharewebTaskLevel1No,
+            AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
+            Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
+            Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] },
+            TaskID :TaskID,
+            TaskLevel : Tasklevel
+
+
+        }).then((res: any) => {
+            console.log(res);
+            if (PopupType == 'CreatePopup') {
+                res.data['SiteIcon'] = AllItems.SiteIcon
+                res.data['listId'] = AllItems.listId
+                res.data['SharewebTaskType'] = { Title: 'Task' }
+                res.data['PortfolioType'] =   portFolioTypeId[0]
+                res.data.AssignedTo = []
+                res.data.Responsible_x0020_Team = []
+                res.data.Team_x0020_Members = []
+                if (res?.data?.Team_x0020_MembersId?.length > 0) {
+                    res.data?.Team_x0020_MembersId?.map((teamUser: any) => {
+                        let elementFound = props?.TaskUsers?.filter((User: any) => {
+                            if (User?.AssingedToUser?.Id == teamUser) {
+                                res.data.Team_x0020_Members.push(User?.AssingedToUser)
+                            }
+                        })
+
+                    })
+                }
+                if (res?.data?.Responsible_x0020_TeamId?.length > 0) {
+                    res.data?.Responsible_x0020_TeamId?.map((teamUser: any) => {
+                        let elementFound = props?.TaskUsers?.filter((User: any) => {
+                            if (User?.AssingedToUser?.Id == teamUser) {
+                                res.data.Responsible_x0020_Team.push(User?.AssingedToUser);
+                            }
+                        })
+
+                    })
+                }
+                if (res?.data?.AssignedToId?.length > 0) {
+                    res.data?.AssignedToId?.map((teamUser: any) => {
+                        let elementFound = props?.TaskUsers?.filter((User: any) => {
+                            if (User?.AssingedToUser?.Id == teamUser) {
+                                res.data.AssignedTo.push(User?.AssingedToUser)
+                            }
+                        })
+
+                    })
+                }
+                res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("DD-MM-YYYY") : '',
+                    res.data['siteType'] = AllItems.siteType
+                res.data['Shareweb_x0020_ID'] = SharewebID
+                if (SelectedTasks != undefined && SelectedTasks.length > 0)
+                    setIsPopupComponent(true)
+                setSharewebTask(res.data)
+                closeTaskStatusUpdatePoup(res);
+            }
+            else {
+                res.data['SiteIcon'] = AllItems.SiteIcon
+                res.data['listId'] = AllItems.listId
+                res.data['SharewebTaskType'] = { Title: 'Task' }
+                res.data['PortfolioType'] =  portFolioTypeId[0],
                 res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : null,
                     res.data['siteType'] = AllItems.siteType
                 res.data['Shareweb_x0020_ID'] = SharewebID
@@ -811,11 +1093,11 @@ const CreateWS = (props: any) => {
         })
     if(LetestLevelData.length  ==  0){
         Tasklevel = 1
-        TaskID = props?.props?.TaskID + '-W'+ Tasklevel;
+        TaskID = props?.props?.TaskID + '-W'+ WorstreamLatestId;
     }
     else{
         Tasklevel = LetestLevelData.length + 1
-         TaskID = props?.props?.TaskID + '-W'+ Tasklevel;
+         TaskID = props?.props?.TaskID + '-W'+ WorstreamLatestId;
     }
 
 
@@ -985,7 +1267,7 @@ const CreateWS = (props: any) => {
             Categories: categoriesItem ? categoriesItem : null,
             SharewebCategoriesId: { "results": CategoryID },
             Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
-            PortfolioId: portFolio,
+            PortfolioId: AllItems.Id,
             PortfolioTypeId: portFolioTypeId == undefined?null:portFolioTypeId[0]?.Id,
             ParentTaskId: AllItems.Id,
             ServicesId: { "results": RelevantPortfolioIds },
@@ -1015,7 +1297,7 @@ const CreateWS = (props: any) => {
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
                 res.data['listId'] = AllItems.listId
                 res.data['Shareweb_x0020_ID'] = SharewebID;
-                res.data['PortfolioType'] = portFolioTypeId == undefined?null:portFolioTypeId[0]?.Id,
+                res.data['PortfolioType'] =  portFolioTypeId[0],
                 res.data['Portfolio'] = { 'Id': portFolio };
                 res.data.DueDate = res?.data?.DueDate != null ? Moment(res?.data?.DueDate).format("DD-MM-YYYY") : null,
                     res.data['siteType'] = AllItems.siteType
@@ -1038,7 +1320,7 @@ const CreateWS = (props: any) => {
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
                 res.data['Shareweb_x0020_ID'] = SharewebID;
-                res.data['PortfolioType'] =  portFolioTypeId == undefined?null:portFolioTypeId[0]?.Id
+                res.data['PortfolioType'] =   portFolioTypeId[0]
                 res.data['Portfolio'] = { 'Id': portFolio };
                 res.data.DueDate = res?.data?.DueDate != null ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : null;
                 res.data['siteType'] = AllItems.siteType
@@ -1159,11 +1441,11 @@ const CreateWS = (props: any) => {
         })
         if (LetestLevelData.length == 0) {
             Tasklevel = 1
-            TaskID = props?.props?.TaskID + '-T' + Tasklevel + LatestId;
+            TaskID = props?.props?.TaskID + '-T' + Tasklevel + '-' + LatestId;
         }
         else {
             Tasklevel = LetestLevelData.length + 1
-            TaskID = props?.props?.TaskID + '-T' + Tasklevel + LatestId;
+            TaskID = props?.props?.TaskID + '-T' + Tasklevel + '-' + LatestId;;
         }
         if (SharewebTasknewTypeId == 2 || SharewebTasknewTypeId == 6) {
             var SharewebID = '';
@@ -1310,7 +1592,7 @@ const CreateWS = (props: any) => {
                 ComponentId: { "results": Component },
                 Categories: categoriesItem ? categoriesItem : null,
                 Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
-                PortfolioId: portFolio,
+                PortfolioId: AllItems.Id,
                 PortfolioTypeId: portFolioTypeId == undefined ?null:portFolioTypeId[0]?.Id,
                 TaskTypeId: SharewebTasknewTypeId,
                 SharewebCategoriesId: { "results": CategoryID },
@@ -1337,7 +1619,7 @@ const CreateWS = (props: any) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['Shareweb_x0020_ID'] = SharewebID;
-                res.data['PortfolioType'] = portFolioTypeId == undefined?null:portFolioTypeId[0]?.Id,
+                res.data['PortfolioType'] =  portFolioTypeId[0],
                 res.data['Portfolio'] = { 'Id': portFolio };
                 res.data['TaskType'] = { 'Id': res.data.TaskTypeId };
                 // res.DueDate = NewDate != '' && NewDate != undefined ? NewDate : undefined,

@@ -234,7 +234,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           display: this.taskUsers[index].Title
         });
   
-        if (this.taskUsers[index].Title == "Deepak Trivedi" || this.taskUsers[index].Title == "Stefan Hochhuth" || this.taskUsers[index].Title == "Robert Ungethuem" || this.taskUsers[index].Title == "Mattis Hahn"||this.taskUsers[index].Title=="Ksenia Kozhukhar"||this.taskUsers[index].Title=="Mayank Pal") {
+        if (this.taskUsers[index].Title == "Deepak Trivedi" || this.taskUsers[index].Title == "Stefan Hochhuth" || this.taskUsers[index].Title == "Robert Ungethuem" || this.taskUsers[index].Title == "Mattis Hahn"||this.taskUsers[index].Title=="Prashant Kumar") {
           this.topCommenters.push({
             id: this.taskUsers[index].Title + "{" + this.taskUsers[index].Email + "}",
             display: this.taskUsers[index].Title,
@@ -532,6 +532,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       this.setState({
         mentionValue: this.state.mentionValue + '@[' + e.currentTarget?.title + '](' + e.currentTarget?.id + ') '
       }, () => { console.log(this.state.mentionValue) })
+      e.currentTarget?.classList?.remove('active');
     }
 
   }
@@ -627,7 +628,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
      
       <>
    <div className={color?"d-flex full-width pb-1 serviepannelgreena":"d-flex full-width pb-1"}>
-        <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+        <div className='subheading'>
           
           <span className="siteColor">
             Update Comment
@@ -642,7 +643,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   private customHeaderforALLcomments(){
     return (
       <div className={color?"d-flex full-width pb-1 serviepannelgreena":"d-flex full-width pb-1 "}>
-        <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+        <div className='subheading'>
           
           <span className="siteColor">
           Comment:{Title}{commentlength}
@@ -712,8 +713,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
               </div>
               <span className='clintlist'>
                 <MentionsInput placeholder='Recipients Name' value={this.state?.mentionValue ? this.state?.mentionValue : ""} onChange={(e) => this.setMentionValue(e)}
-                  className="form-control"
-                  classNames={mentionClass}>
+                  className='form-control' classNames={mentionClass}>
                   <Mention trigger="@" data={this.mentionUsers} appendSpaceOnAdd={true} />
                 </MentionsInput>
               </span>
@@ -839,8 +839,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
               <HtmlEditorCard editorValue={this.state.editorValue} HtmlEditorStateChange={this.HtmlEditorStateChange}></HtmlEditorCard>
             </div>
             <footer className='text-end'>
-              <button type="button" className="btn btn-primary mt-2" onClick={(e) => this.updateComment()} >Save</button>
-              <button type="button" className="btn btn-default ms-2 mt-2 " onClick={(e) => this.CloseModal(e)}>Cancel</button>
+              <button type="button" className="btn btn-default  mt-2 " onClick={(e) => this.CloseModal(e)}>Cancel</button>
+              <button type="button" className="btn btn-primary ms-2 mt-2" onClick={(e) => this.updateComment()} >Save</button>
             </footer>
             </div>
        

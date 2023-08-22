@@ -45,7 +45,8 @@ import SiteCompositionComponent from "./SiteCompositionComponent";
 import SmartTotalTime from './SmartTimeTotal';
 import "react-datepicker/dist/react-datepicker.css";
 import BackgroundCommentComponent from "./BackgroundCommentComponent";
-import { Description } from "@material-ui/icons";
+import { TooltipHost, ITooltipHostStyles } from '@fluentui/react/lib/Tooltip';
+import { useId } from '@fluentui/react-hooks';
 
 var AllMetaData: any = []
 var taskUsers: any = []
@@ -84,6 +85,7 @@ var selectedClientCategoryData: any = [];
 var GlobalServiceAndComponentData: any = [];
 var timesheetData: any = [];
 var AddImageDescriptionsIndex: any;
+
 const EditTaskPopup = (Items: any) => {
     const Context = Items.context;
     const AllListIdData = Items.AllListId;
@@ -176,8 +178,13 @@ const EditTaskPopup = (Items: any) => {
     const [IsCopyOrMovePanel, setIsCopyOrMovePanel] = React.useState<any>('');
     const [EnableSiteCompositionValidation, setEnableSiteCompositionValidation] = React.useState(false);
     // const [ShareWebConfigData, setShareWebConfigData] = React.useState<any>([]);
-
-
+    const [EstimatedDescription, setEstimatedDescription] = React.useState('');
+    const [EstimatedTime, setEstimatedTime] = React.useState<any>('');
+    const [TotalEstimatedTime, setTotalEstimatedTime] = React.useState(0);
+    const hostStyles: Partial<ITooltipHostStyles> = { root: { display: 'inline-block' } };
+    const buttonId = useId(`callout-button`);
+    const calloutProps = { gapSpace: 0 };
+    let FeedBackCount: any = 0;
     const StatusArray = [
         { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
         { value: 2, status: "2% Follow Up", taskStatusComment: "Follow Up" },
@@ -217,15 +224,17 @@ const EditTaskPopup = (Items: any) => {
         siteUrls = AllListIdData.siteUrl
     }
     React.useEffect(() => {
-        loadTaskUsers();
-        GetExtraLookupColumnData();
-        getAllSitesData();
-        // getCurrentUserDetails();
-        loadAllCategoryData("Categories");
-        loadAllClientCategoryData("Client Category");
-        GetMasterData();
-        AddImageDescriptionsIndex = undefined;
-    }, [])
+        if (FeedBackCount == 0) {
+            loadTaskUsers();
+            GetExtraLookupColumnData();
+            getAllSitesData();
+            // getCurrentUserDetails();
+            loadAllCategoryData("Categories");
+            loadAllClientCategoryData("Client Category");
+            GetMasterData();
+            AddImageDescriptionsIndex = undefined;
+        }
+    }, [FeedBackCount])
 
 
 
@@ -385,7 +394,7 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getById(Items.Items.listId)
                     .items
-                    .select("Id,Title,Priority_x0020_Rank,workingThisWeek,EstimatedTime,waitForResponse,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,Priority_x0020_Rank,workingThisWeek,EstimatedTime,EstimatedTimeDescription,waitForResponse,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
@@ -395,7 +404,7 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getByTitle(Items.Items.listName)
                     .items
-                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,EstimatedTime,workingThisWeek,OffshoreImageUrl,OffshoreComments,waitForResponse,SiteCompositionSettings,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,EstimatedTime,EstimatedTimeDescription,workingThisWeek,OffshoreImageUrl,OffshoreComments,waitForResponse,SiteCompositionSettings,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
@@ -784,6 +793,15 @@ const EditTaskPopup = (Items: any) => {
                     } else {
                         item.BackgroundImages = []
                     }
+                }
+                if (item.EstimatedTimeDescription != undefined || item.EstimatedTimeDescription != null && item.EstimatedTimeDescription?.length > 0) {
+                    item.EstimatedTimeDescriptionArray = JSON.parse(item.EstimatedTimeDescription);
+                    let tempArray: any = JSON.parse(item.EstimatedTimeDescription);
+                    let tempTimeData: any = 0;
+                    tempArray?.map((itemData: any) => {
+                        tempTimeData = tempTimeData + Number(itemData.EstimatedTime)
+                    })
+                    setTotalEstimatedTime(tempTimeData);
                 }
 
                 setEditData(item)
@@ -2304,7 +2322,8 @@ const EditTaskPopup = (Items: any) => {
             ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] },
             SiteCompositionSettings: (SiteCompositionSetting != undefined && SiteCompositionSetting.length > 0) ? JSON.stringify(SiteCompositionSetting) : EditData.SiteCompositionSettings,
             ApproverHistory: ApproverHistoryData?.length > 0 ? JSON.stringify(ApproverHistoryData) : null,
-            EstimatedTime: EditData.EstimatedTime ? EditData.EstimatedTime : null
+            EstimatedTime: EditData.EstimatedTime ? EditData.EstimatedTime : null,
+            EstimatedTimeDescription: EditData.EstimatedTimeDescriptionArray ? JSON.stringify(EditData.EstimatedTimeDescriptionArray) : null
         }
         return UpdateDataObject;
     }
@@ -2863,7 +2882,76 @@ const EditTaskPopup = (Items: any) => {
         setImageCustomizePopup(true)
     }
     const ImageCustomizeFunctionClosePopup = () => {
-        setImageCustomizePopup(false)
+        setImageCustomizePopup(false);
+        if (CommentBoxData?.length > 0 || SubCommentBoxData?.length > 0) {
+            if (CommentBoxData?.length == 0 && SubCommentBoxData?.length > 0) {
+                let message = JSON.parse(EditData.FeedBack);
+                let feedbackArray: any = [];
+                if (message != null) {
+                    feedbackArray = message[0]?.FeedBackDescriptions
+                }
+                let tempArray: any = [];
+                if (feedbackArray[0] != undefined) {
+                    tempArray.push(feedbackArray[0])
+                } else {
+                    let tempObject: any =
+                    {
+                        "Title": '<p> </p>',
+                        "Completed": false,
+                        "isAddComment": false,
+                        "isShowComment": false,
+                        "isPageType": '',
+                    }
+                    tempArray.push(tempObject);
+                }
+
+                CommentBoxData = tempArray;
+                let result: any = [];
+                if (SubCommentBoxData == "delete") {
+                    result = tempArray
+                } else {
+                    result = tempArray.concat(SubCommentBoxData);
+                }
+                updateFeedbackArray[0].FeedBackDescriptions = result;
+            }
+            if (CommentBoxData?.length > 0 && SubCommentBoxData?.length == 0) {
+                let result: any = [];
+                if (SubCommentBoxData == "delete") {
+                    result = CommentBoxData;
+                } else {
+                    let message = JSON.parse(EditData.FeedBack);
+                    if (message != null) {
+                        let feedbackArray = message[0]?.FeedBackDescriptions;
+                        feedbackArray?.map((array: any, index: number) => {
+                            if (index > 0) {
+                                SubCommentBoxData.push(array);
+                            }
+                        })
+                        result = CommentBoxData.concat(SubCommentBoxData);
+                    } else {
+                        result = CommentBoxData;
+                    }
+                }
+                updateFeedbackArray[0].FeedBackDescriptions = result;
+            }
+            if (CommentBoxData?.length > 0 && SubCommentBoxData?.length > 0) {
+                let result: any = [];
+                if (SubCommentBoxData == "delete") {
+                    result = CommentBoxData
+                } else {
+                    result = CommentBoxData.concat(SubCommentBoxData)
+                }
+                updateFeedbackArray[0].FeedBackDescriptions = result;
+            }
+        } else {
+            updateFeedbackArray = JSON.parse(EditData.FeedBack);
+        }
+        let AllEditData: any = updateFeedbackArray[0].FeedBackDescriptions
+        // AllEditData.FeedBackArray = updateFeedbackArray;
+        FeedBackCount++;
+        console.log(updateFeedbackArray)
+        setEditData((prev: any) => ({ ...prev, FeedBackArray: AllEditData }))
+        console.log(EditData)
     }
 
     const CommonClosePopupFunction = () => {
@@ -3342,8 +3430,66 @@ const EditTaskPopup = (Items: any) => {
         console.log("Site Composition final Call back Data =========", Data);
     }, [])
 
-    // This is for the Background Comment section Functions 
+    // This is for the Upadte Estimated Time Descriptions  section Functions 
 
+    const UpdateEstimatedTimeDescriptions = (e: any) => {
+        if (e.target.name == "Description") {
+            setEstimatedDescription(e.target.value);
+        }
+        if (e.target.name == "Time") {
+            setEstimatedTime(e.target.value);
+        }
+    }
+
+    const SaveEstimatedTimeDescription = () => {
+        let TimeStamp: any = Moment(new Date().toLocaleString());
+        let PresentDate: any = Moment(new Date()).format("MM-DD-YYYY");
+        let TempTotalTimeData: any = 0;
+        if (EstimatedTime > 0 && EstimatedDescription?.length > 0) {
+            let EstimatedTimeDescriptionsJSON: any = {
+                EstimatedTime: EstimatedTime,
+                EstimatedTimeDescription: EstimatedDescription,
+                Team: currentUserData[0].TimeCategory,
+                CreatedDate: PresentDate,
+                TimeStamp: "" + TimeStamp,
+                UserName: currentUserData[0].Title,
+                UserImage: currentUserData[0].Item_x0020_Cover?.Url?.length > 0 ? currentUserData[0].Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                AssignedToId: currentUserData[0].AssingedToUserId,
+            }
+            if (EditData != undefined && (EditData?.EstimatedTimeDescriptionArray == null || EditData?.EstimatedTimeDescriptionArray == undefined)) {
+                setEditData({ ...EditData, EstimatedTimeDescriptionArray: [EstimatedTimeDescriptionsJSON] });
+                TempTotalTimeData = EstimatedTime;
+            } else {
+                if (EditData?.EstimatedTimeDescriptionArray?.length > 0) {
+                    EditData?.EstimatedTimeDescriptionArray?.push(EstimatedTimeDescriptionsJSON);
+                    let tempArray: any = EditData.EstimatedTimeDescriptionArray;
+                    setEditData({ ...EditData, EstimatedTimeDescriptionArray: tempArray });
+                }
+            }
+            if (EditData?.EstimatedTimeDescriptionArray?.length > 0) {
+                EditData?.EstimatedTimeDescriptionArray?.map((ETDItem: any) => {
+                    TempTotalTimeData = Number(TempTotalTimeData) + Number(ETDItem.EstimatedTime)
+
+                })
+            }
+            setTotalEstimatedTime(TempTotalTimeData);
+            // console.log("datatta tatysu====", EstimatedDescription, EstimatedTime);
+            console.log("Data JSON =======", EstimatedTimeDescriptionsJSON);
+            setEstimatedDescription('');
+            setEstimatedTime('');
+        } else {
+            if (EstimatedTime == 0 || EstimatedTime == undefined) {
+                alert("Please Enter Estimated Time");
+            }
+            if (EstimatedDescription.length == 0 || EstimatedDescription == undefined) {
+                alert("Please Enter Estimated Time Description");
+            }
+        }
+
+
+
+
+    }
 
     // ************** this is custom header and custom Footers section functions for panel *************
 
@@ -3356,7 +3502,7 @@ const EditTaskPopup = (Items: any) => {
                         {`${EditData.TaskId != undefined || EditData.TaskId != null ? EditData.TaskId : ""} ${EditData.Title != undefined || EditData.Title != null ? EditData.Title : ""}`}
                     </span>
                 </div>
-                <Tooltip ComponentId="1683" isServiceTask ={ServicesTaskCheck} />
+                <Tooltip ComponentId="1683" isServiceTask={ServicesTaskCheck} />
             </div>
         );
     };
@@ -3368,7 +3514,7 @@ const EditTaskPopup = (Items: any) => {
                         Update Task Status
                     </span>
                 </div>
-                <Tooltip ComponentId="1683" isServiceTask ={ServicesTaskCheck}/>
+                <Tooltip ComponentId="1683" isServiceTask={ServicesTaskCheck} />
             </div>
         );
     };
@@ -3382,7 +3528,7 @@ const EditTaskPopup = (Items: any) => {
                         Select Site
                     </span>
                 </div>
-                <Tooltip ComponentId="1683" isServiceTask ={ServicesTaskCheck}/>
+                <Tooltip ComponentId="1683" isServiceTask={ServicesTaskCheck} />
             </div>
         );
     };
@@ -3394,7 +3540,7 @@ const EditTaskPopup = (Items: any) => {
                         Replace Image
                     </span>
                 </div>
-                <Tooltip ComponentId="756" isServiceTask ={ServicesTaskCheck}/>
+                <Tooltip ComponentId="756" isServiceTask={ServicesTaskCheck} />
             </div>
         )
     }
@@ -3406,7 +3552,7 @@ const EditTaskPopup = (Items: any) => {
                         Select Project
                     </span>
                 </div>
-                <Tooltip ComponentId="1608" isServiceTask ={ServicesTaskCheck}/>
+                <Tooltip ComponentId="1608" isServiceTask={ServicesTaskCheck} />
             </div>
         )
     }
@@ -3418,7 +3564,7 @@ const EditTaskPopup = (Items: any) => {
                         Select Approver
                     </span>
                 </div>
-                <Tooltip ComponentId="1683" isServiceTask ={ServicesTaskCheck}/>
+                <Tooltip ComponentId="1683" isServiceTask={ServicesTaskCheck} />
             </div>
         )
     }
@@ -4445,13 +4591,60 @@ const EditTaskPopup = (Items: any) => {
                                         </div>
                                         <div className="col-12 mb-2">
                                             <div className="input-group ">
-                                                <label className="form-label full-width">Estimated Time In Hours</label>
-                                                <input type="text" className="form-control"
-                                                    defaultValue={EditData.EstimatedTime}
-                                                    placeholder="Enter Estimated Time In Hours"
-                                                    onChange={(e) => setEditData({ ...EditData, EstimatedTime: Number(e.target.value) })}
-                                                />
+                                                <label className="form-label full-width">Estimated Task Time Details</label>
+                                                <div onChange={UpdateEstimatedTimeDescriptions} className="full-width">
+                                                    <textarea
+                                                        className="form-control p-1" name="Description"
+                                                        defaultValue={EstimatedDescription}
+                                                        value={EstimatedDescription}
+                                                        rows={1}
+                                                        placeholder="Estimated Time Description"
+
+                                                    >
+                                                    </textarea>
+                                                    <div className="gap-2 my-1 d-flex">
+                                                        <input type="number" className="col-6 my-1 p-1" name="Time"
+                                                            defaultValue={EstimatedTime}
+                                                            value={EstimatedTime}
+                                                            placeholder="Estimated Hours"
+                                                        />
+                                                        <button className="btn btn-primary full-width my-1" onClick={SaveEstimatedTimeDescription}>
+                                                            Submit
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </div>
+                                        </div>
+                                        <div className="col-12 mb-2">
+                                            {EditData?.EstimatedTimeDescriptionArray != null && EditData?.EstimatedTimeDescriptionArray?.length > 0 ?
+                                                <div className="border p-1">
+                                                    {EditData?.EstimatedTimeDescriptionArray?.map((EstimatedTimeData: any, Index: any) => {
+                                                        return (
+                                                            <div>
+                                                                <div className="align-content-center border-bottom d-flex justify-content-between p-1 mb-1">
+                                                                    <img className="ProirityAssignedUserPhoto m-0" title={EstimatedTimeData.UserName} src={EstimatedTimeData.UserImage != undefined && EstimatedTimeData.UserImage?.length > 0 ? EstimatedTimeData.UserImage : ''} />
+                                                                    <span>{EstimatedTimeData.Team ? EstimatedTimeData.Team : null}</span> |
+                                                                    <span>Time : {EstimatedTimeData.EstimatedTime ? (EstimatedTimeData.EstimatedTime > 1 ? EstimatedTimeData.EstimatedTime + " hours" : EstimatedTimeData.EstimatedTime + " hour") : "0 hour"}</span>
+                                                                    <TooltipHost
+                                                                        content={EstimatedTimeData.EstimatedTimeDescription}
+                                                                        id={buttonId + "-" + Index}
+                                                                        calloutProps={calloutProps}
+                                                                        styles={hostStyles}
+                                                                    >
+                                                                        <span className="svg__iconbox svg__icon--info" ></span>
+                                                                    </TooltipHost>
+                                                                    <span title="Edit" className="svg__iconbox svg__icon--editBox" onClick={() => alert("We are working on this feature. It will be live soon..")}></span>
+                                                                </div>
+
+                                                            </div>
+                                                        )
+                                                    })}
+                                                    <div className="text-end">
+                                                        <span>Total Estimated Time : </span><span className="mx-1">{TotalEstimatedTime > 1 ? TotalEstimatedTime + " hours" : TotalEstimatedTime + " hour"} </span>
+                                                    </div>
+                                                </div>
+                                                : null
+                                            }
                                         </div>
                                     </div>
                                     <div className="col-md-4">
@@ -5545,12 +5738,28 @@ const EditTaskPopup = (Items: any) => {
                                                     </div>
                                                     <div className="col-12 mb-2">
                                                         <div className="input-group ">
-                                                            <label className="form-label full-width">Estimated Time In Hours</label>
-                                                            <input type="text" className="form-control"
-                                                                defaultValue={EditData.EstimatedTime}
-                                                                placeholder="Enter Estimated Time In Hours"
-                                                                onChange={(e) => setEditData({ ...EditData, EstimatedTime: Number(e.target.value) })}
-                                                            />
+                                                            <label className="form-label full-width">Estimated Task Time Details</label>
+                                                            <div onChange={UpdateEstimatedTimeDescriptions} className="full-width">
+                                                                <textarea
+                                                                    className="form-control p-1" name="Description"
+                                                                    defaultValue={EstimatedDescription}
+                                                                    value={EstimatedDescription}
+                                                                    rows={1}
+                                                                    placeholder="Estimated Time Description"
+
+                                                                >
+                                                                </textarea>
+                                                                <div className="gap-2 my-1 d-flex">
+                                                                    <input type="number" className="col-6 my-1 p-1" name="Time"
+                                                                        defaultValue={EstimatedTime}
+                                                                        value={EstimatedTime}
+                                                                        placeholder="Estimated Hours"
+                                                                    />
+                                                                    <button className="btn btn-primary full-width my-1" onClick={SaveEstimatedTimeDescription}>
+                                                                        Submit
+                                                                    </button>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -5742,7 +5951,7 @@ const EditTaskPopup = (Items: any) => {
             <Modal isOpen={AddImageDescriptions} isBlocking={AddImageDescriptions} containerClassName="custommodalpopup p-2">
                 <div className="modal-header mb-1">
                     <h5 className="modal-title">Add Image Description</h5>
-                    <span className='mx-1'> <Tooltip ComponentId='5669' isServiceTask ={ServicesTaskCheck} /></span>
+                    <span className='mx-1'> <Tooltip ComponentId='5669' isServiceTask={ServicesTaskCheck} /></span>
                     <button type="button"
                         className="btn-close"
                         data-bs-dismiss="modal"

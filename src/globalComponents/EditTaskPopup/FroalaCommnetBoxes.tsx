@@ -33,19 +33,23 @@ export default function FroalaCommnetBoxes(textItems: any) {
     let SmartLightStatus: any = textItems.SmartLightStatus;
     useEffect(() => {
         if (TextItems != undefined && TextItems.length > 0) {
-            setBtnStatus(true)
+            setState([]);
+            let testItems:any=[]
             TextItems.map((item: any, index: any) => {
                 if (index > 0) {
                     if (item.ApproverData == undefined) {
                         item.ApproverData = [];
                     }
                     item.taskIndex = index;
-                    State.push(item);
+                    testItems.push(item);
                     setTexts(!Texts);
                     IndexCount = IndexCount + 1;
                     UpdatedFeedBackParentArray.push(item);
                 }
             })
+            setState((prev: any) => testItems);
+            setBtnStatus(true)
+
         } else {
             setBtnStatus(false)
         }
@@ -53,7 +57,8 @@ export default function FroalaCommnetBoxes(textItems: any) {
             setIsCurrentUserApprover(true);
         }
         getCurrentUserDetails();
-    }, [])
+        setIndexCount(TextItems?.length)
+    }, [TextItems?.length])
     const getCurrentUserDetails = async () => {
         let currentUserId: number;
         await pnp.sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
@@ -156,13 +161,13 @@ export default function FroalaCommnetBoxes(textItems: any) {
                     let Index = Number(id) + 1;
                     let NewTitle: any = "";
                     if (UpdatedFeedBackParentArray[id].Title != undefined && UpdatedFeedBackParentArray[id].Title.length > 0) {
-                        NewTitle = UpdatedFeedBackParentArray[id].Title + " (See " +Index +")";
+                        NewTitle = UpdatedFeedBackParentArray[id].Title + " (See " + Index + ")";
                     } else {
-                        NewTitle = "See " +Index
+                        NewTitle = "See " + Index
                     }
                     UpdatedFeedBackParentArray[id].Title = NewTitle;
                     const copy = [...State];
-                    const obj = { ...State[id], Title: NewTitle, SeeAbove:true };
+                    const obj = { ...State[id], Title: NewTitle, SeeAbove: true };
                     copy[id] = obj;
                     setState(copy);
                 } else {
@@ -176,7 +181,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                     }
                     UpdatedFeedBackParentArray[id].Title = NewTitle;
                     const copy = [...State];
-                    const obj = { ...State[id], Title: NewTitle, SeeAbove : false };
+                    const obj = { ...State[id], Title: NewTitle, SeeAbove: false };
                     copy[id] = obj;
                     setState(copy);
                 }
@@ -226,10 +231,6 @@ export default function FroalaCommnetBoxes(textItems: any) {
         } else {
             setPostBtnStatus(true)
         }
-        // const copy = State;
-        // const obj = { ...State[Index], Comments: dataPost};    
-        // copy[Index] = obj;
-        // setState(copy);
         UpdatedFeedBackParentArray[Index].Comments = dataPost;
         callBack(UpdatedFeedBackParentArray);
     }, [])
@@ -242,7 +243,6 @@ export default function FroalaCommnetBoxes(textItems: any) {
             ApprovalDate: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
             isShowLight: value
         }
-        // currentUserData.isShowLight = value;
         UpdatedFeedBackParentArray[index].isShowLight = value;
         UpdatedFeedBackParentArray[index].ApproverData.push(temObject);
         let tempApproverData: any = UpdatedFeedBackParentArray[index].ApproverData
@@ -279,7 +279,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
     function createRows(state: any[]) {
         return (
             <div>
-                <div className="add-text-box">
+                {TextItems?.length > 0 ? <div className={IndexCount % 2 == 0 ? "add-text-box" : "add-text-box"}>
                     {state?.map((obj, i) => {
                         return (
                             <div className="FeedBack-comment row my-1">
@@ -322,7 +322,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                             <span className="mx-1">
                                                 <input className="form-check-input m-0 rounded-0 commentSectionLabel"
                                                     type="checkbox"
-                                                    checked={obj.SeeAbove != undefined && obj.SeeAbove == true? true : false}
+                                                    checked={obj.SeeAbove != undefined && obj.SeeAbove == true ? true : false}
                                                     value={obj.SeeAbove != undefined && obj.SeeAbove == true ? "true" : "false"}
                                                     name='SeeAbove'
                                                 />
@@ -425,7 +425,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                             SmartLightPercentStatus={SmartLightPercentStatus}
                                             isCurrentUserApprover={isCurrentUserApprover}
                                             Context={Context}
-                                            isFirstComment ={false}
+                                            isFirstComment={false}
                                         />
                                     </div>
                                 </div>
@@ -433,7 +433,8 @@ export default function FroalaCommnetBoxes(textItems: any) {
                         );
                     })}
                     {btnStatus ? <button className="btn btn-primary" onClick={addMainRowInDiv}>Add New Box</button> : null}
-                </div>
+                </div> : null}
+
                 {/* ********************* this is Approval History panel ****************** */}
                 {ApprovalPointHistoryStatus ?
                     <ApprovalHistoryPopup

@@ -2,22 +2,17 @@ import React from 'react'
 import DefaultFolderContent from './DefaultFolderContent'
 import axios from 'axios';
 import { FaChevronDown, FaChevronRight } from 'react-icons/fa';
+import { SlArrowRight, SlArrowLeft, SlArrowUp, SlArrowDown } from "react-icons/sl";
+import { Card, CardBody, CardFooter, CardHeader, CardTitle, Col, CustomInput, Pagination, PaginationItem, PaginationLink, Progress, Row, Table } from "reactstrap";
 import "react-popper-tooltip/dist/styles.css";
-// import {
-//     Document,
-//     Packer,
-//     Paragraph
-// } from "docx";
 import Tooltip from '../Tooltip';
 import { sp } from 'sp-pnp-js'
 import { Web } from "@pnp/sp/webs";
 import { IList } from "@pnp/sp/lists";
 import pptxgen from 'pptxgenjs';
-import { Button, Modal } from "react-bootstrap";
+import { Button, Modal, ModalBody } from "react-bootstrap";
 import * as GlobalFunction from '../globalCommon';
 import SmartInformation from '../../webparts/taskprofile/components/SmartInformation';
-// import { Document, Paragraph, Packer, IRunPropertiesOptions } from 'docx';
-// import officegen from 'officegen';
 import ExcelJS from 'exceljs';
 import { IFileAddResult } from "@pnp/sp/files";
 import { Panel, PanelType } from 'office-ui-fabric-react';
@@ -199,22 +194,28 @@ const AncTool = (props: any) => {
                 if (file?.Title != undefined && file?.File_x0020_Type != undefined) {
                     file.docType = file?.File_x0020_Type
                     newFilesArr.push(file)
-                }else if (file?.Title != undefined && file?.FileSystemObjectType != 1){
+                } else if (file?.Title != undefined && file?.FileSystemObjectType != 1) {
                     file.docType = getFileType(file?.Name);
                 }
-                if(file?.File_x0020_Type=='aspx'){
-                    file.docType ='link'
-                    file.EncodedAbsUrl=file?.Url?.Url
+                if (file?.File_x0020_Type == 'aspx') {
+                    file.docType = 'link'
+                    file.EncodedAbsUrl = file?.Url?.Url
                 }
-                if(file?.File_x0020_Type=='rar'){
-                    file.docType ='zip'
-                    file.EncodedAbsUrl=file?.Url?.Url
+                if (file?.File_x0020_Type == 'rar') {
+                    file.docType = 'zip'
+                    file.EncodedAbsUrl = file?.Url?.Url
                 }
-                if(file?.File_x0020_Type=='msg'){
-                    file.docType ='mail'
-                    file.EncodedAbsUrl=file?.Url?.Url
+                if (file?.File_x0020_Type == 'msg') {
+                    file.docType = 'mail'
+                    file.EncodedAbsUrl = file?.Url?.Url
                 }
-                
+                if (file?.File_x0020_Type == 'jpg'||file?.File_x0020_Type == 'jfif') {
+                    file.docType = 'jpeg'
+                }
+                if (file?.File_x0020_Type == 'doc') {
+                    file.docType = 'docx'
+                }
+
                 if (file[siteName] != undefined && file[siteName].length > 0 && file[siteName].some((task: any) => task.Id == props?.item?.Id)) {
                     alreadyTaggedFiles.push(file);
                 }
@@ -286,7 +287,9 @@ const AncTool = (props: any) => {
     const searchExistingFile = (value: any) => {
         if (value?.length > 0) {
             setExistingFiles((prevFile: any) => {
-                backupExistingFiles
+                return backupExistingFiles.filter((file: any) => {
+                    return file?.Title?.toLowerCase()?.includes(value?.toLowerCase());
+                });
             });
         } else {
             setExistingFiles(backupExistingFiles);
@@ -301,7 +304,7 @@ const AncTool = (props: any) => {
     const onRenderCustomHeaderMain = () => {
         return (
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
-                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                <div className='subheading'>
                     <img className="imgWid29 pe-1 mb-1 " src={Item?.SiteIcon} />
                     <span className="siteColor">
                         {`Add & Connect Tool - ${Item.TaskId != undefined || Item.TaskId != null ? Item.TaskId : ""} ${Item.Title != undefined || Item.Title != null ? Item.Title : ""}`}
@@ -311,23 +314,37 @@ const AncTool = (props: any) => {
             </div>
         );
     };
+    const ChoosePathCustomHeader = () => {
+        return (
+            <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
+                <div className='subheading'>
+                    {/* <img className="imgWid29 pe-1 mb-1 " src={Item?.SiteIcon} /> */}
+                    <span className="siteColor">
+                        Select Upload Folder
+                    </span>
+                </div>
+                {/* <Tooltip ComponentId="528" /> */}
+            </div>
+        );
+    };
     //End//
     // File Drag And Drop And Upload
     const handleFileDrop = (event: any) => {
         event.preventDefault();
         const file = event.dataTransfer.files[0];
         setSelectedFile(file);
+        handleUpload()
     };
     const handleFileInputChange = (event: any) => {
         const file = event.target.files[0];
         setSelectedFile(file);
     };
-    const handleRankChange = (event: any,from:any) => {
+    const handleRankChange = (event: any, from: any) => {
         const rank = parseInt(event.target.value);
-        if(from=='Upload'){
+        if (from == 'Upload') {
             setItemRank(rank);
         }
-        if(from=='linkDoc'){
+        if (from == 'linkDoc') {
             setLinkDocitemRank(rank);
         }
     };
@@ -365,7 +382,7 @@ const AncTool = (props: any) => {
                 const reader = new FileReader();
                 reader.onloadend = async () => {
                     const fileContent = reader.result as ArrayBuffer;
-                    setCreateNewDocType(getFileType(selectedFile?.name))
+                    setCreateNewDocType(getFileType(selectedFile?.name));
                     // Upload the file
                     await sp.web
                         .getFolderByServerRelativeUrl(uploadPath)
@@ -382,9 +399,9 @@ const AncTool = (props: any) => {
                                         taggedDocument = {
                                             ...taggedDocument,
                                             fileName: fileName,
-                                            docType: createNewDocType,
+                                            docType: getFileType(selectedFile?.name),
                                             uploaded: true,
-                                            link: `${rootSiteName}${selectedPath.displayPath}/${fileName}`,
+                                            link: `${rootSiteName}${selectedPath.displayPath}/${fileName}?web=1`,
                                             size: fileSize
                                         }
                                         taggedDocument.link = file?.EncodedAbsUrl;
@@ -534,7 +551,7 @@ const AncTool = (props: any) => {
                             fileName: fileName,
                             docType: createNewDocType,
                             uploaded: true,
-                            link: `${rootSiteName}${selectedPath.displayPath}/${fileName}`,
+                            link: `${rootSiteName}${selectedPath.displayPath}/${fileName}?web=1`,
                             size: fileSize
                         }
                         setTimeout(async () => {
@@ -645,15 +662,18 @@ const AncTool = (props: any) => {
 
         return (
             <li style={{ listStyle: 'none' }}>
-                <span onClick={toggleExpand}>
-                    {hasChildren ? (
-                        folder.isExpanded ? <FaChevronDown /> : <FaChevronRight />
-                    ) : (
-                        <FaChevronDown style={{ color: 'white' }} />
-                    )}
+                <span className='d-flex' onClick={toggleExpand}>
+                    <span className='me-1'>
+                        {hasChildren ? (
+                            folder.isExpanded ? <SlArrowDown /> : <SlArrowRight />
+                        ) : (
+                            <SlArrowDown style={{ color: 'white' }} />
+                        )}
+                    </span>
                     <span className='svg__iconbox svg__icon--folder me-1'></span>
+                    <span className={`${rootSiteName}${selectPathFromPopup}` === folder.EncodedAbsUrl ? "highlighted hreflink" : "hreflink"} onClick={() => setFolderPathFromPopup(folder.EncodedAbsUrl)}>{folder.FileLeafRef}</span>
                 </span>
-                <span className={`${rootSiteName}${selectPathFromPopup}` === folder.EncodedAbsUrl ? "highlighted hreflink" : "hreflink"} onClick={() => setFolderPathFromPopup(folder.EncodedAbsUrl)}>{folder.FileLeafRef}</span>
+
                 {hasChildren && folder.isExpanded && (
                     <ul>
                         {folder.subRows.map((subFolder: any) => (
@@ -668,22 +688,26 @@ const AncTool = (props: any) => {
     const onRenderCustomFooterMain = () => {
         return (<>
 
-            <div className="p-2 pb-0 pe-4">
+            <div className="p-2 pb-0 px-4">
                 <div>
-                    <span className='highlighted'>{selectPathFromPopup?.length > 0 ? `${selectPathFromPopup}/` : ''}</span>
+                    <Row className='mb-1'><span className='highlighted'>{selectPathFromPopup?.length > 0 ? `${selectPathFromPopup}/` : ''}</span></Row>
                     {CreateFolderLocation ?
-                        <><input type="text" placeholder='Folder Name' value={newSubFolderName} onChange={(e) => setNewSubFolderName(e.target.value)} />
-                            <button className="btn btnPrimary pull-right" disabled={newSubFolderName?.length > 0 ? false : true} onClick={() => { CreateSubFolder() }}>Create Folder</button>
-                        </> : ''}
+                        <Row>
+                            <div className='col-md-9'><input type="text" className='form-control' placeholder='Folder Name' value={newSubFolderName} onChange={(e) => setNewSubFolderName(e.target.value)} /></div>
+                            <div className='col-md-3 pe-0'><button className="btn btnPrimary pull-right" disabled={newSubFolderName?.length > 0 ? false : true} onClick={() => { CreateSubFolder() }}>Create Folder</button></div>
+                        </Row> : ''}
                 </div>
-                {selectPathFromPopup?.length > 0 && CreateFolderLocation != true ?
-                    <div className="text-end">
-                        <a className='hreflink' onClick={() => showCreateFolderLocation(true)}>
-                            Create Sub Folder
-                        </a>
-                    </div> : ''}
+
             </div>
             <footer className='text-end p-2'>
+
+                {/* <label className='me-1'><input className='form-check-input' type='checkbox' /> Update Default Folder </label> */}
+                {selectPathFromPopup?.length > 0 && CreateFolderLocation != true ?
+                    <label className="text-end me-1">
+                        <a className='hreflink btn btnPrimary' onClick={() => showCreateFolderLocation(true)}>
+                            Create Folder
+                        </a>
+                    </label> : ''}
                 <button className="btn btnPrimary " disabled={selectPathFromPopup?.length > 0 ? false : true} onClick={() => { selectFolderToUpload() }}>Select</button>
                 <button className='btn btn-default ms-1' onClick={() => cancelPathFolder()}>Cancel</button>
             </footer>
@@ -760,7 +784,7 @@ const AncTool = (props: any) => {
         props?.callBack();
     }
     // Add Link to Document And tag//
-    const CreateLinkAndTag=async ()=>{
+    const CreateLinkAndTag = async () => {
         let taggedDocument = {
             fileName: '',
             docType: '',
@@ -790,29 +814,29 @@ const AncTool = (props: any) => {
                     fileName = `${props?.item?.Title}.aspx`
                 }
                 var vardata = '<%@ Page language="C#" %>' +
-                "<%@ Assembly Name='Microsoft.SharePoint, Version=15.0.0.0, Culture=neutral,   PublicKeyToken=71e9bce111e9429c' %>" +
-                "<%@ Register TagPrefix='SharePoint' Namespace='Microsoft.SharePoint.WebControls' Assembly='Microsoft.SharePoint' %>" +
-                "<%@ Import Namespace='System.IO' %>" +
-                "<%@ Import Namespace='Microsoft.SharePoint' %>" +
-                "<%@ Import Namespace='Microsoft.SharePoint.Utilities' %>" +
-                "<%@ Import Namespace='Microsoft.SharePoint.WebControls' %>" +
-                '<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882">' +
-                '<head>' +
-                "<meta name='WebPartPageExpansion' content='full' /> <meta name='progid' content='SharePoint.Link' />" +
-                '<!--[if gte mso 9]><SharePoint:CTFieldRefs runat=server Prefix="mso:" FieldList="FileLeafRef,URL,IconOverlay"><xml>' +
-                '<mso:CustomDocumentProperties>' +
-                '<mso:ContentTypeId msdt:dt="string">0x01010A00A9B5E70634EEA14BBCC80A59F37723F3</mso:ContentTypeId>' +
-                '<mso:IconOverlay msdt:dt="string">|docx?d=wb030a1c46dee4fd6ac9e319218f7b63b|linkoverlay.gif</mso:IconOverlay>' +
-                '<mso:Url msdt:dt="string">' + LinkToDocUrl + ', ' + LinkToDocUrl + '</mso:Url>' +
-                '</mso:CustomDocumentProperties>' +
-                '</xml></SharePoint:CTFieldRefs><![endif]-->' +
-                '</head>' +
-                '<body>' +
-                "<form id='Form1' runat='server'>" +
-                "<SharePoint:UrlRedirector id='Redirector1' runat='server' />" +
-                '</form>' +
-                '</body>' +
-                '</html>';
+                    "<%@ Assembly Name='Microsoft.SharePoint, Version=15.0.0.0, Culture=neutral,   PublicKeyToken=71e9bce111e9429c' %>" +
+                    "<%@ Register TagPrefix='SharePoint' Namespace='Microsoft.SharePoint.WebControls' Assembly='Microsoft.SharePoint' %>" +
+                    "<%@ Import Namespace='System.IO' %>" +
+                    "<%@ Import Namespace='Microsoft.SharePoint' %>" +
+                    "<%@ Import Namespace='Microsoft.SharePoint.Utilities' %>" +
+                    "<%@ Import Namespace='Microsoft.SharePoint.WebControls' %>" +
+                    '<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882">' +
+                    '<head>' +
+                    "<meta name='WebPartPageExpansion' content='full' /> <meta name='progid' content='SharePoint.Link' />" +
+                    '<!--[if gte mso 9]><SharePoint:CTFieldRefs runat=server Prefix="mso:" FieldList="FileLeafRef,URL,IconOverlay"><xml>' +
+                    '<mso:CustomDocumentProperties>' +
+                    '<mso:ContentTypeId msdt:dt="string">0x01010A00A9B5E70634EEA14BBCC80A59F37723F3</mso:ContentTypeId>' +
+                    '<mso:IconOverlay msdt:dt="string">|docx?d=wb030a1c46dee4fd6ac9e319218f7b63b|linkoverlay.gif</mso:IconOverlay>' +
+                    '<mso:Url msdt:dt="string">' + LinkToDocUrl + ', ' + LinkToDocUrl + '</mso:Url>' +
+                    '</mso:CustomDocumentProperties>' +
+                    '</xml></SharePoint:CTFieldRefs><![endif]-->' +
+                    '</head>' +
+                    '<body>' +
+                    "<form id='Form1' runat='server'>" +
+                    "<SharePoint:UrlRedirector id='Redirector1' runat='server' />" +
+                    '</form>' +
+                    '</body>' +
+                    '</html>';
                 await sp.web
                     .getFolderByServerRelativeUrl(selectedPath.displayPath)
                     .files.add(fileName, vardata, true).then(async (uploadedFile: any) => {
@@ -843,7 +867,7 @@ const AncTool = (props: any) => {
                                             Description: LinkToDocUrl ? LinkToDocUrl : '',
                                             Url: LinkToDocUrl ? LinkToDocUrl : ''
                                         },
-                                        File_x0020_Type:'aspx'
+                                        File_x0020_Type: 'aspx'
                                     }
                                     await sp.web.lists.getByTitle('Documents').items.getById(file.Id)
                                         .update(postData).then((updatedFile: any) => {
@@ -872,22 +896,22 @@ const AncTool = (props: any) => {
     return (
         <>
             <div className={ServicesTaskCheck ? "serviepannelgreena mb-3 card commentsection" : "mb-3 card commentsection"}>
-                <div className='card-header'>
-                    <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Add & Connect Tool<span><Tooltip ComponentId='324' /></span></div>
-                </div>
-                <div className='card-body'>
-                    <div className="row">
+                <CardHeader>
+                    <CardTitle className="h5 d-flex justify-content-between align-items-center  mb-0">Add & Connect Tool<span><Tooltip ComponentId='324' /></span></CardTitle>
+                </CardHeader>
+                <CardBody>
+                    <Row>
                         <div className="comment-box hreflink mb-2 col-sm-12">
-                            <span onClick={() => { setModalIsOpen(true) }}> Upload Documents</span>
+                            <a className='siteColor' onClick={() => { setModalIsOpen(true) }}> Upload Documents</a>
                         </div>
                         <div className="comment-box hreflink mb-2 col-sm-12">
-                            <span onClick={() => { setFileNamePopup(true) }}> Create New Item</span>
+                            <a className='siteColor' onClick={() => { setFileNamePopup(true) }}> Create New Item</a>
                         </div>
                         <div className="comment-box hreflink mb-2 col-sm-12">
-                            <span onClick={() => { setRemark(true) }}> Add SmartNote</span>
+                            <a className='siteColor' onClick={() => { setRemark(true) }}> Add SmartNote</a>
                         </div>
-                    </div>
-                </div>
+                    </Row>
+                </CardBody>
             </div>
             <Panel
                 type={PanelType.large}
@@ -897,68 +921,85 @@ const AncTool = (props: any) => {
                 isBlocking={false}>
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
 
-                    <div className="modal-body mb-5">
+                    <ModalBody>
                         <ul className="fixed-Header nav nav-tabs" id="myTab" role="tablist">
                             <button className="nav-link active" id="Documnets-Tab" data-bs-toggle="tab" data-bs-target="#Documents" type="button" role="tab" aria-controls="Documents" aria-selected="true">
                                 Documents
                             </button>
                         </ul>
-                        <div className="border border-top-0 clearfix p-3 tab-content " id="myTabContent">
+                        <div className="border border-top-0 clearfix p-3 tab-content Anctoolpopup " id="myTabContent">
                             <div className="tab-pane  show active" id="Documents" role="tabpanel" aria-labelledby="Documents">
-                                <div className="row">
-                                    <div className="col-sm-6">
+                                <Row>
+                                    <Col>
                                         {selectedPath?.displayPath?.length > 0 ?
                                             // <DefaultFolderContent Context={props.Context} AllListId={props?.AllListId} item={Item} folderPath={selectedPath?.displayPath} /> 
-                                            <div className="">
-                                                <details>
-                                                    <summary>1. Default Folder Content </summary>
-                                                    <div className='AccordionContent mx-height'>
-                                                        <div className="col-sm-12 panel-body">
-                                                            <input id="searchinput" type="search" onChange={(e) => { searchCurrentFolder(e.target.value) }} placeholder="Search..." className="form-control" />
-                                                            <div className="Alltable mt-10">
-                                                                <div className="col-sm-12 pad0 ">
-                                                                    {currentFolderFiles?.length > 0 ?
-                                                                        <div className='smart'>
-                                                                            <table className='table'>
+                                            <div className='panel  mb-2'>
+                                                <h3 className='pageTitle'>1. Default Folder Content  <hr></hr></h3>
+                                                <div>
+                                                    <input id="searchinput" type="search" onChange={(e) => { searchCurrentFolder(e.target.value) }} placeholder="Search..." className="form-control" />
+                                                    <div className="Alltable mt-2">
+                                                        <div className="col">
+                                                            {currentFolderFiles?.length > 0 ?
+                                                                <div>
+                                                                    <Table hover responsive m-0>
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th className='p-1'>Doc Type</th>
+                                                                                <th className='p-1'>Title</th>
+
+                                                                            </tr>
+
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            {currentFolderFiles?.map((file: any) => {
+                                                                                return (
+                                                                                    <tr>
+                                                                                        <td><span className={`svg__iconbox svg__icon--${file?.docType}`} title={file?.docType}></span></td>
+
+                                                                                        <td><a href={file?.docType == 'pdf' ? file?.ServerRelativeUrl : file?.LinkingUri} target="_blank" data-interception="off" className='hreflink'> {file?.Title} </a></td>
+                                                                                    </tr>
+                                                                                )
+                                                                            })}
+
+
+                                                                        </tbody>
+                                                                    </Table>
+                                                                    {/* <table>
+                                                                        <tr>
+                                                                            <th>DocType</th>
+                                                                            <th>Title</th>
+                                                                        </tr>
+                                                                        {currentFolderFiles?.map((file: any) => {
+                                                                            return (
                                                                                 <tr>
-                                                                                    <th>DocType</th>
-                                                                                    <th>Title</th>
+                                                                                    <td><span className={`svg__iconbox svg__icon--${file?.docType}`} title={file?.docType}></span></td>
+
+                                                                                    <td><a href={file?.docType == 'pdf' ? file?.ServerRelativeUrl : file?.LinkingUri} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
                                                                                 </tr>
-                                                                                {currentFolderFiles?.map((file: any) => {
-                                                                                    return (
-                                                                                        <tr>
-                                                                                            <td><span className={`svg__iconbox svg__icon--${file?.docType}`} title={file?.docType}></span></td>
-
-                                                                                            <td><a href={file?.docType == 'pdf' ? file?.ServerRelativeUrl : file?.LinkingUri} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
-                                                                                        </tr>
-                                                                                    )
-                                                                                })}
-                                                                            </table>
-                                                                        </div>
-                                                                        :
-                                                                        <div className="current_commnet ">
-                                                                            No Documents Available
-                                                                        </div>
-                                                                    }
-
+                                                                            )
+                                                                        })}
+                                                                    </table> */}
                                                                 </div>
-                                                            </div>
+                                                                :
+                                                                <div className="No_Documents">
+                                                                    No Documents Available
+                                                                </div>
+                                                            }
+
                                                         </div>
                                                     </div>
-                                                </details>
+                                                </div>
                                             </div>
                                             : ''
                                         }
-                                    </div>
-                                    <div className="col-sm-6">
-
-                                        <>
+                                    </Col>
+                                    <Col>
+                                        <div className='panel  mb-2'>
                                             {selectPathFromPopup?.length > 0 ?
-                                                <label className="full_width ">Selected Folder</label>
-                                                : <label className="full_width ">Default Folder</label>
+                                                <h3 className='pageTitle'> Selected Folder <hr></hr> </h3>
+                                                : <h3 className='pageTitle'> Default Folder <hr></hr> </h3>
                                             }
-                                            <div>
-
+                                            <div className='d-flex'>
                                                 <span>{folderExist == true ? <span>{selectedPath?.displayPath}</span> : <span>{selectedPath?.displayPath?.split(siteName)}<span className='highlighted'>{siteName}
                                                     <div className="popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
                                                         <span className="svg__iconbox svg__icon--info " ></span>
@@ -968,54 +1009,61 @@ const AncTool = (props: any) => {
                                                             </span>
                                                         </div>
                                                     </div>
-                                                </span></span>}</span> </div>
-                                        </>
-                                        <span>
-                                            <a title="Click for Associated Folder" className='hreflink pull-right' onClick={() => setChoosePathPopup(true)} >Change Path</a>
-                                        </span>
-
-                                        <div className="clearfix"></div>
-
-                                    </div>
-
-                                </div>
-                                <div className="row form-group clearfix">
-                                    <div className="col-sm-6 border">
-                                        {/* <ConnectExistingDoc Context={props.Context} AllListId={props?.AllListId} item={Item} folderPath={selectedPath?.completePath} /> */}
-                                        <div className="panel panel-default">
-                                            <div className="panel-heading">
-                                                <h3 className="panel-title">
-                                                    2. Connect Existing Documents
-                                                </h3>
+                                                </span></span>}</span>
+                                                <span><a title="Click for Associated Folder" className='hreflink ms-2' onClick={() => setChoosePathPopup(true)} > Change Path </a></span>
                                             </div>
-                                            <div className="panel-body h309">
-                                                <input id="searchinputCED" type="search" onChange={(e) => { searchExistingFile(e.target.value) }} placeholder="Search..." className="form-control mb-1 " />
-                                                <div className="Alltable mt-10 mx-height mb-1">
-                                                    <div className="container-new b-none h212">
+                                        </div>
+
+
+                                    </Col>
+
+                                </Row>
+                                <Row className='mt-2'>
+                                    <Col>
+                                        {/* <ConnectExistingDoc Context={props.Context} AllListId={props?.AllListId} item={Item} folderPath={selectedPath?.completePath} /> */}
+                                        <div className="panel">
+                                            <h3 className="pageTitle">
+                                                2. Connect Existing Documents
+                                                <hr></hr>
+                                            </h3>
+
+                                            <div>
+                                                <input id="searchinputCED" type="search" onChange={(e) => { searchExistingFile(e.target.value) }} placeholder="Search..." className="form-control" />
+                                                <div className="Alltable mt-2">
+                                                    <div>
                                                         {/* <GlobalCommanTable headerOptions={headerOptions} paginatedTable={true} columns={columns} data={ExistingFiles} callBackData={callBackData} showHeader={true} /> */}
                                                         {ExistingFiles?.length > 0 ?
-                                                            <div className='smart SearchTableCategoryComponent'>
-                                                                <table className='table '>
+                                                            <Table hover responsive >
+                                                                <thead>
                                                                     <tr>
-                                                                        <th>&nbsp;</th>
-                                                                        <th>Type</th>
-                                                                        <th>Title</th>
-                                                                        <th>Item Rank</th>
+                                                                        <th ></th>
+                                                                        <th className='p-1'>Type</th>
+                                                                        <th className='p-1'>Title</th>
+                                                                        <th className='p-1'>Item Rank</th>
+
                                                                     </tr>
+
+                                                                </thead>
+                                                                <tbody className='Scrolling'>
                                                                     {ExistingFiles?.map((file: any) => {
-                                                                        return (
-                                                                            <tr>
-                                                                                <td><input type="checkbox" className='form-check-input hreflink' checked={AllReadytagged?.some((doc: any) => file.Id == doc.Id)} onClick={() => { tagSelectedDoc(file) }} /></td>
-                                                                                <td><span className={`svg__iconbox svg__icon--${file?.docType}`} title={file?.File_x0020_Type}></span></td>
-                                                                                <td><a href={file?.EncodedAbsUrl} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
-                                                                                <td>{file?.ItemRank}</td>
-                                                                            </tr>
-                                                                        )
+                                                                        if(!AllReadytagged?.some((doc: any) => file?.Id == doc?.Id)){
+                                                                            return (
+                                                                                <tr>
+                                                                                    <td><input type="checkbox" className='form-check-input hreflink' checked={AllReadytagged?.some((doc: any) => file.Id == doc.Id)} onClick={() => { tagSelectedDoc(file) }} /></td>
+                                                                                    <td><span className={`svg__iconbox svg__icon--${file?.docType}`} title={file?.File_x0020_Type}></span></td>
+                                                                                    <td><a href={file?.EncodedAbsUrl} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
+                                                                                    <td>{file?.ItemRank}</td>
+                                                                                </tr>
+                                                                            )
+                                                                        }
+                                                                        
                                                                     })}
-                                                                </table>
-                                                            </div>
+
+
+                                                                </tbody>
+                                                            </Table>
                                                             :
-                                                            <div className="current_commnet ">
+                                                            <div className="No_Documents">
                                                                 No Documents Available
                                                             </div>
                                                         }
@@ -1023,138 +1071,143 @@ const AncTool = (props: any) => {
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div className="col-sm-6 border">
-                                        <div className="panel panel-default add-connect">
-                                            <div className="panel-heading ">
-                                                <h3 className="panel-title">
-                                                    3. Upload a New Document
-                                                </h3>
-                                            </div>
-                                            <div className="panel-body">
-                                                <div>
-                                                    <div
-                                                        className="nontag text-center drophere "
-                                                        onDragOver={(event) => event.preventDefault()}
-                                                        onDrop={handleFileDrop} >
-                                                        {selectedFile ? <p>Selected file: {selectedFile.name}</p> : <p>Drag and drop file here</p>}
-                                                    </div>
-                                                    <div className="row">
-                                                        <div className="col-sm-6">
-                                                            <select value={itemRank} onChange={(e:any)=>{handleRankChange(e,'Upload')}} className='full-width'>
-                                                                {itemRanks.map((rank) => (
-                                                                    <option key={rank?.rank} value={rank?.rank}>{rank?.rankTitle}</option>
-                                                                ))}
-                                                            </select>
-                                                        </div>
-                                                        <div className="col-sm-6">
-                                                            <input type="file" onChange={handleFileInputChange} className='full-width' />
-                                                        </div>
-                                                        <div className="col-sm-12">
-                                                            <input type="text" onChange={(e) => { setRenamedFileName(e.target.value) }} value={renamedFileName} placeholder='Rename File' className='full-width' />
-                                                        </div>
-                                                    </div>
+                                    </Col>
+                                    <Col>
+                                        <div className="panel">
+                                            <h3 className="pageTitle">
+                                                3. Upload a New Document
+                                                <hr></hr>
+                                            </h3>
 
-
-
-                                                    <button onClick={handleUpload} disabled={selectedFile?.name?.length > 0 ? false : true} className="btn btn-primary mt-2 my-1  float-end px-3">Upload</button>
+                                            <Col>
+                                                <Row className='mb-2 px-2'>
+                                                    <label className='form-label full-width ps-0'>Item Rank</label>
+                                                    <select value={itemRank} onChange={(e: any) => { handleRankChange(e, 'Upload') }} className='form-select'>
+                                                        {itemRanks.map((rank) => (
+                                                            <option key={rank?.rank} value={rank?.rank}>{rank?.rankTitle}</option>
+                                                        ))}
+                                                    </select>
+                                                </Row>
+                                                <div className='dragDropbox ' onDragOver={(event) => event.preventDefault()} onDrop={handleFileDrop}>
+                                                    {selectedFile ? <p>Selected file: {selectedFile.name}</p> : <p>Drag and drop file here</p>}
                                                 </div>
-                                            </div>
+
+
+                                                <Row className='mb-2 px-2'>
+                                                    <input type="file" onChange={handleFileInputChange} className='full-width' />
+                                                </Row>
+                                                <Row className='mb-2 px-2'>
+                                                    <input type="text" onChange={(e) => { setRenamedFileName(e.target.value) }} value={renamedFileName} placeholder='Rename your document' className='full-width' />
+                                                </Row>
+                                                <button onClick={handleUpload} disabled={selectedFile?.name?.length > 0 ? false : true} className="btn btn-primary mt-2 my-1  float-end px-3">Upload</button>
+                                            </Col>
+
                                         </div>
-                                    </div>
-                                </div>
-                                <div className="row form-group clearfix">
-                                    <div className="col-sm-6 padL-0">
+                                    </Col>
+                                </Row>
+                                <Row className='mt-2'>
+                                    <Col>
                                         {/* <ConnectExistingDoc Context={props.Context} AllListId={props?.AllListId} item={Item} folderPath={selectedPath?.completePath} /> */}
-                                        <div className="panel panel-default">
-                                            <div className="panel-heading">
-                                                <h3 className="panel-title">
-                                                    4. Already Tagged Documents
-                                                </h3>
-                                            </div>
-                                            <div className="panel-body h309">
+                                        <div className="panel">
+                                            <h3 className="pageTitle">
+                                                4. Already Tagged Documents
+                                                <hr></hr>
+                                            </h3>
+
+                                            <div className='Alltable'>
 
                                                 {AllReadytagged?.length > 0 ?
-                                                    <div className='smart SearchTableCategoryComponent'>
-                                                        <table className='table '>
-                                                            <tr>
-                                                                <th>Type</th>
-                                                                <th>Title</th>
-                                                                <th>Item Rank</th>
-                                                                <th>&nbsp;</th>
-                                                            </tr>
-                                                            {AllReadytagged?.map((file: any) => {
-                                                                return (
-                                                                    <tr>
-                                                                        <td><span className={`svg__iconbox svg__icon--${file?.docType}`} title={file?.docType}></span></td>
-                                                                        <td><a href={file?.EncodedAbsUrl} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
-                                                                        <td>{file?.ItemRank}</td>
-                                                                        <td> <span
-                                                                            style={{ marginLeft: '6px' }}
-                                                                            title='Untag Document'
-                                                                            onClick={() => { tagSelectedDoc(file) }} 
-                                                                            className='svg__iconbox svg__icon--cross dark hreflink'
-                                                                        ></span></td>
-                                                                    </tr>
-                                                                )
-                                                            })}
-                                                        </table>
+                                                    <div>
+                                                        <Table hover responsive mb-0>
+                                                            <thead>
+                                                                <tr>
+
+                                                                    <th className='p-1'>Type</th>
+                                                                    <th className='p-1'>Title</th>
+                                                                    <th className='p-1'>Item Rank</th>
+                                                                    <th>&nbsp;</th>
+
+                                                                </tr>
+
+                                                            </thead>
+                                                            <tbody>
+                                                                {AllReadytagged?.map((file: any) => {
+                                                                    return (
+                                                                        <tr>
+                                                                            <td><span className={`svg__iconbox svg__icon--${file?.docType}`} title={file?.docType}></span></td>
+                                                                            <td><a href={file?.EncodedAbsUrl} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
+                                                                            <td>{file?.ItemRank}</td>
+                                                                            <td> <span
+                                                                                style={{ marginLeft: '6px' }}
+                                                                                title='Untag Document'
+                                                                                onClick={() => { tagSelectedDoc(file) }}
+                                                                                className='svg__iconbox svg__icon--cross dark hreflink'
+                                                                            ></span></td>
+                                                                        </tr>
+                                                                    )
+                                                                })}
+
+
+                                                            </tbody>
+                                                        </Table>
+
                                                     </div>
                                                     :
-                                                    <div className="current_commnet ">
+                                                    <div className="No_Documents">
                                                         No Documents Tagged
                                                     </div>
                                                 }
                                             </div>
                                         </div>
-                                    </div>
-                                    <div className="col-sm-6 pad0">
-                                        <div className="panel panel-default add-connect">
-                                            <div className="panel-heading ">
-                                                <h3 className="panel-title">
-                                                    5. Add a link to a document
-                                                </h3>
-                                            </div>
-                                            <div className="panel-body">
-                                                <div className="row">
-                                                <div className="col-sm-6">
-                                                        <input type="text"placeholder='Title' onChange={(e) => { setLinkToDocTitle(e.target.value) }} value={LinkToDocTitle} className='full-width' />
-                                                    </div>
-                                                    <div className="col-sm-6">
-                                                        <select value={LinkDocitemRank}   onChange={(e:any)=>{handleRankChange(e,'linkDoc')}} className='full-width'>
-                                                            {itemRanks.map((rank) => (
-                                                                <option key={rank?.rank} value={rank?.rank}>{rank?.rankTitle}</option>
-                                                            ))}
-                                                        </select>
-                                                    </div>
-                                                    <div className="col-sm-12">
-                                                    <input type="text" onChange={(e) => { setLinkToDocUrl(e.target.value) }} value={LinkToDocUrl}  placeholder='Url' className='full-width' />
-                                                    </div>
-                                                </div>
-                                                <button disabled={(LinkToDocUrl?.length > 0 && LinkToDocTitle?.length > 0 )? false : true} className="btn btn-primary mt-2 my-1  float-end px-3"  onClick={() => { CreateLinkAndTag() }}>Create</button>
-                                            </div>
+                                    </Col>
+                                    <Col>
+                                        <div className="panel">
+
+                                            <h3 className="pageTitle">
+                                                5. Add a link to a document
+                                                <hr></hr>
+                                            </h3>
+
+
+                                            <Col>
+                                                <Col className='col mb-2'>
+                                                    <label>Name</label>
+                                                    <input type="text" placeholder='Name' onChange={(e) => { setLinkToDocTitle(e.target.value) }} value={LinkToDocTitle} className='full-width' />
+                                                </Col>
+                                                <Col className='clearfix col mb-2'>
+                                                    <label>URL</label>
+                                                    <input type="text" onChange={(e) => { setLinkToDocUrl(e.target.value) }} value={LinkToDocUrl} placeholder='Url' className='full-width' />
+                                                </Col>
+                                                <Col className='pe-0'>
+                                                    <label>Item Rank</label>
+                                                    <select value={LinkDocitemRank} onChange={(e: any) => { handleRankChange(e, 'linkDoc') }} className='full-width form-select '>
+                                                        {itemRanks.map((rank) => (
+                                                            <option key={rank?.rank} value={rank?.rank}>{rank?.rankTitle}</option>
+                                                        ))}
+                                                    </select>
+                                                </Col>
+                                                <Col>
+                                                    <button disabled={(LinkToDocUrl?.length > 0 && LinkToDocTitle?.length > 0) ? false : true} className="btn btn-primary mt-2 my-1  float-end px-3" onClick={() => { CreateLinkAndTag() }}>Create</button>
+                                                </Col>
+                                            </Col>
                                         </div>
-                                    </div>
-                                </div>
+                                    </Col>
+
+                                </Row>
                             </div>
                         </div>
-                    </div>
+                    </ModalBody>
                 </div>
-
-
-
-
-
             </Panel>
             <Panel
                 type={PanelType.medium}
                 isOpen={choosePathPopup}
                 onDismiss={cancelPathFolder}
-                headerText='Choose Path'
+                onRenderHeader={ChoosePathCustomHeader}
                 onRenderFooter={onRenderCustomFooterMain}
                 isBlocking={choosePathPopup}>
                 <div id="folderHierarchy">
-                    <ul id="groupedFolders">
+                    <ul id="groupedFolders" className='p-0'>
                         {AllFoldersGrouped.map((folder: any) => (
                             <Folder folder={folder} onToggle={handleToggle} />
                         ))}
@@ -1203,42 +1256,45 @@ const AncTool = (props: any) => {
                                 <span onClick={() => cancelConfirmationPopup()}><i className="svg__iconbox svg__icon--cross crossBtn"></i></span>
                             </div>
                             <div className="modal-body p-2">
-                                <div><strong>Folder :</strong> <a href={`${rootSiteName}${selectedPath?.displayPath}`} target="_blank" data-interception="off" className='hreflink'> {selectedPath?.displayPath} <span className="svg__iconbox svg__icon--folder ms-1"></span></a></div>
-                                <div><strong>Metadat-Tag :</strong> <span>{props?.item?.Title}</span></div>
-                                <div className="row">
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th>&nbsp;</th>
-                                                <th>File Name</th>
-                                                <th>Uploaded</th>
-                                                <th>Tagged</th>
-                                                <th>Share Link</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td><span className={`svg__iconbox svg__icon--${UploadedDocDetails?.docType}`}></span></td>
-                                                <td><a href={UploadedDocDetails?.link} target="_blank" data-interception="off" className='hreflink'>{UploadedDocDetails?.fileName}</a>{`(${UploadedDocDetails?.size})`}</td>
-                                                <td>{UploadedDocDetails?.uploaded == true ? <span className='svg__iconbox svg__icon--Completed'></span> : <span className='svg__iconbox svg__icon--cross'></span>}</td>
-                                                <td>{UploadedDocDetails?.tagged == true ? <span className='svg__iconbox svg__icon--Completed'></span> : <span className='svg__iconbox svg__icon--cross'></span>}</td>
-                                                <td>{UploadedDocDetails?.uploaded == true ? <>
-                                                    <span className='svg__iconbox svg__icon--link hreflink' title='Copy Link' data-bs-toggle="popover" data-bs-content="Link Copied" onClick={() => { navigator.clipboard.writeText(UploadedDocDetails?.link); }}></span>
-                                                    <span className='svg__iconbox svg__icon--mail hreflink' title='Share In Mail' onClick={() => { window.open(`mailto:?&subject=${props?.item?.Title}&body=${UploadedDocDetails?.link}`) }}></span>
-                                                </> : <></>}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                                <Col><strong>Folder :</strong> <a href={`${rootSiteName}${selectedPath?.displayPath}`} target="_blank" data-interception="off" className='hreflink'> {selectedPath?.displayPath} <span className="svg__iconbox svg__icon--folder ms-1"></span></a></Col>
+                                <Col className='mb-2'><strong>Metadat-Tag :</strong> <span>{props?.item?.Title}</span></Col>
+
+                                <Col className='Alltable mt-2'>
+                                    <div>
+                                        <Table hover responsive mb-0>
+                                            <thead>
+                                                <tr>
+                                                    <th>&nbsp;</th>
+                                                    <th>File Name</th>
+                                                    <th>Uploaded</th>
+                                                    <th>Tagged</th>
+                                                    <th>Share Link</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td><span className={`svg__iconbox svg__icon--${UploadedDocDetails?.docType}`}></span></td>
+                                                    <td><a href={UploadedDocDetails?.link} target="_blank" data-interception="off" className='hreflink'>{UploadedDocDetails?.fileName}</a>{`(${UploadedDocDetails?.size})`}</td>
+                                                    <td>{UploadedDocDetails?.uploaded == true ? <span className='svg__iconbox svg__icon--Completed'></span> : <span className='svg__iconbox svg__icon--cross'></span>}</td>
+                                                    <td>{UploadedDocDetails?.tagged == true ? <span className='svg__iconbox svg__icon--Completed'></span> : <span className='svg__iconbox svg__icon--cross'></span>}</td>
+                                                    <td>{UploadedDocDetails?.uploaded == true ? <>
+                                                        <span className='svg__iconbox svg__icon--link hreflink' title='Copy Link' data-bs-toggle="popover" data-bs-content="Link Copied" onClick={() => { navigator.clipboard.writeText(UploadedDocDetails?.link); }}></span>
+                                                        <span className='svg__iconbox svg__icon--mail hreflink' title='Share In Mail' onClick={() => { window.open(`mailto:?&subject=${props?.item?.Title}&body=${UploadedDocDetails?.link}`) }}></span>
+                                                    </> : <></>}</td>
+                                                </tr>
+                                            </tbody>
+                                        </Table>
+                                    </div>
+
+                                </Col>
                             </div>
                             <footer className='text-end p-2'>
-                                <button className="btn btnPrimary" onClick={() => cancelConfirmationPopup()}>Ok</button>
+                                <button className="btn btnPrimary" onClick={() => cancelConfirmationPopup()}>OK</button>
                             </footer>
                         </div>
                     </div>
                 </div> : ''
             }
-            
             {remark && <SmartInformation Id={props?.item?.Id}
                 AllListId={props.AllListId}
                 Context={props?.Context}

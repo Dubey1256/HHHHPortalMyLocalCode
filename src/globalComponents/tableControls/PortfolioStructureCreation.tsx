@@ -68,7 +68,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
             webServerRelativeUrl: this.props.PropsValue.siteUrl.toLowerCase().split('.com')[1],
             PortfolioTypeArray: [],
             PortfolioTypeId: 1,
-            defaultPortfolioType: (this.props.PortfolioType === undefined || this.props.PortfolioType === '') ? 'Component' : this.props.PortfolioType,
+            defaultPortfolioType: (this.props.PortfolioType === undefined || this.props.PortfolioType === '') ? (this.props?.SelectedItem?.PortfolioType?.Id !=undefined ?this.props?.SelectedItem?.PortfolioType?.Title: 'Component') : this.props.PortfolioType,
         }
         this.getPortfolioType();
         this.LoadSPComponents();
@@ -77,7 +77,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
 
     private async LoadSPComponents() {
         let SPDetails: any = [];
-        let filtertitle = this.state.PortfolioType.split(' ')[0];
+        let filtertitle = this.state.defaultPortfolioType;
         this.Portfolio_x0020_Type = filtertitle;
         // var select: any = "Title,Id,PortfolioType&$filter=Portfolio_x0020_Type eq '" + filtertitle + "'"
         // SPDetails = await globalCommon.getData(this.state.PropValue.siteUrl, this.state.PropValue.MasterTaskListID, select);
@@ -141,7 +141,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
         let web = new Web(this.state.PropValue.siteUrl);
         let PortFolioType = [];
         PortFolioType = await web.lists
-            .getById('c21ab0e4-4984-4ef7-81b5-805efaa3752e')
+            .getById(this.state?.PropValue?.PortFolioTypeID !=undefined ? this.state?.PropValue?.PortFolioTypeID :'c21ab0e4-4984-4ef7-81b5-805efaa3752e')
             .items.select(
                 "Id",
                 "Title",
@@ -257,6 +257,9 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
     private IconUrl = '';
 
     CreateFolder = async (Type: any) => {
+       
+        await this.LoadPortfolioitemParentId(undefined, undefined, undefined);
+        this.LoadSPComponents();
         let folderURL = '';
         if (this.Portfolio_x0020_Type == 'Component') {
             folderURL = (this.state.webServerRelativeUrl + '/Documents/COMPONENT-PORTFOLIO').toLowerCase();
@@ -265,7 +268,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
         } else if (this.Portfolio_x0020_Type == 'Events') {
             folderURL = (this.state.webServerRelativeUrl + '/Documents/EVENT-PORTFOLIO').toLowerCase();
         }
-        let DOcListID = "d0f88b8f-d96d-4e12-b612-2706ba40fb08"
+        let DOcListID =(this.state?.PropValue?.DocumentListID !=undefined ? this.state?.PropValue?.DocumentListID :'d0f88b8f-d96d-4e12-b612-2706ba40fb08');
         if (this.state.textTitle == '') {
             alert('Please Enter the Title!')
         }
@@ -281,6 +284,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
     };
 
     createComponent = async (Type: any) => {
+        
         let postdata = {
             "Item_x0020_Type": 'Component',
             "Title": this.state.textTitle,
@@ -334,16 +338,12 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                 ItemTypes = 'Feature';
             }
             else if (this.state.SelectedItem != null || this.state.SelectedItem == undefined) {
-                ItemTypes = 'Component';
+                ItemTypes = this.state.defaultPortfolioType;
             }
         } else ItemTypes = (this.state.ChildItemTitle != undefined && this.state.ChildItemTitle.length > 0) ? this.state.ChildItemTitle[0].MasterItemsType : 'Component';
         let filter = ''
-
-        // if (ItemTypes == 'Component') {
-        //     filter = "Item_x0020_Type eq '" + ItemTypes + "'and orderby eq 'Created desc'"
-        // }
-        if (ItemTypes == 'Component') {
-            filter = "Item_x0020_Type eq '" + ItemTypes + "'"
+        if (ItemTypes == this.state.defaultPortfolioType) {
+            filter = "PortfolioType/Id eq '" + this.state.PortfolioTypeId + "'";// "Item_x0020_Type eq '" + ItemTypes + "'"
         }
         else {
             filter = "Parent/Id eq '" + this.state.SelectedItem.Id + "' and Item_x0020_Type eq '" + ItemTypes + "'"
@@ -385,11 +385,11 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                 item.PortfolioStructureIDs = this.state.SelectedItem.PortfolioStructureID + '-' + ItemTypes.slice(0, 1) + item.NextLevel;
         }
         if (this.props.SelectedItem == undefined) {
-            // const tempItem = this.state.PortfolioTypeArray.filter((port: any) =>  (port.Title === this.state?.PortfolioType) ||(port.Title === this.state?.defaultPortfolioType) );
-            // //const tempNumber =tempItem[0]?.IdRange?.split('-')[0];
-            // const tempNumber = tempItem[0]?.Title?.charAt(0) +tempItem[0]?.IdRange?.split('-')[0];
-            // this.PortfolioStructureIDs= tempNumber?.substring(0, tempNumber?.length - (this.NextLevel.toString().length)) + this.NextLevel;
-            this.PortfolioStructureIDs = 'C' + this.NextLevel;
+            const tempItem = this.state?.PortfolioTypeArray?.filter((port: any) =>  ((port.Title === this.state?.PortfolioType) ||(this.state?.defaultPortfolioType?.toLowerCase()?.indexOf(port.Title?.toLowerCase()) >-1)) ||(port.Title === this.state?.defaultPortfolioType) );
+            //const tempNumber =tempItem[0]?.IdRange?.split('-')[0];
+            const tempNumber = tempItem[0]?.Title?.charAt(0) +tempItem[0]?.IdRange?.split('-')[0];
+            this.PortfolioStructureIDs= tempNumber?.substring(0, tempNumber?.length - (this.NextLevel?.toString()?.length)) + this.NextLevel;
+            this.PortfolioStructureIDs= this.state?.PropValue?.PortFolioTypeID !=undefined ? this.PortfolioStructureIDs :'C' + this.NextLevel;
         }
  
 
@@ -719,7 +719,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
     public render(): React.ReactElement<IStructureCreationProps> {
         return (
             <>
-                <div id="ExandTableIds" className={this.state.PortfolioType == 'Events' ? 'eventpannelorange' : ((this.state.PortfolioType == 'Service' || this.state.PortfolioType == 'Service Portfolio') ? 'serviepannelgreena' : 'component Portfolio clearfix')}>
+                <div id="ExandTableIds" className={this.state.defaultPortfolioType == 'Events' ? 'eventpannelorange' : ((this.state.defaultPortfolioType == 'Service' || this.state.defaultPortfolioType == 'Service Portfolio') ? 'serviepannelgreena' : 'component Portfolio clearfix')}>
 
                     {this.state.OpenModal == 'Component' &&
                         <div >
@@ -915,7 +915,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                             } */}
 
                             </div>
-                            <footer className={(this.state.PortfolioType == 'Service' || this.state.PortfolioType == 'Service Portfolio') ? "serviepannelgreena text-end  mt-2" : "text-end  mt-2"}>
+                            <footer className={(this.state.defaultPortfolioType == 'Service' || this.state.defaultPortfolioType == 'Service Portfolio') ? "serviepannelgreena text-end  mt-2" : "text-end  mt-2"}>
                                 <button type="button" className="btn btn-primary me-1" onClick={() => this.CreateFolder('CreatePopup')}
                                 >
                                     Create & Open Popup
@@ -1032,7 +1032,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                     <div ng-repeat-end></div>
 
                                 </div>
-                                <footer className={(this.state.PortfolioType == 'Service' || this.state.PortfolioType == 'Service Portfolio') ? "serviepannelgreena text-end  mt-2" : "text-end  mt-2"}>
+                                <footer className={(this.state.defaultPortfolioType == 'Service' || this.state.defaultPortfolioType == 'Service Portfolio') ? "serviepannelgreena text-end  mt-2" : "text-end  mt-2"}>
                                     <a className="me-1" onClick={() => this.addNewTextField()} ng-click="addNewTextField()">
                                         <img className="icon-sites-img" ng-show="Portfolio_x0020_Type=='Component'"
                                             src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Add-New.png" />

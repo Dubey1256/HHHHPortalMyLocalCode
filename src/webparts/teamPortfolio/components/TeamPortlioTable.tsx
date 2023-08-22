@@ -1,28 +1,14 @@
 import * as React from "react";
-import { Component } from "react";
 import * as $ from "jquery";
 import * as Moment from "moment";
-//import '../../cssFolder/foundation.scss';
-import { Modal, Panel, PanelType } from "office-ui-fabric-react";
-//import "bootstrap/dist/css/bootstrap.min.css";
-import {
-    FaChevronRight,
-    FaChevronDown,
-    FaMinus,
-    FaPlus,
-    FaCompressArrowsAlt,
-} from "react-icons/fa";
-import { SlArrowRight, SlArrowLeft, SlArrowUp, SlArrowDown } from "react-icons/sl";
-import { CSVLink } from "react-csv";
-import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
-//import SmartFilter from './SmartFilter';
-//import '../../cssFolder/foundation.scss';
+import { Panel, PanelType } from "office-ui-fabric-react";
+import { FaCompressArrowsAlt,} from "react-icons/fa";
+import { SlArrowRight,SlArrowDown } from "react-icons/sl";
+import pnp, { Web} from "sp-pnp-js";
 import { map } from "jquery";
 import EditInstituton from "../../EditPopupFiles/EditComponent";
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup";
-import ExpndTable from "../../../globalComponents/ExpandTable/Expandtable";
-import { GlobalConstants } from "../../../globalComponents/LocalCommon";
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
 import { PortfolioStructureCreationCard } from "../../../globalComponents/tableControls/PortfolioStructureCreation";
@@ -30,46 +16,26 @@ import CreateActivity from "../../servicePortfolio/components/CreateActivity";
 import CreateWS from "../../servicePortfolio/components/CreateWS";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Tooltip from "../../../globalComponents/Tooltip";
-import * as XLSX from "xlsx";
-import {
-    Column, Table,
-    ExpandedState, useReactTable, getCoreRowModel, getFilteredRowModel, getExpandedRowModel, ColumnDef, flexRender, getSortedRowModel, SortingState,
-    ColumnFiltersState, FilterFn, getFacetedUniqueValues, getFacetedRowModel
-} from "@tanstack/react-table";
-import { RankingInfo, rankItem, compareItems } from "@tanstack/match-sorter-utils";
+import {ColumnDef} from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { HTMLProps } from "react";
-import HighlightableCell from "../../componentPortfolio/components/highlight";
+import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 import Loader from "react-loader";
-import ShowTeamMembers from "../../../globalComponents/ShowTeamMember";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
-
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 import SmartFilterSearchGlobal from "../../../globalComponents/SmartFilterGolobalBomponents/SmartFilterGlobalComponents";
-import { concat } from "lodash";
-import saveAs from "file-saver";
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
-// import Excel from 'exceljs';
 var filt: any = "";
 var ContextValue: any = {};
 let globalFilterHighlited: any;
 let forceExpanded: any = [];
-let activity = 0;
-let workstrim = 0;
-let task = 0;
 let isUpdated: any = "";
-let componentData: any = []; let subComponentData: any = []; let featureData: any = [];
-let activityData: any = []; let workstreamData: any = []; let tasksData: any = [];
+let componentData: any = [];
 let componentDataCopyBackup: any = []
 let filterCount: any = 0;
-let FinalFilterData: any = [];
 let portfolioColor: any = '';
 let copyDtaArray: any = [];
 let renderData: any = [];
-// ReactTable Part/////
-// ReactTable Part end/////
-
 function TeamPortlioTable(SelectedProp: any) {
     try {
         if (SelectedProp?.SelectedProp != undefined) {
@@ -85,26 +51,15 @@ function TeamPortlioTable(SelectedProp: any) {
         console.log(e);
     }
     ContextValue = SelectedProp?.SelectedProp;
-    const [sorting, setSorting] = React.useState<SortingState>([]);
-    const [expanded, setExpanded] = React.useState<ExpandedState>({});
-    const [rowSelection, setRowSelection] = React.useState({});
     const refreshData = () => setData(() => renderData);
     const [loaded, setLoaded] = React.useState(false);
-    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-    const [globalFilter, setGlobalFilter] = React.useState("");
-    globalFilterHighlited = globalFilter;
-    const [checkData, setcheckData] = React.useState([])
-    const [showTeamMemberOnCheck, setShowTeamMemberOnCheck] = React.useState(false)
-    const [ShowTeamPopup, setShowTeamPopup] = React.useState(false);
     const [siteConfig, setSiteConfig] = React.useState([]);
-    const [maidataBackup, setmaidataBackup] = React.useState([]);
     const [data, setData] = React.useState([]);
     copyDtaArray = data;
     const [AllUsers, setTaskUser] = React.useState([]);
     const [AllMetadata, setMetadata] = React.useState([])
     const [AllClientCategory, setAllClientCategory] = React.useState([])
     const [IsUpdated, setIsUpdated] = React.useState("");
-    const [tablecontiner, settablecontiner]: any = React.useState("hundred");
     const [checkedList, setCheckedList] = React.useState<any>({});
     const [AllSiteTasksData, setAllSiteTasksData] = React.useState([]);
     const [AllMasterTasksData, setAllMasterTasks] = React.useState([]);
@@ -128,29 +83,15 @@ function TeamPortlioTable(SelectedProp: any) {
     const [SharewebTask, setSharewebTask] = React.useState("");
     const [SharewebTimeComponent, setSharewebTimeComponent] = React.useState([]);
     const [IsTimeEntry, setIsTimeEntry] = React.useState(false);
-    const [AllCountItems, setAllCountItems] = React.useState({
-        AllComponentItems: [],
-        AllSubComponentItems: [],
-        AllFeaturesItems: [],
-        AfterSearchComponentItems: [],
-        AfterSearchSubComponentItems: [],
-        AfterSearchFeaturesItems: [],
-    });
     const [portfolioTypeConfrigration, setPortfolioTypeConfrigration] = React.useState<any>([{ Title: 'Component', Suffix: 'C', Level: 1 }, { Title: 'SubComponent', Suffix: 'S', Level: 2 }, { Title: 'Feature', Suffix: 'F', Level: 3 }]);
     let ComponetsData: any = {};
     let Response: any = [];
     let props = undefined;
     let AllTasks: any = [];
-    let CopyTaskData: any = [];
     let AllComponetsData: any = [];
     let TaskUsers: any = [];
     let TasksItem: any = [];
-
-
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
     const getTaskUsers = async () => {
         let web = new Web(ContextValue.siteUrl);
         let taskUsers = [];
@@ -180,7 +121,7 @@ function TeamPortlioTable(SelectedProp: any) {
         let web = new Web(ContextValue.siteUrl);
         let PortFolioType = [];
         PortFolioType = await web.lists
-            .getById('c21ab0e4-4984-4ef7-81b5-805efaa3752e')
+            .getById(ContextValue.PortFolioTypeID)
             .items.select(
                 "Id",
                 "Title",
@@ -195,7 +136,7 @@ function TeamPortlioTable(SelectedProp: any) {
         let taskTypeData = [];
         let typeData: any = [];
         taskTypeData = await web.lists
-            .getById('21b55c7b-5748-483a-905a-62ef663972dc')
+            .getById(ContextValue.TaskTypeID)
             .items.select(
                 'Id',
                 'Level',
@@ -247,9 +188,7 @@ function TeamPortlioTable(SelectedProp: any) {
             let newarray: any = [];
             const ItemTypeColumn = "Item Type";
             console.log("Fetching portfolio icons...");
-
-            // Fetching the field data
-            const field = await new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP")
+            const field = await new Web(ContextValue.siteUrl)
                 .lists.getById(ContextValue?.MasterTaskListID)
                 .fields.getByTitle(ItemTypeColumn)
                 .get();
@@ -286,31 +225,22 @@ function TeamPortlioTable(SelectedProp: any) {
 
 
     const LoadAllSiteTasks = function () {
-        let Response: any = [];
         let AllTasksData: any = [];
         let Counter = 0;
         if (siteConfig != undefined && siteConfig.length > 0) {
             map(siteConfig, async (config: any) => {
                 let web = new Web(ContextValue.siteUrl);
-                let AllTasksMatches = [];
+                let AllTasksMatches:any = [];
                 AllTasksMatches = await web.lists
                     .getById(config.listId)
-                    .items.select("ParentTask/Title", "ParentTask/Id", "ClientTime",
-                        "ItemRank", "Portfolio_x0020_Type", "SiteCompositionSettings", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "TimeSpent", "BasicImageInfo", "OffshoreComments", "OffshoreImageUrl", "CompletedDate",
-                        "Shareweb_x0020_ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "ParentTask/Shareweb_x0020_ID",
-                        "SharewebTaskType/Id", "SharewebTaskType/Title", "SharewebTaskType/Level", "Priority_x0020_Rank", "Team_x0020_Members/Title",
-                        "Team_x0020_Members/Id", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Id", "ClientCategory/Id", "ClientCategory/Title",
-                        "FileLeafRef", "FeedBack", "Title", "Id", "ID", "PercentComplete", "StartDate", "DueDate", "Comments", "Categories", "Status", "Body", "Mileage",
-                        "PercentComplete", "ClientCategory", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "TaskType/Id", "TaskType/Title", "Portfolio/Id",
-                        "Services/Id", "Events/Id", "Events/Title", "Services/Title", "Component/Id", "Component/Title", "Component/ItemType", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange",
-                        // "SharewebCategories/Id", "SharewebCategories/Title",  "Team_x0020_Members/Name","AssignedTo/Name","Editor/Id", "Editor/Title",
+                    .items.select("ParentTask/Title", "ParentTask/Id","ItemRank", "TaskLevel", "OffshoreComments","TeamMembers/Id", "ClientCategory/Id", "ClientCategory/Title",
+                        "TaskID", "ResponsibleTeam/Id", "ResponsibleTeam/Title", "ParentTask/TaskID", "TaskType/Level", "PriorityRank", "TeamMembers/Title","FeedBack", "Title", "Id", "ID", "DueDate", "Comments", "Categories", "Status", "Body",
+                        "PercentComplete", "ClientCategory", "Priority", "TaskType/Id", "TaskType/Title", "Portfolio/Id","Portfolio/ItemType","Portfolio/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange","PortfolioType/Title",
+                        "TaskCategories/Id", "TaskCategories/Title",  "TeamMembers/Name",
                     )
                     .expand(
-                        "ParentTask", "PortfolioType", "Portfolio", "TaskType", "SharewebTaskType", "AssignedTo", "ClientCategory", "Author", "Team_x0020_Members", "Responsible_x0020_Team",
-                        "Component",
-                        "Events",
-                        "Services",
-                        // "SharewebCategories","Editor",
+                        "ParentTask", "PortfolioType", "Portfolio", "TaskType", "ClientCategory", "TeamMembers", "ResponsibleTeam",
+                        "TaskCategories"
                     )
                     .filter("Status ne 'Completed'")
                     .orderBy("orderby", false)
@@ -330,10 +260,10 @@ function TeamPortlioTable(SelectedProp: any) {
                         item.siteUrl = ContextValue.siteUrl;
                         item["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
                         item.fontColorTask = "#000"
-                        // if (item.SharewebCategories.results != undefined) {
-                        //     if (item.SharewebCategories.results.length > 0) {
+                        // if (item.TaskCategories.results != undefined) {
+                        //     if (item.TaskCategories.results.length > 0) {
                         //         $.each(
-                        //             item.SharewebCategories.results,
+                        //             item.TaskCategories.results,
                         //             function (ind: any, value: any) {
                         //                 if (value.Title.toLowerCase() == "draft") {
                         //                     item.isDrafted = true;
@@ -388,8 +318,8 @@ function TeamPortlioTable(SelectedProp: any) {
                                     }
                                 });
                             }
-                            if (result.Responsible_x0020_Team != undefined && result.Responsible_x0020_Team.length > 0) {
-                                map(result.Responsible_x0020_Team, (Assig: any) => {
+                            if (result.ResponsibleTeam != undefined && result.ResponsibleTeam.length > 0) {
+                                map(result.ResponsibleTeam, (Assig: any) => {
                                     if (Assig.Id != undefined) {
                                         map(AllUsers, (users: any) => {
                                             if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
@@ -402,10 +332,10 @@ function TeamPortlioTable(SelectedProp: any) {
                                 });
                             }
                             if (
-                                result.Team_x0020_Members != undefined &&
-                                result.Team_x0020_Members.length > 0
+                                result.TeamMembers != undefined &&
+                                result.TeamMembers.length > 0
                             ) {
-                                map(result.Team_x0020_Members, (Assig: any) => {
+                                map(result.TeamMembers, (Assig: any) => {
                                     if (Assig.Id != undefined) {
                                         map(AllUsers, (users: any) => {
                                             if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
@@ -422,11 +352,11 @@ function TeamPortlioTable(SelectedProp: any) {
                             } else {
                                 result.ClientCategorySearch = ''
                             }
-                            if (result.Id === 1441) console.log(result);
-                            result["Shareweb_x0020_ID"] = globalCommon.getTaskId(result);
-                            if (result["Shareweb_x0020_ID"] == undefined) {
-                                result["Shareweb_x0020_ID"] = "";
-                            }
+                            // if (result.Id === 1441) console.log(result);
+                            // result["TaskID"] = globalCommon.getTaskId(result);
+                            // if (result["TaskID"] == undefined) {
+                            //     result["TaskID"] = "";
+                            // }
 
                             taskTypeDataItem?.map((type: any) => {
                                 if (result?.TaskType?.Title === type.Title && result.PortfolioType != undefined) {
@@ -456,52 +386,18 @@ function TeamPortlioTable(SelectedProp: any) {
                 }
             })
         }
-
-        // if (isUpdated === "") {
-        //     filt = "(Item_x0020_Type eq 'Component') or (Item_x0020_Type eq 'SubComponent') or (Item_x0020_Type eq 'Feature') and ((Portfolio_x0020_Type eq 'Service') or (Portfolio_x0020_Type eq 'Component'))";
-        // }
-        // if (isUpdated != undefined && isUpdated.toLowerCase().indexOf("service") > -1)
-        //     filt =
-        //         "((Item_x0020_Type eq 'Component') or (Item_x0020_Type eq 'SubComponent') or (Item_x0020_Type eq 'Feature')) and ((Portfolio_x0020_Type eq 'Service'))";
-        // if (
-        //     isUpdated != undefined &&
-        //     isUpdated.toLowerCase().indexOf("event") > -1
-        // )
-        //     filt =
-        //         "((Item_x0020_Type eq 'Component') or (Item_x0020_Type eq 'SubComponent') or (Item_x0020_Type eq 'Feature')) and ((Portfolio_x0020_Type eq 'Events'))";
-        // if (
-        //     isUpdated != undefined &&
-        //     isUpdated.toLowerCase().indexOf("component") > -1
-        // )
-        //     filt =
-        //         "((Item_x0020_Type eq 'Component') or (Item_x0020_Type eq 'SubComponent') or (Item_x0020_Type eq 'Feature')) and ((Portfolio_x0020_Type eq 'Component'))";
         let web = new Web(ContextValue.siteUrl);
         let componentDetails = [];
         componentDetails = await web.lists
             .getById(ContextValue.MasterTaskListID)
-            //.getByTitle('Master Tasks')
-            .items//.getById(this.state.itemID)
-            .select("ID", "Id", "Title", "Mileage", "TaskListId",
-                "TaskListName", "WorkspaceType", "PortfolioLevel", "PortfolioStructureID", "component_x0020_link", "Package", "Comments",
-                "DueDate", "Sitestagging", "Body", "Deliverables", "SiteCompositionSettings", "StartDate", "Created", "Item_x0020_Type",
-                "Help_x0020_Information", "Background", "Categories", "Short_x0020_Description_x0020_On", "TechnicalExplanations", "Idea",
-                "ValueAdded", "CategoryItem", "Priority_x0020_Rank", "Priority", "TaskDueDate", "PercentComplete",
-                "Modified", "CompletedDate", "ItemRank", "Portfolio_x0020_Type", "ClientTime", "Parent/Id", "Parent/Title",
-
-                "Author/Title",
-                "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title",
-                "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange",
-                "Component/Title", "Component/ItemType", "Services/Id", "Services/Title", "Services/ItemType", "Events/Id", "Events/Title", "Events/ItemType", "AssignedTo/Id", "Component/Id",
-                // 'ClientCategory/Color_x0020_Tag',//"SharewebCategories/Id", "SharewebTaskType/Title","SharewebCategories/Title","Editor/Title",
+            .items
+            .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title",
+                "DueDate", "Body", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
+                "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title","PercentComplete",
+                "ResponsibleTeam/Id", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange","PortfolioType/Title","AssignedTo/Id",
             )
             .expand(
-                "Parent", "PortfolioType", "AssignedTo", "ClientCategory", "Author", "Team_x0020_Members", "Responsible_x0020_Team",
-                "Events",
-                "Services",
-                "Component",
-                // "SharewebTaskType",
-                // "SharewebCategories"
-                // "Editor",
+                "Parent", "PortfolioType", "AssignedTo", "ClientCategory", "TeamMembers", "ResponsibleTeam"
             )
             .top(4999)
             .filter(filt)
@@ -527,7 +423,7 @@ function TeamPortlioTable(SelectedProp: any) {
             if (result?.Item_x0020_Type != undefined) {
                 result.SiteIconTitle = result?.Item_x0020_Type?.charAt(0);
             }
-            result["Shareweb_x0020_ID"] = result?.PortfolioStructureID;
+            result["TaskID"] = result?.PortfolioStructureID;
 
             result.DueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
             if (result.DueDate == "Invalid date" || "") {
@@ -555,10 +451,10 @@ function TeamPortlioTable(SelectedProp: any) {
                 });
             }
             if (
-                result.Responsible_x0020_Team != undefined &&
-                result.Responsible_x0020_Team.length > 0
+                result.ResponsibleTeam != undefined &&
+                result.ResponsibleTeam.length > 0
             ) {
-                map(result.Responsible_x0020_Team, (Assig: any) => {
+                map(result.ResponsibleTeam, (Assig: any) => {
                     if (Assig.Id != undefined) {
                         map(AllUsers, (users: any) => {
                             if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
@@ -570,8 +466,8 @@ function TeamPortlioTable(SelectedProp: any) {
                     }
                 });
             }
-            if (result.Team_x0020_Members != undefined && result.Team_x0020_Members.length > 0) {
-                map(result.Team_x0020_Members, (Assig: any) => {
+            if (result.TeamMembers != undefined && result.TeamMembers.length > 0) {
+                map(result.TeamMembers, (Assig: any) => {
                     if (Assig.Id != undefined) {
                         map(AllUsers, (users: any) => {
                             if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
@@ -600,21 +496,6 @@ function TeamPortlioTable(SelectedProp: any) {
         ComponetsData["allComponets"] = componentDetails;
         // LoadAllSiteTasks();
     };
-
-    // React.useEffect(() => {
-    //     const params = new URLSearchParams(window.location.search);
-    //     let query = params.get("PortfolioType");
-    //     if (query === 'Service' || query === 'service') {
-    //         let QueryPams = "Service Portfolio"
-    //         setIsUpdated(QueryPams);
-    //         isUpdated = query;
-    //     } else if (query === 'component' || query === 'component') {
-    //         let QueryPams = "Component Portfolio"
-    //         setIsUpdated(QueryPams);
-    //         isUpdated = query;
-
-    //     }
-    // }, [])
     React.useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         let query = params.get("PortfolioType");
@@ -672,37 +553,6 @@ function TeamPortlioTable(SelectedProp: any) {
         let filterDataBackup = JSON.parse(JSON.stringify(filterData));
         setAllSmartFilterData(filterDataBackup);
     }, []);
-
-    // React.useEffect(() => {
-    //     if (smartAllFilterData?.length > 0 && updatedSmartFilter === false) {
-    //         setLoaded(false);
-    //         componentData = [];
-    //         setAllSmartFilterDataBackup(structuredClone(smartAllFilterData));
-    //         if (IsUpdated === "") {
-    //             portfolioTypeData?.map((port: any) => {
-    //                 componentGrouping(port?.Id);
-    //             })
-    //         } else if (IsUpdated.length) {
-    //             portfolioTypeData?.map((port: any) => {
-    //                 componentGrouping(port?.Id);
-    //             })
-    //         }
-    //     }
-    //     if (smartAllFilterData?.length > 0 && updatedSmartFilter === true) {
-    //         // updatedSmartFilterGrouping()
-    //         setLoaded(false);
-    //         filterCount = 0;
-    //         componentDataCopyBackup = [];
-    //         setDataBackup([]);
-    //         let AllSmartFilterDataBackupCopy = AllSmartFilterDataBackup?.filter((elem: any) => elem.PortfolioType != undefined);
-    //         setDataBackup(structuredClone(AllSmartFilterDataBackupCopy));
-    //         componentDataCopyBackup = structuredClone(componentData);
-    //         filterDataAfterUpdate();
-    //         // portfolioTypeData?.map((port: any) => {
-    //         //     updatedSmartFilterGrouping(port?.Id);
-    //         // })
-    //     }
-    // }, [smartAllFilterData])
     React.useEffect(() => {
         if (smartAllFilterData?.length > 0 && updatedSmartFilter === false) {
             setLoaded(false);
@@ -738,14 +588,11 @@ function TeamPortlioTable(SelectedProp: any) {
 
     const DynamicSort = function (items: any, column: any) {
         items?.sort(function (a: any, b: any) {
-            // return   a[column] - b[column];
             var aID = a[column];
             var bID = b[column];
             return aID == bID ? 0 : aID > bID ? 1 : -1;
         });
-
     };
-
     const componentGrouping = (portId: any) => {
         let FinalComponent: any = []
         let AllProtFolioData = smartAllFilterData?.filter((comp: any) => comp?.PortfolioType?.Id === portId && comp.TaskType === undefined);
@@ -758,7 +605,7 @@ function TeamPortlioTable(SelectedProp: any) {
             })
             let subComFeat = AllProtFolioData?.filter((comp: any) => comp?.Parent?.Id === masterTask?.Id)
             masterTask.subRows = masterTask?.subRows?.concat(subComFeat);
-            subComFeat?.forEach((subComp) => {
+            subComFeat?.forEach((subComp:any) => {
                 subComp.subRows = [];
                 taskTypeData?.map((levelType: any) => {
                     if (levelType.Level === 1)
@@ -811,14 +658,12 @@ function TeamPortlioTable(SelectedProp: any) {
             let worstreamAndTask = smartAllFilterData?.filter((taskData: any) => taskData?.ParentTask?.Id === act?.Id && taskData?.siteType === act?.siteType)
             if (worstreamAndTask.length > 0) {
                 act.subRows = act?.subRows?.concat(worstreamAndTask);
-                // act.subRows.push(worstreamAndTask);
             }
             worstreamAndTask?.forEach((wrkst: any) => {
                 wrkst.subRows = wrkst.subRows === undefined ? [] : wrkst.subRows;
                 let allTasksData = smartAllFilterData?.filter((elem: any) => elem?.ParentTask?.Id === wrkst?.Id && elem?.siteType === wrkst?.siteType);
                 if (allTasksData.length > 0) {
                     wrkst.subRows = wrkst?.subRows?.concat(allTasksData)
-                    // wrkst.subRows.push(allTasksData);
                 }
             })
         })
@@ -912,98 +757,6 @@ function TeamPortlioTable(SelectedProp: any) {
             setData(finalDataCopyArray);
         }
     }
-    // const filterDataAfterUpdate = () => {
-    //     let AllsmartAllFilterData = smartAllFilterData?.filter((elemVal: any) => elemVal.PortfolioType != undefined);
-    //     const updatedRows = [];
-    //     for (let i = 0; i < AllsmartAllFilterData.length; i++) {
-    //         const row = AllsmartAllFilterData[i];
-    //         row.subRows=[];
-    //         const updatedRow = updatedSmartFilterGrouping(row);
-    //         updatedRows.push(...updatedRow);
-    //     }
-    //     FinalFilterData.push(updatedRows);
-    //     console.log(updatedRows);
-    // };
-
-    // const updatedSmartFilterGrouping = (row: any): any[] => {
-    //     for (let i = 0; i < allDataBackup.length; i++) {
-    //         const Object = allDataBackup[i];
-    //         if (Object.Id === row?.Portfolio?.Id) {
-    //             Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
-    //             Object.subRows.push(row);
-    //             return updatedSmartFilterGrouping(Object);
-    //         } else if (Object.Id === row?.Parent?.Id) {
-    //             Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
-    //             Object.subRows.push(row);
-    //             return updatedSmartFilterGrouping(Object);
-    //         } else if (row?.Component != undefined && row?.Component?.length > 0 && Object.Id === row?.Component[0]?.Id) {
-    //             Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
-    //             Object.subRows.push(row);
-    //             return updatedSmartFilterGrouping(Object);
-    //         } else if (row?.Services != undefined && row?.Services?.length > 0 && Object.Id === row?.Services[0]?.Id) {
-    //             Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
-    //             Object.subRows.push(row);
-    //             return updatedSmartFilterGrouping(Object);
-    //         }
-    //     }
-    //     if(row.subRows?.length>0){
-    //         row.subRows = row?.subRows?.filter((ele: any, ind: any) => ind === row?.subRows?.findIndex((elem: any) => elem.ID === ele.ID));
-    //     }
-    //     return [row];
-    // };
-
-
-
-
-
-
-
-    // const filterDataAfterUpdate = () => {
-    //     let AllsmartAllFilterData = smartAllFilterData?.filter((elemVal: any) => elemVal.PortfolioType != undefined);
-    //     let updatedRows = [];
-    //     for (let i = 0; i < AllsmartAllFilterData.length; i++) {
-    //         const row = AllsmartAllFilterData[i];
-    //         row.subRows = [];
-    //         const updatedRow = updatedSmartFilterGrouping(row);
-    //         updatedRows.push(updatedRow);
-    //     }
-    //     FinalFilterData.push(updatedRows);
-    //     console.log(updatedRows);
-    // };
-
-    // const updatedSmartFilterGrouping = (row: any): any => {
-    //     // for (let i = 0; i < allDataBackup.length; i++) {
-    //     const checkIfParentIsPersent = (parentRow: any) => {
-    //         for (let i = 0; i < allDataBackup.length; i++) {
-    //             let Object = allDataBackup[i];
-    //             if (Object.Id === parentRow?.Portfolio?.Id) {
-    //                 Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
-    //                 Object.subRows.push(parentRow);
-    //                 return Object
-    //             } else if (Object.Id === parentRow?.Parent?.Id) {
-    //                 Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
-    //                 Object.subRows.push(parentRow);
-    //                 return Object
-    //             } else if (parentRow?.Component != undefined && parentRow?.Component?.length > 0 && Object.Id === parentRow?.Component[0]?.Id) {
-    //                 Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
-    //                 Object.subRows.push(parentRow);
-    //                 return Object
-    //             } else if (parentRow?.Services != undefined && parentRow?.Services?.length > 0 && Object.Id === parentRow?.Services[0]?.Id) {
-    //                 Object.subRows = Object.subRows === undefined ? [] : Object.subRows;
-    //                 Object.subRows.push(parentRow);
-    //                 return Object
-    //             }
-    //         }
-    //         return undefined;
-    //     }
-    //     let parentRows = checkIfParentIsPersent(row)
-    //     if (parentRows === undefined) {
-    //         return row;
-    //     }
-    //     return updatedSmartFilterGrouping(parentRows);
-    // };
-
-
 
     ///react table start function//////
     /////////////////////Table Column Start///////////////////////////////
@@ -1066,20 +819,14 @@ function TeamPortlioTable(SelectedProp: any) {
                     <>
                         <span className="d-flex">
                             {row?.original?.Title != "Others" ? (
-                                <IndeterminateCheckbox
-                                    {...{
-                                        checked: row.getIsSelected(),
-                                        indeterminate: row.getIsSomeSelected(),
-                                        onChange: row.getToggleSelectedHandler(),
-                                    }}
-                                />
+                                <IndeterminateCheckbox {...{ checked: row.getIsSelected(), indeterminate: row.getIsSomeSelected(),onChange: row.getToggleSelectedHandler(), }}/>
                             ) : (
                                 ""
                             )}{" "}
                             {row?.original?.SiteIcon != undefined ? (
                                 <a className="hreflink" title="Show All Child" data-toggle="modal" >
-                                    <img className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 workmember ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 workmember ml20 me-1" : row?.original?.SharewebTaskType?.Title == "Activities" ? "ml-36 workmember ml20 me-1" :
-                                        row?.original?.SharewebTaskType?.Title == "Workstream" ? "ml-48 workmember ml20 me-1" : row?.original?.SharewebTaskType?.Title == "Task" || row?.original?.Item_x0020_Type === "Task" && row?.original?.SharewebTaskType == undefined ? "ml-60 workmember ml20 me-1" : "workmember ml20 me-1"
+                                    <img className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 workmember ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 workmember ml20 me-1" :
+                                        row?.original?.TaskType?.Title == "Workstream" ? "ml-48 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Task" || row?.original?.Item_x0020_Type === "Task" && row?.original?.TaskType == undefined ? "ml-60 workmember ml20 me-1" : "workmember ml20 me-1"
                                     }
                                         src={row?.original?.SiteIcon}>
                                     </img>
@@ -1087,8 +834,8 @@ function TeamPortlioTable(SelectedProp: any) {
                             ) : (
                                 <>
                                     {row?.original?.Title != "Others" ? (
-                                        <div style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons" : row?.original?.SharewebTaskType?.Title == "Activities" ? "ml-36 Dyicons" :
-                                            row?.original?.SharewebTaskType?.Title == "Workstream" ? "ml-48 Dyicons" : row?.original?.SharewebTaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons"
+                                        <div style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 Dyicons" :
+                                            row?.original?.TaskType?.Title == "Workstream" ? "ml-48 Dyicons" : row?.original?.TaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons"
                                         }>
                                             {row?.original?.SiteIconTitle}
                                         </div>
@@ -1097,8 +844,6 @@ function TeamPortlioTable(SelectedProp: any) {
                                     )}
                                 </>
                             )}
-
-
                             {/* ////////// Plush Icons////// */}
                             {/* <span>
                                 {((row.getCanExpand() &&
@@ -1164,13 +909,13 @@ function TeamPortlioTable(SelectedProp: any) {
                 size: 145,
             },
             {
-                accessorFn: (row) => row?.Shareweb_x0020_ID,
+                accessorFn: (row) => row?.TaskID,
                 cell: ({ row, getValue }) => (
                     <>
                         <ReactPopperTooltip ShareWebId={getValue()} row={row} />
                     </>
                 ),
-                id: "Shareweb_x0020_ID",
+                id: "TaskID",
                 placeholder: "ID",
                 header: "",
                 size: 130,
@@ -1489,7 +1234,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 obj.data.TitleNew = obj.data.Title;
                 obj.data.siteType = "Master Tasks";
                 obj.data.SiteIconTitle = obj?.data?.Item_x0020_Type?.charAt(0);
-                obj.data["Shareweb_x0020_ID"] = obj.data.PortfolioStructureID;
+                obj.data["TaskID"] = obj.data.PortfolioStructureID;
                 if (
                     item.props != undefined &&
                     item.props.SelectedItem != undefined &&
@@ -1560,7 +1305,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 })
             }
             item.data.SiteIconTitle = item?.data?.Item_x0020_Type?.charAt(0);
-            item.data["Shareweb_x0020_ID"] = item.data.PortfolioStructureID;
+            item.data["TaskID"] = item.data.PortfolioStructureID;
             copyDtaArray.unshift(item.data);
             renderData = [];
             renderData = renderData.concat(copyDtaArray)
@@ -1657,11 +1402,15 @@ const closeActivity = () => {
     setActivityPopup(false)
 }
 const addActivity = (type: any) => {
-    if (checkedList?.TaskType?.Id === 3 || checkedList?.TaskType == undefined) {
+    if (checkedList?.TaskType?.Id == undefined || checkedList?.TaskTypeId == undefined) {
     checkedList.NoteCall = type
     setActivityPopup(true);
     }
-    if(checkedList?.TaskType?.Id == 1){
+    if (checkedList?.TaskTypeId === 3 || checkedList?.TaskType?.Id === 3) {
+        checkedList.NoteCall = 'Task'
+        setIsOpenActivity(true);
+        }
+    if(checkedList?.TaskType?.Id == 1 || checkedList?.TaskTypeId == 1){
         checkedList.NoteCall = 'Workstream'
         setIsOpenWorkstream(true);
     }
@@ -1671,24 +1420,23 @@ const addActivity = (type: any) => {
     }
    
 }
-const onRenderCustomHeaderMain = () => {
-    return (
-        <div className="d-flex full-width pb-1">
-            <div
+    const onRenderCustomHeaderMain = () => {
+        return (
+            <div className="d-flex full-width pb-1">
+              <div
                 style={{
-                    marginRight: "auto",
-                    fontSize: "20px",
-                    fontWeight: "600",
-                    marginLeft: "20px",
+                  marginRight: "auto",
+                  fontSize: "20px",
+                  fontWeight: "600",
+                  marginLeft: "20px",
                 }}
-            >
-                <span>{`Create Component `}</span>
+              >
+                <span>{`Create Item`}</span>
+              </div>
+              <Tooltip ComponentId={1746} />
             </div>
-        </div>
-    );
-};
-// new change end////
-//-------------------------------------------------------------End---------------------------------------------------------------------------------
+          );
+    };
     //-------------------------------------------------------------End---------------------------------------------------------------------------------
     return (
         <div id="ExandTableIds" style={{}}>
@@ -1731,7 +1479,7 @@ const onRenderCustomHeaderMain = () => {
                 </div>
             </section>
 
-            <section className="TableContentSection taskprofilepagegreen" id={tablecontiner} >
+            <section className="TableContentSection taskprofilepagegreen">
                 <div className="container-fluid">
                     <section className="TableSection">
                         <div className="container p-0">
@@ -1739,7 +1487,7 @@ const onRenderCustomHeaderMain = () => {
                                 <div className="col-sm-12 p-0 smart">
                                     <div className="">
                                         <div className="wrapper">
-                                            <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1}
+                                            {/* <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1}
                                                 color={`${portfolioColor ? portfolioColor : "#000069"}`}
                                                 speed={2}
                                                 trail={60}
@@ -1751,7 +1499,7 @@ const onRenderCustomHeaderMain = () => {
                                                 left="50%"
                                                 scale={1.0}
                                                 loadedClassName="loadedContent"
-                                            />
+                                            /> */}
                                             <GlobalCommanTable AllListId={ContextValue} columns={columns} data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity} />
                                         </div>
                                     </div>
@@ -1794,7 +1542,7 @@ const onRenderCustomHeaderMain = () => {
                     >
                         <div id="portfolio" className="section-event pt-0">
                             {checkedList != undefined &&
-                                checkedList?.SharewebTaskType?.Title == "Workstream" ? (
+                                checkedList?.TaskType?.Title == "Workstream" ? (
                                 <ul className="quick-actions">
                                     <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
                                         <div onClick={(e) => CreateActivityPopup("Task")}>
@@ -1869,6 +1617,12 @@ const onRenderCustomHeaderMain = () => {
                                         <div onClick={() => CreateActivityPopup("Activities")}>
                                             <span className="icon-sites"></span>
                                             Activity
+                                        </div>
+                                    </li>
+                                    <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                        <div onClick={() => CreateActivityPopup("Task")}>
+                                            <span className="icon-sites"></span>
+                                            Task
                                         </div>
                                     </li>
 
