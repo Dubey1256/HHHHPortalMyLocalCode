@@ -893,11 +893,11 @@ const CreateWS = (props: any) => {
         })
         if (LetestLevelData.length == 0) {
             Tasklevel = 1
-            TaskID = props?.props?.TaskID + '-T' + Tasklevel + LatestId;
+            TaskID = props?.props?.TaskID + '-T'  + LatestId;
         }
         else {
             Tasklevel = LetestLevelData.length + 1
-            TaskID = props?.props?.TaskID + '-T' + Tasklevel + LatestId;
+            TaskID = props?.props?.TaskID + '-T'  + LatestId;
         }
         var CategoryID: any = []
         CategoriesData.map((category) => {
@@ -1441,11 +1441,11 @@ const CreateWS = (props: any) => {
         })
         if (LetestLevelData.length == 0) {
             Tasklevel = 1
-            TaskID = props?.props?.TaskID + '-T' + Tasklevel + '-' + LatestId;
+            TaskID = props?.props?.TaskID + '-T' + LatestId;
         }
         else {
             Tasklevel = LetestLevelData.length + 1
-            TaskID = props?.props?.TaskID + '-T' + Tasklevel + '-' + LatestId;;
+            TaskID = props?.props?.TaskID + '-T' + LatestId;;
         }
         if (SharewebTasknewTypeId == 2 || SharewebTasknewTypeId == 6) {
             var SharewebID = '';
