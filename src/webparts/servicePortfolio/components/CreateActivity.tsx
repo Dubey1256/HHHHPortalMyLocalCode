@@ -207,27 +207,7 @@ const CreateActivity = (props: any) => {
     }, [])
 
     const getTooltiphierarchyWithoutGroupByTable = (row: any): any => {
-        // for (let i = 0; i < AllMatsterAndTaskData.length; i++) {
-        //     const Object = AllMatsterAndTaskData[i];
-        //     if (Object.Id === row?.ParentTask?.Id && row?.siteType === Object?.siteType) {
-        //         Object.subRows = [];
-        //         Object.subRows.push(row);
-        //         return getTooltiphierarchyWithoutGroupByTable(Object);
-        //     } else if (Object.Id === row?.Parent?.Id) {
-        //         Object.subRows = [];
-        //         Object.subRows.push(row);
-        //         return getTooltiphierarchyWithoutGroupByTable(Object);
-        //     } else if (row?.Component != undefined && row?.Component?.length > 0 && Object.Id === row?.Component[0]?.Id) {
-        //         Object.subRows = [];
-        //         Object.subRows.push(row);
-        //         return getTooltiphierarchyWithoutGroupByTable(Object);
-        //     } else if (row?.Services != undefined && row?.Services?.length > 0 && Object.Id === row?.Services[0]?.Id) {
-        //         Object.subRows = [];
-        //         Object.subRows.push(row);
-        //         return getTooltiphierarchyWithoutGroupByTable(Object);
-        //     }
-        // }
-        // return [row];
+       
         var Data: any = []
         AllMatsterAndTaskData?.forEach((val: any) => {
 
@@ -422,7 +402,7 @@ const CreateActivity = (props: any) => {
         let tempArray: any = [];
         let flag = false;
         SiteTypeBackupArray.forEach((val: any) => {
-            if (val.Id == value.Id && AllItems?.NoteCall != 'Task') {
+            if (val.Id == value.Id) {
                 if (val.IscreateTask) {
                     val.IscreateTask = false;
                 } else {
@@ -720,12 +700,12 @@ const CreateActivity = (props: any) => {
     var SharewebID: any = ''
 
     const getActivitiesDetails = async (item: any) => {
-        siteTypess?.forEach((ba:any)=>{
-            if(item.Title == ba.Title){
-                ba.IscreateTask = true;
-                ba.isSiteSelect = true;
-            }
-        })
+        // siteTypess?.forEach((ba:any)=>{
+        //     if(item.Title == ba.Title){
+        //         ba.IscreateTask = true;
+        //         ba.isSiteSelect = true;
+        //     }
+        // })
         console.log(item)
         let web = new Web(dynamicList.siteUrl);
         let componentDetails = [];

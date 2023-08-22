@@ -1,7 +1,6 @@
 import React from 'react'
 import DefaultFolderContent from './DefaultFolderContent'
 import axios from 'axios';
-import { usePopperTooltip } from "react-popper-tooltip";
 import { FaChevronDown, FaChevronRight } from 'react-icons/fa';
 import { SlArrowRight, SlArrowLeft, SlArrowUp, SlArrowDown } from "react-icons/sl";
 import { Card, CardBody, CardFooter, CardHeader, CardTitle, Col, CustomInput, Pagination, PaginationItem, PaginationLink, Progress, Row, Table } from "reactstrap";
@@ -210,8 +209,11 @@ const AncTool = (props: any) => {
                     file.docType = 'mail'
                     file.EncodedAbsUrl = file?.Url?.Url
                 }
-                if (file?.File_x0020_Type == 'jpg') {
+                if (file?.File_x0020_Type == 'jpg'||file?.File_x0020_Type == 'jfif') {
                     file.docType = 'jpeg'
+                }
+                if (file?.File_x0020_Type == 'doc') {
+                    file.docType = 'docx'
                 }
 
                 if (file[siteName] != undefined && file[siteName].length > 0 && file[siteName].some((task: any) => task.Id == props?.item?.Id)) {
@@ -285,7 +287,9 @@ const AncTool = (props: any) => {
     const searchExistingFile = (value: any) => {
         if (value?.length > 0) {
             setExistingFiles((prevFile: any) => {
-                backupExistingFiles
+                return backupExistingFiles.filter((file: any) => {
+                    return file?.Title?.toLowerCase()?.includes(value?.toLowerCase());
+                });
             });
         } else {
             setExistingFiles(backupExistingFiles);
@@ -395,9 +399,9 @@ const AncTool = (props: any) => {
                                         taggedDocument = {
                                             ...taggedDocument,
                                             fileName: fileName,
-                                            docType: createNewDocType,
+                                            docType: getFileType(selectedFile?.name),
                                             uploaded: true,
-                                            link: `${rootSiteName}${selectedPath.displayPath}/${fileName}`,
+                                            link: `${rootSiteName}${selectedPath.displayPath}/${fileName}?web=1`,
                                             size: fileSize
                                         }
                                         taggedDocument.link = file?.EncodedAbsUrl;
@@ -547,7 +551,7 @@ const AncTool = (props: any) => {
                             fileName: fileName,
                             docType: createNewDocType,
                             uploaded: true,
-                            link: `${rootSiteName}${selectedPath.displayPath}/${fileName}`,
+                            link: `${rootSiteName}${selectedPath.displayPath}/${fileName}?web=1`,
                             size: fileSize
                         }
                         setTimeout(async () => {
@@ -1006,7 +1010,7 @@ const AncTool = (props: any) => {
                                                         </div>
                                                     </div>
                                                 </span></span>}</span>
-                                                <span><a title="Click for Associated Folder" className='hreflink' onClick={() => setChoosePathPopup(true)} > Change Path </a></span>
+                                                <span><a title="Click for Associated Folder" className='hreflink ms-2' onClick={() => setChoosePathPopup(true)} > Change Path </a></span>
                                             </div>
                                         </div>
 
@@ -1042,14 +1046,17 @@ const AncTool = (props: any) => {
                                                                 </thead>
                                                                 <tbody className='Scrolling'>
                                                                     {ExistingFiles?.map((file: any) => {
-                                                                        return (
-                                                                            <tr>
-                                                                                <td><input type="checkbox" className='form-check-input hreflink' checked={AllReadytagged?.some((doc: any) => file.Id == doc.Id)} onClick={() => { tagSelectedDoc(file) }} /></td>
-                                                                                <td><span className={`svg__iconbox svg__icon--${file?.docType}`} title={file?.File_x0020_Type}></span></td>
-                                                                                <td><a href={file?.EncodedAbsUrl} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
-                                                                                <td>{file?.ItemRank}</td>
-                                                                            </tr>
-                                                                        )
+                                                                        if(!AllReadytagged?.some((doc: any) => file?.Id == doc?.Id)){
+                                                                            return (
+                                                                                <tr>
+                                                                                    <td><input type="checkbox" className='form-check-input hreflink' checked={AllReadytagged?.some((doc: any) => file.Id == doc.Id)} onClick={() => { tagSelectedDoc(file) }} /></td>
+                                                                                    <td><span className={`svg__iconbox svg__icon--${file?.docType}`} title={file?.File_x0020_Type}></span></td>
+                                                                                    <td><a href={file?.EncodedAbsUrl} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
+                                                                                    <td>{file?.ItemRank}</td>
+                                                                                </tr>
+                                                                            )
+                                                                        }
+                                                                        
                                                                     })}
 
 
@@ -1282,7 +1289,7 @@ const AncTool = (props: any) => {
                                 </Col>
                             </div>
                             <footer className='text-end p-2'>
-                                <button className="btn btnPrimary" onClick={() => cancelConfirmationPopup()}>Ok</button>
+                                <button className="btn btnPrimary" onClick={() => cancelConfirmationPopup()}>OK</button>
                             </footer>
                         </div>
                     </div>

@@ -25,6 +25,7 @@ import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-toolt
 import SmartFilterSearchGlobal from "../../../globalComponents/SmartFilterGolobalBomponents/SmartFilterGlobalComponents";
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
+//import RestructuringCom from "../../../globalComponents/Restructuring/RestructuringCom";
 var filt: any = "";
 var ContextValue: any = {};
 let globalFilterHighlited: any;
@@ -33,10 +34,16 @@ let isUpdated: any = "";
 let componentData: any = [];
 let componentDataCopyBackup: any = []
 let filterCount: any = 0;
+let childRefdata:any;
 let portfolioColor: any = '';
 let copyDtaArray: any = [];
 let renderData: any = [];
 function TeamPortlioTable(SelectedProp: any) {
+    const childRef =React.useRef<any>();
+    if(childRef!=null){
+        childRefdata={...childRef};
+        
+    }
     try {
         if (SelectedProp?.SelectedProp != undefined) {
             SelectedProp.SelectedProp.isShowTimeEntry = JSON.parse(
@@ -82,6 +89,8 @@ function TeamPortlioTable(SelectedProp: any) {
     const [IsTask, setIsTask] = React.useState(false);
     const [SharewebTask, setSharewebTask] = React.useState("");
     const [SharewebTimeComponent, setSharewebTimeComponent] = React.useState([]);
+    const [checkedList1, setCheckedList1] = React.useState([]);
+    const [topCompoIcon, setTopCompoIcon]: any = React.useState(false);
     const [IsTimeEntry, setIsTimeEntry] = React.useState(false);
     const [portfolioTypeConfrigration, setPortfolioTypeConfrigration] = React.useState<any>([{ Title: 'Component', Suffix: 'C', Level: 1 }, { Title: 'SubComponent', Suffix: 'S', Level: 2 }, { Title: 'Feature', Suffix: 'F', Level: 3 }]);
     let ComponetsData: any = {};
@@ -770,7 +779,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: ({ table }: any) => (
                     <>
                         <button
-                            className="border-0 bg-Ff"
+                            className="border-0 bg-Ff mb-3"
                             {...{
                                 onClick: table.getToggleAllRowsExpandedHandler(),
                             }}
@@ -953,7 +962,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 // ),
 
                 cell: ({ row, column, getValue }) => (
-                    <div className="d-flex">
+                    <div className="alignCenter">
                         <span className="column-description2">
                             {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== "Others" && (
                                 <a className="text-content hreflink" title={row?.original?.Title} data-interception="off" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
@@ -976,7 +985,7 @@ function TeamPortlioTable(SelectedProp: any) {
                         {row?.original?.Categories == 'Draft' ?
                             <FaCompressArrowsAlt style={{ height: '11px', width: '20px', color: `${row?.original?.PortfolioType?.Color}` }} /> : ''}
                         {row?.original?.subRows?.length > 0 ?
-                            <span className='ms-1 mt-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
+                            <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
                         {row?.original?.descriptionsSearch != null && row?.original?.descriptionsSearch != '' && (
                             <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />
                         )}
@@ -1064,8 +1073,8 @@ function TeamPortlioTable(SelectedProp: any) {
                                 data-bs-placement="auto"
                                 title="Click To Edit Timesheet"
                             >
-                                <span style={{ backgroundColor: `${portfolioColor}` }}
-                                    className="svg__iconbox svg__icon--clock"
+                                <span
+                                    className="svg__iconbox svg__icon--clock dark"
                                     data-bs-toggle="tooltip"
                                     data-bs-placement="bottom"
                                     title="Click To Edit Timesheet"
@@ -1082,11 +1091,25 @@ function TeamPortlioTable(SelectedProp: any) {
                 size: 1,
             },
             {
+                header: ({ table }: any) => (
+                <>
+                  {
+                    topCompoIcon ?
+                      <span onClick={()=>trueTopIcon(true)}>
+                        <img
+                          className="icon-sites-img"
+                          src={IsUpdated == "Service" ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png'}
+        
+                        />
+                      </span>
+                      : ''
+                  }
+        
+                </>
+              ),
                 cell: ({ row, getValue }) => (
                     <>
-                        {row?.original?.siteType === "Master Tasks" &&
-                            row?.original?.Title !== "Others" &&
-                            row?.original?.isRestructureActive && (
+                        { row?.original?.isRestructureActive && (
                                 <a
                                     href="#"
                                     data-bs-toggle="tooltip"
@@ -1096,7 +1119,8 @@ function TeamPortlioTable(SelectedProp: any) {
                                     <img
                                         className="workmember"
                                         src={row?.original?.Restructuring}
-                                    // onClick={(e) => OpenModal(row?.original)}
+                                        onClick={() => callChildFunction(row?.original)}
+                                        // onClick={()=>callChildFunction(row?.original)}
                                     />
                                 </a>
                             )}
@@ -1106,7 +1130,6 @@ function TeamPortlioTable(SelectedProp: any) {
                 id: "row?.original.Id",
                 canSort: false,
                 placeholder: "",
-                header: "",
                 size: 1,
             },
             {
@@ -1175,13 +1198,48 @@ function TeamPortlioTable(SelectedProp: any) {
     //     forceExpanded = [];
     // }, [table.getState().columnFilters, table.getState().globalFilter]);
 
+
+
+    //-------------------------------------------------- restructuring function start---------------------------------------------------------------
+
     const callBackData = React.useCallback((checkData: any) => {
+        let array : any = [];
         if (checkData != undefined) {
             setCheckedList(checkData);
+            array.push(checkData);
         } else {
             setCheckedList({});
+            array = [];
         }
+        setCheckedList1(array);
     }, []);
+
+
+    const callBackData1  = React.useCallback((getData: any,topCompoIcon:any) => {
+     
+        setData((getData)=> [...getData]);
+        setTopCompoIcon(topCompoIcon);
+    },[]);
+
+
+    //  Function to call the child component's function
+  const callChildFunction = (items: any) => {
+    if (childRef.current) {
+      childRef.current.callChildFunction(items);
+    }
+  };
+
+  const trueTopIcon = (items: any) => {
+    if (childRef.current) {
+      childRef.current.trueTopIcon(items);
+    }
+  };
+
+
+
+  //-------------------------------------------------- restructuring function end---------------------------------------------------------------
+
+
     //// popup Edit Task And Component///
     const EditComponentPopup = (item: any) => {
         item["siteUrl"] = ContextValue.siteUrl;
@@ -1223,6 +1281,7 @@ function TeamPortlioTable(SelectedProp: any) {
             </div>
         );
     };
+  
     let isOpenPopup = false;
     const AddStructureCallBackCall = React.useCallback((item) => {
         //  setRowSelection({});
@@ -1479,6 +1538,7 @@ const addActivity = (type: any) => {
                 </div>
             </section>
 
+
             <section className="TableContentSection taskprofilepagegreen">
                 <div className="container-fluid">
                     <section className="TableSection">
@@ -1689,4 +1749,5 @@ const addActivity = (type: any) => {
 
     );
 }
-export default TeamPortlioTable;
+export default TeamPortlioTable;    
+   
