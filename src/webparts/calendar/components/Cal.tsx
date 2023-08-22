@@ -175,50 +175,6 @@ const handlePeoplePickerChange = (items: any[]): void => {
 
 
 
-// const handleSave = async (): Promise<void> => {
-//   try {
-//       const web = new Web(props.props.siteUrl);
-
-//     const users = selectedUsers.map(item => item.id);
-
-//     await web.lists.getById(props.props.SmalsusLeaveCalendar).items.getById(709).update({
-//       Employee: {Email:"anubhav.shukla@hochhuth-consulting.de"} 
-//     });
-
-//     console.log("Item updated successfully!");
-//   } catch (error) {
-//     console.log("Error updating item:", error);
-//   }
-// };
-
-const handleSave = async (): Promise<void> => {
-  try {
-    const web = new Web(props.props.siteUrl);
-    const userIDs = selectedUsers.map(item => item.secondaryText);
-
-    web.lists.getById(props.props.SmalsusLeaveCalendar).items.getById(716).update({
-      EmployeeId:188
-    })
-    .then(result => {
-      console.log("Item added successfully:", result);
-    })
-    .catch(error => {
-      console.log("Error adding item:", error);
-    });
-    // const itemToUpdate = web.lists.getById(props.props.SmalsusLeaveCalendar).items.getById(709);
-
-    // await itemToUpdate.update({
-    //   Employee: { results: 188 }
-    // });
-
-  //   console.log("Item updated successfully!");
-  } catch (error) {
-    console.log("Error updating item:", error);
-  }
-  
-};
-
-
 
 //  People Picker Function close
 
@@ -456,7 +412,11 @@ const handleSave = async (): Promise<void> => {
     { key: "SPFx", text: "SPFx" },
     { key: "Shareweb(Contact)", text: "Shareweb(Contact) " },
     { key: "Shareweb(ANC)", text: "Shareweb(ANC) " },
-    { key: "Shareweb(Project)", text: "Shareweb(Project) " }
+    { key: "Shareweb(Project)", text: "Shareweb(Project) " },
+    { key: "QA", text: "QA " },
+    { key: "Design", text: "Design" }
+
+
   ];
 
   const openm = () => {
@@ -699,9 +659,9 @@ const handleSave = async (): Promise<void> => {
           };
 
           setDetails(newEvent);
-
+            let mytitle= newEvent.name + "-" + newEvent.type + "-" + newEvent.title;
           let eventData = {
-            Title: newEvent.title,
+            Title: mytitle,
 
             // Name: newEvent.name,
             EmployeeId:newEvent.nameId,
@@ -1141,8 +1101,9 @@ const handleSave = async (): Promise<void> => {
     let results = null;
     try {
       const web = new Web(props.props.siteUrl);
+      let mytitle= editEvent.name + "-" + editEvent.type + "-" + editEvent.title;
       const editEventItem = {
-        Title: editEvent.Title,
+        Title: mytitle,
         Description: editEvent.Description,
         EventDate: await getUtcTime(editEvent.EventDate),
         EndDate: await getUtcTime(editEvent.EndDate),
@@ -1502,12 +1463,15 @@ const handleSave = async (): Promise<void> => {
   }, []);
 
 
-
+ 
+  
   
   return (
     <div>
+      <div className="w-100 text-end"><a target="_blank" data-interception="off" href={`${props.props.siteUrl}/SitePages/SmalsusLeaveCalendar-old.aspx`}> Old Leave Calendar</a></div>
+      <div className="w-100 text-end"><a target="_blank" data-interception="off" href={`${props.props.siteUrl}/Lists/SmalsusLeaveCalendar/calendar.aspx`}> Add to Outlook Calendar</a></div>
       <div style={{ height: "500pt" }}>
-        <a className="mailBtn" href="#" onClick={emailComp}>
+        <a className="mailBtn me-4 mt-4" href="#" onClick={emailComp}>
           <FaPaperPlane></FaPaperPlane> <span>Send Leave Summary</span>
         </a>
         {/* <button type="button" className="mailBtn" >
@@ -1520,13 +1484,15 @@ const handleSave = async (): Promise<void> => {
           defaultView="month"
           startAccessor="start"
           endAccessor="end"
-          //components={components}
+          // components={{
+          //   toolbar: CustomToolbar,
+          // }}
           // onShowMore={handleShowMore}
           //  onNavigate={handleNavigate}
           defaultDate={moment().toDate()}
           // defaultView={Views.MONTH}
           onShowMore={handleShowMore}
-          views={{ month: true, week: false, day: false, agenda: true }}
+          views={{ month: true, week: true, day: true, agenda: true }}
           localizer={localizer}
           onSelectEvent={handleDateClick}
         />
@@ -1808,7 +1774,7 @@ const handleSave = async (): Promise<void> => {
                 </div>
                         
               </div>
-              <a target='_blank' href ={`${props.props.siteUrl}/Lists/SmalsusLeaveCalendar/EditForm.aspx?ID=${vId}`}>Open out-of-the-box form</a>
+              <a target='_blank' data-interception="off" href ={`${props.props.siteUrl}/Lists/SmalsusLeaveCalendar/EditForm.aspx?ID=${vId}`}>Open out-of-the-box form</a>
               <div>
                 <button
                   className="btn btn-primary px-3"
