@@ -930,19 +930,19 @@ const inlineEditingcolumns = (props: any) => {
                             onChange={(e: any) => setEditDate(e.target.value)} />
 
                         <div className='d-flex flex-column mt-2 mb-2'>
-                            <span className='SpfxCheckRadio'>
-                                <input className='radio' type="radio" value="Male" name="date" checked={dueDate.selectDateName == 'Today'} onClick={() => duedatechange('Today')} /> Today</span>
-                            <span className='SpfxCheckRadio'>
-                                <input className='radio' type="radio" value="Female" name="date" checked={dueDate.selectDateName == 'Tommorow'} onClick={() => duedatechange('Tommorow')} /> Tommorow
+                            <span className='m-1'>
+                                <input className='me-1' type="radio" value="Male" name="date" checked={dueDate.selectDateName == 'Today'} onClick={() => duedatechange('Today')} /> Today</span>
+                            <span className='m-1'>
+                                <input className='me-1' type="radio" value="Female" name="date" checked={dueDate.selectDateName == 'Tommorow'} onClick={() => duedatechange('Tommorow')} /> Tommorow
                             </span>
-                            <span className='SpfxCheckRadio'>
-                                <input className='radio' type="radio" value="Other" name="date" checked={dueDate.selectDateName == 'This Week'} onClick={() => duedatechange('This Week')} /> This Week
+                            <span className='m-1'>
+                                <input className='me-1' type="radio" value="Other" name="date" checked={dueDate.selectDateName == 'This Week'} onClick={() => duedatechange('This Week')} /> This Week
                             </span>
-                            <span className='SpfxCheckRadio'>
-                                <input className='radio' type="radio" value="Female" name="date" checked={dueDate.selectDateName == 'Next Week'} onClick={() => duedatechange('Next Week')} /> Next Week
+                            <span className='m-1'>
+                                <input className='me-1' type="radio" value="Female" name="date" checked={dueDate.selectDateName == 'Next Week'} onClick={() => duedatechange('Next Week')} /> Next Week
                             </span>
-                            <span className='SpfxCheckRadio'>
-                                <input className='radio' type="radio" value="Female" name="date" checked={dueDate.selectDateName == 'This Month'} onClick={() => duedatechange('This Month')} /> This Month
+                            <span className='m-1'>
+                                <input className='me-1' type="radio" value="Female" name="date" checked={dueDate.selectDateName == 'This Month'} onClick={() => duedatechange('This Month')} /> This Month
                             </span>
 
                         </div>
@@ -1047,11 +1047,11 @@ const inlineEditingcolumns = (props: any) => {
                                     return (
                                         <tr key={index}>
                                             <td>
-                                                <div className="SpfxCheckRadio">
-                                                    <input className="radio"
+                                                <div className="form-check l-radio">
+                                                    <input className="form-check-input"
                                                         type="radio" checked={taskStatusInNumber == item?.value}
                                                         onClick={() => PercentCompleted(item)} />
-                                                    <label className="form-check-label">{item?.status}</label>
+                                                    <label className="form-check-label mx-2">{item?.status}</label>
                                                 </div>
                                             </td>
                                         </tr>
@@ -1083,8 +1083,8 @@ const inlineEditingcolumns = (props: any) => {
                                     return (
                                         <tr key={index}>
                                             <td>
-                                                <div className="SpfxCheckRadio">
-                                                    <input className="radio"
+                                                <div className="form-check l-radio">
+                                                    <input className="form-check-input"
                                                         type="radio" checked={taskPriority == item.Title}
                                                         onClick={() => setTaskPriority(item.Title)} />
                                                     <label className="form-check-label mx-2">{item.Title}</label>
@@ -1100,7 +1100,6 @@ const inlineEditingcolumns = (props: any) => {
                         <div className={ServicesTaskCheck ? "serviepannelgreena d-flex" : "d-flex"} key={option.Id}>
                             <input
                                 type="checkbox"
-                                className='form-check-input'
                                 id={option.Id}
                                 value={option.Id}
                                 checked={selectedCatId?.includes(option.Id)}
