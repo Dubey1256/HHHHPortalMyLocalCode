@@ -258,7 +258,7 @@ const TaskDetailsPanel = (props: any) => {
                   TaskUsers={AllUser}
                   pageName={'ProjectManagment'}
                 /> */}
-            <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={props.taskUsers} />
+            <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={contextdata?.taskUsers} />
           </span>
         ),
         id: 'TeamMembers',
@@ -361,7 +361,7 @@ const TaskDetailsPanel = (props: any) => {
         isBlocking={false}
       >
         <div>
-          <GlobalCommanTable AllListId={contextdata?.AllListId} headerOptions={headerOptions} columns={column2} data={data} callBackData={callBackData} TaskUsers={props.taskUsers} showHeader={true} />
+          <GlobalCommanTable AllListId={contextdata?.AllListId} headerOptions={headerOptions} columns={column2} data={data} callBackData={callBackData} TaskUsers={contextdata?.taskUsers} showHeader={true} />
         </div>
         {openEditPopup && <EditTaskPopup Items={selectedEditData} context={contextdata?.context} AllListId={contextdata?.AllListId} Call={callbackEditpopup} />}
       </Panel>
