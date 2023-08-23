@@ -4633,7 +4633,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     >
                                                                         <span className="svg__iconbox svg__icon--info" ></span>
                                                                     </TooltipHost>
-                                                                    <span title="Edit" className="svg__iconbox svg__icon--editBox" onClick={() => alert("We are working on this feature. It will be live soon..")}></span>
+                                                                    {/* <span title="Edit" className="svg__iconbox svg__icon--editBox" onClick={() => alert("We are working on this feature. It will be live soon..")}></span> */}
                                                                 </div>
 
                                                             </div>
@@ -5761,6 +5761,37 @@ const EditTaskPopup = (Items: any) => {
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                    </div>
+                                                    <div className="col-12 mb-2">
+                                                        {EditData?.EstimatedTimeDescriptionArray != null && EditData?.EstimatedTimeDescriptionArray?.length > 0 ?
+                                                            <div className="border p-1">
+                                                                {EditData?.EstimatedTimeDescriptionArray?.map((EstimatedTimeData: any, Index: any) => {
+                                                                    return (
+                                                                        <div>
+                                                                            <div className="align-content-center border-bottom d-flex justify-content-between p-1">
+                                                                                <img className="ProirityAssignedUserPhoto m-0" title={EstimatedTimeData.UserName} src={EstimatedTimeData.UserImage != undefined && EstimatedTimeData.UserImage?.length > 0 ? EstimatedTimeData.UserImage : ''} />
+                                                                                <span>{EstimatedTimeData.Team ? EstimatedTimeData.Team : null}</span> |
+                                                                                <span>Time : {EstimatedTimeData.EstimatedTime ? (EstimatedTimeData.EstimatedTime > 1 ? EstimatedTimeData.EstimatedTime + " hours" : EstimatedTimeData.EstimatedTime + " hour") : "0 hour"}</span>
+                                                                                <TooltipHost
+                                                                                    content={EstimatedTimeData.EstimatedTimeDescription}
+                                                                                    id={buttonId + "-" + Index}
+                                                                                    calloutProps={calloutProps}
+                                                                                    styles={hostStyles}
+                                                                                >
+                                                                                    <span className="svg__iconbox svg__icon--info" ></span>
+                                                                                </TooltipHost>
+                                                                                {/* <span title="Edit" className="svg__iconbox svg__icon--editBox" onClick={() => alert("We are working on this feature. It will be live soon..")}></span> */}
+                                                                            </div>
+
+                                                                        </div>
+                                                                    )
+                                                                })}
+                                                                <div className="text-end">
+                                                                    <span>Total Estimated Time : </span><span className="mx-1">{TotalEstimatedTime > 1 ? TotalEstimatedTime + " hours" : TotalEstimatedTime + " hour"} </span>
+                                                                </div>
+                                                            </div>
+                                                            : null
+                                                        }
                                                     </div>
                                                 </div>
                                                 <div className="col-md-4">
