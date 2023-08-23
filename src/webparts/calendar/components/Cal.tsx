@@ -1418,6 +1418,7 @@ const handlePeoplePickerChange = (items: any[]): void => {
     });
     setDt(formattedDate);
     // handleSelectSlot(slotinfo2);
+    
     console.log("clicked", event, date);
     setShowM(event);
     openModal();
@@ -1484,15 +1485,10 @@ const handlePeoplePickerChange = (items: any[]): void => {
           defaultView="month"
           startAccessor="start"
           endAccessor="end"
-          // components={{
-          //   toolbar: CustomToolbar,
-          // }}
-          // onShowMore={handleShowMore}
-          //  onNavigate={handleNavigate}
           defaultDate={moment().toDate()}
           // defaultView={Views.MONTH}
           onShowMore={handleShowMore}
-          views={{ month: true, week: true, day: true, agenda: true }}
+          views={{ month: true, week: true, day:true , agenda: true }}
           localizer={localizer}
           onSelectEvent={handleDateClick}
         />

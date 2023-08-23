@@ -812,30 +812,44 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
               result.TeamLeaderUser = [];
 
               if (ProjectData.length !== 0) {
-                ProjectData.forEach((project:any) => {
-                  if (project?.Id === result?.Project?.Id) {
-                    let ProjectTitles = result?.Project?.Title;
-                    result.ProjectTitle = ProjectTitles.split(' ')[0];
 
-                    result.ProjectId = result?.Project?.Id;
-              
-                    result.joinedData = ProjectData
-                      .filter((elem:any) => elem?.Id === result?.Project?.Id)
-                      .map((elem:any) => {
-                        const title = elem.Title || '';
-                        const body = elem.Body ? elem.Body.replace(/<[^>]+>/g, '') : '';
-                        const dueDate = elem.DueDate ? new Date(elem.DueDate).toLocaleDateString() : '';              
-                        const formattedData = [];
-                        if (title) formattedData.push(`Title: ${title}`);
-                        if (body) formattedData.push(`Description: ${body}`);
-                         if (dueDate) formattedData.push(`Due Date: ${dueDate}`);
-              
-                        return formattedData.join('\n');
-                      })
-                      .join('\n\n');
-                  }
+                ProjectData.forEach((project: any) => {
+
+                    if (project?.Id === result?.Project?.Id) {
+
+                        result.ProjectTitle = result?.Project?.Title;
+
+                        result.ProjectId = result?.Project?.Id;
+
+                        result.projectStructerId = "P" + result?.Project?.Id;
+
+                        result.joinedData = ProjectData.filter((elem: any) => elem?.Id === result?.Project?.Id)
+
+                            .map((elem: any) => {
+
+                                const projectStructerId = 'P' + elem?.Id
+
+                                const title = elem.Title || '';
+
+                                const dueDate = elem.DueDate ? new Date(elem.DueDate).toLocaleDateString() : '';
+
+                                const formattedData = [];
+
+                                if (projectStructerId) formattedData.push(`projectStructerId: ${projectStructerId}`)
+
+                                if (title) formattedData.push(`Title: ${title}`);
+
+                                if (dueDate) formattedData.push(`Due Date: ${dueDate}`);
+
+                                return formattedData.join('\n');
+
+                            }).join('\n\n');
+
+                    }
+
                 });
-              }
+
+            }
               
               result.AllTeamName =
                 result.AllTeamName === undefined ? "" : result.AllTeamName;
@@ -4266,20 +4280,34 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         header: "",
       },
       {
-        accessorFn: (row) => row?.ProjectTitle,
+
+        accessorFn: (row) => row?.projectStructerId + "." + row?.ProjectTitle,
+
         cell: ({ row }) => (
-          <>
-            {row?.original?.ProjectTitle != (null || undefined) ?
-              <span ><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${NextProp.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
-                 <ReactPopperTooltip ShareWebId={row?.original?.ProjectTitle} projectToolShow={true} row={row} AllListId={NextProp}/></a></span>
-              : ""}
-          </>
+
+            <>
+
+                {row?.original?.ProjectTitle != (null || undefined) ?
+
+                    <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${NextProp.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
+
+                        <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={NextProp} /></a></span>
+
+                    : ""}
+
+            </>
+
         ),
+
         id: 'ProjectTitle',
+
         placeholder: "Project",
+
         header: "",
-        size: 100,
-      },
+
+        size: 70,
+
+    },
       {
         accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title).join("-"),
         cell: ({ row }) => (
