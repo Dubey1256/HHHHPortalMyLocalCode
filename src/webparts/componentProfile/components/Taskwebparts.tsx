@@ -2248,8 +2248,8 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         if (CountArray == 0) {
           AllItems.push(childItem.data)
         }
-        // setData(AllItems => ([...AllItems]))
-        refreshData();
+         setData(AllItems => ([...AllItems]))
+        //refreshData();
         // rerender();
       }
 
