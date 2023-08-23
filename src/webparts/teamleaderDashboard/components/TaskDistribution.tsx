@@ -3,7 +3,7 @@ import { mycontext } from './TeamDashboard'
 import GlobalCommanTable, { IndeterminateCheckbox } from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import { ColumnDef } from '@tanstack/react-table';
 import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
-import ShowTaskTeamMembers from '../../../globalComponents/ShowTeamMember';
+import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 import { Web } from 'sp-pnp-js';
 let headerOptions: any = {
     openTab: true,
@@ -333,13 +333,15 @@ const TaskDistribution = (props: any) => {
 
       
     }
+    // ============update task team member while drop the task =============
    const  UpdateTheTaskMember=(taskDetails:any,TeamMember:any)=>{
-    let  teammember:any=[];
-    let assignMember:any=[];
+  
 
     return new Promise((resolve, reject) => {
+      var   teammember:any=[];
+      var  assignMember:any=[];
       if(taskDetails?.TeamMembersId!=undefined && taskDetails?.TeamMembersId?.length>0){
-        let teammember:any=taskDetails?.TeamMembersId
+         teammember=taskDetails?.TeamMembersId
         teammember.push(TeamMember?.AssingedToUserId)
       }
       if(taskDetails.TeamMembersId?.length==0){
@@ -350,7 +352,7 @@ const TaskDistribution = (props: any) => {
         assignMember=taskDetails?.AssignedToIds
         assignMember.push(TeamMember?.AssingedToUserId)
       }
-      if(taskDetails?.AssignedTo?.length==0){
+      if(taskDetails?.AssignedTo?.length==0||taskDetails?.AssignedToIds?.length==0){
         assignMember.push(TeamMember?.AssingedToUserId)
       }
     
@@ -359,8 +361,10 @@ const TaskDistribution = (props: any) => {
         .getById(taskDetails?.listId)
         .items
         .getById(taskDetails.Id)
-        .update( {Team_x0020_MembersId:{ "results": teammember },
-        AssignedToId:{"results": assignMember}})
+        .update({
+        Team_x0020_MembersId: { "results": (teammember != undefined && teammember.length > 0) ? teammember : [] },
+        AssignedToId:{"results": assignMember},
+     })
         .then((items:any)=>{
           console.log(items)
           resolve(items);

@@ -79,8 +79,10 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
 
 
     const callBackData = React.useCallback((elem: any, ShowingData: any, selectedArray: any) => {
-        if (selectionType == "Multi") {
-            MultiSelectedData = elem;
+        MultiSelectedData=[];
+        if (selectionType == "Multi" && elem?.length>0) {
+            elem.map((item:any)=> MultiSelectedData?.push(item?.original))
+            // MultiSelectedData = elem;
         } else {
             if (elem != undefined) {
                 setCheckBoxData([elem])
@@ -111,16 +113,10 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
 
     const CustomFooter = () => {
         return (
-            <div className={ComponentType == "Service" ? "me-3 p-2 serviepannelgreena text-end" : "me-3 p-2 text-end"}>
-                <button type="button" className="btn btn-primary">
-                    <a target="_blank" data-interception="off"
-                        href={ComponentType == "Service" ? `${Dynamic.siteUrl}/SitePages/Service-Portfolio.aspx` : `${Dynamic.siteUrl}/SitePages/Component-Portfolio.aspx`}>
-                        <span className="text-light"> Create New One</span>
-                    </a>
-                </button>
+            <footer className={ComponentType == "Service" ? "me-3 p-2 serviepannelgreena text-end" : "me-3 p-2 text-end"}>  
                 <button type="button" className="btn btn-primary mx-1" onClick={setModalIsOpenToOK}>OK</button>
                 <button type="button" className="btn btn-default" onClick={setModalIsOpenToFalse}>Cancel</button>
-            </div>
+            </footer>
         )
     }
     const columns = React.useMemo<ColumnDef<any, unknown>[]>(
