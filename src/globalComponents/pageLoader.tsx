@@ -1,5 +1,4 @@
 import React from 'react'
-import '../webparts/projectManagement/components/TagTaskToProjectPopup.scss'
 const pageLoader = () => {
   return (
    <body className='bodyClass'>
