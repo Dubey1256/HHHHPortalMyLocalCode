@@ -45,13 +45,13 @@ import {
   getFacetedUniqueValues,
   FilterFn
 } from "@tanstack/react-table";
-import HighlightableCell from '../../componentPortfolio/components/highlight'
+// import HighlightableCell from '../../componentPortfolio/components/highlight'
 import Loader from "react-loader";
 import ShowTeamMembers from "../../../globalComponents/ShowTeamMember";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 // import HighlightableCell from "../../../globalComponents/highlight";
-// import HighlightableCell from "../../componentPortfolio/components/highlight";
+import HighlightableCell from "../../componentPortfolio/components/highlight";
 
 
 ///TanstackTable filter And CheckBox 

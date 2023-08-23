@@ -847,10 +847,10 @@ const CreateWS = (props: any) => {
         if (date != undefined) {
             NewDate = new Date(date).toDateString();
         }
-        if (AllItems?.Component[0] != undefined && AllItems?.Component.length > 0) {
+        if (AllItems?.Component != undefined && AllItems?.Component.length > 0) {
             Component.push(AllItems.Component[0].Id)
         }
-        if (AllItems?.Services[0] != undefined && AllItems?.Services?.length > 0) {
+        if (AllItems?.Services != undefined && AllItems?.Services?.length > 0) {
             RelevantPortfolioIds.push(AllItems.Services[0].Id)
         }
         if (AllItems?.Portfolio_x0020_Type == undefined) {
@@ -1623,7 +1623,7 @@ const CreateWS = (props: any) => {
                 res.data['Portfolio'] = { 'Id': portFolio };
                 res.data['TaskType'] = { 'Id': res.data.TaskTypeId };
                 // res.DueDate = NewDate != '' && NewDate != undefined ? NewDate : undefined,
-                res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : '',
+                res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : null,
                     res.data['siteType'] = AllItems.siteType
 
                 res.data.Created = new Date();
