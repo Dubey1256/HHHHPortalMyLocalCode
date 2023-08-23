@@ -396,7 +396,7 @@ const SmartFilterSearchGlobal = (item: any) => {
                                     <span style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter()}>
                                         {IsSmartfilter === true ?
                                             <SlArrowDown style={{ color: `${portfolioColor}` }} /> : <SlArrowRight style={{ color: `${portfolioColor}` }} />}
-                                        <span>SmartSearch – Filters</span>
+                                        <span className='mx-1'>SmartSearch – Filters</span>
                                     </span>
                                     <span className="ml20" style={{ color: `${portfolioColor}` }} >{filterInfo}</span>
                                     <span className="pull-right bg-color">

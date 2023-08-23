@@ -2,9 +2,9 @@ import * as React from "react";
 import * as $ from "jquery";
 import * as Moment from "moment";
 import { Panel, PanelType } from "office-ui-fabric-react";
-import { FaCompressArrowsAlt,} from "react-icons/fa";
-import { SlArrowRight,SlArrowDown } from "react-icons/sl";
-import pnp, { Web} from "sp-pnp-js";
+import { FaCompressArrowsAlt, } from "react-icons/fa";
+import { SlArrowRight, SlArrowDown } from "react-icons/sl";
+import pnp, { Web } from "sp-pnp-js";
 import { map } from "jquery";
 import EditInstituton from "../../EditPopupFiles/EditComponent";
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
@@ -16,7 +16,7 @@ import CreateActivity from "../../servicePortfolio/components/CreateActivity";
 import CreateWS from "../../servicePortfolio/components/CreateWS";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Tooltip from "../../../globalComponents/Tooltip";
-import {ColumnDef} from "@tanstack/react-table";
+import { ColumnDef } from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 import Loader from "react-loader";
@@ -34,15 +34,16 @@ let isUpdated: any = "";
 let componentData: any = [];
 let componentDataCopyBackup: any = []
 let filterCount: any = 0;
-let childRefdata:any;
+let childRefdata: any;
 let portfolioColor: any = '';
+let ProjectData: any = [];
 let copyDtaArray: any = [];
 let renderData: any = [];
 function TeamPortlioTable(SelectedProp: any) {
-    const childRef =React.useRef<any>();
-    if(childRef!=null){
-        childRefdata={...childRef};
-        
+    const childRef = React.useRef<any>();
+    if (childRef != null) {
+        childRefdata = { ...childRef };
+
     }
     try {
         if (SelectedProp?.SelectedProp != undefined) {
@@ -239,17 +240,17 @@ function TeamPortlioTable(SelectedProp: any) {
         if (siteConfig != undefined && siteConfig.length > 0) {
             map(siteConfig, async (config: any) => {
                 let web = new Web(ContextValue.siteUrl);
-                let AllTasksMatches:any = [];
+                let AllTasksMatches: any = [];
                 AllTasksMatches = await web.lists
                     .getById(config.listId)
-                    .items.select("ParentTask/Title", "ParentTask/Id","ItemRank", "TaskLevel", "OffshoreComments","TeamMembers/Id", "ClientCategory/Id", "ClientCategory/Title",
-                        "TaskID", "ResponsibleTeam/Id", "ResponsibleTeam/Title", "ParentTask/TaskID", "TaskType/Level", "PriorityRank", "TeamMembers/Title","FeedBack", "Title", "Id", "ID", "DueDate", "Comments", "Categories", "Status", "Body",
-                        "PercentComplete", "ClientCategory", "Priority", "TaskType/Id", "TaskType/Title", "Portfolio/Id","Portfolio/ItemType","Portfolio/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange","PortfolioType/Title",
-                        "TaskCategories/Id", "TaskCategories/Title",  "TeamMembers/Name",
+                    .items.select("ParentTask/Title", "ParentTask/Id", "ItemRank", "TaskLevel", "OffshoreComments", "TeamMembers/Id", "ClientCategory/Id", "ClientCategory/Title",
+                        "TaskID", "ResponsibleTeam/Id", "ResponsibleTeam/Title", "ParentTask/TaskID", "TaskType/Level", "PriorityRank", "TeamMembers/Title", "FeedBack", "Title", "Id", "ID", "DueDate", "Comments", "Categories", "Status", "Body",
+                        "PercentComplete", "ClientCategory", "Priority", "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title",
+                        "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title",
                     )
                     .expand(
                         "ParentTask", "PortfolioType", "Portfolio", "TaskType", "ClientCategory", "TeamMembers", "ResponsibleTeam",
-                        "TaskCategories"
+                        "TaskCategories", "Project"
                     )
                     .filter("Status ne 'Completed'")
                     .orderBy("orderby", false)
@@ -290,8 +291,7 @@ function TeamPortlioTable(SelectedProp: any) {
                         map(AllTasks, (result: any) => {
                             result.Id = result.Id != undefined ? result.Id : result.ID;
                             result.TeamLeaderUser = [];
-                            result.AllTeamName =
-                                result.AllTeamName === undefined ? "" : result.AllTeamName;
+                            result.AllTeamName = result.AllTeamName === undefined ? "" : result.AllTeamName;
                             result.chekbox = false;
                             result.descriptionsSearch = '';
                             result.commentsSearch = '';
@@ -372,6 +372,17 @@ function TeamPortlioTable(SelectedProp: any) {
                                     type[type.Title + 'number'] += 1;
                                 }
                             })
+
+                            if (result.Project) {
+                                result.ProjectTitle = result?.Project?.Title;
+                                result.ProjectId = result?.Project?.Id;
+                                result.projectStructerId = result?.Project?.PortfolioStructureID
+                                const title = result?.Project?.Title || '';
+                                const dueDate = result?.DueDate;
+                                result.joinedData = [];
+                                if (title) result.joinedData.push(`Title: ${title}`);
+                                if (dueDate) result.joinedData.push(`Due Date: ${dueDate}`);
+                            }
                             result["Item_x0020_Type"] = "Task";
                             TasksItem.push(result);
                             AllTasksData.push(result)
@@ -390,9 +401,7 @@ function TeamPortlioTable(SelectedProp: any) {
             portfolioTypeData?.map((elem: any) => {
                 if (isUpdated === "") {
                     filt = "";
-                } else if (isUpdated === elem.Title || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) {
-                    filt = "(Portfolio_x0020_Type eq '" + elem.Title + "')"
-                }
+                } else if (isUpdated === elem.Title || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) { filt = "(Portfolio_x0020_Type eq '" + elem.Title + "')" }
             })
         }
         let web = new Web(ContextValue.siteUrl);
@@ -402,8 +411,8 @@ function TeamPortlioTable(SelectedProp: any) {
             .items
             .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title",
                 "DueDate", "Body", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
-                "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title","PercentComplete",
-                "ResponsibleTeam/Id", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange","PortfolioType/Title","AssignedTo/Id",
+                "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete",
+                "ResponsibleTeam/Id", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id",
             )
             .expand(
                 "Parent", "PortfolioType", "AssignedTo", "ClientCategory", "TeamMembers", "ResponsibleTeam"
@@ -413,6 +422,7 @@ function TeamPortlioTable(SelectedProp: any) {
             .get();
 
         console.log(componentDetails);
+        ProjectData = componentDetails.filter((projectItem: any) => projectItem.Item_x0020_Type === "Project")
         componentDetails.forEach((result: any) => {
             result["siteType"] = "Master Tasks";
             result.AllTeamName = "";
@@ -614,7 +624,7 @@ function TeamPortlioTable(SelectedProp: any) {
             })
             let subComFeat = AllProtFolioData?.filter((comp: any) => comp?.Parent?.Id === masterTask?.Id)
             masterTask.subRows = masterTask?.subRows?.concat(subComFeat);
-            subComFeat?.forEach((subComp:any) => {
+            subComFeat?.forEach((subComp: any) => {
                 subComp.subRows = [];
                 taskTypeData?.map((levelType: any) => {
                     if (levelType.Level === 1)
@@ -828,7 +838,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     <>
                         <span className="d-flex">
                             {row?.original?.Title != "Others" ? (
-                                <IndeterminateCheckbox {...{ checked: row.getIsSelected(), indeterminate: row.getIsSomeSelected(),onChange: row.getToggleSelectedHandler(), }}/>
+                                <IndeterminateCheckbox {...{ checked: row.getIsSelected(), indeterminate: row.getIsSomeSelected(), onChange: row.getToggleSelectedHandler(), }} />
                             ) : (
                                 ""
                             )}{" "}
@@ -995,7 +1005,22 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "Title",
                 resetColumnFilters: false,
                 header: "",
-                size: 550,
+                size: 480,
+            },
+            {
+                accessorFn: (row) => row?.projectStructerId + "." + row?.ProjectTitle,
+                cell: ({ row }) => (
+                    <>
+                        {row?.original?.ProjectTitle != (null || undefined) ?
+                            <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
+                                <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextValue} /></a></span>
+                            : ""}
+                    </>
+                ),
+                id: 'ProjectTitle',
+                placeholder: "Project",
+                header: "",
+                size: 70,
             },
             {
                 accessorFn: (row) => row?.ClientCategorySearch,
@@ -1092,38 +1117,28 @@ function TeamPortlioTable(SelectedProp: any) {
             },
             {
                 header: ({ table }: any) => (
-                <>
-                  {
-                    topCompoIcon ?
-                      <span onClick={()=>trueTopIcon(true)}>
-                        <img
-                          className="icon-sites-img"
-                          src={IsUpdated == "Service" ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png'}
-        
-                        />
-                      </span>
-                      : ''
-                  }
-        
-                </>
-              ),
+                    <>{
+                        topCompoIcon ?
+                            <span style={{ backgroundColor: `${portfolioColor}` }} className="Dyicons mb-1 mx-1 p-1" onClick={() => trueTopIcon(true)}>
+                                <span  className="svg__iconbox svg__icon--re-structure"></span>
+                            </span>
+                            : ''
+                    }
+                    </>
+                ),
                 cell: ({ row, getValue }) => (
                     <>
-                        { row?.original?.isRestructureActive && (
-                                <a
-                                    href="#"
-                                    data-bs-toggle="tooltip"
-                                    data-bs-placement="auto"
-                                    title="Edit"
-                                >
-                                    <img
-                                        className="workmember"
-                                        src={row?.original?.Restructuring}
-                                        onClick={() => callChildFunction(row?.original)}
-                                        // onClick={()=>callChildFunction(row?.original)}
-                                    />
-                                </a>
-                            )}
+                        {row?.original?.isRestructureActive && (
+                            <span className="Dyicons p-1" style={{ backgroundColor: `${portfolioColor}` }} onClick={() => callChildFunction(row?.original)}>
+                                <span className="svg__iconbox svg__icon--re-structure"> </span>
+                                {/* <img
+                                    className="workmember"
+                                    src={row?.original?.Restructuring}
+                                    
+                                // onClick={()=>callChildFunction(row?.original)}
+                                /> */}
+                            </span>
+                        )}
                         {getValue()}
                     </>
                 ),
@@ -1203,7 +1218,7 @@ function TeamPortlioTable(SelectedProp: any) {
     //-------------------------------------------------- restructuring function start---------------------------------------------------------------
 
     const callBackData = React.useCallback((checkData: any) => {
-        let array : any = [];
+        let array: any = [];
         if (checkData != undefined) {
             setCheckedList(checkData);
             array.push(checkData);
@@ -1215,30 +1230,29 @@ function TeamPortlioTable(SelectedProp: any) {
     }, []);
 
 
-    const callBackData1  = React.useCallback((getData: any,topCompoIcon:any) => {
-     
-        setData((getData)=> [...getData]);
+    const callBackData1 = React.useCallback((getData: any, topCompoIcon: any) => {
+
+        setData((getData) => [...getData]);
         setTopCompoIcon(topCompoIcon);
-    },[]);
+    }, []);
 
 
     //  Function to call the child component's function
-  const callChildFunction = (items: any) => {
-    if (childRef.current) {
-      childRef.current.callChildFunction(items);
-    }
-  };
+    const callChildFunction = (items: any) => {
+        if (childRef.current) {
+            childRef.current.callChildFunction(items);
+        }
+    };
 
-  const trueTopIcon = (items: any) => {
-    if (childRef.current) {
-      childRef.current.trueTopIcon(items);
-    }
-  };
+    const trueTopIcon = (items: any) => {
+        if (childRef.current) {
+            childRef.current.trueTopIcon(items);
+        }
+    };
 
 
 
-  //-------------------------------------------------- restructuring function end---------------------------------------------------------------
-
+    //-------------------------------------------------- restructuring function end---------------------------------------------------------------
 
     //// popup Edit Task And Component///
     const EditComponentPopup = (item: any) => {
@@ -1281,7 +1295,7 @@ function TeamPortlioTable(SelectedProp: any) {
             </div>
         );
     };
-  
+
     let isOpenPopup = false;
     const AddStructureCallBackCall = React.useCallback((item) => {
         //  setRowSelection({});
@@ -1434,67 +1448,67 @@ function TeamPortlioTable(SelectedProp: any) {
         renderData = [];
         renderData = renderData.concat(copyDtaArray)
         refreshData();
-       
-    }
-   // new change////
-   const CreateActivityPopup = (type: any) => {
-    if (checkedList?.TaskType === undefined) {
-        checkedList.NoteCall = type
-        setIsOpenActivity(true)
-       
-    }
-    if (checkedList?.TaskType?.Id == 1) {
-        checkedList.NoteCall = type
-        setIsOpenWorkstream(true);
-    }
-    if (checkedList?.TaskType?.Id == 3) {
-        checkedList.NoteCall = type
-        setIsOpenActivity(true);
 
     }
-    if (checkedList?.TaskType?.Id == 2) {
+    // new change////
+    const CreateActivityPopup = (type: any) => {
+        if (checkedList?.TaskType === undefined) {
+            checkedList.NoteCall = type
+            setIsOpenActivity(true)
 
-        alert("You can not create ny item inside Task")
-    }
-}
-const closeActivity = () => {
-    setActivityPopup(false)
-}
-const addActivity = (type: any) => {
-    if (checkedList?.TaskType?.Id == undefined || checkedList?.TaskTypeId == undefined) {
-    checkedList.NoteCall = type
-    setActivityPopup(true);
-    }
-    if (checkedList?.TaskTypeId === 3 || checkedList?.TaskType?.Id === 3) {
-        checkedList.NoteCall = 'Task'
-        setIsOpenActivity(true);
         }
-    if(checkedList?.TaskType?.Id == 1 || checkedList?.TaskTypeId == 1){
-        checkedList.NoteCall = 'Workstream'
-        setIsOpenWorkstream(true);
-    }
-    if (checkedList?.TaskType?.Id == 2) {
+        if (checkedList?.TaskType?.Id == 1) {
+            checkedList.NoteCall = type
+            setIsOpenWorkstream(true);
+        }
+        if (checkedList?.TaskType?.Id == 3) {
+            checkedList.NoteCall = type
+            setIsOpenActivity(true);
 
-        alert("You can not create ny item inside Task")
+        }
+        if (checkedList?.TaskType?.Id == 2) {
+
+            alert("You can not create ny item inside Task")
+        }
     }
-   
-}
+    const closeActivity = () => {
+        setActivityPopup(false)
+    }
+    const addActivity = (type: any) => {
+        if (checkedList?.TaskType?.Id == undefined || checkedList?.TaskTypeId == undefined) {
+            checkedList.NoteCall = type
+            setActivityPopup(true);
+        }
+        if (checkedList?.TaskTypeId === 3 || checkedList?.TaskType?.Id === 3) {
+            checkedList.NoteCall = 'Task'
+            setIsOpenActivity(true);
+        }
+        if (checkedList?.TaskType?.Id == 1 || checkedList?.TaskTypeId == 1) {
+            checkedList.NoteCall = 'Workstream'
+            setIsOpenWorkstream(true);
+        }
+        if (checkedList?.TaskType?.Id == 2) {
+
+            alert("You can not create ny item inside Task")
+        }
+
+    }
     const onRenderCustomHeaderMain = () => {
         return (
             <div className="d-flex full-width pb-1">
-              <div
-                style={{
-                  marginRight: "auto",
-                  fontSize: "20px",
-                  fontWeight: "600",
-                  marginLeft: "20px",
-                }}
-              >
-                <span>{`Create Item`}</span>
-              </div>
-              <Tooltip ComponentId={1746} />
+                <div
+                    style={{
+                        marginRight: "auto",
+                        fontSize: "20px",
+                        fontWeight: "600",
+                        marginLeft: "20px",
+                    }}
+                >
+                    <span>{`Create Item`}</span>
+                </div>
+                <Tooltip ComponentId={1746} />
             </div>
-          );
+        );
     };
     //-------------------------------------------------------------End---------------------------------------------------------------------------------
     return (
@@ -1547,20 +1561,7 @@ const addActivity = (type: any) => {
                                 <div className="col-sm-12 p-0 smart">
                                     <div className="">
                                         <div className="wrapper">
-                                            {/* <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1}
-                                                color={`${portfolioColor ? portfolioColor : "#000069"}`}
-                                                speed={2}
-                                                trail={60}
-                                                shadow={false}
-                                                hwaccel={false}
-                                                className="spinner"
-                                                zIndex={2e9}
-                                                top="28%"
-                                                left="50%"
-                                                scale={1.0}
-                                                loadedClassName="loadedContent"
-                                            /> */}
-                                            <GlobalCommanTable AllListId={ContextValue} columns={columns} data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity} />
+                                            <GlobalCommanTable ref={childRef} callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1} data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity} />
                                         </div>
                                     </div>
                                 </div>
@@ -1749,5 +1750,5 @@ const addActivity = (type: any) => {
 
     );
 }
-export default TeamPortlioTable;    
-   
+export default TeamPortlioTable;
+
