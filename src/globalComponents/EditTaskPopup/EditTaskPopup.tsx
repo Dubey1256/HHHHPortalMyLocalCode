@@ -4621,7 +4621,7 @@ const EditTaskPopup = (Items: any) => {
                                                     {EditData?.EstimatedTimeDescriptionArray?.map((EstimatedTimeData: any, Index: any) => {
                                                         return (
                                                             <div>
-                                                                <div className="align-content-center border-bottom d-flex justify-content-between p-1 mb-1">
+                                                                <div className="align-content-center border-bottom d-flex justify-content-between p-1">
                                                                     <img className="ProirityAssignedUserPhoto m-0" title={EstimatedTimeData.UserName} src={EstimatedTimeData.UserImage != undefined && EstimatedTimeData.UserImage?.length > 0 ? EstimatedTimeData.UserImage : ''} />
                                                                     <span>{EstimatedTimeData.Team ? EstimatedTimeData.Team : null}</span> |
                                                                     <span>Time : {EstimatedTimeData.EstimatedTime ? (EstimatedTimeData.EstimatedTime > 1 ? EstimatedTimeData.EstimatedTime + " hours" : EstimatedTimeData.EstimatedTime + " hour") : "0 hour"}</span>

@@ -303,9 +303,9 @@ const TimeReport = (props:any) => {
         myData = await web.lists
             .getById('72ABA576-5272-4E30-B332-25D7E594AAA4')
             .items
-            .select("RecurrenceData,Duration,Author/Title,Editor/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,Name")
+            .select("RecurrenceData,Duration,Author/Title,Editor/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,Employee/Id")
             .top(499)
-            .expand("Author,Editor")
+            .expand("Author,Editor,Employee")
             .getAll()
             console.log(myData);
            
@@ -338,7 +338,7 @@ const TimeReport = (props:any) => {
             leaveUser?.forEach((val:any)=>{
                 var users:any={}
                 AllUsers?.forEach((item:any)=>{
-                    if(val.Name == item.Title){
+                    if(val?.Employee?.Id == item?.AssingedToUserId){
                         users['userName'] = item.Title
                         users['Components'] = ''
                         users['SubComponents'] = ''
