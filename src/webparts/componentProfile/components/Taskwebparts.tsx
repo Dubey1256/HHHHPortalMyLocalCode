@@ -272,59 +272,59 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
   // Load TimeEntry Data
  
-  const GetTimeEntryData = async () => {
-    let web = new Web(NextProp?.siteUrl);
-    let Timesheet = [];
-    Timesheet = await web.lists
-      .getByTitle('TaskTimeSheetListNew')
-      .items
-      .select('Id,Title,TaskDate,TaskTime,AdditionalTimeEntry,Modified,Description,TaskOffshoreTasks/Id,TaskOffshoreTasks/Title,Author/Id,AuthorId,Author/Title,TaskKathaBeck/Id,TaskKathaBeck/Title,TaskDE/Title,TaskDE/Id,TaskEI/Title,TaskEI/Id,TaskEPS/Title,TaskEPS/Id,TaskEducation/Title,TaskEducation/Id,TaskHHHH/Title,TaskHHHH/Id,TaskQA/Title,TaskQA/Id,TaskGender/Title,TaskGender/Id,TaskShareweb/Title,TaskShareweb/Id,TaskGruene/Title,TaskGruene/Id')
-      .expand('Author,TaskKathaBeck,TaskDE,TaskEI,TaskEPS,TaskEducation,TaskGender,TaskQA,TaskDE,TaskShareweb,TaskHHHH,TaskGruene,TaskOffshoreTasks')
-      .getAll();
-    let Timesheet2 = await web.lists
-      .getByTitle('TasksTimesheet2')
-      .items
-      .select("Id,Title,TaskDate,AdditionalTimeEntry,Created,Modified,TaskTime,Modified,SortOrder,AdditionalTimeEntry,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title,TaskALAKDigital/Id,TaskALAKDigital/Title,TaskMigration/Id,TaskMigration/Title")
-      .expand('Category,TimesheetTitle,TaskMigration,TaskALAKDigital')
-      .top(4999)
-      .getAll();
-      TimesheetData= Timesheet.concat(Timesheet2);
+  // const GetTimeEntryData = async () => {
+  //   let web = new Web(NextProp?.siteUrl);
+  //   let Timesheet = [];
+  //   Timesheet = await web.lists
+  //     .getByTitle('TaskTimeSheetListNew')
+  //     .items
+  //     .select('Id,Title,TaskDate,TaskTime,AdditionalTimeEntry,Modified,Description,TaskOffshoreTasks/Id,TaskOffshoreTasks/Title,Author/Id,AuthorId,Author/Title,TaskKathaBeck/Id,TaskKathaBeck/Title,TaskDE/Title,TaskDE/Id,TaskEI/Title,TaskEI/Id,TaskEPS/Title,TaskEPS/Id,TaskEducation/Title,TaskEducation/Id,TaskHHHH/Title,TaskHHHH/Id,TaskQA/Title,TaskQA/Id,TaskGender/Title,TaskGender/Id,TaskShareweb/Title,TaskShareweb/Id,TaskGruene/Title,TaskGruene/Id')
+  //     .expand('Author,TaskKathaBeck,TaskDE,TaskEI,TaskEPS,TaskEducation,TaskGender,TaskQA,TaskDE,TaskShareweb,TaskHHHH,TaskGruene,TaskOffshoreTasks')
+  //     .getAll();
+  //   let Timesheet2 = await web.lists
+  //     .getByTitle('TasksTimesheet2')
+  //     .items
+  //     .select("Id,Title,TaskDate,AdditionalTimeEntry,Created,Modified,TaskTime,Modified,SortOrder,AdditionalTimeEntry,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title,TaskALAKDigital/Id,TaskALAKDigital/Title,TaskMigration/Id,TaskMigration/Title")
+  //     .expand('Category,TimesheetTitle,TaskMigration,TaskALAKDigital')
+  //     .top(4999)
+  //     .getAll();
+  //     TimesheetData= Timesheet.concat(Timesheet2);
 
-  }
+  // }
 // Calculate smarttime 
-function calculateTotalTimeForTask(Tasks:any) {
-  // Filter the data to find entries with matching TaskEI.Id
-  if(TimesheetData?.length != 0){
+// function calculateTotalTimeForTask(Tasks:any) {
+//   // Filter the data to find entries with matching TaskEI.Id
+//   if(TimesheetData?.length != 0){
     
-    let tasktype = `Task${Tasks?.siteType}`;
+//     let tasktype = `Task${Tasks?.siteType}`;
     
-    let filtertaskdata = TimesheetData.filter((entry:any) => entry[tasktype]?.Id === Tasks?.Id);
-      // Calculate total time for matched entries
-  let totalTime = 0;
-  if(filtertaskdata?.length != 0){
+//     let filtertaskdata = TimesheetData.filter((entry:any) => entry[tasktype]?.Id === Tasks?.Id);
+//       // Calculate total time for matched entries
+//   let totalTime = 0;
+//   if(filtertaskdata?.length != 0){
     
-    filtertaskdata?.forEach((entry:any) => {
-    if(entry?.AdditionalTimeEntry != null){
+//     filtertaskdata?.forEach((entry:any) => {
+//     if(entry?.AdditionalTimeEntry != null){
       
-    const additionalTimeEntries = JSON.parse(entry.AdditionalTimeEntry);
-    const entryTotalTime = additionalTimeEntries.reduce(
-      (total:any, additionalEntry:any) => total + parseFloat(additionalEntry.TaskTime),
-      0
-    );
-    if(entryTotalTime > 0){
-      totalTime += entryTotalTime;
- }
+//     const additionalTimeEntries = JSON.parse(entry.AdditionalTimeEntry);
+//     const entryTotalTime = additionalTimeEntries.reduce(
+//       (total:any, additionalEntry:any) => total + parseFloat(additionalEntry.TaskTime),
+//       0
+//     );
+//     if(entryTotalTime > 0){
+//       totalTime += entryTotalTime;
+//  }
     
-  }
-  });
+//   }
+//   });
   
-}
+// }
 
 
-  return totalTime;
-}
+//   return totalTime;
+// }
 
-}
+// }
 
 
 
@@ -1277,7 +1277,7 @@ function calculateTotalTimeForTask(Tasks:any) {
       // do whatever
     }
 
-    await GetTimeEntryData();
+    // await GetTimeEntryData();
     await getProjectData();
     LoadAllSiteTasks();
   };
@@ -1641,10 +1641,10 @@ function calculateTotalTimeForTask(Tasks:any) {
           let Tasks = subcomp["subRows"].filter(
             (sub: { Item_x0020_Type: string }) => sub.Item_x0020_Type === "Task"
           );
-          Tasks.map((item: any) => {
-            item.smartTime = calculateTotalTimeForTask(item);
+          // Tasks.map((item: any) => {
+          //   item.smartTime = calculateTotalTimeForTask(item);
               
-          })
+          // })
           let Features = subcomp["subRows"].filter(
             (sub: { Item_x0020_Type: string }) =>
               sub.Item_x0020_Type === "Feature"
@@ -1676,10 +1676,10 @@ function calculateTotalTimeForTask(Tasks:any) {
                 (sub: { Item_x0020_Type: string }) =>
                   sub.Item_x0020_Type === "Task"
               );
-              Tasks.map((item: any) => {
-                item.smartTime = calculateTotalTimeForTask(item);
+              // Tasks.map((item: any) => {
+              //   item.smartTime = calculateTotalTimeForTask(item);
             
-              })
+              // })
               featurecomp["subRows"] = [];
               DynamicSort(Tasks, "Shareweb_x0020_ID");
               featurecomp["subRows"] = Tasks;
@@ -1759,9 +1759,9 @@ function calculateTotalTimeForTask(Tasks:any) {
         var SubTasks = comp.subRows.filter(
           (sub: { Item_x0020_Type: string }) => sub.Item_x0020_Type === "Task"
         );
-        SubTasks.map((item: any) => {
-          item.smartTime = calculateTotalTimeForTask(item);
-        })
+        // SubTasks.map((item: any) => {
+        //   item.smartTime = calculateTotalTimeForTask(item);
+        // })
         var SubFeatures = comp.subRows.filter(
           (sub: { Item_x0020_Type: string }) =>
             sub.Item_x0020_Type === "Feature"
@@ -1784,10 +1784,10 @@ function calculateTotalTimeForTask(Tasks:any) {
                 (sub: any) => sub.Item_x0020_Type === "Task"
               );
 
-              SubchildTasks.map((item: any) => {
-                item.smartTime = calculateTotalTimeForTask(item);
+              // SubchildTasks.map((item: any) => {
+              //   item.smartTime = calculateTotalTimeForTask(item);
             
-              })
+              // })
               Subchildcomponnet = Subchildcomponnet.concat(SubchildTasks);
               subcomp["subRows"] = Subchildcomponnet;
               // var SubchildTasks = subcomp.subRows.filter((sub: any) => (sub.ItemType === 'SubComponnet'));
@@ -1822,22 +1822,22 @@ function calculateTotalTimeForTask(Tasks:any) {
     temp.subRows = ComponentsData[0].subRows.filter(
       (sub: any) => sub.Item_x0020_Type === "Task" && sub.subRows.length == 0
     );
-    temp?.subRows?.map((item: any) => {
-      item.smartTime = calculateTotalTimeForTask(item);
+    // temp?.subRows?.map((item: any) => {
+    //   item.smartTime = calculateTotalTimeForTask(item);
             
-    })
+    // })
     AllItems = ComponentsData[0].subRows.filter(
       (sub: any) => sub.Item_x0020_Type != "Task" || sub.subRows.length > 0
     );
-    AllItems.map((item: any) => {
-      item.smartTime = calculateTotalTimeForTask(item);
-    })
+    // AllItems.map((item: any) => {
+    //   item.smartTime = calculateTotalTimeForTask(item);
+    // })
     var activities = temp.subRows.filter(
       (sub: any) => sub?.SharewebTaskType?.Title === "Activities"
     );
-    activities.map((item: any) => {
-      item.smartTime = calculateTotalTimeForTask(item);
-    })
+    // activities.map((item: any) => {
+    //   item.smartTime = calculateTotalTimeForTask(item);
+    // })
     if (activities != undefined && activities.length > 0) {
       AllItems = AllItems.concat(activities);
     }
@@ -4370,24 +4370,24 @@ function calculateTotalTimeForTask(Tasks:any) {
         header: "",
         size: 127,
       },
-      {
-        accessorFn: (row) => String(row?.smartTime),
-        cell: ({ row }) => (
-          <>
-            {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && row?.original?.smartTime != undefined && (
+      // {
+      //   accessorFn: (row) => String(row?.smartTime),
+      //   cell: ({ row }) => (
+      //     <>
+      //       {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && row?.original?.smartTime != undefined && (
 
-              <>
-                <span>{String(row?.original?.smartTime)}</span>
-              </>
+      //         <>
+      //           <span>{String(row?.original?.smartTime)}</span>
+      //         </>
 
-            )}
-          </>
-        ),
-        id: "smartTime",
-        placeholder: "SmartTime",
-        header: "",
-        size: 56,
-      },
+      //       )}
+      //     </>
+      //   ),
+      //   id: "smartTime",
+      //   placeholder: "SmartTime",
+      //   header: "",
+      //   size: 56,
+      // },
       {
         cell: ({ row, getValue }) => (
           <>

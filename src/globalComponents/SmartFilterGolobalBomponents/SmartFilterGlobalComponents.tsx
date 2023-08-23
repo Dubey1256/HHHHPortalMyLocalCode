@@ -3,6 +3,7 @@ import { Web } from "sp-pnp-js";
 import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 import '../SmartFilterGolobalBomponents/Style.css'
+import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
 let filterGroupsDataBackup: any = [];
 let filterGroupData1: any = [];
 const SmartFilterSearchGlobal = (item: any) => {
@@ -10,7 +11,7 @@ const SmartFilterSearchGlobal = (item: any) => {
     let allTastsData: any = item.AllSiteTasksData;
     let smartFiltercallBackData = item.smartFiltercallBackData;
     let ContextValue = item?.ContextValue;
-    let portfolioColor:any=item?.portfolioColor
+    let portfolioColor: any = item?.portfolioColor
 
     const [TaskUsersData, setTaskUsersData] = React.useState([])
     const [smartmetaDataDetails, setSmartmetaDataDetails] = React.useState([])
@@ -130,7 +131,7 @@ const SmartFilterSearchGlobal = (item: any) => {
         smartmetaDataDetails.forEach((element: any) => {
             element.label = element.Title;
             element.value = element.Id;
-            if (element.TaxType == 'Task Types' ) {
+            if (element.TaxType == 'Task Types') {
                 filterGroups[0].values.push(element);
                 filterGroups[0].checked.push(element.Id)
             }
@@ -393,19 +394,13 @@ const SmartFilterSearchGlobal = (item: any) => {
                             <span>
                                 <label className="toggler full_width mb-10 active">
                                     <span style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter()}>
-                                        <img title="Filter" className="hreflink wid22" style={{ color: `${portfolioColor}` }}
-                                            src={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Filter-12-WF.png"} />
-                                        SmartSearch – Filters
+                                        {IsSmartfilter === true ?
+                                            <SlArrowDown style={{ color: `${portfolioColor}` }} /> : <SlArrowRight style={{ color: `${portfolioColor}` }} />}
+                                        <span>SmartSearch – Filters</span>
                                     </span>
                                     <span className="ml20" style={{ color: `${portfolioColor}` }} >{filterInfo}</span>
                                     <span className="pull-right bg-color">
-                                        <span>  <img className="icon-sites-img  wid22 ml5" style={{ color: `${portfolioColor}` }}
-                                            title="Share SmartFilters selection" onClick={() => showSmartFilter()}
-                                            src={IsSmartfilter === true ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/newsub_icon.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Add-New.png"} />
-                                            <img className="icon-sites-img  wid22 ml5" style={{ color: `${portfolioColor}` }}
-                                                title="Share SmartFilters selection"
-                                                src={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Icon_Share_Green.png"} />
-                                        </span>
+                                        <span className='svg__iconbox svg__icon--share ' style={{ backgroundColor: `${portfolioColor}` }}> </span>
                                     </span>
                                 </label>
                                 {IsSmartfilter === true ? <div className="togglecontent" style={{ display: "block" }}>
@@ -441,12 +436,12 @@ const SmartFilterSearchGlobal = (item: any) => {
                                                     }
                                                 </tr>
                                             </table>
-                                            <div className="col-md-12 pad0 text-end w-100 mb-5">
-                                                <button type="button" style={{ backgroundColor: `${portfolioColor}`, border:'none' }} className="btn btn-grey ml5 pull-right " title="Clear All" onClick={ClearFilter}>
-                                                    Clear Filter
-                                                </button>
-                                                <button type="button" style={{ color: `${portfolioColor}`, border:'none' }} className="btn pull-right  btn-primary mx-2" title="Smart Filter" onClick={UpdateFilterData}>
+                                            <div className="col-md-12 pad0 text-end w-100 my-3 mb-5">
+                                                <button type="button" style={{ backgroundColor: `${portfolioColor}`, borderColor: ` ${portfolioColor}` }} className="btn pull-right  btn-primary mx-2" title="Smart Filter" onClick={UpdateFilterData}>
                                                     Update Filter
+                                                </button>
+                                                <button type="button" style={{ color: `${portfolioColor}`, borderColor: ` ${portfolioColor}` }} className="btn btn-default ml5 pull-right " title="Clear All" onClick={ClearFilter}>
+                                                    Clear Filter
                                                 </button>
                                             </div>
                                         </div>

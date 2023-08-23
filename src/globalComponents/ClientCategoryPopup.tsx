@@ -77,7 +77,7 @@ const ClientCategoryPupup=(props:any)=>{
 
     const customHeader = () => {
         return (
-            <div className={props.props.Services.length>0?"d-flex full-width pb-1 serviepannelgreena":"d-flex full-width pb-1"} >
+            <div className={props?.props?.Services?.length>0?"d-flex full-width pb-1 serviepannelgreena":"d-flex full-width pb-1"} >
                 <div className="subheading">
                    <span>Select -Client Category</span> 
                  </div>

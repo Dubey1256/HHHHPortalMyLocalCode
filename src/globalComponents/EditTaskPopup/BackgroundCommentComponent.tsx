@@ -27,7 +27,7 @@ const BackgroundCommentComponent = (Props: any) => {
         let DataObject: any = {
             data_url: dt,
             file: "Image/jpg",
-            fileName: `Cover_Imgage_${BackgroundImageData?.length + 1}_${Props.TaskData.Id}_${Props.TaskData.siteType}.jpg`
+            fileName: `Cover_Image_${BackgroundImageData?.length + 1}_${Props.TaskData.Id}_${Props.TaskData.siteType}.jpg`
         }
         let ReplaceImageData = DataObject;
         uploadImageFolder(ReplaceImageData)

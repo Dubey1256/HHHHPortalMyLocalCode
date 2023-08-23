@@ -53,6 +53,7 @@ let AllItems: any = {}
 const defaultContent = "";
 let defaultfile = [];
 let AllMatsterAndTaskData: any = []
+
 const CreateActivity = (props: any) => {
     // AllMatsterAndTaskData = [...props?.AllMasterTasks];
     // AllMatsterAndTaskData = AllMatsterAndTaskData?.concat(props?.LoadAllSiteTasks);
@@ -73,7 +74,7 @@ const CreateActivity = (props: any) => {
     }
 
     let portFolioTypeId = props?.portfolioTypeData?.filter((elem: any) => elem?.Id === props?.props?.PortfolioType?.Id)
-    let portFolio = props?.props?.Id
+    var portFolio = props?.props?.Id
 
     const [PhoneStatus, setPhoneStatus] = React.useState(false);
     const [EmailStatus, setEmailStatus] = React.useState(false);
@@ -206,27 +207,7 @@ const CreateActivity = (props: any) => {
     }, [])
 
     const getTooltiphierarchyWithoutGroupByTable = (row: any): any => {
-        // for (let i = 0; i < AllMatsterAndTaskData.length; i++) {
-        //     const Object = AllMatsterAndTaskData[i];
-        //     if (Object.Id === row?.ParentTask?.Id && row?.siteType === Object?.siteType) {
-        //         Object.subRows = [];
-        //         Object.subRows.push(row);
-        //         return getTooltiphierarchyWithoutGroupByTable(Object);
-        //     } else if (Object.Id === row?.Parent?.Id) {
-        //         Object.subRows = [];
-        //         Object.subRows.push(row);
-        //         return getTooltiphierarchyWithoutGroupByTable(Object);
-        //     } else if (row?.Component != undefined && row?.Component?.length > 0 && Object.Id === row?.Component[0]?.Id) {
-        //         Object.subRows = [];
-        //         Object.subRows.push(row);
-        //         return getTooltiphierarchyWithoutGroupByTable(Object);
-        //     } else if (row?.Services != undefined && row?.Services?.length > 0 && Object.Id === row?.Services[0]?.Id) {
-        //         Object.subRows = [];
-        //         Object.subRows.push(row);
-        //         return getTooltiphierarchyWithoutGroupByTable(Object);
-        //     }
-        // }
-        // return [row];
+       
         var Data: any = []
         AllMatsterAndTaskData?.forEach((val: any) => {
 
@@ -421,7 +402,7 @@ const CreateActivity = (props: any) => {
         let tempArray: any = [];
         let flag = false;
         SiteTypeBackupArray.forEach((val: any) => {
-            if (val.Id == value.Id && AllItems?.NoteCall != 'Task') {
+            if (val.Id == value.Id) {
                 if (val.IscreateTask) {
                     val.IscreateTask = false;
                 } else {
@@ -719,13 +700,12 @@ const CreateActivity = (props: any) => {
     var SharewebID: any = ''
 
     const getActivitiesDetails = async (item: any) => {
-
-        siteTypess?.forEach((ba:any)=>{
-            if(item.Title == ba.Title){
-                ba.IscreateTask = true;
-                ba.isSiteSelect = true;
-            }
-        })
+        // siteTypess?.forEach((ba:any)=>{
+        //     if(item.Title == ba.Title){
+        //         ba.IscreateTask = true;
+        //         ba.isSiteSelect = true;
+        //     }
+        // })
         console.log(item)
         let web = new Web(dynamicList.siteUrl);
         let componentDetails = [];
@@ -743,7 +723,7 @@ const CreateActivity = (props: any) => {
             LatestTaskNumber = 1;
             item.LatestTaskNumber = LatestTaskNumber
         } else {
-            LatestTaskNumber = componentDetails[0]?.SharewebTaskLevel1No;
+            LatestTaskNumber = componentDetails[0].SharewebTaskLevel1No;
             LatestTaskNumber += 1;
             item.LatestTaskNumber = LatestTaskNumber
         }
@@ -782,7 +762,7 @@ const CreateActivity = (props: any) => {
                     if (componentDetails.length == 0) {
                         WorstreamLatestId = 1;
                     } else {
-                        WorstreamLatestId = componentDetails[0]?.SharewebTaskLevel2No + 1;
+                        WorstreamLatestId = componentDetails[0].SharewebTaskLevel2No + 1;
                     }
                     getTasktype();
                 }
@@ -964,21 +944,28 @@ const CreateActivity = (props: any) => {
                     if (AllItems?.NoteCall == 'Activities') {
                         let web = new Web(dynamicList.siteUrl);
 
-                        // AllMatsterAndTaskData?.forEach((val:any)=>{
-                        //     if(val?.ParentTask?.Id == props?.props?.Id){
-                        //         TaskID = val.TaskID
-                        //         prentID = val.ID;
-                        //     }
-                        //   })
+                        AllMatsterAndTaskData?.forEach((val:any)=>{
+                            if(val?.ParentTask?.Id == props?.props?.Id){
+                                TaskID = val.TaskID
+                                prentID = val.ID;
+                            }
+                          })
 
-                        //   LetestLevelData = await web.lists
-                        //   .getById(value.listId)
-                        //   .items
-                        //   .select("Id,Title,TaskType,Created")
-                        //   .filter(`Id eq '${prentID}'` && `TaskType eq 'Activities'`)
-                        //   .top(4999)
-                        //   .get()
-                        // console.log(LetestLevelData)
+                          let componentDetails: any = [];
+                          componentDetails = await web.lists
+                              .getById(value.listId)
+                              .items
+                              .select("Id,Title,SharewebTaskType/Id,SharewebTaskType/Title")
+                              .expand('SharewebTaskType')
+                              .orderBy("Id", false)
+                              .filter("SharewebTaskType/Title eq 'Activities'")
+                              .top(1)
+                              .get()
+                          console.log(componentDetails)
+                          var LatestId = componentDetails[0].Id + 1;
+                          LatestId += newIndex;
+
+                     
 
                         AllItems?.subRows?.forEach((vall: any) => {
                             if (vall?.TaskType?.Title == 'Activities' || vall?.SharewebTaskType?.Title == 'Activities') {
@@ -988,11 +975,11 @@ const CreateActivity = (props: any) => {
                         })
                         if (LetestLevelData.length == 0) {
                             Tasklevel = 1
-                            TaskID = props?.props?.PortfolioStructureID + '-A' + Tasklevel;
+                            TaskID = props?.props?.PortfolioStructureID + '-A' + Tasklevel 
                         }
                         else {
                             Tasklevel = LetestLevelData.length + 1
-                            TaskID = props?.props?.PortfolioStructureID + '-A' + Tasklevel;
+                            TaskID = props?.props?.PortfolioStructureID + '-A' + Tasklevel 
                         }
 
                         // if (AllItems.Title == undefined) {
@@ -1009,23 +996,7 @@ const CreateActivity = (props: any) => {
                             var Title = save.Title != undefined && save.Title != '' ? save.Title : post.Title
                         }
 
-                        let componentDetails: any = [];
-                        componentDetails = await web.lists
-                            .getById(value.listId)
-                            .items
-                            .select("Id,Title,SharewebTaskType/Id,SharewebTaskType/Title")
-                            .expand('SharewebTaskType')
-                            .orderBy("Id", false)
-                            .filter("SharewebTaskType/Title eq 'Activities'")
-                            .top(1)
-                            .get()
-                        console.log(componentDetails)
-                        if(componentDetails.length === 0){
-                            var LatestId:any  =1
-                        }else{
-                            var LatestId:any = componentDetails[0]?.Id + 1;
-                        }
-                        LatestId += newIndex;
+                       
                         if (Task == undefined || Task == '')
                             Task = SelectedTasks[0];
                         if (TaskprofileId == '' || SelectedTasks.length > 0) {
@@ -1091,8 +1062,8 @@ const CreateActivity = (props: any) => {
                             res.data['listId'] = value?.listId
                             res.data['SharewebTaskType'] = { Title: 'Activities' }
                             res.data['Shareweb_x0020_ID'] = SharewebID;
-                            res.data['PortfolioType'] =  {'Id':portFolioTypeId == undefined ? null : portFolioTypeId[0] },
-                            res.data['Portfolio'] = { 'Id': portFolio };
+                            res.data['PortfolioType'] =  portFolioTypeId[0],
+                                res.data['Portfolio'] = { 'Id': portFolio };
                             res.data['TaskType'] = { 'Id': res.data.TaskTypeId };
                             // res.data['TaskType'] =
                             res.data.DueDate = date ? Moment(date).format("MM-DD-YYYY") : null,
@@ -1225,7 +1196,7 @@ const CreateActivity = (props: any) => {
                             .top(1)
                             .get()
                         console.log(componentDetails)
-                        var LatestId = componentDetails[0]?.Id + 1;
+                        var LatestId = componentDetails[0].Id + 1;
                         LatestId += newIndex;
                         if (Task == undefined || Task == '')
                             Task = SelectedTasks[0];
@@ -1241,11 +1212,11 @@ const CreateActivity = (props: any) => {
                         })
                         if (LetestLevelData.length == 0) {
                             Tasklevel = 1
-                            TaskID = props?.props?.TaskID + '-T' + Tasklevel + LatestId;
+                            TaskID = props?.props?.TaskID + '-T' + LatestId;;
                         }
                         else {
                             Tasklevel = LetestLevelData.length + 1
-                            TaskID = props?.props?.TaskID + '-T' + Tasklevel + LatestId;
+                            TaskID = props?.props?.TaskID + '-T'  + LatestId; 
                         }
                         if (SharewebTasknewTypeId == 2 || SharewebTasknewTypeId == 6) {
                             var SharewebID = '';
@@ -1290,7 +1261,7 @@ const CreateActivity = (props: any) => {
                             DueDate: date != undefined ? Moment(date).format("MM-DD-YYYY") : null,
                             ServicesId: { "results": RelevantPortfolioIds },
                             SharewebCategoriesId: { "results": CategoryID },
-                            PortfolioId: portFolio,
+                            PortfolioId: AllItems.Id,
                             PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
                             TaskTypeId: SharewebTasknewTypeId,
                             ParentTaskId: AllItems.Id,
@@ -1316,9 +1287,13 @@ const CreateActivity = (props: any) => {
                             data['SiteIcon'] = value.Item_x005F_x0020_Cover?.Url
                             data['SharewebTaskType'] = { Title: 'Task' }
                             res.data['Shareweb_x0020_ID'] = SharewebID;
-                            res.data['PortfolioType'] =  {'Id':portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id },
-                                res.data['Portfolio'] = { 'Id': portFolio };
-                            res.data['TaskType'] = { 'Id': res.data.TaskTypeId };
+
+                           
+                                res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0]:null
+                                res.data['Portfolio'] = {'Id': portFolio };
+                                res.data['TaskType'] = { 'Id': res.data.TaskTypeId };
+                            
+                           
                             data.DueDate = date ? Moment(date).format("MM-DD-YYYY") : null,
 
                                 data['siteType'] = value?.siteName
@@ -1369,7 +1344,6 @@ const CreateActivity = (props: any) => {
                             data.Clientcategories = data.ClientCategory;
                             res.data = data;
                             console.log(res);
-
                             if (AllItems.PageType == 'ProjectManagement') {
                                 props.Call();
                                 let url = `${dynamicList.siteUrl}/SitePages/Task-Profile.aspx?taskId=${res.data.Id}&Site=${res.data.siteType}`
@@ -1378,7 +1352,7 @@ const CreateActivity = (props: any) => {
                             else {
                                 closeTaskStatusUpdatePoup(res);
                             }
-                           
+                          
                         })
                         // }
                     }
@@ -1784,7 +1758,7 @@ const CreateActivity = (props: any) => {
 
                     <div className={AllItems?.Portfolio_x0020_Type == 'Events' ? 'app component clearfix eventpannelorange' : (AllItems?.Portfolio_x0020_Type == 'Service' || AllItems?.Services?.length > 0 ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
                         <div className='row mt-2 border Create-taskpage'>
-                            {(AllItems?.Item_x0020_Type == 'Component' || AllItems?.Item_x0020_Type == 'SubComponent' || AllItems?.Item_x0020_Type == 'Feature') &&
+                            {(AllItems?.Item_x0020_Type == 'Component' || AllItems?.Item_x0020_Type == 'SubComponent' || AllItems?.Item_x0020_Type == 'Feature' || AllItems.PageType == 'ProjectManagement') &&
                                 <fieldset>
                                     <legend className="border-bottom fs-6 ">Sites</legend>
                                     <ul className="quick-actions">

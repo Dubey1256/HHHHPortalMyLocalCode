@@ -692,7 +692,7 @@ const TaskDashboard = (props: any) => {
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
                     <span>
-                        <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesTask} />
+                        <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesTask} AllListId={props?.props}/>
                     </span>
 
                 ),
@@ -869,7 +869,7 @@ const TaskDashboard = (props: any) => {
                 Cell: ({ row }: any) => (
                     <span>
 
-                        <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesTask} AllListId={AllListId}/>
+                        <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesTask} AllListId={ props?.props}/>
 
                     </span>
                 ),
@@ -1650,9 +1650,9 @@ const TaskDashboard = (props: any) => {
             const results = await web.lists
                 .getById(AllListId?.SmalsusLeaveCalendar)
                 .items.select(
-                    "RecurrenceData,Duration,Author/Title,Editor/Title,Name,NameId,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type"
+                    "RecurrenceData,Duration,Author/Title,Editor/Title,Name,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type"
                 )
-                .expand("Author,Editor")
+                .expand("Author,Editor,Employee")
                 .top(5000)
                 .getAll();
             let peopleOnLeave: any = [];
@@ -1660,7 +1660,7 @@ const TaskDashboard = (props: any) => {
                 emp.leaveStart = new Date(emp.EventDate).setHours(0, 0, 0, 0);
                 emp.leaveEnd = new Date(emp.EndDate).setHours(0, 0, 0, 0);
                 if (startDate >= emp.leaveStart && startDate <= emp.leaveEnd) {
-                    peopleOnLeave.push(emp);
+                    peopleOnLeave.push(emp?.Employee?.Id);
                 }
             })
             setOnLeaveEmployees(peopleOnLeave)
@@ -1870,7 +1870,7 @@ const TaskDashboard = (props: any) => {
             var subject = "Today's Working Tasks of All Team";
             taskUsersGroup?.map((userGroup: any) => {
                 let teamsTaskBody: any = [];
-                if (userGroup.Title == "Junior Developer Team" || userGroup.Title == "Senior Developer Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team" || userGroup.Title == "Smalsus Lead Team") {
+                if (userGroup.Title == "Junior Developer Team" || userGroup.Title == "Senior Developer Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Business Analyst") {
                     if (userGroup.Title == "Smalsus Lead Team") {
                         userGroup.childBackup = userGroup?.childs;
                         userGroup.childs = [];
@@ -1881,7 +1881,7 @@ const TaskDashboard = (props: any) => {
                         })
                     }
                     userGroup?.childs?.map((teamMember: any) => {
-                        if (!onLeaveEmployees.some((emp: any) => emp.NameId == teamMember?.AssingedToUserId)) {
+                        if (!onLeaveEmployees.some((emp: any) => emp == teamMember?.AssingedToUserId)) {
                             let body: any = '';
                             let body1: any = [];
                             let tasksCopy: any = [];

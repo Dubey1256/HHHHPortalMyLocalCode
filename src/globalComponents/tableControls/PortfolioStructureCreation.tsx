@@ -37,9 +37,6 @@ export interface IStructureCreationState {
     PortfolioTypeArray: any,
     PortfolioTypeId: any,
     defaultPortfolioType: any,
-
-
-
 }
 
 const dragItem: any = {}
@@ -55,6 +52,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
             Item_x0020_Type: 'SubComponent',
             SelectedItem: this.props.SelectedItem,
             PortfolioType: this.props.PortfolioType, // (this.props.PortfolioType ===undefined || this.props.PortfolioType ==='') ?'Component Portfolio':this.props.PortfolioType,
+            // PortfolioType: (this.props.PortfolioType !==undefined) ?(this.props?.PortfolioType?.toLowerCase().split(' portfolio')[0]):this.props.PortfolioType,
             TeamConfig: [],
             OpenModal: '',
             ChildItemTitle: [],
@@ -68,8 +66,16 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
             webServerRelativeUrl: this.props.PropsValue.siteUrl.toLowerCase().split('.com')[1],
             PortfolioTypeArray: [],
             PortfolioTypeId: 1,
-            defaultPortfolioType: (this.props.PortfolioType === undefined || this.props.PortfolioType === '') ? (this.props?.SelectedItem?.PortfolioType?.Id !=undefined ?this.props?.SelectedItem?.PortfolioType?.Title: 'Component') : this.props.PortfolioType,
+            defaultPortfolioType: (this.props.PortfolioType === undefined || this.props.PortfolioType === '') ? (this.props?.SelectedItem?.PortfolioType?.Id != undefined ? this.props?.SelectedItem?.PortfolioType?.Title : 'Component') : this.props.PortfolioType,
         }
+        // if (this.props?.PortfolioType != undefined && this.props?.PortfolioType?.toLowerCase().indexOf('portfolio') > -1) {
+        //     this.state.defaultPortfolioType = (this.props?.PortfolioType?.toLowerCase().split(' portfolio')[0]);
+        //     // this.setState({
+        //     //     defaultPortfolioType: defaultPortfolioType,
+
+        //     // })
+        // }
+
         this.getPortfolioType();
         this.LoadSPComponents();
 
@@ -77,7 +83,10 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
 
     private async LoadSPComponents() {
         let SPDetails: any = [];
-        let filtertitle = this.state.defaultPortfolioType;
+        let filtertitle = "";
+        if (this.props?.PortfolioType != undefined && this.props?.PortfolioType?.toLowerCase().indexOf('portfolio') > -1)
+            filtertitle = this.state.defaultPortfolioType.split(' Portfolio')[0];
+        else filtertitle = this.state.defaultPortfolioType;
         this.Portfolio_x0020_Type = filtertitle;
         // var select: any = "Title,Id,PortfolioType&$filter=Portfolio_x0020_Type eq '" + filtertitle + "'"
         // SPDetails = await globalCommon.getData(this.state.PropValue.siteUrl, this.state.PropValue.MasterTaskListID, select);
@@ -141,7 +150,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
         let web = new Web(this.state.PropValue.siteUrl);
         let PortFolioType = [];
         PortFolioType = await web.lists
-            .getById(this.state?.PropValue?.PortFolioTypeID !=undefined ? this.state?.PropValue?.PortFolioTypeID :'c21ab0e4-4984-4ef7-81b5-805efaa3752e')
+            .getById(this.state?.PropValue?.PortFolioTypeID != undefined ? this.state?.PropValue?.PortFolioTypeID : 'c21ab0e4-4984-4ef7-81b5-805efaa3752e')
             .items.select(
                 "Id",
                 "Title",
@@ -151,7 +160,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
             .get();
         if (this?.state?.defaultPortfolioType != undefined) {
             PortFolioType?.forEach((obj: any) => {
-                if (this?.state?.defaultPortfolioType?.toLowerCase() === obj?.Title?.toLowerCase())
+                if (this?.state?.defaultPortfolioType?.toLowerCase().indexOf(obj?.Title?.toLowerCase()) > -1)
                     this.setState({ PortfolioTypeId: obj.Id });
 
             })
@@ -257,7 +266,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
     private IconUrl = '';
 
     CreateFolder = async (Type: any) => {
-       
+
         await this.LoadPortfolioitemParentId(undefined, undefined, undefined);
         this.LoadSPComponents();
         let folderURL = '';
@@ -268,7 +277,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
         } else if (this.Portfolio_x0020_Type == 'Events') {
             folderURL = (this.state.webServerRelativeUrl + '/Documents/EVENT-PORTFOLIO').toLowerCase();
         }
-        let DOcListID =(this.state?.PropValue?.DocumentListID !=undefined ? this.state?.PropValue?.DocumentListID :'d0f88b8f-d96d-4e12-b612-2706ba40fb08');
+        let DOcListID = (this.state?.PropValue?.DocumentListID != undefined ? this.state?.PropValue?.DocumentListID : 'd0f88b8f-d96d-4e12-b612-2706ba40fb08');
         if (this.state.textTitle == '') {
             alert('Please Enter the Title!')
         }
@@ -284,7 +293,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
     };
 
     createComponent = async (Type: any) => {
-        
+
         let postdata = {
             "Item_x0020_Type": 'Component',
             "Title": this.state.textTitle,
@@ -343,7 +352,10 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
         } else ItemTypes = (this.state.ChildItemTitle != undefined && this.state.ChildItemTitle.length > 0) ? this.state.ChildItemTitle[0].MasterItemsType : 'Component';
         let filter = ''
         if (ItemTypes == this.state.defaultPortfolioType) {
-            filter = "PortfolioType/Id eq '" + this.state.PortfolioTypeId + "'";// "Item_x0020_Type eq '" + ItemTypes + "'"
+            if (this.props?.PortfolioType != undefined && this.props?.PortfolioType?.toLowerCase().indexOf('portfolio') > -1)
+                filter = "Item_x0020_Type eq 'Component'"
+            else
+                filter = "PortfolioType/Id eq '" + this.state.PortfolioTypeId + "'";// "Item_x0020_Type eq '" + ItemTypes + "'"
         }
         else {
             filter = "Parent/Id eq '" + this.state.SelectedItem.Id + "' and Item_x0020_Type eq '" + ItemTypes + "'"
@@ -385,13 +397,17 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                 item.PortfolioStructureIDs = this.state.SelectedItem.PortfolioStructureID + '-' + ItemTypes.slice(0, 1) + item.NextLevel;
         }
         if (this.props.SelectedItem == undefined) {
-            const tempItem = this.state?.PortfolioTypeArray?.filter((port: any) =>  ((port.Title === this.state?.PortfolioType) ||(this.state?.defaultPortfolioType?.toLowerCase()?.indexOf(port.Title?.toLowerCase()) >-1)) ||(port.Title === this.state?.defaultPortfolioType) );
-            //const tempNumber =tempItem[0]?.IdRange?.split('-')[0];
-            const tempNumber = tempItem[0]?.Title?.charAt(0) +tempItem[0]?.IdRange?.split('-')[0];
-            this.PortfolioStructureIDs= tempNumber?.substring(0, tempNumber?.length - (this.NextLevel?.toString()?.length)) + this.NextLevel;
-            this.PortfolioStructureIDs= this.state?.PropValue?.PortFolioTypeID !=undefined ? this.PortfolioStructureIDs :'C' + this.NextLevel;
+            if (this.props?.PortfolioType != undefined && this.props?.PortfolioType?.toLowerCase().indexOf('portfolio') > -1) {
+                this.PortfolioStructureIDs = 'C' + this.NextLevel;
+            } else {
+                const tempItem = this.state?.PortfolioTypeArray?.filter((port: any) => ((port.Title === this.state?.PortfolioType) || (this.state?.defaultPortfolioType?.toLowerCase()?.indexOf(port.Title?.toLowerCase()) > -1)) || (port.Title === this.state?.defaultPortfolioType));
+                //const tempNumber =tempItem[0]?.IdRange?.split('-')[0];
+                const tempNumber = tempItem[0]?.Title?.charAt(0) + tempItem[0]?.IdRange?.split('-')[0];
+                this.PortfolioStructureIDs = tempNumber?.substring(0, tempNumber?.length - (this.NextLevel?.toString()?.length)) + this.NextLevel;
+                //  this.PortfolioStructureIDs = this.state?.PropValue?.PortFolioTypeID != undefined ? this.PortfolioStructureIDs : 'C' + this.NextLevel;
+            }
         }
- 
+
 
 
         if (isloadEssentialDeatils == undefined || isloadEssentialDeatils == true)

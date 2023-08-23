@@ -303,9 +303,9 @@ const TimeReport = (props:any) => {
         myData = await web.lists
             .getById('72ABA576-5272-4E30-B332-25D7E594AAA4')
             .items
-            .select("RecurrenceData,Duration,Author/Title,Editor/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,Name")
+            .select("RecurrenceData,Duration,Author/Title,Editor/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,Employee/Id")
             .top(499)
-            .expand("Author,Editor")
+            .expand("Author,Editor,Employee")
             .getAll()
             console.log(myData);
            
@@ -338,7 +338,7 @@ const TimeReport = (props:any) => {
             leaveUser?.forEach((val:any)=>{
                 var users:any={}
                 AllUsers?.forEach((item:any)=>{
-                    if(val.Name == item.Title){
+                    if(val?.Employee?.Id == item?.AssingedToUserId){
                         users['userName'] = item.Title
                         users['Components'] = ''
                         users['SubComponents'] = ''
@@ -1141,16 +1141,16 @@ var ReportDate = new Date(MyDate)
                 <div className='col-7 mt-4 showDate'>
 
                     <input type='date' value={Moment(selectdate!= undefined?selectdate:defaultDate).format("YYYY-MM-DD")} max="9999-12-31 mx-3" onChange={(e) => setSelectDate(e.target.value)} />
-                    <label className='mx-2'>
-                        <input type="radio" name="Custom" checked={checkedCustom} className="me-1" />Custom
+                    <label className='mx-2 SpfxCheckRadio'>
+                        <input type="radio" name="Custom" checked={checkedCustom} className="radio" />Custom
                     </label>
-                    <label className='mx-2'>
-                        <input type="radio"  name="Yesterday" checked={checkedWS} onClick={() => selectType('Yesterday')} className="me-1" />Yesterday
+                    <label className='mx-2 SpfxCheckRadio'>
+                        <input type="radio"  name="Yesterday" checked={checkedWS} onClick={() => selectType('Yesterday')} className="radio" />Yesterday
                     </label>
-                    <label className='mx-2'>
-                        <input type="radio" name="Today" checked={checkedTask} onClick={() => selectType('Today')} className="me-1" />Today
+                    <label className='mx-2 SpfxCheckRadio'>
+                        <input type="radio" name="Today" checked={checkedTask} onClick={() => selectType('Today')} className="radio" />Today
                     </label>
-                    <button className='btn btn-primary' type="submit" onClick={() => GeneratedTask()}>Generate TimeSheet</button>
+                    <button className='btnCol btn btn-primary' type="submit" onClick={() => GeneratedTask()}>Generate TimeSheet</button>
 
 
                 </div>
