@@ -24,7 +24,8 @@ export default class ProjectManagement extends React.Component<IProjectManagemen
       DocumentsListID,
       TaskTimeSheetListID,
       TimeEntry,
-      SiteCompostion
+      SiteCompostion,
+      TaskTypeID
     } = this.props;
     return (
       <div>

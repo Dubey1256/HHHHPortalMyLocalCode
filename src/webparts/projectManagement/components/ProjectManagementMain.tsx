@@ -139,7 +139,8 @@ const ProjectManagementMain = (props: any) => {
       siteUrl: props?.props?.siteUrl,
       AdminConfigrationListID: props?.props?.AdminConfigrationListID,
       isShowTimeEntry: isShowTimeEntry,
-      isShowSiteCompostion: isShowSiteCompostion
+      isShowSiteCompostion: isShowSiteCompostion,
+      TaskTypeID:props?.props?.TaskTypeID
     }
     if (props?.props?.SmartInformationListID != undefined) {
       setIsSmartInfoAvailable(true)
@@ -321,143 +322,6 @@ const ProjectManagementMain = (props: any) => {
 
   }, []);
 
-  const getPortfolio = async (type: any) => {
-    let result;
-    if (AllListId?.MasterTaskListID != undefined) {
-      try {
-        var RootComponentsData: any[] = []; var ComponentsData: any[] = [];
-        var SubComponentsData: any[] = [];
-        var FeatureData: any[] = [];
-        if (type != undefined) {
-          let web = new Web(AllListId?.siteUrl);
-          let componentDetails = [];
-          if (type == 'All') {
-            componentDetails = await web.lists
-              .getById(AllListId?.MasterTaskListID)
-              .items
-              .select("ID", "Title", "DueDate", "Status", "ItemRank", "Item_x0020_Type", "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "SharewebCategories/Id", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title")
-              .expand("Team_x0020_Members", "Author", "ClientCategory", "Parent", "SharewebCategories", "AssignedTo", "ClientCategory")
-              .top(4999)
-              .get()
-          } else {
-            componentDetails = await web.lists
-              .getById(AllListId?.MasterTaskListID)
-              .items
-              .select("ID", "Title", "DueDate", "Status", "ItemRank", "Item_x0020_Type", "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "SharewebCategories/Id", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title")
-              .expand("Team_x0020_Members", "Author", "ClientCategory", "Parent", "SharewebCategories", "AssignedTo", "ClientCategory").filter("Portfolio_x0020_Type eq '" + type + "'")
-              .top(4999)
-              .get()
-          }
-          let Response: ArrayLike<any> = [];
-          Response = await loadTaskUsers();
-
-          $.each(componentDetails, function (index: any, result: any) {
-
-            result.TitleNew = result.Title;
-            result.TeamLeaderUser = []
-            result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
-
-            if (result.DueDate == 'Invalid date' || '') {
-              result.DueDate = result.DueDate.replaceAll("Invalid date", "")
-            }
-            if (result.PercentComplete != undefined)
-              result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
-
-            if (result.Short_x0020_Description_x0020_On != undefined) {
-              result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
-            }
-
-            if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
-              $.each(result.AssignedTo, function (index: any, Assig: any) {
-                if (Assig.Id != undefined) {
-                  $.each(Response, function (index: any, users: any) {
-
-                    if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
-                      users.ItemCover = users.Item_x0020_Cover;
-                      result.TeamLeaderUser.push(users);
-                    }
-
-                  })
-                }
-              })
-            }
-            if (result.Team_x0020_Members != undefined && result.Team_x0020_Members.length > 0) {
-              $.each(result.Team_x0020_Members, function (index: any, Assig: any) {
-                if (Assig.Id != undefined) {
-                  $.each(Response, function (index: any, users: any) {
-                    if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
-                      users.ItemCover = users.Item_x0020_Cover;
-                      result.TeamLeaderUser.push(users);
-                    }
-
-                  })
-                }
-              })
-            }
-
-            if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
-              $.each(result.Team_x0020_Members, function (index: any, catego: any) {
-                result.ClientCategory.push(catego);
-              })
-            }
-            if (result.Item_x0020_Type == 'Root Component') {
-              result['Child'] = [];
-              RootComponentsData.push(result);
-            }
-            if (result.Item_x0020_Type == 'Component') {
-              result['Child'] = [];
-              ComponentsData.push(result);
-
-
-            }
-
-            if (result.Item_x0020_Type == 'SubComponent') {
-              result['Child'] = [];
-              SubComponentsData.push(result);
-
-
-            }
-            if (result.Item_x0020_Type == 'Feature') {
-              result['Child'] = [];
-              FeatureData.push(result);
-            }
-          });
-
-          $.each(SubComponentsData, function (index: any, subcomp: any) {
-            if (subcomp.Title != undefined) {
-              $.each(FeatureData, function (index: any, featurecomp: any) {
-                if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
-                  subcomp['Child'].push(featurecomp);;
-                }
-              })
-            }
-          })
-
-          $.each(ComponentsData, function (index: any, subcomp: any) {
-            if (subcomp.Title != undefined) {
-              $.each(SubComponentsData, function (index: any, featurecomp: any) {
-                if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
-                  subcomp['Child'].push(featurecomp);;
-                }
-              })
-            }
-          })
-          result = componentDetails;
-          //maidataBackup.push(ComponentsData)
-          // setmaidataBackup(ComponentsData)
-
-        }
-      }
-      catch (error) {
-        return Promise.reject(error);
-      }
-    } else {
-      alert('Master Task List Id not present')
-    }
-
-    return result;
-
-  }
 
   const CallBack = React.useCallback((item: any) => {
     setisOpenEditPopup(false);
@@ -552,7 +416,8 @@ const ProjectManagementMain = (props: any) => {
   }, []);
 
   const LoadAllSiteTasks = async function () {
-
+    let taskComponent: any = [];
+    let taskServices: any = [];
     if (siteConfig?.length > 0) {
       try {
         var AllTask: any = [];
@@ -587,13 +452,13 @@ const ProjectManagementMain = (props: any) => {
             }
             items.AllTeamMember = [];
             items.HierarchyData = [];
-            items.descriptionsSearch='';
+            items.descriptionsSearch = '';
             items.siteType = config.Title;
             items.bodys = items.Body != null && items.Body.split('<p><br></p>').join('');
             if (items?.Body != undefined && items?.Body != null) {
-              items.descriptionsSearch =items?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
-          }
-            items.commentsSearch = items?.Comments!=null&& items?.Comments!=undefined ? items.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, ''):'';
+              items.descriptionsSearch = items?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
+            }
+            items.commentsSearch = items?.Comments != null && items?.Comments != undefined ? items.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
             items.listId = config.listId;
             items.siteUrl = config.siteUrl.Url;
             items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
@@ -607,11 +472,17 @@ const ProjectManagementMain = (props: any) => {
                 : "";
             items.portfolio = {};
             if (items?.Component?.length > 0) {
+              if (!taskComponent?.some((id: any) => id == items?.Component[0].Id)) {
+                taskComponent.push(items?.Component[0].Id)
+              }
               items.portfolio = items?.Component[0];
               items.PortfolioTitle = items?.Component[0]?.Title;
               items["Portfoliotype"] = "Component";
             }
             if (items?.Services?.length > 0) {
+              if (!taskServices?.some((id: any) => id == items?.Services[0].Id)) {
+                taskServices.push(items?.Services[0].Id)
+              }
               items.portfolio = items?.Services[0];
               items.PortfolioTitle = items?.Services[0]?.Title;
               items["Portfoliotype"] = "Service";
@@ -663,6 +534,8 @@ const ProjectManagementMain = (props: any) => {
             setAllTasks(AllTask);
             setData(AllTask);
             backupAllTasks = AllTask;
+            console.log(taskComponent)
+            console.log(taskServices)
           }
 
         });
@@ -689,17 +562,7 @@ const ProjectManagementMain = (props: any) => {
       .items.select("ComponentCategory/Id", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "Deliverable_x002d_Synonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "Admin_x0020_Notes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "SharewebCategories/Id", "SharewebCategories/Title", "Priority_x0020_Rank", "Reference_x0020_Item_x0020_Json", "Team_x0020_Members/Title", "Team_x0020_Members/Name", "Component/Id", "Services/Id", "Services/Title", "Services/ItemType", "Component/Title", "Component/ItemType", "Team_x0020_Members/Id", "Item_x002d_Image", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
       .expand("ClientCategory", "ComponentCategory", "AssignedTo", "Component", "Services", "AttachmentFiles", "Author", "Editor", "Team_x0020_Members", "SharewebComponent", "SharewebCategories", "Parent")
       .top(4999)
-      .get().then((data) => {
-        console.log(data)
-        data?.forEach((val: any) => {
-          MyAllData.push(val)
-        })
-
-
-      }).catch((error) => {
-        console.log(error)
-      })
-
+      .get()
 
   }
   React.useEffect(() => {
@@ -1056,7 +919,7 @@ const ProjectManagementMain = (props: any) => {
         cell: ({ row, getValue }) => (
           <>
             <span className="d-flex">
-              <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} AllListId={AllListId}/>
+              <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />
             </span>
           </>
         ),
@@ -1065,7 +928,7 @@ const ProjectManagementMain = (props: any) => {
         accessorFn: (row) => row?.Title,
         cell: ({ row, column, getValue }) => (
           <>
-            <span >
+            <span className='d-flex'>
               {row.original.Services.length >= 1 ? (
                 <a
                   className="hreflink text-success"
@@ -1188,15 +1051,15 @@ const ProjectManagementMain = (props: any) => {
         resetColumnFilters: false,
         size: 100,
         id: "descriptionsSearch",
-    },
-    {
+      },
+      {
         accessorKey: "commentsSearch",
         placeholder: "commentsSearch",
         header: "",
         resetColumnFilters: false,
         size: 100,
         id: "commentsSearch",
-    },
+      },
       {
         accessorFn: (row) => row?.PercentComplete,
         cell: ({ row }) => (
