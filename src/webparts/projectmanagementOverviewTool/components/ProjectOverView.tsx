@@ -83,7 +83,7 @@ export default function ProjectOverview(props: any) {
             isShowTimeEntry: isShowTimeEntry,
             isShowSiteCompostion: isShowSiteCompostion,
             SmalsusLeaveCalendar: props?.props?.SmalsusLeaveCalendar,
-            TaskTypeID:props?.props?.TaskTypeID
+            TaskTypeID: props?.props?.TaskTypeID
         }
         loadTodaysLeave();
         setPageLoader(true);
@@ -809,7 +809,7 @@ export default function ProjectOverview(props: any) {
                             )}
                             <span className='ms-1'>{row?.original?.Shareweb_x0020_ID}</span>
                         </span>
-                        
+
                     </>
                 ),
                 accessorKey: "Shareweb_x0020_ID",
@@ -1702,10 +1702,9 @@ export default function ProjectOverview(props: any) {
                                         </dt>
 
                                     </dl>
-                                    <div className="text-end">
+                                    <div className="text-end pull-right">
                                         {currentUserData?.Title == "Deepak Trivedi" || currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" ?
-                                            <>
-                                            <a className="hreflink" onClick={() => { sendAllWorkingTodayTasks() }}>Share Working Todays's Task</a></>
+                                            <><a className="hreflink" onClick={() => { sendAllWorkingTodayTasks() }}>Share Working Todays's Task</a></>
                                             : ''}
                                     </div>
                                 </div>
