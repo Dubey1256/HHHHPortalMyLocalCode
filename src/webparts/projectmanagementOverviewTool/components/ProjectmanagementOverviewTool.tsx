@@ -22,7 +22,8 @@ export default class ProjectmanagementOverviewTool extends React.Component<IProj
       TaskTimeSheetListID,
       TimeEntry,
       SiteCompostion,
-      SmalsusLeaveCalendar
+      SmalsusLeaveCalendar,
+      TaskTypeID
     } = this.props;
 
     return (
