@@ -97,7 +97,7 @@ const loadleave = async () =>  {
         Subject: "HHHH - Team Attendance- "+formattedDate +"-"+ totalteammemberonleave+" - "+Object?.keys(nameidTotals)?.length ,
         //Array of string for To of Email
         //   To: emailprops.To,
-        To: ["abhishek.tiwari@hochhuth-consulting.de","juli.kumari@hochhuth-consulting.de","ranu.trivedi@hochhuth-consulting.de"],
+        To: ["abhishek.tiwari@hochhuth-consulting.de","juli.kumari@hochhuth-consulting.de","juli.kumari@smalsus.com","anubhav@smalsus.com","ranu.trivedi@hochhuth-consulting.de"],
         AdditionalHeaders: {
           "content-type": "text/html",
         },

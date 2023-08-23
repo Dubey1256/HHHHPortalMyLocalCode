@@ -191,7 +191,6 @@ let workstrim = 0;
 let task = 0;
 let AllActivitysData: any = [];
 let AllWorkStreamData: any = [];
-let ProjectData: any = [];
 let TimesheetData:any=[];
 export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   if (countaa == 0) {
@@ -664,21 +663,6 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     makeFinalgrouping();
   };
 
-  const getProjectData = async () => {
-    let web = new Web(NextProp.siteUrl);
-    ProjectData = await web.lists
-      .getById(NextProp.MasterTaskListID)
-      .items.select(
-        "Item_x0020_Type",
-        "Title",
-        "Id",
-        "DueDate",
-        "WebpartId",
-        "Body"
-      )
-      .filter("Item_x0020_Type  eq 'Project'")
-      .get();
-  };
 
 
 
@@ -695,6 +679,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
             "ParentTask/Title",
             "ParentTask/Id",
             "Project/Id",
+            "Project/PortfolioStructureID",
             "Project/Title",
             "Services/Title",
             "ClientTime",
@@ -810,47 +795,25 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
             map(AllTasks, (result: any) => {
               result.Id = result.Id != undefined ? result.Id : result.ID;
               result.TeamLeaderUser = [];
+              if (result.Project) {
 
-              if (ProjectData.length !== 0) {
+                result.ProjectTitle = result?.Project?.Title;
 
-                ProjectData.forEach((project: any) => {
+                result.ProjectId = result?.Project?.Id;
 
-                    if (project?.Id === result?.Project?.Id) {
+                result.projectStructerId = result?.Project?.PortfolioStructureID
 
-                        result.ProjectTitle = result?.Project?.Title;
+                const title = result?.Project?.Title || '';
 
-                        result.ProjectId = result?.Project?.Id;
+                const dueDate = result?.DueDate;
 
-                        result.projectStructerId = "P" + result?.Project?.Id;
+                result.joinedData = [];
 
-                        result.joinedData = ProjectData.filter((elem: any) => elem?.Id === result?.Project?.Id)
+                if (title) result.joinedData.push(`Title: ${title}`);
 
-                            .map((elem: any) => {
-
-                                const projectStructerId = 'P' + elem?.Id
-
-                                const title = elem.Title || '';
-
-                                const dueDate = elem.DueDate ? new Date(elem.DueDate).toLocaleDateString() : '';
-
-                                const formattedData = [];
-
-                                if (projectStructerId) formattedData.push(`projectStructerId: ${projectStructerId}`)
-
-                                if (title) formattedData.push(`Title: ${title}`);
-
-                                if (dueDate) formattedData.push(`Due Date: ${dueDate}`);
-
-                                return formattedData.join('\n');
-
-                            }).join('\n\n');
-
-                    }
-
-                });
+                if (dueDate) result.joinedData.push(`Due Date: ${dueDate}`);
 
             }
-              
               result.AllTeamName =
                 result.AllTeamName === undefined ? "" : result.AllTeamName;
               result.chekbox = false;
@@ -1292,7 +1255,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     }
 
     // await GetTimeEntryData();
-    await getProjectData();
+    // await getProjectData();
     LoadAllSiteTasks();
   };
   //const [IsUpdated, setIsUpdated] = React.useState(SelectedProp.SelectedProp);
