@@ -86,7 +86,8 @@ const RelevantDocuments = (props: any,ref:any) => {
                                   <a  href={item.EncodedAbsUrl}>
                                     {item?.File_x0020_Type=="pdf"&&<span className='svg__iconbox svg__icon--pdf' title="pdf"></span>}
                                     {item?.File_x0020_Type=="docx"&&<span className='svg__iconbox svg__icon--docx'title="docx"></span>} 
-                                    {item?.File_x0020_Type=="csv"||item?.File_x0020_Type=="xlsx"&&<span className='svg__iconbox svg__icon--csv'title="csv"></span>}
+                                    {item?.File_x0020_Type=="csv"&&<span className='svg__iconbox svg__icon--csv'title="csv"></span>}
+                                    {item?.File_x0020_Type=="xlsx"&&<span className='svg__iconbox svg__icon--xlsx'title="xlsx"></span> }
                                     {item?.File_x0020_Type=="jpeg"||item?.File_x0020_Type=="jpg "&&<span className='svg__iconbox svg__icon--jpeg'title="jpeg"></span>}
                                     {item?.File_x0020_Type=="ppt"||item?.File_x0020_Type=="pptx"&&<span className='svg__iconbox svg__icon--ppt'title="ppt"></span>}
                                     {item?.File_x0020_Type=="svg"&&<span className='svg__iconbox svg__icon--svg'title="svg"></span>}
@@ -94,16 +95,12 @@ const RelevantDocuments = (props: any,ref:any) => {
                                     {item?.File_x0020_Type=="png"&&<span className='svg__iconbox svg__icon--png'title="png"></span>}
                                     {item?.File_x0020_Type=="txt"&&<span className='svg__iconbox svg__icon--txt'title="txt"></span>}
                                     {item?.File_x0020_Type=="smg"&&<span className='svg__iconbox svg__icon--smg'title="smg"></span>}
-                                    {item?.File_x0020_Type=="aspx"&&<span className='svg__iconbox svg__icon--link'title="Link"></span>}
                                     
                                     </a>
                                 
                                 </li>
                                 <li>
-                                    {item?.File_x0020_Type=="aspx"?
-                                    <a className='px-2' href={`${item?.Url?.Url}`}target="_blank" data-interception="off"> <span>{item?.Title}</span></a>:
-                                    <a className='px-2' href={`${item?.EncodedAbsUrl}?web=1`}target="_blank" data-interception="off"> <span>{item?.Title}</span></a>}
-                                   
+                                   <a className='px-2' href={`${item?.EncodedAbsUrl}?web=1`}target="_blank" data-interception="off"> <span>{item?.Title}</span></a>
                                 </li>
                                 <li className='d-end'>
                               <span title="Edit" className="svg__iconbox svg__icon--edit hreflink" onClick={() => editDocumentsLink(item)}></span>

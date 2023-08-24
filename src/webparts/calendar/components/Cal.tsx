@@ -119,6 +119,27 @@ let startTime: any,
 let maxD = new Date(8640000000000000);
 
 const App = (props: any) => {
+
+
+
+
+
+
+  React.useEffect(() => {
+   
+        try {
+            $('#spPageCanvasContent').removeClass();
+            $('#spPageCanvasContent').addClass('Calendarcl')
+            $('#workbenchPageContent').removeClass();
+            $('#workbenchPageContent').addClass('Calendarcl')
+        } catch (e) {
+            console.log(e);
+        }
+    }
+,[])
+
+
+
   const [m, setm]: any = React.useState(false);
   const [events, setEvents]: any = React.useState([]);
   let compareData: any = [];

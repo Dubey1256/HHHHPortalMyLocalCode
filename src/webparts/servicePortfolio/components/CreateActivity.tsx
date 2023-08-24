@@ -1062,7 +1062,7 @@ const CreateActivity = (props: any) => {
                             res.data['listId'] = value?.listId
                             res.data['SharewebTaskType'] = { Title: 'Activities' }
                             res.data['Shareweb_x0020_ID'] = SharewebID;
-                            res.data['PortfolioType'] =  portFolioTypeId[0],
+                            res.data['PortfolioType'] =  portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
                                 res.data['Portfolio'] = { 'Id': portFolio };
                             res.data['TaskType'] = { 'Id': res.data.TaskTypeId };
                             // res.data['TaskType'] =
