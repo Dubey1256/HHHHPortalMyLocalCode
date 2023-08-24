@@ -310,7 +310,7 @@ const TimeReport = (props:any) => {
             console.log(myData);
            
             myData?.forEach((val:any)=>{
-                if(val.Name != null && val.Name != undefined){
+              
                     // var TodayDate:any = new Date()
                     // TodayDate =  Moment(TodayDate).format("DD/MM/YYYY")
                    //var TodayDate =  selectDate.split("/")
@@ -331,7 +331,7 @@ const TimeReport = (props:any) => {
                         leaveUser.push(val)
     
                     }
-                }
+                
                
             })
             console.log(leaveUser)
@@ -1010,8 +1010,10 @@ const TimeReport = (props:any) => {
     '</tbody>' +
     '</table>'
 var pageurl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TimeReport.aspx";
-var ReportDate = new Date(MyDate)
- var ReportDatetime =Moment(ReportDate).format('MM/DD/YYYY')
+var c = MyDate.split('-');
+var a1 = c[2] + '-' + c[1] + '-' + c[0];
+var ReportDate = new Date(a1)
+ var ReportDatetime =Moment(ReportDate).format('DD/MM/YYYY')
     var body:any =
                 '<p style="text-align: center;margin-bottom: 1px;">' + 'TimeSheet of  date' + '&nbsp;' + '<strong>' + ReportDatetime + '</strong>' + '</p>' +
                 '<p style="text-align: center;margin: 0 auto;">' + '<a  href=' + pageurl + ' >' + 'Online version of timesheet' + '</a >' + '</p>' +
