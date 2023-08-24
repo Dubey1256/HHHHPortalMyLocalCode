@@ -97,7 +97,7 @@ const loadleave = async () =>  {
         Subject: "HHHH - Team Attendance- "+formattedDate +"-"+ totalteammemberonleave+" - "+Object?.keys(nameidTotals)?.length ,
         //Array of string for To of Email
         //   To: emailprops.To,
-        To: ["abhishek.tiwari@hochhuth-consulting.de","ranu.trivedi@hochhuth-consulting.de"],
+        To: ["abhishek.tiwari@hochhuth-consulting.de","juli.kumari@hochhuth-consulting.de","juli.kumari@smalsus.com","anubhav@smalsus.com","ranu.trivedi@hochhuth-consulting.de"],
         AdditionalHeaders: {
           "content-type": "text/html",
         },
@@ -237,105 +237,103 @@ const data = props.data;
     
     <div>
       <div id="htmlMailBodyemail" style={{ display: "none" }}>
-        <div style={{ marginTop: "2pt" }}>Hello sir,</div>
         <div style={{ marginTop: "2pt" }}>
           Below is the today's leave report.
         </div>
       
 
       <div>
-      <table data-border="1" cellSpacing={0}>
-          <thead>
-            <tr style={{textAlign:"center", padding:"5px",background:"#c5d9f1"}}>
-                <th style={{border:"1px solid #000"}} colSpan={8} >{formattedDate}</th>
-            </tr>
-            <tr style={{textAlign:"center", padding:"5px",background:"#fcd5b4"}}>
-                
-                <th style={{borderBottom:"1px solid #000"}}>HHHH Team</th>
-                {/* <th style={{border:"1px solid #000",borderTop:"0px"}}>Designation</th> */}
-                <th style={{borderBottom:"1px solid #000"}}>Smalsus Lead Team</th>
-                <th style={{border:"1px solid #000",borderTop:"0px"}}>Senior Developer Team</th>
-                <th style={{border:"1px solid #000",borderTop:"0px"}}>Junior Developer Team</th>
-                <th style={{border:"1px solid #000",borderTop:"0px"}}>Design Team</th>
-                <th style={{border:"1px solid #000",borderTop:"0px"}}>QA Team</th>
-
-               
-            </tr>
-            {data?.map((item:any,index:any)=>{
+      <table style={{borderCollapse: "collapse", width: "100%"}}>
+  <thead>
+    <tr>
+      <th colSpan={8} style={{backgroundColor: "#fcd5b4",borderBottom: "1px solid #CCC", textAlign: "center", padding: "8px"}}>{formattedDate}</th>
+    </tr>
+    <tr>
+      <th style={{border: "1px solid #dddddd", textAlign: "center", padding: "8px"}}>HHHH Team</th>
+      <th style={{border: "1px solid #dddddd", textAlign: "center", padding: "8px"}}>Smalsus Lead Team</th>
+      <th style={{border: "1px solid #dddddd", textAlign: "center", padding: "8px"}}>Senior Developer Team</th>
+      <th style={{border: "1px solid #dddddd", textAlign: "center", padding: "8px"}}>Junior Developer Team</th>
+      <th style={{border: "1px solid #dddddd", textAlign: "center", padding: "8px"}}>Design Team</th>
+      <th style={{border: "1px solid #dddddd", textAlign: "center", padding: "8px"}}>QA Team</th>
+    </tr>
+  </thead>
+  <tbody>
+    {data?.map((item:any,index:any)=>{
                 return(
-                    <tr style={{textAlign:"center", padding:"5px",background:"#fff"}}>
-                        
-                        <td style={{borderBottom:"1px solid #000",borderTop:"0px"}}>{item?.hhhhteam != null?item?.hhhhteam.map((hhhte:any)=>{
+    <tr style={{backgroundColor: "#f2f2f2"}}>
+      <td style={{border: "1px solid #dddddd", textAlign: "center", padding: "8px"}}>{item?.hhhhteam != null?item?.hhhhteam.map((hhhte:any)=>{
                           return hhhte.Title;
                         }):""}</td>
-                        <td style={{border:"1px solid #000",borderTop:"0px"}}>{item?.smalsuslead != (null || undefined)?item?.smalsuslead.map((smalslead:any)=>{
+      <td style={{border: "1px solid #dddddd", textAlign: "center", padding: "8px"}}>{item?.smalsuslead != (null || undefined)?item?.smalsuslead.map((smalslead:any)=>{
                           return smalslead.Title;
                         }):""}</td>
-                        <td style={{border:"1px solid #000",borderTop:"0px"}} >{item?.seniordev != (null || undefined)?item?.seniordev.map((seniord:any)=>{
+      <td style={{border: "1px solid #dddddd", textAlign: "center", padding: "8px"}}>{item?.seniordev != (null || undefined)?item?.seniordev.map((seniord:any)=>{
                           return seniord.Title;}):""}</td>
-                        <td style={{borderBottom:"1px solid #000",borderTop:"0px"}}>{item?.Juniordev != (null || undefined)?item?.Juniordev.map((juniiord:any)=>{
+      <td style={{border: "1px solid #dddddd", textAlign: "center", padding: "8px"}}>{item?.Juniordev != (null || undefined)?item?.Juniordev.map((juniiord:any)=>{
                           return juniiord.Title;
                         }):""}</td>
-                        <td style={{border:"1px solid #000",borderTop:"0px"}}>{item?.designteam != (null || undefined)?item?.designteam.map((designord:any)=>{
+      <td style={{border: "1px solid #dddddd", textAlign: "center", padding: "8px"}}>{item?.designteam != (null || undefined)?item?.designteam.map((designord:any)=>{
                           return designord.Title;
                         }):""}</td>
-                        <td style={{border:"1px solid #000",borderTop:"0px"}} >{item?.qateam != (null || undefined)?item?.qateam.map((qaord:any)=>{
+      <td style={{border: "1px solid #dddddd", textAlign: "center", padding: "8px"}}>{item?.qateam != (null || undefined)?item?.qateam.map((qaord:any)=>{
                           return qaord.Title;
                         }):""}</td>
-                        
-                    </tr>
-                )})}
-                
-          </thead>
-        </table>
-        <table data-border="1" cellSpacing={0}>
+    </tr>
+   
+     )})}
+  </tbody>
+</table>
+
+     
+        <table data-border="1" cellSpacing={0} style={{width: "100%",marginTop: "10px"}}>
           <thead>
-            <tr style={{textAlign:"center", padding:"5px",background:"#c5d9f1"}}>
-                <th style={{border:"1px solid #000"}} colSpan={8} >{formattedDate}</th>
+            
+            <tr style={{textAlign:"center", background:"#c5d9f1"}}>
+                <th style={{border:"1px solid #CCC",padding:"8px"}} colSpan={8} >{formattedDate}</th>
             </tr>
-            <tr style={{textAlign:"center", padding:"5px",background:"#fcd5b4"}}>
-                <th style={{border:"1px solid #000",borderTop:"0px"}}>S No.</th>
-                <th style={{borderBottom:"1px solid #000"}}>Name</th>
-                {/* <th style={{border:"1px solid #000",borderTop:"0px"}}>Designation</th> */}
-                <th style={{borderBottom:"1px solid #000"}}>Attendance</th>
-                <th style={{border:"1px solid #000",borderTop:"0px"}}>Reason</th>
-                <th style={{border:"1px solid #000",borderTop:"0px"}}>Expected leave end</th>
-                <th style={{border:"1px solid #000",borderTop:"0px"}}>Team</th>
-                <th style={{border:"1px solid #000",borderTop:"0px"}}> Total leave this year</th>
+            <tr style={{textAlign:"center", padding:"8px",background:"#fcd5b4"}}>
+                <th style={{border:"1px solid #CCC",padding:"8px",borderTop:"0px"}}>S No.</th>
+                <th style={{borderBottom:"1px solid #CCC"}}>Name</th>
+                {/* <th style={{border:"1px solid #CCC",borderTop:"0px"}}>Designation</th> */}
+                <th style={{borderBottom:"1px solid #CCC",padding:"8px"}}>Attendance</th>
+                <th style={{border:"1px solid #CCC",borderTop:"0px",padding:"8px"}}>Reason</th>
+                <th style={{border:"1px solid #CCC",padding:"8px",borderTop:"0px"}}>Expected leave end</th>
+                <th style={{border:"1px solid #CCC",padding:"8px",borderTop:"0px"}}>Team</th>
+                <th style={{border:"1px solid #CCC",padding:"8px",borderTop:"0px"}}> Total leave this year</th>
  
                
             </tr>
             {data?.map((item:any,index:any)=>{
                 return(
-                    <tr style={{textAlign:"center", padding:"5px",background:"#fff"}}>
-                        <td style={{border:"1px solid #000",borderTop:"0px"}}>
+                    <tr style={{textAlign:"center", padding:"8px",background:"#fff"}}>
+                        <td style={{border:"1px solid #CCC",borderTop:"0px"}}>
                             {index+1}
                         </td>
-                        <td style={{borderBottom:"1px solid #000"}}>
-                           <a href={`${props.Listdata.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${item.NameId}&Name=${item.Name}`}> {item.Name}</a>
+                        <td style={{borderBottom:"1px solid #CCC", padding:"8px"}}>
+                           <a href={`${props.Listdata.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${item?.NameId}&Name=${item?.Name}`}> {item?.Name}</a>
                         </td>
-                        {/* <td style={{border:"1px solid #000",borderTop:"0px"}}>
+                        {/* <td style={{border:"1px solid #CCC",borderTop:"0px"}}>
                             {item.Designation}
                         </td>
                         
                          */}
-                          <td style={item.eventType=="Un-Planned"?{border:"1px solid #000",background:"#f00"}:{borderBottom:"1px solid #000",background:"#0ac55f"}}>
+                          <td style={item.eventType=="Un-Planned"?{border:"1px solid #CCC",background:"#f00"}:{borderBottom:"1px solid #CCC",background:"#0ac55f", padding:"8px"}}>
                           {item.eventType}
                       </td>
                       
                         
-                        <td style={{border:"1px solid #000",borderTop:"0px"}} dangerouslySetInnerHTML={{__html: item.desc}}></td>
-                        <td style={{border:"1px solid #000",borderTop:"0px"}} ><a href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmalsusLeaveCalendar.aspx">
+                        <td style={{border:"1px solid #CCC",borderTop:"0px", padding:"8px"}} >{item?.shortD}</td>
+                        <td style={{border:"1px solid #CCC",borderTop:"0px", padding:"8px"}} ><a href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmalsusLeaveCalendar.aspx">
                           <span>{item.enddate.toLocaleString() }</span>
                           {/* Today Date */}
                           </a></td>
-                        <td style={{border:"1px solid #000",borderTop:"0px"}} dangerouslySetInnerHTML={{__html: item.Designation}}></td>
-                        <td style={{border:"1px solid #000",borderTop:"0px"}} >{item?.TotalLeave}</td>
+                        <td style={{border:"1px solid #CCC",borderTop:"0px", padding:"8px"}} dangerouslySetInnerHTML={{__html: item.Designation}}></td>
+                        <td style={{border:"1px solid #CCC",borderTop:"0px", padding:"8px"}} >{item?.TotalLeave}</td>
                         
                     </tr>
                 )
             })}
-          </thead>
+          </thead> 
         </table>
       </div>
       </div>
