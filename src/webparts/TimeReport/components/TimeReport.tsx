@@ -310,7 +310,7 @@ const TimeReport = (props:any) => {
             console.log(myData);
            
             myData?.forEach((val:any)=>{
-                if(val.Name != null && val.Name != undefined){
+              
                     // var TodayDate:any = new Date()
                     // TodayDate =  Moment(TodayDate).format("DD/MM/YYYY")
                    //var TodayDate =  selectDate.split("/")
@@ -331,7 +331,7 @@ const TimeReport = (props:any) => {
                         leaveUser.push(val)
     
                     }
-                }
+                
                
             })
             console.log(leaveUser)
