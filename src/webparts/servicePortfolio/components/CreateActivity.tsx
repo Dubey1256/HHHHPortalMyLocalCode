@@ -941,7 +941,7 @@ const CreateActivity = (props: any) => {
                 let prentID = ''
                 let LetestLevelData = []
                 if (value.IscreateTask == true) {
-                    if (AllItems?.NoteCall == 'Activities') {
+                    if (AllItems?.NoteCall != 'Task') {
                         let web = new Web(dynamicList.siteUrl);
 
                         AllMatsterAndTaskData?.forEach((val:any)=>{

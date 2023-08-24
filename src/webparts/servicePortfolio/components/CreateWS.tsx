@@ -1982,7 +1982,7 @@ const CreateWS = (props: any) => {
                                 placeholder="Enter Child Item Title" defaultValue={AllItems?.Title}  onChange={(e) => setPostData({ ...postData, Title: e.target.value })}
                             />
                         </div>
-                        <div className="col-md-4">
+                        {/* <div className="col-md-4">
                             {AllItems?.Portfolio_x0020_Type == 'Component'
                                 &&
                                 <div className="">
@@ -2013,17 +2013,11 @@ const CreateWS = (props: any) => {
                                                 )
                                             })}
 
-                                            {/* <span ng-show="smartComponent.length!=0" className="col-sm-1">
-                                                <a className="hreflink" title="Edit Component" data-toggle="modal"
-                                                    onClick={(e) => EditComponent(AllItems)}>
-
-                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png" />
-                                                </a>
-                                            </span> */}
+                                           
                                         </div>
                                     </div>
                                 </div>}
-                        </div>
+                        </div> */}
 
                     </div>
                     <div className='row mt-2'>
