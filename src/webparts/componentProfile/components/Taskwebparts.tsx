@@ -673,7 +673,6 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         "Title",
         "Id",
         "DueDate",
-        "WebpartId",
         "Body"
       )
       .filter("Item_x0020_Type  eq 'Project'")

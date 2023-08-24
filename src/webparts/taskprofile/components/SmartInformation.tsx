@@ -1101,7 +1101,7 @@ const SmartInformation = (props: any,ref:any) => {
           if((props?.Context?.pageContext?.legacyPageContext?.userId==SmartInformation?.Author?.Id && SmartInformation?.SelectedFolder=="Only For Me")||SmartInformation.SelectedFolder=="Public"){
             return (
               <>
-               <div className='border dropdown mt-2 shadow'>
+               <div className='border dropdown mt-2 '>
                   <div className='bg-ee d-flex py-1 '>
                     <span className='full-width'>
                       <a onClick={() => showhideComposition(SmartInformation)}>
@@ -1199,11 +1199,10 @@ const SmartInformation = (props: any,ref:any) => {
           <div className="row">
             <dl className="align-items-center d-flex Hz-align ">
               <dt>
-                Select
-                Permission:
+                Select Permission:
               </dt>
-              <dt><input type="radio" checked={allValue?.SelectedFolder == "Public"} value="Public" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>Global</label></dt>
-              <dt><input type="radio" checked={allValue?.SelectedFolder == "Only For Me"} value="Only For Me" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>Only for me</label></dt>
+              <dt className='SpfxCheckRadio '><input type="radio" className='radio' checked={allValue?.SelectedFolder == "Public"} value="Public" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>Global</label></dt>
+              <dt className='SpfxCheckRadio '><input type="radio" className='radio'   checked={allValue?.SelectedFolder == "Only For Me"} value="Only For Me" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>Only for me</label></dt>
 
               {/* <dt><input type="radio" checked={allValue?.SelectedFolder == "Memberarea"} value="Memberarea" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>Memberarea</label></dt> */}
               {/* <dt><input type="radio" checked={allValue?.SelectedFolder == "EDA"} value="EDA" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>EDA Only</label></dt>
@@ -1439,8 +1438,8 @@ const SmartInformation = (props: any,ref:any) => {
                 </div>
                 <div className="input-group mx-4">
                   <label className="form-label full-width">
-                    <span><input type="radio" name="radio" className="form-check-input" value="Component" checked={componentpopup} onClick={(e) => checkradiobutton(e, "Component")} /> Component</span>
-                    <span className='ps-3'><input type="radio" name="radio" className="form-check-input" value="Service" checked={servicespopup} onClick={(e) => checkradiobutton(e, "Service")} /> Service</span>
+                    <span className='SpfxCheckRadio '><input type="radio" name="radio" className=" radio" value="Component" checked={componentpopup} onClick={(e) => checkradiobutton(e, "Component")} /> Component</span>
+                    <span className='ps-3 SpfxCheckRadio '><input type="radio" name="radio" className="radio" value="Service" checked={servicespopup} onClick={(e) => checkradiobutton(e, "Service")} /> Service</span>
                   </label>
 
                   {allValue?.componentservicesetdataTag != undefined &&

@@ -69,9 +69,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       columns : []
     }    
     this.GetResult();   
-    
   }
-
   private AllTimeEntry:any=[];
   private TotalTimeEntry:any;
   private TotalDays:any;
