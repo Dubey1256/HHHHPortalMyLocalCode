@@ -59,6 +59,7 @@ export interface ITaskprofileState {
   subchildcomment: any,
   updateComment: boolean;
   showComposition: boolean;
+  ShowEstimatedTimeDescription: boolean;
   isOpenEditPopup: boolean;
   TaskDeletedStatus: boolean;
   isTimeEntry: boolean,
@@ -93,23 +94,7 @@ export interface ITaskprofileState {
 }
 
 export default class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> {
-  //   private styles = mergeStyleSets({
-  //     callout: {
-  //         width: 700,
-  //         padding: '20px 24px',
-  //     },
-  //     title: {
-  //         marginBottom: 12,
-  //         fontWeight: FontWeights.semilight,
-  //     },
-  //     buttons: {
-  //         display: 'flex',
-  //         justifyContent: 'flex-end',
-  //         marginTop: 20,
-  //     },
-  // });
-
-  private relevantDocRef: any;
+ private relevantDocRef: any;
   private smartInfoRef: any;
   private taskUsers: any = [];
   private smartMetaDataIcon: any;
@@ -164,6 +149,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       showcomment: 'none',
       updateComment: false,
       showComposition: true,
+      ShowEstimatedTimeDescription:false,
       isOpenEditPopup: false,
       TaskDeletedStatus: false,
       isopenversionHistory: false,
@@ -350,7 +336,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       .getByTitle(this.state?.listName)
       .items
       .getById(this.state?.itemID)
-      .select("ID", "Title", "Comments", "ApproverHistory", "EstimatedTime", "DueDate", "IsTodaysTask", "Approver/Id", "Approver/Title", "ParentTask/Id", "Project/Id", "Project/Title", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
+      .select("ID", "Title", "Comments", "ApproverHistory", "EstimatedTime", "DueDate", "IsTodaysTask",'EstimatedTimeDescription', "Approver/Id", "Approver/Title", "ParentTask/Id", "Project/Id", "Project/Title", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
       .expand("Team_x0020_Members", "Project", "Approver", "ParentTask", "SmartInformation", "AssignedTo", "SharewebCategories", "Author", "ClientCategory", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor", "AttachmentFiles")
       .get()
     AllListId = {
@@ -442,6 +428,19 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         console.log(e)
       }
     }
+    let tempEstimatedArrayData: any;
+    let TotalEstimatedTime: any = 0;
+    if (taskDetails['EstimatedTimeDescription']?.length > 0) {
+      tempEstimatedArrayData = JSON.parse(taskDetails['EstimatedTimeDescription']);
+      if (tempEstimatedArrayData?.length > 0) {
+        tempEstimatedArrayData?.map((TimeDetails: any) => {
+          TotalEstimatedTime = TotalEstimatedTime + Number(TimeDetails.EstimatedTime);
+        })
+      }
+    } else {
+      tempEstimatedArrayData = [];
+    }
+
     let tempTask = {
       SiteIcon: this.GetSiteIcon(this.state?.listName),
       sitePage: this.props.Context?._pageContext?._web?.title,
@@ -478,7 +477,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       BasicImageInfo: this.GetAllImages(JSON.parse(taskDetails["BasicImageInfo"]), taskDetails["AttachmentFiles"], taskDetails["Attachments"]),
       FeedBack: JSON.parse(taskDetails["FeedBack"]),
       SharewebTaskType: taskDetails["SharewebTaskType"] != null ? taskDetails["SharewebTaskType"]?.Title : '',
-
+      EstimatedTimeDescriptionArray: tempEstimatedArrayData,
+      TotalEstimatedTime: TotalEstimatedTime,
       Component: taskDetails["Component"],
       Services: taskDetails["Services"],
       Creation: taskDetails["Created"],
@@ -858,6 +858,18 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     } else {
       this.setState({
         showComposition: true
+      });
+    }
+
+  }
+  private showhideEstimatedTime() {
+    if (this.state.ShowEstimatedTimeDescription) {
+      this.setState({
+        ShowEstimatedTimeDescription: false
+      });
+    } else {
+      this.setState({
+        ShowEstimatedTimeDescription: true
       });
     }
 
@@ -2092,6 +2104,40 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                       </div>
                     }
                   </dl>}
+                  {this.state.Result?.EstimatedTimeDescriptionArray?.length > 0 &&
+                    <dl className="Sitecomposition my-2">
+                      <div className='dropdown'>
+                        <a className="sitebutton bg-fxdark d-flex">
+                          <span className="arrowicons" onClick={() => this.showhideEstimatedTime()}>{this.state.ShowEstimatedTimeDescription ? <SlArrowDown /> : <SlArrowRight />}</span>
+                          <div className="d-flex justify-content-between full-width">
+                            <p className="pb-0 mb-0 ">Estimated Task Time Details</p>
+                          </div>
+                        </a>
+                        <div className="spxdropdown-menu" style={{ display: this.state.ShowEstimatedTimeDescription ? 'block' : 'none' }}>
+                          <div className="col-12" style={{ fontSize: "14px" }}>
+                            {this.state.Result?.EstimatedTimeDescriptionArray != null && this.state.Result?.EstimatedTimeDescriptionArray?.length > 0 ?
+                              <div className="p-1">
+                                {this.state.Result?.EstimatedTimeDescriptionArray?.map((EstimatedTimeData: any, Index: any) => {
+                                  return (
+                                    <div className={this.state.Result?.EstimatedTimeDescriptionArray?.length == Index + 1 ? "align-content-center d-flex justify-content-between p-1 px-2" : "align-content-center border-bottom d-flex justify-content-between p-1 px-2"}>
+                                      <img className="ProirityAssignedUserPhoto m-0" title={EstimatedTimeData.UserName} src={EstimatedTimeData.UserImage != undefined && EstimatedTimeData.UserImage?.length > 0 ? EstimatedTimeData.UserImage : ''} />
+                                      <span>{EstimatedTimeData.Team ? EstimatedTimeData.Team : null}</span> |
+                                      <span>Time : {EstimatedTimeData.EstimatedTime ? (EstimatedTimeData.EstimatedTime > 1 ? EstimatedTimeData.EstimatedTime + " hours" : EstimatedTimeData.EstimatedTime + " hour") : "0 hour"}</span>
+                                      <span className="svg__iconbox svg__icon--info" title={EstimatedTimeData.EstimatedTimeDescription} ></span>
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                              : null
+                            }
+                          </div>
+                        </div>
+                        <div className="boldClable border border-top-0 ps-2 py-1">
+                          <span>Total Estimated Time : </span><span className="mx-1">{this.state.Result.TotalEstimatedTime > 1 ? this.state.Result.TotalEstimatedTime + " hours" : this.state.Result.TotalEstimatedTime + " hour"} </span>
+                        </div>
+                      </div>
+                    </dl>
+                  }
 
                 </div>
               </div>
@@ -2246,12 +2292,12 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                         <div className="border p-2 full-width text-break"
                                           title={fbData.ApproverData != undefined && fbData.ApproverData.length > 0 ? fbData.ApproverData[fbData.ApproverData.length - 1].isShowLight : ""}>
 
-                                          <span dangerouslySetInnerHTML={{ __html: fbData.Title.replace(/\n/g, "<br />") }}></span>
+                                          <span dangerouslySetInnerHTML={{ __html: fbData?.Title?.replace(/\n/g, "<br />") }}></span>
                                           <div className="col">
-                                            {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments']?.map((fbComment: any, k: any) => {
+                                            {fbData['Comments'] != null && fbData['Comments']?.length > 0 && fbData['Comments']?.map((fbComment: any, k: any) => {
                                               return <div className={fbComment.isShowLight != undefined && fbComment.isApprovalComment ? `col add_cmnt my-1 ${fbComment.isShowLight}` : "col add_cmnt my-1"}>
                                                 <div className="">
-                                                  <div className="alignCenter p-0">
+                                                  <div className="d-flex p-0">
                                                     <div className="col-1 p-0">
                                                       <img className="workmember" src={fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ?
                                                         fbComment.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
@@ -2285,7 +2331,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                                   <div className="col-12 ps-3 pe-0">
                                                     {fbComment?.ReplyMessages != undefined && fbComment?.ReplyMessages.length > 0 && fbComment?.ReplyMessages?.map((replymessage: any, index: any) => {
                                                       return (
-                                                        <div className="alignCenter border ms-3 p-2  mb-1">
+                                                        <div className="d-flex border ms-3 p-2  mb-1">
                                                           <div className="col-1 p-0 mx-1">
                                                             <img className="workmember" src={replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != '' ?
                                                               replymessage.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
@@ -2412,7 +2458,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                               {fbSubData?.Comments != null && fbSubData.Comments.length > 0 && fbSubData?.Comments?.map((fbComment: any, k: any) => {
                                                 return <div className={fbComment?.isShowLight != undefined && fbComment.isApprovalComment ? `col-sm-12  mb-2 add_cmnt my-1 ${fbComment?.isShowLight}` : "col-sm-12  mb-2 add_cmnt my-1 "}>
                                                   <div className="">
-                                                    <div className="alignCenter p-0">
+                                                    <div className="d-flex p-0">
                                                       <div className="col-sm-1 padL-0 wid35">
                                                         <img className="workmember" src={fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ?
                                                           fbComment.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
@@ -2446,7 +2492,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                                     <div className="col-12 ps-3 pe-0">
                                                       {fbComment?.ReplyMessages != undefined && fbComment?.ReplyMessages.length > 0 && fbComment?.ReplyMessages?.map((replymessage: any, ReplyIndex: any) => {
                                                         return (
-                                                          <div className="alignCenter border ms-3 p-2  mb-1">
+                                                          <div className="d-flex border ms-3 p-2  mb-1">
                                                             <div className="col-1 p-0 mx-1">
                                                               <img className="workmember" src={replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != '' ?
                                                                 replymessage.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
@@ -2540,8 +2586,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
                 {/*===================Backgroundimage code and comment========== */}
 
-                {this.backGroundComment && this.state.Result["OffshoreImageUrl"].length > 0 ? <div className="col mt-2">
-                  <div className="Taskaddcomment row border-top">
+                {this.backGroundComment && <div className="col mt-2">
+                  <div className="Taskaddcomment row">
                     {this.state.Result["OffshoreImageUrl"] != null && this.state.Result["OffshoreImageUrl"].length > 0 &&
                       <div className="bg-white col-sm-4 mt-2 p-0">
                         {this.state.Result["OffshoreImageUrl"] != null && this.state.Result["OffshoreImageUrl"]?.map((imgData: any, i: any) => {
@@ -2601,7 +2647,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
                     </div>}
                   </div>
-                </div> : null}
+                </div> }
 
               </section>
 

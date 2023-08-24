@@ -2514,7 +2514,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                   {linkedComponentData?.map((com: any) => {
                                     return (
                                       <>
-                                        <div className="block d-flex justify-content-between mb-1">
+                                        <div className="colorComponentBgColor d-flex justify-content-between mb-1">
 
                                           <a
                                             className="hreflink service ps-2"

@@ -200,11 +200,11 @@ let AllAvailableTitle: any = [];
             {smartTimeTotal.toFixed(1)}
             <span className='openhoverpopup hoverimg'>
             <span className="svg__iconbox svg__icon--clock dark" onClick={OpenTimeEntry}></span>
-               <div className='hoverpopup overlay scrollbar'>
+               <div className='hoverpopup overlay'>
                     <div className='hoverpopuptitle'>{item.props.Title}</div>
                     <div className='hoverpopupbody'>
                         <table className='table mb-0'>
-                            <tbody>
+                           { additionalTime.length > 0?<tbody>
                                 {additionalTime.length > 0 && additionalTime.map((items: any) => {
                                     return (
                                         <>
@@ -229,7 +229,8 @@ let AllAvailableTitle: any = [];
                                     )
                                 }
                                 )}
-                            </tbody>
+                            </tbody>:<div className='p-2'><div className='noTimeEntry'>No Time Entry</div></div>}
+
                         </table>
                     </div> </div>
             </span>

@@ -33,6 +33,8 @@ const TeamLeaderHeader = (props: any) => {
     const [isOpenPopup,setIsOpenPopup ] = React.useState(false)
     let allTaskData = props.allTaskData.length > 0 ? props.allTaskData : [];
     console.log(props.allTaskData)
+
+   
     React.useMemo(() => {
         console.log("Use Effect Function ========")
         if (allTaskData?.length > 0) {
@@ -218,7 +220,7 @@ const TeamLeaderHeader = (props: any) => {
                     </Col>
                 </Row>
             </div>}
-            <TaskDetailsPanel OpenPopup={isOpenPopup}setIsOpenPopup={setIsOpenPopup}particularTaskdetailModal={particularTaskdetailModal}taskUsers={props.taskUsers}/>
+            <TaskDetailsPanel OpenPopup={isOpenPopup}setIsOpenPopup={setIsOpenPopup}particularTaskdetailModal={particularTaskdetailModal}/>
         </>
     )
 
