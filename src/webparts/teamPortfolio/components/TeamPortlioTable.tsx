@@ -1120,7 +1120,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     <>{
                         topCompoIcon ?
                             <span style={{ backgroundColor: `${portfolioColor}` }} className="Dyicons mb-1 mx-1 p-1" onClick={() => trueTopIcon(true)}>
-                                <span  className="svg__iconbox svg__icon--re-structure"></span>
+                                <span className="svg__iconbox svg__icon--re-structure"></span>
                             </span>
                             : ''
                     }
@@ -1129,7 +1129,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 cell: ({ row, getValue }) => (
                     <>
                         {row?.original?.isRestructureActive && (
-                            <span className="Dyicons p-1" style={{ backgroundColor: `${portfolioColor}` }} onClick={() => callChildFunction(row?.original)}>
+                            <span className="Dyicons p-1" style={{ backgroundColor:`${row?.original?.PortfolioType?.Color}` }} onClick={() => callChildFunction(row?.original)}>
                                 <span className="svg__iconbox svg__icon--re-structure"> </span>
                                 {/* <img
                                     className="workmember"
