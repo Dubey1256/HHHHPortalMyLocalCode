@@ -263,7 +263,25 @@ const GlobalCommanTable = (items: any, ref: any) => {
         enableSubRowSelection: false,
         // filterFns: undefined
     });
-
+    /****************** defult sorting  part *******************/
+    React.useEffect(() => {
+        if (columns?.length > 0 && columns != undefined) {
+            let sortingDescData: any = [];
+            columns.map((sortDec: any) => {
+                if (sortDec.isColumnDefultSortingDesc === true) {
+                    let obj = { 'id': sortDec.id, desc: true }
+                    sortingDescData.push(obj);
+                } else if (sortDec.isColumnDefultSortingAsc === true) {
+                    let obj = { 'id': sortDec.id, desc: false }
+                    sortingDescData.push(obj)
+                }
+            })
+            if (sortingDescData.length > 0) {
+                setSorting(sortingDescData);
+            }
+        }
+    }, [])
+    /****************** defult sorting  part end *******************/
 
     React.useEffect(() => {
         CheckDataPrepre()

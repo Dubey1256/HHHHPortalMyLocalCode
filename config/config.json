@@ -187,6 +187,24 @@
         }
       ]
     },
+    
+    "document-search-web-part": {
+     "components": [
+       {
+         "entrypoint": "./lib/webparts/documentSearch/DocumentSearchWebPart.js",
+         "manifest": "./src/webparts/documentSearch/DocumentSearchWebPart.manifest.json"
+       }
+     ]
+   }
+  ,
+  "smart-meta-search-web-part": {
+   "components": [
+     {
+       "entrypoint": "./lib/webparts/smartMetaSearch/SmartMetaSearchWebPart.js",
+       "manifest": "./src/webparts/smartMetaSearch/SmartMetaSearchWebPart.manifest.json"
+     }
+   ]
+ },
     "manage-smart-metadata-web-part": {
       "components": [
         {
@@ -240,6 +258,14 @@
         {
           "entrypoint": "./lib/webparts/calendar/CalendarWebPart.js",
           "manifest": "./src/webparts/calendar/CalendarWebPart.manifest.json"
+        }
+      ]
+    },
+    "meeting-overview-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/meetingOverview/MeetingOverviewWebPart.js",
+          "manifest": "./src/webparts/meetingOverview/MeetingOverviewWebPart.manifest.json"
         }
       ]
     },
@@ -337,7 +363,10 @@
     "TeamleaderDashboardWebPartStrings": "lib/webparts/teamleaderDashboard/loc/{locale}.js",
     "TestWebPartWebPartStrings": "lib/webparts/testWebPart/loc/{locale}.js",
     "RootDashboardWebPartStrings": "lib/webparts/rootDashboard/loc/{locale}.js",
+    "SmartMetaSearchWebPartStrings": "lib/webparts/smartMetaSearch/loc/{locale}.js",
+    "DocumentSearchWebPartStrings": "lib/webparts/documentSearch/loc/{locale}.js",
     "UserTimeEntryWebPartStrings": "lib/webparts/userTimeEntry/loc/{locale}.js",
-    "TeamPortfolioWebPartStrings": "lib/webparts/teamPortfolio/loc/{locale}.js"
+    "TeamPortfolioWebPartStrings": "lib/webparts/teamPortfolio/loc/{locale}.js",
+    "MeetingOverviewWebPartStrings": "lib/webparts/meetingOverview/loc/{locale}.js"
   }
 }

@@ -1032,7 +1032,7 @@ const SiteCompositionComponent = (Props: any) => {
                         Select Client Category
                     </span>
                 </div>
-                <Tooltip ComponentId="1626" isServiceTask={ServicesTaskCheck}/>
+                <Tooltip ComponentId="1626" />
             </div>
         )
     }
@@ -1176,7 +1176,7 @@ const SiteCompositionComponent = (Props: any) => {
                         Select Item
                     </span>
                 </div>
-                <Tooltip ComponentId="1626" isServiceTask={ServicesTaskCheck}/>
+                <Tooltip ComponentId="1263" />
             </div>
         )
     }
@@ -1339,7 +1339,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                             defaultValue={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(2) : null}
                                                             className="form-control p-1"
                                                             onChange={(e) => ChangeTimeManuallyFunction(e, siteData.Title)}
-                                                        /> : <input type="number" className="form-control" readOnly={true} style={{ cursor: "not-allowed", width: "100%" }}
+                                                        /> : <input type="number" className="form-control" value={''} readOnly={true} style={{ cursor: "not-allowed", width: "100%" }}
                                                         />}</>
                                                 }
                                             </td>
@@ -1687,12 +1687,12 @@ const SiteCompositionComponent = (Props: any) => {
                         </tbody>
                         : null}
                 </table>
-                <div className="bg-secondary d-flex justify-content-end p-1 shadow-lg">
+                <footer className="bg-secondary d-flex justify-content-end p-1 shadow-lg">
                     <div className="bg-body col-sm-2 p-1">
                         <div className="">{isPortfolioComposition == true || ProportionalStatus == false ? `${TotalPercent} %` : "100%"}</div>
                     </div>
                     <button className="btn ms-1 btn-primary px-4" onClick={UpdateSiteTaggingAndClientCategory}>Save</button>
-                </div>
+                </footer>
             </div>
             {/* ********************* this Client Category Popup panel ****************** */}
             <Panel

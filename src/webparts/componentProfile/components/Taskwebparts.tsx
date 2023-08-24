@@ -45,13 +45,13 @@ import {
   getFacetedUniqueValues,
   FilterFn
 } from "@tanstack/react-table";
-import HighlightableCell from '../../componentPortfolio/components/highlight'
+// import HighlightableCell from '../../componentPortfolio/components/highlight'
 import Loader from "react-loader";
 import ShowTeamMembers from "../../../globalComponents/ShowTeamMember";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 // import HighlightableCell from "../../../globalComponents/highlight";
-// import HighlightableCell from "../../componentPortfolio/components/highlight";
+import HighlightableCell from "../../componentPortfolio/components/highlight";
 
 
 ///TanstackTable filter And CheckBox 
@@ -191,7 +191,6 @@ let workstrim = 0;
 let task = 0;
 let AllActivitysData: any = [];
 let AllWorkStreamData: any = [];
-let ProjectData: any = [];
 let TimesheetData:any=[];
 export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   if (countaa == 0) {
@@ -577,12 +576,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     return (
       <div className="d-flex full-width pb-1">
         <div
-          style={{
-            marginRight: "auto",
-            fontSize: "20px",
-            fontWeight: "600",
-            marginLeft: "20px",
-          }}
+        className="subheading"
         >
           <span>{`Create  ${IsUpdated} item in ${MeetingItems[0]?.PortfolioStructureID} ${MeetingItems[0]?.Title}`}</span>
         </div>
@@ -664,20 +658,6 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     makeFinalgrouping();
   };
 
-  const getProjectData = async () => {
-    let web = new Web(NextProp.siteUrl);
-    ProjectData = await web.lists
-      .getById(NextProp.MasterTaskListID)
-      .items.select(
-        "Item_x0020_Type",
-        "Title",
-        "Id",
-        "DueDate",
-        "Body"
-      )
-      .filter("Item_x0020_Type  eq 'Project'")
-      .get();
-  };
 
 
 
@@ -694,6 +674,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
             "ParentTask/Title",
             "ParentTask/Id",
             "Project/Id",
+            "Project/PortfolioStructureID",
             "Project/Title",
             "Services/Title",
             "ClientTime",
@@ -809,33 +790,25 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
             map(AllTasks, (result: any) => {
               result.Id = result.Id != undefined ? result.Id : result.ID;
               result.TeamLeaderUser = [];
+              if (result.Project) {
 
-              if (ProjectData.length !== 0) {
-                ProjectData.forEach((project:any) => {
-                  if (project?.Id === result?.Project?.Id) {
-                    let ProjectTitles = result?.Project?.Title;
-                    result.ProjectTitle = ProjectTitles.split(' ')[0];
+                result.ProjectTitle = result?.Project?.Title;
 
-                    result.ProjectId = result?.Project?.Id;
-              
-                    result.joinedData = ProjectData
-                      .filter((elem:any) => elem?.Id === result?.Project?.Id)
-                      .map((elem:any) => {
-                        const title = elem.Title || '';
-                        const body = elem.Body ? elem.Body.replace(/<[^>]+>/g, '') : '';
-                        const dueDate = elem.DueDate ? new Date(elem.DueDate).toLocaleDateString() : '';              
-                        const formattedData = [];
-                        if (title) formattedData.push(`Title: ${title}`);
-                        if (body) formattedData.push(`Description: ${body}`);
-                         if (dueDate) formattedData.push(`Due Date: ${dueDate}`);
-              
-                        return formattedData.join('\n');
-                      })
-                      .join('\n\n');
-                  }
-                });
-              }
-              
+                result.ProjectId = result?.Project?.Id;
+
+                result.projectStructerId = result?.Project?.PortfolioStructureID
+
+                const title = result?.Project?.Title || '';
+
+                const dueDate = result?.DueDate;
+
+                result.joinedData = [];
+
+                if (title) result.joinedData.push(`Title: ${title}`);
+
+                if (dueDate) result.joinedData.push(`Due Date: ${dueDate}`);
+
+            }
               result.AllTeamName =
                 result.AllTeamName === undefined ? "" : result.AllTeamName;
               result.chekbox = false;
@@ -1277,7 +1250,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     }
 
     // await GetTimeEntryData();
-    await getProjectData();
+    // await getProjectData();
     LoadAllSiteTasks();
   };
   //const [IsUpdated, setIsUpdated] = React.useState(SelectedProp.SelectedProp);
@@ -4265,20 +4238,34 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         header: "",
       },
       {
-        accessorFn: (row) => row?.ProjectTitle,
+
+        accessorFn: (row) => row?.projectStructerId + "." + row?.ProjectTitle,
+
         cell: ({ row }) => (
-          <>
-            {row?.original?.ProjectTitle != (null || undefined) ?
-              <span ><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${NextProp.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
-                 <ReactPopperTooltip ShareWebId={row?.original?.ProjectTitle} projectToolShow={true} row={row} AllListId={NextProp}/></a></span>
-              : ""}
-          </>
+
+            <>
+
+                {row?.original?.ProjectTitle != (null || undefined) ?
+
+                    <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${NextProp.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
+
+                        <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={NextProp} /></a></span>
+
+                    : ""}
+
+            </>
+
         ),
+
         id: 'ProjectTitle',
+
         placeholder: "Project",
+
         header: "",
-        size: 100,
-      },
+
+        size: 70,
+
+    },
       {
         accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title).join("-"),
         cell: ({ row }) => (
@@ -4902,13 +4889,13 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       <Panel
         onRenderHeader={onRenderCustomHeaderMain}
         type={PanelType.custom}
-        customWidth="600px"
+        customWidth="810px"
         isOpen={ActivityPopup}
         onDismiss={closeTaskStatusUpdatePoup2}
         isBlocking={false}
       >
 
-        <div className="modal-body bg-f5f5 clearfix">
+        <div className="modal-body clearfix">
           <div
             className={
               props?.Portfolio_x0020_Type == "Events Portfolio"
@@ -4922,13 +4909,13 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
               {props != undefined && props.Portfolio_x0020_Type == "Service" ? (
                 <ul className="quick-actions">
 
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2 hreflink">
                     <div onClick={() => CreateMeetingPopups("Activities")}>
                       <span className="icon-sites"></span>
                       Activity
                     </div>
                   </li>
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2  hreflink">
                     <div onClick={() => CreateMeetingPopups("Task")}>
                       <span className="icon-sites"></span>
                       Task
@@ -4937,33 +4924,37 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                 </ul>
               ) : (
                 <ul className="quick-actions">
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                 <li className="d-grid w-100">
+                  <ul className="d-flex justify-content-center p-0">
+                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2 hreflink">
 
-                    <div onClick={() => CreateMeetingPopups("Activities")}>
+                      <div onClick={() => CreateMeetingPopups("Activities")}>
 
-                      <span className="icon-sites"></span>
+                        <span className="icon-sites"></span>
 
-                      Activity
+                        Activity
 
-                    </div>
+                      </div>
 
-                  </li>
+                   </li>
 
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                      <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2 hreflink">
 
-                    <div onClick={() => CreateMeetingPopups("Task")}>
+                      <div onClick={() => CreateMeetingPopups("Task")}>
 
-                      <span className="icon-sites"> </span>
+                        <span className="icon-sites"> </span>
 
-                      Task
+                        Task
 
-                    </div>
+                      </div>
 
-                  </li>
+                      </li>
+                  </ul>
+                 </li>
 
 
 
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2 hreflink">
 
                     <div onClick={() => CreateMeetingPopups("Activities")}>
 
@@ -4984,7 +4975,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                     </div>
 
                   </li>
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2 hreflink">
 
                     <div onClick={() => CreateMeetingPopups("Improvement")}>
 
@@ -5002,7 +4993,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
                   </li>
 
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2 hreflink">
 
                     <div onClick={() => CreateMeetingPopups("Activities")}>
 
@@ -5020,7 +5011,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
                   </li>
 
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2 hreflink">
 
                     <div onClick={() => CreateMeetingPopups("Bug")}>
 
@@ -5038,7 +5029,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
                   </li>
 
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2 hreflink">
 
                     <div onClick={() => CreateMeetingPopups("Feedback")}>
 
@@ -5058,7 +5049,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
 
 
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2 hreflink">
 
                     <div onClick={() => CreateMeetingPopups("Design")}>
 
@@ -5083,7 +5074,10 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
               )}
             </div>
           </div>
-          <button
+          
+        </div>
+        <div className="modal-footer">
+        <button
             type="button"
             className="btn btn-default btn-default ms-1 pull-right"
             onClick={closeTaskStatusUpdatePoup2}
@@ -5092,7 +5086,6 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
           </button>
         </div>
       </Panel>
-
       {
         ResturuningOpen &&
         <Panel
