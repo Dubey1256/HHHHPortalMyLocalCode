@@ -140,12 +140,12 @@ export function IndeterminateCheckbox(
 
 // ReactTable Part end/////
 let isShowingDataAll: any = false;
-const GlobalCommanTable = (items: any,ref:any) => {
-    let childRefdata: any ;
-    const childRef =React.useRef<any>();
-    if(childRef!=null){
-        childRefdata={...childRef};
-        
+const GlobalCommanTable = (items: any, ref: any) => {
+    let childRefdata: any;
+    const childRef = React.useRef<any>();
+    if (childRef != null) {
+        childRefdata = { ...childRef };
+
     }
     let expendedTrue = items?.expendedTrue
     let data = items?.data;
@@ -174,6 +174,7 @@ const GlobalCommanTable = (items: any,ref:any) => {
     const [globalSearchType, setGlobalSearchType] = React.useState("ALL");
     const [selectedFilterPanelIsOpen, setSelectedFilterPanelIsOpen] = React.useState(false);
     const [tablecontiner, settablecontiner]: any = React.useState("hundred");
+    const [trueRestructuring, setTrueRestructuring] = React.useState(false);
     const [columnVisibility, setColumnVisibility] = React.useState({ descriptionsSearch: false, commentsSearch: false });
     const [selectedFilterPannelData, setSelectedFilterPannelData] = React.useState({
         Title: { Title: 'Title', Selected: true },
@@ -262,19 +263,36 @@ const GlobalCommanTable = (items: any,ref:any) => {
         enableSubRowSelection: false,
         // filterFns: undefined
     });
-
+    /****************** defult sorting  part *******************/
+    React.useEffect(() => {
+        if (columns?.length > 0 && columns != undefined) {
+            let sortingDescData: any = [];
+            columns.map((sortDec: any) => {
+                if (sortDec.isColumnDefultSortingDesc === true) {
+                    let obj = { 'id': sortDec.id, desc: true }
+                    sortingDescData.push(obj);
+                } else if (sortDec.isColumnDefultSortingAsc === true) {
+                    let obj = { 'id': sortDec.id, desc: false }
+                    sortingDescData.push(obj)
+                }
+            })
+            if (sortingDescData.length > 0) {
+                setSorting(sortingDescData);
+            }
+        }
+    }, [])
+    /****************** defult sorting  part end *******************/
 
     React.useEffect(() => {
         CheckDataPrepre()
     }, [table?.getSelectedRowModel()?.flatRows.length])
     React.useEffect(() => {
-
         if (items?.pageSize != undefined) {
             table.setPageSize(items?.pageSize)
         } else {
-            table.setPageSize(100)
+            table.setPageSize(100);
         }
-        table.setPageSize(100)
+        table.setPageSize(100);
     }, [])
     let item: any;
     let ComponentCopy: any = 0;
@@ -355,11 +373,12 @@ const GlobalCommanTable = (items: any,ref:any) => {
         let itrm: any;
         let parentData: any;
         let parentDataCopy: any;
-        if (usedFor == "SiteComposition"||items?.multiSelect === true) {
+        if (usedFor == "SiteComposition" || items?.multiSelect === true) {
             let finalData: any = table?.getSelectedRowModel()?.flatRows;
             callBackData(finalData);
         } else {
             if (table?.getSelectedRowModel()?.flatRows.length > 0) {
+                restructureFunct(true)
                 table?.getSelectedRowModel()?.flatRows?.map((elem: any) => {
                     if (elem?.getParentRows() != undefined) {
                         // parentData = elem?.parentRow;
@@ -399,8 +418,10 @@ const GlobalCommanTable = (items: any,ref:any) => {
                 });
                 callBackData(item)
             } else {
+                restructureFunct(false)
                 callBackData(item)
             }
+            console.log("itrm", item)
         }
     }
     const ShowTeamFunc = () => {
@@ -542,23 +563,28 @@ const GlobalCommanTable = (items: any,ref:any) => {
 
 
 
+    ///////////////// code with neha /////////////////////
     const callChildFunction = (items: any) => {
         if (childRef.current) {
-          childRef.current.OpenModal(items);
+            childRef.current.OpenModal(items);
         }
-      };
-    
-      const trueTopIcon = (items: any) => {
-        if (childRef.current) {
-          childRef.current.trueTopIcon(items);
-        }
-      };
+    };
 
-      React.useImperativeHandle(ref, () => ({
-        callChildFunction,trueTopIcon
-      
-      
-      }));
+    const trueTopIcon = (items: any) => {
+        if (childRef.current) {
+            childRef.current.trueTopIcon(items);
+        }
+    };
+
+    React.useImperativeHandle(ref, () => ({
+        callChildFunction, trueTopIcon
+    }));
+
+    const restructureFunct = (items: any) => {
+        setTrueRestructuring(items);
+    }
+
+    ////////////////  end /////////////////
 
     return (
         <>
@@ -639,16 +665,14 @@ const GlobalCommanTable = (items: any,ref:any) => {
                         )}
                         {table?.getSelectedRowModel()?.flatRows.length === 1 ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
                             <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} > Add Activity-Task</button>}
+
+                        {
+                            trueRestructuring == true ?
+                                <RestructuringCom restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows.length > 0 ? [table?.getSelectedRowModel()?.flatRows[0].original] : []} />
+                                : <button type="button" title="Restructure" disabled={true} className="btn btn-primary"
+                                >Restructure</button>
+                        }
                     </>
-                     
-                    }
-                    {table?.getSelectedRowModel()?.flatRows.length > 0 ? <RestructuringCom ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={[table?.getSelectedRowModel()?.flatRows[0].original]} /> : <button
-                     type="button" title="Restructure"
-                     disabled={true}
-                     className="btn btn-primary"
-                   >
-                     Restructure
-                   </button> 
                     }
 
                     {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--team teamIcon"></span></a>
@@ -787,5 +811,4 @@ const GlobalCommanTable = (items: any,ref:any) => {
         </>
     )
 }
-
 export default React.forwardRef(GlobalCommanTable);    

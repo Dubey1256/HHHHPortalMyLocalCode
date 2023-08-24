@@ -941,7 +941,7 @@ const CreateActivity = (props: any) => {
                 let prentID = ''
                 let LetestLevelData = []
                 if (value.IscreateTask == true) {
-                    if (AllItems?.NoteCall == 'Activities') {
+                    if (AllItems?.NoteCall != 'Task') {
                         let web = new Web(dynamicList.siteUrl);
 
                         AllMatsterAndTaskData?.forEach((val:any)=>{
@@ -1062,7 +1062,7 @@ const CreateActivity = (props: any) => {
                             res.data['listId'] = value?.listId
                             res.data['SharewebTaskType'] = { Title: 'Activities' }
                             res.data['Shareweb_x0020_ID'] = SharewebID;
-                            res.data['PortfolioType'] =  portFolioTypeId[0],
+                            res.data['PortfolioType'] =  portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
                                 res.data['Portfolio'] = { 'Id': portFolio };
                             res.data['TaskType'] = { 'Id': res.data.TaskTypeId };
                             // res.data['TaskType'] =
@@ -1750,7 +1750,7 @@ const CreateActivity = (props: any) => {
                 isOpen={TaskStatuspopup}
                 onDismiss={closeTaskStatusUpdatePoup}
                 isBlocking={false}
-                className={AllItems?.Portfolio_x0020_Type == 'Service' || AllItems?.Services?.length > 0 ? "serviepannelgreena" : ""}
+                className={AllItems?.Portfolio_x0020_Type == 'Service' || AllItems?.Services?.length > 0 || props?.props?.PortfolioType?.Id == 2 ? "serviepannelgreena" : ""}
 
             >
                 <div className="modal-body active">
