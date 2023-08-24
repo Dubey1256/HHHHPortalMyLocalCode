@@ -576,12 +576,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     return (
       <div className="d-flex full-width pb-1">
         <div
-          style={{
-            marginRight: "auto",
-            fontSize: "20px",
-            fontWeight: "600",
-            marginLeft: "20px",
-          }}
+        className="subheading"
         >
           <span>{`Create  ${IsUpdated} item in ${MeetingItems[0]?.PortfolioStructureID} ${MeetingItems[0]?.Title}`}</span>
         </div>
@@ -4894,13 +4889,13 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       <Panel
         onRenderHeader={onRenderCustomHeaderMain}
         type={PanelType.custom}
-        customWidth="600px"
+        customWidth="810px"
         isOpen={ActivityPopup}
         onDismiss={closeTaskStatusUpdatePoup2}
         isBlocking={false}
       >
 
-        <div className="modal-body bg-f5f5 clearfix">
+        <div className="modal-body clearfix">
           <div
             className={
               props?.Portfolio_x0020_Type == "Events Portfolio"
@@ -4914,13 +4909,13 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
               {props != undefined && props.Portfolio_x0020_Type == "Service" ? (
                 <ul className="quick-actions">
 
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2 hreflink">
                     <div onClick={() => CreateMeetingPopups("Activities")}>
                       <span className="icon-sites"></span>
                       Activity
                     </div>
                   </li>
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2  hreflink">
                     <div onClick={() => CreateMeetingPopups("Task")}>
                       <span className="icon-sites"></span>
                       Task
@@ -4929,33 +4924,37 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                 </ul>
               ) : (
                 <ul className="quick-actions">
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                 <li className="d-grid w-100">
+                  <ul className="d-flex justify-content-center p-0">
+                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2 hreflink">
 
-                    <div onClick={() => CreateMeetingPopups("Activities")}>
+                      <div onClick={() => CreateMeetingPopups("Activities")}>
 
-                      <span className="icon-sites"></span>
+                        <span className="icon-sites"></span>
 
-                      Activity
+                        Activity
 
-                    </div>
+                      </div>
 
-                  </li>
+                   </li>
 
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                      <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2 hreflink">
 
-                    <div onClick={() => CreateMeetingPopups("Task")}>
+                      <div onClick={() => CreateMeetingPopups("Task")}>
 
-                      <span className="icon-sites"> </span>
+                        <span className="icon-sites"> </span>
 
-                      Task
+                        Task
 
-                    </div>
+                      </div>
 
-                  </li>
+                      </li>
+                  </ul>
+                 </li>
 
 
 
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2 hreflink">
 
                     <div onClick={() => CreateMeetingPopups("Activities")}>
 
@@ -4976,7 +4975,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                     </div>
 
                   </li>
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2 hreflink">
 
                     <div onClick={() => CreateMeetingPopups("Improvement")}>
 
@@ -4994,7 +4993,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
                   </li>
 
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2 hreflink">
 
                     <div onClick={() => CreateMeetingPopups("Activities")}>
 
@@ -5012,7 +5011,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
                   </li>
 
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2 hreflink">
 
                     <div onClick={() => CreateMeetingPopups("Bug")}>
 
@@ -5030,7 +5029,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
                   </li>
 
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2 hreflink">
 
                     <div onClick={() => CreateMeetingPopups("Feedback")}>
 
@@ -5050,7 +5049,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
 
 
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2 hreflink">
 
                     <div onClick={() => CreateMeetingPopups("Design")}>
 
@@ -5075,7 +5074,10 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
               )}
             </div>
           </div>
-          <button
+          
+        </div>
+        <div className="modal-footer">
+        <button
             type="button"
             className="btn btn-default btn-default ms-1 pull-right"
             onClick={closeTaskStatusUpdatePoup2}
@@ -5084,7 +5086,6 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
           </button>
         </div>
       </Panel>
-
       {
         ResturuningOpen &&
         <Panel
