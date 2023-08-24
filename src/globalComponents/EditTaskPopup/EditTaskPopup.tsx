@@ -221,7 +221,13 @@ const EditTaskPopup = (Items: any) => {
             siteUrls = AllListIdData.siteUrl;
         }
     } else {
-        siteUrls = AllListIdData.siteUrl
+        if(Items.Items.siteUrl != undefined && Items.Items.siteUrl.length > 15){
+            siteUrls = Items.Items.siteUrl    
+        }
+        else{
+            siteUrls = AllListIdData.siteUrl
+
+        }
     }
     React.useEffect(() => {
         if (FeedBackCount == 0) {

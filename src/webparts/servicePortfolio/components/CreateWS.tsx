@@ -114,8 +114,12 @@ const CreateWS = (props: any) => {
         const parentdata: any = []
         // parentdata.push()
         // return new Promise((resolve, reject) => {
-        var filt = "Id eq " + (Item.Parent != null || undefined ? Item?.Parent?.Id : Item?.Component?.length > 0 ? Item?.Component[0]?.Id : Item?.Services[0]?.Id) + "";
-        let web = new Web(dynamicList?.siteUrl);
+            if(Item.Parent != null || Item?.Component != undefined || Item?.Services != undefined){
+
+                var filt = "Id eq " + (Item.Parent != null || undefined ? Item?.Parent?.Id : Item?.Component?.length > 0 ? Item?.Component[0]?.Id : Item?.Services[0]?.Id) + "";
+            
+            }
+            let web = new Web(dynamicList?.siteUrl);
         let compo = [];
         web.lists
             .getById(dynamicList?.MasterTaskListID)
