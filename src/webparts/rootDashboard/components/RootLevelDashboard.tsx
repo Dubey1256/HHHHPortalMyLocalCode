@@ -683,11 +683,13 @@ const RootLevelDashboard = (props: any) => {
   }
   return (
     <>
-      <div className='align-items-center d-flex heading justify-content-between mb-2 ps-0'>
+
+      <h2 className='align-items-center d-flex heading justify-content-between mb-2 ps-0'>
         <span>
               All Sites Tasks
         </span>
-      </div>
+      </h2>
+     
       <div className='AllTaskSiteRadio align-items-center d-flex justify-content-between mb-2 ps-0'>
         <dl className='alignCenter gap-2 mb-0'>
           {dashboardConfigrations?.map((list: any) => {
