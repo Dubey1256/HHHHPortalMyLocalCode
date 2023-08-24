@@ -228,7 +228,7 @@ export default function ReactPopperTooltip({ ShareWebId, row, projectToolShow, A
                 </div>
             )}
 
-            {action === "hover" && visible && projectToolShow === true && (
+{action === "hover" && visible && projectToolShow === true && (
                 <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container" })}>
                     <span>
                         {row?.original?.joinedData.map((line: any, index: any) => (

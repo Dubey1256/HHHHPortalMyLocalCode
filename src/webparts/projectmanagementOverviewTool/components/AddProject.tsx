@@ -1,14 +1,9 @@
 import { Panel, PanelType } from 'office-ui-fabric-react'
 import React, { useState } from 'react'
 import { Web } from "sp-pnp-js";
-import * as Moment from 'moment';
-import ComponentPortPolioPopup from '../../EditPopupFiles/ComponentPortfolioSelection';
 import Button from 'react-bootstrap/Button';
-import LinkedComponent from '../../../globalComponents/EditTaskPopup/LinkedComponent';
-import PortfolioTagging from './PortfolioTagging';
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 let portfolioType = '';
-let AllListId: any = {};
 const AddProject = (props: any) => {
     const [title, settitle] = React.useState('')
     const [lgShow, setLgShow] = useState(false);
@@ -40,14 +35,17 @@ const AddProject = (props: any) => {
                 .select("Id,Title,PortfolioLevel,PortfolioStructureID").filter("Item_x0020_Type eq 'Project'")
                 .top(1).orderBy('PortfolioLevel', false)
                 .get().then(async (res: any) => {
-                    console.log(res)
-                    let portfolioLevel = res[0].PortfolioLevel
+                    let portfolioLevel = 1;
+                    if (res?.length > 0) {
+                        portfolioLevel = res[0].PortfolioLevel + 1
+                    }
+
                     await web.lists.getById(props?.AllListId?.MasterTaskListID).items.add({
                         Title: `${title}`,
                         Item_x0020_Type: "Project",
-                        PortfolioLevel:portfolioLevel+1,
+                        PortfolioLevel: portfolioLevel,
                         ComponentId: { "results": (selectedComponent !== undefined && selectedComponent?.length > 0) ? selectedComponent : [] },
-                        PortfolioStructureID:`P${portfolioLevel+1}`,
+                        PortfolioStructureID: `P${portfolioLevel}`,
                         ServicesId: { "results": (selectedService !== undefined && selectedService?.length > 0) ? selectedService : [] },
                     }).then((res: any) => {
                         closePopup()

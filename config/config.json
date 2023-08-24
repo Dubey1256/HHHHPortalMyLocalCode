@@ -243,6 +243,14 @@
         }
       ]
     },
+    "meeting-overview-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/meetingOverview/MeetingOverviewWebPart.js",
+          "manifest": "./src/webparts/meetingOverview/MeetingOverviewWebPart.manifest.json"
+        }
+      ]
+    },
     "teamleader-dashboard-web-part": {
       "components": [
         {
@@ -338,6 +346,7 @@
     "TestWebPartWebPartStrings": "lib/webparts/testWebPart/loc/{locale}.js",
     "RootDashboardWebPartStrings": "lib/webparts/rootDashboard/loc/{locale}.js",
     "UserTimeEntryWebPartStrings": "lib/webparts/userTimeEntry/loc/{locale}.js",
-    "TeamPortfolioWebPartStrings": "lib/webparts/teamPortfolio/loc/{locale}.js"
+    "TeamPortfolioWebPartStrings": "lib/webparts/teamPortfolio/loc/{locale}.js",
+    "MeetingOverviewWebPartStrings": "lib/webparts/meetingOverview/loc/{locale}.js"
   }
 }

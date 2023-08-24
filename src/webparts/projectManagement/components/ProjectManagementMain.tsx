@@ -41,26 +41,18 @@ let headerOptions: any = {
   teamsIcon: true
 }
 var allSmartInfo: any = [];
-var DynamicData: any = {}
 var AllSitesAllTasks: any = [];
-var ChildData: any = []
-var Parent: any = []
-var SubChild: any = []
-var AllData: any = []
-let AllComponentData: any = []
 var AllListId: any = {};
 var backupAllTasks: any = [];
 var MasterListData: any = []
-//var isCall = false;
+let taskTaggedServices: any = []
+let taskTaggedComponents: any = []
 var MyAllData: any = []
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
 const ProjectManagementMain = (props: any) => {
-  const [item, setItem] = React.useState({});
+  // const [item, setItem] = React.useState({});
   const [AllTaskUsers, setAllTaskUsers] = React.useState([]);
-  const [icon, seticon] = React.useState(false);
-  const [isCall, setIsCall] = React.useState(false);
-  const [ShareWebCoseticonmponent, setShareWebComponent] = React.useState("");
   const [IsPortfolio, setIsPortfolio] = React.useState(false);
   const [IsComponent, setIsComponent] = React.useState(false);
   const [SharewebComponent, setSharewebComponent] = React.useState("");
@@ -70,11 +62,12 @@ const ProjectManagementMain = (props: any) => {
   const [isOpenCreateTask, setisOpenCreateTask] = React.useState(false);
   const [Masterdata, setMasterdata] = React.useState<any>({});
   const [passdata, setpassdata] = React.useState("");
+  const [taskTaggedCompAndService, setTaskTaggedCompAndService] = React.useState({
+    component: [], service: []
+  });
   const [projectTitle, setProjectTitle] = React.useState("");
-  const [count, setCount] = React.useState(0)
   const [projectId, setProjectId] = React.useState(null);
-  const [starIcon, setStarIcon]: any = React.useState(false);
-  const [createTaskId, setCreateTaskId] = React.useState({});
+  const [createTaskId, setCreateTaskId] = React.useState({ portfolioData: null, portfolioType: null });
   const [isSmartInfoAvailable, setIsSmartInfoAvailable]: any = React.useState(false);
   // const[allSmartInfo,setAllSmartInfo]=React.useState([])
   const [remark, setRemark] = React.useState(false)
@@ -140,7 +133,7 @@ const ProjectManagementMain = (props: any) => {
       AdminConfigrationListID: props?.props?.AdminConfigrationListID,
       isShowTimeEntry: isShowTimeEntry,
       isShowSiteCompostion: isShowSiteCompostion,
-      TaskTypeID:props?.props?.TaskTypeID
+      TaskTypeID: props?.props?.TaskTypeID
     }
     if (props?.props?.SmartInformationListID != undefined) {
       setIsSmartInfoAvailable(true)
@@ -416,8 +409,9 @@ const ProjectManagementMain = (props: any) => {
   }, []);
 
   const LoadAllSiteTasks = async function () {
-    let taskComponent: any = [];
-    let taskServices: any = [];
+    let taskComponent: any = Masterdata?.ComponentId?.length > 0 ? Masterdata?.ComponentId : [];
+    let taskServices: any = Masterdata?.ServicesId?.length > 0 ? Masterdata?.ServicesId : [];
+
     if (siteConfig?.length > 0) {
       try {
         var AllTask: any = [];
@@ -473,7 +467,10 @@ const ProjectManagementMain = (props: any) => {
             items.portfolio = {};
             if (items?.Component?.length > 0) {
               if (!taskComponent?.some((id: any) => id == items?.Component[0].Id)) {
-                taskComponent.push(items?.Component[0].Id)
+                let comp = items?.Component[0]
+                comp.filterActive = false;
+                taskComponent.push(comp?.Id)
+                taskTaggedComponents.push(comp)
               }
               items.portfolio = items?.Component[0];
               items.PortfolioTitle = items?.Component[0]?.Title;
@@ -481,7 +478,10 @@ const ProjectManagementMain = (props: any) => {
             }
             if (items?.Services?.length > 0) {
               if (!taskServices?.some((id: any) => id == items?.Services[0].Id)) {
-                taskServices.push(items?.Services[0].Id)
+                let serv = items?.Services[0];
+                serv.filterActive = false;
+                taskServices.push(serv?.Id)
+                taskTaggedServices.push(serv)
               }
               items.portfolio = items?.Services[0];
               items.PortfolioTitle = items?.Services[0]?.Title;
@@ -533,9 +533,11 @@ const ProjectManagementMain = (props: any) => {
           if (arraycount === setCount) {
             setAllTasks(AllTask);
             setData(AllTask);
+            setTaskTaggedCompAndService({
+              component: taskTaggedComponents,
+              service: taskTaggedServices
+            })
             backupAllTasks = AllTask;
-            console.log(taskComponent)
-            console.log(taskServices)
           }
 
         });
@@ -565,22 +567,19 @@ const ProjectManagementMain = (props: any) => {
       .get()
 
   }
-  React.useEffect(() => {
-    if (Masterdata?.Id != undefined) {
-      setItem(Masterdata);
+  // React.useEffect(() => {
+  //   if (Masterdata?.Id != undefined) {
+  //     setItem(Masterdata);
 
-      linkedComponentData = Masterdata?.smartService;
-      smartComponentData = Masterdata?.smartComponent;
-    }
-  }, [Masterdata]);
+  //     linkedComponentData = Masterdata?.smartService;
+  //     smartComponentData = Masterdata?.smartComponent;
+  //   }
+  // }, [Masterdata]);
   const EditPortfolio = (item: any, type: any) => {
     portfolioType = type;
     setSharewebComponent(item);
     setIsPortfolio(true);
   };
-  const ClosePopup = () => {
-    setIsCall(false)
-  }
   const Call = (propsItems: any, type: any) => {
     setIsComponent(false);
     setIsPortfolio(false);
@@ -673,13 +672,6 @@ const ProjectManagementMain = (props: any) => {
     }
   };
 
-  const ChangeIcon = () => {
-    seticon(!icon)
-  }
-  const callParentItem = (item: any) => {
-    setSharewebComponent(item);
-    setIsCall(true)
-  }
   const TagPotfolioToProject = async () => {
     if (QueryId != undefined && AllListId?.MasterTaskListID != undefined) {
       let selectedComponent: any[] = [];
@@ -919,7 +911,7 @@ const ProjectManagementMain = (props: any) => {
         cell: ({ row, getValue }) => (
           <>
             <span className="d-flex">
-              <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />
+              <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
             </span>
           </>
         ),
@@ -1199,59 +1191,46 @@ const ProjectManagementMain = (props: any) => {
     [data]
   );
   const clearPortfolioFilter = () => {
-    let projectData = Masterdata;
-    projectData?.smartComponent?.map((item: any, index: any) => {
-      item.filterActive = false;
-    });
-    projectData?.smartService?.map((item: any, index: any) => {
-      item.filterActive = false;
-    });
-    setMasterdata(projectData);
+    setCreateTaskId({ portfolioData: null, portfolioType: null })
     setData(AllTasks);
     setSidebarStatus({ ...sidebarStatus, sideBarFilter: false });
   };
-  const filterPotfolioTasks = (
-    portfolio: any,
-    clickedIndex: any,
-    type: any
-  ) => {
-    setCreateTaskId({ portfolioData: portfolio, portfolioType: type });
+  const filterPotfolioTasks = (portfolio: any, clickedIndex: any, type: any) => {
     let projectData = Masterdata;
     let displayTasks = AllTasks;
-    projectData?.smartComponent?.map((item: any, index: any) => {
-      if (type == "Component" && clickedIndex == index) {
-        item.filterActive = true;
-        setSidebarStatus({ ...sidebarStatus, sideBarFilter: true });
+    if (type == 'Component' || type == 'taskComponent') {
+      if (createTaskId?.portfolioData?.Id != portfolio?.Id) {
         displayTasks = AllTasks.filter((items: any) => {
-          if (
-            items?.Component?.length > 0 &&
-            items?.Component[0]?.Id == portfolio?.Id
-          ) {
+          if (items?.Component?.length > 0 && items?.Component[0]?.Id == portfolio?.Id) {
             return true;
           }
           return false;
         });
-      } else {
-        item.filterActive = false;
-      }
-    });
-    projectData?.smartService?.map((item: any, index: any) => {
-      if (type == "Service" && clickedIndex == index) {
-        item.filterActive = true;
+        setCreateTaskId({ portfolioData: portfolio, portfolioType: 'Component' });
         setSidebarStatus({ ...sidebarStatus, sideBarFilter: true });
+      } else if (createTaskId?.portfolioData?.Id == portfolio?.Id) {
+        setCreateTaskId({ portfolioData: null, portfolioType: null })
+        setSidebarStatus({ ...sidebarStatus, sideBarFilter: false });
+      }
+    }
+    if (type == 'Service' || type == 'taskService') {
+      if (createTaskId?.portfolioData?.Id != portfolio?.Id) {
         displayTasks = AllTasks.filter((items: any) => {
-          if (
-            items?.Services?.length > 0 &&
-            items?.Services[0]?.Id == portfolio?.Id
-          ) {
+          if (items?.Services?.length > 0 && items?.Services[0]?.Id == portfolio?.Id) {
             return true;
           }
           return false;
         });
-      } else {
-        item.filterActive = false;
+        setCreateTaskId({ portfolioData: portfolio, portfolioType: 'Service' });
+        setSidebarStatus({ ...sidebarStatus, sideBarFilter: true });
+      } else if (createTaskId?.portfolioData?.Id == portfolio?.Id) {
+        setCreateTaskId({ portfolioData: null, portfolioType: null })
+        setSidebarStatus({ ...sidebarStatus, sideBarFilter: false });
       }
-    });
+    }
+
+
+
     setMasterdata(projectData);
     setData(displayTasks);
   };
@@ -1339,22 +1318,22 @@ const ProjectManagementMain = (props: any) => {
                       </li>
                       <li className="nav__item  pb-1 pt-0">
                         <div className="nav__text">
-                          {Masterdata?.smartComponent?.length > 0 ? (
-                            <ul className="nav__subList scrollbarCustom pt-1 ps-0">
+                          {Masterdata?.smartComponent?.length > 0 || taskTaggedCompAndService?.component?.length > 0 ? (
+                            <ul className="nav__subList maXh-200 scrollbar pt-1 ps-0">
                               {Masterdata?.smartComponent?.map(
                                 (component: any, index: any) => {
                                   return (
                                     <li
                                       className={
-                                        component?.filterActive
-                                          ? "nav__item bg-ee"
-                                          : "nav__item"
+                                        component?.Id == createTaskId?.portfolioData?.Id
+                                          ? "nav__item bg-ee ps-1"
+                                          : "nav__item ps-1"
                                       }
                                     >
                                       <span>
                                         <a
                                           className={
-                                            component?.filterActive
+                                            component?.Id == createTaskId?.portfolioData?.Id
                                               ? "hreflink "
                                               : "text-white hreflink"
                                           }
@@ -1365,6 +1344,40 @@ const ProjectManagementMain = (props: any) => {
                                               component,
                                               index,
                                               "Component"
+                                            )
+                                          }
+                                        >
+                                          {component?.Title}
+                                        </a>
+                                      </span>
+                                    </li>
+                                  );
+                                }
+                              )}
+                              {taskTaggedCompAndService?.component?.map(
+                                (component: any, index: any) => {
+                                  return (
+                                    <li
+                                      className={
+                                        component?.Id == createTaskId?.portfolioData?.Id
+                                          ? "nav__item bg-ee ps-1"
+                                          : "nav__item ps-1"
+                                      }
+                                    >
+                                      <span>
+                                        <a
+                                          className={
+                                            component?.Id == createTaskId?.portfolioData?.Id
+                                              ? "hreflink "
+                                              : "text-white hreflink"
+                                          }
+                                          data-interception="off"
+                                          target="blank"
+                                          onClick={() =>
+                                            filterPotfolioTasks(
+                                              component,
+                                              index,
+                                              "taskComponent"
                                             )
                                           }
                                         >
@@ -1430,22 +1443,22 @@ const ProjectManagementMain = (props: any) => {
                         className="nav__item  pb-1 pt-0"
                       >
                         <div className="nav__text">
-                          {Masterdata?.smartService?.length > 0 ? (
-                            <ul className="nav__subList scrollbarCustom pt-1 ps-0">
+                          {Masterdata?.smartService?.length > 0 || taskTaggedCompAndService?.service?.length > 0 ? (
+                            <ul className="nav__subList maXh-200 scrollbar pt-1 ps-0">
                               {Masterdata?.smartService?.map(
                                 (service: any, index: any) => {
                                   return (
                                     <li
                                       className={
-                                        service?.filterActive
-                                          ? "nav__item bg-ee"
-                                          : "nav__item"
+                                        service?.Id == createTaskId?.portfolioData?.Id
+                                          ? "nav__item bg-ee ps-1"
+                                          : "nav__item ps-1"
                                       }
                                     >
                                       <span>
                                         <a
                                           className={
-                                            service?.filterActive
+                                            service?.Id == createTaskId?.portfolioData?.Id
                                               ? "hreflink "
                                               : "text-white hreflink"
                                           }
@@ -1456,6 +1469,40 @@ const ProjectManagementMain = (props: any) => {
                                               service,
                                               index,
                                               "Service"
+                                            )
+                                          }
+                                        >
+                                          {service?.Title}
+                                        </a>
+                                      </span>
+                                    </li>
+                                  );
+                                }
+                              )}
+                              {taskTaggedCompAndService?.service?.map(
+                                (service: any, index: any) => {
+                                  return (
+                                    <li
+                                      className={
+                                        service?.Id == createTaskId?.portfolioData?.Id
+                                          ? "nav__item bg-ee ps-1"
+                                          : "nav__item ps-1"
+                                      }
+                                    >
+                                      <span>
+                                        <a
+                                          className={
+                                            service?.Id == createTaskId?.portfolioData?.Id
+                                              ? "hreflink "
+                                              : "text-white hreflink"
+                                          }
+                                          data-interception="off"
+                                          target="blank"
+                                          onClick={() =>
+                                            filterPotfolioTasks(
+                                              service,
+                                              index,
+                                              "taskService"
                                             )
                                           }
                                         >
@@ -1513,14 +1560,14 @@ const ProjectManagementMain = (props: any) => {
                                 />
                               )}
                               {/* {projectId && (
-                            <TagTaskToProjectPopup
-                              projectItem={Masterdata}
-                              className="ms-2"
-                              projectId={projectId}
-                              callBack={tagAndCreateCallBack}
-                              projectTitle={projectTitle}
-                            />
-                          )} */}
+                                <TagTaskToProjectPopup
+                                  projectItem={Masterdata}
+                                  className="ms-2"
+                                  projectId={projectId}
+                                  callBack={tagAndCreateCallBack}
+                                  projectTitle={projectTitle}
+                                />
+                              )} */}
                             </div>
                           </div>
                         </div>
@@ -1654,18 +1701,19 @@ const ProjectManagementMain = (props: any) => {
                       </div>
                     </section>
                     <div>
+                      {sidebarStatus.sideBarFilter ? (
+                        <div className="text-end">
+                          <a onClick={() => clearPortfolioFilter()} className="hreflink">
+                            Clear Portfolio Filter
+                          </a>
+                        </div>
+                      ) : (
+                        ""
+                      )}
                       <div className="Alltable">
                         <div className="section-event ps-0">
                           <div className="wrapper project-management-Table">
-                            {sidebarStatus.sideBarFilter ? (
-                              <div className="text-end">
-                                <a onClick={() => clearPortfolioFilter()}>
-                                  Clear Portfolio Filter
-                                </a>
-                              </div>
-                            ) : (
-                              ""
-                            )}
+
                             <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} columns={column2} data={data} callBackData={callBackData} TaskUsers={AllUser} showHeader={true} />
                           </div>
 
