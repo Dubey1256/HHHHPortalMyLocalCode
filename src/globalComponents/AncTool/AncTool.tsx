@@ -941,8 +941,8 @@ const AncTool = (props: any) => {
                                                         <div className="col">
                                                             {currentFolderFiles?.length > 0 ?
                                                                 <div>
-                                                                    <Table hover responsive m-0>
-                                                                        <thead>
+                                                                    <Table className='mb-0' hover responsive>
+                                                                        <thead className='fixed-Header top-0'>
                                                                             <tr>
                                                                                 <th className='p-1'>Doc Type</th>
                                                                                 <th className='p-1'>Title</th>
@@ -954,7 +954,7 @@ const AncTool = (props: any) => {
                                                                             {currentFolderFiles?.map((file: any) => {
                                                                                 return (
                                                                                     <tr>
-                                                                                        <td><span className={`svg__iconbox svg__icon--${file?.docType}`} title={file?.docType}></span></td>
+                                                                                        <td><span className={`alignIcon  svg__iconbox svg__icon--${file?.docType}`} title={file?.docType}></span></td>
 
                                                                                         <td><a href={file?.docType == 'pdf' ? file?.ServerRelativeUrl : file?.LinkingUri} target="_blank" data-interception="off" className='hreflink'> {file?.Title} </a></td>
                                                                                     </tr>
@@ -999,10 +999,10 @@ const AncTool = (props: any) => {
                                                 <h3 className='pageTitle'> Selected Folder <hr></hr> </h3>
                                                 : <h3 className='pageTitle'> Default Folder <hr></hr> </h3>
                                             }
-                                            <div className='d-flex'>
+                                            <div className='alignCenter'>
                                                 <span>{folderExist == true ? <span>{selectedPath?.displayPath}</span> : <span>{selectedPath?.displayPath?.split(siteName)}<span className='highlighted'>{siteName}
                                                     <div className="popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                        <span className="svg__iconbox svg__icon--info " ></span>
+                                                        <span className="alignIcon svg__iconbox svg__icon--info " ></span>
                                                         <div className="popover__content">
                                                             <span>
                                                                 Highlighted folder does not exist. It will be created at the time of document upload.
@@ -1033,13 +1033,13 @@ const AncTool = (props: any) => {
                                                     <div>
                                                         {/* <GlobalCommanTable headerOptions={headerOptions} paginatedTable={true} columns={columns} data={ExistingFiles} callBackData={callBackData} showHeader={true} /> */}
                                                         {ExistingFiles?.length > 0 ?
-                                                            <Table hover responsive >
-                                                                <thead>
+                                                            <Table hover responsive className='mb-0'>
+                                                                <thead className='fixed-Header top-0'>
                                                                     <tr>
                                                                         <th ></th>
                                                                         <th className='p-1'>Type</th>
                                                                         <th className='p-1'>Title</th>
-                                                                        <th className='p-1'>Item Rank</th>
+                                                                        <th style={{width:'85px'}} className='p-1'>Item Rank</th>
 
                                                                     </tr>
 
@@ -1050,9 +1050,9 @@ const AncTool = (props: any) => {
                                                                             return (
                                                                                 <tr>
                                                                                     <td><input type="checkbox" className='form-check-input hreflink' checked={AllReadytagged?.some((doc: any) => file.Id == doc.Id)} onClick={() => { tagSelectedDoc(file) }} /></td>
-                                                                                    <td><span className={`svg__iconbox svg__icon--${file?.docType}`} title={file?.File_x0020_Type}></span></td>
+                                                                                    <td><span className={`alignIcon  svg__iconbox svg__icon--${file?.docType}`} title={file?.File_x0020_Type}></span></td>
                                                                                     <td><a href={file?.EncodedAbsUrl} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
-                                                                                    <td>{file?.ItemRank}</td>
+                                                                                    <td style={{textAlign:'center'}}>{file?.ItemRank}</td>
                                                                                 </tr>
                                                                             )
                                                                         }
@@ -1089,10 +1089,10 @@ const AncTool = (props: any) => {
                                                     </select>
                                                 </Row>
                                                 <div className='dragDropbox ' onDragOver={(event) => event.preventDefault()} onDrop={handleFileDrop}>
-                                                    {selectedFile ? <p>Selected file: {selectedFile.name}</p> : <p>Drag and drop file here</p>}
+                                                    {selectedFile ? <p>Selected file: {selectedFile.name}</p> : <p>Drag and drop file here (max. 5 items)</p>}
                                                 </div>
 
-
+                                                <Row  className='text-center'>OR</Row>
                                                 <Row className='mb-2 px-2'>
                                                     <input type="file" onChange={handleFileInputChange} className='full-width' />
                                                 </Row>
@@ -1118,13 +1118,13 @@ const AncTool = (props: any) => {
 
                                                 {AllReadytagged?.length > 0 ?
                                                     <div>
-                                                        <Table hover responsive mb-0>
-                                                            <thead>
+                                                        <Table className='mb-0' hover responsive>
+                                                            <thead className='fixed-Header top-0'>
                                                                 <tr>
 
                                                                     <th className='p-1'>Type</th>
                                                                     <th className='p-1'>Title</th>
-                                                                    <th className='p-1'>Item Rank</th>
+                                                                    <th>Item Rank</th>
                                                                     <th>&nbsp;</th>
 
                                                                 </tr>
@@ -1134,14 +1134,14 @@ const AncTool = (props: any) => {
                                                                 {AllReadytagged?.map((file: any) => {
                                                                     return (
                                                                         <tr>
-                                                                            <td><span className={`svg__iconbox svg__icon--${file?.docType}`} title={file?.docType}></span></td>
+                                                                            <td><span className={`alignIcon  svg__iconbox svg__icon--${file?.docType}`} title={file?.docType}></span></td>
                                                                             <td><a href={file?.EncodedAbsUrl} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
                                                                             <td>{file?.ItemRank}</td>
                                                                             <td> <span
                                                                                 style={{ marginLeft: '6px' }}
                                                                                 title='Untag Document'
                                                                                 onClick={() => { tagSelectedDoc(file) }}
-                                                                                className='svg__iconbox svg__icon--cross dark hreflink'
+                                                                                className='alignIcon  svg__iconbox svg__icon--cross dark hreflink'
                                                                             ></span></td>
                                                                         </tr>
                                                                     )
@@ -1249,20 +1249,20 @@ const AncTool = (props: any) => {
             </Modal>
             {ShowConfirmation ?
                 <div className="modal Anc-Confirmation-modal" >
-                    <div className="modal-dialog modal-mg rounded-0 ">
+                    <div className="modal-dialog modal-mg rounded-0 " style={{maxWidth:"700px"}}>
                         <div className="modal-content rounded-0">
                             <div className="modal-header">
                                 <h5 className="modal-title">Upload Documents - Confirmation</h5>
                                 <span onClick={() => cancelConfirmationPopup()}><i className="svg__iconbox svg__icon--cross crossBtn"></i></span>
                             </div>
                             <div className="modal-body p-2">
-                                <Col><strong>Folder :</strong> <a href={`${rootSiteName}${selectedPath?.displayPath}`} target="_blank" data-interception="off" className='hreflink'> {selectedPath?.displayPath} <span className="svg__iconbox svg__icon--folder ms-1"></span></a></Col>
-                                <Col className='mb-2'><strong>Metadat-Tag :</strong> <span>{props?.item?.Title}</span></Col>
+                                <Col><span><strong>Folder :</strong> </span><a href={`${rootSiteName}${selectedPath?.displayPath}`} target="_blank" data-interception="off" className='hreflink'> {selectedPath?.displayPath} <span className="svg__iconbox svg__icon--folder ms-1 alignIcon "></span></a></Col>
+                                <Col className='mb-2'><strong>Metadata-Tag :</strong> <span>{props?.item?.Title}</span></Col>
 
                                 <Col className='Alltable mt-2'>
                                     <div>
-                                        <Table hover responsive mb-0>
-                                            <thead>
+                                        <Table className='mb-0' hover responsive>
+                                            <thead className='fixed-Header top-0'>
                                                 <tr>
                                                     <th>&nbsp;</th>
                                                     <th>File Name</th>
@@ -1275,11 +1275,11 @@ const AncTool = (props: any) => {
                                                 <tr>
                                                     <td><span className={`svg__iconbox svg__icon--${UploadedDocDetails?.docType}`}></span></td>
                                                     <td><a href={UploadedDocDetails?.link} target="_blank" data-interception="off" className='hreflink'>{UploadedDocDetails?.fileName}</a>{`(${UploadedDocDetails?.size})`}</td>
-                                                    <td>{UploadedDocDetails?.uploaded == true ? <span className='svg__iconbox svg__icon--Completed'></span> : <span className='svg__iconbox svg__icon--cross'></span>}</td>
-                                                    <td>{UploadedDocDetails?.tagged == true ? <span className='svg__iconbox svg__icon--Completed'></span> : <span className='svg__iconbox svg__icon--cross'></span>}</td>
+                                                    <td>{UploadedDocDetails?.uploaded == true ? <span className='alignIcon  svg__iconbox svg__icon--Completed' style={{width:"15px"}}></span> : <span className='alignIcon  svg__iconbox svg__icon--cross' ></span>}</td>
+                                                    <td>{UploadedDocDetails?.tagged == true ? <span className='alignIcon  svg__iconbox svg__icon--Completed' style={{width:"15px"}}></span> : <span className='alignIcon  svg__iconbox svg__icon--cross'></span>}</td>
                                                     <td>{UploadedDocDetails?.uploaded == true ? <>
-                                                        <span className='svg__iconbox svg__icon--link hreflink' title='Copy Link' data-bs-toggle="popover" data-bs-content="Link Copied" onClick={() => { navigator.clipboard.writeText(UploadedDocDetails?.link); }}></span>
-                                                        <span className='svg__iconbox svg__icon--mail hreflink' title='Share In Mail' onClick={() => { window.open(`mailto:?&subject=${props?.item?.Title}&body=${UploadedDocDetails?.link}`) }}></span>
+                                                        <span className='me-3 alignIcon  svg__iconbox svg__icon--link hreflink' title='Copy Link' data-bs-toggle="popover" data-bs-content="Link Copied" onClick={() => { navigator.clipboard.writeText(UploadedDocDetails?.link); }}></span>
+                                                        <span className='alignIcon  svg__iconbox svg__icon--mail hreflink' title='Share In Mail' onClick={() => { window.open(`mailto:?&subject=${props?.item?.Title}&body=${UploadedDocDetails?.link}`) }}></span>
                                                     </> : <></>}</td>
                                                 </tr>
                                             </tbody>
