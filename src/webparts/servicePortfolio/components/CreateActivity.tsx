@@ -1197,7 +1197,6 @@ const CreateActivity = (props: any) => {
                             .get()
                         console.log(componentDetails)
                         var LatestId = componentDetails[0].Id + 1;
-                        LatestId += newIndex;
                         if (Task == undefined || Task == '')
                             Task = SelectedTasks[0];
                         if (TaskprofileId == '' || SelectedTasks.length > 0) {
