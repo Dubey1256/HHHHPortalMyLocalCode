@@ -683,12 +683,14 @@ const RootLevelDashboard = (props: any) => {
   }
   return (
     <>
-      <div className='header-section justify-content-between row'>
-        <div className="col-sm-8">
-          <h2 style={{ color: "#000066", fontWeight: "600" }}>All Sites Tasks</h2>
-        </div>
-      </div>
-      <div className='AllTaskSiteRadio d-flex justify-content-between'>
+
+      <h2 className='align-items-center d-flex heading justify-content-between mb-2 ps-0'>
+        <span>
+              All Sites Tasks
+        </span>
+      </h2>
+     
+      <div className='AllTaskSiteRadio align-items-center d-flex justify-content-between mb-2 ps-0'>
         <dl className='alignCenter gap-2 mb-0'>
           {dashboardConfigrations?.map((list: any) => {
             return (

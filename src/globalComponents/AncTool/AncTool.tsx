@@ -1092,7 +1092,7 @@ const AncTool = (props: any) => {
                                                     {selectedFile ? <p>Selected file: {selectedFile.name}</p> : <p>Drag and drop file here (max. 5 items)</p>}
                                                 </div>
 
-                                                <Row  className='text-center'>OR</Row>
+                                                <Col  className='text-center pb-2'>OR</Col>
                                                 <Row className='mb-2 px-2'>
                                                     <input type="file" onChange={handleFileInputChange} className='full-width' />
                                                 </Row>
