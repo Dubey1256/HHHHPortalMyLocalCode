@@ -1,6 +1,7 @@
 import React from 'react'
 import DefaultFolderContent from './DefaultFolderContent'
 import axios from 'axios';
+import { usePopperTooltip } from "react-popper-tooltip";
 import { FaChevronDown, FaChevronRight } from 'react-icons/fa';
 import { SlArrowRight, SlArrowLeft, SlArrowUp, SlArrowDown } from "react-icons/sl";
 import { Card, CardBody, CardFooter, CardHeader, CardTitle, Col, CustomInput, Pagination, PaginationItem, PaginationLink, Progress, Row, Table } from "reactstrap";
@@ -1089,10 +1090,10 @@ const AncTool = (props: any) => {
                                                     </select>
                                                 </Row>
                                                 <div className='dragDropbox ' onDragOver={(event) => event.preventDefault()} onDrop={handleFileDrop}>
-                                                    {selectedFile ? <p>Selected file: {selectedFile.name}</p> : <p>Drag and drop file here (max. 5 items)</p>}
+                                                    {selectedFile ? <p>Selected file: {selectedFile.name}</p> : <p>Drag and drop file here </p>}
                                                 </div>
 
-                                                <Row  className='text-center'>OR</Row>
+                                                <Col  className='text-center pb-2'>OR</Col>
                                                 <Row className='mb-2 px-2'>
                                                     <input type="file" onChange={handleFileInputChange} className='full-width' />
                                                 </Row>

@@ -572,12 +572,13 @@ const handlePeoplePickerChange = (items: any[]): void => {
             enddate.setHours(enddate.getHours() - 5);
             enddate.setMinutes(enddate.getMinutes() - 30);
           }
-          let a;
-          if (item?.Employee?.Title != undefined && item.Event_x002d_Type != undefined) {
-            a = item?.Employee?.Title + "-" + item.Event_x002d_Type + "-" + item.Title;
-          } else {
-            a = item.Title;
-          }
+          let a=item.Title;;
+
+          // if (item?.Employee?.Title != undefined && item.Event_x002d_Type != undefined) {
+          //   a = item?.Employee?.Title + "-" + item.Event_x002d_Type + "-" + item.Title;
+          // } else {
+          //   a = item.Title;
+          // }
 
           const dataEvent = {
             shortD: item.Title,
