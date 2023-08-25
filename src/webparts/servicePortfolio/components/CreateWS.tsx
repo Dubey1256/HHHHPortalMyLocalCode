@@ -24,11 +24,11 @@ var dynamicList: any = {}
 var TeamMemberIds: any = [];
 let InheritClientCategory: any = [];
 let AllItems: any = {};
-
+var portFolioTypeId:any = ''
 //var checkedWS:boolean=true;
 const CreateWS = (props: any) => {
 
-    let portFolioTypeId = props?.portfolioTypeData?.filter((elem: any) => elem?.Id === props?.props?.PortfolioType?.Id)
+     portFolioTypeId = props?.portfolioTypeData?.filter((elem: any) => elem?.Id === props?.props?.PortfolioType?.Id)
     let portFolio = props?.props?.Id
 
     if (props.SelectedProp != undefined && props.SelectedProp.SelectedProp != undefined) {
@@ -1431,7 +1431,7 @@ const CreateWS = (props: any) => {
             .get()
         console.log(componentDetails)
         var LatestId = componentDetails[0].Id + 1;
-        LatestId += index;
+       
         if (Task == undefined || Task == '')
             Task = SelectedTasks[0];
         if (TaskprofileId == '' || SelectedTasks.length > 0) {
