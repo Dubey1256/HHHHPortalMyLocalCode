@@ -3333,7 +3333,7 @@ function TimeEntryPopup(item: any) {
                                                     form
                                                 </a>
                                                 <button type="button" className="btn btn-primary ms-2"
-                                                   disabled={TimeInMinutes <= 0 ? true : false} onClick={(e) => UpdateAdditionaltime(child)}>
+                                                    onClick={(e) => UpdateAdditionaltime(child)}>
                                                     Save
                                                 </button>
                                             </div>
@@ -3578,7 +3578,7 @@ function TimeEntryPopup(item: any) {
                                                                 Open out-of-the-box
                                                                 form
                                                             </a>
-                                                            <button type="button" className="btn btn-primary ms-2" disabled={TimeInMinutes <= 0 ? true : false}
+                                                            <button type="button" className="btn btn-primary ms-2" 
                                                                 onClick={() => SaveCopytime(child)}>
                                                                 Save
                                                             </button>
