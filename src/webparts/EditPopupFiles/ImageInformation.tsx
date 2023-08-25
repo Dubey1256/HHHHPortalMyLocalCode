@@ -425,14 +425,14 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                                 <div className='mt-3'>
                                                     <FlorarImagetabportfolio callBack={florarImageUploadCallBackFunction}></FlorarImagetabportfolio>
                                                  </div>
-                                                <div className='text-lg-end mt-2'><Button className='btn btn-primary ms-1  mx-2 btn btn-primary'onClick={() => uploadImage()}>Upload</Button></div> 
+                                                <div className='text-lg-end mt-2'><Button className='btn btn-primary ms-1  btn btn-primary'onClick={() => uploadImage()}>Upload</Button></div> 
                                             </div>
                                         </Tab>
                                         <Tab eventKey="Upload" title="Upload">
                                             <div className='border border-top-0 p-2'>
                                                 <div className='mt-3' style={{ height: "500px" }}>
                                                     <input type="file" multiple accept='image/*' className='full-width' onChange={(e) => UploadImageValue(e, "upload")} />
-                                                    <div className='text-lg-end mt-2'><Button className='btn btn-primary ms-1  mx-2 btn btn-primary' onClick={() => uploadImage()}>Upload</Button></div>
+                                                    <div className='text-lg-end mt-2'><Button className='btn btn-primary ms-1   btn btn-primary' onClick={() => uploadImage()}>Upload</Button></div>
                                                 </div>
                                             </div>
                                         </Tab>

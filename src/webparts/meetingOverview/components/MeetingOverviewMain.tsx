@@ -185,7 +185,7 @@ const MeetingOverviewMain = (props: any) => {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, getValue }) => (
                     <>
-                        <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
+                        <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/Meeting-Profile.aspx?meetingId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
                         {row?.original?.Body !== null && <InfoIconsToolTip Discription={row?.original?.Body} row={row?.original} />}
                     </>
 
