@@ -221,7 +221,13 @@ const EditTaskPopup = (Items: any) => {
             siteUrls = AllListIdData.siteUrl;
         }
     } else {
-        siteUrls = AllListIdData.siteUrl
+        if(Items.Items.siteUrl != undefined && Items.Items.siteUrl.length > 15){
+            siteUrls = Items.Items.siteUrl    
+        }
+        else{
+            siteUrls = AllListIdData.siteUrl
+
+        }
     }
     React.useEffect(() => {
         if (FeedBackCount == 0) {
@@ -4578,7 +4584,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 <a
                                                                     target="_blank"
                                                                     data-interception="off"
-                                                                    href={`${Items.Items.siteType}/SitePages/TaskDashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`} >
+                                                                    href={`${siteUrls}/SitePages/TaskDashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`} >
                                                                     <img className="ProirityAssignedUserPhoto ms-2" data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''}
                                                                         src={userDtl.Item_x0020_Cover ? userDtl.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
                                                                     />
@@ -5724,7 +5730,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             <a
                                                                                 target="_blank"
                                                                                 data-interception="off"
-                                                                                href={`${Items.Items.siteType}/SitePages/TaskDashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`} >
+                                                                                href={`${siteUrls}/SitePages/TaskDashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`} >
                                                                                 <img data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''}
                                                                                     style={{ width: "35px", height: "35px", marginLeft: "10px", borderRadius: "50px" }}
                                                                                     src={userDtl.Item_x0020_Cover ? userDtl.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
