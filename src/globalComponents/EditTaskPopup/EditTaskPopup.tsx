@@ -1430,6 +1430,8 @@ const EditTaskPopup = (Items: any) => {
                             setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '1' })
                             setPercentCompleteStatus(item.status);
                             setTaskStatus(item.taskStatusComment);
+                            setPercentCompleteCheck(false);
+
                         }
                     })
                 }
