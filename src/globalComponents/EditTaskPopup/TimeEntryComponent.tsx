@@ -623,6 +623,10 @@ function TimeEntryPopup(item: any) {
         if (items === '15') {
             changeTime = Number(changeTime)
             changeTime = changeTime - 15
+
+            if(changeTime < 0){
+                changeTime = 0;
+            }
             setTimeInMinutes(changeTime)
             if (changeTime != undefined) {
                 var TimeInHour: any = changeTime / 60;
@@ -634,6 +638,10 @@ function TimeEntryPopup(item: any) {
         if (items === '60') {
             changeTime = Number(changeTime)
             changeTime = changeTime - 60
+
+            if(changeTime < 0){
+                changeTime = 0;
+            }
             if (changeTime != undefined) {
                 var TimeInHour: any = changeTime / 60;
 
