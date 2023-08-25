@@ -876,7 +876,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                       <div>
                         <div className='d-flex justify-content-between align-items-center'>
                           <span className='comment-date'>
-                            <span className='round  pe-1'> <img className='align-self-start me-1' style={{ height: '35px', width: '35px' }} title={cmtData?.AuthorName}
+                            <span className='round  pe-1'> <img className='align-self-start me-1' title={cmtData?.AuthorName}
                               src={cmtData?.AuthorImage != undefined && cmtData?.AuthorImage != '' ?
                                 cmtData.AuthorImage :
                                 "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
