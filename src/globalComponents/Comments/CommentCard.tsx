@@ -48,6 +48,7 @@ export interface ICommentCardState {
   editorChangeValue: string;
   mailReply:any;
   postButtonHide:boolean;
+  topCommenterShow:boolean;
 }
 
 export class CommentCard extends React.Component<ICommentCardProps, ICommentCardState> {
@@ -73,6 +74,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       mentionValue: '',
       mailReply:{isMailReply:false,Index:null},
       postButtonHide:false,
+      topCommenterShow:false,
       /*editorState:EditorState.createWithContent(
         ContentState.createFromBlockArray(
           convertFromHTML('').contentBlocks
@@ -323,7 +325,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         CommenttoPost: '',
         mentionValue: '',
         mailReply:{isMailReply:false,index:null},
-        postButtonHide:false
+        postButtonHide:false,
+        topCommenterShow:true
       });
     } else {
       alert('Please input some text.')
@@ -532,7 +535,15 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       this.setState({
         mentionValue: this.state.mentionValue + '@[' + e.currentTarget?.title + '](' + e.currentTarget?.id + ') '
       }, () => { console.log(this.state.mentionValue) })
+      
+      
+    }if(this.state.topCommenterShow==true){
       e.currentTarget?.classList?.remove('active');
+      e.currentTarget?.classList?.add('active');
+      this.setState({
+        mentionValue: this.state.mentionValue + '@[' + e.currentTarget?.title + '](' + e.currentTarget?.id + ') ',
+        topCommenterShow:false
+      }, () => { console.log(this.state.mentionValue) })
     }
 
   }
