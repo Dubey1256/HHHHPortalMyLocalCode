@@ -137,18 +137,18 @@ function TimeEntryPopup(item: any) {
 
     }
     const getAllTime = async () => {
-        
+
         $.each(AllUsers, async function (index: any, taskUser: any) {
             if (taskUser.AssingedToUserId == CurntUserId) {
-                if(CurntUserId == '278'){
+                if (CurntUserId == '278') {
                     UserName = 'mobile'
                 }
-              
-                else{
-                  
+
+                else {
+
                     UserName = taskUser.Title;
                 }
-                
+
             }
 
         });
@@ -845,7 +845,7 @@ function TimeEntryPopup(item: any) {
             if (items.subRows.length > 0) {
                 items.subRows = items.subRows.reverse()
                 $.each(items.subRows, function (index: any, val: any) {
-                    if(val.TaskDate != null){
+                    if (val.TaskDate != null) {
                         var dateValues = val?.TaskDate?.split("/");
                         var dp = dateValues[1] + "/" + dateValues[0] + "/" + dateValues[2];
                         var NewDate = new Date(dp)
@@ -854,8 +854,8 @@ function TimeEntryPopup(item: any) {
                             getDateForTimeEntry(NewDate, val);
                         } catch (e) { }
                     }
-                   
-                   
+
+
                 })
             }
         })
@@ -988,20 +988,20 @@ function TimeEntryPopup(item: any) {
 
     }
     function datecomp(d1: any, d2: any) {
-        if(d1.TaskDate != null && d2.TaskDate != null){
+        if (d1.TaskDate != null && d2.TaskDate != null) {
 
-        
-        var a1 = d1.TaskDate.split("/");
-        var a2 = d2.TaskDate.split("/");
-        a1 = a1[2] + a1[1] + a1[0];
-        a2 = a2[2] + a2[1] + a2[0];
-        // a1 = a1[1] + a1[0] + a1[2];
-        //a2 = a2[1] + a2[0] + a2[2];
-        //var a1:any= new Date(d1.TaskDate)
-        //var a2:any= new Date(d2.TaskDate)
-        //var b1:any = Moment(a1).format()
-        //var b2:any = Moment(a1).format()
-        return a2 - a1;
+
+            var a1 = d1.TaskDate.split("/");
+            var a2 = d2.TaskDate.split("/");
+            a1 = a1[2] + a1[1] + a1[0];
+            a2 = a2[2] + a2[1] + a2[0];
+            // a1 = a1[1] + a1[0] + a1[2];
+            //a2 = a2[1] + a2[0] + a2[2];
+            //var a1:any= new Date(d1.TaskDate)
+            //var a2:any= new Date(d2.TaskDate)
+            //var b1:any = Moment(a1).format()
+            //var b2:any = Moment(a1).format()
+            return a2 - a1;
         }
     }
 
@@ -1478,11 +1478,11 @@ function TimeEntryPopup(item: any) {
 
     }
 
-    
+
     var isTimes = false;
     const UpdateAdditionaltime = async (child: any) => {
         var Dateee = ''
-       
+
         if (editeddata != undefined) {
             var a = Moment(editeddata).format()
             Dateee = Moment(a).format('DD/MM/YYYY')
@@ -1629,7 +1629,7 @@ function TimeEntryPopup(item: any) {
 
     }
     const saveOldUserTask = async (UpdatedData: any) => {
-        
+
         var Available = false;
         var TimeInHours: any = changeTime / 60;
         TimeInHours = TimeInHours.toFixed(2);
@@ -1741,7 +1741,7 @@ function TimeEntryPopup(item: any) {
 
         var AddedData: any = []
 
-       
+
 
         if (checkCategories == undefined && checkCategories == undefined) {
             alert("please select category or Title");
@@ -1767,7 +1767,7 @@ function TimeEntryPopup(item: any) {
 
             }
         }
-    
+
 
 
 
@@ -1874,14 +1874,14 @@ function TimeEntryPopup(item: any) {
         var CurrentUser: any = {}
         var update: any = {};
         var CurrentAddData: any = []
-        var CurrentUserData: any=[]
-        var AllData:any = []
+        var CurrentUserData: any = []
+        var AllData: any = []
         var count = 0
-        var LetestId =''
-        var MyData:any=[]
+        var LetestId = ''
+        var MyData: any = []
         var countss = 0
         var AddMainParentId: any = ''
-        var isTrueTime:Boolean = false;
+        var isTrueTime: Boolean = false;
         var AddParentId: any = ''
         let web = new Web(`${CurrentSiteUrl}`);
         var TimeInMinute: any = changeTime / 60
@@ -1904,75 +1904,75 @@ function TimeEntryPopup(item: any) {
             var linkedSite = "Task" + item.props.siteType
         }
         CurrentAddData = await web.lists
-        .getByTitle(listName)
-        .items
-        .select(`Id,Title,TaskDate,Created,Modified,TaskTime,${linkedSite}/Title,${linkedSite}/Id,Description,SortOrder,AdditionalTimeEntry,AuthorId,Author/Title,Editor/Id,Editor/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title`)
-        .expand(`Editor,Author,Category,TimesheetTitle,${linkedSite}`)
-        .filter(`AuthorId eq '${CurntUserId}'` && `TimesheetTitle/Id eq '${ParentId.Id}'`)
-        .getAll();
+            .getByTitle(listName)
+            .items
+            .select(`Id,Title,TaskDate,Created,Modified,TaskTime,${linkedSite}/Title,${linkedSite}/Id,Description,SortOrder,AdditionalTimeEntry,AuthorId,Author/Title,Editor/Id,Editor/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title`)
+            .expand(`Editor,Author,Category,TimesheetTitle,${linkedSite}`)
+            .filter(`AuthorId eq '${CurntUserId}'` && `TimesheetTitle/Id eq '${ParentId.Id}'`)
+            .getAll();
         CurrentUserData = CurrentAddData;
         CurrentUserData?.forEach((time: any) => {
             countss++
-            if(time.AuthorId == CurntUserId){
-                  if (time.AdditionalTimeEntry != null && time.AdditionalTimeEntry != undefined) {
-                  time.AdditionalTime = JSON.parse(time.AdditionalTimeEntry)
-                   AllData.push(time)
+            if (time.AuthorId == CurntUserId) {
+                if (time.AdditionalTimeEntry != null && time.AdditionalTimeEntry != undefined) {
+                    time.AdditionalTime = JSON.parse(time.AdditionalTimeEntry)
+                    AllData.push(time)
+                }
             }
-        }
         })
-        if(AllData != undefined && AllData.length > 0){
-            var timeSpentId:any = '';
-            AllData?.forEach((itemms:any)=>{
-              
-                 timeSpentId = itemms.AdditionalTime[itemms.AdditionalTime.length - 1];
-                 LetestId = itemms.Id
-                 itemms?.AdditionalTime.forEach((val:any)=>{
+        if (AllData != undefined && AllData.length > 0) {
+            var timeSpentId: any = '';
+            AllData?.forEach((itemms: any) => {
+
+                timeSpentId = itemms.AdditionalTime[itemms.AdditionalTime.length - 1];
+                LetestId = itemms.Id
+                itemms?.AdditionalTime.forEach((val: any) => {
                     isTrueTime = true;
                     count++
                     AddParentId = val.ParentID
-        
+
                     AddMainParentId = val.MainParentId
                     MyData.push(val)
-                 })
-                
-            })
-           
-                if(MyData != undefined && MyData.length >0){
-                    update['AuthorName'] = CurrentUser.AuthorName;
-                    update['AuthorId'] = CurntUserId;
-                    update['AuthorImage'] = CurrentUser.AuthorImage;
-                    update['ID'] = timeSpentId.ID + 1;
-                    update['Id'] = timeSpentId.ID + 1;
-                    update['MainParentId'] = AddMainParentId;
-                    update['ParentID'] = AddParentId;
-                    update['TaskTime'] = TimeInHours;
-                    update['TaskTimeInMin'] = TimeInMinutes;
-                    update['TaskDate'] = Moment(myDatee).format('DD/MM/YYYY');
-                    update['Description'] = postData.Description
-                    MyData.push(update)
-                    UpdatedData = MyData
-                }
-                else {
-                    
-                    update['AuthorName'] = CurrentUser.AuthorName;
-                    update['AuthorImage'] = CurrentUser.AuthorImage;
-                    update['AuthorId'] = CurntUserId
-                    update['ID'] = 0;
-                    update['Id'] = 0;
-                    update['MainParentId'] = ParentId.Id;
-                    update['ParentID'] = LetestId;
-                    update['TaskTime'] = TimeInHours;
-                    update['TaskTimeInMin'] = TimeInMinutes;
-                    update['TaskDate'] = Moment(myDatee).format('DD/MM/YYYY');
-                    update['Description'] = postData.Description
-                    AllData[0].AdditionalTime.push(update)
-                    UpdatedData = AllData[0].AdditionalTime
-        
-                }
-            
+                })
 
-           
-            
+            })
+
+            if (MyData != undefined && MyData.length > 0) {
+                update['AuthorName'] = CurrentUser.AuthorName;
+                update['AuthorId'] = CurntUserId;
+                update['AuthorImage'] = CurrentUser.AuthorImage;
+                update['ID'] = timeSpentId.ID + 1;
+                update['Id'] = timeSpentId.ID + 1;
+                update['MainParentId'] = AddMainParentId;
+                update['ParentID'] = AddParentId;
+                update['TaskTime'] = TimeInHours;
+                update['TaskTimeInMin'] = TimeInMinutes;
+                update['TaskDate'] = Moment(myDatee).format('DD/MM/YYYY');
+                update['Description'] = postData.Description
+                MyData.push(update)
+                UpdatedData = MyData
+            }
+            else {
+
+                update['AuthorName'] = CurrentUser.AuthorName;
+                update['AuthorImage'] = CurrentUser.AuthorImage;
+                update['AuthorId'] = CurntUserId
+                update['ID'] = 0;
+                update['Id'] = 0;
+                update['MainParentId'] = ParentId.Id;
+                update['ParentID'] = LetestId;
+                update['TaskTime'] = TimeInHours;
+                update['TaskTimeInMin'] = TimeInMinutes;
+                update['TaskDate'] = Moment(myDatee).format('DD/MM/YYYY');
+                update['Description'] = postData.Description
+                AllData[0].AdditionalTime.push(update)
+                UpdatedData = AllData[0].AdditionalTime
+
+            }
+
+
+
+
         }
         if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
 
@@ -1986,25 +1986,25 @@ function TimeEntryPopup(item: any) {
         const finalData = UpdatedData.filter((val: any, id: any, array: any) => {
             return array.indexOf(val) == id;
         })
-        if(isTrueTime == true){
-        
-        await web.lists.getById(ListId)
-            .items.getById(AddParentId)
-            .update({
+        if (isTrueTime == true) {
 
-                AdditionalTimeEntry: JSON.stringify(finalData),
+            await web.lists.getById(ListId)
+                .items.getById(AddParentId)
+                .update({
 
-            }).then((res: any) => {
-                console.log(res);
+                    AdditionalTimeEntry: JSON.stringify(finalData),
 
-               
-                setupdateData(updateData + 1)
+                }).then((res: any) => {
+                    console.log(res);
 
 
+                    setupdateData(updateData + 1)
 
-            })
+
+
+                })
         }
-      
+
 
 
         closeAddTaskTimepopup();
@@ -2058,7 +2058,7 @@ function TimeEntryPopup(item: any) {
         //                 UpdatedData = items.AdditionalTime
 
         //             }
-                  
+
 
         //             if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
 
@@ -2069,13 +2069,13 @@ function TimeEntryPopup(item: any) {
         //                 var ListId = TimeSheetlistId
         //             }
 
-                   
+
         //             if(isTrueTime == true){
         //                 const finalData = UpdatedData.filter((val: any, id: any, array: any) => {
         //                     return array.indexOf(val) == id;
         //                 })
 
-                    
+
         //             await web.lists.getById(ListId)
         //                 .items.getById(AddParentId)
         //                 .update({
@@ -2085,7 +2085,7 @@ function TimeEntryPopup(item: any) {
         //                 }).then((res: any) => {
         //                     console.log(res);
 
-                           
+
         //                     setupdateData(updateData + 1)
 
 
@@ -2205,7 +2205,7 @@ function TimeEntryPopup(item: any) {
 
 
     }
-    const saveJsonDataAnotherCopy = async (CurrentUser: any, items: any,child:any) => {
+    const saveJsonDataAnotherCopy = async (CurrentUser: any, items: any, child: any) => {
         var update: any = {};
         var UpdatedData: any = []
         let web = new Web(`${CurrentSiteUrl}`);
@@ -2262,10 +2262,10 @@ function TimeEntryPopup(item: any) {
         child.AuthorName = CurrentUser.AuthorName;
         child.AuthorImage = CurrentUser.AuthorImage;
         child.AuthorId = CurntUserId
-        child.ID =  child.ID + 1;
-        child.Id =  child.Id + 1;
-        child.ParentID =  NewParentId;
-        child.MainParentId =  items.TimesheetTitle.Id;
+        child.ID = child.ID + 1;
+        child.Id = child.Id + 1;
+        child.ParentID = NewParentId;
+        child.MainParentId = items.TimesheetTitle.Id;
         child.TaskTime = TimeInHours != undefined && TimeInHours != 0 ? TimeInHours : child.TaskTime;
         child.TaskTimeInMin = TimeInMinutes != undefined && TimeInMinutes != 0 ? TimeInMinutes : child.TaskTimeInMin;
         child.TaskDate = Dateee != "Invalid date" ? Dateee : Moment(DateFormate).format('DD/MM/YYYY');
@@ -2317,13 +2317,13 @@ function TimeEntryPopup(item: any) {
 
             let web = new Web(`${CurrentSiteUrl}`);
             await web.lists.getById(ListId).items.getById(val.Id).delete()
-            TaskCate?.forEach(async (item:any)=>{
-                if(item.TimesheetTitle.Id == val.Id){
+            TaskCate?.forEach(async (item: any) => {
+                if (item.TimesheetTitle.Id == val.Id) {
                     await web.lists.getById(ListId).items.getById(item.Id).delete()
                     setupdateData(updateData + 1)
                 }
             })
-           
+
 
         }
 
@@ -2333,9 +2333,9 @@ function TimeEntryPopup(item: any) {
 
 
     var isTrue = false;
-     const SaveCopytime = async (child: any) => {
+    const SaveCopytime = async (child: any) => {
         var CurrentUser: any = {}
-       
+
         var counts = 0;
         var update: any = {};
         var TimeInMinute: any = changeTime / 60
@@ -2367,12 +2367,12 @@ function TimeEntryPopup(item: any) {
                 if (subItem.AdditionalTime.length > 0 && subItem.AdditionalTime != undefined) {
                     var timeSpentId = subItem.AdditionalTime[subItem.AdditionalTime.length - 1];
                     $.each(subItem.AdditionalTime, async function (index: any, NewsubItem: any) {
-                        if(NewsubItem.AuthorId == CurntUserId){
+                        if (NewsubItem.AuthorId == CurntUserId) {
                             AddParent = NewsubItem.ParentID
                             AddMainParent = NewsubItem.MainParentId
                             isTrue = true;
                         }
-                       
+
 
                     })
 
@@ -2401,32 +2401,32 @@ function TimeEntryPopup(item: any) {
         }
         setCopyTaskpopup(false)
         let web = new Web(`${CurrentSiteUrl}`);
-        if (isTrue == true){
+        if (isTrue == true) {
             await web.lists.getById(ListId).items.getById(AddParent).update({
 
 
                 // TaskDate:postData.TaskDate,
                 AdditionalTimeEntry: JSON.stringify(UpdatedData),
-    
+
             }).then((res: any) => {
-    
+
                 console.log(res);
-    
+
                 closeCopyTaskpopup();
                 setupdateData(updateData + 1)
-    
+
             })
         }
 
-        
+
         if (TaskCate.length == counts && isTrue == false) {
-            TaskCate?.forEach((items:any)=>{
-                if(items.Id == child.ParentID){
-                    saveJsonDataAnotherCopy(CurrentUser, items,child)
+            TaskCate?.forEach((items: any) => {
+                if (items.Id == child.ParentID) {
+                    saveJsonDataAnotherCopy(CurrentUser, items, child)
 
                 }
             })
-           
+
         }
     }
     const DateFormat = (itemL: any) => {
@@ -2844,7 +2844,7 @@ function TimeEntryPopup(item: any) {
                         <div className="col-sm-12 p-0 smart">
                             <div>
                                 <div className="wrapper AllTime">
-                                 
+
                                     {data && <GlobalCommanTable columns={column} data={data} callBackData={callBackData} expendedTrue={expendedTrue} />}
 
                                     {TaskCate.length === 0 && <div className="text-center pb-3"
@@ -2926,14 +2926,14 @@ function TimeEntryPopup(item: any) {
                                                     Date
 
                                                 </label>
-                                               
+
                                                 <DatePicker className="form-control"
                                                     selected={myDatee}
                                                     onChange={handleDatedue}
                                                     dateFormat="EEE, dd MMM yyyy"
 
                                                 />
-                                                
+
 
                                             </div>
                                         </div>
@@ -2995,8 +2995,8 @@ function TimeEntryPopup(item: any) {
                                         <div className="col-sm-3 pe-0">
                                             <label></label>
                                             <input type="text"
-                                               
-                                                value={TimeInMinutes >0 ? TimeInMinutes : 0}
+
+                                                value={TimeInMinutes > 0 ? TimeInMinutes : 0}
                                                 onChange={(e) => changeTimeFunction(e, 'Add')} />
 
                                         </div>
@@ -3067,12 +3067,12 @@ function TimeEntryPopup(item: any) {
 
                             <div className="col mb-2">
                                 <div className='mb-1'>
-                                   
-                                        <a target="_blank" href="{{pageContext}}/SitePages/SmartMetadata.aspx?TabName=Timesheet">
-                                            Manage
-                                            Categories
-                                        </a>
-                                    
+
+                                    <a target="_blank" href="{{pageContext}}/SitePages/SmartMetadata.aspx?TabName=Timesheet">
+                                        Manage
+                                        Categories
+                                    </a>
+
                                 </div>
                                 {TimeSheet.map((Items: any) => {
                                     return (
@@ -3168,7 +3168,7 @@ function TimeEntryPopup(item: any) {
                                                         Date
 
                                                     </label>
-                                                   
+
                                                     <DatePicker className="form-control"
                                                         selected={editeddata}
                                                         onChange={handleDatedue}
@@ -3237,7 +3237,7 @@ function TimeEntryPopup(item: any) {
                                         <div className="row mb-2">
                                             <div className="col-sm-3 pe-0">
                                                 <label
-                                                  ></label>
+                                                ></label>
                                                 <input type="text"
                                                     className="form-control"
                                                     value={(TimeInMinutes > 0 || TimeInMinutes == undefined) ? TimeInMinutes : child.TaskTimeInMin} onChange={(e) => changeTimeFunction(e, 'Edit')} />
@@ -3317,15 +3317,15 @@ function TimeEntryPopup(item: any) {
                                                 </div>
                                             </div>
                                             <div className="col-sm-6 text-end">
-                                               
+
                                                 <a target="_blank"
-                                                   
+
                                                     href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TaskTimeSheetListNew/EditForm.aspx?ID=${child.ParentID}`}>
                                                     Open out-of-the-box
                                                     form
                                                 </a>
                                                 <button type="button" className="btn btn-primary ms-2"
-                                                   disabled={TimeInMinutes <= 0 ? true : false} onClick={(e) => UpdateAdditionaltime(child)}>
+                                                    disabled={TimeInMinutes <= 0 ? true : false} onClick={(e) => UpdateAdditionaltime(child)}>
                                                     Save
                                                 </button>
                                             </div>
@@ -3387,21 +3387,17 @@ function TimeEntryPopup(item: any) {
                                                                     </span>
                                                                     |
                                                                     <span className="href"
-
                                                                         id="selectedToday"
-
-                                                                        onClick={() => changeDatetodayQuickly(child.TaskDate, 'Today', 'Edit')}>Today</span>
+                                                                        onClick={() => changeDatetodayQuickly(child.TaskDate, 'Today', 'Edit')}
+                                                                    >Today</span>
                                                                 </div>
                                                                 <label className="full_width">
                                                                     Date
-
                                                                 </label>
-                                                              
                                                                 <DatePicker className="form-control"
                                                                     selected={editeddata}
                                                                     onChange={handleDatedue}
                                                                     dateFormat="EEE, dd MMM yyyy" />
-
                                                             </div>
                                                         </div>
 
@@ -3462,7 +3458,7 @@ function TimeEntryPopup(item: any) {
                                                     <div className="row mb-2">
                                                         <div className="col-sm-3 pe-0">
                                                             <label
-                                                               ></label>
+                                                            ></label>
                                                             <input type="text"
                                                                 className='form-control'
                                                                 name="timeSpent"
@@ -3545,9 +3541,9 @@ function TimeEntryPopup(item: any) {
                                                             </div>
                                                         </div>
                                                         <div className="col-sm-6 text-end">
-                                                           
+
                                                             <a target="_blank"
-                                                               
+
                                                                 href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TaskTimeSheetListNew/EditForm.aspx?ID=${child.ParentID}`}>
                                                                 Open out-of-the-box
                                                                 form
@@ -3625,7 +3621,7 @@ function TimeEntryPopup(item: any) {
                                             Date
 
                                         </label>
-                                       
+
                                         <DatePicker className="form-control"
                                             selected={myDatee}
                                             onChange={handleDatedue}
@@ -3693,11 +3689,11 @@ function TimeEntryPopup(item: any) {
                             <div className="row mb-2">
                                 <div className="col-sm-3 pe-0">
                                     <label
-                                      ></label>
+                                    ></label>
                                     <input type="text"
                                         autoComplete="off"
                                         className="form-control"
-                                        value={TimeInMinutes >0 ? TimeInMinutes : 0} onChange={(e) => changeTimeFunction(e, 'Add')} />
+                                        value={TimeInMinutes > 0 ? TimeInMinutes : 0} onChange={(e) => changeTimeFunction(e, 'Add')} />
 
                                 </div>
                                 <div className="col-sm-3 ps-0">
