@@ -48,6 +48,7 @@ export interface ICommentCardState {
   editorChangeValue: string;
   mailReply: any;
   postButtonHide: boolean;
+  topCommenterShow:boolean;
 }
 
 export class CommentCard extends React.Component<ICommentCardProps, ICommentCardState> {
@@ -72,6 +73,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       isModalOpen: false,
       AllCommentModal: false,
       mentionValue: '',
+      topCommenterShow:false,
       mailReply: { isMailReply: false, Index: null },
       postButtonHide: false,
       /*editorState:EditorState.createWithContent(
@@ -221,7 +223,9 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           display: this.taskUsers[index].Title
         });
 
-        if (this.taskUsers[index].Title == "Deepak Trivedi" || this.taskUsers[index].Title == "Stefan Hochhuth" || this.taskUsers[index].Title == "Robert Ungethuem" || this.taskUsers[index].Title == "Mattis Hahn" || this.taskUsers[index].Title == "Ksenia Kozhukhar" || this.taskUsers[index].Title == "Mayank Pal") {
+      
+
+        if (this.taskUsers[index].Title == "Deepak Trivedi" || this.taskUsers[index].Title == "Stefan Hochhuth" || this.taskUsers[index].Title == "Robert Ungethuem" || this.taskUsers[index].Title == "Mattis Hahn"||this.taskUsers[index].Title=="Prashant Kumar") {
           this.topCommenters.push({
             id: this.taskUsers[index].Title + "{" + this.taskUsers[index].Email + "}",
             display: this.taskUsers[index].Title,
@@ -533,16 +537,42 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   }
 
   private topCommentersClick(e: any) {
+
     console.log(e.currentTarget.className);
+
     if (e.currentTarget?.className?.indexOf('active') < 0) {
+
       e.currentTarget?.classList?.add('active');
+
       this.setState({
+
         mentionValue: this.state.mentionValue + '@[' + e.currentTarget?.title + '](' + e.currentTarget?.id + ') '
+
       }, () => { console.log(this.state.mentionValue) })
+
+     
+
+     
+
+    }if(this.state.topCommenterShow==true){
+
+      e.currentTarget?.classList?.remove('active');
+
+      e.currentTarget?.classList?.add('active');
+
+      this.setState({
+
+        mentionValue: this.state.mentionValue + '@[' + e.currentTarget?.title + '](' + e.currentTarget?.id + ') ',
+
+        topCommenterShow:false
+
+      }, () => { console.log(this.state.mentionValue) })
+
     }
 
-  }
+ 
 
+  }
   private setMentionValue(e: any) {
     this.setState({
       mentionValue: e.target.value
