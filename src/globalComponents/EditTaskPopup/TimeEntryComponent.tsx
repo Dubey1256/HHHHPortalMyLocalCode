@@ -623,6 +623,10 @@ function TimeEntryPopup(item: any) {
         if (items === '15') {
             changeTime = Number(changeTime)
             changeTime = changeTime - 15
+
+            if(changeTime < 0){
+                changeTime = 0;
+            }
             setTimeInMinutes(changeTime)
             if (changeTime != undefined) {
                 var TimeInHour: any = changeTime / 60;
@@ -634,6 +638,10 @@ function TimeEntryPopup(item: any) {
         if (items === '60') {
             changeTime = Number(changeTime)
             changeTime = changeTime - 60
+
+            if(changeTime < 0){
+                changeTime = 0;
+            }
             if (changeTime != undefined) {
                 var TimeInHour: any = changeTime / 60;
 
@@ -3325,7 +3333,7 @@ function TimeEntryPopup(item: any) {
                                                     form
                                                 </a>
                                                 <button type="button" className="btn btn-primary ms-2"
-                                                   disabled={TimeInMinutes <= 0 ? true : false} onClick={(e) => UpdateAdditionaltime(child)}>
+                                                    onClick={(e) => UpdateAdditionaltime(child)}>
                                                     Save
                                                 </button>
                                             </div>
@@ -3570,7 +3578,7 @@ function TimeEntryPopup(item: any) {
                                                                 Open out-of-the-box
                                                                 form
                                                             </a>
-                                                            <button type="button" className="btn btn-primary ms-2" disabled={TimeInMinutes <= 0 ? true : false}
+                                                            <button type="button" className="btn btn-primary ms-2" 
                                                                 onClick={() => SaveCopytime(child)}>
                                                                 Save
                                                             </button>

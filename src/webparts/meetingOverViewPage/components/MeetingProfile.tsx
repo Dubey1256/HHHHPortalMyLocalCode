@@ -200,10 +200,11 @@ const MeetingProfile = (props: any) => {
   
       }
                     let data = {
-                        itemId: taskDetails.Id,
+                        Id: taskDetails.Id,
                         Title: taskDetails?.Title,
                         MeetingId:taskDetails?.PortfolioStructureID,
                         listName:"Master Tasks",
+                        DueDate: taskDetails["DueDate"],
                         Created: taskDetails["Created"],
                         Creation: taskDetails["Created"],
                         Modified: taskDetails["Modified"],
@@ -743,12 +744,11 @@ const MeetingProfile = (props: any) => {
                 <section className='col-9'>
                     <div className='team_member row'>
                         <div className='col-6'>
-                            <dl>
-                                <dt className='bg-Fa'>Meeting Id</dt>
-                                <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{resultData.MeetingId} </span>
-                                    {/* {TaskIdCSF != "" && <span className="idhide bg-fxdark siteColor">{TaskIdCSF?.replace("-", ">")}{TaskIdAW == "" && resultData["TaskId"] != undefined && <span className='text-body'>{">" + resultData["TaskId"]}</span>} {TaskIdAW != "" && <span className='text-body'>{">" + TaskIdAW?.replace("-", ">")}</span>}</span>} */}
-                                </dd>
-                            </dl>
+                        <dl>
+                    <dt className='bg-Fa'>Meeting Date</dt>
+                    <dd className='bg-Ff'>{resultData["DueDate"] != null && resultData["DueDate"] != undefined ? moment(resultData["DueDate"]).format("DD/MM/YYYY") : ''}</dd>
+                  </dl>
+                          
                         </div>
                         <div className='col-6'>
                             <dl>

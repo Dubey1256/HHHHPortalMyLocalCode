@@ -1871,7 +1871,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                       <li>
                         <a  >
                         <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                          <span title={this.state.Result['Title']}>{truncatedTitle?.length>0?truncatedTitle:this.state.Result['Title']}</span>
+                          <span>{truncatedTitle?.length>0?truncatedTitle:this.state.Result['Title']}</span>
                                 <span className="f-13 popover__content" >
                                { this.state.Result['Title']}
                                 </span>
@@ -1893,7 +1893,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
               {this.state.Result["SiteIcon"] != "" && <img className="imgWid29 pe-1 " title={this?.state?.Result?.siteType} src={this.state.Result["SiteIcon"]} />}
               {this.state.Result["SiteIcon"] === "" && <img className="imgWid29 pe-1 " src="" />}
                <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                             <span title={this.state.Result['Title']}>{truncatedTitle?.length>0?truncatedTitle:this.state.Result['Title']}</span>
+                             <span >{truncatedTitle?.length>0?truncatedTitle:this.state.Result['Title']}</span>
                                 <span className="f-13 popover__content" >
                                { this.state.Result['Title']}
                                 </span>
@@ -2677,7 +2677,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                 </>}
               </div>
               <div>{this.state.Result.Id && <SmartInformation ref={this.smartInfoRef} Id={this.state.Result.Id} AllListId={AllListId} Context={this.props?.Context} taskTitle={this.state.Result?.Title} listName={this.state.Result?.listName} />}</div>
-              <div> {this.state.Result != undefined && <RelevantDocuments ref={this?.relevantDocRef} siteUrl={this.props.siteUrl} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments>}</div>
+              <div> {this.state.Result != undefined && <RelevantDocuments ref={this?.relevantDocRef}AllListId={AllListId} siteUrl={this.props.siteUrl} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments>}</div>
 
             </div>
 

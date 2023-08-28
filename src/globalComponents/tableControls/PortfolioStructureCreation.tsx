@@ -155,7 +155,8 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                 "Id",
                 "Title",
                 "Color",
-                "IdRange"
+                "IdRange",
+                "Suffix"
             )
             .get();
         if (this?.state?.defaultPortfolioType != undefined) {
@@ -352,10 +353,11 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
         } else ItemTypes = (this.state.ChildItemTitle != undefined && this.state.ChildItemTitle.length > 0) ? this.state.ChildItemTitle[0].MasterItemsType : 'Component';
         let filter = ''
         if (ItemTypes == this.state.defaultPortfolioType) {
-            if (this.props?.PortfolioType != undefined && this.props?.PortfolioType?.toLowerCase().indexOf('portfolio') > -1)
-                filter = "Item_x0020_Type eq 'Component'"
-            else
-                filter = "PortfolioType/Id eq '" + this.state.PortfolioTypeId + "'";// "Item_x0020_Type eq '" + ItemTypes + "'"
+            filter = "Item_x0020_Type eq 'Component'"
+            // if (this.props?.PortfolioType != undefined && this.props?.PortfolioType?.toLowerCase().indexOf('portfolio') > -1)
+            //     filter = "Item_x0020_Type eq 'Component'"
+            // else
+            //     filter = "PortfolioType/Id eq '" + this.state.PortfolioTypeId + "'";// "Item_x0020_Type eq '" + ItemTypes + "'"
         }
         else {
             filter = "Parent/Id eq '" + this.state.SelectedItem.Id + "' and Item_x0020_Type eq '" + ItemTypes + "'"
@@ -401,9 +403,16 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                 this.PortfolioStructureIDs = 'C' + this.NextLevel;
             } else {
                 const tempItem = this.state?.PortfolioTypeArray?.filter((port: any) => ((port.Title === this.state?.PortfolioType) || (this.state?.defaultPortfolioType?.toLowerCase()?.indexOf(port.Title?.toLowerCase()) > -1)) || (port.Title === this.state?.defaultPortfolioType));
-                //const tempNumber =tempItem[0]?.IdRange?.split('-')[0];
-                const tempNumber = tempItem[0]?.Title?.charAt(0) + tempItem[0]?.IdRange?.split('-')[0];
-                this.PortfolioStructureIDs = tempNumber?.substring(0, tempNumber?.length - (this.NextLevel?.toString()?.length)) + this.NextLevel;
+                let tempNumber: any;
+                if (tempItem[0]?.IdRange != undefined) {
+                    tempNumber = tempItem[0]?.Suffix + tempItem[0]?.IdRange?.split('-')[0];
+                    this.PortfolioStructureIDs = tempNumber?.substring(0, tempNumber?.length - (this.NextLevel?.toString()?.length)) + this.NextLevel;
+                }
+                else {
+                    tempNumber = tempItem[0]?.Suffix + ('0000');
+                    this.PortfolioStructureIDs = tempNumber?.substring(0, tempNumber?.length - (this.NextLevel?.toString()?.length)) + this.NextLevel;
+                }
+
                 //  this.PortfolioStructureIDs = this.state?.PropValue?.PortFolioTypeID != undefined ? this.PortfolioStructureIDs : 'C' + this.NextLevel;
             }
         }

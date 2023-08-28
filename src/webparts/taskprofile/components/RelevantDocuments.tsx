@@ -67,6 +67,7 @@ const RelevantDocuments = (props: any,ref:any) => {
       }
       const callbackeditpopup=()=>{
         loadAllSitesDocuments();
+        setEditdocpanel(false);
       }
     return (
         <>
