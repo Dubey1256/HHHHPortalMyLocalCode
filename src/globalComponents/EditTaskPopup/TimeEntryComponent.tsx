@@ -3336,23 +3336,8 @@ function TimeEntryPopup(item: any) {
                         </>
                     )
                 })}
-
-
-
-
-
-
-
-
-
-
             </Panel>
-
-
-
             {/* ----------------------------------------------------------------------------Copy Task------------------------------------------------------------------------------------------------------------ */}
-
-
             <Panel
                 onRenderHeader={onRenderCustomHeaderCopyTaskTime}
                 type={PanelType.custom}
@@ -3364,10 +3349,8 @@ function TimeEntryPopup(item: any) {
                 {saveCopyTaskTime.map((item: any) => {
                     return (
                         <>
-
                             <div className={PortfolioType == "Service" ? "modal-body border p-3 serviepannelgreena" : "modal-body border p-3"}>
                                 <div className="col">
-
                                     {/* <div className="form-group mb-2">
                                         <label>Title</label>
                                         <input type="text" autoComplete="off"
@@ -3379,7 +3362,6 @@ function TimeEntryPopup(item: any) {
                                     {saveCopyTaskTimeChild.map((child: any, index: any) => {
                                         return (
                                             <>
-
                                                 <div className="col">
                                                     <div className='row'>
                                                         <div className="col-sm-6 ">
