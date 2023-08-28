@@ -10,8 +10,9 @@ import Example from '../EditTaskPopup/FroalaCommnetBoxes';
 import * as globalCommon from "../globalCommon";
 import * as Moment from 'moment';
 import { Web } from "sp-pnp-js";
+import { RiDeleteBin6Line } from 'react-icons/ri'
 import TeamConfigurationCard from "../TeamConfiguration/TeamConfiguration";
-import {mycontextValue} from '../../webparts/meetingOverViewPage/components/MeetingProfile'
+import { mycontextValue } from '../../webparts/meetingOverViewPage/components/MeetingProfile';
 var updateFeedbackArray: any = [];
 var FeedBackBackupArray: any = [];
 var CommentBoxData: any = [];
@@ -20,15 +21,15 @@ var AddImageDescriptionsIndex: any;
 var currentUserBackupArray: any = [];
 const MeetingPopupComponent = (Props: any) => {
     const contextdata: any = React.useContext(mycontextValue)
-    
+
     const [IsOpenMeetingPopup, setIsOpenMeetingPopup] = useState(Props.isShow);
     const [MeetingData, setMeetingData] = useState<any>({})
     const [TaskImages, setTaskImages] = React.useState([]);
     const [UploadBtnStatus, setUploadBtnStatus] = React.useState(false);
     const AllTaskUsersData: any = contextdata.taskUsers;
     const AllListIdData = contextdata.AllListId;
-    const Context:any=contextdata.Context
-    
+    const Context: any = contextdata.Context
+
     //  ************** This is used for handeling Site Url for Diffrent Cases ******************** 
 
     var siteUrls: any;
@@ -57,7 +58,7 @@ const MeetingPopupComponent = (Props: any) => {
         try {
             let web = new Web(siteUrls);
             let smartMeta: any;
-           
+
             // if (Props.Items.listId != undefined) {
             smartMeta = await web.lists
                 .getById(AllListIdData?.MasterTaskListID)
@@ -164,6 +165,90 @@ const MeetingPopupComponent = (Props: any) => {
     const SubCommentSectionCallBack = React.useCallback((feedBackData: any) => {
         SubCommentBoxData = feedBackData;
     }, [])
+
+
+    const UpdateMeetingDetailsFunction = async () => {
+        if (CommentBoxData?.length > 0 || SubCommentBoxData?.length > 0) {
+            if (CommentBoxData?.length == 0 && SubCommentBoxData?.length > 0) {
+                let message = JSON.parse(MeetingData.FeedBack);
+                let feedbackArray: any = [];
+                if (message != null) {
+                    feedbackArray = message[0]?.FeedBackDescriptions
+                }
+                let tempArray: any = [];
+                if (feedbackArray[0] != undefined) {
+                    tempArray.push(feedbackArray[0])
+                } else {
+                    let tempObject: any =
+                    {
+                        "Title": '<p> </p>',
+                        "Completed": false,
+                        "isAddComment": false,
+                        "isShowComment": false,
+                        "isPageType": '',
+                    }
+                    tempArray.push(tempObject);
+                }
+
+                CommentBoxData = tempArray;
+                let result: any = [];
+                if (SubCommentBoxData == "delete") {
+                    result = tempArray
+                } else {
+                    result = tempArray.concat(SubCommentBoxData);
+                }
+                updateFeedbackArray[0].FeedBackDescriptions = result;
+            }
+            if (CommentBoxData?.length > 0 && SubCommentBoxData?.length == 0) {
+                let result: any = [];
+                if (SubCommentBoxData == "delete") {
+                    result = CommentBoxData;
+                } else {
+                    let message = JSON.parse(MeetingData.FeedBack);
+                    if (message != null) {
+                        let feedbackArray = message[0]?.FeedBackDescriptions;
+                        feedbackArray?.map((array: any, index: number) => {
+                            if (index > 0) {
+                                SubCommentBoxData.push(array);
+                            }
+                        })
+                        result = CommentBoxData.concat(SubCommentBoxData);
+                    } else {
+                        result = CommentBoxData;
+                    }
+                }
+                updateFeedbackArray[0].FeedBackDescriptions = result;
+            }
+            if (CommentBoxData?.length > 0 && SubCommentBoxData?.length > 0) {
+                let result: any = [];
+                if (SubCommentBoxData == "delete") {
+                    result = CommentBoxData
+                } else {
+                    result = CommentBoxData.concat(SubCommentBoxData)
+                }
+                updateFeedbackArray[0].FeedBackDescriptions = result;
+            }
+        } else {
+            updateFeedbackArray = JSON.parse(MeetingData.FeedBack);
+        }
+        try {
+            let web = new Web(siteUrls);
+            await web.lists.getById(AllListIdData?.MasterTaskListID).items.getById(Props.Items.Id).update({
+                Title: MeetingData.Title,
+                DueDate: MeetingData.DueDate ? Moment(MeetingData.DueDate).format("MM-DD-YYYY") : null,
+                FeedBack: updateFeedbackArray?.length > 0 ? JSON.stringify(updateFeedbackArray) : null,
+                // AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds.length > 0) ? AssignedToIds : [] },
+                // Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0) ? ResponsibleTeamIds : [] },
+                // Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds.length > 0) ? TeamMemberIds : [] }
+            }).then(async (res: any) => {
+                console.log("Updated Succesfully !!!!!!", res);
+                closeMeetingPopupFunction();
+            })
+
+        } catch (error) {
+            console.log("Error:", error.message);
+        }
+    }
 
 
 
@@ -321,6 +406,35 @@ const MeetingPopupComponent = (Props: any) => {
             }
         }
     }
+
+
+      // ****************** This is used for Delete Task Functions **********************
+      const deleteTaskFunction = async (TaskID: number) => {
+        let deletePost = confirm("Do you really want to delete this Task?")
+        if (deletePost) {
+            deleteItemFunction(TaskID);
+        } else {
+            console.log("Your Task has not been deleted");
+        }
+    }
+    const deleteItemFunction = async (itemId: any) => {
+        try {
+            if (Props?.Items?.listId != undefined) {
+                let web = new Web(siteUrls);
+                await web.lists.getById(Props?.Items?.listId).items.getById(itemId).recycle();
+
+            } else {
+                let web = new Web(siteUrls);
+                await web.lists.getById(Props?.Items?.listId).items.getById(itemId).recycle();
+            }
+
+        } catch (error) {
+            console.log("Error:", error.message);
+        }
+
+    }
+
+
     const RemoveImageFunction = (imageIndex: number, imageName: any, FunctionType: any) => {
         let tempArray: any = [];
         if (FunctionType == "Remove") {
@@ -382,17 +496,17 @@ const MeetingPopupComponent = (Props: any) => {
                     <div>
                         <div className="">
                             Created <span className="font-weight-normal siteColor">
-                                {/* {MeetingData.Created ? Moment(MeetingData.Created).format("DD/MM/YYYY") : ""}   */}
+                                {MeetingData.Created ? Moment(MeetingData.Created).format("DD/MM/YYYY") : ""}
                             </span>
                             By <span className="font-weight-normal siteColor">
-                                {/* {MeetingData.Author?.Title ? MeetingData.Author?.Title : ''} */}
+                                {MeetingData.Author?.Title ? MeetingData.Author?.Title : ''}
                             </span>
                         </div>
                         <div>
                             Last modified <span className="font-weight-normal siteColor">
-                                {/* {MeetingData.Modified ? Moment(MeetingData.Modified).format("DD/MM/YYYY") : ''} */}
+                                {MeetingData.Modified ? Moment(MeetingData.Modified).format("DD/MM/YYYY") : ''}
                             </span> By <span className="font-weight-normal siteColor">
-                                {/* {MeetingData.Editor?.Title ? MeetingData.Editor.Title : ''} */}
+                                {MeetingData.Editor?.Title ? MeetingData.Editor.Title : ''}
                             </span>
                         </div>
                         <div>
@@ -400,9 +514,9 @@ const MeetingPopupComponent = (Props: any) => {
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" style={{ marginLeft: "-5px" }} fill="none">
                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z" fill="#333333" />
                                 </svg>
-                                {/* <RiDeleteBin6Line /> */}
+                                <RiDeleteBin6Line />
                                 <span
-                                // onClick={() => deleteTaskFunction(MeetingData.ID)}
+                                onClick={() => deleteTaskFunction(MeetingData.ID)}
                                 >Delete This Item</span>
                             </a>
                             {/* | */}
@@ -434,15 +548,16 @@ const MeetingPopupComponent = (Props: any) => {
                             </a>
                             {/* } */}
                             <span>
-                                <button type="button" className="btn btn-default mx-2"
+                    
+                                <button className="btn btn-primary px-4 mx-2"
+                                    onClick={UpdateMeetingDetailsFunction}
+                                >
+                                    Save
+                                </button>
+                                <button type="button" className="btn btn-default"
                                     onClick={closeMeetingPopupFunction}
                                 >
                                     Cancel
-                                </button>
-                                <button className="btn btn-primary px-4"
-                                // onClick={UpdateTaskInfoFunction}
-                                >
-                                    Save
                                 </button>
                             </span>
                         </div>
@@ -477,7 +592,7 @@ const MeetingPopupComponent = (Props: any) => {
                                         <label className="form-label">Title</label>
                                         <input type="text" className="form-control" placeholder="Task Name"
                                             defaultValue={MeetingData.Title}
-                                        // onChange={(e) => setUpdateTaskInfo({ ...UpdateTaskInfo, Title: e.target.value })}
+                                            onChange={(e) => setMeetingData({ ...MeetingData, Title: e.target.value })}
                                         />
                                     </div>
                                     <div className="">
@@ -486,11 +601,11 @@ const MeetingPopupComponent = (Props: any) => {
 
                                             </span></div>
                                             <input type="date" className="form-control" placeholder="Enter Due Date" max="9999-12-31"
-                                                //  min={MeetingData.Created ? Moment(MeetingData.Created).format("YYYY-MM-DD") : ""}
+                                                min={MeetingData.Created ? Moment(MeetingData.Created).format("YYYY-MM-DD") : ""}
                                                 defaultValue={MeetingData.DueDate ? Moment(MeetingData.DueDate).format("YYYY-MM-DD") : ''}
-                                            // onChange={(e) => setEditData({
-                                            //     ...EditData, DueDate: e.target.value
-                                            // })}
+                                                onChange={(e) => setMeetingData({
+                                                    ...MeetingData, DueDate: e.target.value
+                                                })}
                                             />
                                         </div>
                                     </div>
@@ -500,7 +615,6 @@ const MeetingPopupComponent = (Props: any) => {
                                         <div className="input-group">
                                             <label className="form-label full-width  mx-2">
                                                 {MeetingData.TaskAssignedUsers?.length > 0 ? 'Working Member' : ""}
-
                                             </label>
                                             {MeetingData.TaskAssignedUsers?.map((userDtl: any, index: any) => {
                                                 return (
