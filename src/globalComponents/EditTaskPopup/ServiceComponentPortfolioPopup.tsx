@@ -114,61 +114,29 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     const CustomFooter = () => {
         return (
             <footer className={ComponentType == "Service" ? "me-3 p-2 serviepannelgreena text-end" : "me-3 p-2 text-end"}>  
-                <button type="button" className="btn btn-default mx-1" onClick={setModalIsOpenToFalse}>Cancel</button>
-                <button type="button" className="btn btn-primary" onClick={setModalIsOpenToOK}>OK</button>
-               
+                <button type="button" className="btn btn-default" onClick={setModalIsOpenToFalse}>Cancel</button>
+                <button type="button" className="btn btn-primary ms-1" onClick={setModalIsOpenToOK}>OK</button>
             </footer>
         )
     }
     const columns = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
+                accessorKey: "",
+                placeholder: "",
+                hasCheckbox: true,
+                hasCustomExpanded: true,
+                hasExpanded: true,
+                size: 55,
+                id: 'Id',
+            },{
                 accessorKey: "PortfolioStructureID",
                 placeholder: "ID",
-                size: 15,
-                header: ({ table }: any) => (
-                    <>
-                        <button className='border-0 bg-Ff'
-                            {...{
-                                onClick: table.getToggleAllRowsExpandedHandler(),
-                            }}
-                        >
-                            {table.getIsAllRowsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
-                        </button>{" "}
-                        {selectionType == "Multi" ? <IndeterminateCheckbox {...{
-                            checked: table.getIsAllRowsSelected(),
-                            indeterminate: table.getIsSomeRowsSelected(),
-                            onChange: table.getToggleAllRowsSelectedHandler(),
-                        }} /> : ''}
-                        {" "}
-                    </>
-                ),
+                size: 100,
+              
                 cell: ({ row, getValue }) => (
-                    <div
-                        style={row.getCanExpand() ? {
-                            paddingLeft: `${row.depth * 5}px`,
-                        } : {
-                            paddingLeft: "18px",
-                        }}
-                    >
+                    <div>
                         <>
-                            {row.getCanExpand() ? (
-                                <span className=' border-0'
-                                    {...{
-                                        onClick: row.getToggleExpandedHandler(),
-                                        style: { cursor: "pointer" },
-                                    }}
-                                >
-                                    {row.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
-                                </span>
-                            ) : (
-                                ""
-                            )}{" "}
-                            <IndeterminateCheckbox {...{
-                                checked: row.getIsSelected(),
-                                indeterminate: row.getIsSomeSelected(),
-                                onChange: row.getToggleSelectedHandler(),
-                            }} />{" "}
                             {row?.original?.SiteIcon != undefined ?
                                 <a className="hreflink" title="Show All Child" data-toggle="modal">
                                     <img className="icon-sites-img ml20 me-1" src={row?.original?.SiteIcon}></img>
@@ -201,7 +169,6 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 id: "Title",
                 placeholder: "Title",
                 header: "",
-                size: 27,
             },
             {
                 accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title).join("-"),
@@ -217,7 +184,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 id: 'ClientCategory',
                 placeholder: "Client Category",
                 header: "",
-                size: 15,
+                size: 100,
             },
             {
                 accessorFn: (row) => row?.TeamLeaderUser?.map((val: any) => val.Title).join("-"),
@@ -229,25 +196,25 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 id: 'TeamLeaderUser',
                 placeholder: "Team",
                 header: "",
-                size: 15,
+                size: 100,
             },
             {
                 accessorKey: "PercentComplete",
                 placeholder: "Status",
                 header: "",
-                size: 7,
+                size: 42,
             },
             {
                 accessorKey: "ItemRank",
                 placeholder: "Item Rank",
                 header: "",
-                size: 7,
+                size: 42,
             },
             {
                 accessorKey: "DueDate",
                 placeholder: "Due Date",
                 header: "",
-                size: 9,
+                size: 100,
             },
         ],
         [data]

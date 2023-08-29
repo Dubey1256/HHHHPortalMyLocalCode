@@ -221,10 +221,10 @@ const EditTaskPopup = (Items: any) => {
             siteUrls = AllListIdData.siteUrl;
         }
     } else {
-        if(Items.Items.siteUrl != undefined && Items.Items.siteUrl.length > 15){
-            siteUrls = Items.Items.siteUrl    
+        if (Items.Items.siteUrl != undefined && Items.Items.siteUrl.length > 15) {
+            siteUrls = Items.Items.siteUrl
         }
-        else{
+        else {
             siteUrls = AllListIdData.siteUrl
 
         }
@@ -6007,8 +6007,8 @@ const EditTaskPopup = (Items: any) => {
                         onChange={(e) => UpdateImageDescription(e)}></textarea></div>
                 </div>
                 <footer className='text-end mt-2 mx-2'>
+                    <button className='btn btn-default mx-1' onClick={closeAddImageDescriptionFunction}>Cancel</button>
                     <button className="btn btnPrimary " onClick={SaveImageDescription}>Save</button>
-                    <button className='btn btn-default ms-1' onClick={closeAddImageDescriptionFunction}>Cancel</button>
                 </footer>
             </Modal>
 
