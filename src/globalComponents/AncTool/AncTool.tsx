@@ -709,8 +709,9 @@ const AncTool = (props: any) => {
                             Create Folder
                         </a>
                     </label> : ''}
-                <button className="btn btnPrimary " disabled={selectPathFromPopup?.length > 0 ? false : true} onClick={() => { selectFolderToUpload() }}>Select</button>
-                <button className='btn btn-default ms-1' onClick={() => cancelPathFolder()}>Cancel</button>
+                    <button className='btn btn-default ' onClick={() => cancelPathFolder()}>Cancel</button>
+                <button className="btn btnPrimary ms-1" disabled={selectPathFromPopup?.length > 0 ? false : true} onClick={() => { selectFolderToUpload() }}>Select</button>
+        
             </footer>
         </>
         );

@@ -9,7 +9,7 @@ import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 import Loader from "react-loader";
 import * as moment from 'moment';
 import { SlArrowRight } from "react-icons/sl";
-
+import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import {
   FaChevronRight,
   FaChevronDown,
@@ -39,6 +39,7 @@ import { Web } from 'sp-pnp-js';
 import HighlightableCell from '../../../globalComponents/GroupByReactTableComponents/highlight';
 
 import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
+import ReactPopperTooltip from '../../../globalComponents/Hierarchy-Popper-tooltip';
 var AllTasks: any = [];
 let AllTasksRendar: any = [];
 let siteConfig: any = [];
@@ -314,7 +315,7 @@ function TasksTable(props: any) {
                 }
               })
             }
-            obj.Restructuring = IsUpdated != undefined && IsUpdated == 'Service' ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"  : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+            obj.Restructuring = IsUpdated != undefined && IsUpdated == 'Service' ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
             obj.childsLength = obj.childs != undefined && obj.childs.length > 0 ? obj.childs.length : 0;
             obj.subRowsLength = obj.subRows != undefined && obj.subRows.length > 0 ? obj.subRows.length : 0;
           })
@@ -421,12 +422,12 @@ function TasksTable(props: any) {
     MeetingItems = []
     var MainId: any = ''
     let ParentTaskId: any;
-    if (childItem != undefined && childItem.data?.ItmesDelete==undefined) {
-     
-        childItem.data.Item_x0020_Type = "Task";
-      
-      
-      
+    if (childItem != undefined && childItem.data?.ItmesDelete == undefined) {
+
+      childItem.data.Item_x0020_Type = "Task";
+
+
+
       childItem.data['flag'] = true;
       // childItem.data['SiteIcon']= GetIconImageUrl(childItem.data.siteType,childItem.data.siteUrl,undefined)
       // childItem.data['TitleNew'] = childItem.data.Title;
@@ -441,8 +442,8 @@ function TasksTable(props: any) {
         ParentTaskId = childItem.data.ParentTaskId;
       }
       // ==========create ws and task======================== 
-      let grouping:any = true;
-      if(childItem.data?.editpopup==undefined&&childItem.data?.ItmesDelete==undefined){
+      let grouping: any = true;
+      if (childItem.data?.editpopup == undefined && childItem.data?.ItmesDelete == undefined) {
         finalData?.map((elem: any) => {
           if (elem?.Id === ParentTaskId || elem.ID === ParentTaskId) {
             elem.subRows = elem.subRows == undefined ? [] : elem.subRows
@@ -454,58 +455,58 @@ function TasksTable(props: any) {
           AllTasksRendar?.push(childItem.data)
           finalData = finalData.concat(AllTasksRendar)
         }
-        else if(grouping === false){
+        else if (grouping === false) {
           AllTasksRendar = AllTasksRendar?.concat(finalData)
-          finalData=[];
+          finalData = [];
           finalData = finalData?.concat(AllTasksRendar)
         }
       }
 
       //============ update the data to Edit task popup==================
 
-      if(childItem.data?.editpopup!=undefined&&childItem.data?.editpopup==true&&childItem.data?.ItmesDelete==undefined){
-        finalData?.map((ele:any,index:any)=>{
-          if(ele.subRows!=undefined&&ele.subRows.length>0){
-            ele.subRows?.map((sub:any,subindex:any)=>{
-              if(sub.Id==childItem.data.Id){
-                finalData[index].subRows.splice(subindex, 1,childItem.data);
+      if (childItem.data?.editpopup != undefined && childItem.data?.editpopup == true && childItem.data?.ItmesDelete == undefined) {
+        finalData?.map((ele: any, index: any) => {
+          if (ele.subRows != undefined && ele.subRows.length > 0) {
+            ele.subRows?.map((sub: any, subindex: any) => {
+              if (sub.Id == childItem.data.Id) {
+                finalData[index].subRows.splice(subindex, 1, childItem.data);
               }
             })
           }
-          if(ele.Id==childItem.data.Id){
-            finalData.splice(index, 1,childItem.data);
+          if (ele.Id == childItem.data.Id) {
+            finalData.splice(index, 1, childItem.data);
           }
         })
         AllTasksRendar = AllTasksRendar?.concat(finalData)
-        finalData=[];
+        finalData = [];
         finalData = finalData?.concat(AllTasksRendar)
-       }
-      
+      }
+
 
       console.log(finalData)
       refreshData();
     }
-     // ===============Delete the data to Edit task popup====================
+    // ===============Delete the data to Edit task popup====================
 
-     if(childItem?.data?.ItmesDelete==true){
-      finalData?.map((ele:any,index:any)=>{
-        if(ele.subRows!=undefined&&ele.subRows.length>0){
-          ele.subRows?.map((sub:any,subindex:any)=>{
-            if(sub.Id==childItem.data.Id){
+    if (childItem?.data?.ItmesDelete == true) {
+      finalData?.map((ele: any, index: any) => {
+        if (ele.subRows != undefined && ele.subRows.length > 0) {
+          ele.subRows?.map((sub: any, subindex: any) => {
+            if (sub.Id == childItem.data.Id) {
               finalData[index].subRows.splice(subindex, 1);
             }
           })
         }
-        if(ele.Id==childItem.data.Id){
+        if (ele.Id == childItem.data.Id) {
           finalData.splice(index, 1);
         }
       })
       AllTasksRendar = AllTasksRendar?.concat(finalData)
-      finalData=[];
-      finalData = finalData?.concat(AllTasksRendar)  
+      finalData = [];
+      finalData = finalData?.concat(AllTasksRendar)
       console.log(finalData)
       refreshData();
-     }
+    }
   }, []);
 
   const TimeEntryCallBack = React.useCallback((item1) => {
@@ -586,10 +587,10 @@ function TasksTable(props: any) {
 
     setTopTaskresIcon(false);
     AllTasksRendar = AllTasksRendar?.concat(data)
-    finalData=[];
-    finalData = finalData?.concat(AllTasksRendar);  
-     refreshData();
-   
+    finalData = [];
+    finalData = finalData?.concat(AllTasksRendar);
+    refreshData();
+
   }
 
   const CreateOpenCall = React.useCallback((item) => {
@@ -613,60 +614,40 @@ function TasksTable(props: any) {
   const columns = React.useMemo<ColumnDef<any, unknown>[]>(
     () => [
       {
+        accessorKey: "",
+        placeholder: "",
+        hasCheckbox: true,
+        hasCustomExpanded: true,
+        hasExpanded: true,
+        size: 55,
+        id: 'Id',
+      },
+      {
+        accessorKey: "",
+        placeholder: "",
+        id: 'icons',
+        size: 90,
+        cell: ({ row, getValue }) => (
+          <div>
+            {row?.original?.SiteIcon != undefined &&
+              <a className="hreflink" title="Show All Child" data-toggle="modal">
+                <img className="icon-sites-img ml20 me-1" src={row?.original?.SiteIcon}></img>
+              </a>
+            }
+            {getValue()}
+          </div>
+        ),
+      },
+      {
         accessorKey: "Shareweb_x0020_ID",
         placeholder: "ID",
-        size: 17,
-        header: ({ table }: any) => (
-          <>
-            <button className='border-0 bg-Ff'
-              {...{
-                onClick: table.getToggleAllRowsExpandedHandler(),
-              }}
-            >
-              {table.getIsAllRowsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
-            </button>{" "}
-            <IndeterminateCheckbox {...{
-              checked: table.getIsAllRowsSelected(),
-              indeterminate: table.getIsSomeRowsSelected(),
-              onChange: table.getToggleAllRowsSelectedHandler(),
-            }} />{" "}
-          </>
-        ),
+        id: 'Shareweb_x0020_ID',
+        size: 145,
         cell: ({ row, getValue }) => (
-          <div
-            style={row.getCanExpand() ? {
-              paddingLeft: `${row.depth * 5}px`,
-            } : {
-              paddingLeft: "18px",
-            }}
-          >
-            <>
-              {row.getCanExpand() ? (
-                <span className='border-0'
-                  {...{
-                    onClick: row.getToggleExpandedHandler(),
-                    style: { cursor: "pointer" },
-                  }}
-                >
-                  {row.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
-                </span>
-              ) : ""}{" "}
-              {row?.original?.TitleNew != 'Tasks' ? <IndeterminateCheckbox
-                {...{
-                  checked: row.getIsSelected(),
-                  indeterminate: row.getIsSomeSelected(),
-                  onChange: row.getToggleSelectedHandler()
-
-                }}
-              /> : ""}{" "}
-              {row?.original?.SiteIcon != undefined ?
-                <a className="hreflink" title="Show All Child" data-toggle="modal">
-                  <img className="icon-sites-img ml20 me-1" src={row?.original?.SiteIcon}></img>
-                  {/* </a> : <>{row?.original?.TitleNew != "Tasks" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</> */}
-                </a> : <>{row?.original?.TitleNew != "Tasks" ? <div className='Dyicons'>T</div> : ""}</>
-              }
-              {getValue()}
-            </>
+          <div>
+            {row?.original?.TitleNew != "Tasks" ?
+              <ReactPopperTooltip ShareWebId={getValue()} row={row} />
+              : ''}
           </div>
         ),
       },
@@ -709,7 +690,6 @@ function TasksTable(props: any) {
         id: "Title",
         placeholder: "Title",
         header: "",
-        size: 28,
       },
       {
         accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title).join("-"),
@@ -722,7 +702,7 @@ function TasksTable(props: any) {
         id: 'ClientCategory',
         placeholder: "Client Category",
         header: "",
-        size: 8,
+        size: 120,
       },
       {
         accessorFn: (row) => row?.TeamLeaderUser?.map((val: any) => val.Title).join("-"),
@@ -734,23 +714,23 @@ function TasksTable(props: any) {
         id: 'TeamLeaderUser',
         placeholder: "Team",
         header: "",
-        size: 5,
+        size: 100,
       },
       {
         accessorKey: "PercentComplete",
         placeholder: "Status",
         header: "",
-        size: 3,
+        size: 42,
       },
       {
         accessorKey: "ItemRank",
         placeholder: "Item Rank",
         header: "",
-        size: 3,
+        size: 42,
       },
       {
         accessorFn: (row) => row?.DueDate,
-        cell: ({ row, getValue }) => (
+        cell: ({ row }) => (
           <>
             {row?.original?.DueDate == null ? (""
             ) : (
@@ -764,11 +744,11 @@ function TasksTable(props: any) {
         id: 'DueDate',
         placeholder: "Due Date",
         header: "",
-        size: 4,
+        size: 100,
       },
       {
         accessorFn: (row) => row?.Created,
-        cell: ({ row, getValue }) => (
+        cell: ({ row }) => (
           <>
             {row?.original?.Created == null ? (""
             ) : (
@@ -795,7 +775,7 @@ function TasksTable(props: any) {
         id: 'Created',
         placeholder: "Created Date",
         header: "",
-        size: 9,
+        size: 110,
       },
       {
         cell: ({ row, getValue }) => (
@@ -812,31 +792,31 @@ function TasksTable(props: any) {
         canSort: false,
         placeholder: "",
         header: "",
-        size: 0,
+        size: 2,
       },
-     
+
       {
         header: ({ table }: any) => (
           <>
-          {
-             topTaskresIcon?<span onClick={()=>setTasksRestruct(true)}>
-               { 
-                 (checkedList[0].Services != undefined &&  checkedList[0].Services.length > 0 ? 
-                  <img title='Restructure' className="icon-sites-img" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png" /> :
-                 <img title='Restructure' className="icon-sites-img" src='https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png' />
-              )
-               } 
-              </span>:<span></span> 
-              
-          }
-            
+            {
+              topTaskresIcon ? <span onClick={() => setTasksRestruct(true)}>
+                {
+                  (checkedList[0].Services != undefined && checkedList[0].Services.length > 0 ?
+                    <img title='Restructure' className="icon-sites-img" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png" /> :
+                    <img title='Restructure' className="icon-sites-img" src='https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png' />
+                  )
+                }
+              </span> : <span></span>
+
+            }
+
           </>
         ),
         cell: ({ row, getValue }) => (
           <>
             <a className='d-flex'>
               {row?.original?.isRestructureActive && (
-              <span onClick={(e) => OpenModal(row?.original)}><img className="icon-sites-img me-2" src={row?.original?.Restructuring} /> </span>)}
+                <span onClick={(e) => OpenModal(row?.original)}><img className="icon-sites-img me-2" src={row?.original?.Restructuring} /> </span>)}
               {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && (
                 <span title='Edit' onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit"></span>
               )}
@@ -847,7 +827,7 @@ function TasksTable(props: any) {
         id: "row?.original.Id",
         canSort: false,
         placeholder: "",
-        size: 1,
+        size: 2,
       },
 
     ],
@@ -882,52 +862,55 @@ function TasksTable(props: any) {
     var ArrayTest: any = [];
     let array = data;
     AllTasksRendar = [];
-    
-   
-    if(checkedList?.length > 0 && checkedList != undefined){
-      checkedList.map((items:any)=>{
+
+
+    if (checkedList?.length > 0 && checkedList != undefined) {
+      checkedList.map((items: any) => {
         array.map((obj) => {
           setTopTaskresIcon(true);
-          let newobj:any;
-          if(obj.SharewebTaskType?.Title != "Task"){
-            obj.isRestructureActive = true; 
+          let newobj: any;
+          if (obj.SharewebTaskType?.Title != "Task") {
+            obj.isRestructureActive = true;
           }
-         
-            
-          if(obj.Id === items.Id && obj.SharewebTaskType?.Title != undefined){
-                         obj.isRestructureActive = false; 
-                         newobj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIcon,SharewebTaskType:obj.SharewebTaskType,} 
-                         ArrayTest.push(newobj);   
-                          
+
+
+          if (obj.Id === items.Id && obj.SharewebTaskType?.Title != undefined) {
+            obj.isRestructureActive = false;
+            newobj = { Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIcon, SharewebTaskType: obj.SharewebTaskType, }
+            ArrayTest.push(newobj);
+
           }
-          if(obj.childs.length > 0 && obj.childs != undefined){
-                obj.childs.map((sub:any)=>{
-                  setTopTaskresIcon(true);
-                  if(obj.SharewebTaskType?.Title != "Task"){
-                    sub.isRestructureActive = true; 
+          if (obj.childs.length > 0 && obj.childs != undefined) {
+            obj.childs.map((sub: any) => {
+              setTopTaskresIcon(true);
+              if (obj.SharewebTaskType?.Title != "Task") {
+                sub.isRestructureActive = true;
+              }
+
+              if (sub.Id === items.Id && sub.SharewebTaskType?.Title != undefined) {
+                obj.isRestructureActive = false;
+                sub.isRestructureActive = false;
+                newobj = {
+                  Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle, SharewebTaskType: obj.SharewebTaskType,
+                  newChild: {
+                    Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIcon, SharewebTaskType: sub.SharewebTaskType,
                   }
-                  
-                  if(sub.Id === items.Id && sub.SharewebTaskType?.Title != undefined){
-                    obj.isRestructureActive = false; 
-                sub.isRestructureActive = false; 
-                    newobj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle,SharewebTaskType:obj.SharewebTaskType,
-                      newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIcon,SharewebTaskType:sub.SharewebTaskType,
-                     }} 
-                     ArrayTest.push(newobj); 
-                   
-               }
-               
-                })
+                }
+                ArrayTest.push(newobj);
+
+              }
+
+            })
           }
         })
       })
-     
+
     }
     setOldArrayBackup(ArrayTest);
     AllTasksRendar = AllTasksRendar?.concat(array)
-    finalData=[];
-    finalData = finalData?.concat(AllTasksRendar);  
-     refreshData();
+    finalData = [];
+    finalData = finalData?.concat(AllTasksRendar);
+    refreshData();
 
   }
 
@@ -940,9 +923,9 @@ function TasksTable(props: any) {
   };
 
   const OpenModal = (item: any) => {
-     var TestArray: any = [];
-      setResturuningOpen(true);
-      TestArray = [item]
+    var TestArray: any = [];
+    setResturuningOpen(true);
+    TestArray = [item]
     setNewArrayBackup(TestArray);
 
 
@@ -951,234 +934,234 @@ function TasksTable(props: any) {
   const setRestructure = (e: any) => {
     let value = e.target.value;
     // let data:any = data;
-    let array:any = []
-    let SharewebTaskLevel2No:any = 0;
-    let ParentTask:any;
-    let SharewebTaskType:any;
-    let Shareweb_x0020_ID:any;
+    let array: any = []
+    let SharewebTaskLevel2No: any = 0;
+    let ParentTask: any;
+    let SharewebTaskType: any;
+    let Shareweb_x0020_ID: any;
     let dataArray = checkedList;
 
-    
-    if(value != undefined){
-      data?.map((obj:any)=>{
-           
-            if(value == "Task"){
-            SharewebTaskType = {Id:2,Title:value,Level:2};
-            ParentTask = obj.ParentTask;
-            Shareweb_x0020_ID = obj?.ParentTask.Shareweb_x0020_ID + "-" + "T" + obj.Id;
-                SharewebTaskLevel2No = null;
-              }else{
-              SharewebTaskType = {Id:3,Title:value,Level:3};
-              ParentTask = obj.ParentTask;
-              Shareweb_x0020_ID = obj?.ParentTask.Shareweb_x0020_ID + "-" + "W" + SharewebTaskLevel2No;
-              if(obj?.SharewebTaskType?.Title == value && (SharewebTaskLevel2No < obj.SharewebTaskLevel2No || SharewebTaskLevel2No == obj.SharewebTaskLevel2No)){
-                SharewebTaskLevel2No = obj.SharewebTaskLevel2No + 1;
-              }else{
-                if(SharewebTaskLevel2No == 0){
-                  SharewebTaskLevel2No = 1;
-                }
-              }
-            }
-      })
-     }
 
-     if(checkedList != undefined){
-      dataArray.map((items:any)=>{
+    if (value != undefined) {
+      data?.map((obj: any) => {
+
+        if (value == "Task") {
+          SharewebTaskType = { Id: 2, Title: value, Level: 2 };
+          ParentTask = obj.ParentTask;
+          Shareweb_x0020_ID = obj?.ParentTask.Shareweb_x0020_ID + "-" + "T" + obj.Id;
+          SharewebTaskLevel2No = null;
+        } else {
+          SharewebTaskType = { Id: 3, Title: value, Level: 3 };
+          ParentTask = obj.ParentTask;
+          Shareweb_x0020_ID = obj?.ParentTask.Shareweb_x0020_ID + "-" + "W" + SharewebTaskLevel2No;
+          if (obj?.SharewebTaskType?.Title == value && (SharewebTaskLevel2No < obj.SharewebTaskLevel2No || SharewebTaskLevel2No == obj.SharewebTaskLevel2No)) {
+            SharewebTaskLevel2No = obj.SharewebTaskLevel2No + 1;
+          } else {
+            if (SharewebTaskLevel2No == 0) {
+              SharewebTaskLevel2No = 1;
+            }
+          }
+        }
+      })
+    }
+
+    if (checkedList != undefined) {
+      dataArray.map((items: any) => {
         items.SharewebTaskLevel2No = SharewebTaskLevel2No;
         items.ParentTask = ParentTask;
         items.SharewebTaskType = SharewebTaskType
         items.Shareweb_x0020_ID = Shareweb_x0020_ID;
-         array.push(items);
+        array.push(items);
       })
     }
-     setCheckedList(array);  
-       
-   }
+    setCheckedList(array);
+
+  }
 
 
 
-   const UpdateTopTaskRestructure=async ()=>{
+  const UpdateTopTaskRestructure = async () => {
     AllTasksRendar = [];
 
 
     let web = new Web(props?.AllListId?.siteUrl);
     await web.lists.getById(checkedList[0].listId).items
-    .getById(checkedList[0].Id)
-    .update({
-          Shareweb_x0020_ID:checkedList[0].Shareweb_x0020_ID,
-          SharewebTaskLevel2No:checkedList[0].SharewebTaskLevel2No,
-          SharewebTaskTypeId:checkedList[0].SharewebTaskType.Id,
-          ParentTaskId : checkedList[0].ParentTask.Id
-    })
-    .then((res: any) => {
-      let checkUpdate : number = 1;
-      let checkUpdate1 : number = 1;
-      let backupCheckedList :any = OldArrayBackup;
-      let latestCheckedList:any = checkedList ; 
+      .getById(checkedList[0].Id)
+      .update({
+        Shareweb_x0020_ID: checkedList[0].Shareweb_x0020_ID,
+        SharewebTaskLevel2No: checkedList[0].SharewebTaskLevel2No,
+        SharewebTaskTypeId: checkedList[0].SharewebTaskType.Id,
+        ParentTaskId: checkedList[0].ParentTask.Id
+      })
+      .then((res: any) => {
+        let checkUpdate: number = 1;
+        let checkUpdate1: number = 1;
+        let backupCheckedList: any = OldArrayBackup;
+        let latestCheckedList: any = checkedList;
 
-      let array :any = [];
-              data.map((items:any)=>{       
-                   array.push(items)
-              })
-          
-         array.forEach((obj:any , index:any) => {
-            obj.isRestructureActive = false;
-            if(checkUpdate == 1){
-              array.push(...{...latestCheckedList});
-              checkUpdate = checkUpdate + 1;
-     }
-     if(obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate1 == 1){
-                   array.splice(index,1);
-                   checkUpdate = checkUpdate1 + 1;
-     }
-            if (obj.childs != undefined && obj.childs.length > 0) {
-              obj.childs.forEach((sub: any,indexsub:any) => {
-                sub.isRestructureActive = false;
-         if(sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate1 == 1){
-                       array[index]?.subRows.splice(indexsub,1);
-                       array[index]?.childs.splice(indexsub,1);
-                       checkUpdate = checkUpdate1 + 1;
-         }      
-              })
-            }
-      
-      
-          })
-      
-          setTopTaskresIcon(false);
-          setTasksRestruct(false);
-          AllTasksRendar = AllTasksRendar?.concat(array)
-          finalData=[];
-          finalData = finalData?.concat(AllTasksRendar);  
-          refreshData();
-          setNewArrayBackup([]);
-          setOldArrayBackup([]);
-          setRowSelection({});
-          setCheckedList([]);
-          setResturuningOpen(false);
-    })
-   }
+        let array: any = [];
+        data.map((items: any) => {
+          array.push(items)
+        })
+
+        array.forEach((obj: any, index: any) => {
+          obj.isRestructureActive = false;
+          if (checkUpdate == 1) {
+            array.push(...{ ...latestCheckedList });
+            checkUpdate = checkUpdate + 1;
+          }
+          if (obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate1 == 1) {
+            array.splice(index, 1);
+            checkUpdate = checkUpdate1 + 1;
+          }
+          if (obj.childs != undefined && obj.childs.length > 0) {
+            obj.childs.forEach((sub: any, indexsub: any) => {
+              sub.isRestructureActive = false;
+              if (sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate1 == 1) {
+                array[index]?.subRows.splice(indexsub, 1);
+                array[index]?.childs.splice(indexsub, 1);
+                checkUpdate = checkUpdate1 + 1;
+              }
+            })
+          }
+
+
+        })
+
+        setTopTaskresIcon(false);
+        setTasksRestruct(false);
+        AllTasksRendar = AllTasksRendar?.concat(array)
+        finalData = [];
+        finalData = finalData?.concat(AllTasksRendar);
+        refreshData();
+        setNewArrayBackup([]);
+        setOldArrayBackup([]);
+        setRowSelection({});
+        setCheckedList([]);
+        setResturuningOpen(false);
+      })
+  }
 
 
 
 
   const UpdateTaskRestructure = async function () {
     AllTasksRendar = [];
-   
-    let numbers :any ;
-    let numbers1 :any ;
-  let  SharewebTaskTypeId : any;
-   let ParentTaskId :any ;
-   let Shareweb_x0020_ID : any ;
 
-   if(NewArrayBackup.length > 0 && NewArrayBackup != undefined ){
-    if(NewArrayBackup[0]?.SharewebTaskType?.Title == "Workstream"){
-      ParentTaskId = NewArrayBackup[0].Id;
-      Shareweb_x0020_ID = NewArrayBackup[0].Shareweb_x0020_ID + "-" + "T"+checkedList[0].Id;
-      SharewebTaskTypeId = 2; 
+    let numbers: any;
+    let numbers1: any;
+    let SharewebTaskTypeId: any;
+    let ParentTaskId: any;
+    let Shareweb_x0020_ID: any;
+
+    if (NewArrayBackup.length > 0 && NewArrayBackup != undefined) {
+      if (NewArrayBackup[0]?.SharewebTaskType?.Title == "Workstream") {
+        ParentTaskId = NewArrayBackup[0].Id;
+        Shareweb_x0020_ID = NewArrayBackup[0].Shareweb_x0020_ID + "-" + "T" + checkedList[0].Id;
+        SharewebTaskTypeId = 2;
+      }
     }
-   }
 
 
-   let web = new Web(props?.AllListId?.siteUrl);
+    let web = new Web(props?.AllListId?.siteUrl);
     await web.lists.getById(checkedList[0].listId).items
-    .getById(checkedList[0].Id)
-    .update({
-          Shareweb_x0020_ID:Shareweb_x0020_ID,
-          SharewebTaskTypeId:SharewebTaskTypeId,
-          ParentTaskId : ParentTaskId
-    })
-    .then((res: any) => {
-      let checkUpdate : number = 1;
-      let backupCheckedList :any =[];
-      let latestCheckedList:any =[] ; 
-      checkedList.map((items:any)=>{
-        latestCheckedList.push({...items})
-        backupCheckedList.push({...items})
+      .getById(checkedList[0].Id)
+      .update({
+        Shareweb_x0020_ID: Shareweb_x0020_ID,
+        SharewebTaskTypeId: SharewebTaskTypeId,
+        ParentTaskId: ParentTaskId
       })
-      
-      latestCheckedList?.map((items:any)=>{
-          items.Parent = {Id:ParentTaskId,Shareweb_x0020_ID:Shareweb_x0020_ID,Title:NewArrayBackup[0]?.Title},
-          items.Shareweb_x0020_ID = Shareweb_x0020_ID,
-          items.SharewebTaskType = {Id:2,Title:"Task",Level:2}       
-   })
+      .then((res: any) => {
+        let checkUpdate: number = 1;
+        let backupCheckedList: any = [];
+        let latestCheckedList: any = [];
+        checkedList.map((items: any) => {
+          latestCheckedList.push({ ...items })
+          backupCheckedList.push({ ...items })
+        })
 
-         
-          let array = data;
-          array.forEach((obj:any , index:any) => {
-            obj.isRestructureActive = false;
-            if(obj.Id === NewArrayBackup[0]?.Id && obj.Item_x0020_Type === NewArrayBackup[0]?.Item_x0020_Type && obj.SharewebTaskType?.Title === NewArrayBackup[0]?.SharewebTaskType?.Title && checkUpdate != 3 ){
-              obj.subRows.push(...latestCheckedList);
-              obj.childs.push(...latestCheckedList);
-              checkUpdate = checkUpdate + 1;
-     }
-     if(obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3){
-                   array.splice(index,1);
-                   checkUpdate = checkUpdate + 1;
-     }
-            if (obj.childs != undefined && obj.childs.length > 0) {
-              obj.childs.forEach((sub: any,indexsub:any) => {
-                sub.isRestructureActive = false;
-                if(sub.Id === NewArrayBackup[0]?.Id && sub.Item_x0020_Type === NewArrayBackup[0]?.Item_x0020_Type && sub.SharewebTaskType?.Title === NewArrayBackup[0]?.SharewebTaskType?.Title  && checkUpdate != 3){
-                  sub.subRows.push(...latestCheckedList) ;
-                  sub.childs.push(...latestCheckedList) ;
-                  checkUpdate = checkUpdate + 1;
-         }
-         if(sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3){
-                       array[index]?.subRows.splice(indexsub,1);
-                       array[index]?.childs.splice(indexsub,1);
-                       checkUpdate = checkUpdate + 1;
-         }
-                if (sub.childs != undefined && sub.childs.length > 0) {
-                  sub.childs.forEach((newsub: any,lastIndex:any) => {
-                    newsub.isRestructureActive = false;
-                    if(newsub.Id === NewArrayBackup[0]?.Id && newsub.Item_x0020_Type === NewArrayBackup[0]?.Item_x0020_Type && newsub.SharewebTaskType?.Title === NewArrayBackup[0]?.SharewebTaskType?.Title  && checkUpdate != 3){
-                      newsub.subRows.push(...latestCheckedList);
-                      newsub.childs.push(...latestCheckedList);
-                      checkUpdate = checkUpdate + 1;
-             }
-             if(newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && newsub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3){
-                           array[index]?.subRows[indexsub]?.subRows.splice(lastIndex,1);
-                           array[index]?.childs[indexsub]?.childs.splice(lastIndex,1);
-                           checkUpdate = checkUpdate + 1;
-             }
-                  })
-                }
-      
-              })
-            }
-      
-      
-          })
-      
-          setTopTaskresIcon(false);
-          AllTasksRendar = AllTasksRendar?.concat(array)
-          finalData=[];
-          finalData = finalData?.concat(AllTasksRendar);  
-          refreshData();
-          setNewArrayBackup([]);
-          setOldArrayBackup([]);
-          setCheckedList([]);
-          setRowSelection({});
-          setResturuningOpen(false);
-    })
-  
+        latestCheckedList?.map((items: any) => {
+          items.Parent = { Id: ParentTaskId, Shareweb_x0020_ID: Shareweb_x0020_ID, Title: NewArrayBackup[0]?.Title },
+            items.Shareweb_x0020_ID = Shareweb_x0020_ID,
+            items.SharewebTaskType = { Id: 2, Title: "Task", Level: 2 }
+        })
+
+
+        let array = data;
+        array.forEach((obj: any, index: any) => {
+          obj.isRestructureActive = false;
+          if (obj.Id === NewArrayBackup[0]?.Id && obj.Item_x0020_Type === NewArrayBackup[0]?.Item_x0020_Type && obj.SharewebTaskType?.Title === NewArrayBackup[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+            obj.subRows.push(...latestCheckedList);
+            obj.childs.push(...latestCheckedList);
+            checkUpdate = checkUpdate + 1;
+          }
+          if (obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+            array.splice(index, 1);
+            checkUpdate = checkUpdate + 1;
+          }
+          if (obj.childs != undefined && obj.childs.length > 0) {
+            obj.childs.forEach((sub: any, indexsub: any) => {
+              sub.isRestructureActive = false;
+              if (sub.Id === NewArrayBackup[0]?.Id && sub.Item_x0020_Type === NewArrayBackup[0]?.Item_x0020_Type && sub.SharewebTaskType?.Title === NewArrayBackup[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                sub.subRows.push(...latestCheckedList);
+                sub.childs.push(...latestCheckedList);
+                checkUpdate = checkUpdate + 1;
+              }
+              if (sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                array[index]?.subRows.splice(indexsub, 1);
+                array[index]?.childs.splice(indexsub, 1);
+                checkUpdate = checkUpdate + 1;
+              }
+              if (sub.childs != undefined && sub.childs.length > 0) {
+                sub.childs.forEach((newsub: any, lastIndex: any) => {
+                  newsub.isRestructureActive = false;
+                  if (newsub.Id === NewArrayBackup[0]?.Id && newsub.Item_x0020_Type === NewArrayBackup[0]?.Item_x0020_Type && newsub.SharewebTaskType?.Title === NewArrayBackup[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                    newsub.subRows.push(...latestCheckedList);
+                    newsub.childs.push(...latestCheckedList);
+                    checkUpdate = checkUpdate + 1;
+                  }
+                  if (newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && newsub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                    array[index]?.subRows[indexsub]?.subRows.splice(lastIndex, 1);
+                    array[index]?.childs[indexsub]?.childs.splice(lastIndex, 1);
+                    checkUpdate = checkUpdate + 1;
+                  }
+                })
+              }
+
+            })
+          }
+
+
+        })
+
+        setTopTaskresIcon(false);
+        AllTasksRendar = AllTasksRendar?.concat(array)
+        finalData = [];
+        finalData = finalData?.concat(AllTasksRendar);
+        refreshData();
+        setNewArrayBackup([]);
+        setOldArrayBackup([]);
+        setCheckedList([]);
+        setRowSelection({});
+        setResturuningOpen(false);
+      })
+
   }
   function structuredClone(obj: any): any {
 
     return JSON.parse(JSON.stringify(obj));
 
-}
+  }
   const openActivity = () => {
-    let data2:any= structuredClone(props?.props)
+    let data2: any = structuredClone(props?.props)
     if (checkData != undefined && checkData != null) {
       if (checkData?.SharewebTaskType?.Title == 'Workstream') {
         checkData['NoteCall'] = 'Task'
-       console.log(MeetingItems[MeetingItems.length - 1]) 
-       if(MeetingItems[MeetingItems.length - 1]?.ClientTime?.length>0 && MeetingItems[MeetingItems?.length - 1].ClientTime!=undefined){
-        MeetingItems[MeetingItems.length - 1].ClientTime=JSON.parse(MeetingItems[MeetingItems?.length - 1]?.ClientTime)
-       }
-    
+        console.log(MeetingItems[MeetingItems.length - 1])
+        if (MeetingItems[MeetingItems.length - 1]?.ClientTime?.length > 0 && MeetingItems[MeetingItems?.length - 1].ClientTime != undefined) {
+          MeetingItems[MeetingItems.length - 1].ClientTime = JSON.parse(MeetingItems[MeetingItems?.length - 1]?.ClientTime)
+        }
+
         setMeetingPopup(true)
       }
     }
@@ -1189,19 +1172,19 @@ function TasksTable(props: any) {
         setMeetingPopup(true)
       }
       if (props.props.SharewebTaskType == 'Activities') {
-        let parentcat:any=[];
-    
-        if(data2?.ClientTime!=null && data2?.ClientTime!=undefined){
+        let parentcat: any = [];
 
-          data2.ClientTime=JSON.stringify(data2?.ClientTime)
-        }else{
-          data2.ClientTime=null
+        if (data2?.ClientTime != null && data2?.ClientTime != undefined) {
+
+          data2.ClientTime = JSON.stringify(data2?.ClientTime)
+        } else {
+          data2.ClientTime = null
         }
-       
+
         MeetingItems.push(data2)
-       setWSPopup(true)
-       
-    
+        setWSPopup(true)
+
+
 
       }
     }
@@ -1210,78 +1193,78 @@ function TasksTable(props: any) {
 
 
   // ===========REACT TABLE ==========
-  const onChangeHandler = (itrm: any, child: any, e: any) => {
-    let checked = e
-    if (checked == true) {
-      setcheckData(itrm)
+  // const onChangeHandler = (itrm: any, child: any, e: any) => {
+  //   let checked = e
+  //   if (checked == true) {
+  //     setcheckData(itrm)
 
-      itrm.chekBox = true
+  //     itrm.chekBox = true
 
-      if (itrm.SharewebTaskType == undefined) {
-        setActivityDisable(false)
-        itrm['siteUrl'] = props?.AllListId?.siteUrl;
-        itrm['listName'] = 'Master Tasks';
-        MeetingItems.push(itrm)
-        //setMeetingItems(itrm);
+  //     if (itrm.SharewebTaskType == undefined) {
+  //       setActivityDisable(false)
+  //       itrm['siteUrl'] = props?.AllListId?.siteUrl;
+  //       itrm['listName'] = 'Master Tasks';
+  //       MeetingItems.push(itrm)
+  //       //setMeetingItems(itrm);
 
-      }
-      if (itrm.SharewebTaskType != undefined) {
-        if (itrm.SharewebTaskType.Title == 'Activities' || itrm.SharewebTaskType.Title == "Workstream") {
-          setActivityDisable(false)
-          // Arrays.push(itrm)
-          itrm['PortfolioId'] = child.Id;
-          MeetingItems.push(itrm)
-          setCount(count + 2)
-        }
-        if (itrm.SharewebTaskType.Title == 'Task') {
-          setActivityDisable(true)
-          MeetingItems.push(itrm)
+  //     }
+  //     if (itrm.SharewebTaskType != undefined) {
+  //       if (itrm.SharewebTaskType.Title == 'Activities' || itrm.SharewebTaskType.Title == "Workstream") {
+  //         setActivityDisable(false)
+  //         // Arrays.push(itrm)
+  //         itrm['PortfolioId'] = child.Id;
+  //         MeetingItems.push(itrm)
+  //         setCount(count + 2)
+  //       }
+  //       if (itrm.SharewebTaskType.Title == 'Task') {
+  //         setActivityDisable(true)
+  //         MeetingItems.push(itrm)
 
-        }
-      }
-    }
-    // if (checked == false) {
-    //     itrm.chekBox = false;
-    //     setcheckData(null)
-    //     MeetingItems?.forEach((val: any, index: any) => {
-    //         if (val.Id == itrm.Id) {
-    //             MeetingItems.splice(index, 1)
-    //         }
-    //     })
-    //     if (itrm.SharewebTaskType != undefined) {
-    //         if (itrm.SharewebTaskType.Title == 'Task') {
-    //             setActivityDisable(false)
+  //       }
+  //     }
+  //   }
+  //   // if (checked == false) {
+  //   //     itrm.chekBox = false;
+  //   //     setcheckData(null)
+  //   //     MeetingItems?.forEach((val: any, index: any) => {
+  //   //         if (val.Id == itrm.Id) {
+  //   //             MeetingItems.splice(index, 1)
+  //   //         }
+  //   //     })
+  //   //     if (itrm.SharewebTaskType != undefined) {
+  //   //         if (itrm.SharewebTaskType.Title == 'Task') {
+  //   //             setActivityDisable(false)
 
-    //         }
-    //     }
-    //     setCount(count + 2)
-    // }
-    var list: any = []
-    if (checkedList.length > 0) {
-      list = checkedList;
-    }
+  //   //         }
+  //   //     }
+  //   //     setCount(count + 2)
+  //   // }
+  //   var list: any = []
+  //   if (checkedList.length > 0) {
+  //     list = checkedList;
+  //   }
 
-    var flag = true;
-    list?.forEach((obj: any, index: any) => {
-      if (obj.Id != undefined && itrm?.Id != undefined && obj.Id === itrm.Id) {
-        flag = false;
-        list.splice(index, 1);
-      }
-    })
-    if (itrm.SharewebTaskType?.Title == 'Task') {
-      setActivityDisable(false)
-    }
-    if (flag)
-      list.push(itrm);
-    console.log(list);
-    // list?.forEach((items:any)=>{
-    //     checkedList.push(items)
-    // })
-   
-    setCheckedList(checkedList => (list));
-    // if (list.length === 0)
-    //   clearreacture();
-  };
+  //   var flag = true;
+  //   list?.forEach((obj: any, index: any) => {
+  //     if (obj.Id != undefined && itrm?.Id != undefined && obj.Id === itrm.Id) {
+  //       flag = false;
+  //       list.splice(index, 1);
+  //     }
+  //   })
+  //   if (itrm.SharewebTaskType?.Title == 'Task') {
+  //     setActivityDisable(false)
+  //   }
+  //   if (flag)
+  //     list.push(itrm);
+  //   console.log(list);
+  //   // list?.forEach((items:any)=>{
+  //   //     checkedList.push(items)
+  //   // })
+
+  //   setCheckedList(checkedList => (list));
+  //   // if (list.length === 0)
+  //   //   clearreacture();
+  // };
   const findUserByName = (Id: any) => {
     const user = AllUsers.filter((user: any) => user.AssingedToUserId == Id);
     let Image: any;
@@ -1293,7 +1276,7 @@ function TasksTable(props: any) {
     }
     return user ? Image : null;
   };
- 
+
 
   React.useEffect(() => {
     CheckDataPrepre()
@@ -1315,9 +1298,9 @@ function TasksTable(props: any) {
         });
       }
       if (itrm?.Item_x0020_Type == "Component") {
-        onChangeHandler(itrm, 'parent', eTarget);
+        // onChangeHandler(itrm, 'parent', eTarget);
       } else {
-        onChangeHandler(itrm, props, eTarget);
+        // onChangeHandler(itrm, props, eTarget);
       }
     } else {
 
@@ -1333,71 +1316,52 @@ function TasksTable(props: any) {
       setExpanded({});
     }
   }, [table.getState().columnFilters]);
+  const callBackData = React.useCallback((checkData: any) => {
+    let array: any = [];
+    if (checkData != undefined) {
+
+      if (checkData.SharewebTaskType == undefined) {
+        setActivityDisable(false)
+        checkData['siteUrl'] = props?.AllListId?.siteUrl;
+        checkData['listName'] = 'Master Tasks';
+        MeetingItems.push(checkData)
+        //setMeetingItems(itrm);
+
+      }
+      if (checkData.SharewebTaskType != undefined) {
+        if (checkData.SharewebTaskType.Title == 'Activities' || checkData.SharewebTaskType.Title == "Workstream") {
+          setActivityDisable(false)
+          // Arrays.push(itrm)
+          checkData['PortfolioId'] = props?.Id;
+          MeetingItems.push(checkData)
+          setCount(count + 2)
+        }
+        if (checkData.SharewebTaskType.Title == 'Task') {
+          setActivityDisable(true)
+          MeetingItems.push(checkData)
+
+        }
+      }
+      setcheckData(checkData);
+      array.push(checkData);
+
+
+    } else {
+      setcheckData({});
+      array = [];
+    }
+    // setCheckedList1(array);
+  }, []);
+
   return (
 
-    <div className={IsUpdated === 'Events' ? 'app component eventpannelorange ps-0' : (IsUpdated == 'Service' ? 'app component serviepannelgreena ps-0' : 'app component ps-0')}>
+    <div className={IsUpdated === 'Events' ? 'app component eventpannelorange' : (IsUpdated == 'Service' ? 'app component serviepannelgreena' : 'app component')}>
       <div className="Alltable mt-10">
-        <div className="tbl-headings">
-          <span className="leftsec">
-            <span className='t-arrow'>
-              {componentDetails !== undefined && props.props.ParentTask != undefined && props.props.ParentTask.Title != undefined &&
-                <>
-                  <img className='icon-sites-img ml20' src={componentDetails.SiteIcon} />
-                  {<SlArrowRight></SlArrowRight>} <img className='icon-sites-img ml20' src={props.props.ParentIcon} />
-                  {<SlArrowRight></SlArrowRight>} <img className='icon-sites-img ml20' src={props.props.CurrentIcon} /> <a>{props.props.Title}</a>
-                </>
-              }
-              {componentDetails === undefined && props.props.ParentTask != undefined && props.props.ParentTask.Title != undefined &&
-                <>
 
-                  <img className='icon-sites-img ml20' src={props.props.ParentIcon} />
-                  {<SlArrowRight></SlArrowRight>} <img className='icon-sites-img ml20' src={props.props.CurrentIcon} /> <a>{props.props.Title}</a>
-                </>
-              }
-              {componentDetails !== undefined && props.props.ParentTask === undefined &&
-                <>
-                  <img className='icon-sites-img ml20' src={componentDetails.SiteIcon} />
-                  {<SlArrowRight></SlArrowRight>} <img className='icon-sites-img ml20' src={props.props.CurrentIcon} /> <a>{props.props.Title}</a>
-                </>
-              }
-            </span>
-            <span className="g-search">
-              <input type="text" className="searchbox_height full_width" id="globalSearch" placeholder="search all"
-                ng-model="SearchComponent.GlobalSearch" />
-              <span className="gsearch-btn" ng-click="SearchAll_Item()"><i className="fa fa-search"></i></span>
-            </span>
-          </span>
-          <span className="toolbox mx-auto">
-
-            <button type="button"
-              className="btn btn-primary"
-              onClick={() => openActivity()}
-              disabled={checkData?.SharewebTaskType?.Title === "Task" ? true : false}>
-              Add Workstream-Task
-            </button>
-            <button type="button"
-              className="btn btn-primary" disabled={table?.getSelectedRowModel()?.flatRows.length === 0 || table?.getSelectedRowModel()?.flatRows.length > 1 ? true : false}
-              onClick={buttonRestructuring}>
-              Restructure
-            </button>
-            {/* <button type="button"
-                            className="btn {{(compareComponents.length==0 && SelectedTasks.length==0)?'btn-grey':'btn-primary'}}"
-                            disabled={true}>
-                            Compare
-                        </button> */}
-            {/* <a className='expand'>
-                                            <ExpndTable prop={expndpopup} prop1={tablecontiner} />
-                                        </a>
-                        <a>
-                            <Tooltip ComponentId='1748'/>
-                            
-                        </a> */}
-          </span>
-        </div>
         <div className="col-sm-12 pad0 smart" >
           <div className="">
             <div className={`${data.length > 10 ? "wrapper" : "MinHeight"}`}>
-              <table className=" Improvementstable SortingTable table table-hover" style={{ width: "100%" }}>
+              {/* <table className=" Improvementstable SortingTable table table-hover" style={{ width: "100%" }}>
                 <thead className='fixed-Header top-0'>
                   {table.getHeaderGroups().map((headerGroup: any) => (
                     <tr key={headerGroup.id}>
@@ -1459,83 +1423,105 @@ function TasksTable(props: any) {
                     );
                   })}
                 </tbody>
-              </table>
+              </table> */}
+              <GlobalCommanTable
+                //  ref={childRef}
+                callChildFunction={Call}
+                AllListId={props?.AllListId}
+                columns={columns}
+                //  restructureCallBack={callBackData1} 
+                data={data}
+                callBackData={callBackData}
+                TaskUsers={AllUsers}
+                showHeader={true}
+                // portfolioColor={portfolioColor} 
+                // portfolioTypeData={portfolioTypeDataItem}
+                //  taskTypeDataItem={taskTypeDataItem} 
+                // portfolioTypeConfrigration={portfolioTypeConfrigration } 
+                showingAllPortFolioCount={false}
+                showCreationAllButton={true}
+                AddWorkstreamTask={openActivity}
+                taskProfile={true}
+                expandIcon={true}
+              />
             </div>
+
           </div>
         </div>
       </div>
 
 
-<span>
-<Panel headerText={` ${NewArrayBackup[0]?.Title}-Restructuring Tool `} type={PanelType.medium} isOpen={ResturuningOpen} isBlocking={false} onDismiss={RestruringCloseCall}>
+      <span>
+        <Panel headerText={` ${NewArrayBackup[0]?.Title}-Restructuring Tool `} type={PanelType.medium} isOpen={ResturuningOpen} isBlocking={false} onDismiss={RestruringCloseCall}>
           <div className='mt-4 mb-3'>
-           <span>{`All below selected items will be added as Task inside "${NewArrayBackup[0]?.Title}"`}</span>
-           <div className='mt-2' >Old : <span><img width={"25px"} height={"25px"} src={NewArrayBackup[0]?.SiteIcon} />{NewArrayBackup[0]?.Title}</span></div>
-           <div className='mt-2'>New : <span><img width={"25px"} height={"25px"} src={NewArrayBackup[0]?.SiteIcon} />{NewArrayBackup[0]?.Title}</span><span>{`>`}</span> <span><img width={"25px"} height={"25px"} src={OldArrayBackup[0]?.siteIcon} />{OldArrayBackup[0]?.Title}</span></div>
+            <span>{`All below selected items will be added as Task inside "${NewArrayBackup[0]?.Title}"`}</span>
+            <div className='mt-2' >Old : <span><img width={"25px"} height={"25px"} src={NewArrayBackup[0]?.SiteIcon} />{NewArrayBackup[0]?.Title}</span></div>
+            <div className='mt-2'>New : <span><img width={"25px"} height={"25px"} src={NewArrayBackup[0]?.SiteIcon} />{NewArrayBackup[0]?.Title}</span><span>{`>`}</span> <span><img width={"25px"} height={"25px"} src={OldArrayBackup[0]?.siteIcon} />{OldArrayBackup[0]?.Title}</span></div>
           </div>
           <footer className="mt-2 text-end">
             <button type="button" className="btn btn-primary " onClick={(e) => UpdateTaskRestructure()}>Save</button>
             <button type="button" className="btn btn-default btn-default ms-1" onClick={RestruringCloseCall}>Cancel</button>
           </footer>
         </Panel>
-        </span>
+      </span>
 
 
-        <span>
-<Panel headerText={`Restructuring Tool `} type={PanelType.medium} isOpen={tasksRestruct} isBlocking={false} onDismiss={RestruringCloseCall}>
+      <span>
+        <Panel headerText={`Restructuring Tool `} type={PanelType.medium} isOpen={tasksRestruct} isBlocking={false} onDismiss={RestruringCloseCall}>
           <div className='mt-4 mb-3'>
-           <span>{`All below selected items will be added as ${checkedList[0]?.SharewebTaskType?.Title}`}</span>
-           <div className='mt-2' >Select Task Type : 
-           <span>
-           <input
+            <span>{`All below selected items will be added as ${checkedList[0]?.SharewebTaskType?.Title}`}</span>
+            <div className='mt-2' >Select Task Type :
+              <span>
+                <input
                   type="radio"
-                   name="fav_language"
-                   value="Workstream"
-                   checked={
+                  name="fav_language"
+                  value="Workstream"
+                  checked={
                     checkedList[0]?.SharewebTaskType?.Title == "Workstream"
-                       ? true
-                       : false
-                   }
-                   onChange={(e) =>setRestructure(e)}
-                 />
-                 <label className="ms-1"> {"Workstream"} </label>
-           </span>
-           <span>
-           <input
+                      ? true
+                      : false
+                  }
+                  onChange={(e) => setRestructure(e)}
+                />
+                <label className="ms-1"> {"Workstream"} </label>
+              </span>
+              <span>
+                <input
                   type="radio"
-                   name="fav_language"
-                   value="Task"
-                   checked={
+                  name="fav_language"
+                  value="Task"
+                  checked={
                     checkedList[0]?.SharewebTaskType?.Title == "Task"
-                       ? true
-                       : false
-                   }
-                   onChange={(e) =>setRestructure(e)}
-                 />
-                 <label className="ms-1"> {"Task"} </label>
-           </span>
-           </div>
-           <div className='mt-2' >Old : <span><img width={"25px"} height={"25px"} src={OldArrayBackup[0]?.siteIcon} />{OldArrayBackup[0]?.Title}</span></div>
-           <div className='mt-2'>New : <span><img width={"25px"} height={"25px"} src={OldArrayBackup[0]?.siteIcon} />{OldArrayBackup[0]?.Title}</span></div>
+                      ? true
+                      : false
+                  }
+                  onChange={(e) => setRestructure(e)}
+                />
+                <label className="ms-1"> {"Task"} </label>
+              </span>
+            </div>
+            <div className='mt-2' >Old : <span><img width={"25px"} height={"25px"} src={OldArrayBackup[0]?.siteIcon} />{OldArrayBackup[0]?.Title}</span></div>
+            <div className='mt-2'>New : <span><img width={"25px"} height={"25px"} src={OldArrayBackup[0]?.siteIcon} />{OldArrayBackup[0]?.Title}</span></div>
           </div>
           <footer className="mt-2 text-end">
             <button type="button" className="btn btn-primary " onClick={(e) => UpdateTopTaskRestructure()}>Save</button>
             <button type="button" className="btn btn-default btn-default ms-1" onClick={RestruringCloseCall}>Cancel</button>
           </footer>
         </Panel>
-        </span>
+      </span>
 
 
 
       {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call} AllListId={props.AllListId} context={props.Context} pageName={"TaskFooterTable"}></EditTaskPopup>}
       {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack} AllListId={props.AllListId} TimeEntryPopup Context={props.Context}></TimeEntryPopup>}
-      {MeetingPopup && 
-      <CreateActivity props={MeetingItems[MeetingItems.length - 1]} 
-      Call={Call}
-      TaskUsers={AllUsers}
-      AllClientCategory={AllClientCategory}
-       LoadAllSiteTasks={LoadAllSiteTasks}
-        SelectedProp={props.AllListId}>
+      {MeetingPopup &&
+        <CreateActivity
+          props={MeetingItems[MeetingItems.length - 1]}
+          Call={Call}
+          TaskUsers={AllUsers}
+          AllClientCategory={AllClientCategory}
+          LoadAllSiteTasks={LoadAllSiteTasks}
+          SelectedProp={props.AllListId}>
         </CreateActivity>}
       {WSPopup && <CreateWS props={MeetingItems[MeetingItems.length - 1]} Call={Call} data={data} SelectedProp={props.AllListId}></CreateWS>}
       {addModalOpen && <Panel headerText={` Create Component `} type={PanelType.medium} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>

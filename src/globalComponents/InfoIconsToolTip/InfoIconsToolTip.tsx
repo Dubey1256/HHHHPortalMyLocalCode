@@ -58,7 +58,7 @@ export default function InfoIconsToolTip({ Discription, row }: any) {
                 onMouseEnter={() => handlAction("hover")}
                 onMouseLeave={() => handleMouseLeave()}
             >
-                <span title="Edit" className="svg__iconbox svg__icon--info"></span>
+                <span title="Edit" className="svg__iconbox svg__icon--info dark"></span>
             </span>
 
             {action === "click" && visible && (
