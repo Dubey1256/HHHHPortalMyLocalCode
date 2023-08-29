@@ -676,8 +676,8 @@ const TimeReport = (props:any) => {
                 id: 'Task',
                 header: '',
                 placeholder: "Task",
-
-
+               
+ 
 
             },
             {
@@ -695,6 +695,7 @@ const TimeReport = (props:any) => {
                 header: '',
                 accessorFn: (row) => row?.Components,
                 placeholder: "Components",
+                size: 155,
 
 
             },
@@ -703,6 +704,7 @@ const TimeReport = (props:any) => {
                 header: '',
                 accessorFn: (row) => row?.SubComponents,
                 placeholder: "SubComponents",
+                size: 135,
                 cell: ({ row, getValue }) => (
                     <>
                         <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
@@ -730,12 +732,14 @@ const TimeReport = (props:any) => {
                 header: '',
                 accessorFn: (row) => row?.Features,
                 placeholder: "Features",
+                size: 250,
 
             },
             {
                 header: '',
                 accessorKey: 'Effort',
                 placeholder: "Effort",
+                size: 60,
 
 
             },
@@ -743,6 +747,7 @@ const TimeReport = (props:any) => {
                 header: '',
                 accessorKey: 'siteType',
                 placeholder: "Sites",
+                size: 110,
 
 
             },
@@ -750,30 +755,35 @@ const TimeReport = (props:any) => {
                 header: '',
                 accessorKey: 'PercentComplete',
                 placeholder: "PercentComplete",
+                size: 42,
 
             },
             {
                 header: '',
                 accessorKey: 'Status',
                 placeholder: "Status",
+                size: 120,
 
             },
             {
                 header: '',
                 accessorKey: 'userName',
                 placeholder: "userName",
+                size: 130,
 
             },
             {
                 header: '',
                 accessorKey: 'Department',
                 placeholder: "Designation",
+                size: 120,
 
             },
             {
                 header: '',
                 accessorKey: 'ClientCategory',
                 placeholder: "ClientCategory",
+                size: 160,
 
             },
 
@@ -1199,7 +1209,7 @@ var ReportDate = new Date(a1)
                 data?.length >0?
                 <>
                  <div className='pull-right mail-info' onClick={()=>sendEmail()}><MdEmail/></div>
-               <GlobalCommanTable columns={column} data={data} callBackData={callBackData} showHeader={true} /> </>:
+               <GlobalCommanTable columns={column} data={data} callBackData={callBackData} showHeader={true} expandIcon={true}/> </>:
                 <div className="bg-f5f5 mb-2 mt-2">Oops! Time Entries not available (Might be Weekend or Holiday or No data available In this Selected Date).</div>
              }
             

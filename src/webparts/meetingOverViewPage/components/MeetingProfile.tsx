@@ -17,17 +17,19 @@ import {
 import moment from 'moment';
 import SmartInformation from '../../taskprofile/components/SmartInformation';
 import RelevantDocuments from '../../taskprofile/components/RelevantDocuments';
+import MeetingPopupComponent from '../../../globalComponents/MeetingPopup/MeetingPopup';
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
 var AllListId: any;
 var taskUsers: any;
 var currentUser: any;
 var buttonId:any;
-const mycontextValue: any = React.createContext({ AllListId: {}, context: {},  currentUser: {}, taskUsers: [] });
+const mycontextValue:any = React.createContext({ AllListId: {}, context: {},  currentUser: {}, taskUsers: [] });
 const MeetingProfile = (props: any) => {
     const [meetingId, setmeetingId] = React.useState(null)
     const [display, setDisplay] = React.useState('none');
     const [openModelImg, setOpenModelImg] = React.useState<any>({ isModalOpen: false, imageInfo: {ImageName:"",ImageUrl:""}, showPopup: 'none' })
+    const [showMeetingPopup,setshowMeetingPopup]=React.useState(false);
     const [feedbackpopup, setfeedbackpopup] = React.useState(
         { showcomment: 'none',
          showhideCommentBoxIndex: null,
@@ -162,7 +164,7 @@ const MeetingProfile = (props: any) => {
 
                 .items.getById(AllListId?.meetingId)
 
-                .select("Id", "Title", "DueDate", "AssignedTo/Id","Attachments", "FeedBack", "AssignedTo/Title", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", 'AttachmentFiles', "ShortDescriptionVerified", "SharewebTaskType/Title", "BasicImageInfo", 'Author/Id', 'Author/Title', "Editor/Title", "Editor/Id", "OffshoreComments", "OffshoreImageUrl", "Team_x0020_Members/Id", "Team_x0020_Members/Title")
+                .select("Id", "Title", "DueDate", "AssignedTo/Id","Attachments", "FeedBack", "PortfolioStructureID","AssignedTo/Title", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", 'AttachmentFiles', "ShortDescriptionVerified", "SharewebTaskType/Title", "BasicImageInfo", 'Author/Id', 'Author/Title', "Editor/Title", "Editor/Id", "OffshoreComments", "OffshoreImageUrl", "Team_x0020_Members/Id", "Team_x0020_Members/Title")
 
                 // .top(5000)
 
@@ -198,9 +200,17 @@ const MeetingProfile = (props: any) => {
   
       }
                     let data = {
-                        itemId: taskDetails.Id,
+                        Id: taskDetails.Id,
                         Title: taskDetails?.Title,
+                        MeetingId:taskDetails?.PortfolioStructureID,
                         listName:"Master Tasks",
+                        DueDate: taskDetails["DueDate"],
+                        Created: taskDetails["Created"],
+                        Creation: taskDetails["Created"],
+                        Modified: taskDetails["Modified"],
+                        ModifiedBy: taskDetails["Editor"],
+                        Author: GetUserObject(taskDetails["Author"]?.Title),
+                        listId:props?.props?.MasterTaskListID,
                         BasicImageInfo:GetAllImages(JSON.parse(taskDetails["BasicImageInfo"]), taskDetails["AttachmentFiles"], taskDetails["Attachments"]),
                         // GetAllImages(JSON.parse(taskDetails["BasicImageInfo"]), taskDetails["AttachmentFiles"], taskDetails["Attachments"])
                         FeedBack: JSON.parse(taskDetails["FeedBack"]),
@@ -707,7 +717,7 @@ const MeetingProfile = (props: any) => {
       }
     return (
         <>
-          <mycontextValue.Provider value={{ ...mycontextValue, AllListId: AllListId, Context: props?.props?.Context,  currentUser: currentUser, taskUsers: taskUsers }}></mycontextValue.Provider>
+          <mycontextValue.Provider value={{ ...mycontextValue, AllListId: AllListId, Context: props?.props?.Context,  currentUser: currentUser, taskUsers: taskUsers }}>
             <div>
                 <section className='row p-0'>
                     <h2 className="heading d-flex ps-0 justify-content-between align-items-center">
@@ -722,7 +732,7 @@ const MeetingProfile = (props: any) => {
                                 </span>
                             </span>
                             <a className="hreflink" title='Edit'
-                            //   onClick={() => OpenEditPopUp()}
+                              onClick={() => setshowMeetingPopup(true)}
                             > <span className='svg__iconbox svg__icon--edit'></span></a>
 
                         </span>
@@ -734,12 +744,11 @@ const MeetingProfile = (props: any) => {
                 <section className='col-9'>
                     <div className='team_member row'>
                         <div className='col-6'>
-                            <dl>
-                                <dt className='bg-Fa'>Task Id</dt>
-                                <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{resultData.itemId} </span>
-                                    {/* {TaskIdCSF != "" && <span className="idhide bg-fxdark siteColor">{TaskIdCSF?.replace("-", ">")}{TaskIdAW == "" && resultData["TaskId"] != undefined && <span className='text-body'>{">" + resultData["TaskId"]}</span>} {TaskIdAW != "" && <span className='text-body'>{">" + TaskIdAW?.replace("-", ">")}</span>}</span>} */}
-                                </dd>
-                            </dl>
+                        <dl>
+                    <dt className='bg-Fa'>Meeting Date</dt>
+                    <dd className='bg-Ff'>{resultData["DueDate"] != null && resultData["DueDate"] != undefined ? moment(resultData["DueDate"]).format("DD/MM/YYYY") : ''}</dd>
+                  </dl>
+                          
                         </div>
                         <div className='col-6'>
                             <dl>
@@ -1184,6 +1193,23 @@ const MeetingProfile = (props: any) => {
                             </div>
                         </div>
                     </div>
+                    <section>
+          
+          <div className='row'>
+            {/* {this.state.Result?.Portfolio_x0020_Type!=undefined &&<TaskWebparts props={this.state.Result}/>} */}
+            {resultData != undefined &&
+              <div className="ItemInfo mb-20" style={{ paddingTop: '15px' }}>
+
+                <div>Created <span >{(moment(resultData['Creation']).format('DD MMM YYYY HH:mm '))}</span> by <span className="siteColor">{resultData['Author'] != null &&resultData['Author'].length > 0 && resultData['Author'][0].Title}</span>
+                </div>
+                <div>Last modified <span >{(moment(resultData['Modified']).format('DD MMM YYYY HH:mm '))}</span> by <span className="siteColor">{resultData['ModifiedBy'] != null && resultData['ModifiedBy'].Title}</span>
+                  {/* <div>Last modified <span >{this.ConvertLocalTOServerDate(this.state.Result['Modified'], 'DD MMM YYYY hh:mm')}</span> by <span className="siteColor">{this.state.Result['ModifiedBy'] != null && this.state.Result['ModifiedBy'].Title}</span> */}
+                  {/* <span>{this.state.itemID ? <VersionHistoryPopup taskId={this.state.itemID} listId={this.state.Result.listId} siteUrls={this.state.Result.siteUrl} isOpen={this.state.isopenversionHistory} /> : ''}</span> */}
+                </div>
+              </div>
+            }
+          </div>
+        </section>
                 </section>
                 <section className='col-3' >
                     <div>
@@ -1262,7 +1288,17 @@ const MeetingProfile = (props: any) => {
 
 ) : null
 }
+{
+
+   showMeetingPopup ? <MeetingPopupComponent Items={resultData} isShow={showMeetingPopup} closePopup={() => setshowMeetingPopup(false)} /> : null
+
+
+
+
+}
+</mycontextValue.Provider>
         </>
     )
 }
 export default MeetingProfile;
+export { mycontextValue }
