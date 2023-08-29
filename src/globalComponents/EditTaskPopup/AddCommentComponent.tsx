@@ -428,8 +428,9 @@ const AddCommentComponent = (FbData: any) => {
                     </Text>
                     <FocusZone handleTabKey={FocusZoneTabbableElements.all} isCircularNavigation>
                         <Stack className={styles.buttons} gap={8} horizontal>
+                        <DefaultButton onClick={toggleIsCalloutVisible}>Cancel</DefaultButton>
                             <PrimaryButton onClick={SaveReplyMessageFunction}>Save</PrimaryButton>
-                            <DefaultButton onClick={toggleIsCalloutVisible}>Cancel</DefaultButton>
+                            
                         </Stack>
                     </FocusZone>
                 </FocusTrapCallout>
