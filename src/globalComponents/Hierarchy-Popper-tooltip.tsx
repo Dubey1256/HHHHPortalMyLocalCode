@@ -2,7 +2,7 @@ import * as React from "react";
 import { usePopperTooltip } from "react-popper-tooltip";
 import "react-popper-tooltip/dist/styles.css";
 import { ColumnDef, } from "@tanstack/react-table";
-import { FaChevronDown, FaChevronRight } from "react-icons/fa";
+import { FaChevronDown, FaChevronRight, FaPlus } from "react-icons/fa";
 import GlobalCommanTable from "./GroupByReactTableComponents/GlobalCommanTable";
 import CreateActivity from "../webparts/servicePortfolio/components/CreateActivity";
 import CreateWS from "../webparts/servicePortfolio/components/CreateWS";
@@ -103,38 +103,26 @@ export default function ReactPopperTooltip({ ShareWebId, row, projectToolShow, A
         () => [
             {
                 accessorKey: "",
-                size: 7,
+                placeholder: "",
+                hasCustomExpanded: true,
+                hasExpanded: true,
+                size: 27,
+                id: 'Id',
+            },
+            {
+                accessorKey: "",
+                size: 40,
                 canSort: false,
                 placeholder: "",
                 id: 'Shareweb_x0020_ID',
                 cell: ({ row, getValue }) => (
-                    <div
-                        style={row.getCanExpand() ? {
-                            paddingLeft: `${row.depth * 5}px`,
-                        } : {
-                            paddingLeft: "18px",
-                        }}
-                    >
-                        <>
-                            {row.getCanExpand() ? (
-                                <span className=' border-0'
-                                    {...{
-                                        onClick: row.getToggleExpandedHandler(),
-                                        style: { cursor: "pointer" },
-                                    }}
-                                >
-                                    {row.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
-                                </span>
-                            ) : (
-                                ""
-                            )}{" "}
-
-                            <> {row?.original?.SiteIcon != undefined ?
-                                <a className="hreflink" title="Show All Child" data-toggle="modal">
-                                    <img className="icon-sites-img ml20 me-1" src={row?.original?.SiteIcon}></img>
-                                </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</>}
-                                <span>{row?.original?.Shareweb_x0020_ID}</span>
-                            </>
+                    <div>
+                        <><> {row?.original?.SiteIcon != undefined ?
+                            <a className="hreflink" title="Show All Child" data-toggle="modal">
+                                <img className="icon-sites-img ml20 me-1" src={row?.original?.SiteIcon}></img>
+                            </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</>}
+                            <span>{row?.original?.Shareweb_x0020_ID}</span>
+                        </>
                             {getValue()}
                         </>
                     </div>
@@ -150,25 +138,18 @@ export default function ReactPopperTooltip({ ShareWebId, row, projectToolShow, A
                 canSort: false,
                 placeholder: "",
                 header: "",
-                size: 15,
             },
             {
                 accessorKey: "",
-                size: 7,
+                size: 30,
                 canSort: false,
                 header: "",
                 placeholder: "",
-                id: 'Shareweb_x0020_ID',
-                cell: ({ row, getValue }) => (
-                    <div
-                        style={row.getCanExpand() ? {
-                            paddingLeft: `${0}px`,
-                        } : {
-                            paddingLeft: "18px",
-                        }}
-                    >
+                id: 'plushIcon',
+                cell: ({ row }) => (
+                    <div>
                         <>
-                            <span onClick={() => openActivityPopup(row.original)}>+</span>
+                            <span onClick={() => openActivityPopup(row.original)}><FaPlus style={{ fontSize: '10px' }} /></span>
                         </>
                     </div>
                 ),

@@ -16,7 +16,7 @@ import {
     getPaginationRowModel
 } from "@tanstack/react-table";
 import { RankingInfo, rankItem, compareItems } from "@tanstack/match-sorter-utils";
-import { FaSearch, FaSort, FaSortDown, FaSortUp, FaChevronRight, FaChevronLeft, FaAngleDoubleRight, FaAngleDoubleLeft, FaInfoCircle } from 'react-icons/fa';
+import { FaSearch, FaSort, FaSortDown, FaSortUp, FaChevronRight, FaChevronLeft, FaAngleDoubleRight, FaAngleDoubleLeft, FaInfoCircle, FaPlus, FaMinus } from 'react-icons/fa';
 import { HTMLProps } from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -27,6 +27,7 @@ import ShowTeamMembers from '../ShowTeamMember';
 import SelectFilterPanel from './selectFilterPannel';
 import ExpndTable from '../ExpandTable/Expandtable';
 import RestructuringCom from '../Restructuring/RestructuringCom';
+import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
 
 // ReactTable Part/////
 declare module "@tanstack/table-core" {
@@ -138,6 +139,95 @@ export function IndeterminateCheckbox(
     );
 }
 
+// ********************* function with globlize Expended And Checkbox*******************
+let forceExpanded: any = [];
+const getFirstColHeader = ({ hasCheckbox, hasExpanded }: any) => {
+    return ({ table }: any) => (
+        <>
+            {hasExpanded && (<>
+                <span className="border-0 bg-Ff" {...{ onClick: table.getToggleAllRowsExpandedHandler(), }}>
+                    {table.getIsAllRowsExpanded() ? (
+                        <SlArrowDown title='Tap to collapse the childs' />) : (<SlArrowRight title='Tap to expand the childs' />)}
+                </span>{" "}
+            </>)}
+            {hasCheckbox && (
+                <span style={hasExpanded ? { marginLeft: '7px', marginBottom: '5px' } : {}} ><IndeterminateCheckbox className="mx-1 " {...{ checked: table.getIsAllRowsSelected(), indeterminate: table.getIsSomeRowsSelected(), onChange: table.getToggleAllRowsSelectedHandler(), }} />{" "}</span>
+            )}
+        </>
+    );
+};
+
+const getFirstColCell = ({ setExpanded, hasCheckbox, hasCustomExpanded, hasExpanded }: any) => {
+    return ({ row, getValue, table }: any) => (
+        <div className="alignCenter">
+            {hasExpanded && row.getCanExpand() && (
+                <div className="border-0 alignCenter" {...{ onClick: row.getToggleExpandedHandler(), style: { cursor: "pointer" }, }}>
+                    {row.getIsExpanded() ? <SlArrowDown title={'collapse ' + `${row.original.Title}` + ' childs'} style={{ color: `${row?.original?.PortfolioType?.Color}` }} /> : <SlArrowRight title={'Expand' + `${row.original.Title}` + 'childs'} style={{ color: `${row?.original?.PortfolioType?.Color}` }} />}
+                </div>
+            )}{" "}
+            {hasCheckbox && (
+                <span style={{ marginLeft: hasExpanded && row.getCanExpand() ? '11px' : hasExpanded !== true ? '0px' : '25px' }}> <IndeterminateCheckbox {...{ checked: row.getIsSelected(), indeterminate: row.getIsSomeSelected(), onChange: row.getToggleSelectedHandler(), }} />{" "}</span>
+            )}
+            {hasCustomExpanded && <div>
+                {((row.getCanExpand() &&
+                    row.subRows?.length !== row.original.subRows?.length) ||
+                    !row.getCanExpand() ||
+                    forceExpanded.includes(row.id)) &&
+                    row.original.subRows?.length ? (
+                    <div className="mx-1 alignCenter"
+                        {...{
+                            onClick: () => {
+                                if (!forceExpanded.includes(row.id)) {
+                                    const coreIds = table.getCoreRowModel().rowsById;
+                                    row.subRows = coreIds[row.id].subRows;
+                                    const rowModel = table.getRowModel();
+                                    const updateRowModelRecursively = (item: any) => {
+                                        item.subRows?.forEach((elem: any) => {
+                                            if (!rowModel.rowsById[elem.id]) {
+                                                rowModel.flatRows.push(elem);
+                                                rowModel.rowsById[elem.id] = elem;
+                                            }
+                                            elem?.subRows?.length &&
+                                                updateRowModelRecursively(elem);
+                                        });
+                                    }
+                                    updateRowModelRecursively(row);
+                                    const temp = Object.keys(coreIds).filter(
+                                        (item: any) =>
+                                            item === row.id ||
+                                            item.startsWith(row.id + ".")
+                                    );
+                                    forceExpanded = [...forceExpanded, ...temp];
+                                    setExpanded((prev: any) => ({
+                                        ...prev,
+                                        [row.id]: true,
+                                    }));
+                                } else {
+                                    row.getToggleExpandedHandler()();
+                                }
+                            },
+                            style: { cursor: "pointer" },
+                        }}
+                    >
+                        {!row.getCanExpand() ||
+                            (row.getCanExpand() &&
+                                row.subRows?.length !== row.original.subRows?.length)
+                            ? <FaPlus style={{ fontSize: '10px', color: `${row?.original?.PortfolioType?.Color}` }} />
+                            : row.getIsExpanded()
+                                ? <FaMinus style={{ color: `${row?.original?.PortfolioType?.Color}` }} />
+                                : <FaPlus style={{ fontSize: '10px', color: `${row?.original?.PortfolioType?.Color}` }} />}
+                    </div>
+                ) : (
+                    ""
+                )}{" "}
+            </div>}
+            {getValue()}
+        </div>
+    );
+};
+// ********************* function with globlize Expended And Checkbox*******************
+
+
 // ReactTable Part end/////
 let isShowingDataAll: any = false;
 const GlobalCommanTable = (items: any, ref: any) => {
@@ -224,6 +314,30 @@ const GlobalCommanTable = (items: any, ref: any) => {
         };
     };
 
+    // ***************** coustmize Global Expende And Check Box *********************
+    const modColumns = React.useMemo(() => {
+        return columns.map((elem: any, index: any) => {
+            elem.header = elem.header || "";
+            if (index === 0) {
+                elem = {
+                    ...elem,
+                    header: getFirstColHeader({
+                        hasCheckbox: elem.hasCheckbox,
+                        hasExpanded: elem.hasExpanded
+                    }),
+                    cell: getFirstColCell({
+                        setExpanded,
+                        hasExpanded: elem.hasExpanded,
+                        hasCheckbox: elem.hasCheckbox,
+                        hasCustomExpanded: elem.hasCustomExpanded,
+                    }),
+                };
+            }
+            return elem;
+        });
+    }, [columns]);
+    // ***************** coustmize Global Expende And Check Box End *****************
+
     const selectedFilterCallBack = React.useCallback((item: any) => {
         if (item != undefined) {
             setSelectedFilterPannelData(item)
@@ -233,7 +347,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
     const table: any = useReactTable({
         data,
-        columns,
+        columns: modColumns,
         filterFns: {
             fuzzy: fuzzyFilter
         },
@@ -285,7 +399,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
     React.useEffect(() => {
         CheckDataPrepre()
-    }, [table?.getSelectedRowModel()?.flatRows.length])
+    }, [table?.getSelectedRowModel()?.flatRows])
     React.useEffect(() => {
         if (items?.pageSize != undefined) {
             table.setPageSize(items?.pageSize)
@@ -447,13 +561,33 @@ const GlobalCommanTable = (items: any, ref: any) => {
             }
         })
     }
+    // React.useEffect(() => {
+    //     if (expendedTrue != true) {
+    //         if (table.getState().columnFilters.length || table.getState()?.globalFilter?.length > 0) {
+    //             setExpanded(true);
+    //         } else {
+    //             setExpanded({});
+    //         }
+    //     }
+    // }, [table.getState().columnFilters, table.getState().globalFilter]);
+
     React.useEffect(() => {
         if (expendedTrue != true) {
             if (table.getState().columnFilters.length || table.getState()?.globalFilter?.length > 0) {
-                setExpanded(true);
+                const allKeys = Object.keys(table.getFilteredRowModel().rowsById).reduce(
+                    (acc: any, cur: any) => {
+                        if (table.getFilteredRowModel().rowsById[cur].subRows?.length) {
+                            acc[cur] = true;
+                        }
+                        return acc;
+                    },
+                    {}
+                );
+                setExpanded(allKeys);
             } else {
                 setExpanded({});
             }
+            forceExpanded = [];
         }
     }, [table.getState().columnFilters, table.getState().globalFilter]);
 
@@ -551,13 +685,13 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const expndpopup = (e: any) => {
         settablecontiner(e);
     };
-
-    //// open All Header Model Like add Structure Activity/////
     const openCreationAllStructure = (eventValue: any) => {
         if (eventValue === "Add Structure") {
             items?.OpenAddStructureModal();
         } else if (eventValue === "Add Activity-Task") {
             items?.addActivity();
+        } else if (eventValue === "Add Workstream-Task") {
+            items?.AddWorkstreamTask();
         }
     }
 
@@ -606,7 +740,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
 
                         <span className="popover__wrapper ms-1" style={{ position: "unset" }} data-bs-toggle="tooltip" data-bs-placement="auto">
-                            <FaInfoCircle style={{ color: `${portfolioColor}` }} />
+                            {/* <FaInfoCircle style={{ color: `${portfolioColor}` }} /> */}
+                            <span className='svg__iconbox svg__icon--info alignIcon' style={{ backgroundColor: `${portfolioColor}` }}></span>
                             <span className="popover__content mt-3 m-3 mx-3" style={{ zIndex: 100 }}>
                                 <label style={{ color: `${portfolioColor}` }}>
                                     Showing
@@ -655,7 +790,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     </span>
                 </span>
                 <span className="toolbox">
-                    {items?.showCreationAllButton === true && <>
+                    {items.taskProfile != true && items?.showCreationAllButton === true && <>
                         {table?.getSelectedRowModel()?.flatRows?.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Feature" &&
                             table?.getSelectedRowModel()?.flatRows[0]?.original?.SharewebTaskType?.Title != "Activities" && table?.getSelectedRowModel()?.flatRows[0]?.original?.SharewebTaskType?.Title != "Workstream" &&
                             table?.getSelectedRowModel()?.flatRows[0]?.original?.SharewebTaskType?.Title != "Task" || table?.getSelectedRowModel()?.flatRows?.length === 0 ? (
@@ -675,12 +810,25 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     </>
                     }
 
-                    {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--team teamIcon"></span></a>
-                    </span> : <span><a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team teamIcon"></span></a></span>}
-                    {table?.getSelectedRowModel()?.rows?.length > 0 ? <span>
-                        <a onClick={() => openTaskAndPortfolioMulti()} className="openWebIcon"><span style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--openWeb"></span></a>
-                    </span> : <span><a className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a></span>}
-                    <a className='excal' onClick={() => exportToExcel()}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a>
+                    {items.taskProfile === true && items?.showCreationAllButton === true && <>
+                        {table?.getSelectedRowModel()?.flatRows.length < 2 ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Workstream-Task")}>Add Workstream-Task</button> :
+                            <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} > Add Workstream-Task</button>}
+
+                        {/* {
+                            trueRestructuring == true ?
+                                <RestructuringCom restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows.length > 0 ? [table?.getSelectedRowModel()?.flatRows[0].original] : []} />
+                                : <button type="button" title="Restructure" disabled={true} className="btn btn-primary"
+                                >Restructure</button>
+                        } */}
+                    </>
+                    }
+
+                    {showTeamMemberOnCheck === true ? <a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--team"></span></a>
+                        : <a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team"></span></a>}
+                    {table?.getSelectedRowModel()?.rows?.length > 0 ?
+                        <a onClick={() => openTaskAndPortfolioMulti()} title='Open in new tab' className="openWebIcon p-0"><span style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--openWeb"></span></a>
+                        : <a className="openWebIcon p-0" title='Open in new tab'><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a>}
+                    <a className='excal' title='Export to excal' onClick={() => exportToExcel()}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a>
 
                     <a className='brush'><i className="fa fa-paint-brush hreflink" style={{ color: `${portfolioColor}` }} aria-hidden="true" title="Clear All" onClick={() => { setGlobalFilter(''); setColumnFilters([]); }}></i></a>
 
@@ -688,7 +836,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     <a className='Prints' onClick={() => downloadPdf()}>
                         <i className="fa fa-print" aria-hidden="true" style={{ color: `${portfolioColor}` }} title="Print"></i>
                     </a>
-                    {expandIcon === true && <a className="expand" style={{ color: `${portfolioColor}` }}>
+                    {expandIcon === true && <a className="expand" title="Expand table section" style={{ color: `${portfolioColor}` }}>
                         <ExpndTable prop={expndpopup} prop1={tablecontiner} />
                     </a>}
 
