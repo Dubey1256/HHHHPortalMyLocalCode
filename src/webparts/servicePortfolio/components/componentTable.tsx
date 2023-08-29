@@ -329,7 +329,6 @@ function ComponentTable(SelectedProp: any) {
     setActivityPopup(false);
   };
   const openActivity = () => {
-    setActivityPopup(false);
     if (checkedList.length > 1) {
       alert(
         "More than 1 Parents selected, Select only 1 Parent to create a child item"
@@ -354,7 +353,7 @@ function ComponentTable(SelectedProp: any) {
           // checkedList[0] === undefined
         ) {
           checkedList[0]["NoteCall"] = "Activities";
-          setMeetingPopup(true);
+          setActivityPopup(true);
         }
         if (
           checkedList[0].Portfolio_x0020_Type === "Component" &&
