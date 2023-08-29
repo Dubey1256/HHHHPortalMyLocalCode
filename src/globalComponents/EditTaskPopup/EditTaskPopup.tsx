@@ -3639,12 +3639,12 @@ const EditTaskPopup = (Items: any) => {
                                 Open Out-Of-The-Box Form
                             </a>}
                             <span >
+                                <button type="button" className="btn btn-default me-1 px-3" onClick={setModalIsOpenToFalse}>
+                                    Cancel
+                                </button>
                                 <button className="btn btn-primary px-3"
                                     onClick={UpdateTaskInfoFunction}>
                                     Save
-                                </button>
-                                <button type="button" className="btn btn-default ms-1 px-3" onClick={setModalIsOpenToFalse}>
-                                    Cancel
                                 </button>
                             </span>
                         </div>

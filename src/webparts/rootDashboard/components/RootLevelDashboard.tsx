@@ -311,43 +311,13 @@ const RootLevelDashboard = (props: any) => {
   const column2 = React.useMemo<ColumnDef<any, unknown>[]>(
     () => [
       {
-        header: ({ table }: any) => (
-          <>
-            <IndeterminateCheckbox className=" "
-              {...{
-                checked: table.getIsAllRowsSelected(),
-                indeterminate: table.getIsSomeRowsSelected(),
-                onChange: table.getToggleAllRowsSelectedHandler(),
-              }}
-            />{" "}
-          </>
-        ),
-        cell: ({ row, getValue }) => (
-          <>
-            <span>
-              {row?.original?.Title != "Others" ? (
-                <IndeterminateCheckbox
-                  {...{
-                    checked: row.getIsSelected(),
-                    indeterminate: row.getIsSomeSelected(),
-                    onChange: row.getToggleSelectedHandler(),
-                  }}
-                />
-              ) : (
-                ""
-              )}
-
-              {getValue()}
-            </span>
-          </>
-        ),
         accessorKey: "",
-        id: "row?.original.Id",
-        resetColumnFilters: false,
-        resetSorting: false,
-        canSort: false,
         placeholder: "",
-        size: 35
+        hasCheckbox: true,
+        hasCustomExpanded: true,
+        hasExpanded: true,
+        size: 55,
+        id: 'Id',
       },
       {
         accessorKey: 'siteType',
@@ -686,10 +656,10 @@ const RootLevelDashboard = (props: any) => {
 
       <h2 className='align-items-center d-flex heading justify-content-between mb-2 ps-0'>
         <span>
-              All Sites Tasks
+          All Sites Tasks
         </span>
       </h2>
-     
+
       <div className='AllTaskSiteRadio align-items-center d-flex justify-content-between mb-2 ps-0'>
         <dl className='alignCenter gap-2 mb-0'>
           {dashboardConfigrations?.map((list: any) => {
