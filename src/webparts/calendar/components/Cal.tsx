@@ -1794,19 +1794,20 @@ const handlePeoplePickerChange = (items: any[]): void => {
               </div>
               <a target='_blank' data-interception="off" href ={`${props.props.siteUrl}/Lists/SmalsusLeaveCalendar/EditForm.aspx?ID=${vId}`}>Open out-of-the-box form</a>
               <div>
-                <button
-                  className="btn btn-primary px-3"
-                  onClick={updateElement}
-                >
-                  Save
-                </button>
-                <button
+              <button
                   type="button"
-                  className="btn btn-default ms-1 px-3"
+                  className="btn btn-default  px-3"
                   onClick={closem}
                 >
                   Cancel
                 </button>
+                <button
+                  className="btn btn-primary ms-1 px-3"
+                  onClick={updateElement}
+                >
+                  Save
+                </button>
+               
               </div>
             </div>
           </footer>
@@ -1816,16 +1817,17 @@ const handlePeoplePickerChange = (items: any[]): void => {
 
         {!disab ? (
           <div className="modal-footer">
-            <button className="btn btn-primary px-3" onClick={saveEvent}>
-              Save
-            </button>
-            <button
+                <button
               type="button"
-              className="btn btn-default ms-1 px-3"
+              className="btn btn-default  px-3"
               onClick={closem}
             >
               Cancel
             </button>
+            <button className="btn btn-primary ms-1 px-3" onClick={saveEvent}>
+              Save
+            </button>
+        
           </div>
         ) : (
           ""

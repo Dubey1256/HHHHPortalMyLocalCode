@@ -308,8 +308,9 @@ export default class ComponentComments extends React.Component<IComponentComment
                   />
                   </div>
                   <div className="modal-footer">
-                    <button type="button" className="btn btn-primary" >Save</button>
-                    <button type="button" className="btn btn-default" onClick={(e) =>this.CloseModal(e) }>Cancel</button>
+                  <button type="button" className="btn btn-default" onClick={(e) =>this.CloseModal(e) }>Cancel</button>
+                    <button type="button" className="btn btn-primary ms-1" >Save</button>
+                 
                   </div>
                 </div>
               </div>          
