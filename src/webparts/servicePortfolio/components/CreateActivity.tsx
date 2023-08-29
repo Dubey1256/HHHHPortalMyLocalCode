@@ -1062,7 +1062,7 @@ const CreateActivity = (props: any) => {
                             res.data['listId'] = value?.listId
                             res.data['SharewebTaskType'] = { Title: 'Activities' }
                             res.data['Shareweb_x0020_ID'] = SharewebID;
-                            res.data['PortfolioType'] =  portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
+                            res.data['PortfolioType'] =  portFolioTypeId == undefined ? null : portFolioTypeId[0],
                                 res.data['Portfolio'] = { 'Id': portFolio };
                             res.data['TaskType'] = { 'Id': res.data.TaskTypeId };
                             // res.data['TaskType'] =
@@ -1197,7 +1197,6 @@ const CreateActivity = (props: any) => {
                             .get()
                         console.log(componentDetails)
                         var LatestId = componentDetails[0].Id + 1;
-                        LatestId += newIndex;
                         if (Task == undefined || Task == '')
                             Task = SelectedTasks[0];
                         if (TaskprofileId == '' || SelectedTasks.length > 0) {

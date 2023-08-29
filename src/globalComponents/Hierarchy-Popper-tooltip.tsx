@@ -84,6 +84,7 @@ export default function ReactPopperTooltip({ ShareWebId, row, projectToolShow, A
         if (row?.SharewebTaskType?.Title == 'Activities') {
             setOpenWS(true)
             row['NoteCall'] = 'Task'
+            row['PageType'] = 'ProjectManagement'
             checkedData = row;
         }
         if (row?.SharewebTaskType?.Title == 'Workstream') {

@@ -83,7 +83,7 @@ export default function ProjectOverview(props: any) {
             isShowTimeEntry: isShowTimeEntry,
             isShowSiteCompostion: isShowSiteCompostion,
             SmalsusLeaveCalendar: props?.props?.SmalsusLeaveCalendar,
-            TaskTypeID: props?.props?.TaskTypeID
+            TaskTypeID:props?.props?.TaskTypeID
         }
         loadTodaysLeave();
         setPageLoader(true);
@@ -809,7 +809,7 @@ export default function ProjectOverview(props: any) {
                             )}
                             <span className='ms-1'>{row?.original?.Shareweb_x0020_ID}</span>
                         </span>
-
+                        
                     </>
                 ),
                 accessorKey: "Shareweb_x0020_ID",
@@ -1493,8 +1493,8 @@ export default function ProjectOverview(props: any) {
                     smartmeta = await web.lists
                         .getById(config.listId)
                         .items
-                        .select("Id,Title,Priority_x0020_Rank,EstimatedTime,Project/Priority_x0020_Rank,Project/Id,Project/Title,Events/Id,EventsId,workingThisWeek,EstimatedTime,SharewebTaskLevel1No,SharewebTaskLevel2No,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Component/Id,Component/Title,Services/Id,Services/Title,PercentComplete,ComponentId,Categories,ServicesId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
-                        .expand('AssignedTo,Events,Project,Author,Editor,Component,Services,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory')
+                        .select("Id,Title,Priority_x0020_Rank,EstimatedTime,Project/Priority_x0020_Rank,Project/Id,Project/Title,workingThisWeek,EstimatedTime,SharewebTaskLevel1No,SharewebTaskLevel2No,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Component/Id,Component/Title,Services/Id,Services/Title,PercentComplete,ComponentId,Categories,ServicesId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                        .expand('AssignedTo,Project,Author,Editor,Component,Services,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory')
                         .filter("IsTodaysTask eq 1")
                         .top(4999)
                         .get();
@@ -1702,9 +1702,10 @@ export default function ProjectOverview(props: any) {
                                         </dt>
 
                                     </dl>
-                                    <div className="text-end pull-right">
+                                    <div className="text-end">
                                         {currentUserData?.Title == "Deepak Trivedi" || currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" ?
-                                            <><a className="hreflink" onClick={() => { sendAllWorkingTodayTasks() }}>Share Working Todays's Task</a></>
+                                            <>
+                                            <a className="hreflink" onClick={() => { sendAllWorkingTodayTasks() }}>Share Working Todays's Task</a></>
                                             : ''}
                                     </div>
                                 </div>

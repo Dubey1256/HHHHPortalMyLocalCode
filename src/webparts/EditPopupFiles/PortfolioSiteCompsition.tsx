@@ -1027,7 +1027,7 @@ const SiteCompositionComponent = (Props: any) => {
     const onRenderCustomClientCategoryHeader = () => {
         return (
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"} >
-                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                <div className="subheading">
                     <span>
                         Select Client Category
                     </span>
@@ -1247,17 +1247,19 @@ const SiteCompositionComponent = (Props: any) => {
     return (
         <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
             <div className="align-items-center col-sm-12 d-flex ps-3">
+                 <label className="SpfxCheckRadio me-2">
                 <input
                     type="radio"
                     id="Manual"
                     name="SiteCompositions"
                     defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0].Manual : false}
                     title="add manual Time"
-                    className="mx-1"
+                    className="radio"
                     value={SiteCompositionSettings ? SiteCompositionSettings[0].Manual : false}
                     onChange={() => ChangeSiteCompositionSettings("Manual")}
                 />
-                <label>Manual</label>
+               Manual</label>
+               <label className="SpfxCheckRadio">
                 <input
                     type="radio"
                     id="Proportional"
@@ -1266,9 +1268,9 @@ const SiteCompositionComponent = (Props: any) => {
                     name="SiteCompositions"
                     value={SiteCompositionSettings ? SiteCompositionSettings[0].Proportional : false}
                     title="add Proportional Time"
-                    className="mx-1"
+                    className="radio"
                 />
-                <label>Proportional</label>
+                Proportional</label>
                 <span className="mx-1 ms-2 siteColor hreflink" onClick={() => alert("We are working on it, This feature will be live soon ...")} title="Click here to calculate allocation and start dates.">
                     Calculated
                 </span>
@@ -1687,7 +1689,7 @@ const SiteCompositionComponent = (Props: any) => {
                         </tbody>
                         : null}
                 </table>
-                <footer className="bg-secondary d-flex justify-content-end p-1 shadow-lg">
+                <footer className="bg-e9 d-flex justify-content-end p-1 shadow-lg">
                     <div className="bg-body col-sm-2 p-1">
                         <div className="">{isPortfolioComposition == true || ProportionalStatus == false ? `${TotalPercent} %` : "100%"}</div>
                     </div>

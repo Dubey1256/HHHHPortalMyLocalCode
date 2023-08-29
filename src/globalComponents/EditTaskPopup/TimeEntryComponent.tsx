@@ -115,7 +115,7 @@ function TimeEntryPopup(item: any) {
     const [year, setYear] = React.useState(1)
     const [years, setYears] = React.useState(1)
     const [TimeInHours, setTimeInHours] = React.useState(0)
-    const [TimeInMinutes, setTimeInMinutes] = React.useState(0)
+    const [TimeInMinutes, setTimeInMinutes] = React.useState<any>(0)
     const [categoryData, setCategoryData] = React.useState([])
     var smartTermName = "Task" + item.props.siteType;
 
@@ -623,6 +623,10 @@ function TimeEntryPopup(item: any) {
         if (items === '15') {
             changeTime = Number(changeTime)
             changeTime = changeTime - 15
+
+            if(changeTime < 0){
+                changeTime = 0;
+            }
             setTimeInMinutes(changeTime)
             if (changeTime != undefined) {
                 var TimeInHour: any = changeTime / 60;
@@ -634,6 +638,10 @@ function TimeEntryPopup(item: any) {
         if (items === '60') {
             changeTime = Number(changeTime)
             changeTime = changeTime - 60
+
+            if(changeTime < 0){
+                changeTime = 0;
+            }
             if (changeTime != undefined) {
                 var TimeInHour: any = changeTime / 60;
 
@@ -1741,6 +1749,8 @@ function TimeEntryPopup(item: any) {
 
         var AddedData: any = []
 
+       
+
         if (checkCategories == undefined && checkCategories == undefined) {
             alert("please select category or Title");
             return false;
@@ -1765,7 +1775,7 @@ function TimeEntryPopup(item: any) {
 
             }
         }
-
+    
 
 
 
@@ -2994,7 +3004,7 @@ function TimeEntryPopup(item: any) {
                                             <label></label>
                                             <input type="text"
                                                
-                                                value={TimeInMinutes}
+                                                value={TimeInMinutes >0 ? TimeInMinutes : 0}
                                                 onChange={(e) => changeTimeFunction(e, 'Add')} />
 
                                         </div>
@@ -3096,7 +3106,7 @@ function TimeEntryPopup(item: any) {
 
                 </div>
                 <div className={PortfolioType == "Service" ? "modal-footer mt-2 serviepannelgreena" : "modal-footer mt-2"}>
-                    <button type="button" className="btn btn-primary" disabled={TimeInMinutes < 0 ? true : false} onClick={saveTimeSpent}>
+                    <button type="button" className="btn btn-primary" disabled={TimeInMinutes <= 0 ? true : false} onClick={saveTimeSpent}>
                         Submit
                     </button>
 
@@ -3323,7 +3333,7 @@ function TimeEntryPopup(item: any) {
                                                     form
                                                 </a>
                                                 <button type="button" className="btn btn-primary ms-2"
-                                                   disabled={TimeInMinutes < 0 ? true : false} onClick={(e) => UpdateAdditionaltime(child)}>
+                                                    onClick={(e) => UpdateAdditionaltime(child)}>
                                                     Save
                                                 </button>
                                             </div>
@@ -3568,7 +3578,7 @@ function TimeEntryPopup(item: any) {
                                                                 Open out-of-the-box
                                                                 form
                                                             </a>
-                                                            <button type="button" className="btn btn-primary ms-2" disabled={TimeInMinutes < 0 ? true : false}
+                                                            <button type="button" className="btn btn-primary ms-2" 
                                                                 onClick={() => SaveCopytime(child)}>
                                                                 Save
                                                             </button>
@@ -3713,7 +3723,7 @@ function TimeEntryPopup(item: any) {
                                     <input type="text"
                                         autoComplete="off"
                                         className="form-control"
-                                        value={TimeInMinutes} onChange={(e) => changeTimeFunction(e, 'Add')} />
+                                        value={TimeInMinutes >0 ? TimeInMinutes : 0} onChange={(e) => changeTimeFunction(e, 'Add')} />
 
                                 </div>
                                 <div className="col-sm-3 ps-0">
@@ -3794,7 +3804,7 @@ function TimeEntryPopup(item: any) {
             </div> */}
                                 <div className="col-sm-12 text-end mt-2">
 
-                                    <button disabled={TimeInMinutes < 0 ? true : false} type="button" className="btn btn-primary ms-2"
+                                    <button disabled={TimeInMinutes <= 0 ? true : false} type="button" className="btn btn-primary ms-2"
                                         onClick={AddTaskTime}>
                                         Save
                                     </button>

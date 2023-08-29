@@ -14,6 +14,7 @@ import { Web } from "sp-pnp-js";
 import ComponentPortPolioPopup from "./ComponentPortfolioSelection";
 import CommentCard from "../../globalComponents/Comments/CommentCard";
 import { IoMdArrowDropdown, IoMdArrowDropright } from "react-icons/io";
+import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { map } from "lodash";
 import "react-datepicker/dist/react-datepicker.css";
@@ -2635,7 +2636,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
 
                           </div>
                         </div>
-                        <div className="col-sm-4 ">
+                        <div className="col-sm-4 ps-0">
                           <div className="input-group">
                             <label className="form-label  full-width">
                               Due Date
@@ -2648,7 +2649,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                             />
                           </div>
                         </div>
-                        <div className="col-sm-4 pe-0">
+                        <div className="col-sm-4 px-0">
                           <div className="input-group">
                             <label className="form-label  full-width">
                               {" "}
@@ -2706,7 +2707,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                           </div>
                         </div>
 
-                        <div className="col-sm-4">
+                        <div className="col-sm-4 ps-0">
                           <div className="input-group">
                             <label className="form-label  full-width">
                               Client Activity{" "}
@@ -2723,7 +2724,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                           </div>
                         </div>
 
-                        <div className="col-sm-4 pe-0">
+                        <div className="col-sm-4 px-0">
                           <div className="input-group">
                             <label className="form-label  full-width">
                               Package
@@ -2755,9 +2756,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                             />
                           </div>
 
-                          <div className="form-check">
+                          <div className="SpfxCheckRadio">
                             <input
-                              className="form-check-input"
+                              className="radio"
                               name="NotStarted"
                               type="radio"
                               value="Not Started"
@@ -2774,9 +2775,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                               Not Started{" "}
                             </label>
                           </div>
-                          <div className="form-check">
+                          <div className="SpfxCheckRadio">
                             <input
-                              className="form-check-input"
+                              className="radio"
                               name="NotStarted"
                               type="radio"
                               value="In Preparation"
@@ -2794,9 +2795,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                               In Preparation
                             </label>
                           </div>
-                          <div className="form-check">
+                          <div className="SpfxCheckRadio">
                             <input
-                              className="form-check-input"
+                              className="radio"
                               name="NotStarted"
                               type="radio"
                               value="In Development"
@@ -2814,9 +2815,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                               In Development{" "}
                             </label>
                           </div>
-                          <div className="form-check">
+                          <div className="SpfxCheckRadio">
                             <input
-                              className="form-check-input"
+                              className="radio"
                               name="NotStarted"
                               type="radio"
                               value="Active"
@@ -2827,9 +2828,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                             ></input>
                             <label className="form-check-label">Active</label>
                           </div>
-                          <div className="form-check">
+                          <div className="SpfxCheckRadio">
                             <input
-                              className="form-check-input"
+                              className="radio"
                               name="NotStarted"
                               type="radio"
                               value="Archived"
@@ -2860,9 +2861,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                             />
                           </div>
 
-                          <div className="form-check">
+                          <div className="SpfxCheckRadio ">
                             <input
-                              className="form-check-input"
+                              className="radio"
                               name="radioTime"
                               onChange={(e) => setTime(EditData, "05")}
                               checked={EditData?.Mileage === "05" ? true : false}
@@ -2872,9 +2873,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                               Very Quick
                             </label>
                           </div>
-                          <div className="form-check">
+                          <div className="SpfxCheckRadio">
                             <input
-                              className="form-check-input"
+                              className="radio"
                               name="radioTime"
                               onChange={(e) => setTime(EditData, "15")}
                               checked={EditData?.Mileage === "15" ? true : false}
@@ -2883,9 +2884,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
 
                             <label className="form-check-label">Quick </label>
                           </div>
-                          <div className="form-check">
+                          <div className="SpfxCheckRadio">
                             <input
-                              className="form-check-input"
+                              className="radio"
                               name="radioTime"
                               onChange={(e) => setTime(EditData, "60")}
                               checked={EditData?.Mileage === "60" ? true : false}
@@ -2893,9 +2894,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                             ></input>
                             <label className="form-check-label">Medium</label>
                           </div>
-                          <div className="form-check">
+                          <div className="SpfxCheckRadio">
                             <input
-                              className="form-check-input"
+                              className="radio"
                               name="radioTime"
                               onChange={(e) => setTime(EditData, "240")}
                               checked={
@@ -2923,9 +2924,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                           />
                         </div>
 
-                        <div className="form-check">
+                        <div className="SpfxCheckRadio">
                           <input
-                            className="form-check-input"
+                            className="radio"
                             name="radioPriority"
                             type="radio"
                             value="(1) High"
@@ -2936,9 +2937,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                           ></input>
                           <label> High</label>
                         </div>
-                        <div className="form-check">
+                        <div className="SpfxCheckRadio">
                           <input
-                            className="form-check-input"
+                            className="radio"
                             name="radioPriority"
                             type="radio"
                             value="(2) Normal"
@@ -2949,9 +2950,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                           ></input>
                           <label> Normal</label>
                         </div>
-                        <div className="form-check">
+                        <div className="SpfxCheckRadio">
                           <input
-                            className="form-check-input"
+                            className="radio"
                             name="radioPriority"
                             type="radio"
                             value="(3) Low"
@@ -3029,23 +3030,15 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
 
                                 <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e)} />
 
-                                <span className="input-group-text">
-
-
-
-
+                                <span onClick={() => EditComponentPicker(item)} className="input-group-text" title="Status Popup"><span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span></span>
+                                {/* <span className="input-group-text">
                                   <a className="hreflink" title="Edit Categories">
-
-
-
-
-                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png"
-
+                                      <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png"
                                       onClick={() => EditComponentPicker(item)} />
 
                                   </a>
 
-                                </span>
+                                </span> */}
 
                               </div>
 
@@ -3234,12 +3227,13 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                         listName={EditData?.siteType}
                         itemID={EditData?.Id}
                         AllListId={RequireData}
+                        Context={RequireData.Context}
                       ></CommentCard>
                     </div>
-                    <div className="col-sm-8">
+                    <div className="col-sm-8 taskurl">
 
                       <div className="input-group mb-2">
-                        <label className="form-label  full-width"></label>
+                        <label className="form-label  full-width">Relevant URL</label>
                         <input
                           type="text"
                           className="form-control me-1"
@@ -3253,7 +3247,8 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                           }
                           placeholder="Url"
                         ></input>
-                        <span> <a target="_blank" data-interception="off" href={EditData.component_x0020_link}> Open  </a></span>
+                        <span className="input-group-text"><a href={EditData.component_x0020_link} target="_blank"  data-interception="off"><span className="svg__iconbox svg__icon--link"></span></a></span>
+                        {/* <span> <a target="_blank" data-interception="off" > Open  </a></span> */}
                       </div>
                     </div>
                   </div>
@@ -3297,9 +3292,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                   >
                                     <span className="sign">
                                       {EditData?.showsAdmin ? (
-                                        <IoMdArrowDropdown />
+                                        <SlArrowDown />
                                       ) : (
-                                        <IoMdArrowDropright />
+                                        <SlArrowRight />
                                       )}
                                     </span>
                                     <span className="fw-medium font-sans-serif text-900">
@@ -3311,7 +3306,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                 <div className="accordion-collapse collapse show">
                                   {EditData?.showsAdmin && (
                                     <div
-                                      className="accordion-body pt-1"
+                                      className="accordion-body py-2 px-2"
                                       id="testDiv1"
                                     >
                                       <textarea
@@ -3347,9 +3342,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                     <span className="fw-medium font-sans-serif text-900">
                                       <span className="sign">
                                         {EditData?.showdes ? (
-                                          <IoMdArrowDropdown />
+                                          <SlArrowDown />
                                         ) : (
-                                          <IoMdArrowDropright />
+                                          <SlArrowRight />
                                         )}
                                       </span>{" "}
                                       Description
@@ -3359,7 +3354,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                 <div className="accordion-collapse collapse show">
                                   {EditData?.showdes && (
                                     <div
-                                      className="accordion-body pt-1"
+                                      className="accordion-body py-2 px-2"
                                       id="testDiv1"
                                     >
                                       <span className="form-check text-end">
@@ -3406,9 +3401,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                     <span className="fw-medium font-sans-serif text-900">
                                       <span className="sign">
                                         {EditData?.show ? (
-                                          <IoMdArrowDropdown />
+                                          <SlArrowDown />
                                         ) : (
-                                          <IoMdArrowDropright />
+                                          <SlArrowRight />
                                         )}
                                       </span>{" "}
                                       Short Description
@@ -3418,7 +3413,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                 <div className="accordion-collapse collapse show">
                                   {EditData?.show && (
                                     <div
-                                      className="accordion-body pt-1"
+                                      className="accordion-body py-2 px-2"
                                       id="testDiv1"
                                     >
                                       <span className="form-check text-end">
@@ -3466,9 +3461,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                   >
                                     <span className="sign">
                                       {EditData?.showl ? (
-                                        <IoMdArrowDropdown />
+                                        <SlArrowDown />
                                       ) : (
-                                        <IoMdArrowDropright />
+                                        <SlArrowRight />
                                       )}
                                     </span>
                                     <span className="fw-medium font-sans-serif text-900">
@@ -3480,7 +3475,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                 <div className="accordion-collapse collapse show">
                                   {EditData?.showl && (
                                     <div
-                                      className="accordion-body pt-1"
+                                      className="accordion-body py-2 px-2"
                                       id="testDiv1"
                                     >
                                       <span className="form-check text-end">
@@ -3526,9 +3521,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                   >
                                     <span className="sign">
                                       {EditData?.shows ? (
-                                        <IoMdArrowDropdown />
+                                        <SlArrowDown />
                                       ) : (
-                                        <IoMdArrowDropright />
+                                        <SlArrowRight />
                                       )}
                                     </span>
                                     <span className="fw-medium font-sans-serif text-900">
@@ -3540,7 +3535,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                 <div className="accordion-collapse collapse show">
                                   {EditData?.shows && (
                                     <div
-                                      className="accordion-body pt-1"
+                                      className="accordion-body py-2 px-2"
                                       id="testDiv1"
                                     >
                                       <span className="form-check text-end">
@@ -3586,9 +3581,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                   >
                                     <span className="sign">
                                       {EditData?.showj ? (
-                                        <IoMdArrowDropdown />
+                                        <SlArrowDown />
                                       ) : (
-                                        <IoMdArrowDropright />
+                                        <SlArrowRight />
                                       )}
                                     </span>
                                     <span className="fw-medium font-sans-serif text-900">
@@ -3600,7 +3595,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                 <div className="accordion-collapse collapse show">
                                   {EditData?.showj && (
                                     <div
-                                      className="accordion-body pt-1"
+                                      className="accordion-body py-2 px-2"
                                       id="testDiv1"
                                     >
                                       <span className="form-check text-end">
@@ -3646,9 +3641,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                   >
                                     <span className="sign">
                                       {EditData?.showm ? (
-                                        <IoMdArrowDropdown />
+                                        <SlArrowDown />
                                       ) : (
-                                        <IoMdArrowDropright />
+                                        <SlArrowRight />
                                       )}
                                     </span>
                                     <span className="fw-medium font-sans-serif text-900">
@@ -3660,7 +3655,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                 <div className="accordion-collapse collapse show">
                                   {EditData?.showm && (
                                     <div
-                                      className="accordion-body pt-1"
+                                      className="accordion-body py-2 px-2"
                                       id="testDiv1"
                                     >
                                       <span className="form-check text-end">
@@ -3748,9 +3743,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                             >
                               <span className="sign">
                                 {CollapseExpend ? (
-                                  <IoMdArrowDropdown />
+                                  <SlArrowDown />
                                 ) : (
-                                  <IoMdArrowDropright />
+                                  <SlArrowRight />
                                 )}
                               </span>
                               <span className="fw-medium font-sans-serif text-900">

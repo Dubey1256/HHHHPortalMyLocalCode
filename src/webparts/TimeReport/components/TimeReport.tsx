@@ -310,7 +310,7 @@ const TimeReport = (props:any) => {
             console.log(myData);
            
             myData?.forEach((val:any)=>{
-                if(val.Name != null && val.Name != undefined){
+              
                     // var TodayDate:any = new Date()
                     // TodayDate =  Moment(TodayDate).format("DD/MM/YYYY")
                    //var TodayDate =  selectDate.split("/")
@@ -331,7 +331,7 @@ const TimeReport = (props:any) => {
                         leaveUser.push(val)
     
                     }
-                }
+                
                
             })
             console.log(leaveUser)
@@ -676,8 +676,8 @@ const TimeReport = (props:any) => {
                 id: 'Task',
                 header: '',
                 placeholder: "Task",
-
-
+               
+ 
 
             },
             {
@@ -695,6 +695,7 @@ const TimeReport = (props:any) => {
                 header: '',
                 accessorFn: (row) => row?.Components,
                 placeholder: "Components",
+                size: 155,
 
 
             },
@@ -703,6 +704,7 @@ const TimeReport = (props:any) => {
                 header: '',
                 accessorFn: (row) => row?.SubComponents,
                 placeholder: "SubComponents",
+                size: 135,
                 cell: ({ row, getValue }) => (
                     <>
                         <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
@@ -730,12 +732,14 @@ const TimeReport = (props:any) => {
                 header: '',
                 accessorFn: (row) => row?.Features,
                 placeholder: "Features",
+                size: 250,
 
             },
             {
                 header: '',
                 accessorKey: 'Effort',
                 placeholder: "Effort",
+                size: 60,
 
 
             },
@@ -743,6 +747,7 @@ const TimeReport = (props:any) => {
                 header: '',
                 accessorKey: 'siteType',
                 placeholder: "Sites",
+                size: 110,
 
 
             },
@@ -750,30 +755,35 @@ const TimeReport = (props:any) => {
                 header: '',
                 accessorKey: 'PercentComplete',
                 placeholder: "PercentComplete",
+                size: 42,
 
             },
             {
                 header: '',
                 accessorKey: 'Status',
                 placeholder: "Status",
+                size: 120,
 
             },
             {
                 header: '',
                 accessorKey: 'userName',
                 placeholder: "userName",
+                size: 130,
 
             },
             {
                 header: '',
                 accessorKey: 'Department',
                 placeholder: "Designation",
+                size: 120,
 
             },
             {
                 header: '',
                 accessorKey: 'ClientCategory',
                 placeholder: "ClientCategory",
+                size: 160,
 
             },
 
@@ -1010,8 +1020,10 @@ const TimeReport = (props:any) => {
     '</tbody>' +
     '</table>'
 var pageurl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TimeReport.aspx";
-var ReportDate = new Date(MyDate)
- var ReportDatetime =Moment(ReportDate).format('MM/DD/YYYY')
+var c = MyDate.split('-');
+var a1 = c[2] + '-' + c[1] + '-' + c[0];
+var ReportDate = new Date(a1)
+ var ReportDatetime =Moment(ReportDate).format('DD/MM/YYYY')
     var body:any =
                 '<p style="text-align: center;margin-bottom: 1px;">' + 'TimeSheet of  date' + '&nbsp;' + '<strong>' + ReportDatetime + '</strong>' + '</p>' +
                 '<p style="text-align: center;margin: 0 auto;">' + '<a  href=' + pageurl + ' >' + 'Online version of timesheet' + '</a >' + '</p>' +
@@ -1197,7 +1209,7 @@ var ReportDate = new Date(MyDate)
                 data?.length >0?
                 <>
                  <div className='pull-right mail-info' onClick={()=>sendEmail()}><MdEmail/></div>
-               <GlobalCommanTable columns={column} data={data} callBackData={callBackData} showHeader={true} /> </>:
+               <GlobalCommanTable columns={column} data={data} callBackData={callBackData} showHeader={true} expandIcon={true}/> </>:
                 <div className="bg-f5f5 mb-2 mt-2">Oops! Time Entries not available (Might be Weekend or Holiday or No data available In this Selected Date).</div>
              }
             
