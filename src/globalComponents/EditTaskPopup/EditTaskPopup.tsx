@@ -3642,14 +3642,14 @@ const EditTaskPopup = (Items: any) => {
                                 Open Out-Of-The-Box Form
                             </a>}
                             <span >
-                            <button type="button" className="btn btn-default px-3" onClick={setModalIsOpenToFalse}>
-                                    Cancel
-                                </button>
-                                <button className="btn btn-primary ms-1 px-3"
+                                <button className="btn btn-primary mx-1 px-3"
                                     onClick={UpdateTaskInfoFunction}>
                                     Save
                                 </button>
-                               
+                                <button type="button" className="btn btn-default px-3" onClick={setModalIsOpenToFalse}>
+                                    Cancel
+                                </button>
+
                             </span>
                         </div>
                     </div>
@@ -3737,13 +3737,13 @@ const EditTaskPopup = (Items: any) => {
                         <span className="text-light">Create New One</span>
                     </a>
                 </button>
-                <button type="button" className="btn btn-default px-3 mx-1" onClick={closeProjectManagementPopup}>
-                    Cancel
-                </button>
-                <button type="button" className="btn btn-primary px-3" onClick={saveSelectedProject} >
+                <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveSelectedProject} >
                     Save
                 </button>
-               
+                <button type="button" className="btn btn-default px-3" onClick={closeProjectManagementPopup}>
+                    Cancel
+                </button>
+
             </footer>
         )
     }
@@ -6008,8 +6008,8 @@ const EditTaskPopup = (Items: any) => {
                         onChange={(e) => UpdateImageDescription(e)}></textarea></div>
                 </div>
                 <footer className='text-end mt-2 mx-2'>
-                    <button className='btn btn-default mx-1' onClick={closeAddImageDescriptionFunction}>Cancel</button>
-                    <button className="btn btnPrimary " onClick={SaveImageDescription}>Save</button>
+                    <button className="btn btnPrimary mx-1 " onClick={SaveImageDescription}>Save</button>
+                    <button className='btn btn-default' onClick={closeAddImageDescriptionFunction}>Cancel</button>
                 </footer>
             </Modal>
 
@@ -6080,13 +6080,13 @@ const EditTaskPopup = (Items: any) => {
                         <FlorarImageUploadComponent callBack={FlorarImageReplaceComponentCallBack} />
                     </div>
                     <footer className="float-end mt-1">
-                       <button type="button" className="btn btn-default px-3 mx-1" onClick={closeReplaceImagePopup}>
-                            Cancel
-                        </button>
-                        <button type="button" className="btn btn-primary px-3 " onClick={UpdateImage} >
+                        <button type="button" className="btn btn-primary px-3 mx-1" onClick={UpdateImage} >
                             Update
                         </button>
-                      
+                        <button type="button" className="btn btn-default px-3" onClick={closeReplaceImagePopup}>
+                            Cancel
+                        </button>
+
                     </footer>
                 </div>
             </Panel>
@@ -6219,13 +6219,13 @@ const EditTaskPopup = (Items: any) => {
                         </div>
                     </div>
                     <footer className="float-end mt-1">
-                    <button type="button" className="btn btn-default px-3 mx-1" onClick={closeApproverPopup}>
-                            Cancel
-                        </button>
-                        <button type="button" className="btn btn-primary px-3 " onClick={UpdateApproverFunction}>
+                        <button type="button" className="btn btn-primary px-3 mx-1" onClick={UpdateApproverFunction}>
                             Save
                         </button>
-                     
+                        <button type="button" className="btn btn-default px-3" onClick={closeApproverPopup}>
+                            Cancel
+                        </button>
+
                     </footer>
                 </div>
             </Panel>
