@@ -2703,7 +2703,6 @@ function TimeEntryPopup(item: any) {
             {
                 accessorKey: "",
                 placeholder: "",
-                hasCheckbox: true,
                 hasCustomExpanded: true,
                 hasExpanded: true,
                 size: 20,
