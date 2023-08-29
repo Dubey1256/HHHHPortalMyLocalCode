@@ -3,7 +3,6 @@ import * as $ from "jquery";
 import * as Moment from "moment";
 import { Panel, PanelType } from "office-ui-fabric-react";
 import { FaCompressArrowsAlt, } from "react-icons/fa";
-import { SlArrowRight, SlArrowDown } from "react-icons/sl";
 import pnp, { Web } from "sp-pnp-js";
 import { map } from "jquery";
 import EditInstituton from "../../EditPopupFiles/EditComponent";
@@ -409,7 +408,7 @@ function TeamPortlioTable(SelectedProp: any) {
         componentDetails = await web.lists
             .getById(ContextValue.MasterTaskListID)
             .items
-            .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title",
+            .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID","StructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title",
                 "DueDate", "Body", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
                 "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete",
                 "ResponsibleTeam/Id", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id",
@@ -442,7 +441,7 @@ function TeamPortlioTable(SelectedProp: any) {
             if (result?.Item_x0020_Type != undefined) {
                 result.SiteIconTitle = result?.Item_x0020_Type?.charAt(0);
             }
-            result["TaskID"] = result?.PortfolioStructureID;
+            result["TaskID"] = result?.StructureID;
 
             result.DueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
             if (result.DueDate == "Invalid date" || "") {
@@ -778,154 +777,49 @@ function TeamPortlioTable(SelectedProp: any) {
     }
 
     ///react table start function//////
-    /////////////////////Table Column Start///////////////////////////////
     const columns: any = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
                 accessorKey: "",
                 placeholder: "",
-                size: 35,
+                hasCheckbox: true,
+                hasCustomExpanded: true,
+                hasExpanded: true,
+                size: 55,
                 id: 'Id',
-                header: ({ table }: any) => (
-                    <>
-                        <button
-                            className="border-0 bg-Ff mb-3"
-                            {...{
-                                onClick: table.getToggleAllRowsExpandedHandler(),
-                            }}
-                        >
-                            {table.getIsAllRowsExpanded() ? (
-                                <SlArrowDown style={{ color: `${portfolioColor}` }} />) : (<SlArrowRight style={{ color: `${portfolioColor}` }} />)}
-                        </button>{" "}
-                    </>
-                ),
-                cell: ({ row, getValue }) => (
-                    <div className="d-flex">
-                        <>
-                            {row.getCanExpand() ? (
-                                <span
-                                    className="border-0"
-                                    {...{
-                                        onClick: row.getToggleExpandedHandler(),
-                                        style: { cursor: "pointer" },
-                                    }}
-                                >
-                                    {row.getIsExpanded() ? <SlArrowDown style={{ color: `${row?.original?.PortfolioType?.Color}` }} /> : <SlArrowRight style={{ color: `${row?.original?.PortfolioType?.Color}` }} />}
-                                </span>
-                            ) : (
-                                ""
-                            )}{" "}
-                            {getValue()}
-                        </>
-                    </div>
-                ),
             },
-
-
             {
-                header: ({ table }: any) => (
-                    <>
-                        <IndeterminateCheckbox className="mx-1 "
-                            {...{
-                                checked: table.getIsAllRowsSelected(),
-                                indeterminate: table.getIsSomeRowsSelected(),
-                                onChange: table.getToggleAllRowsSelectedHandler(),
-                            }}
-                        />{" "}
-                    </>
-                ),
-                cell: ({ row, getValue, table }) => (
-                    <>
-                        <span className="d-flex">
-                            {row?.original?.Title != "Others" ? (
-                                <IndeterminateCheckbox {...{ checked: row.getIsSelected(), indeterminate: row.getIsSomeSelected(), onChange: row.getToggleSelectedHandler(), }} />
-                            ) : (
-                                ""
-                            )}{" "}
-                            {row?.original?.SiteIcon != undefined ? (
-                                <a className="hreflink" title="Show All Child" data-toggle="modal" >
-                                    <img className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 workmember ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 workmember ml20 me-1" :
-                                        row?.original?.TaskType?.Title == "Workstream" ? "ml-48 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Task" || row?.original?.Item_x0020_Type === "Task" && row?.original?.TaskType == undefined ? "ml-60 workmember ml20 me-1" : "workmember ml20 me-1"
-                                    }
-                                        src={row?.original?.SiteIcon}>
-                                    </img>
-                                </a>
-                            ) : (
-                                <>
-                                    {row?.original?.Title != "Others" ? (
-                                        <div style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 Dyicons" :
-                                            row?.original?.TaskType?.Title == "Workstream" ? "ml-48 Dyicons" : row?.original?.TaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons"
-                                        }>
-                                            {row?.original?.SiteIconTitle}
-                                        </div>
-                                    ) : (
-                                        ""
-                                    )}
-                                </>
-                            )}
-                            {/* ////////// Plush Icons////// */}
-                            {/* <span>
-                                {((row.getCanExpand() &&
-                                    row.subRows?.length !== row.original.subRows?.length) ||
-                                    !row.getCanExpand() ||
-                                    forceExpanded.includes(row.id)) &&
-                                    row.original.subRows?.length ? (
-                                    <span className="mx-1"
-                                        {...{
-                                            onClick: () => {
-                                                if (!forceExpanded.includes(row.id)) {
-                                                    const coreIds = table.getCoreRowModel().rowsById;
-                                                    row.subRows = coreIds[row.id].subRows;
-                                                    const rowModel = table.getRowModel();
-                                                    const updateRowModelRecursively = (item: any) => {
-                                                        item.subRows?.forEach((elem: any) => {
-                                                            if (!rowModel.rowsById[elem.id]) {
-                                                                rowModel.flatRows.push(elem);
-                                                                rowModel.rowsById[elem.id] = elem;
-                                                            }
-                                                            elem?.subRows?.length &&
-                                                                updateRowModelRecursively(elem);
-                                                        });
-                                                    }
-                                                    updateRowModelRecursively(row);
-                                                    const temp = Object.keys(coreIds).filter(
-                                                        (item: any) =>
-                                                            item === row.id ||
-                                                            item.startsWith(row.id + ".")
-                                                    );
-                                                    forceExpanded = [...forceExpanded, ...temp];
-                                                    setExpanded((prev: any) => ({
-                                                        ...prev,
-                                                        [row.id]: true,
-                                                    }));
-                                                } else {
-                                                    row.getToggleExpandedHandler()();
-                                                }
-                                            },
-                                            style: { cursor: "pointer" },
-                                        }}
-                                    >
-                                        {!row.getCanExpand() ||
-                                            (row.getCanExpand() &&
-                                                row.subRows?.length !== row.original.subRows?.length)
-                                            ? <FaPlus style={{ fontSize: '10px' }} className={IsUpdated != "Service Portfolio" && IsUpdated != "Component Portfolio" ? row?.original?.dynamicColor : ''} />
-                                            : row.getIsExpanded()
-                                                ? <FaMinus className={IsUpdated != "Service Portfolio" && IsUpdated != "Component Portfolio" ? row?.original?.dynamicColor : ''} />
-                                                : <FaPlus style={{ fontSize: '10px' }} className={IsUpdated != "Service Portfolio" && IsUpdated != "Component Portfolio" ? row?.original?.dynamicColor : ''} />}
-                                    </span>
+                cell: ({ row, getValue }) => (
+                    <div className="alignCenter">
+                        {row?.original?.SiteIcon != undefined ? (
+                            <div className="alignCenter" title="Show All Child">
+                                <img title={row?.original?.TaskType?.Title} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 workmember ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 workmember ml20 me-1" :
+                                    row?.original?.TaskType?.Title == "Workstream" ? "ml-48 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Task" || row?.original?.Item_x0020_Type === "Task" && row?.original?.TaskType == undefined ? "ml-60 workmember ml20 me-1" : "workmember ml20 me-1"
+                                }
+                                    src={row?.original?.SiteIcon}>
+                                </img>
+                            </div>
+                        ) : (
+                            <>
+                                {row?.original?.Title != "Others" ? (
+                                    <div title={row?.original?.Item_x0020_Type} style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 Dyicons" :
+                                        row?.original?.TaskType?.Title == "Workstream" ? "ml-48 Dyicons" : row?.original?.TaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons"
+                                    }>
+                                        {row?.original?.SiteIconTitle}
+                                    </div>
                                 ) : (
                                     ""
-                                )}{" "}
-                            </span> */}
-                            {getValue()}
-                        </span>
-                    </>
+                                )}
+                            </>
+                        )}
+                        {getValue()}
+                    </div>
                 ),
                 accessorKey: "",
                 id: "row?.original.Id",
                 canSort: false,
                 placeholder: "",
-                size: 145,
+                size: 95,
             },
             {
                 accessorFn: (row) => row?.TaskID,
@@ -937,40 +831,11 @@ function TeamPortlioTable(SelectedProp: any) {
                 id: "TaskID",
                 placeholder: "ID",
                 header: "",
-                size: 130,
+                resetColumnFilters: false,
+                size: 195,
             },
             {
                 accessorFn: (row) => row?.Title,
-                // cell: ({ row, column, getValue }) => (
-                //     <div className="column-fixedTitleWidth">
-                //         <div className="text-content">
-                //             {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== "Others" && (
-                //                 <a data-interception="off" target="_blank" style={{ color: `${row?.original?.PortfolioType?.Color}` }} href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.ID} >
-                //                     <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : globalFilterHighlited} />
-                //                 </a>
-                //             )}
-                //             {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== "Others" && (
-                //                 <a data-interception="off" target="_blank" style={{ color: `${row?.original?.PortfolioType?.Color}` }}
-                //                     href={ContextValue.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + row?.original?.ID + "&Site=" + row?.original?.siteType} >
-                //                     <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : globalFilterHighlited} />
-                //                 </a>
-                //             )}
-                //             {row?.original.Title === "Others" ? (
-                //                 <span style={{ color: `${row?.original?.PortfolioType?.Color}` }}>{row?.original.Title}</span>
-                //             ) : (
-                //                 ""
-                //             )}
-                //             {row?.original?.Categories == 'Draft' ?
-                //                 <FaCompressArrowsAlt style={{ height: '11px', width: '20px', color: `${row?.original?.PortfolioType?.Color}` }} /> : ''}
-                //             {row?.original?.subRows?.length > 0 ?
-                //                 <span className='ms-1 mt-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
-                //             {row?.original?.descriptionsSearch != null && row?.original?.descriptionsSearch != '' && (
-                //                 <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />
-                //             )}
-                //         </div>
-                //     </div>
-                // ),
-
                 cell: ({ row, column, getValue }) => (
                     <div className="alignCenter">
                         <span className="column-description2">
@@ -1019,6 +884,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 ),
                 id: 'ProjectTitle',
                 placeholder: "Project",
+                resetColumnFilters: false,
                 header: "",
                 size: 70,
             },
@@ -1092,17 +958,14 @@ function TeamPortlioTable(SelectedProp: any) {
                 cell: ({ row, getValue }) => (
                     <>
                         {row?.original?.siteType != "Master Tasks" && (
-                            <a
-                                onClick={(e) => EditDataTimeEntryData(e, row.original)}
+                            <a className="alignCenter" onClick={(e) => EditDataTimeEntryData(e, row.original)}
                                 data-bs-toggle="tooltip"
                                 data-bs-placement="auto"
-                                title="Click To Edit Timesheet"
-                            >
+                                title="Click To Edit Timesheet">
                                 <span
                                     className="svg__iconbox svg__icon--clock dark"
                                     data-bs-toggle="tooltip"
                                     data-bs-placement="bottom"
-                                    title="Click To Edit Timesheet"
                                 ></span>
                             </a>
                         )}
@@ -1119,7 +982,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: ({ table }: any) => (
                     <>{
                         topCompoIcon ?
-                            <span style={{ backgroundColor: `${portfolioColor}` }} className="Dyicons mb-1 mx-1 p-1" onClick={() => trueTopIcon(true)}>
+                            <span style={{ backgroundColor: `${portfolioColor}` }} title="Restructure" className="Dyicons mb-1 mx-1 p-1" onClick={() => trueTopIcon(true)}>
                                 <span className="svg__iconbox svg__icon--re-structure"></span>
                             </span>
                             : ''
@@ -1129,7 +992,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 cell: ({ row, getValue }) => (
                     <>
                         {row?.original?.isRestructureActive && (
-                            <span className="Dyicons p-1" style={{ backgroundColor:`${row?.original?.PortfolioType?.Color}` }} onClick={() => callChildFunction(row?.original)}>
+                            <span className="Dyicons p-1" title="Restructure" style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} onClick={() => callChildFunction(row?.original)}>
                                 <span className="svg__iconbox svg__icon--re-structure"> </span>
                                 {/* <img
                                     className="workmember"
@@ -1156,11 +1019,10 @@ function TeamPortlioTable(SelectedProp: any) {
                                     href="#"
                                     data-bs-toggle="tooltip"
                                     data-bs-placement="auto"
-                                    title="Edit"
+                                    title={'Edit ' + `${row.original.Title}`}
                                 >
                                     {" "}
                                     <span
-                                        title="Edit"
                                         className="svg__iconbox svg__icon--edit"
                                         onClick={(e) => EditComponentPopup(row?.original)}
                                     ></span>
@@ -1172,11 +1034,10 @@ function TeamPortlioTable(SelectedProp: any) {
                                     href="#"
                                     data-bs-toggle="tooltip"
                                     data-bs-placement="auto"
-                                    title="Edit"
+                                    title={'Edit ' + `${row.original.Title}`}
                                 >
                                     {" "}
                                     <span
-                                        title="Edit"
                                         className="svg__iconbox svg__icon--edit"
                                         onClick={(e) => EditItemTaskPopup(row?.original)}
                                     ></span>
@@ -1307,7 +1168,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 obj.data.TitleNew = obj.data.Title;
                 obj.data.siteType = "Master Tasks";
                 obj.data.SiteIconTitle = obj?.data?.Item_x0020_Type?.charAt(0);
-                obj.data["TaskID"] = obj.data.PortfolioStructureID;
+                obj.data["TaskID"] = obj.data.StructureID;
                 if (
                     item.props != undefined &&
                     item.props.SelectedItem != undefined &&
@@ -1378,7 +1239,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 })
             }
             item.data.SiteIconTitle = item?.data?.Item_x0020_Type?.charAt(0);
-            item.data["TaskID"] = item.data.PortfolioStructureID;
+            item.data["TaskID"] = item.data.StructureID;
             copyDtaArray.unshift(item.data);
             renderData = [];
             renderData = renderData.concat(copyDtaArray)
