@@ -700,8 +700,9 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
             dialogContentProps={deleteDialogContentProps}
         >
             <DialogFooter>
+            <DefaultButton text="Cancel" onClick={this.onCancelDeleteDialog} />
                 <PrimaryButton text="OK" onClick={this.onConfirmDeleteDialog} />
-                <DefaultButton text="Cancel" onClick={this.onCancelDeleteDialog} />
+               
             </DialogFooter>
         </Dialog>)
 

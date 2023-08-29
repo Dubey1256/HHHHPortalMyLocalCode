@@ -314,12 +314,13 @@ const BackgroundCommentComponent = (Props: any) => {
                         </div>
                         <footer className="d-flex justify-content-between ms-3 mx-2 float-end">
                             <div>
-                                <button className="btn btnPrimary" onClick={ChangeCommentFunction}>
-                                    Save
-                                </button>
-                                <button className='btn btn-default mx-1' onClick={editPostCloseFunction}>
+                            <button className='btn btn-default' onClick={editPostCloseFunction}>
                                     Cancel
                                 </button>
+                                <button className="btn btnPrimary mx-1" onClick={ChangeCommentFunction}>
+                                    Save
+                                </button>
+                               
                             </div>
                         </footer>
                     </div>

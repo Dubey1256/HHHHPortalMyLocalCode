@@ -5386,6 +5386,13 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                 </span> : " "
             }
             <footer className="mt-2 text-end">
+            <button
+                type="button"
+                className="btn btn-default btn-default ms-1"
+                onClick={topRestructureClose}
+              >
+                Cancel
+              </button>
               <button
                 type="button"
                 className="btn btn-primary "
@@ -5393,13 +5400,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
               >
                 Save
               </button>
-              <button
-                type="button"
-                className="btn btn-default btn-default ms-1"
-                onClick={topRestructureClose}
-              >
-                Cancel
-              </button>
+         
             </footer>
           </div>
         </Panel>

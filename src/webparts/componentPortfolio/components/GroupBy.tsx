@@ -4892,7 +4892,7 @@ function ComponentTable(SelectedProp: any) {
                     {checkedList != undefined && checkedList.length > 0 && checkedList[0]?.Item_x0020_Type === 'Task' ?
                         <button type="button" className="btn btn-primary " onClick={(e) => UpdateTaskRestructure()}>Save</button>
                         : <button type="button" className="btn btn-primary " onClick={(e) => UpdateRestructure()}>Save</button>}
-                    <button type="button" className="btn btn-default btn-default ms-1" onClick={RestruringCloseCall}>Cancel</button>
+                        <button type="button" className="btn btn-default btn-default ms-1" onClick={RestruringCloseCall}>Cancel</button>
 
 
                 </footer>

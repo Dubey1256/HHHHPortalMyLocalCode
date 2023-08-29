@@ -207,6 +207,7 @@ const LinkedServices = ({ props, Dynamic, Call }: any) => {
     const CustomFooter = () => {
         return (
             <div className="me-3 p-2 serviepannelgreena text-end">
+            <button type="button" className="btn btn-default" onClick={setModalIsOpenToFalse}>Cancel</button>
             <button type="button" className="btn btn-primary">
                 <a target="_blank" data-interception="off"
                     href={`${Dynamic.siteUrl}/SitePages/Service-Portfolio.aspx`}>
@@ -214,7 +215,7 @@ const LinkedServices = ({ props, Dynamic, Call }: any) => {
                 </a>
             </button>
             <button type="button" className="btn btn-primary mx-1" onClick={setModalIsOpenToOK}>OK</button>
-            <button type="button" className="btn btn-default" onClick={setModalIsOpenToFalse}>Cancel</button>
+          
         </div>
         )
     }
