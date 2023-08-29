@@ -1814,7 +1814,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     }
     return (
       <div className={this.state.Result["Services"] != undefined && this.state.Result["Services"].length > 0 ? 'app component serviepannelgreena' : "app component"}>
-        {this.state.maincollection != null && this.state.maincollection.length > 0 &&
+       <section className='ContentSection'> {this.state.maincollection != null && this.state.maincollection.length > 0 &&
           <div className='row'>
             <div className="col-sm-12 p-0 ">
               <ul className="spfxbreadcrumb m-0 p-0">
@@ -1871,7 +1871,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                       <li>
                         <a  >
                         <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                          <span>{truncatedTitle?.length>0?truncatedTitle:this.state.Result['Title']}</span>
+                          <span title={this.state.Result['Title']}>{truncatedTitle?.length>0?truncatedTitle:this.state.Result['Title']}</span>
                                 <span className="f-13 popover__content" >
                                { this.state.Result['Title']}
                                 </span>
@@ -1893,7 +1893,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
               {this.state.Result["SiteIcon"] != "" && <img className="imgWid29 pe-1 " title={this?.state?.Result?.siteType} src={this.state.Result["SiteIcon"]} />}
               {this.state.Result["SiteIcon"] === "" && <img className="imgWid29 pe-1 " src="" />}
                <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                             <span >{truncatedTitle?.length>0?truncatedTitle:this.state.Result['Title']}</span>
+                             <span title={this.state.Result['Title']}>{truncatedTitle?.length>0?truncatedTitle:this.state.Result['Title']}</span>
                                 <span className="f-13 popover__content" >
                                { this.state.Result['Title']}
                                 </span>
@@ -2682,8 +2682,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
             </div>
 
           </div>
-        </section>
-        <section>
+        </section></section>
+        <section className='TableContentSection'>
           <div className="row">
             {this.state.Result != undefined && this.state.Result.Id != undefined && this.state.Result.SharewebTaskType != "" && this.state.Result.SharewebTaskType != undefined && this.state.Result.SharewebTaskType != 'Task' ? <TasksTable props={this.state.Result} AllListId={AllListId} Context={this.props?.Context} /> : ''}
           </div>

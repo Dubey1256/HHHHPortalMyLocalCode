@@ -709,9 +709,9 @@ const AncTool = (props: any) => {
                             Create Folder
                         </a>
                     </label> : ''}
-                    <button className='btn btn-default ' onClick={() => cancelPathFolder()}>Cancel</button>
+               
+                <button className='btn btn-default ' onClick={() => cancelPathFolder()}>Cancel</button>
                 <button className="btn btnPrimary ms-1" disabled={selectPathFromPopup?.length > 0 ? false : true} onClick={() => { selectFolderToUpload() }}>Select</button>
-        
             </footer>
         </>
         );
@@ -1033,7 +1033,6 @@ const AncTool = (props: any) => {
                                                 <input id="searchinputCED" type="search" onChange={(e) => { searchExistingFile(e.target.value) }} placeholder="Search..." className="form-control" />
                                                 <div className="Alltable mt-2">
                                                     <div>
-                                                        {/* <GlobalCommanTable headerOptions={headerOptions} paginatedTable={true} columns={columns} data={ExistingFiles} callBackData={callBackData} showHeader={true} /> */}
                                                         {ExistingFiles?.length > 0 ?
                                                             <Table hover responsive className='mb-0'>
                                                                 <thead className='fixed-Header top-0'>
@@ -1244,8 +1243,9 @@ const AncTool = (props: any) => {
                         </div>
                     </div>
                     <footer className='text-end p-2'>
+                       
+                        <button className='btn btn-default me-1' onClick={() => cancelNewCreateFile()}>Cancel</button>
                         <button className="btn btnPrimary" disabled={renamedFileName?.length > 0 ? false : true} onClick={() => { CreateNewAndTag() }}>Create</button>
-                        <button className='btn btn-default ms-1' onClick={() => cancelNewCreateFile()}>Cancel</button>
                     </footer>
                 </div>
             </Modal>

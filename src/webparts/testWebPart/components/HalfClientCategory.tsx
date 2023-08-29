@@ -137,7 +137,7 @@ const HalfClientCategory = (props: any) => {
             siteConfig = [];
         }
     };
-    
+
     function siteCompositionType(jsonStr: any) {
         var data = JSON.parse(jsonStr);
         try {
@@ -403,56 +403,25 @@ const HalfClientCategory = (props: any) => {
     const CallBack = (item: any) => {
 
     }
-    function IndeterminateCheckbox({
-        indeterminate,
-        className = "",
-        ...rest
-      }: { indeterminate?: boolean } & React.HTMLProps<HTMLInputElement>) {
-        const ref = React.useRef<HTMLInputElement>(null!);
-        React.useEffect(() => {
-          if (typeof indeterminate === "boolean") {
-            ref.current.indeterminate = !rest.checked && indeterminate;
-          }
-        }, [ref, indeterminate]);
-        return (
-          <input
-            type="checkbox"
-            ref={ref}
-            className={className + "  cursor-pointer form-check-input rounded-0"}
-            {...rest}
-          />
-        );
-      }
+
     const columns = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
+            {
+                accessorKey: "",
+                placeholder: "",
+                hasCheckbox: true,
+                size: 20,
+                id: 'Id',
+            },
             {
                 accessorKey: "Shareweb_x0020_ID",
                 placeholder: "Id",
                 resetColumnFilters: false,
                 resetSorting: false,
-                size: 80,
-                header: ({ table }: any) => (
-                    <>
-                        <IndeterminateCheckbox className=" "
-                            {...{
-                                checked: table.getIsAllRowsSelected(),
-                                indeterminate: table.getIsSomeRowsSelected(),
-                                onChange: table.getToggleAllRowsSelectedHandler(),
-                            }}
-                        />{" "}
-
-                    </>
-                ),
+                size: 70,
                 cell: ({ row, getValue }) => (
                     <div>
                         <>
-                            <IndeterminateCheckbox
-                                {...{
-                                    checked: row.getIsSelected(),
-                                    indeterminate: row.getIsSomeSelected(),
-                                    onChange: row.getToggleSelectedHandler(),
-                                }}
-                            />{" "}
                             {row?.original.Shareweb_x0020_ID}
                         </>
                     </div>
@@ -573,34 +542,21 @@ const HalfClientCategory = (props: any) => {
     const columnsMaster = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
+                accessorKey: "",
+                placeholder: "",
+                hasCheckbox: true,
+                size: 20,
+                id: 'Id',
+            },
+            {
                 accessorKey: "Shareweb_x0020_ID",
                 placeholder: "Id",
                 resetColumnFilters: false,
                 resetSorting: false,
-                size: 80,
-                header: ({ table }: any) => (
-                    <>
-                        <IndeterminateCheckbox className=" "
-                            {...{
-                                checked: table.getIsAllRowsSelected(),
-                                indeterminate: table.getIsSomeRowsSelected(),
-                                onChange: table.getToggleAllRowsSelectedHandler(),
-                            }}
-                        />{" "}
-
-                    </>
-                ),
+                size: 70,
                 cell: ({ row, getValue }) => (
                     <div>
                         <>
-                            <IndeterminateCheckbox
-                                {...{
-                                    checked: row.getIsSelected(),
-                                    indeterminate: row.getIsSomeSelected(),
-                                    onChange: row.getToggleSelectedHandler(),
-                                }}
-                            />{" "}
-
                             {row?.original.Shareweb_x0020_ID}
                         </>
                     </div>
