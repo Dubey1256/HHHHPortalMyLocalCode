@@ -318,6 +318,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   }
 
   private async GetResult() {
+    console.log("test")
     await this.getsmartmetadataIcon();
     try {
       isShowTimeEntry = this.props.TimeEntry != "" ? JSON.parse(this.props.TimeEntry) : "";
