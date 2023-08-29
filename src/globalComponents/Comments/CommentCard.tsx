@@ -334,7 +334,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         CommenttoPost: '',
         mentionValue: '',
         mailReply: { isMailReply: false, index: null },
-        postButtonHide: false
+        postButtonHide: false,
+        topCommenterShow:true
       });
     } else {
       alert('Please input some text.')
