@@ -62,8 +62,9 @@ class ModalChangeSmartMetadataParent extends React.Component<IModalChangeSmartMe
         );
         const elemFooter: JSX.Element = (
             <div style={{textAlign:"right"}}>
-                <Button variant="btn primary" onClick={()=>this.props.saveModalChangeParent(this.state.selParentId)} disabled={isNaN(this.state.selParentId)}  >Save</Button>
-                <Button variant="btn btn-default" onClick={this.props.hideModalChangeParent}  >Cancel</Button>
+                   <Button variant="btn btn-default" onClick={this.props.hideModalChangeParent}  >Cancel</Button>
+                <Button variant="btn primary ms-1" onClick={()=>this.props.saveModalChangeParent(this.state.selParentId)} disabled={isNaN(this.state.selParentId)}  >Save</Button>
+             
             </div>
         );
         

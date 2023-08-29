@@ -548,17 +548,17 @@ const MeetingPopupComponent = (Props: any) => {
                             </a>
                             {/* } */}
                             <span>
-                    
-                                <button className="btn btn-primary px-4 mx-2"
-                                    onClick={UpdateMeetingDetailsFunction}
-                                >
-                                    Save
-                                </button>
-                                <button type="button" className="btn btn-default"
+                            <button type="button" className="btn btn-default px-4 mx-2"
                                     onClick={closeMeetingPopupFunction}
                                 >
                                     Cancel
                                 </button>
+                                <button className="btn btn-primary "
+                                    onClick={UpdateMeetingDetailsFunction}
+                                >
+                                    Save
+                                </button>
+                                
                             </span>
                         </div>
                     </div>

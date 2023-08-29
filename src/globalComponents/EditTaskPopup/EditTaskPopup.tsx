@@ -3641,13 +3641,14 @@ const EditTaskPopup = (Items: any) => {
                                 Open Out-Of-The-Box Form
                             </a>}
                             <span >
-                                <button className="btn btn-primary px-3"
+                            <button type="button" className="btn btn-default px-3" onClick={setModalIsOpenToFalse}>
+                                    Cancel
+                                </button>
+                                <button className="btn btn-primary ms-1 px-3"
                                     onClick={UpdateTaskInfoFunction}>
                                     Save
                                 </button>
-                                <button type="button" className="btn btn-default ms-1 px-3" onClick={setModalIsOpenToFalse}>
-                                    Cancel
-                                </button>
+                               
                             </span>
                         </div>
                     </div>
@@ -3735,12 +3736,13 @@ const EditTaskPopup = (Items: any) => {
                         <span className="text-light">Create New One</span>
                     </a>
                 </button>
-                <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveSelectedProject} >
-                    Save
-                </button>
-                <button type="button" className="btn btn-default px-3" onClick={closeProjectManagementPopup}>
+                <button type="button" className="btn btn-default px-3 mx-1" onClick={closeProjectManagementPopup}>
                     Cancel
                 </button>
+                <button type="button" className="btn btn-primary px-3" onClick={saveSelectedProject} >
+                    Save
+                </button>
+               
             </footer>
         )
     }
@@ -6077,12 +6079,13 @@ const EditTaskPopup = (Items: any) => {
                         <FlorarImageUploadComponent callBack={FlorarImageReplaceComponentCallBack} />
                     </div>
                     <footer className="float-end mt-1">
-                        <button type="button" className="btn btn-primary px-3 mx-1" onClick={UpdateImage} >
-                            Update
-                        </button>
-                        <button type="button" className="btn btn-default px-3" onClick={closeReplaceImagePopup}>
+                       <button type="button" className="btn btn-default px-3 mx-1" onClick={closeReplaceImagePopup}>
                             Cancel
                         </button>
+                        <button type="button" className="btn btn-primary px-3 " onClick={UpdateImage} >
+                            Update
+                        </button>
+                      
                     </footer>
                 </div>
             </Panel>
@@ -6215,12 +6218,13 @@ const EditTaskPopup = (Items: any) => {
                         </div>
                     </div>
                     <footer className="float-end mt-1">
-                        <button type="button" className="btn btn-primary px-3 mx-1" onClick={UpdateApproverFunction}>
-                            Save
-                        </button>
-                        <button type="button" className="btn btn-default px-3" onClick={closeApproverPopup}>
+                    <button type="button" className="btn btn-default px-3 mx-1" onClick={closeApproverPopup}>
                             Cancel
                         </button>
+                        <button type="button" className="btn btn-primary px-3 " onClick={UpdateApproverFunction}>
+                            Save
+                        </button>
+                     
                     </footer>
                 </div>
             </Panel>
