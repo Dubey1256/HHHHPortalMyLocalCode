@@ -42,44 +42,12 @@ const TaskDetailsPanel = (props: any) => {
   const column2 = React.useMemo<ColumnDef<any, unknown>[]>(
     () => [
       {
-        header: ({ table }: any) => (
-          <>
-            <IndeterminateCheckbox className=" "
-              {...{
-                checked: table.getIsAllRowsSelected(),
-                indeterminate: table.getIsSomeRowsSelected(),
-                onChange: table.getToggleAllRowsSelectedHandler(),
-              }}
-            />{" "}
-          </>
-        ),
-        cell: ({ row, getValue }) => (
-          <>
-            <span className="d-flex">
-              {row?.original?.Title != "Others" ? (
-                <IndeterminateCheckbox
-                  {...{
-                    checked: row.getIsSelected(),
-                    indeterminate: row.getIsSomeSelected(),
-                    onChange: row.getToggleSelectedHandler(),
-                  }}
-                />
-              ) : (
-                ""
-              )}
-
-              {getValue()}
-            </span>
-          </>
-        ),
         accessorKey: "",
-        id: "row?.original.Id",
-        resetColumnFilters: false,
-        resetSorting: false,
-        canSort: false,
         placeholder: "",
-        size: 35
-      },
+        hasCheckbox: true,
+        size: 20,
+        id: 'Id',
+    },
       {
         accessorKey: "Shareweb_x0020_ID",
         placeholder: "Task Id",
