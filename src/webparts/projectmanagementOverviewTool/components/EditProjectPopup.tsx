@@ -2838,18 +2838,19 @@ function EditProjectPopup(item: any) {
                     </a>
                     <button
                       type="button"
-                      className="btn btn-primary "
-                      onClick={(e) => SaveData()}
-                    >
-                      Save
-                    </button>
-                    <button
-                      type="button"
                       className="btn btn-default btn-default ms-1"
                       onClick={setModalIsOpenToFalse}
                     >
                       Cancel
                     </button>
+                    <button
+                      type="button"
+                      className="btn btn-primary "
+                      onClick={(e) => SaveData()}
+                    >
+                      Save
+                    </button>
+                    
                   </div>
                 </div>
               </div>
