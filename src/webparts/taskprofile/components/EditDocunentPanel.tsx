@@ -40,6 +40,7 @@ const EditDocumentpanel=(props:any)=>{
        
     const handleClosedoc = () => {
         setEditdocpanel(false)
+        props.callbackeditpopup();
         // handleClose();
       }
       let ItemRank = [
