@@ -76,7 +76,7 @@ const AddProject = (props: any) => {
             <button type="button" className='btn btn-primary mb-2' onClick={() => OpenCreateTaskPopup()}>Create Meeting</button>
 
             <Panel
-                headerText={`Create Project`}
+                headerText={`Create Meeting`}
                 type={PanelType.medium}
                 isOpen={lgShow}
                 onDismiss={() => closePopup()}

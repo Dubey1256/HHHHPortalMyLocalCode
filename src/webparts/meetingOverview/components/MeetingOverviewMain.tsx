@@ -143,31 +143,16 @@ const MeetingOverviewMain = (props: any) => {
     const column2 = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
-                header: ({ table }: any) => (
-                    <>
-                        <IndeterminateCheckbox className=" "
-                            {...{
-                                checked: table.getIsAllRowsSelected(),
-                                indeterminate: table.getIsSomeRowsSelected(),
-                                onChange: table.getToggleAllRowsSelectedHandler(),
-                            }}
-                        />{" "}
-                    </>
-                ),
+                accessorKey: "",
+                placeholder: "",
+                hasCheckbox: true,
+                size: 20,
+                id: 'Id',
+              },{
                 cell: ({ row, getValue }) => (
                     <>
                         <span className="d-flex">
-                            {row?.original?.Title != "Others" ? (
-                                <IndeterminateCheckbox
-                                    {...{
-                                        checked: row?.getIsSelected(),
-                                        indeterminate: row?.getIsSomeSelected(),
-                                        onChange: row?.getToggleSelectedHandler(),
-                                    }}
-                                />
-                            ) : (
-                                ""
-                            )}
+                        
                             <span className='ms-1'>{row?.original?.Shareweb_x0020_ID}</span>
                         </span>
 

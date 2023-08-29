@@ -274,54 +274,32 @@ export default function ProjectOverview(props: any) {
     const columns = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
+                accessorKey: "",
+                placeholder: "",
+                hasCheckbox: true,
+                hasCustomExpanded: true,
+                hasExpanded: true,
+                size: 55,
+                id: 'Id',
+            },
+            {
                 accessorKey: "Shareweb_x0020_ID",
                 placeholder: "Id",
                 id: 'Shareweb_x0020_ID',
                 resetColumnFilters: false,
                 resetSorting: false,
                 size: 80,
-                header: ({ table }: any) => (
-                    <>
-                        <button className='border-0 bg-Ff'
-                            {...{
-                                onClick: table.getToggleAllRowsExpandedHandler(),
-                            }}
-                        >
-                            {table.getIsAllRowsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
-                        </button>{" "}
-
-                    </>
-                ),
-                cell: ({ row, getValue }) => (
-                    <div
-                        style={row?.getCanExpand() ? {
-                            paddingLeft: `${row?.depth * 5}px`,
-                        } : {
-                            paddingLeft: "18px",
-                        }}
-                    >
+                cell: ({ row }) => (
+                    <div>
                         <>
-                            {row?.getCanExpand() ? (
-                                <span className=' border-0'
-                                    {...{
-                                        onClick: row?.getToggleExpandedHandler(),
-                                        style: { cursor: "pointer" },
-                                    }}
-                                >
-                                    {row?.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
-                                </span>
-                            ) : (
-                                ""
-                            )}{" "}
                             {row?.original?.siteType != "Project" ? <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} /> : <span>{row?.original?.Shareweb_x0020_ID}</span>}
-
                         </>
                     </div>
                 ),
             },
             {
                 accessorFn: (row) => row?.siteType,
-                cell: ({ row, getValue }) => (
+                cell: ({ row }) => (
                     <>{
                         row?.original?.siteType !== "Master Tasks" ?
                             <span>
@@ -495,58 +473,24 @@ export default function ProjectOverview(props: any) {
     const groupedUsers = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
+                accessorKey: "",
+                placeholder: "",
+                hasCheckbox: true,
+                hasCustomExpanded: true,
+                hasExpanded: true,
+                size: 55,
+                id: 'Id',
+            },
+            {
                 accessorKey: "Shareweb_x0020_ID",
                 id: 'Shareweb_x0020_ID',
                 placeholder: "Id",
                 resetColumnFilters: false,
                 resetSorting: false,
-                size: 120,
-                header: ({ table }: any) => (
-                    <>
-                        <button className='border-0 bg-Ff'
-                            {...{
-                                onClick: table.getToggleAllRowsExpandedHandler(),
-                            }}
-                        >
-                            {table.getIsAllRowsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
-                        </button>{" "}
-                        <IndeterminateCheckbox className=" "
-                            {...{
-                                checked: table.getIsAllRowsSelected(),
-                                indeterminate: table.getIsSomeRowsSelected(),
-                                onChange: table.getToggleAllRowsSelectedHandler(),
-                            }}
-                        />{" "}
-
-                    </>
-                ),
+                size: 80,
                 cell: ({ row, getValue }) => (
-                    <div
-                        style={row?.getCanExpand() ? {
-                            paddingLeft: `${row?.depth * 5}px`,
-                        } : {
-                        }}
-                    >
+                    <div>
                         <>
-                            {row?.getCanExpand() ? (
-                                <span className=' border-0'
-                                    {...{
-                                        onClick: row?.getToggleExpandedHandler(),
-                                        style: { cursor: "pointer" },
-                                    }}
-                                >
-                                    {row?.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
-                                </span>
-                            ) : (
-                                ""
-                            )}{" "}
-                            {row?.original?.Item_x0020_Type == "tasks" ? <IndeterminateCheckbox
-                                {...{
-                                    checked: row?.getIsSelected(),
-                                    indeterminate: row?.getIsSomeSelected(),
-                                    onChange: row?.getToggleSelectedHandler(),
-                                }}
-                            /> : ''}
                             <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />
 
                         </>
@@ -782,43 +726,26 @@ export default function ProjectOverview(props: any) {
     const column2 = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
-                header: ({ table }: any) => (
-                    <>
-                        <IndeterminateCheckbox className=" "
-                            {...{
-                                checked: table.getIsAllRowsSelected(),
-                                indeterminate: table.getIsSomeRowsSelected(),
-                                onChange: table.getToggleAllRowsSelectedHandler(),
-                            }}
-                        />{" "}
-                    </>
-                ),
-                cell: ({ row, getValue }) => (
-                    <>
-                        <span className="d-flex">
-                            {row?.original?.Title != "Others" ? (
-                                <IndeterminateCheckbox
-                                    {...{
-                                        checked: row?.getIsSelected(),
-                                        indeterminate: row?.getIsSomeSelected(),
-                                        onChange: row?.getToggleSelectedHandler(),
-                                    }}
-                                />
-                            ) : (
-                                ""
-                            )}
-                            <span className='ms-1'>{row?.original?.Shareweb_x0020_ID}</span>
-                        </span>
-                        
-                    </>
-                ),
+                accessorKey: "",
+                placeholder: "",
+                hasCheckbox: true,
+                size: 20,
+                id: 'Id',
+            },
+            {
                 accessorKey: "Shareweb_x0020_ID",
                 placeholder: "Id",
                 id: 'Shareweb_x0020_ID',
                 resetColumnFilters: false,
                 resetSorting: false,
-                size: 80,
+                size: 60,
+                cell: ({ row }) => (
+                    <>
+                        <span className='ms-1'>{row?.original?.Shareweb_x0020_ID}</span>
 
+
+                    </>
+                ),
             },
             {
                 accessorFn: (row) => row?.Title,
@@ -946,51 +873,22 @@ export default function ProjectOverview(props: any) {
     const flatView = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
+                accessorKey: "",
+                placeholder: "",
+                hasCheckbox: true,
+                size: 20,
+                id: 'Id',
+            },
+            {
                 accessorKey: "Shareweb_x0020_ID",
                 placeholder: "Id",
                 resetColumnFilters: false,
                 resetSorting: false,
-                size: 120,
-                header: ({ table }: any) => (
-                    <>
-                        <IndeterminateCheckbox className=" "
-                            {...{
-                                checked: table.getIsAllRowsSelected(),
-                                indeterminate: table.getIsSomeRowsSelected(),
-                                onChange: table.getToggleAllRowsSelectedHandler(),
-                            }}
-                        />{" "}
-                    </>
-                ),
-                cell: ({ row, getValue }) => (
-                    <div
-                        style={row?.getCanExpand() ? {
-                            paddingLeft: `${row?.depth * 5}px`,
-                        } : {
-                        }}
-                    >
+                size: 100,
+                cell: ({ row }) => (
+                    <div>
                         <>
-                            {row?.getCanExpand() ? (
-                                <span className=' border-0'
-                                    {...{
-                                        onClick: row?.getToggleExpandedHandler(),
-                                        style: { cursor: "pointer" },
-                                    }}
-                                >
-                                    {row?.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
-                                </span>
-                            ) : (
-                                ""
-                            )}{" "}
-                            <IndeterminateCheckbox
-                                {...{
-                                    checked: row?.getIsSelected(),
-                                    indeterminate: row?.getIsSomeSelected(),
-                                    onChange: row?.getToggleSelectedHandler(),
-                                }}
-                            />
                             <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />
-
                         </>
                     </div>
                 ),
@@ -1221,6 +1119,7 @@ export default function ProjectOverview(props: any) {
                 if (tasksCopy?.length > 0) {
                     tasksCopy?.map((item: any) => {
                         let memberOnLeave = false;
+                        let EstimatedDesc = JSON.parse(item?.EstimatedTimeDescription)
                         item?.AssignedTo?.map((user: any) => {
                             memberOnLeave = onLeaveEmployees.some((emp: any) => emp == user?.Id)
                         });
@@ -1493,19 +1392,28 @@ export default function ProjectOverview(props: any) {
                     smartmeta = await web.lists
                         .getById(config.listId)
                         .items
-                        .select("Id,Title,Priority_x0020_Rank,EstimatedTime,Project/Priority_x0020_Rank,Project/Id,Project/Title,workingThisWeek,EstimatedTime,SharewebTaskLevel1No,SharewebTaskLevel2No,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Component/Id,Component/Title,Services/Id,Services/Title,PercentComplete,ComponentId,Categories,ServicesId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                        .select("Id,Title,Priority_x0020_Rank,EstimatedTime,EstimatedTimeDescription,Project/Priority_x0020_Rank,Project/Id,Project/Title,workingThisWeek,EstimatedTime,SharewebTaskLevel1No,SharewebTaskLevel2No,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Component/Id,Component/Title,Services/Id,Services/Title,PercentComplete,ComponentId,Categories,ServicesId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                         .expand('AssignedTo,Project,Author,Editor,Component,Services,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory')
                         .filter("IsTodaysTask eq 1")
                         .top(4999)
                         .get();
                     arraycount++;
                     smartmeta.map((items: any) => {
+                        let EstimatedDesc = JSON.parse(items?.EstimatedTimeDescription)
                         items.Item_x0020_Type = 'tasks';
                         items.ShowTeamsIcon = false
                         items.descriptionsSearch = '';
                         items.AllTeamMember = [];
                         items.siteType = config.Title;
                         items.siteUrl = config.siteUrl.Url;
+                        items.EstimatedTime = 0
+                        let estimatedDescription = ''
+                        if (EstimatedDesc?.length > 0) {
+                            EstimatedDesc?.map((time: any) => {
+                                items.EstimatedTime += Number(time?.EstimatedTime)
+                                estimatedDescription += ', ' + time?.EstimatedTimeDescription
+                            })
+                        }
                         items.bodys = items.Body != null && items.Body.split('<p><br></p>').join('');
                         if (items?.Body != undefined && items?.Body != null) {
                             items.descriptionsSearch = items?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
