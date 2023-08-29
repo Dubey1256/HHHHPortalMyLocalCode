@@ -289,13 +289,12 @@ const TagTaskToProjectPopup = (props: any) => {
 
 
             <footer className='text-end p-2'>
-               
-                <button type="button" className="btn btn-default px-3" onClick={handleClose}>
-                    Cancel
-                </button>
-                <button className="btn btn-primary ms-1 px-3"
+                <button className="btn btn-primary px-3"
                     onClick={()=>{tagSelectedTasks()}}>
                     Tag Tasks
+                </button>
+                <button type="button" className="btn btn-default ms-1 px-3" onClick={handleClose}>
+                    Cancel
                 </button>
                 {/* <Button type="button" className="me-2" variant="secondary" onClick={handleClose}>Cancel</Button>
                 <Button type="button" variant="primary" disabled={selectedTasks?.length > 0 ? false : true} onClick={() => tagSelectedTasks()}>Tag</Button> */}
@@ -304,7 +303,26 @@ const TagTaskToProjectPopup = (props: any) => {
 
         )
     }
-
+    function IndeterminateCheckbox({
+        indeterminate,
+        className = "",
+        ...rest
+    }: { indeterminate?: boolean } & React.HTMLProps<HTMLInputElement>) {
+        const ref = React.useRef<HTMLInputElement>(null!);
+        React.useEffect(() => {
+            if (typeof indeterminate === "boolean") {
+                ref.current.indeterminate = !rest.checked && indeterminate;
+            }
+        }, [ref, indeterminate]);
+        return (
+            <input
+                type="checkbox"
+                ref={ref}
+                className={className + "  cursor-pointer form-check-input rounded-0"}
+                {...rest}
+            />
+        );
+    }
     const inlineCallBack = React.useCallback((item: any) => {
         setAllTasks(prevTasks => {
             const updatedTasks = prevTasks.map((task: any) => {
@@ -320,11 +338,43 @@ const TagTaskToProjectPopup = (props: any) => {
     const column2 = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
+                header: ({ table }: any) => (
+                    <>
+                        <IndeterminateCheckbox className=" "
+                            {...{
+                                checked: table.getIsAllRowsSelected(),
+                                indeterminate: table.getIsSomeRowsSelected(),
+                                onChange: table.getToggleAllRowsSelectedHandler(),
+                            }}
+                        />{" "}
+                    </>
+                ),
+                cell: ({ row, getValue }) => (
+                    <>
+                        <span className="d-flex">
+                            {row?.original?.Title != "Others" ? (
+                                <IndeterminateCheckbox
+                                    {...{
+                                        checked: row.getIsSelected(),
+                                        indeterminate: row.getIsSomeSelected(),
+                                        onChange: row.getToggleSelectedHandler(),
+                                    }}
+                                />
+                            ) : (
+                                ""
+                            )}
+
+                            {getValue()}
+                        </span>
+                    </>
+                ),
                 accessorKey: "",
+                id: "row?.original.Id",
+                resetColumnFilters: false,
+                resetSorting: false,
+                canSort: false,
                 placeholder: "",
-                hasCheckbox: true,
-                size: 35,
-                id: 'Id',
+                size: 35
             },
             {
                 accessorKey: "Shareweb_x0020_ID",
