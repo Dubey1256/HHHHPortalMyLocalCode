@@ -2241,7 +2241,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                   <div>
                                     {/* { this.state?.emailcomponentopen && countemailbutton==0 &&<EmailComponenet approvalcallback={() => { this.approvalcallback() }}  Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus}  currentUser={this.props?.CurrentUser} items={this.props?.Result} />} */}
                                     <div className="col mb-2">
-                                      <div className='justify-content-between d-flex'>
+                                      <div className='w-100'>
                                         <div className="pt-1">
                                           {this.state.ApprovalStatus ?
                                             <span className="MR5">
@@ -2270,10 +2270,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                             : null
                                           }
                                         </div>
-                                        <div className='pb-1'>
-                                          <span className="d-block">
+                                        <div className='pb-1 text-end'>
+                                          <a className="d-block">
                                             <a style={{ cursor: 'pointer' }} onClick={(e) => this.showhideCommentBox(i)}>Add Comment</a>
-                                          </span>
+                                          </a>
                                         </div>
                                       </div>
 
@@ -2323,7 +2323,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                                       <div className='d-flex justify-content-between align-items-center'>
                                                         {fbComment?.AuthorName} - {fbComment?.Created}
                                                         <span className='d-flex'>
-                                                          <a className="ps-1" title="Comment Reply" >
+                                                          <a className="px-1" title="Comment Reply" >
                                                             <div data-toggle="tooltip" id={buttonId + "-" + i + k}
                                                               onClick={() => this.openReplycommentPopup(i, k)}
                                                               data-placement="bottom"
@@ -2404,7 +2404,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
                                     {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext']?.map((fbSubData: any, j: any) => {
                                       return <div className="col-sm-12 p-0 mb-2" style={{ width: '100%' }}>
-                                        <div className='justify-content-between d-flex'>
+                                        <div className='w-100'>
                                           <div>
                                             {this.state.ApprovalStatus ?
                                               <span className="MR5">
