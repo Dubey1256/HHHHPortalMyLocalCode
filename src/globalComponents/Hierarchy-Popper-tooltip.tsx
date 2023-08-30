@@ -107,6 +107,7 @@ export default function ReactPopperTooltip({ ShareWebId, row, projectToolShow, A
                 placeholder: "",
                 hasCustomExpanded: true,
                 hasExpanded: true,
+                isHeaderNotAvlable:true,
                 size: 27,
                 id: 'Id',
             },
@@ -199,7 +200,7 @@ export default function ReactPopperTooltip({ ShareWebId, row, projectToolShow, A
                     <div {...getArrowProps({ className: "tooltip-arrow" })} />
                 </div>
             )}
-            {action === "hover" && visible && projectToolShow != true && (
+            {action === "hover" && visible && projectToolShow != true && row?.original?.toolTitle !=undefined && row?.original?.toolSharewebId !=undefined && (
                 <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container" })}>
                     <span>
                         <span>
@@ -210,7 +211,7 @@ export default function ReactPopperTooltip({ ShareWebId, row, projectToolShow, A
                 </div>
             )}
 
-{action === "hover" && visible && projectToolShow === true && (
+            {action === "hover" && visible && projectToolShow === true && (
                 <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container" })}>
                     <span>
                         {row?.original?.joinedData.map((line: any, index: any) => (

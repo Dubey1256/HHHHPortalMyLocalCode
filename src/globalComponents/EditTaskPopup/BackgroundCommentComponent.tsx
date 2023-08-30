@@ -120,7 +120,7 @@ const BackgroundCommentComponent = (Props: any) => {
     }
 
     const deletebackgroundImageFunction = async (ItemData: any) => {
-    
+
         let tempArray: any = [];
         const web = new Web(Props.Context.pageContext.web.absoluteUrl);
         var text: any = "Are you sure want to delete this image";
@@ -314,13 +314,13 @@ const BackgroundCommentComponent = (Props: any) => {
                         </div>
                         <footer className="d-flex justify-content-between ms-3 mx-2 float-end">
                             <div>
-                            <button className='btn btn-default' onClick={editPostCloseFunction}>
-                                    Cancel
-                                </button>
                                 <button className="btn btnPrimary mx-1" onClick={ChangeCommentFunction}>
                                     Save
                                 </button>
-                               
+                                <button className='btn btn-default' onClick={editPostCloseFunction}>
+                                    Cancel
+                                </button>
+
                             </div>
                         </footer>
                     </div>

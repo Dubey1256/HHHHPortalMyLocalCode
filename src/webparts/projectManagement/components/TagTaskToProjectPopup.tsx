@@ -237,33 +237,45 @@ const TagTaskToProjectPopup = (props: any) => {
 
     const tagSelectedTasks = async () => {
         let selectedTaskId = ''
-        selectedTasks?.map(async (item: any, index: any) => {
-            if (index == 0) {
-                selectedTaskId = selectedTaskId + '(' + item?.siteType + ') ' + item?.Shareweb_x0020_ID
-            } else {
-                selectedTaskId = selectedTaskId + ',' + '(' + item?.siteType + ') ' + item?.Shareweb_x0020_ID
-            }
-        })
-
-        let confirmation = confirm('Are you sure you want to tag ' + selectedTaskId + ' to this project ?')
-        if (confirmation == true) {
+        if(props?.meetingPages){
+            // let confirmation = confirm('Are you sure you want to tagTask')
+            // if(confirmation){
+                props.callBack(selectedTasks);
+                handleClose()
+            // }
+            
+        }else{
             selectedTasks?.map(async (item: any, index: any) => {
-                const web = new Web(item?.siteUrl);
-                await web.lists.getById(item?.listId).items.getById(item?.Id).update({
-                    ProjectId: props?.projectId != undefined ? props?.projectId : ''
-                }).then((e: any) => {
-                    if (index == selectedTasks?.length - 1) {
-                        props.callBack();
-                    }
-                })
-                    .catch((err: { message: any; }) => {
-                        console.log(err.message);
-                    });
+                if (index == 0) {
+                    selectedTaskId = selectedTaskId + '(' + item?.siteType + ') ' + item?.Shareweb_x0020_ID
+                } else {
+                    selectedTaskId = selectedTaskId + ',' + '(' + item?.siteType + ') ' + item?.Shareweb_x0020_ID
+                }
             })
-
-            handleClose()
+    
+            let confirmation = confirm('Are you sure you want to tag ' + selectedTaskId + ' to this project ?')
+            if (confirmation == true) {
+              
+                selectedTasks?.map(async (item: any, index: any) => {
+                    const web = new Web(item?.siteUrl);
+                    await web.lists.getById(item?.listId).items.getById(item?.Id).update({
+                        ProjectId: props?.projectId != undefined ? props?.projectId : ''
+                    }).then((e: any) => {
+                        if (index == selectedTasks?.length - 1) {
+                            props.callBack();
+                           
+                        }
+                    })
+                        .catch((err: { message: any; }) => {
+                            console.log(err.message);
+                        });
+                })
+    
+                handleClose()
+            }
+    
         }
-
+       
     }
 
     const handleClose = () => {
@@ -289,13 +301,14 @@ const TagTaskToProjectPopup = (props: any) => {
 
 
             <footer className='text-end p-2'>
+                <button type="button" className="btn btn-default ms-1 px-3" onClick={handleClose}>
+                    Cancel
+                </button>
                 <button className="btn btn-primary px-3"
                     onClick={()=>{tagSelectedTasks()}}>
                     Tag Tasks
                 </button>
-                <button type="button" className="btn btn-default ms-1 px-3" onClick={handleClose}>
-                    Cancel
-                </button>
+                
                 {/* <Button type="button" className="me-2" variant="secondary" onClick={handleClose}>Cancel</Button>
                 <Button type="button" variant="primary" disabled={selectedTasks?.length > 0 ? false : true} onClick={() => tagSelectedTasks()}>Tag</Button> */}
             </footer>
@@ -338,43 +351,13 @@ const TagTaskToProjectPopup = (props: any) => {
     const column2 = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
-                header: ({ table }: any) => (
-                    <>
-                        <IndeterminateCheckbox className=" "
-                            {...{
-                                checked: table.getIsAllRowsSelected(),
-                                indeterminate: table.getIsSomeRowsSelected(),
-                                onChange: table.getToggleAllRowsSelectedHandler(),
-                            }}
-                        />{" "}
-                    </>
-                ),
-                cell: ({ row, getValue }) => (
-                    <>
-                        <span className="d-flex">
-                            {row?.original?.Title != "Others" ? (
-                                <IndeterminateCheckbox
-                                    {...{
-                                        checked: row.getIsSelected(),
-                                        indeterminate: row.getIsSomeSelected(),
-                                        onChange: row.getToggleSelectedHandler(),
-                                    }}
-                                />
-                            ) : (
-                                ""
-                            )}
-
-                            {getValue()}
-                        </span>
-                    </>
-                ),
                 accessorKey: "",
-                id: "row?.original.Id",
-                resetColumnFilters: false,
-                resetSorting: false,
-                canSort: false,
                 placeholder: "",
-                size: 35
+                hasCheckbox: true,
+                // hasCustomExpanded: true,
+                // hasExpanded: true,
+                size: 30,
+                id: 'Id',
             },
             {
                 accessorKey: "Shareweb_x0020_ID",
@@ -382,7 +365,7 @@ const TagTaskToProjectPopup = (props: any) => {
                 header: "",
                 resetColumnFilters: false,
                 resetSorting: false,
-                size: 70,
+                size: 130,
                 cell: ({ row, getValue }) => (
                     <>
                         <span className="d-flex">
@@ -609,8 +592,9 @@ const TagTaskToProjectPopup = (props: any) => {
 
     return (
         <>
-            <Button type="button" variant="secondary" className='pull-right ms-2' onClick={() => OpenTaskPopupData()}>Add Existing Tasks</Button>
-
+            
+            {props.meetingPages ?<Button type="button" variant="secondary" className='pull-right ms-2' onClick={() => OpenTaskPopupData()}>Add Tasks To Meeting</Button>
+            :<Button type="button" variant="secondary" className='pull-right ms-2' onClick={() => OpenTaskPopupData()}>Add Existing Tasks</Button>}
             <Panel
                 onRenderHeader={onRenderCustomHeaderMain}
                 type={PanelType.large}
