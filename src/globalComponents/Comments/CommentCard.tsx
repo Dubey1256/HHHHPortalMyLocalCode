@@ -582,10 +582,19 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   private async SendTeamMsg(mention_To: any, txtComment: any) {
     var SelectedUser: any[] = []
     for (let index = 0; index < mention_To.length; index++) {
+
       for (let TeamUserIndex = 0; TeamUserIndex < this.TeamUser.length; TeamUserIndex++) {
+
         if (mention_To[index] != undefined && this.TeamUser[TeamUserIndex] != undefined && mention_To[index].toLowerCase() == this.TeamUser[TeamUserIndex].userPrincipalName.toLowerCase())
+
           SelectedUser.push(this.TeamUser[TeamUserIndex])
+
+        if (mention_To[index] != undefined && this.TeamUser[TeamUserIndex] != undefined && mention_To[index].toLowerCase() == 'stefan.hochhuth@hochhuth-consulting.de' && this.TeamUser[TeamUserIndex].id == 'b0f99ab1-aef3-475c-98bd-e68229168489')
+
+          SelectedUser.push(this.TeamUser[TeamUserIndex])
+
       }
+
     }
 
     try {
