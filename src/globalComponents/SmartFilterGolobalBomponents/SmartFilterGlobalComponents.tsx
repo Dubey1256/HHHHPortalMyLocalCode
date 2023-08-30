@@ -437,12 +437,13 @@ const SmartFilterSearchGlobal = (item: any) => {
                                                 </tr>
                                             </table>
                                             <div className="col-md-12 pad0 text-end w-100 my-3 mb-5">
-                                                <button type="button" style={{ backgroundColor: `${portfolioColor}`, borderColor: ` ${portfolioColor}` }} className="btn pull-right  btn-primary mx-2" title="Smart Filter" onClick={UpdateFilterData}>
-                                                    Update Filter
-                                                </button>
                                                 <button type="button" style={{ color: `${portfolioColor}`, borderColor: ` ${portfolioColor}` }} className="btn btn-default ml5 pull-right " title="Clear All" onClick={ClearFilter}>
                                                     Clear Filter
                                                 </button>
+                                                <button type="button" style={{ backgroundColor: `${portfolioColor}`, borderColor: ` ${portfolioColor}` }} className="btn pull-right  btn-primary mx-2" title="Smart Filter" onClick={UpdateFilterData}>
+                                                    Update Filter
+                                                </button>
+
                                             </div>
                                         </div>
                                     </div>

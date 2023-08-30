@@ -28,6 +28,9 @@ import SelectFilterPanel from './selectFilterPannel';
 import ExpndTable from '../ExpandTable/Expandtable';
 import RestructuringCom from '../Restructuring/RestructuringCom';
 import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
+import Loader from "react-loader";
+import PageLoader from '../pageLoader';
+import { BsSearch } from 'react-icons/bs';
 
 // ReactTable Part/////
 declare module "@tanstack/table-core" {
@@ -82,7 +85,7 @@ function DebouncedInput({
     return (
         <>
             <div className="container-2 mx-1">
-                <span className="icon"><FaSearch style={{ color: `${portfolioColor}` }} /></span>
+                <span className="icon"><BsSearch style={{ color: `${portfolioColor}` }} /></span>
                 <input type="search" id="search" {...props}
                     value={value}
                     onChange={(e) => setValue(e.target.value)} />
@@ -141,10 +144,10 @@ export function IndeterminateCheckbox(
 
 // ********************* function with globlize Expended And Checkbox*******************
 let forceExpanded: any = [];
-const getFirstColHeader = ({ hasCheckbox, hasExpanded }: any) => {
+const getFirstColHeader = ({ hasCheckbox, hasExpanded, isHeaderNotAvlable }: any) => {
     return ({ table }: any) => (
         <>
-            {hasExpanded && (<>
+            {hasExpanded && isHeaderNotAvlable != true && (<>
                 <span className="border-0 bg-Ff" {...{ onClick: table.getToggleAllRowsExpandedHandler(), }}>
                     {table.getIsAllRowsExpanded() ? (
                         <SlArrowDown title='Tap to collapse the childs' />) : (<SlArrowRight title='Tap to expand the childs' />)}
@@ -323,7 +326,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     ...elem,
                     header: getFirstColHeader({
                         hasCheckbox: elem.hasCheckbox,
-                        hasExpanded: elem.hasExpanded
+                        hasExpanded: elem.hasExpanded,
+                        isHeaderNotAvlable: elem.isHeaderNotAvlable
                     }),
                     cell: getFirstColCell({
                         setExpanded,
@@ -711,7 +715,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     };
 
     React.useImperativeHandle(ref, () => ({
-        callChildFunction, trueTopIcon
+        callChildFunction, trueTopIcon, setRowSelection
     }));
 
     const restructureFunct = (items: any) => {
@@ -724,7 +728,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
         <>
             {showHeader === true && <div className='tbl-headings justify-content-between mb-1'>
                 <span className='leftsec'>
-                    {showingAllPortFolioCount === true ? <div>
+                    {showingAllPortFolioCount === true ? <div className='mb-1'>
                         <label style={{ color: `${portfolioColor}` }}>
                             Showing
                         </label>
@@ -741,7 +745,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
                         <span className="popover__wrapper ms-1" style={{ position: "unset" }} data-bs-toggle="tooltip" data-bs-placement="auto">
                             {/* <FaInfoCircle style={{ color: `${portfolioColor}` }} /> */}
-                            <span className='svg__iconbox svg__icon--info alignIcon' style={{ backgroundColor: `${portfolioColor}` }}></span>
+                            <span className='svg__iconbox svg__icon--info alignIcon dark'></span>
                             <span className="popover__content mt-3 m-3 mx-3" style={{ zIndex: 100 }}>
                                 <label style={{ color: `${portfolioColor}` }}>
                                     Showing
@@ -765,7 +769,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                             </span>
                         </span>
                     </div> :
-                        <span style={{ color: `${portfolioColor}` }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} of ${data?.length}`}</span>}
+                        <span style={{ color: `${portfolioColor}` }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} out of ${data?.length}`}</span>}
                     <DebouncedInput
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}
@@ -803,9 +807,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
                         {
                             trueRestructuring == true ?
-                                <RestructuringCom restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows.length > 0 ? [table?.getSelectedRowModel()?.flatRows[0].original] : []} />
-                                : <button type="button" title="Restructure" disabled={true} className="btn btn-primary"
-                                >Restructure</button>
+                                <RestructuringCom style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
+                                : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>
                         }
                     </>
                     }
@@ -823,9 +826,9 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     </>
                     }
 
-                    {showTeamMemberOnCheck === true ? <a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--team"></span></a>
+                    {table?.getSelectedRowModel()?.flatRows?.length > 0 ? <a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--team"></span></a>
                         : <a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team"></span></a>}
-                    {table?.getSelectedRowModel()?.rows?.length > 0 ?
+                    {table?.getSelectedRowModel()?.flatRows?.length > 0 ?
                         <a onClick={() => openTaskAndPortfolioMulti()} title='Open in new tab' className="openWebIcon p-0"><span style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--openWeb"></span></a>
                         : <a className="openWebIcon p-0" title='Open in new tab'><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a>}
                     <a className='excal' title='Export to excal' onClick={() => exportToExcel()}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a>
@@ -839,7 +842,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     {expandIcon === true && <a className="expand" title="Expand table section" style={{ color: `${portfolioColor}` }}>
                         <ExpndTable prop={expndpopup} prop1={tablecontiner} />
                     </a>}
-
                 </span>
             </div>}
 
@@ -955,7 +957,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
             </div> : ''}
             {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} /> : ''}
             {selectedFilterPanelIsOpen && <SelectFilterPanel isOpen={selectedFilterPanelIsOpen} selectedFilterCallBack={selectedFilterCallBack} setSelectedFilterPannelData={setSelectedFilterPannelData} selectedFilterPannelData={selectedFilterPannelData} portfolioColor={portfolioColor} />}
-
         </>
     )
 }
