@@ -144,6 +144,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                 placeholder: "",
                 hasCustomExpanded: true,
                 hasExpanded: true,
+                isHeaderNotAvlable:true,
                 size: 27,
                 id: 'Id',
             },

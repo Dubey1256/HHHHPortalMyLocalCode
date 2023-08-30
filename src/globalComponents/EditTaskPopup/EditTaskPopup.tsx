@@ -767,6 +767,7 @@ const EditTaskPopup = (Items: any) => {
                     updateFeedbackArray = [FeedBackItem]
                     let tempArray: any = [FeedBackItem]
                     item.FeedBack = JSON.stringify(tempArray);
+                    item.FeedBackArray = tempArray[0]?.FeedBackDescriptions;
                     FeedBackBackupArray = JSON.stringify(tempArray);
                 }
                 if (item.Component?.length > 0) {
