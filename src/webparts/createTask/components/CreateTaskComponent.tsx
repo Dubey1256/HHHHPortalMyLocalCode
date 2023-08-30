@@ -666,7 +666,10 @@ function CreateTaskComponent(props: any) {
             alert("Please Enter The Task Name")
         } else if (save.siteType.length <= 0) {
             alert("Please Select the Site ")
-        } else {
+        } else if(save.taskName.length > 56){
+            alert("Task Title is too long. Please chose a shorter name and enter the details into the task description.")
+        }
+        else{
             let CategoryTitle: any;
             let TeamMembersIds: any[] = [];
             sharewebCat?.map((cat: any) => {
@@ -1786,7 +1789,7 @@ function CreateTaskComponent(props: any) {
                         Component</label>
                         {
                             burgerMenuTaskDetails?.ComponentID == undefined ? <>
-                              <label className='SpfxCheckRadio'>
+                              <label className='SpfxCheckRadio ms-3'>
                             <input
                                 type="radio" className="radio" checked={save.portfolioType === 'Service'}
                                 name="taskcategory" onChange={() => selectPortfolioType('Service')} />
@@ -2095,7 +2098,7 @@ function CreateTaskComponent(props: any) {
                             }
                         })
                     }
-                    <button type="button" className='btn btn-primary bg-siteColor ' onClick={() => createTask()}>Submit</button>
+                    <button type="button" className='btnCol btn btn-primary' onClick={() => createTask()}>Submit</button>
                 </div>
                 {/* {IsComponent && <ServiceComponentPortfolioPopup props={ShareWebComponent} Call={Call} Dynamic={AllListId} AllListId={AllListId} smartComponentData={smartComponentData} ></ServiceComponentPortfolioPopup>}
                 {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call} AllListId={AllListId} Dynamic={AllListId} linkedComponentData={linkedComponentData}  ></LinkedComponent>} */}

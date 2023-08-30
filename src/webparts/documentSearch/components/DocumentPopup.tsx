@@ -751,8 +751,9 @@ const DocumentPopup = (props: any) => {
                             </a>
                             |
                             <a className="mx-1" target="_blank" href={`${PageContext.context._pageContext._web.absoluteUrl}/Documents/Forms/EditForm.aspx?ID=${UpdatedItem.ID}`}>Open out-of-the-box form</a>
-                            <button className="btn btn-default" onClick={closePopup}>Cancel</button>
                             <button className="btn btn-primary mx-2" onClick={UpdateItem}>Save</button>
+                            <button className="btn btn-default" onClick={closePopup}>Cancel</button>
+                           
                         </div>
                     </div>
                 </div>

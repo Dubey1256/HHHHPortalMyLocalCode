@@ -221,10 +221,10 @@ const EditTaskPopup = (Items: any) => {
             siteUrls = AllListIdData.siteUrl;
         }
     } else {
-        if(Items.Items.siteUrl != undefined && Items.Items.siteUrl.length > 15){
-            siteUrls = Items.Items.siteUrl    
+        if (Items.Items.siteUrl != undefined && Items.Items.siteUrl.length > 15) {
+            siteUrls = Items.Items.siteUrl
         }
-        else{
+        else {
             siteUrls = AllListIdData.siteUrl
 
         }
@@ -658,6 +658,7 @@ const EditTaskPopup = (Items: any) => {
                                         setPercentCompleteStatus(item.status);
                                         setTaskStatus(item.taskStatusComment);
                                         setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: `1` })
+                                        setPercentCompleteCheck(false);
                                     }
                                 })
                             }
@@ -766,6 +767,7 @@ const EditTaskPopup = (Items: any) => {
                     updateFeedbackArray = [FeedBackItem]
                     let tempArray: any = [FeedBackItem]
                     item.FeedBack = JSON.stringify(tempArray);
+                    item.FeedBackArray = tempArray[0]?.FeedBackDescriptions;
                     FeedBackBackupArray = JSON.stringify(tempArray);
                 }
                 if (item.Component?.length > 0) {
@@ -3641,13 +3643,14 @@ const EditTaskPopup = (Items: any) => {
                                 Open Out-Of-The-Box Form
                             </a>}
                             <span >
-                                <button className="btn btn-primary px-3"
+                                <button className="btn btn-primary mx-1 px-3"
                                     onClick={UpdateTaskInfoFunction}>
                                     Save
                                 </button>
-                                <button type="button" className="btn btn-default ms-1 px-3" onClick={setModalIsOpenToFalse}>
+                                <button type="button" className="btn btn-default px-3" onClick={setModalIsOpenToFalse}>
                                     Cancel
                                 </button>
+
                             </span>
                         </div>
                     </div>
@@ -3741,6 +3744,7 @@ const EditTaskPopup = (Items: any) => {
                 <button type="button" className="btn btn-default px-3" onClick={closeProjectManagementPopup}>
                     Cancel
                 </button>
+
             </footer>
         )
     }
@@ -6005,8 +6009,8 @@ const EditTaskPopup = (Items: any) => {
                         onChange={(e) => UpdateImageDescription(e)}></textarea></div>
                 </div>
                 <footer className='text-end mt-2 mx-2'>
-                    <button className="btn btnPrimary " onClick={SaveImageDescription}>Save</button>
-                    <button className='btn btn-default ms-1' onClick={closeAddImageDescriptionFunction}>Cancel</button>
+                    <button className="btn btnPrimary mx-1 " onClick={SaveImageDescription}>Save</button>
+                    <button className='btn btn-default' onClick={closeAddImageDescriptionFunction}>Cancel</button>
                 </footer>
             </Modal>
 
@@ -6083,6 +6087,7 @@ const EditTaskPopup = (Items: any) => {
                         <button type="button" className="btn btn-default px-3" onClick={closeReplaceImagePopup}>
                             Cancel
                         </button>
+
                     </footer>
                 </div>
             </Panel>
@@ -6221,6 +6226,7 @@ const EditTaskPopup = (Items: any) => {
                         <button type="button" className="btn btn-default px-3" onClick={closeApproverPopup}>
                             Cancel
                         </button>
+
                     </footer>
                 </div>
             </Panel>

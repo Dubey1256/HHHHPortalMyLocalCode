@@ -76,7 +76,7 @@ const AddProject = (props: any) => {
             <button type="button" className='btn btn-primary mb-2' onClick={() => OpenCreateTaskPopup()}>Create Meeting</button>
 
             <Panel
-                headerText={`Create Project`}
+                headerText={`Create Meeting`}
                 type={PanelType.medium}
                 isOpen={lgShow}
                 onDismiss={() => closePopup()}
@@ -117,8 +117,9 @@ const AddProject = (props: any) => {
                     </div>
                 </div>
                 <footer className='text-end'>
-                    <Button type="button" variant="primary" className='me-1' onClick={() => addFunction()}>Create</Button>
-                    <Button type="button" className="btn btn-default" variant="secondary" onClick={() => closePopup()}>Cancel</Button>
+                <Button type="button" className="btn btn-default" variant="secondary" onClick={() => closePopup()}>Cancel</Button>
+                <Button type="button" variant="primary" className='ms-1' onClick={() => addFunction()}>Create</Button>
+                    
 
                 </footer>
             </Panel>
