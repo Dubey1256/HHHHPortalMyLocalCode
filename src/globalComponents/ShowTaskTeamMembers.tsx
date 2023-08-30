@@ -113,8 +113,8 @@ function ShowTaskTeamMembers(item: any) {
               ? ItemNew["TeamLeader"].map((rcData: any, i: any) => {
                 return (
                   <>
-                    <span className="user_Member_img">
-                      <a
+                    <span className="user_Member_img alignCenter">
+                      <a className="alignCenter"
                         href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${rcData?.AssingedToUserId}&Name=${rcData.Title}`}
                         target="_blank"
                         data-interception="off"
@@ -133,8 +133,7 @@ function ShowTaskTeamMembers(item: any) {
 
             {ItemNew["AllTeamMembers"] != null &&
               ItemNew["AllTeamMembers"].length > 0 ? (
-              <div className="  ">
-                <a
+                <a className="alignCenter"
                   href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${ItemNew["AllTeamMembers"][0].AssingedToUserId}&Name=${ItemNew["AllTeamMembers"][0].Title}`}
                   target="_blank"
                   data-interception="off"
@@ -145,7 +144,6 @@ function ShowTaskTeamMembers(item: any) {
                     src={ItemNew["AllTeamMembers"][0].ItemCover}
                   ></img>
                 </a>
-              </div>
             ) : (
               " "
             )}
