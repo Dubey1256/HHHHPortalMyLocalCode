@@ -19,11 +19,13 @@ import { ColumnDef } from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 import Loader from "react-loader";
+import { Bars } from 'react-loader-spinner'
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 import SmartFilterSearchGlobal from "../../../globalComponents/SmartFilterGolobalBomponents/SmartFilterGlobalComponents";
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
+import PageLoader from "../../../globalComponents/pageLoader";
 //import RestructuringCom from "../../../globalComponents/Restructuring/RestructuringCom";
 var filt: any = "";
 var ContextValue: any = {};
@@ -408,7 +410,7 @@ function TeamPortlioTable(SelectedProp: any) {
         componentDetails = await web.lists
             .getById(ContextValue.MasterTaskListID)
             .items
-            .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID","StructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title",
+            .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "StructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title",
                 "DueDate", "Body", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
                 "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete",
                 "ResponsibleTeam/Id", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id",
@@ -688,6 +690,9 @@ function TeamPortlioTable(SelectedProp: any) {
         items.subRows = items?.subRows?.concat(findActivity)
         items.subRows = items?.subRows?.concat(findTasks)
     }
+
+
+
     const filterDataAfterUpdate = () => {
         smartAllFilterData?.map((filterItem: any) => {
             updatedSmartFilterGrouping(filterItem)
@@ -904,7 +909,7 @@ function TeamPortlioTable(SelectedProp: any) {
             {
                 accessorFn: (row) => row?.AllTeamName,
                 cell: ({ row }) => (
-                    <div>
+                    <div className="alignCenter">
                         <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={AllUsers} Context={SelectedProp?.SelectedProp} />
                     </div>
                 ),
@@ -1159,7 +1164,7 @@ function TeamPortlioTable(SelectedProp: any) {
 
     let isOpenPopup = false;
     const AddStructureCallBackCall = React.useCallback((item) => {
-        //  setRowSelection({});
+        childRef?.current?.setRowSelection({});
         if (!isOpenPopup && item.CreatedItem != undefined) {
             item.CreatedItem.forEach((obj: any) => {
                 obj.data.childs = [];
@@ -1253,6 +1258,7 @@ function TeamPortlioTable(SelectedProp: any) {
 
     //----------------------------Code By Santosh---------------------------------------------------------------------------
     const Call = (res: any) => {
+        childRef?.current?.setRowSelection({});
         setIsComponent(false);
         setIsTask(false);
         setIsOpenActivity(false)
@@ -1334,6 +1340,7 @@ function TeamPortlioTable(SelectedProp: any) {
     }
     const closeActivity = () => {
         setActivityPopup(false)
+        childRef?.current?.setRowSelection({});
     }
     const addActivity = (type: any) => {
         if (checkedList?.TaskType?.Id == undefined || checkedList?.TaskTypeId == undefined) {
@@ -1374,7 +1381,6 @@ function TeamPortlioTable(SelectedProp: any) {
     //-------------------------------------------------------------End---------------------------------------------------------------------------------
     return (
         <div id="ExandTableIds" style={{}}>
-
             <section className="ContentSection">
                 <div className="col-sm-12 clearfix">
                     <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
@@ -1422,6 +1428,19 @@ function TeamPortlioTable(SelectedProp: any) {
                                 <div className="col-sm-12 p-0 smart">
                                     <div className="">
                                         <div className="wrapper">
+                                            <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1}
+                                                color={portfolioColor ? portfolioColor : "#000069"}
+                                                speed={2}
+                                                trail={60}
+                                                shadow={false}
+                                                hwaccel={false}
+                                                className="spinner"
+                                                zIndex={2e9}
+                                                top="28%"
+                                                left="50%"
+                                                scale={1.0}
+                                                loadedClassName="loadedContent"
+                                            />
                                             <GlobalCommanTable ref={childRef} callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1} data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity} />
                                         </div>
                                     </div>
@@ -1608,7 +1627,6 @@ function TeamPortlioTable(SelectedProp: any) {
                 ></TimeEntryPopup>
             )}
         </div>
-
     );
 }
 export default TeamPortlioTable;
