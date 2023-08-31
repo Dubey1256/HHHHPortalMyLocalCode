@@ -40,6 +40,7 @@ import HighlightableCell from '../../../globalComponents/GroupByReactTableCompon
 
 import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
 import ReactPopperTooltip from '../../../globalComponents/Hierarchy-Popper-tooltip';
+import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
 var AllTasks: any = [];
 let AllTasksRendar: any = [];
 let siteConfig: any = [];
@@ -230,7 +231,7 @@ function TasksTable(props: any) {
     //     if (config.Title != 'Master Tasks' && config.Title != 'SDC Sites') {
     try {
       let AllTasksMatches = [];
-      var select = "SharewebTaskLevel2No,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,SharewebTaskLevel1No,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,Shareweb_x0020_ID, Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level, Priority_x0020_Rank, Team_x0020_Members/Title, Team_x0020_Members/Name, Component/Id,Component/Title,Component/ItemType, Team_x0020_Members/Id, Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$filter=" + filter + ""
+      var select = "SharewebTaskLevel2No,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,SharewebTaskLevel1No,Services/Id, Project/Id,Project/PortfolioStructureID, Project/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,Shareweb_x0020_ID, Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level, Priority_x0020_Rank, Team_x0020_Members/Title, Team_x0020_Members/Name, Component/Id,Component/Title,Component/ItemType, Team_x0020_Members/Id, Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask, Project,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$filter=" + filter + ""
       AllTasksMatches = await globalCommon.getData(props?.AllListId?.siteUrl, props.props.listId, select)
       console.log(AllTasksMatches);
       Counter++;
@@ -275,9 +276,27 @@ function TasksTable(props: any) {
           }
           result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
 
-          if (result.Short_x0020_Description_x0020_On != undefined) {
-            result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
+          if (result.FeedBack != undefined) {
+           
+            let feedbackdata:any= JSON.parse(result?.FeedBack)
+             
+            result.Short_x0020_Description_x0020_On =
+            feedbackdata[0]?.FeedBackDescriptions?.map((child:any) =>
+            child?.Title + ' ' +
+            child?.Subtext?.map((subChild:any) => subChild?.Title).join(' ')
+            ).join(' ')
+          
           }
+          if (result.Project) {
+            result.ProjectTitle = result?.Project?.Title;
+            result.ProjectId = result?.Project?.Id;
+            result.projectStructerId = result?.Project?.PortfolioStructureID
+            const title = result?.Project?.Title || '';
+            const dueDate = result?.DueDate;
+            result.joinedData = [];
+            if (title) result.joinedData.push(`Title: ${title}`);
+            if (dueDate) result.joinedData.push(`Due Date: ${dueDate}`);
+        }
 
           result['SiteIcon'] = GetIconImageUrl(result.siteType, props?.AllListId?.siteUrl, undefined);
           // if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
@@ -676,14 +695,17 @@ function TasksTable(props: any) {
             {row?.original?.subRows?.length > 0 ?
               <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
 
-            {row?.original?.Short_x0020_Description_x0020_On != null &&
-              <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+          
+              {row?.original?.Short_x0020_Description_x0020_On != null && row?.original?.Short_x0020_Description_x0020_On != '' && (
+                <InfoIconsToolTip Discription={row?.original?.Short_x0020_Description_x0020_On} row={row?.original} />
+            )}
+              {/* <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                 <span title="Edit" className="svg__iconbox svg__icon--info"></span>
-                {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /> */}
+             
                 <span className="popover__content">
                   {row?.original?.Short_x0020_Description_x0020_On}
                 </span>
-              </span>}
+              </span> */}
 
           </>
         ),
