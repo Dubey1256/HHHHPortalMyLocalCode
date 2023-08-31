@@ -147,12 +147,18 @@ const MeetingPopupComponent = (Props: any) => {
                     let param: any = Moment(new Date().toLocaleString())
                     var FeedBackItem: any = {};
                     FeedBackItem['Title'] = "FeedBackPicture" + param;
-                    FeedBackItem['FeedBackDescriptions'] = [];
+                    FeedBackItem['FeedBackDescriptions'] = [
+                        {
+                            Title: "\n<p></p>",
+                            Completed: false,
+                        }
+                    ];
                     FeedBackItem['ImageDate'] = "" + param;
                     FeedBackItem['Completed'] = '';
                     updateFeedbackArray = [FeedBackItem]
                     let tempArray: any = [FeedBackItem]
                     item.FeedBack = JSON.stringify(tempArray);
+                    item.FeedBackArray = tempArray[0].FeedBackDescriptions;
                     item.FeedBackBackupArray = JSON.stringify(tempArray);
                 }
                 setMeetingData(item)
@@ -770,7 +776,7 @@ const MeetingPopupComponent = (Props: any) => {
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div className="col-md-4">
                             <div className="full_width ">
                                 {MeetingData?.Id != undefined ?
