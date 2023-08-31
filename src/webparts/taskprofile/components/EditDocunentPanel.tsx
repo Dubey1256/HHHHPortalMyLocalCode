@@ -35,6 +35,10 @@ const EditDocumentpanel=(props:any)=>{
               setcomponentpopup(false);
             }
           }
+          if(props?.editData!+undefined)
+          {
+            props.editData. docTitle= props?.editData.Title.split(props?.editData.File_x0020_Type)[0]
+          }
           setEditdocumentsData(props?.editData); 
     }, [])
        
@@ -107,7 +111,7 @@ const EditDocumentpanel=(props:any)=>{
         const web = new Web(props?.AllListId?.siteUrl);
         await web.lists.getById(props?.AllListId?.DocumentsListID)
           .items.getById(EditdocumentsData.Id).update({
-            Title: EditdocumentsData.Title,
+            Title: EditdocumentsData.docTitle,
             ItemRank: EditdocumentsData.ItemRank,
             Year: EditdocumentsData.Year,
             ItemType: EditdocumentsData.ItemType,
@@ -214,14 +218,14 @@ return(
 
               <div className='d-flex'>
                 <div className="input-group"><label className=" full-width ">Name </label>
-                  <input type="text" className="form-control" value={EditdocumentsData?.Title} onChange={(e => setEditdocumentsData({ ...EditdocumentsData, Title: e.target.value }))} />.{EditdocumentsData?.File_x0020_Type}
+                  <input type="text" className="form-control" value={EditdocumentsData?.docTitle} onChange={(e => setEditdocumentsData({ ...EditdocumentsData, docTitle: e.target.value }))} />.{EditdocumentsData?.File_x0020_Type}
                 </div>
 
                 <div className="input-group mx-4"><label className="full-width ">Year </label>
                   <input type="text" className="form-control" value={EditdocumentsData?.Year} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, Year: e.target.value })} />
-                  <span className="input-group-text" title="Linked Component Task Popup">
+                  {/* <span className="input-group-text" title="Linked Component Task Popup">
                     <span className="svg__iconbox svg__icon--editBox"></span>
-                  </span>
+                  </span> */}
                 </div>
 
                 <div className="input-group">
@@ -281,9 +285,9 @@ return(
         <footer className='text-end mt-2'>
           <div className='col-sm-12 row m-0'>
             <div className="col-sm-6 text-lg-start">
-              {Editdocpanel && <div><div><span className='pe-2'>Created</span><span className='pe-2'>{EditdocumentsData?.Created !== null ? moment(editvalue?.Created).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Author?.Title}</a></span></div>
-                <div><span className='pe-2'>Last modified</span><span className='pe-2'>{EditdocumentsData?.Modified !== null ? moment(editvalue?.Modified).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Editor?.Title}</a></span></div>
-                <div><span onClick={() => deleteDocumentsData(EditdocumentsData?.Id)} className="svg__iconbox svg__icon--trash"></span>Delete this item</div>
+              {Editdocpanel && <div><div><span className='pe-2'>Created</span><span className='pe-2'>{EditdocumentsData?.Created !== null ? moment(editvalue?.Created).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Author}</a></span></div>
+                <div><span className='pe-2'>Last modified</span><span className='pe-2'>{EditdocumentsData?.Modified !== null ? moment(editvalue?.Modified).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Editor}</a></span></div>
+                <div><span onClick={() => deleteDocumentsData(EditdocumentsData?.Id)} className="svg__iconbox svg__icon--trash hreflink"></span>Delete this item</div>
               </div>}
             </div>
 
