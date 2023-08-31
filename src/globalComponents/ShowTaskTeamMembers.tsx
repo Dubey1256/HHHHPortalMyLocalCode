@@ -126,13 +126,14 @@ function ShowTaskTeamMembers(item: any) {
                   </>
                 );
               })
-              :<span>&nbsp;</span>}
+              : <span>&nbsp;</span>}
             {/* {Item["TeamLeader"] != null && Item["TeamLeader"].length > 0 &&
                                                                                                                      <div></div>
                                                                                                                  } */}
 
             {ItemNew["AllTeamMembers"] != null &&
               ItemNew["AllTeamMembers"].length > 0 ? (
+<<<<<<< HEAD
                 <a className="alignCenter"
                   href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${ItemNew["AllTeamMembers"][0].AssingedToUserId}&Name=${ItemNew["AllTeamMembers"][0].Title}`}
                   target="_blank"
@@ -144,6 +145,20 @@ function ShowTaskTeamMembers(item: any) {
                     src={ItemNew["AllTeamMembers"][0].ItemCover}
                   ></img>
                 </a>
+=======
+              <a className="alignCenter"
+                href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${ItemNew["AllTeamMembers"][0].AssingedToUserId}&Name=${ItemNew["AllTeamMembers"][0].Title}`}
+                target="_blank"
+                data-interception="off"
+                title={ItemNew["AllTeamMembers"][0].Title}
+              >
+                <img
+                  className="workmember activeimg"
+                  src={ItemNew["AllTeamMembers"][0].ItemCover}
+                ></img>
+              </a>
+
+>>>>>>> 4b1ea8eefe426c9edfc3147c801e869d0bce79f1
             ) : (
               " "
             )}
@@ -154,7 +169,7 @@ function ShowTaskTeamMembers(item: any) {
                 onMouseOver={(e) => handleSuffixHover(ItemNew)}
                 onMouseLeave={(e) => handleuffixLeave(ItemNew)}
               >
-                 +{ItemNew?.AllTeamMembers?.slice(1)?.length}
+                +{ItemNew?.AllTeamMembers?.slice(1)?.length}
                 <span
                   className="tooltiptext"
                   style={{ display: Display, padding: "10px" }}

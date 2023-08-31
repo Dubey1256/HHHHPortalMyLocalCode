@@ -112,12 +112,13 @@ const SelectFilterPanel = (props: any) => {
                 </div>
             </div>
             <footer>
+            <button type="button" className="btn btn-default mx-1 me-2 pull-right" style={{ backgroundColor: `${props?.portfolioColor}` }} onClick={setModalIsOpenToFalse}>
+                    Cancel
+                </button>
                 <button type="button" className="btn btn-primary pull-right" style={{ backgroundColor: `${props?.portfolioColor}` }} onClick={() => handleChangeData()}>
                     Apply
                 </button>
-                <button type="button" className="btn btn-default mx-1 me-2 pull-right" style={{ backgroundColor: `${props?.portfolioColor}` }} onClick={setModalIsOpenToFalse}>
-                    Cancel
-                </button>
+                
             </footer>
         </Panel>
     );

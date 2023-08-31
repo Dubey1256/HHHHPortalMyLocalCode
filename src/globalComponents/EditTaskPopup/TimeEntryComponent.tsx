@@ -2700,33 +2700,26 @@ function TimeEntryPopup(item: any) {
 
     const column = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
+            {
+                accessorKey: "",
+                placeholder: "",
+                hasCustomExpanded: true,
+                hasExpanded: true,
+                size: 20,
+                id: 'Id',
+            },
 
             {
                 accessorFn: (row) => row?.AuthorName,
                 id: "AuthorName",
                 placeholder: "AuthorName",
                 header: "",
-                size: 360,
+                size: 340,
                 cell: ({ row }) => (
                     <>
                         <span>
                             <div className="d-flex">
                                 <>
-                                    {row.getCanExpand() ? (
-                                        <span
-                                            className="border-0"
-                                            {...{
-                                                onClick: row.getToggleExpandedHandler(),
-                                                style: { cursor: "pointer" },
-                                            }}
-                                        >
-                                            {row.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
-                                        </span>
-                                    ) : (
-                                        ""
-                                    )}{" "}
-
-
                                     {row?.original?.show === true ? <span>
                                         {(row?.original?.AuthorImage != '' && row?.original.AuthorImage != null) ?
                                             <>

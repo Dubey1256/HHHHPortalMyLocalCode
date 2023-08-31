@@ -646,7 +646,7 @@ function TasksTable(props: any) {
         cell: ({ row, getValue }) => (
           <div>
             {row?.original?.TitleNew != "Tasks" ?
-              <ReactPopperTooltip ShareWebId={getValue()} row={row} />
+              <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={props?.AllListId} />
               : ''}
           </div>
         ),
@@ -691,6 +691,22 @@ function TasksTable(props: any) {
         placeholder: "Title",
         header: "",
       },
+      {
+        accessorFn: (row) => row?.projectStructerId + "." + row?.ProjectTitle,
+        cell: ({ row }) => (
+            <>
+                {row?.original?.ProjectTitle != (null || undefined) ?
+                    <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${props?.AllListId.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
+                        <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={props?.AllListId} /></a></span>
+                    : ""}
+            </>
+        ),
+        id: 'ProjectTitle',
+        placeholder: "Project",
+        resetColumnFilters: false,
+        header: "",
+        size: 70,
+    },
       {
         accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title).join("-"),
         cell: ({ row }) => (
@@ -1154,7 +1170,7 @@ function TasksTable(props: any) {
   }
   const openActivity = () => {
     let data2: any = structuredClone(props?.props)
-    if (checkData != undefined && checkData != null) {
+    if (checkData != undefined && checkData != null&&checkData?.SharewebTaskType!=null ) {
       if (checkData?.SharewebTaskType?.Title == 'Workstream') {
         checkData['NoteCall'] = 'Task'
         console.log(MeetingItems[MeetingItems.length - 1])
