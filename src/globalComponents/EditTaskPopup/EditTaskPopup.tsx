@@ -49,6 +49,7 @@ import { TooltipHost, ITooltipHostStyles } from '@fluentui/react/lib/Tooltip';
 import { useId } from '@fluentui/react-hooks';
 
 var AllMetaData: any = []
+var attachments:any=[]
 var taskUsers: any = []
 var IsShowFullViewImage = false;
 var CommentBoxData: any = [];
@@ -228,6 +229,22 @@ const EditTaskPopup = (Items: any) => {
             siteUrls = AllListIdData.siteUrl
 
         }
+    }
+    const loadTime = async()=>{
+        var SiteId = "Task" + Items.Items.siteType;
+        let web = new Web(siteUrls);
+  const TimeEntry = await web.lists.getByTitle('TaskTimeSheetListNew').items.select(`${SiteId}/Id, Id,Title,TaskDate,Created,Modified,TaskTime,Description,SortOrder,AdditionalTimeEntry,AuthorId,Author/Title,Editor/Id,Editor/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title`).expand(`${SiteId},Editor,Author,Category,TimesheetTitle`)
+  .filter(`${SiteId}/Id eq '${Items?.Items?.Id}'`)
+ .get();  
+
+ console.log(TimeEntry)
+ TimeEntry?.forEach((item:any)=>{
+    if(item.AdditionalTimeEntry != undefined && item.AdditionalTimeEntry != ''){
+        timesheetData.push(item)
+    }
+ })
+
+
     }
     React.useEffect(() => {
         if (FeedBackCount == 0) {
@@ -1949,6 +1966,7 @@ const EditTaskPopup = (Items: any) => {
     // ******************** This is Task All Details Update Function  ***************************
 
     const UpdateTaskInfoFunction = async (typeFunction: any) => {
+
         let TaskShuoldBeUpdate = true;
         let DataJSONUpdate: any = await MakeUpdateDataJSON();
         if (EnableSiteCompositionValidation) {
@@ -2075,7 +2093,12 @@ const EditTaskPopup = (Items: any) => {
         }
     }
 
-    const MakeUpdateDataJSON = () => {
+    const MakeUpdateDataJSON = async() => {
+
+        // const attachments = await web.lists.getByTitle('TimesheetListNewId')
+        // .items.getById(Items.Items.Id)
+        // .attachmentFiles.get();
+        
         var UploadImageArray: any = []
         if (TaskImages != undefined && TaskImages.length > 0) {
             TaskImages?.map((imgItem: any) => {
@@ -2380,8 +2403,8 @@ const EditTaskPopup = (Items: any) => {
 
     const getTeamConfigData = React.useCallback((teamConfigData: any, Type: any) => {
         if (Type == "TimeSheet") {
-            timesheetData = teamConfigData;
-            console.log(timesheetData)
+            const timesheetDatass = teamConfigData;
+            console.log(timesheetDatass)
         } else {
             if (ChangeTaskUserStatus) {
                 if (teamConfigData?.AssignedTo?.length > 0) {
@@ -3078,6 +3101,12 @@ const EditTaskPopup = (Items: any) => {
 
 
     const copyAndMoveTaskFunctionOnBackendSide = async (FunctionsType: any) => {
+        loadTime();
+//         var SiteId = "Task" + Items.Items.siteType;
+//         let web = new Web(siteUrls);
+//   const TimeEntry = await web.lists.getByTitle('TimesheetListNewId').items.select(`${SiteId}/Id`).expand(`${SiteId}`)
+//   .filter(`${SiteId}/Id eq '${Items?.Items?.Id}'`)
+//  .get(); 
 
         let TaskDataJSON: any = await MakeUpdateDataJSON();;
         if (SiteTypes != undefined && SiteTypes.length > 0) {
@@ -3092,6 +3121,48 @@ const EditTaskPopup = (Items: any) => {
                 let web = new Web(siteUrls);
                 await web.lists.getByTitle(SelectedSite).items.add(TaskDataJSON).then(async (res: any) => {
                     newGeneratedId = res.data.Id;
+
+                //    const attachmentss = await web.lists.getById(Items?.Items?.listId)
+                //     .items.getById(Items.Items.Id)
+                //     .attachmentFiles.get();
+
+                    // const imageData = await attachmentss.download();
+                    // for (const attachment of attachments) {
+                    //     await web.lists.getByTitle(SelectedSite)
+                    //       .items.getById(newGeneratedId)
+                    //       .attachmentFiles.add(attachment?.FileName, imageData);
+                    //   }
+
+                    // for (const attachmentName of attachmentss) {
+                    //     var attachmentEndpoint = web.lists.getById(Items?.Items?.listId)
+                    //       .items.getById(Items.Items.Id)
+                    //       .attachmentFiles.getByName(attachmentName.FileName).toUrl();
+                
+                    //     const response = await fetch(attachmentEndpoint);
+                    //     const attachmentData = await response.arrayBuffer();
+
+                    //     var uint8Arrayw:any = new Uint8Array(attachmentData);
+                        //var uint8Arrayss = new Uint8Array(response.arrayBuffer());
+
+                       
+                        // var byteArray = new Uint8Array(atob(uint8Arrayw)?.split("")?.map(function (c) {
+                        //     return c.charCodeAt(0);
+                        // }));
+                        // const data: any = byteArray
+                        // var fileData = '';
+                        // for (var i = 0; i < byteArray.byteLength; i++) {
+                        //     fileData += String.fromCharCode(byteArray[i]);
+                        // }
+
+                
+                    //    const MyImage = await web.lists.getByTitle(SelectedSite)
+                    //       .items.getById(newGeneratedId)
+                    //       .attachmentFiles.add(attachmentName?.FileName, uint8Arrayw);
+
+                    //       console.log(MyImage)
+                    //   }
+
+
                     if (FunctionsType == "Copy-Task") {
                         newGeneratedId = res.data.Id;
                         console.log(`Task Copied Successfully on ${SelectedSite} !!!!!`);
