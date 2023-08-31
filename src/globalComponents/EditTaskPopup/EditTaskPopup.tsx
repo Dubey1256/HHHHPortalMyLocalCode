@@ -761,7 +761,10 @@ const EditTaskPopup = (Items: any) => {
                     let param: any = Moment(new Date().toLocaleString())
                     var FeedBackItem: any = {};
                     FeedBackItem['Title'] = "FeedBackPicture" + param;
-                    FeedBackItem['FeedBackDescriptions'] = [];
+                    FeedBackItem['FeedBackDescriptions'] = [{
+                        Title: "\n<p></p>",
+                        Completed: false,
+                    }];
                     FeedBackItem['ImageDate'] = "" + param;
                     FeedBackItem['Completed'] = '';
                     updateFeedbackArray = [FeedBackItem]
