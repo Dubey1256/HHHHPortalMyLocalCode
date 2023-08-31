@@ -288,12 +288,8 @@ const MeetingPopupComponent = (Props: any) => {
 
     const onRenderCustomHeaderMain = () => {
         return (
-            // <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
             <div className="d-flex full-width pb-1">
                 <div className="subheading">
-                    {/* <img className="imgWid29 pe-1 mb-1 "
-                    // src={Items.Items.SiteIcon} 
-                    /> */}
                     <span className="siteColor ms-1">
                         {`${MeetingData.PortfolioStructureID != undefined || MeetingData.PortfolioStructureID != null ? MeetingData.PortfolioStructureID : ""} ${MeetingData.Title != undefined || MeetingData.Title != null ? MeetingData.Title : ""}`}
                     </span>
@@ -738,24 +734,28 @@ const MeetingPopupComponent = (Props: any) => {
             >
                 <div className="modal-body mb-5 my-2">
                     <div className="d-flex justify-content-between">
-                        <div className="col-md-8">
-                            <label className="form-label">Title</label>
-                            <input type="text" className="form-control" placeholder="Task Name"
-                                defaultValue={MeetingData.Title}
-                                onChange={(e) => setMeetingData({ ...MeetingData, Title: e.target.value })}
-                            />
-                            <label className="form-label full-width">Meeting Date
-                            </label>
-                            <input type="date" className="form-control" placeholder="Enter Due Date" max="9999-12-31"
-                                min={MeetingData.Created ? Moment(MeetingData.Created).format("YYYY-MM-DD") : ""}
-                                defaultValue={MeetingData.DueDate ? Moment(MeetingData.DueDate).format("YYYY-MM-DD") : ''}
-                                onChange={(e) => setMeetingData({
-                                    ...MeetingData, DueDate: e.target.value
-                                })}
-                            />
-                            <div className="col mt-2">
+                        <div className="col-md-8 d-flex justify-content-between">
+                            <div className="col-4">
+                                <label className="form-label">Title</label>
+                                <input type="text" className="form-control" placeholder="Task Name"
+                                    defaultValue={MeetingData.Title}
+                                    onChange={(e) => setMeetingData({ ...MeetingData, Title: e.target.value })}
+                                />
+                            </div>
+                            <div className="col-4 mx-2">
+                                <label className="form-label full-width">Meeting Date
+                                </label>
+                                <input type="date" className="form-control" placeholder="Enter Due Date" max="9999-12-31"
+                                    min={MeetingData.Created ? Moment(MeetingData.Created).format("YYYY-MM-DD") : ""}
+                                    defaultValue={MeetingData.DueDate ? Moment(MeetingData.DueDate).format("YYYY-MM-DD") : ''}
+                                    onChange={(e) => setMeetingData({
+                                        ...MeetingData, DueDate: e.target.value
+                                    })}
+                                />
+                            </div>
+                            <div className="col-3">
                                 <div className="input-group">
-                                    <label className="form-label full-width mx-2">
+                                    <label className="form-label full-width mx-2 mb-1">
                                         {MeetingData.TaskAssignedUsers?.length > 0 ? 'Working Member' : ""}
                                     </label>
                                     {MeetingData.TaskAssignedUsers?.map((userDtl: any, index: any) => {
