@@ -114,8 +114,9 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     const CustomFooter = () => {
         return (
             <footer className={ComponentType == "Service" ? "me-3 p-2 serviepannelgreena text-end" : "me-3 p-2 text-end"}>  
+               
+                <button type="button" className="btn btn-primary me-1" onClick={setModalIsOpenToOK}>OK</button>
                 <button type="button" className="btn btn-default" onClick={setModalIsOpenToFalse}>Cancel</button>
-                <button type="button" className="btn btn-primary ms-1" onClick={setModalIsOpenToOK}>OK</button>
             </footer>
         )
     }
