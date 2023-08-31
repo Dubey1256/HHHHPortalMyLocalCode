@@ -84,7 +84,6 @@ var EditDataBackup: any;
 var AllClientCategoryDataBackup: any = [];
 var selectedClientCategoryData: any = [];
 var GlobalServiceAndComponentData: any = [];
-var timesheetData: any = [];
 var AddImageDescriptionsIndex: any;
 
 const EditTaskPopup = (Items: any) => {
@@ -2487,7 +2486,10 @@ const EditTaskPopup = (Items: any) => {
                 let web = new Web(siteUrls);
                 await web.lists.getById(Items.Items.listName).items.getById(itemId).recycle();
             }
-
+   if(Items.Items.Action == 'Move'){
+    let Url = `${siteUrls}/SitePages/Task-Profile.aspx?taskId=${newGeneratedId}&Site=${site}`
+    window.location.href = Url;
+   }
             if (Items?.pageName == "TaskFooterTable") {
                 var ItmesDelete: any = {
                     data: {
@@ -3173,6 +3175,7 @@ const EditTaskPopup = (Items: any) => {
                         if (timesheetData != undefined && timesheetData.length > 0) {
                             await moveTimeSheet(SelectedSite, res.data);
                         } else {
+                            Items.Items.Action = 'Move'
                             deleteItemFunction(Items.Items.Id);
                         }
                     }
@@ -3213,6 +3216,7 @@ const EditTaskPopup = (Items: any) => {
             }).then((res) => {
                 count++
                 if (count == timesheetData.length) {
+                    Items.Items.Action ='Move';
                     deleteItemFunction(Items.Items.Id);
                 }
             })

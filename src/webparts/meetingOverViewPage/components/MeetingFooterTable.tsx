@@ -17,7 +17,7 @@ import {
 import { FaCompressArrowsAlt } from 'react-icons/fa';
 import { mycontextValue } from './MeetingProfile';
 import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
-import GlobalCommanTable from '../../../globalComponents/GlobalCommanTable';
+import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 
  const MettingTable=(props:any)=>{
     const contextdata: any = React.useContext(mycontextValue)
