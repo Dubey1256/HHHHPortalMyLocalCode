@@ -665,7 +665,7 @@ function TasksTable(props: any) {
         cell: ({ row, getValue }) => (
           <div>
             {row?.original?.TitleNew != "Tasks" ?
-              <ReactPopperTooltip ShareWebId={getValue()} row={row} />
+              <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={props?.AllListId} />
               : ''}
           </div>
         ),
