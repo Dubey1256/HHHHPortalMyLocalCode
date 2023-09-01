@@ -41,7 +41,7 @@ import { Filter, DefaultColumnFilter } from '../ReactTableComponents/filters';
 import ShowTaskTeamMembers from "../ShowTaskTeamMembers";
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import EmailComponent from "../EmailComponents";
-import SiteCompositionComponent from "./SiteCompositionComponent";
+// import SiteCompositionComponent from "./SiteCompositionComponent";
 import SmartTotalTime from './SmartTimeTotal';
 import "react-datepicker/dist/react-datepicker.css";
 import BackgroundCommentComponent from "./BackgroundCommentComponent";
