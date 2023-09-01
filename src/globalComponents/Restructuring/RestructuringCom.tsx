@@ -2587,7 +2587,7 @@ const setRestructure = (item: any, title: any) => {
       
         
 
-<span>
+
 
   
 {
@@ -2810,9 +2810,9 @@ const setRestructure = (item: any, title: any) => {
                         </Panel>  : ''
                   
                         }
-</span>
 
-<span>
+
+
   {
     ResturuningOpen === true && restructureItem?.length > 1 ? 
     <Panel isOpen={ResturuningOpen}
@@ -2842,10 +2842,9 @@ const setRestructure = (item: any, title: any) => {
       </footer>
     </Panel> : ""
   }
-</span>
                         
 
-<span>
+
 {
   trueTopCompo == true ? 
   <span>
@@ -2867,7 +2866,7 @@ const setRestructure = (item: any, title: any) => {
 </span>
           : ''
 }
-</span>
+
 
 
 
