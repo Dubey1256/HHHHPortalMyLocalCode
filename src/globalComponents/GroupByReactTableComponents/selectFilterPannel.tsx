@@ -47,7 +47,7 @@ const SelectFilterPanel = (props: any) => {
     const onRenderCustomHeader = () => {
         return (
             <div className="d-flex full-width pb-1">
-                <div style={{ marginRight: 'auto', fontSize: '20px', fontWeight: '600', marginLeft: '20px' }}>
+                <div className="subheading">
                     <span style={{ color: `${props?.portfolioColor}` }}>Select Filter</span>
                 </div>
             </div>
@@ -64,7 +64,7 @@ const SelectFilterPanel = (props: any) => {
             isBlocking={props?.isOpen}
         // onRenderFooter={CustomFooter}
         >
-            <div className="modal-body p-0 mt-2">
+            <div className="modal-body p-0 mt-2 mb-3">
                 <div className="col-sm-12 p-0 smart">
                     <div className="">
                         <div>
@@ -112,10 +112,10 @@ const SelectFilterPanel = (props: any) => {
                 </div>
             </div>
             <footer>
-            <button type="button" className="btn btn-default mx-1 me-2 pull-right" style={{ backgroundColor: `${props?.portfolioColor}` }} onClick={setModalIsOpenToFalse}>
+            <button type="button" className="btn btn-default pull-right" style={{ backgroundColor: `${props?.portfolioColor}` }} onClick={setModalIsOpenToFalse}>
                     Cancel
                 </button>
-                <button type="button" className="btn btn-primary pull-right" style={{ backgroundColor: `${props?.portfolioColor}` }} onClick={() => handleChangeData()}>
+                <button type="button" className="btn btn-primary mx-1 pull-right" style={{ backgroundColor: `${props?.portfolioColor}` }} onClick={() => handleChangeData()}>
                     Apply
                 </button>
                 

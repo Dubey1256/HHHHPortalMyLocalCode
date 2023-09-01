@@ -19,9 +19,8 @@ import SmartInformation from '../../taskprofile/components/SmartInformation';
 import RelevantDocuments from '../../taskprofile/components/RelevantDocuments';
 import MeetingPopupComponent from '../../../globalComponents/MeetingPopup/MeetingPopup';
 import TagTaskToProjectPopup from '../../projectManagement/components/TagTaskToProjectPopup';
-
-import { map } from 'jquery';
 import MettingTable from './MeetingFooterTable';
+import { map } from 'jquery';
 
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
@@ -797,15 +796,16 @@ const MeetingProfile = (props: any) => {
                             > <span className='svg__iconbox svg__icon--edit'></span></a>
 
                         </span>
-                    </h2>
-                </section>
-              {resultData!=null&&< TagTaskToProjectPopup   projectItem={resultData}
+                     {resultData.Id!=null&& <span>< TagTaskToProjectPopup   projectItem={resultData}
                                   className="ms-2"
                                   meetingPages={true}
                                   projectId={resultData.ID}
                                   AllListId={AllListId}
                                   callBack={tagAndCreateCallBack}
-                                  projectTitle={resultData.Title}/> }
+                                  projectTitle={resultData.Title}/> </span>}
+                    </h2>
+                </section>
+            
             </div>
 
             <div className='row'>
