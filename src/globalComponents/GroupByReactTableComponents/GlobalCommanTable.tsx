@@ -846,7 +846,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
             </div>}
 
             <table className="SortingTable table table-hover mb-0" id='my-table' style={{ width: "100%" }}>
-                <thead className='fixed-Header top-0'>
+                <thead className={showHeader === true ? 'fixedSmart-Header top-0' : 'fixed-Header top-0'}>
                     {table.getHeaderGroups().map((headerGroup: any) => (
                         <tr key={headerGroup.id} >
                             {headerGroup.headers.map((header: any) => {
