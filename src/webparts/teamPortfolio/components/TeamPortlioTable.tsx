@@ -367,9 +367,9 @@ function TeamPortlioTable(SelectedProp: any) {
                             // if (result["TaskID"] == undefined) {
                             //     result["TaskID"] = "";
                             // }
-
+                            // && result.PortfolioType != undefined
                             taskTypeDataItem?.map((type: any) => {
-                                if (result?.TaskType?.Title === type.Title && result.PortfolioType != undefined) {
+                                if (result?.TaskType?.Title === type.Title) {
                                     type[type.Title + 'number'] += 1;
                                 }
                             })
@@ -672,16 +672,18 @@ function TeamPortlioTable(SelectedProp: any) {
             console.log("items", items);
         }
         let findActivity = smartAllFilterData?.filter((elem: any) => elem?.TaskType?.Id === levelType.Id && elem?.Portfolio?.Id === items?.Id);
-        let findTasks = smartAllFilterData?.filter((elem1: any) => elem1?.TaskType?.Id != levelType.Id && elem1?.ParentTask?.Id === items?.Id);
+        let findTasks = smartAllFilterData?.filter((elem1: any) => elem1?.TaskType?.Id != levelType.Id && elem1?.Portfolio?.Id === items?.Id);
         findActivity?.forEach((act: any) => {
             act.subRows = [];
-            let worstreamAndTask = smartAllFilterData?.filter((taskData: any) => taskData?.ParentTask?.Id === act?.Id && taskData?.siteType === act?.siteType)
+            let worstreamAndTask = findTasks?.filter((taskData: any) => taskData?.ParentTask?.Id === act?.Id && taskData?.siteType === act?.siteType)
+            findTasks = findTasks?.filter((taskData: any) => taskData?.ParentTask?.Id != act?.Id && taskData?.siteType != act?.siteType);
             if (worstreamAndTask.length > 0) {
                 act.subRows = act?.subRows?.concat(worstreamAndTask);
             }
             worstreamAndTask?.forEach((wrkst: any) => {
                 wrkst.subRows = wrkst.subRows === undefined ? [] : wrkst.subRows;
-                let allTasksData = smartAllFilterData?.filter((elem: any) => elem?.ParentTask?.Id === wrkst?.Id && elem?.siteType === wrkst?.siteType);
+                let allTasksData = findTasks?.filter((elem: any) => elem?.ParentTask?.Id === wrkst?.Id && elem?.siteType === wrkst?.siteType);
+                findTasks = findTasks?.filter((elem: any) => elem?.ParentTask?.Id != wrkst?.Id && elem?.siteType != wrkst?.siteType);
                 if (allTasksData.length > 0) {
                     wrkst.subRows = wrkst?.subRows?.concat(allTasksData)
                 }
