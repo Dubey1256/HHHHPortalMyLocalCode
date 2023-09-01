@@ -3811,7 +3811,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
               bottom: "0px",
               background: "#FAFAFA"
             }}>
-              <div className="align-items-center d-flex justify-content-between px-4 py-2">
+              <div className="align-items-center d-flex justify-content-between me-5 py-2">
                 <div>
                   <div className="text-left">
                     Created{" "}
