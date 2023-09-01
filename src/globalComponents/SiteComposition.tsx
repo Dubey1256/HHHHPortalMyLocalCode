@@ -157,7 +157,7 @@ export default function Sitecomposition(datas: any) {
 
   return (
     <>
-      {(show && ClientTimeArray.length > 0) &&
+      {/* {(show && ClientTimeArray.length > 0) && */}
         <>
           <dl className="Sitecomposition">
             <div className='dropdown'>
@@ -224,7 +224,7 @@ export default function Sitecomposition(datas: any) {
             </div>
           </Panel>
         </>
-      }
+      {/* } */}
     </>
   );
 }
