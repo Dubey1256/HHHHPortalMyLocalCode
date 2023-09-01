@@ -152,7 +152,8 @@ const EditSiteComposition = (Props: any) => {
                 isOpen={EditSiteCompositionStatus}
                 onDismiss={closeEditSiteCompositionModel}
                 isBlocking={false}
-                type={PanelType.medium}
+                type={PanelType.custom}
+                customWidth="900px"
             >
                 <div className={ServicesTaskCheck ? "serviepannelgreena pt-3 edit-site-composition-on-task-profile" : "pt-3 edit-site-composition-on-task-profile"}>
                     {SiteTypes?.length > 0 ?
