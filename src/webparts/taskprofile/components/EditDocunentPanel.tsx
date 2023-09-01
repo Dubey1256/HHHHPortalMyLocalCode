@@ -199,6 +199,7 @@ const EditDocumentpanel=(props:any)=>{
           setisopencomonentservicepopup(true)
         }else{
           alert("Please Choose Component/Service")
+          console.log("test")
         }
      
       }
