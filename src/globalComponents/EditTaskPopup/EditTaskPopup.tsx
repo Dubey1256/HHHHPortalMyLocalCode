@@ -777,7 +777,10 @@ const EditTaskPopup = (Items: any) => {
                     let param: any = Moment(new Date().toLocaleString())
                     var FeedBackItem: any = {};
                     FeedBackItem['Title'] = "FeedBackPicture" + param;
-                    FeedBackItem['FeedBackDescriptions'] = [];
+                    FeedBackItem['FeedBackDescriptions'] = [{
+                        Title: "\n<p></p>",
+                        Completed: false,
+                    }];
                     FeedBackItem['ImageDate'] = "" + param;
                     FeedBackItem['Completed'] = '';
                     updateFeedbackArray = [FeedBackItem]
@@ -818,7 +821,7 @@ const EditTaskPopup = (Items: any) => {
                         item.BackgroundImages = []
                     }
                 }
-                if (item.EstimatedTimeDescription != undefined || item.EstimatedTimeDescription != null && item.EstimatedTimeDescription?.length > 0) {
+                if ((item.EstimatedTimeDescription != undefined || item.EstimatedTimeDescription != null) && item.EstimatedTimeDescription?.length > 5) {
                     item.EstimatedTimeDescriptionArray = JSON.parse(item.EstimatedTimeDescription);
                     let tempArray: any = JSON.parse(item.EstimatedTimeDescription);
                     let tempTimeData: any = 0;

@@ -108,7 +108,7 @@ export function Filter({
     const columnFilterValue = column.getFilterValue();
     // style={{ width: placeholder?.size }}
     return (
-        <input style={{ width: "100%" }} className="me-1 mb-1 mx-1 on-search-cross"
+        <input style={{ width: "100%" }} className="me-1 my-1 mx-1 on-search-cross"
             // type="text"
             title={placeholder?.placeholder}
             type="search"
@@ -147,7 +147,7 @@ let forceExpanded: any = [];
 const getFirstColHeader = ({ hasCheckbox, hasExpanded, isHeaderNotAvlable }: any) => {
     return ({ table }: any) => (
         <>
-            {hasExpanded && isHeaderNotAvlable != true && (<>
+            {hasExpanded &&  isHeaderNotAvlable != true && (<>
                 <span className="border-0 bg-Ff" {...{ onClick: table.getToggleAllRowsExpandedHandler(), }}>
                     {table.getIsAllRowsExpanded() ? (
                         <SlArrowDown title='Tap to collapse the childs' />) : (<SlArrowRight title='Tap to expand the childs' />)}
@@ -327,7 +327,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     header: getFirstColHeader({
                         hasCheckbox: elem.hasCheckbox,
                         hasExpanded: elem.hasExpanded,
-                        isHeaderNotAvlable: elem.isHeaderNotAvlable
+                        isHeaderNotAvlable:elem.isHeaderNotAvlable
                     }),
                     cell: getFirstColCell({
                         setExpanded,
@@ -499,34 +499,34 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 restructureFunct(true)
                 table?.getSelectedRowModel()?.flatRows?.map((elem: any) => {
                     if (elem?.getParentRows() != undefined) {
-                        // parentData = elem?.parentRow;
-                        // parentDataCopy = elem?.parentRow?.original
-                        parentDataCopy = elem?.getParentRows()[0]?.original;
-                        // if (parentData != undefined && parentData?.parentRow != undefined) {
+                    // parentData = elem?.parentRow;
+                    // parentDataCopy = elem?.parentRow?.original
+                    parentDataCopy = elem?.getParentRows()[0]?.original;
+                    // if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                        //     parentData = elem?.parentRow?.parentRow
-                        //     parentDataCopy = elem?.parentRow?.parentRow?.original
+                    //     parentData = elem?.parentRow?.parentRow
+                    //     parentDataCopy = elem?.parentRow?.parentRow?.original
 
-                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                        //         parentData = elem?.parentRow?.parentRow?.parentRow
-                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
-                        //     }
-                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                    //         parentData = elem?.parentRow?.parentRow?.parentRow
+                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
+                    //     }
+                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                        //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
-                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                        //     }
-                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                    //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
+                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                    //     }
+                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                        //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                        //     }
-                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
-                        //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                        //     }
-                        // }
+                    //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                    //     }
+                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                    //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                    //     }
+                    // }
                     }
                     if (parentDataCopy) {
                         elem.original.parentDataId = parentDataCopy
@@ -726,7 +726,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
     return (
         <>
-            {showHeader === true && <div className='tbl-headings justify-content-between mb-1'>
+            {showHeader === true && <div className='tbl-headings justify-content-between mb-1 fixed-Header top-0' style={{background:'#e9e9e9'}}>
                 <span className='leftsec'>
                     {showingAllPortFolioCount === true ? <div className='mb-1'>
                         <label style={{ color: `${portfolioColor}` }}>
