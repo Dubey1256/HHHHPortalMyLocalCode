@@ -5993,13 +5993,11 @@ const EditTaskPopup = (Items: any) => {
                             </div>
                         </div>
                         <div className="tab-pane " id="IMAGETIMESHEET" role="tabpanel" aria-labelledby="IMAGETIMESHEET">
-                            <div className="d-flex">
-                                <div className="col-sm-7">
-                                    <NewTameSheetComponent props={Items} AllListId={AllListIdData}
-                                        TeamConfigDataCallBack={getTeamConfigData}
-                                    />
-                                </div>
-                                <div className="col-sm-5">
+                            <div>
+                                <NewTameSheetComponent props={Items} AllListId={AllListIdData}
+                                    TeamConfigDataCallBack={getTeamConfigData}
+                                />
+                                {/* <div className="col-sm-5">
                                     {EditData.Id != null && AllListIdData.isShowSiteCompostion ?
                                         <div className="site-composition-on-task-popup">
                                             {SiteTypes != undefined && SiteTypes.length > 0 ?
@@ -6021,7 +6019,7 @@ const EditTaskPopup = (Items: any) => {
                                         </div>
                                         : null
                                     }
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                         {IsUserFromHHHHTeam ? null :
