@@ -157,7 +157,7 @@ export default function Sitecomposition(datas: any) {
 
   return (
     <>
-      {(show && ClientTimeArray.length > 0) &&
+      {/* {(show && ClientTimeArray.length > 0) && */}
         <>
           <dl className="Sitecomposition">
             <div className='dropdown'>
@@ -204,7 +204,8 @@ export default function Sitecomposition(datas: any) {
             isOpen={EditSiteCompositionStatus}
             onDismiss={() => setEditSiteCompositionStatus(false)}
             isBlocking={EditSiteCompositionStatus}
-            type={PanelType.medium}
+            type={PanelType.custom}
+            customWidth="900px"
           >
             <div className={ServicesTaskCheck ? "serviepannelgreena pt-3" : "pt-3"}>
               {EditSiteCompositionStatus ? <SiteCompositionComponent
@@ -224,7 +225,7 @@ export default function Sitecomposition(datas: any) {
             </div>
           </Panel>
         </>
-      }
+      {/* } */}
     </>
   );
 }
