@@ -204,7 +204,8 @@ export default function Sitecomposition(datas: any) {
             isOpen={EditSiteCompositionStatus}
             onDismiss={() => setEditSiteCompositionStatus(false)}
             isBlocking={EditSiteCompositionStatus}
-            type={PanelType.medium}
+            type={PanelType.custom}
+            customWidth="900px"
           >
             <div className={ServicesTaskCheck ? "serviepannelgreena pt-3" : "pt-3"}>
               {EditSiteCompositionStatus ? <SiteCompositionComponent
