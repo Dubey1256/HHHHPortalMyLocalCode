@@ -45,6 +45,7 @@ const EditDocumentpanel=(props:any)=>{
     const handleClosedoc = () => {
         setEditdocpanel(false)
         props.callbackeditpopup();
+        
         // handleClose();
       }
       let ItemRank = [
@@ -137,8 +138,14 @@ const EditDocumentpanel=(props:any)=>{
             }
             // handleClose();
             setallSetValue({ ...allValue, EditTaskpopupstatus: false })
+
             setEditdocpanel(false);
-            props.callbackeditpopup();
+            if(props.Keydoc){
+              props.callbackeditpopup(EditdocumentsData);
+            }else{
+              props.callbackeditpopup();
+            }
+           
             // GetResult();
           }).catch((err: any) => {
             console.log(err)
