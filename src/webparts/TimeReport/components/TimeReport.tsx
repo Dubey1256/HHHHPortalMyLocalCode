@@ -1136,7 +1136,7 @@ var ReportDate = new Date(a1)
     
     return (
         <>
-        <div className='ContentSection'>
+        <section className='ContentSection'>
             <div className='row'>
                 <div className='col-sm-3 text-primary'>
                     <h3 className="heading">Time Report
@@ -1203,8 +1203,8 @@ var ReportDate = new Date(a1)
                     </table>
                 </div>
             </div>
-            </div>
-             <div className='TableContentSection'>
+         </section>
+             <section className='TableContentSection'>
             <div className='Alltable'>
             
              {
@@ -1237,7 +1237,7 @@ var ReportDate = new Date(a1)
                   loadedClassName="loadedContent"
                 />
             </div>
-            </div>
+            </section>
             <Panel
                 onRenderHeader={onRenderCustomHeaderMain}
                 type={PanelType.custom}

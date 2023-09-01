@@ -1047,7 +1047,6 @@ const CreateActivity = (props: any) => {
                             SharewebTaskTypeId: 1,
                             Body: AllItems.Body,
                             FeedBack: FeedBackItemArray[0] != "" ? JSON.stringify(FeedBackItemArray) : null,
-                            ParentTaskId: portFolio,
                             SharewebTaskLevel1No: value.LatestTaskNumber,
                             AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
                             Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },

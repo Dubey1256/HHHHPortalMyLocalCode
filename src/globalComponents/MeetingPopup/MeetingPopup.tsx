@@ -32,6 +32,9 @@ const MeetingPopupComponent = (Props: any) => {
     const [TaskImages, setTaskImages] = React.useState([]);
     const [UploadBtnStatus, setUploadBtnStatus] = React.useState(false);
     const [HoverImageData, setHoverImageData] = React.useState([]);
+    const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
+    const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
+    const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
     const [hoverImageModal, setHoverImageModal] = React.useState('None');
     const AllTaskUsersData: any = contextdata?.taskUsers;
     const AllListIdData = contextdata?.AllListId;
@@ -73,7 +76,7 @@ const MeetingPopupComponent = (Props: any) => {
             smartMeta = await web.lists
                 .getById(AllListIdData?.MasterTaskListID)
                 .items
-                .select("Id", "Title", "DueDate", "AssignedTo/Id", "Attachments", "FeedBack", "PortfolioStructureID", "AssignedTo/Title", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", 'AttachmentFiles', "ShortDescriptionVerified", "SharewebTaskType/Title", "BasicImageInfo", 'Author/Id', 'Author/Title', "Editor/Title", "Editor/Id", "OffshoreComments", "OffshoreImageUrl", "Team_x0020_Members/Id", "Team_x0020_Members/Title")
+                .select("Id", "Title", "DueDate", "AssignedTo/Id", "Attachments", "FeedBack", "Created", "Modified", "PortfolioStructureID", "AssignedTo/Title", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", 'AttachmentFiles', "ShortDescriptionVerified", "SharewebTaskType/Title", "BasicImageInfo", 'Author/Id', 'Author/Title', "Editor/Title", "Editor/Id", "OffshoreComments", "OffshoreImageUrl", "Team_x0020_Members/Id", "Team_x0020_Members/Title")
                 .top(5000)
                 .filter(`Id eq ${Props.Items.Id}`).expand("AssignedTo", 'Responsible_x0020_Team', "AttachmentFiles", "Author", 'SharewebTaskType', "Editor", "Team_x0020_Members").get();
 
@@ -99,6 +102,9 @@ const MeetingPopupComponent = (Props: any) => {
                     })
                 })
                 item.TaskAssignedUsers = AssignedUsers;
+                setTaskAssignedTo(item.AssignedTo ? item.AssignedTo : []);
+                setTaskResponsibleTeam(item.Responsible_x0020_Team ? item.Responsible_x0020_Team : []);
+                setTaskTeamMembers(item.Team_x0020_Members ? item.Team_x0020_Members : []);
                 if (item.component_x0020_link != null) {
                     item.Relevant_Url = item.component_x0020_link.Url
                 }
@@ -141,12 +147,18 @@ const MeetingPopupComponent = (Props: any) => {
                     let param: any = Moment(new Date().toLocaleString())
                     var FeedBackItem: any = {};
                     FeedBackItem['Title'] = "FeedBackPicture" + param;
-                    FeedBackItem['FeedBackDescriptions'] = [];
+                    FeedBackItem['FeedBackDescriptions'] = [
+                        {
+                            Title: "\n<p></p>",
+                            Completed: false,
+                        }
+                    ];
                     FeedBackItem['ImageDate'] = "" + param;
                     FeedBackItem['Completed'] = '';
                     updateFeedbackArray = [FeedBackItem]
                     let tempArray: any = [FeedBackItem]
                     item.FeedBack = JSON.stringify(tempArray);
+                    item.FeedBackArray = tempArray[0].FeedBackDescriptions;
                     item.FeedBackBackupArray = JSON.stringify(tempArray);
                 }
                 setMeetingData(item)
@@ -167,6 +179,9 @@ const MeetingPopupComponent = (Props: any) => {
 
 
     const UpdateMeetingDetailsFunction = async () => {
+        let AssignedToIds: any = [];
+        let TeamMemberIds: any = [];
+        let ResponsibleTeamIds: any = [];
         if (CommentBoxData?.length > 0 || SubCommentBoxData?.length > 0) {
             if (CommentBoxData?.length == 0 && SubCommentBoxData?.length > 0) {
                 let message = JSON.parse(MeetingData.FeedBack);
@@ -198,6 +213,7 @@ const MeetingPopupComponent = (Props: any) => {
                 }
                 updateFeedbackArray[0].FeedBackDescriptions = result;
             }
+
             if (CommentBoxData?.length > 0 && SubCommentBoxData?.length == 0) {
                 let result: any = [];
                 if (SubCommentBoxData == "delete") {
@@ -230,15 +246,34 @@ const MeetingPopupComponent = (Props: any) => {
         } else {
             updateFeedbackArray = JSON.parse(MeetingData.FeedBack);
         }
+
+        if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
+            TaskAssignedTo?.map((taskInfo) => {
+                AssignedToIds.push(taskInfo.Id);
+            })
+        }
+
+        if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
+            TaskTeamMembers?.map((taskInfo) => {
+                TeamMemberIds.push(taskInfo.Id);
+            })
+        }
+
+        if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
+            TaskResponsibleTeam?.map((taskInfo) => {
+                ResponsibleTeamIds.push(taskInfo.Id);
+            })
+        }
+
         try {
             let web = new Web(siteUrls);
             await web.lists.getById(AllListIdData?.MasterTaskListID).items.getById(Props.Items.Id).update({
                 Title: MeetingData.Title,
                 DueDate: MeetingData.DueDate ? Moment(MeetingData.DueDate).format("MM-DD-YYYY") : null,
                 FeedBack: updateFeedbackArray?.length > 0 ? JSON.stringify(updateFeedbackArray) : null,
-                // AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds.length > 0) ? AssignedToIds : [] },
-                // Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0) ? ResponsibleTeamIds : [] },
-                // Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds.length > 0) ? TeamMemberIds : [] }
+                AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds.length > 0) ? AssignedToIds : [] },
+                Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0) ? ResponsibleTeamIds : [] },
+                Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds.length > 0) ? TeamMemberIds : [] }
             }).then(async (res: any) => {
                 console.log("Updated Succesfully !!!!!!", res);
                 closeMeetingPopupFunction();
@@ -253,13 +288,9 @@ const MeetingPopupComponent = (Props: any) => {
 
     const onRenderCustomHeaderMain = () => {
         return (
-            // <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
             <div className="d-flex full-width pb-1">
                 <div className="subheading">
-                    {/* <img className="imgWid29 pe-1 mb-1 "
-                    // src={Items.Items.SiteIcon} 
-                    /> */}
-                    <span className="siteColor">
+                    <span className="siteColor ms-1">
                         {`${MeetingData.PortfolioStructureID != undefined || MeetingData.PortfolioStructureID != null ? MeetingData.PortfolioStructureID : ""} ${MeetingData.Title != undefined || MeetingData.Title != null ? MeetingData.Title : ""}`}
                     </span>
                 </div>
@@ -492,7 +523,6 @@ const MeetingPopupComponent = (Props: any) => {
     }
     const closeAddImageDescriptionFunction = () => {
         setAddImageDescriptions(false);
-        // setAddImageDescriptionsIndex(-1);
         AddImageDescriptionsIndex = undefined;
     }
 
@@ -521,8 +551,6 @@ const MeetingPopupComponent = (Props: any) => {
     const MouseHoverImageFunction = (e: any, HoverImageData: any) => {
         e.preventDefault();
         setHoverImageModal("Block");
-        // let tempArray:any =[];
-        // tempArray.push(HoverImageData)
         setHoverImageData([HoverImageData]);
     }
     const MouseOutImageFunction = (e: any) => {
@@ -532,17 +560,59 @@ const MeetingPopupComponent = (Props: any) => {
 
 
     const DDComponentCallBack = (dt: any) => {
-        // setTeamConfig(dt)
-        // console.log(TeamConfig)
-        // console.log(TeamConfig)
-        // props?.TeamConfigDataCallBack(dt,"TeamConfiguration");
+        console.log("Team Config Callback", dt);
+        if (dt?.AssignedTo?.length > 0) {
+            let tempArray: any = [];
+            dt.AssignedTo?.map((arrayData: any) => {
+                if (arrayData.AssingedToUser != null) {
+                    tempArray.push(arrayData.AssingedToUser)
+                } else {
+                    tempArray.push(arrayData);
+                }
+            })
+            setTaskAssignedTo(tempArray);
+            MeetingData.AssignedTo = tempArray;
+        } else {
+            setTaskAssignedTo([]);
+            MeetingData.AssignedTo = [];
+        }
+        if (dt?.TeamMemberUsers?.length > 0) {
+            let tempArray: any = [];
+            dt.TeamMemberUsers?.map((arrayData: any) => {
+                if (arrayData.AssingedToUser != null) {
+                    tempArray.push(arrayData.AssingedToUser)
+                } else {
+                    tempArray.push(arrayData);
+                }
+            })
+            setTaskTeamMembers(tempArray);
+            MeetingData.Team_x0020_Members = tempArray;
+        } else {
+            setTaskTeamMembers([]);
+            MeetingData.Team_x0020_Members = [];
+        }
+        if (dt?.ResponsibleTeam?.length > 0) {
+            let tempArray: any = [];
+            dt.ResponsibleTeam?.map((arrayData: any) => {
+                if (arrayData.AssingedToUser != null) {
+                    tempArray.push(arrayData.AssingedToUser)
+                } else {
+                    tempArray.push(arrayData);
+                }
+            })
+            setTaskResponsibleTeam(tempArray);
+            MeetingData.Responsible_x0020_Team = tempArray;
+        } else {
+            setTaskResponsibleTeam([]);
+            MeetingData.Responsible_x0020_Team = [];
+        }
     }
 
     const shareThisTaskFunction = (EmailData: any) => {
         var link = "mailTo:"
             + "?cc:"
-            + "&subject=" + " [" + "HHHH" + "-Task ] " + EmailData.Title
-            + "&body=" + `${siteUrls}/SitePages/Task-Profile-spfx.aspx?taskId=${EmailData.ID}` + "&" + `Site=${'HHHH'}`;
+            + "&subject=" + " [" + "HHHH" + "-Meeting ] " + EmailData.Title
+            + "&body=" + `${siteUrls}/SitePages/Meeting-Profile.aspx?taskId=${EmailData.ID}`;
         window.location.href = link;
     }
 
@@ -617,7 +687,7 @@ const MeetingPopupComponent = (Props: any) => {
                             </a>
                             {/* } */}
                             <span>
-                            <button className="btn btn-primary px-3 mx-1"
+                                <button className="btn btn-primary px-4 mx-1"
                                     onClick={UpdateMeetingDetailsFunction}
                                 >
                                     Save
@@ -627,7 +697,6 @@ const MeetingPopupComponent = (Props: any) => {
                                 >
                                     Cancel
                                 </button>
-                              
                             </span>
                         </div>
                     </div>
@@ -665,33 +734,28 @@ const MeetingPopupComponent = (Props: any) => {
             >
                 <div className="modal-body mb-5 my-2">
                     <div className="d-flex justify-content-between">
-                        <div className="col-md-4">
-                            <div>
+                        <div className="col-md-8 d-flex justify-content-between">
+                            <div className="col-4">
                                 <label className="form-label">Title</label>
                                 <input type="text" className="form-control" placeholder="Task Name"
                                     defaultValue={MeetingData.Title}
                                     onChange={(e) => setMeetingData({ ...MeetingData, Title: e.target.value })}
                                 />
                             </div>
-                            <div className="">
-                                <div className="input-group ">
-                                    <div className="form-label full-width">Meeting Date<span title="Re-occurring Due Date">
-
-                                    </span></div>
-                                    <input type="date" className="form-control" placeholder="Enter Due Date" max="9999-12-31"
-                                        min={MeetingData.Created ? Moment(MeetingData.Created).format("YYYY-MM-DD") : ""}
-                                        defaultValue={MeetingData.DueDate ? Moment(MeetingData.DueDate).format("YYYY-MM-DD") : ''}
-                                        onChange={(e) => setMeetingData({
-                                            ...MeetingData, DueDate: e.target.value
-                                        })}
-                                    />
-                                </div>
+                            <div className="col-4 mx-2">
+                                <label className="form-label full-width">Meeting Date
+                                </label>
+                                <input type="date" className="form-control" placeholder="Enter Due Date" max="9999-12-31"
+                                    min={MeetingData.Created ? Moment(MeetingData.Created).format("YYYY-MM-DD") : ""}
+                                    defaultValue={MeetingData.DueDate ? Moment(MeetingData.DueDate).format("YYYY-MM-DD") : ''}
+                                    onChange={(e) => setMeetingData({
+                                        ...MeetingData, DueDate: e.target.value
+                                    })}
+                                />
                             </div>
-                        </div>
-                        <div className="col-md-4">
-                            <div className="col mt-2">
+                            <div className="col-3">
                                 <div className="input-group">
-                                    <label className="form-label full-width mx-2">
+                                    <label className="form-label full-width mx-2 mb-1">
                                         {MeetingData.TaskAssignedUsers?.length > 0 ? 'Working Member' : ""}
                                     </label>
                                     {MeetingData.TaskAssignedUsers?.map((userDtl: any, index: any) => {
@@ -712,6 +776,7 @@ const MeetingPopupComponent = (Props: any) => {
                                 </div>
                             </div>
                         </div>
+
                         <div className="col-md-4">
                             <div className="full_width ">
                                 {MeetingData?.Id != undefined ?
@@ -760,10 +825,10 @@ const MeetingPopupComponent = (Props: any) => {
                                                     <div key={index} className="image-item">
                                                         <div className="my-1">
                                                             <div>
-                                                                <input type="checkbox" className="form-check-input"
+                                                                {/* <input type="checkbox" className="form-check-input"
                                                                     checked={ImageDtl.Checked}
                                                                 // onClick={() => ImageCompareFunction(ImageDtl, index)}
-                                                                />
+                                                                /> */}
                                                                 <span className="mx-1">{ImageDtl.ImageName ? ImageDtl.ImageName.slice(0, 24) : ''}</span>
                                                             </div>
                                                             <a href={ImageDtl.ImageUrl} target="_blank" data-interception="off">
@@ -788,11 +853,11 @@ const MeetingPopupComponent = (Props: any) => {
                                                                     <span className="mx-1" title="Delete"
                                                                         onClick={() => RemoveImageFunction(index, ImageDtl.ImageName, "Remove")}
                                                                     > | <RiDeleteBin6Line /> | </span>
-                                                                    <span title="Customize the width of page"
+                                                                    {/* <span title="Customize the width of page"
                                                                     // onClick={() => ImageCustomizeFunction(index)}
                                                                     >
                                                                         <FaExpandAlt /> |
-                                                                    </span>
+                                                                    </span> */}
                                                                     <span title={ImageDtl.Description != undefined && ImageDtl.Description?.length > 1 ? ImageDtl.Description : "Add Image Description"} className="mx-1 img-info"
                                                                         onClick={() => openAddImageDescriptionFunction(index, ImageDtl, "Opne-Model")}
                                                                     >
