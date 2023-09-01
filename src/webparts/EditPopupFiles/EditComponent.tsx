@@ -106,10 +106,10 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
   const [AllCategoryData, setAllCategoryData] = React.useState([]);
   const [categorySearchKey, setCategorySearchKey] = React.useState('');
   const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
-  const[imagetab,setImagetab]=React.useState(false);
+  const [imagetab, setImagetab] = React.useState(false);
 
 
-  function imageta(){
+  function imageta() {
     setImagetab(true);
   }
   // End of Status
@@ -1561,7 +1561,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
             </li>
           </ul></div>
 
-          <div className="feedbkicon"> <Tooltip  ComponentId="1258" IsServiceTask={EditData?.Portfolio_x0020_Type == "Service" ? true : false} /> </div>
+          <div className="feedbkicon"> <Tooltip ComponentId="1258" IsServiceTask={EditData?.Portfolio_x0020_Type == "Service" ? true : false} /> </div>
         </div>
       </>
     );
@@ -2276,7 +2276,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
         {EditData != undefined && EditData?.Title != undefined && (
           <div id="EditGrueneContactSearch">
             <div className="modal-body">
-              <ul className="nav nav-tabs" id="myTab" role="tablist">
+              <ul className="nav nav-tabs fixed-Header" id="myTab" role="tablist">
                 <li className="nav-item" role="presentation">
                   <button
                     className={usedFor != "Task-Popup" ? "nav-link active" : "nav-link"}
@@ -3247,7 +3247,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                           }
                           placeholder="Url"
                         ></input>
-                        <span className="input-group-text"><a href={EditData.component_x0020_link} target="_blank"  data-interception="off"><span className="svg__iconbox svg__icon--link"></span></a></span>
+                        <span className="input-group-text"><a href={EditData.component_x0020_link} target="_blank" data-interception="off"><span className="svg__iconbox svg__icon--link"></span></a></span>
                         {/* <span> <a target="_blank" data-interception="off" > Open  </a></span> */}
                       </div>
                     </div>
@@ -3261,7 +3261,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                   aria-labelledby="profile-tab"
                 >
                   <div className="row">
-                    <div className="col-sm-7 pe-0">
+                    <div className="">
                       <div className="row">
                         <TeamConfigurationCard
                           ItemInfo={EditData}
@@ -3687,7 +3687,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                         </section>
                       </div>
                     </div>
-                    <div className="col-sm-5 ps-0">
+                    {/* <div className="col-sm-5 ps-0">
                       {EditData.Id != null ?
                         <>
                           {SiteTypes != undefined && SiteTypes.length > 0 ?
@@ -3711,7 +3711,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                         : null
                       }
 
-                    </div>
+                    </div> */}
                   </div>
                 </div>
                 <div
@@ -3785,28 +3785,33 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                   </div>
                 </div>
                 <div
-  className="tab-pane"
-  id="image"
-  role="tabpanel"
-  aria-labelledby="image-tab"
->
-  <div className="col-sm-12">
-    {imagetab && (
-      <ImagesC
-        EditdocumentsData={EditData}
-        setData={setEditData}
-        AllListId={RequireData}
-        Context={RequireData.Context}
-        callBack={imageTabCallBack}
-      />
-    )}
-  </div>
-</div>
+                  className="tab-pane"
+                  id="image"
+                  role="tabpanel"
+                  aria-labelledby="image-tab"
+                >
+                  <div className="col-sm-12">
+                    {imagetab && (
+                      <ImagesC
+                        EditdocumentsData={EditData}
+                        setData={setEditData}
+                        AllListId={RequireData}
+                        Context={RequireData.Context}
+                        callBack={imageTabCallBack}
+                      />
+                    )}
+                  </div>
+                </div>
 
               </div>
             </div>
-            <footer className="mt-2">
-              <div className="d-flex justify-content-between align-items-center">
+            <footer className="bg-f4" style={{
+              position: "absolute",
+              width: "100%",
+              bottom: "0px",
+              background: "#FAFAFA"
+            }}>
+              <div className="align-items-center d-flex justify-content-between me-5 py-2">
                 <div>
                   <div className="text-left">
                     Created{" "}
@@ -3852,7 +3857,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                           fill="#333333"
                         />
                       </svg>{" "}
-                      Delete this item
+                      Delete This Item
                     </a>
                     <span>
                       {" "}
@@ -3876,7 +3881,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                         href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${EditData?.Id}`}
                       >
                         <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" />{" "}
-                        Go to Profile page
+                        Go To Profile Page
                       </a>
                       ||
                       <img
@@ -3888,21 +3893,21 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                           }`}
                       >
                         {" "}
-                        Share this task ||
+                        Share This Task ||
                       </a>
                     </span>
-                    <span className="p-1">|</span>
+
                     <a
                       className="p-1"
                       href={`${RequireData.siteUrl}/Lists/Master%20Tasks/EditForm.aspx?ID=${EditData?.Id}`}
                       target="_blank"
                       data-interception="off"
                     >
-                      Open out-of-the-box form
+                      Open Out-of-The-Box Form
                     </a>
                     <button
                       type="button"
-                      className="btn btn-primary "
+                      className="btn btn-primary ms-2 px-4"
                       onClick={(e) => SaveData()}
                     >
                       Save
