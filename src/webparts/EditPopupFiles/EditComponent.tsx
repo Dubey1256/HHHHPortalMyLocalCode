@@ -2276,7 +2276,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
         {EditData != undefined && EditData?.Title != undefined && (
           <div id="EditGrueneContactSearch">
             <div className="modal-body">
-              <ul className="nav nav-tabs" id="myTab" role="tablist">
+              <ul className="nav nav-tabs fixed-Header" id="myTab" role="tablist">
                 <li className="nav-item" role="presentation">
                   <button
                     className={usedFor != "Task-Popup" ? "nav-link active" : "nav-link"}
@@ -3811,7 +3811,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
               bottom: "0px",
               background: "#FAFAFA"
             }}>
-              <div className="align-items-center d-flex justify-content-between px-4 py-2">
+              <div className="align-items-center d-flex justify-content-between me-5 py-2">
                 <div>
                   <div className="text-left">
                     Created{" "}
