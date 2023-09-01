@@ -277,15 +277,29 @@ function TasksTable(props: any) {
           result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
 
           if (result.FeedBack != undefined) {
+
            
+
             let feedbackdata:any= JSON.parse(result?.FeedBack)
+
              
-            result.Short_x0020_Description_x0020_On =
-            feedbackdata[0]?.FeedBackDescriptions?.map((child:any) =>
+
+           
+
+            let FeedbackdatatinfoIcon:any=feedbackdata[0]?.FeedBackDescriptions?.map((child:any) =>
+
             child?.Title + ' ' +
+
             child?.Subtext?.map((subChild:any) => subChild?.Title).join(' ')
+
             ).join(' ')
-          
+
+ 
+
+            result.Short_x0020_Description_x0020_On =FeedbackdatatinfoIcon.replace("undefined", "").replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '')
+
+         
+
           }
           if (result.Project) {
             result.ProjectTitle = result?.Project?.Title;
