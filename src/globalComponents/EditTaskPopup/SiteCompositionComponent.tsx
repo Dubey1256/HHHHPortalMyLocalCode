@@ -1166,7 +1166,7 @@ const SiteCompositionComponent = (Props: any) => {
                 </table>
 
 
-                <div className="bg-e9  d-flex justify-content-end full-width py-1">
+                <footer className="bg-e9  d-flex justify-content-end full-width py-1">
                     <div className="bg-body col-sm-2 p-1">
                         <div className="">{isPortfolioComposition == true || ProportionalStatus == false ? `${TotalPercent} %` : "100%"}</div>
                     </div>
@@ -1178,7 +1178,7 @@ const SiteCompositionComponent = (Props: any) => {
                             Save
                         </button>
                     </div>
-                </div>
+                </footer>
 
 
 

@@ -367,9 +367,9 @@ function TeamPortlioTable(SelectedProp: any) {
                             // if (result["TaskID"] == undefined) {
                             //     result["TaskID"] = "";
                             // }
-
+                            // && result.PortfolioType != undefined
                             taskTypeDataItem?.map((type: any) => {
-                                if (result?.TaskType?.Title === type.Title && result.PortfolioType != undefined) {
+                                if (result?.TaskType?.Title === type.Title) {
                                     type[type.Title + 'number'] += 1;
                                 }
                             })
@@ -410,7 +410,7 @@ function TeamPortlioTable(SelectedProp: any) {
         componentDetails = await web.lists
             .getById(ContextValue.MasterTaskListID)
             .items
-            .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "StructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title",
+            .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title",
                 "DueDate", "Body", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
                 "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete",
                 "ResponsibleTeam/Id", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id",
@@ -443,8 +443,7 @@ function TeamPortlioTable(SelectedProp: any) {
             if (result?.Item_x0020_Type != undefined) {
                 result.SiteIconTitle = result?.Item_x0020_Type?.charAt(0);
             }
-            result["TaskID"] = result?.StructureID;
-
+            result["TaskID"] = result?.PortfolioStructureID;
             result.DueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
             if (result.DueDate == "Invalid date" || "") {
                 result.DueDate = result?.DueDate.replaceAll("Invalid date", "");
@@ -672,16 +671,18 @@ function TeamPortlioTable(SelectedProp: any) {
             console.log("items", items);
         }
         let findActivity = smartAllFilterData?.filter((elem: any) => elem?.TaskType?.Id === levelType.Id && elem?.Portfolio?.Id === items?.Id);
-        let findTasks = smartAllFilterData?.filter((elem1: any) => elem1?.TaskType?.Id != levelType.Id && elem1?.ParentTask?.Id === items?.Id);
+        let findTasks = smartAllFilterData?.filter((elem1: any) => elem1?.TaskType?.Id != levelType.Id && elem1?.Portfolio?.Id === items?.Id);
         findActivity?.forEach((act: any) => {
             act.subRows = [];
-            let worstreamAndTask = smartAllFilterData?.filter((taskData: any) => taskData?.ParentTask?.Id === act?.Id && taskData?.siteType === act?.siteType)
+            let worstreamAndTask = findTasks?.filter((taskData: any) => taskData?.ParentTask?.Id === act?.Id && taskData?.siteType === act?.siteType)
+            // findTasks = findTasks?.filter((taskData: any) => taskData?.ParentTask?.Id != act?.Id && taskData?.siteType != act?.siteType);
             if (worstreamAndTask.length > 0) {
                 act.subRows = act?.subRows?.concat(worstreamAndTask);
             }
             worstreamAndTask?.forEach((wrkst: any) => {
                 wrkst.subRows = wrkst.subRows === undefined ? [] : wrkst.subRows;
-                let allTasksData = smartAllFilterData?.filter((elem: any) => elem?.ParentTask?.Id === wrkst?.Id && elem?.siteType === wrkst?.siteType);
+                let allTasksData = findTasks?.filter((elem: any) => elem?.ParentTask?.Id === wrkst?.Id && elem?.siteType === wrkst?.siteType);
+                // findTasks = findTasks?.filter((elem: any) => elem?.ParentTask?.Id != wrkst?.Id && elem?.siteType != wrkst?.siteType);
                 if (allTasksData.length > 0) {
                     wrkst.subRows = wrkst?.subRows?.concat(allTasksData)
                 }
@@ -1173,7 +1174,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 obj.data.TitleNew = obj.data.Title;
                 obj.data.siteType = "Master Tasks";
                 obj.data.SiteIconTitle = obj?.data?.Item_x0020_Type?.charAt(0);
-                obj.data["TaskID"] = obj.data.StructureID;
+                obj.data["TaskID"] = obj.data.PortfolioStructureID;
                 if (
                     item.props != undefined &&
                     item.props.SelectedItem != undefined &&
@@ -1244,7 +1245,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 })
             }
             item.data.SiteIconTitle = item?.data?.Item_x0020_Type?.charAt(0);
-            item.data["TaskID"] = item.data.StructureID;
+            item.data["TaskID"] = item.data.PortfolioStructureID;
             copyDtaArray.unshift(item.data);
             renderData = [];
             renderData = renderData.concat(copyDtaArray)

@@ -33,6 +33,10 @@ import Tooltip from '../../../globalComponents/Tooltip'
 import ApprovalHistoryPopup from '../../../globalComponents/EditTaskPopup/ApprovalHistoryPopup';
 import { Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import { ImReply } from 'react-icons/im';
+import KeyDocuments from './KeyDocument';
+
+// import {MyContext} from './myContext'
+const MyContext:any = React.createContext<any>({})
 var ClientTimeArray: any = [];
 var TaskIdCSF: any = "";
 var TaskIdAW = "";
@@ -43,7 +47,7 @@ var subchildcomment: any;
 let countemailbutton: number;
 var changespercentage = false;
 var buttonId: any;
-let truncatedTitle:any
+let truncatedTitle: any
 export interface ITaskprofileState {
   Result: any;
   listName: string;
@@ -79,7 +83,8 @@ export interface ITaskprofileState {
   ApprovalStatus: boolean;
   EditSiteCompositionStatus: any
   CommenttoUpdate: string;
-
+  keydoc: any;
+  FileDirRef: any;
   updateCommentText: any;
   updateReplyCommentText: any
   emailComponentstatus: any;
@@ -93,8 +98,8 @@ export interface ITaskprofileState {
   replyTextComment: any;
 }
 
-export default class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> {
- private relevantDocRef: any;
+class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> {
+  private relevantDocRef: any;
   private smartInfoRef: any;
   private taskUsers: any = [];
   private smartMetaDataIcon: any;
@@ -121,6 +126,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       Result: {},
       isEditReplyModalOpen: false,
       replyTextComment: "",
+      keydoc: [],
+      FileDirRef: '',
       currentDataIndex: 0,
       buttonIdCounter: null,
       isCalloutVisible: false,
@@ -149,7 +156,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       showcomment: 'none',
       updateComment: false,
       showComposition: true,
-      ShowEstimatedTimeDescription:false,
+      ShowEstimatedTimeDescription: false,
       isOpenEditPopup: false,
       TaskDeletedStatus: false,
       isopenversionHistory: false,
@@ -336,7 +343,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       .getByTitle(this.state?.listName)
       .items
       .getById(this.state?.itemID)
-      .select("ID", "Title", "Comments", "ApproverHistory", "EstimatedTime", "DueDate", "IsTodaysTask",'EstimatedTimeDescription', "Approver/Id", "Approver/Title", "ParentTask/Id", "Project/Id", "Project/Title", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
+      .select("ID", "Title", "Comments", "ApproverHistory", "EstimatedTime", "DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "Approver/Id", "Approver/Title", "ParentTask/Id", "Project/Id", "Project/Title", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
       .expand("Team_x0020_Members", "Project", "Approver", "ParentTask", "SmartInformation", "AssignedTo", "SharewebCategories", "Author", "ClientCategory", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor", "AttachmentFiles")
       .get()
     AllListId = {
@@ -395,9 +402,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     var array2: any = taskDetails["AssignedTo"] != undefined ? taskDetails["AssignedTo"] : []
     if (taskDetails["Team_x0020_Members"] != undefined) {
       taskDetails.array = array2.concat(taskDetails["Team_x0020_Members"]?.filter((item: any) => array2?.Id != item?.Id))
-}else{
-  taskDetails.array =array2;
-}
+    } else {
+      taskDetails.array = array2;
+    }
     var OffshoreComments: any = [];
     if (taskDetails["OffshoreComments"] != null) {
       let myarray: any = []
@@ -442,7 +449,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       tempEstimatedArrayData = [];
     }
     const maxTitleLength: number = 65;
-  
+
 
     if (taskDetails["Title"].length > maxTitleLength) {
       truncatedTitle = taskDetails["Title"].substring(0, maxTitleLength - 3) + "...";
@@ -466,7 +473,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       listName: taskDetails["listName"],
       siteUrl: taskDetails["siteUrl"],
       TaskId: taskDetails["TaskId"],
-      Title:  taskDetails["Title"],
+      Title: taskDetails["Title"],
       DueDate: taskDetails["DueDate"],
       Categories: taskDetails["Categories"],
       Status: taskDetails["Status"],
@@ -823,17 +830,17 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     e.preventDefault();
     this.setState({
       isModalOpen: false,
-      isEditModalOpen:false,
+      isEditModalOpen: false,
       isEditReplyModalOpen: false,
       imageInfo: {},
 
       showPopup: 'none'
     });
   }
-  private Closecommentpopup=()=>{
+  private Closecommentpopup = () => {
     this.setState({
       isModalOpen: false,
-      isEditModalOpen:false,
+      isEditModalOpen: false,
       isEditReplyModalOpen: false,
       imageInfo: {},
 
@@ -1797,6 +1804,12 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       </>
     );
   };
+  private contextCall = (data:any, path:any) => {
+     this.setState({
+         keydoc:data,
+         FileDirRef:path
+     })
+  };
 
   public render(): React.ReactElement<ITaskprofileProps> {
     buttonId = this.generateButtonId();
@@ -1813,956 +1826,965 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       document.title = "Task Profile"
     }
     return (
-      <div className={this.state.Result["Services"] != undefined && this.state.Result["Services"].length > 0 ? 'app component serviepannelgreena' : "app component"}>
-       <section className='ContentSection'> {this.state.maincollection != null && this.state.maincollection.length > 0 &&
-          <div className='row'>
-            <div className="col-sm-12 p-0 ">
-              <ul className="spfxbreadcrumb m-0 p-0">
-                {this.state.maincollection?.map((breadcrumbitem: any) => {
-                  return <>
-                    {(this.state.Result["Component"] != null && this.state.Result["Component"].length > 0) || (this.state.Result["Services"] != null && this.state.Result["Services"].length > 0) ?
-                      <li >
-                        {this.state.Result["Component"] != null && this.state.Result["Component"].length > 0 &&
-                          <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Component-Portfolio.aspx`}>Component Portfolio</a>
-                        }
-                        {this.state.Result["Services"] != null && this.state.Result["Services"].length > 0 &&
-                          <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Service-Portfolio.aspx`}>Service Portfolio</a>
-                        }
-                      </li> : null
-                    }
-                    {breadcrumbitem.Subchild == undefined && breadcrumbitem.Child == undefined && this.state.Result["Services"].length == 0 &&
-                      this.state.Result["Component"].length == 0 && breadcrumbitem.ParentTask != undefined &&
-                      <li  >
-                        <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Dashboard.aspx`}> <span>Dashboard</span> </a>
-                      </li>
-                    }
-                    {breadcrumbitem.Parentitem != undefined &&
-                      <li>
+      <MyContext.Provider value={{ ...MyContext, FunctionCall : this.contextCall, keyDoc:this.state.keydoc, FileDirRef:this.state.FileDirRef }}>
+        <div className={this.state.Result["Services"] != undefined && this.state.Result["Services"].length > 0 ? 'app component serviepannelgreena' : "app component"}>
+          <section className='ContentSection'> {this.state.maincollection != null && this.state.maincollection.length > 0 &&
+            <div className='row'>
+              <div className="col-sm-12 p-0 ">
 
-                        <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Parentitem?.Id}`}>{breadcrumbitem?.Parentitem?.Title}</a>
-                      </li>
-                    }
-                    {breadcrumbitem.Child != undefined &&
-                      <li>
+                <ul className="spfxbreadcrumb m-0 p-0">
+                  {this.state.maincollection?.map((breadcrumbitem: any) => {
+                    return <>
+                      {(this.state.Result["Component"] != null && this.state.Result["Component"].length > 0) || (this.state.Result["Services"] != null && this.state.Result["Services"].length > 0) ?
+                        <li >
+                          {this.state.Result["Component"] != null && this.state.Result["Component"].length > 0 &&
+                            <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Component-Portfolio.aspx`}>Component Portfolio</a>
+                          }
+                          {this.state.Result["Services"] != null && this.state.Result["Services"].length > 0 &&
+                            <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Service-Portfolio.aspx`}>Service Portfolio</a>
+                          }
+                        </li> : null
+                      }
+                      {breadcrumbitem.Subchild == undefined && breadcrumbitem.Child == undefined && this.state.Result["Services"].length == 0 &&
+                        this.state.Result["Component"].length == 0 && breadcrumbitem.ParentTask != undefined &&
+                        <li  >
+                          <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Dashboard.aspx`}> <span>Dashboard</span> </a>
+                        </li>
+                      }
+                      {breadcrumbitem.Parentitem != undefined &&
+                        <li>
 
-                        <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Child?.Id}`}>{breadcrumbitem?.Child?.Title}</a>
-                      </li>
-                    }
-                    {breadcrumbitem.Subchild != undefined &&
-                      <li >
+                          <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Parentitem?.Id}`}>{breadcrumbitem?.Parentitem?.Title}</a>
+                        </li>
+                      }
+                      {breadcrumbitem.Child != undefined &&
+                        <li>
 
-                        <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem.Subchild.Id}`}>{breadcrumbitem?.Subchild?.Title}</a>
-                      </li>
-                    }
-                    {breadcrumbitem.ParentTask != undefined && breadcrumbitem.ParentTask.Shareweb_x0020_ID != undefined && this.state.Result["ParentTask"] != undefined &&
-                      <li  >
+                          <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Child?.Id}`}>{breadcrumbitem?.Child?.Title}</a>
+                        </li>
+                      }
+                      {breadcrumbitem.Subchild != undefined &&
+                        <li >
 
-                        <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${breadcrumbitem.ParentTask.Id}&Site=${breadcrumbitem?.ParentTask?.siteType}`}>{breadcrumbitem?.ParentTask?.Title}</a>
-                      </li>
-                    }
-                    {/* {breadcrumbitem.ChildTask != undefined &&
+                          <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem.Subchild.Id}`}>{breadcrumbitem?.Subchild?.Title}</a>
+                        </li>
+                      }
+                      {breadcrumbitem.ParentTask != undefined && breadcrumbitem.ParentTask.Shareweb_x0020_ID != undefined && this.state.Result["ParentTask"] != undefined &&
+                        <li  >
+
+                          <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${breadcrumbitem.ParentTask.Id}&Site=${breadcrumbitem?.ParentTask?.siteType}`}>{breadcrumbitem?.ParentTask?.Title}</a>
+                        </li>
+                      }
+                      {/* {breadcrumbitem.ChildTask != undefined &&
                       <li >
 
                         <a target="_blank" data-interception="off"  href={`${this.state.Result["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${breadcrumbitem.ChildTask.Id}&Site=${breadcrumbitem?.ChildTask?.siteType}`}>{breadcrumbitem?.ChildTask?.Title}</a>
                       </li>
                     } */}
 
-                    {breadcrumbitem.ParentTask != undefined &&
-                      <li>
-                        <a  >
-                        <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                          <span title={this.state.Result['Title']}>{truncatedTitle?.length>0?truncatedTitle:this.state.Result['Title']}</span>
-                                <span className="f-13 popover__content" >
-                               { this.state.Result['Title']}
-                                </span>
+                      {breadcrumbitem.ParentTask != undefined &&
+                        <li>
+                          <a  >
+                            <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                              <span title={this.state.Result['Title']}>{truncatedTitle?.length > 0 ? truncatedTitle : this.state.Result['Title']}</span>
+                              <span className="f-13 popover__content" >
+                                {this.state.Result['Title']}
+                              </span>
                             </span>
-                          
-                        </a>
-                      </li>
-                    }
-                  </>
-                })
-                }
-              </ul>
-            </div>
-          </div>
-        }
-        <section className='row p-0'>
-          <h2 className="heading d-flex ps-0 justify-content-between align-items-center">
-            <span>
-              {this.state.Result["SiteIcon"] != "" && <img className="imgWid29 pe-1 " title={this?.state?.Result?.siteType} src={this.state.Result["SiteIcon"]} />}
-              {this.state.Result["SiteIcon"] === "" && <img className="imgWid29 pe-1 " src="" />}
-               <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                             <span title={this.state.Result['Title']}>{truncatedTitle?.length>0?truncatedTitle:this.state.Result['Title']}</span>
-                                <span className="f-13 popover__content" >
-                               { this.state.Result['Title']}
-                                </span>
-                            </span>
-              <a className="hreflink" title='Edit' onClick={() => this.OpenEditPopUp()}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="25" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
-                {/* <img style={{ width: '16px', height: '16px', borderRadius: '0' }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" /> */}
-              </a>
-              {this.state.Result["Approver"] != undefined && this.state.Result["Categories"].includes("Approval") && this.currentUser != undefined && this.currentUser.length > 0 && this.state.Result.Approver.Id == this.currentUser[0].Id && this.state.Result["Status"] == "For Approval" &&
-                this.state.Result["PercentComplete"] == 1 && <span><button onClick={() => this.sendEmail("Approved")} className="btn btn-success ms-3 mx-2">Approve</button><span><button className="btn btn-danger" onClick={() => this.sendEmail("Rejected")}>Reject</button></span></span>
-              }
-              {this.currentUser != undefined && this.state.sendMail && this.state.emailStatus != "" && <EmailComponenet approvalcallback={() => { this.approvalcallback() }} Context={this.props.Context} emailStatus={this.state.emailStatus} currentUser={this.currentUser} items={this.state.Result} />}
-            </span>
-            <span className="text-end fs-6"> <a target='_blank' data-interception="off" href={this.oldTaskLink} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span>
-            {/* {this.state.Result.sitePage == "SH" && <span className="text-end fs-6"> <a target='_blank' data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${this.state.Result.Id}&Site=${this.state.Result.listName}`} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span>} */}
-          </h2>
-        </section>
-        <section>
-          <div className='row'>
-            <div className="col-9 bg-white">
-              <div className="team_member row">
-                <div className='col-md-4 p-0'>
-                  <dl>
-                    <dt className='bg-Fa'>Task Id</dt>
-                    <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["TaskId"]} </span>
-                      {TaskIdCSF != "" && <span className="idhide bg-fxdark siteColor">{TaskIdCSF?.replace("-", ">")}{TaskIdAW == "" && this.state.Result["TaskId"] != undefined && <span className='text-body'>{">" + this.state.Result["TaskId"]}</span>} {TaskIdAW != "" && <span className='text-body'>{">" + TaskIdAW?.replace("-", ">")}</span>}</span>}
-                    </dd>
-                  </dl>
-                  <dl>
-                    <dt className='bg-Fa'>Due Date</dt>
-                    <dd className='bg-Ff'>{this.state.Result["DueDate"] != null && this.state.Result["DueDate"] != undefined ? moment(this.state.Result["DueDate"]).format("DD/MM/YYYY") : ''}</dd>
-                  </dl>
-                  <dl>
-                    <dt className='bg-Fa'>Start Date</dt>
-                    <dd className='bg-Ff'>{this.state.Result["StartDate"] != undefined ? this.state.Result["StartDate"] : ""}</dd>
-                  </dl>
-                  <dl>
-                    <dt className='bg-Fa'>Completion Date</dt>
-                    <dd className='bg-Ff'> {this.state.Result["CompletedDate"] != undefined ? this.state.Result["CompletedDate"] : ""}</dd>
-                  </dl>
-                  <dl>
-                    <dt className='bg-Fa' title="Task Id">Categories</dt>
 
-                    <dd className='bg-Ff text-break'>{this.state.Result["Categories"]}</dd>
-                  </dl>
-                  <dl>
-                    <dt className='bg-Fa'>Estimated Time</dt>
-                    <dd className='bg-Ff position-relative' >
-                    <span className='tooltipbox' title="hours">{this.state.Result["EstimatedTime"] != undefined ? (this.state.Result["EstimatedTime"].toFixed(1) > 1 ?this.state.Result["EstimatedTime"].toFixed(1)+" hours" :this.state.Result["EstimatedTime"].toFixed(1)+" hour") : "0.0 hour"} </span>
-                      {/* <span className='tooltipbox' title="hours">{this.state.Result["EstimatedTime"] != undefined ? this.state.Result["EstimatedTime"].toFixed(1) + "hours" : "0.0 hour"} </span> */}
-                    </dd>
-                  </dl>
-                  {isShowTimeEntry && <dl>
-                    <dt className='bg-Fa'>SmartTime Total</dt>
-                    <dd className='bg-Ff'>
-                      <span className="me-1 alignCenter  pull-left"> {this.state.smarttimefunction ? <SmartTimeTotal AllListId={AllListId} props={this.state.Result} Context={this.props.Context} /> : null}</span>
-                    </dd>
-
-                  </dl>}
-                </div>
-
-                <div className='col-md-4 p-0'>
-                  <dl>
-                    <dt className='bg-Fa'>Team Members</dt>
-                    <dd className='bg-Ff'>
-                      <div className="d-flex align-items-center">
-                        {this.state.Result["TeamLeader"] != null && this.state.Result["TeamLeader"].length > 0 && this.state.Result["TeamLeader"]?.map((rcData: any, i: any) => {
-                          return <div className="user_Member_img"><a href={`${this.state.Result["siteUrl"]}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`} target="_blank" data-interception="off" title={rcData?.Title}>
-                            {rcData.userImage != null && <img className="workmember" src={rcData?.userImage}></img>}
-                            {rcData.userImage == null && <span className="workmember bg-fxdark" >{rcData?.Suffix}</span>}
                           </a>
-                          </div>
-                        })}
-                        {this.state.Result["TeamLeader"] != null && this.state.Result["TeamLeader"].length > 0 &&
-                          <div></div>
-                        }
-
-                        {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 0 &&
-                          <div className="img  "><a href={`${this.state.Result["siteUrl"]}/SitePages/TaskDashboard.aspx?UserId=${this.state.Result["TeamMembers"][0]?.Id}&Name=${this.state.Result["TeamMembers"][0]?.Title}`} target="_blank" data-interception="off" title={this.state.Result["TeamMembers"][0]?.Title}>
-                            {this.state.Result["TeamMembers"][0].userImage != null && <img className={`workmember ${this.state.Result["TeamMembers"][0].activeimg2}`} src={this.state.Result["TeamMembers"][0]?.userImage}></img>}
-                            {this.state.Result["TeamMembers"][0].userImage == null && <span className={`workmember ${this.state.Result["TeamMembers"][0].activeimg2}bg-fxdark border bg-e9 p-1 `} >{this.state.Result["TeamMembers"][0]?.Suffix}</span>}
-                          </a>
-                          </div>
-                        }
-
-                        {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length == 2 && <div className="img mx-2"><a href={`${this.state.Result["siteUrl"]}/SitePages/TaskDashboard.aspx?UserId=${this.state.Result["TeamMembers"][1]?.Id}&Name=${this.state.Result["TeamMembers"][1]?.Title}`} target="_blank" data-interception="off" title={this.state.Result["TeamMembers"][1]?.Title}>
-                          {this.state.Result["TeamMembers"][1]?.userImage != null && <img className={`workmember ${this.state.Result["TeamMembers"][1]?.activeimg2}`} src={this.state.Result["TeamMembers"][1]?.userImage}></img>}
-                          {this.state.Result["TeamMembers"][1]?.userImage == null && <span className={`workmember ${this.state.Result["TeamMembers"][1]?.activeimg2}bg-fxdark border bg-e9 p-1`} >{this.state.Result["TeamMembers"][1]?.Suffix}</span>}
-                        </a>
-                        </div>
-                        }
-                        {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 2 &&
-                          <div className="position-relative user_Member_img_suffix2" onMouseOver={(e) => this.handleSuffixHover()} onMouseLeave={(e) => this.handleuffixLeave()}>+{this.state.Result["TeamMembers"].length - 1}
-                            <span className="tooltiptext" style={{ display: this.state.Display, padding: '10px' }}>
-                              <div>
-                                {this.state.Result["TeamMembers"].slice(1)?.map((rcData: any, i: any) => {
-
-                                  return <div className=" mb-1 team_Members_Item" style={{ padding: '2px' }}>
-                                    <a href={`${this.state.Result["siteUrl"]}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`} target="_blank" data-interception="off">
-
-                                      {rcData?.userImage != null && <img className={`workmember ${rcData?.activeimg2}`} src={rcData?.userImage}></img>}
-                                      {rcData?.userImage == null && <span className={`workmember ${rcData?.activeimg2}bg-fxdark border bg-e9 p-1`}>{rcData?.Suffix}</span>}
-
-                                      <span className='mx-2'>{rcData?.Title}</span>
-                                    </a>
-                                  </div>
-
-                                })
-                                }
-
-                              </div>
-                            </span>
-                          </div>
-                        }
-
-                      </div>
-
-                    </dd>
-                  </dl>
-
-
-
-                  <dl>
-                    <dt className='bg-Fa'>Status</dt>
-                    <dd className='bg-Ff'>{this.state.Result["Status"]}<br></br>
-                      {this.state.Result["ApproverHistory"] != undefined && this.state.Result["ApproverHistory"].length > 1 && this.state.Result["Categories"].includes("Approval") ?
-                        <span style={{ fontSize: "smaller" }}>Pre-Approved by
-                          <img className="workmember" title={this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length - 2]?.ApproverName} src={(this.state.Result?.ApproverHistory[this.state.Result?.ApproverHistory?.length - 2]?.ApproverImage != null) ? (this.state.Result.ApproverHistory[this.state.Result.ApproverHistory.length - 2]?.ApproverImage) : (this.state.Result?.ApproverHistory[this.state.Result.ApproverHistory.length - 2]?.ApproverSuffix)}></img></span>
-                        // {this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length-1].Title}
-                        : null}</dd>
-                  </dl>
-                  <dl>
-                    <dt className='bg-Fa'>Working Today</dt>
-                    <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["IsTodaysTask"] ? "Yes" : "No"} </span>
-                    </dd>
-                  </dl>
-                  <dl>
-                    <dt className='bg-Fa'>Item Rank</dt>
-                    <dd className='bg-Ff'>{this.state.Result["ItemRank"]}</dd>
-                  </dl>
-                  <dl>
-                    <dt className='bg-Fa'>% Complete</dt>
-                    <dd className='bg-Ff'>{this.state.Result["PercentComplete"] != undefined ? this.state.Result["PercentComplete"].toFixed(0) : 0}</dd>
-                  </dl>
-                  <dl>
-                    <dt className='bg-Fa'>Priority</dt>
-                    <dd className='bg-Ff'>{this.state.Result["Priority"]}</dd>
-                  </dl>
-
-                  <dl>
-                    <dt className='bg-Fa'>Created</dt>
-                    <dd className='bg-Ff'>
-                      {this.state.Result["Created"] != undefined && this.state.Result["Created"] != null ? moment(this.state.Result["Created"]).format("DD/MM/YYYY") : ""}  <span className='ms-1'>
-                        {this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 &&
-                          <a title={this.state.Result["Author"][0].Title} >
-                            {this.state.Result["Author"][0].userImage !== "" && <img className="workmember" src={this.state.Result["Author"][0].userImage} ></img>}
-                            {this.state.Result["Author"][0].userImage === "" && <span className="workmember">{this.state.Result["Author"][0].Suffix}</span>}
-                          </a>
-
-                        }
-                      </span>
-
-                    </dd>
-                  </dl>
-                </div>
-                <div className='col-md-4 p-0'>
-
-                  <dl>
-
-                    <dt className='bg-Fa'>Portfolio</dt>
-                    <dd className='bg-Ff full-width'>
-                      {this.state.Result["Component"] != null && this.state.Result["Component"].length > 0 && this.state.Result["Component"]?.map((componentdt: any, i: any) => {
-                        return (
-                          <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${componentdt.Id}`}>{componentdt.Title}</a>
-
-                        )
-                      })}
-                      {this.state.Result["Services"] != null && this.state.Result["Services"].length > 0 && this.state.Result["Services"]?.map((Servicesdt: any, i: any) => {
-                        return (
-                          <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${Servicesdt.Id}`}>{Servicesdt.Title}</a>
-
-                        )
-                      })}
-
-                    </dd>
-                  </dl>
-                  <dl>
-                    <dt className='bg-Fa'>Project</dt>
-                    <dd className='bg-Ff full-width'>
-                      <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Project-Management.aspx?ProjectId=${this.state.Result["Project"]?.Id}`}>{this.state.Result["Project"]?.Title}</a>
-                    </dd>
-                  </dl>
-                  {isShowSiteCompostion && <dl className="Sitecomposition">
-                    {ClientTimeArray != null && ClientTimeArray.length > 0 &&
-                      <div className='dropdown'>
-                        <a className="sitebutton bg-fxdark d-flex">
-                          <span className="arrowicons" onClick={() => this.showhideComposition()}>{this.state.showComposition ? <SlArrowDown /> : <SlArrowRight />}</span>
-                          <div className="d-flex justify-content-between full-width">
-                            <p className="pb-0 mb-0">Site Composition</p>
-                            <p className="input-group-text mb-0 pb-0" title="Edit Site Composition" onClick={() => this.setState({ EditSiteCompositionStatus: true })}>
-                              <span className="svg__iconbox svg__icon--editBox"></span>
-                            </p>
-                          </div>
-
-                        </a>
-                        <div className="spxdropdown-menu" style={{ display: this.state.showComposition ? 'block' : 'none' }}>
-                          <ul>
-                            {ClientTimeArray?.map((cltime: any, i: any) => {
-                              return <li className="Sitelist">
-                                <span>
-                                  <img style={{ width: "22px" }} title={cltime?.SiteName} src={this.GetSiteIcon(cltime?.SiteName) ? this.GetSiteIcon(cltime?.SiteName) : this.GetSiteIcon(cltime?.Title)} />
-                                </span>
-                                {cltime?.ClienTimeDescription != undefined &&
-                                  <span>
-                                    {Number(cltime?.ClienTimeDescription).toFixed(2)}%
-                                  </span>
-                                }
-                                {cltime.ClientCategory != undefined && cltime.ClientCategory.length > 0 ? cltime.ClientCategory?.map((clientcat: any) => {
-                                  return (
-                                    <span>{clientcat.Title}</span>
-                                  )
-                                }) : null}
-                              </li>
-                            })}
-                          </ul>
-                        </div>
-                      </div>
-                    }
-                  </dl>}
-                  {this.state.Result?.EstimatedTimeDescriptionArray?.length > 0 &&
-                    <dl className="Sitecomposition my-2">
-                      <div className='dropdown'>
-                        <a className="sitebutton bg-fxdark d-flex">
-                          <span className="arrowicons" onClick={() => this.showhideEstimatedTime()}>{this.state.ShowEstimatedTimeDescription ? <SlArrowDown /> : <SlArrowRight />}</span>
-                          <div className="d-flex justify-content-between full-width">
-                            <p className="pb-0 mb-0 ">Estimated Task Time Details</p>
-                          </div>
-                        </a>
-                        <div className="spxdropdown-menu" style={{ display: this.state.ShowEstimatedTimeDescription ? 'block' : 'none' }}>
-                          <div className="col-12" style={{ fontSize: "14px" }}>
-                            {this.state.Result?.EstimatedTimeDescriptionArray != null && this.state.Result?.EstimatedTimeDescriptionArray?.length > 0 ?
-                              <div className="p-1">
-                                {this.state.Result?.EstimatedTimeDescriptionArray?.map((EstimatedTimeData: any, Index: any) => {
-                                  return (
-                                    <div className={this.state.Result?.EstimatedTimeDescriptionArray?.length == Index + 1 ? "align-content-center d-flex justify-content-between p-1 px-2" : "align-content-center border-bottom d-flex justify-content-between p-1 px-2"}>
-                                      <img className="ProirityAssignedUserPhoto m-0" title={EstimatedTimeData.UserName} src={EstimatedTimeData.UserImage != undefined && EstimatedTimeData.UserImage?.length > 0 ? EstimatedTimeData.UserImage : ''} />
-                                      <span>{EstimatedTimeData.Team ? EstimatedTimeData.Team : null}</span> |
-                                      <span>Time : {EstimatedTimeData.EstimatedTime ? (EstimatedTimeData.EstimatedTime > 1 ? EstimatedTimeData.EstimatedTime + " hours" : EstimatedTimeData.EstimatedTime + " hour") : "0 hour"}</span>
-                                      <span className="svg__iconbox svg__icon--info" title={EstimatedTimeData.EstimatedTimeDescription} ></span>
-                                    </div>
-                                  )
-                                })}
-                              </div>
-                              : null
-                            }
-                          </div>
-                        </div>
-                        <div className="boldClable border border-top-0 ps-2 py-1">
-                          <span>Total Estimated Time : </span><span className="mx-1">{this.state.Result.TotalEstimatedTime > 1 ? this.state.Result.TotalEstimatedTime + " hours" : this.state.Result.TotalEstimatedTime + " hour"} </span>
-                        </div>
-                      </div>
-                    </dl>
+                        </li>
+                      }
+                    </>
+                  })
                   }
-
-                </div>
+                </ul>
               </div>
-              <div className='row url'>
-                <div className="d-flex p-0">
-                  <div className='bg-Fa p-2'><label>Url</label></div>
-                  <div className='bg-Ff p-2 text-break full-width'>
-                    {this.state.Result["component_url"] != null &&
-                      <a target="_blank" data-interception="off" href={this.state.Result["component_url"].Url}>{this.state.Result["component_url"].Url}</a>
-                    }
-                  </div>
+            </div>
+          }
+            <section className='row p-0'>
+              <h2 className="heading d-flex ps-0 justify-content-between align-items-center">
+                <span>
+                  {this.state.Result["SiteIcon"] != "" && <img className="imgWid29 pe-1 " title={this?.state?.Result?.siteType} src={this.state.Result["SiteIcon"]} />}
+                  {this.state.Result["SiteIcon"] === "" && <img className="imgWid29 pe-1 " src="" />}
+                  <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                    <span title={this.state.Result['Title']}>{truncatedTitle?.length > 0 ? truncatedTitle : this.state.Result['Title']}</span>
+                    <span className="f-13 popover__content" >
+                      {this.state.Result['Title']}
+                    </span>
+                  </span>
+                  <a className="hreflink" title='Edit' onClick={() => this.OpenEditPopUp()}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="25" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
+                    {/* <img style={{ width: '16px', height: '16px', borderRadius: '0' }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" /> */}
+                  </a>
+                  {this.state.Result["Approver"] != undefined && this.state.Result["Categories"].includes("Approval") && this.currentUser != undefined && this.currentUser.length > 0 && this.state.Result.Approver.Id == this.currentUser[0].Id && this.state.Result["Status"] == "For Approval" &&
+                    this.state.Result["PercentComplete"] == 1 && <span><button onClick={() => this.sendEmail("Approved")} className="btn btn-success ms-3 mx-2">Approve</button><span><button className="btn btn-danger" onClick={() => this.sendEmail("Rejected")}>Reject</button></span></span>
+                  }
+                  {this.currentUser != undefined && this.state.sendMail && this.state.emailStatus != "" && <EmailComponenet approvalcallback={() => { this.approvalcallback() }} Context={this.props.Context} emailStatus={this.state.emailStatus} currentUser={this.currentUser} items={this.state.Result} />}
+                </span>
+                <span className="text-end fs-6"> <a target='_blank' data-interception="off" href={this.oldTaskLink} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span>
+                {/* {this.state.Result.sitePage == "SH" && <span className="text-end fs-6"> <a target='_blank' data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${this.state.Result.Id}&Site=${this.state.Result.listName}`} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span>} */}
+              </h2>
+            </section>
+            <section>
+              <div className='row'>
+                <div className="col-9 bg-white">
+                  <div className="team_member row">
+                    <div className='col-md-4 p-0'>
+                      <dl>
+                        <dt className='bg-Fa'>Task Id</dt>
+                        <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["TaskId"]} </span>
+                          {TaskIdCSF != "" && <span className="idhide bg-fxdark siteColor">{TaskIdCSF?.replace("-", ">")}{TaskIdAW == "" && this.state.Result["TaskId"] != undefined && <span className='text-body'>{">" + this.state.Result["TaskId"]}</span>} {TaskIdAW != "" && <span className='text-body'>{">" + TaskIdAW?.replace("-", ">")}</span>}</span>}
+                        </dd>
+                      </dl>
+                      <dl>
+                        <dt className='bg-Fa'>Due Date</dt>
+                        <dd className='bg-Ff'>{this.state.Result["DueDate"] != null && this.state.Result["DueDate"] != undefined ? moment(this.state.Result["DueDate"]).format("DD/MM/YYYY") : ''}</dd>
+                      </dl>
+                      <dl>
+                        <dt className='bg-Fa'>Start Date</dt>
+                        <dd className='bg-Ff'>{this.state.Result["StartDate"] != undefined ? this.state.Result["StartDate"] : ""}</dd>
+                      </dl>
+                      <dl>
+                        <dt className='bg-Fa'>Completion Date</dt>
+                        <dd className='bg-Ff'> {this.state.Result["CompletedDate"] != undefined ? this.state.Result["CompletedDate"] : ""}</dd>
+                      </dl>
+                      <dl>
+                        <dt className='bg-Fa' title="Task Id">Categories</dt>
 
-                </div>
-              </div>
-              <section>
-                <div className="col mt-2">
-                  <div className="Taskaddcomment row">
-                    {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"].length > 0 &&
-                      <div className="bg-white col-sm-4 mt-2 p-0">
-                        {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.map((imgData: any, i: any) => {
-                          return <div className="taskimage border mb-3">
-                            {/*  <BannerImageCard imgData={imgData}></BannerImageCard> */}
+                        <dd className='bg-Ff text-break'>{this.state.Result["Categories"]}</dd>
+                      </dl>
+                      <dl>
+                        <dt className='bg-Fa'>Estimated Time</dt>
+                        <dd className='bg-Ff position-relative' >
+                          <span className='tooltipbox' title="hours">{this.state.Result["EstimatedTime"] != undefined ? (this.state.Result["EstimatedTime"].toFixed(1) > 1 ? this.state.Result["EstimatedTime"].toFixed(1) + " hours" : this.state.Result["EstimatedTime"].toFixed(1) + " hour") : "0.0 hour"} </span>
+                          {/* <span className='tooltipbox' title="hours">{this.state.Result["EstimatedTime"] != undefined ? this.state.Result["EstimatedTime"].toFixed(1) + "hours" : "0.0 hour"} </span> */}
+                        </dd>
+                      </dl>
+                      {isShowTimeEntry && <dl>
+                        <dt className='bg-Fa'>SmartTime Total</dt>
+                        <dd className='bg-Ff'>
+                          <span className="me-1 alignCenter  pull-left"> {this.state.smarttimefunction ? <SmartTimeTotal AllListId={AllListId} props={this.state.Result} Context={this.props.Context} /> : null}</span>
+                        </dd>
 
-                            <a className='images' target="_blank" data-interception="off" href={imgData?.ImageUrl}>
-                              <img alt={imgData?.ImageName} src={imgData?.ImageUrl}
-                                onMouseOver={(e) => this.OpenModal(e, imgData)}
-                                onMouseOut={(e) => this.CloseModal(e)} ></img>
+                      </dl>}
+                    </div>
+
+                    <div className='col-md-4 p-0'>
+                      <dl>
+                        <dt className='bg-Fa'>Team Members</dt>
+                        <dd className='bg-Ff'>
+                          <div className="d-flex align-items-center">
+                            {this.state.Result["TeamLeader"] != null && this.state.Result["TeamLeader"].length > 0 && this.state.Result["TeamLeader"]?.map((rcData: any, i: any) => {
+                              return <div className="user_Member_img"><a href={`${this.state.Result["siteUrl"]}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`} target="_blank" data-interception="off" title={rcData?.Title}>
+                                {rcData.userImage != null && <img className="workmember" src={rcData?.userImage}></img>}
+                                {rcData.userImage == null && <span className="workmember bg-fxdark" >{rcData?.Suffix}</span>}
+                              </a>
+                              </div>
+                            })}
+                            {this.state.Result["TeamLeader"] != null && this.state.Result["TeamLeader"].length > 0 &&
+                              <div></div>
+                            }
+
+                            {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 0 &&
+                              <div className="img  "><a href={`${this.state.Result["siteUrl"]}/SitePages/TaskDashboard.aspx?UserId=${this.state.Result["TeamMembers"][0]?.Id}&Name=${this.state.Result["TeamMembers"][0]?.Title}`} target="_blank" data-interception="off" title={this.state.Result["TeamMembers"][0]?.Title}>
+                                {this.state.Result["TeamMembers"][0].userImage != null && <img className={`workmember ${this.state.Result["TeamMembers"][0].activeimg2}`} src={this.state.Result["TeamMembers"][0]?.userImage}></img>}
+                                {this.state.Result["TeamMembers"][0].userImage == null && <span className={`workmember ${this.state.Result["TeamMembers"][0].activeimg2}bg-fxdark border bg-e9 p-1 `} >{this.state.Result["TeamMembers"][0]?.Suffix}</span>}
+                              </a>
+                              </div>
+                            }
+
+                            {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length == 2 && <div className="img mx-2"><a href={`${this.state.Result["siteUrl"]}/SitePages/TaskDashboard.aspx?UserId=${this.state.Result["TeamMembers"][1]?.Id}&Name=${this.state.Result["TeamMembers"][1]?.Title}`} target="_blank" data-interception="off" title={this.state.Result["TeamMembers"][1]?.Title}>
+                              {this.state.Result["TeamMembers"][1]?.userImage != null && <img className={`workmember ${this.state.Result["TeamMembers"][1]?.activeimg2}`} src={this.state.Result["TeamMembers"][1]?.userImage}></img>}
+                              {this.state.Result["TeamMembers"][1]?.userImage == null && <span className={`workmember ${this.state.Result["TeamMembers"][1]?.activeimg2}bg-fxdark border bg-e9 p-1`} >{this.state.Result["TeamMembers"][1]?.Suffix}</span>}
                             </a>
-
-
-                            <div className="Footerimg d-flex align-items-center bg-fxdark justify-content-between p-1 ">
-                              <div className='usericons'>
-                                <span>
-                                  <span >{imgData?.UploadeDate}</span>
-                                  <span className='round px-1'>
-                                    {imgData?.UserImage != null &&
-                                      <img className='align-self-start' title={imgData?.UserName} src={imgData?.UserImage} />
-                                    }
-                                  </span>
-                                  {imgData?.Description != undefined && imgData?.Description != "" && <span title={imgData?.Description} className="mx-1" >
-                                    <BiInfoCircle />
-                                  </span>}
-
-                                </span>
-                              </div>
-                              <div className="expandicon">
-
-                                <span >
-                                  {imgData?.ImageName?.length > 15 ? imgData?.ImageName.substring(0, 15) + '...' : imgData?.ImageName}
-                                </span>
-                                <span>|</span>
-                                <a className='images' title="Expand Image" target="_blank" data-interception="off" href={imgData?.ImageUrl}><span className='mx-2'><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M212.686 315.314L120 408l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C10.697 480 0 469.255 0 456V344c0-21.382 25.803-32.09 40.922-16.971L72 360l92.686-92.686c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.249 6.248 6.249 16.378 0 22.627zm22.628-118.628L328 104l-32.922-31.029C279.958 57.851 290.666 32 312.048 32h112C437.303 32 448 42.745 448 56v112c0 21.382-25.803 32.09-40.922 16.971L376 152l-92.686 92.686c-6.248 6.248-16.379 6.248-22.627 0l-25.373-25.373c-6.249-6.248-6.249-16.378 0-22.627z"></path></svg></span></a>
-                              </div>
-
                             </div>
-
-                          </div>
-                        })}
-                      </div>
-                    }
-                    {/*feedback comment section code */}
-                    <div className={this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.length > 0 ? "col-sm-8 pe-0 mt-2" : "col-sm-12 pe-0 mt-2"}>
-                      {this.state.Result["SharewebTaskType"] != null && (this.state.Result["SharewebTaskType"] == '' ||
-                        this.state.Result["SharewebTaskType"] == 'Task' || this.state.Result["SharewebTaskType"] == "Workstream" || this.state.Result["SharewebTaskType"] == "Activities") && this.state.Result["FeedBack"] != undefined && this.state.Result["FeedBack"].length > 0 && this.state.Result["FeedBack"][0].FeedBackDescriptions != undefined &&
-                        this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
-                        this.state.Result["FeedBack"][0]?.FeedBackDescriptions[0]?.Title != '' && this.state.countfeedback >= 0 &&
-                        <div className={"Addcomment " + "manage_gap"}>
-                          {this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
-                            let userdisplay: any = [];
-                            userdisplay.push({ Title: this.props?.userDisplayName })
-
-
-                            if (fbData != null && fbData != undefined && fbData?.Title != "") {
-
-                              try {
-                                if (fbData?.Title != undefined) {
-                                  fbData.Title = fbData?.Title?.replace(/\n/g, '<br/>');
-
-                                }
-                              } catch (e) {
-                              }
-                              return (
-                                <>
+                            }
+                            {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 2 &&
+                              <div className="position-relative user_Member_img_suffix2" onMouseOver={(e) => this.handleSuffixHover()} onMouseLeave={(e) => this.handleuffixLeave()}>+{this.state.Result["TeamMembers"].length - 1}
+                                <span className="tooltiptext" style={{ display: this.state.Display, padding: '10px' }}>
                                   <div>
-                                    {/* { this.state?.emailcomponentopen && countemailbutton==0 &&<EmailComponenet approvalcallback={() => { this.approvalcallback() }}  Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus}  currentUser={this.props?.CurrentUser} items={this.props?.Result} />} */}
-                                    <div className="col mb-2">
-                                      <div className='justify-content-between d-flex'>
-                                        <div className="pt-1">
-                                          {this.state.ApprovalStatus ?
-                                            <span className="MR5">
-                                              <span title="Rejected"
-                                                onClick={() => this.changeTrafficLigth(i, "Reject")}
-                                                className={fbData['isShowLight'] == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
-                                              >
-                                              </span>
-                                              <span
-                                                onClick={() => this.changeTrafficLigth(i, "Maybe")}
-                                                title="Maybe" className={fbData['isShowLight'] == "Maybe" ? "circlelight br_yellow pull-left yellow" : "circlelight br_yellow pull-left"}>
-                                              </span>
-                                              <span title="Approved"
-                                                onClick={() => this.changeTrafficLigth(i, "Approve")}
-                                                className={fbData['isShowLight'] == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
+                                    {this.state.Result["TeamMembers"].slice(1)?.map((rcData: any, i: any) => {
 
-                                              </span>
-                                              {fbData['ApproverData'] != undefined && fbData?.ApproverData.length > 0 && <span className='px-3'>
-                                                <a
-                                                  onClick={() => this.ShowApprovalHistory(fbData, i, null)}
-                                                >Pre-approved by -</a>
-                                                <img className="workmember" src={fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.ImageUrl}></img>
-                                              </span>}
-                                            </span>
+                                      return <div className=" mb-1 team_Members_Item" style={{ padding: '2px' }}>
+                                        <a href={`${this.state.Result["siteUrl"]}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`} target="_blank" data-interception="off">
 
-                                            : null
-                                          }
-                                        </div>
-                                        <div className='pb-1'>
-                                          <span className="d-block">
-                                            <a style={{ cursor: 'pointer' }} onClick={(e) => this.showhideCommentBox(i)}>Add Comment</a>
-                                          </span>
-                                        </div>
+                                          {rcData?.userImage != null && <img className={`workmember ${rcData?.activeimg2}`} src={rcData?.userImage}></img>}
+                                          {rcData?.userImage == null && <span className={`workmember ${rcData?.activeimg2}bg-fxdark border bg-e9 p-1`}>{rcData?.Suffix}</span>}
+
+                                          <span className='mx-2'>{rcData?.Title}</span>
+                                        </a>
                                       </div>
 
+                                    })
+                                    }
 
-                                      <div className="d-flex p-0 FeedBack-comment ">
-                                        <div className="border p-1 me-1">
-                                          <span>{i + 1}.</span>
-                                          <ul className='list-none'>
-                                            <li>
-                                              {fbData['Completed'] != null && fbData['Completed'] &&
+                                  </div>
+                                </span>
+                              </div>
+                            }
 
-                                                <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/Completed.png'></img></span>
+                          </div>
+
+                        </dd>
+                      </dl>
+
+
+
+                      <dl>
+                        <dt className='bg-Fa'>Status</dt>
+                        <dd className='bg-Ff'>{this.state.Result["Status"]}<br></br>
+                          {this.state.Result["ApproverHistory"] != undefined && this.state.Result["ApproverHistory"].length > 1 && this.state.Result["Categories"].includes("Approval") ?
+                            <span style={{ fontSize: "smaller" }}>Pre-Approved by
+                              <img className="workmember" title={this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length - 2]?.ApproverName} src={(this.state.Result?.ApproverHistory[this.state.Result?.ApproverHistory?.length - 2]?.ApproverImage != null) ? (this.state.Result.ApproverHistory[this.state.Result.ApproverHistory.length - 2]?.ApproverImage) : (this.state.Result?.ApproverHistory[this.state.Result.ApproverHistory.length - 2]?.ApproverSuffix)}></img></span>
+                            // {this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length-1].Title}
+                            : null}</dd>
+                      </dl>
+                      <dl>
+                        <dt className='bg-Fa'>Working Today</dt>
+                        <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["IsTodaysTask"] ? "Yes" : "No"} </span>
+                        </dd>
+                      </dl>
+                      <dl>
+                        <dt className='bg-Fa'>Item Rank</dt>
+                        <dd className='bg-Ff'>{this.state.Result["ItemRank"]}</dd>
+                      </dl>
+                      <dl>
+                        <dt className='bg-Fa'>% Complete</dt>
+                        <dd className='bg-Ff'>{this.state.Result["PercentComplete"] != undefined ? this.state.Result["PercentComplete"].toFixed(0) : 0}</dd>
+                      </dl>
+                      <dl>
+                        <dt className='bg-Fa'>Priority</dt>
+                        <dd className='bg-Ff'>{this.state.Result["Priority"]}</dd>
+                      </dl>
+
+                      <dl>
+                        <dt className='bg-Fa'>Created</dt>
+                        <dd className='bg-Ff'>
+                          {this.state.Result["Created"] != undefined && this.state.Result["Created"] != null ? moment(this.state.Result["Created"]).format("DD/MM/YYYY") : ""}  <span className='ms-1'>
+                            {this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 &&
+                              <a title={this.state.Result["Author"][0].Title} >
+                                {this.state.Result["Author"][0].userImage !== "" && <img className="workmember" src={this.state.Result["Author"][0].userImage} ></img>}
+                                {this.state.Result["Author"][0].userImage === "" && <span className="workmember">{this.state.Result["Author"][0].Suffix}</span>}
+                              </a>
+
+                            }
+                          </span>
+
+                        </dd>
+                      </dl>
+                    </div>
+                    <div className='col-md-4 p-0'>
+
+                      <dl>
+
+                        <dt className='bg-Fa'>Portfolio</dt>
+                        <dd className='bg-Ff full-width'>
+                          {this.state.Result["Component"] != null && this.state.Result["Component"].length > 0 && this.state.Result["Component"]?.map((componentdt: any, i: any) => {
+                            return (
+                              <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${componentdt.Id}`}>{componentdt.Title}</a>
+
+                            )
+                          })}
+                          {this.state.Result["Services"] != null && this.state.Result["Services"].length > 0 && this.state.Result["Services"]?.map((Servicesdt: any, i: any) => {
+                            return (
+                              <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${Servicesdt.Id}`}>{Servicesdt.Title}</a>
+
+                            )
+                          })}
+
+                        </dd>
+                      </dl>
+                      <dl>
+                        <dt className='bg-Fa'>Project</dt>
+                        <dd className='bg-Ff full-width'>
+                          <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Project-Management.aspx?ProjectId=${this.state.Result["Project"]?.Id}`}>{this.state.Result["Project"]?.Title}</a>
+                        </dd>
+                      </dl>
+                      {isShowSiteCompostion && <dl className="Sitecomposition">
+                        {ClientTimeArray != null && ClientTimeArray.length > 0 &&
+                          <div className='dropdown'>
+                            <a className="sitebutton bg-fxdark d-flex">
+                              <span className="arrowicons" onClick={() => this.showhideComposition()}>{this.state.showComposition ? <SlArrowDown /> : <SlArrowRight />}</span>
+                              <div className="d-flex justify-content-between full-width">
+                                <p className="pb-0 mb-0">Site Composition</p>
+                                <p className="input-group-text mb-0 pb-0" title="Edit Site Composition" onClick={() => this.setState({ EditSiteCompositionStatus: true })}>
+                                  <span className="svg__iconbox svg__icon--editBox"></span>
+                                </p>
+                              </div>
+
+                            </a>
+                            <div className="spxdropdown-menu" style={{ display: this.state.showComposition ? 'block' : 'none' }}>
+                              <ul>
+                                {ClientTimeArray?.map((cltime: any, i: any) => {
+                                  return <li className="Sitelist">
+                                    <span>
+                                      <img style={{ width: "22px" }} title={cltime?.SiteName} src={this.GetSiteIcon(cltime?.SiteName) ? this.GetSiteIcon(cltime?.SiteName) : this.GetSiteIcon(cltime?.Title)} />
+                                    </span>
+                                    {cltime?.ClienTimeDescription != undefined &&
+                                      <span>
+                                        {Number(cltime?.ClienTimeDescription).toFixed(2)}%
+                                      </span>
+                                    }
+                                    {cltime.ClientCategory != undefined && cltime.ClientCategory.length > 0 ? cltime.ClientCategory?.map((clientcat: any) => {
+                                      return (
+                                        <span>{clientcat.Title}</span>
+                                      )
+                                    }) : null}
+                                  </li>
+                                })}
+                              </ul>
+                            </div>
+                          </div>
+                        }
+                      </dl>}
+                      {this.state.Result?.EstimatedTimeDescriptionArray?.length > 0 &&
+                        <dl className="Sitecomposition my-2">
+                          <div className='dropdown'>
+                            <a className="sitebutton bg-fxdark d-flex">
+                              <span className="arrowicons" onClick={() => this.showhideEstimatedTime()}>{this.state.ShowEstimatedTimeDescription ? <SlArrowDown /> : <SlArrowRight />}</span>
+                              <div className="d-flex justify-content-between full-width">
+                                <p className="pb-0 mb-0 ">Estimated Task Time Details</p>
+                              </div>
+                            </a>
+                            <div className="spxdropdown-menu" style={{ display: this.state.ShowEstimatedTimeDescription ? 'block' : 'none' }}>
+                              <div className="col-12" style={{ fontSize: "14px" }}>
+                                {this.state.Result?.EstimatedTimeDescriptionArray != null && this.state.Result?.EstimatedTimeDescriptionArray?.length > 0 ?
+                                  <div className="p-1">
+                                    {this.state.Result?.EstimatedTimeDescriptionArray?.map((EstimatedTimeData: any, Index: any) => {
+                                      return (
+                                        <div className={this.state.Result?.EstimatedTimeDescriptionArray?.length == Index + 1 ? "align-content-center d-flex justify-content-between p-1 px-2" : "align-content-center border-bottom d-flex justify-content-between p-1 px-2"}>
+                                          <img className="ProirityAssignedUserPhoto m-0" title={EstimatedTimeData.UserName} src={EstimatedTimeData.UserImage != undefined && EstimatedTimeData.UserImage?.length > 0 ? EstimatedTimeData.UserImage : ''} />
+                                          <span>{EstimatedTimeData.Team ? EstimatedTimeData.Team : null}</span> |
+                                          <span>Time : {EstimatedTimeData.EstimatedTime ? (EstimatedTimeData.EstimatedTime > 1 ? EstimatedTimeData.EstimatedTime + " hours" : EstimatedTimeData.EstimatedTime + " hour") : "0 hour"}</span>
+                                          <span className="svg__iconbox svg__icon--info" title={EstimatedTimeData.EstimatedTimeDescription} ></span>
+                                        </div>
+                                      )
+                                    })}
+                                  </div>
+                                  : null
+                                }
+                              </div>
+                            </div>
+                            <div className="boldClable border border-top-0 ps-2 py-1">
+                              <span>Total Estimated Time : </span><span className="mx-1">{this.state.Result.TotalEstimatedTime > 1 ? this.state.Result.TotalEstimatedTime + " hours" : this.state.Result.TotalEstimatedTime + " hour"} </span>
+                            </div>
+                          </div>
+                        </dl>
+                      }
+
+                    </div>
+                  </div>
+                  <div className='row url'>
+                    <div className="d-flex p-0">
+                      <div className='bg-Fa p-2'><label>Url</label></div>
+                      <div className='bg-Ff p-2 text-break full-width'>
+                        {this.state.Result["component_url"] != null &&
+                          <a target="_blank" data-interception="off" href={this.state.Result["component_url"].Url}>{this.state.Result["component_url"].Url}</a>
+                        }
+                      </div>
+
+                    </div>
+                  </div>
+                  <section>
+                    <div className="col mt-2">
+                      <div className="Taskaddcomment row">
+                        {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"].length > 0 &&
+                          <div className="bg-white col-sm-4 mt-2 p-0">
+                            {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.map((imgData: any, i: any) => {
+                              return <div className="taskimage border mb-3">
+                                {/*  <BannerImageCard imgData={imgData}></BannerImageCard> */}
+
+                                <a className='images' target="_blank" data-interception="off" href={imgData?.ImageUrl}>
+                                  <img alt={imgData?.ImageName} src={imgData?.ImageUrl}
+                                    onMouseOver={(e) => this.OpenModal(e, imgData)}
+                                    onMouseOut={(e) => this.CloseModal(e)} ></img>
+                                </a>
+
+
+                                <div className="Footerimg d-flex align-items-center bg-fxdark justify-content-between p-1 ">
+                                  <div className='usericons'>
+                                    <span>
+                                      <span >{imgData?.UploadeDate}</span>
+                                      <span className='round px-1'>
+                                        {imgData?.UserImage != null &&
+                                          <img className='align-self-start' title={imgData?.UserName} src={imgData?.UserImage} />
+                                        }
+                                      </span>
+                                      {imgData?.Description != undefined && imgData?.Description != "" && <span title={imgData?.Description} className="mx-1" >
+                                        <BiInfoCircle />
+                                      </span>}
+
+                                    </span>
+                                  </div>
+                                  <div className="expandicon">
+
+                                    <span >
+                                      {imgData?.ImageName?.length > 15 ? imgData?.ImageName.substring(0, 15) + '...' : imgData?.ImageName}
+                                    </span>
+                                    <span>|</span>
+                                    <a className='images' title="Expand Image" target="_blank" data-interception="off" href={imgData?.ImageUrl}><span className='mx-2'><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M212.686 315.314L120 408l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C10.697 480 0 469.255 0 456V344c0-21.382 25.803-32.09 40.922-16.971L72 360l92.686-92.686c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.249 6.248 6.249 16.378 0 22.627zm22.628-118.628L328 104l-32.922-31.029C279.958 57.851 290.666 32 312.048 32h112C437.303 32 448 42.745 448 56v112c0 21.382-25.803 32.09-40.922 16.971L376 152l-92.686 92.686c-6.248 6.248-16.379 6.248-22.627 0l-25.373-25.373c-6.249-6.248-6.249-16.378 0-22.627z"></path></svg></span></a>
+                                  </div>
+
+                                </div>
+
+                              </div>
+                            })}
+                          </div>
+                        }
+                        {/*feedback comment section code */}
+                        <div className={this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.length > 0 ? "col-sm-8 pe-0 mt-2" : "col-sm-12 pe-0 mt-2"}>
+                          {this.state.Result["SharewebTaskType"] != null && (this.state.Result["SharewebTaskType"] == '' ||
+                            this.state.Result["SharewebTaskType"] == 'Task' || this.state.Result["SharewebTaskType"] == "Workstream" || this.state.Result["SharewebTaskType"] == "Activities") && this.state.Result["FeedBack"] != undefined && this.state.Result["FeedBack"].length > 0 && this.state.Result["FeedBack"][0].FeedBackDescriptions != undefined &&
+                            this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
+                            this.state.Result["FeedBack"][0]?.FeedBackDescriptions[0]?.Title != '' && this.state.countfeedback >= 0 &&
+                            <div className={"Addcomment " + "manage_gap"}>
+                              {this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
+                                let userdisplay: any = [];
+                                userdisplay.push({ Title: this.props?.userDisplayName })
+
+
+                                if (fbData != null && fbData != undefined && fbData?.Title != "") {
+
+                                  try {
+                                    if (fbData?.Title != undefined) {
+                                      fbData.Title = fbData?.Title?.replace(/\n/g, '<br/>');
+
+                                    }
+                                  } catch (e) {
+                                  }
+                                  return (
+                                    <>
+                                      <div>
+                                        {/* { this.state?.emailcomponentopen && countemailbutton==0 &&<EmailComponenet approvalcallback={() => { this.approvalcallback() }}  Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus}  currentUser={this.props?.CurrentUser} items={this.props?.Result} />} */}
+                                        <div className="col mb-2">
+                                          <div className='justify-content-between d-flex'>
+                                            <div className="pt-1">
+                                              {this.state.ApprovalStatus ?
+                                                <span className="MR5">
+                                                  <span title="Rejected"
+                                                    onClick={() => this.changeTrafficLigth(i, "Reject")}
+                                                    className={fbData['isShowLight'] == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
+                                                  >
+                                                  </span>
+                                                  <span
+                                                    onClick={() => this.changeTrafficLigth(i, "Maybe")}
+                                                    title="Maybe" className={fbData['isShowLight'] == "Maybe" ? "circlelight br_yellow pull-left yellow" : "circlelight br_yellow pull-left"}>
+                                                  </span>
+                                                  <span title="Approved"
+                                                    onClick={() => this.changeTrafficLigth(i, "Approve")}
+                                                    className={fbData['isShowLight'] == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
+
+                                                  </span>
+                                                  {fbData['ApproverData'] != undefined && fbData?.ApproverData.length > 0 && <span className='px-3'>
+                                                    <a
+                                                      onClick={() => this.ShowApprovalHistory(fbData, i, null)}
+                                                    >Pre-approved by -</a>
+                                                    <img className="workmember" src={fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.ImageUrl}></img>
+                                                  </span>}
+                                                </span>
+
+                                                : null
                                               }
-                                            </li>
-                                            <li>
-                                              {fbData['HighImportance'] != null && fbData['HighImportance'] &&
-                                                <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/highPriorty.png'></img></span>
-                                              }
-                                            </li>
-                                            <li>
-                                              {fbData['LowImportance'] != null && fbData['LowImportance'] &&
-                                                <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/lowPriority.png'></img></span>
-                                              }
-                                            </li>
-                                            <li>
-                                              {fbData['Phone'] != null && fbData['Phone'] &&
-                                                <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/Phone.png'></img></span>
-                                              }
-                                            </li>
-                                          </ul>
+                                            </div>
+                                            <div className='pb-1'>
+                                              <span className="d-block">
+                                                <a style={{ cursor: 'pointer' }} onClick={(e) => this.showhideCommentBox(i)}>Add Comment</a>
+                                              </span>
+                                            </div>
+                                          </div>
+
+
+                                          <div className="d-flex p-0 FeedBack-comment ">
+                                            <div className="border p-1 me-1">
+                                              <span>{i + 1}.</span>
+                                              <ul className='list-none'>
+                                                <li>
+                                                  {fbData['Completed'] != null && fbData['Completed'] &&
+
+                                                    <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/Completed.png'></img></span>
+                                                  }
+                                                </li>
+                                                <li>
+                                                  {fbData['HighImportance'] != null && fbData['HighImportance'] &&
+                                                    <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/highPriorty.png'></img></span>
+                                                  }
+                                                </li>
+                                                <li>
+                                                  {fbData['LowImportance'] != null && fbData['LowImportance'] &&
+                                                    <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/lowPriority.png'></img></span>
+                                                  }
+                                                </li>
+                                                <li>
+                                                  {fbData['Phone'] != null && fbData['Phone'] &&
+                                                    <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/Phone.png'></img></span>
+                                                  }
+                                                </li>
+                                              </ul>
+                                            </div>
+
+                                            <div className="border p-2 full-width text-break"
+                                              title={fbData.ApproverData != undefined && fbData.ApproverData.length > 0 ? fbData.ApproverData[fbData.ApproverData.length - 1].isShowLight : ""}>
+
+                                              <span dangerouslySetInnerHTML={{ __html: fbData?.Title?.replace(/\n/g, "<br />") }}></span>
+                                              <div className="col">
+                                                {fbData['Comments'] != null && fbData['Comments']?.length > 0 && fbData['Comments']?.map((fbComment: any, k: any) => {
+                                                  return <div className={fbComment.isShowLight != undefined && fbComment.isApprovalComment ? `col add_cmnt my-1 ${fbComment.isShowLight}` : "col add_cmnt my-1"}>
+                                                    <div className="">
+                                                      <div className="d-flex p-0">
+                                                        <div className="col-1 p-0">
+                                                          <img className="workmember" src={fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ?
+                                                            fbComment.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
+                                                        </div>
+                                                        <div className="col-11 pe-0" >
+                                                          <div className='d-flex justify-content-between align-items-center'>
+                                                            {fbComment?.AuthorName} - {fbComment?.Created}
+                                                            <span className='d-flex'>
+                                                              <a className="ps-1" title="Comment Reply" >
+                                                                <div data-toggle="tooltip" id={buttonId + "-" + i + k}
+                                                                  onClick={() => this.openReplycommentPopup(i, k)}
+                                                                  data-placement="bottom"
+                                                                >
+                                                                  <ImReply />
+                                                                </div>
+                                                              </a>
+                                                              <a title='Edit'
+                                                                onClick={() => this.openEditModal(fbComment, k, 0, false, i)}
+                                                              >
+                                                                <span className='svg__iconbox svg__icon--edit'></span>
+                                                              </a>
+                                                              <a title='Delete'
+                                                                onClick={() => this.clearComment(false, k, 0, i)}
+                                                              >
+                                                                <span className='svg__iconbox svg__icon--trash'></span></a>
+                                                            </span>
+                                                          </div>
+                                                          <div><span dangerouslySetInnerHTML={{ __html: fbComment?.Title.replace(/\n/g, "<br />") }}></span></div>
+                                                        </div>
+                                                      </div>
+                                                      <div className="col-12 ps-3 pe-0">
+                                                        {fbComment?.ReplyMessages != undefined && fbComment?.ReplyMessages.length > 0 && fbComment?.ReplyMessages?.map((replymessage: any, index: any) => {
+                                                          return (
+                                                            <div className="d-flex border ms-3 p-2  mb-1">
+                                                              <div className="col-1 p-0 mx-1">
+                                                                <img className="workmember" src={replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != '' ?
+                                                                  replymessage.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
+                                                              </div>
+                                                              <div className="col-11 pe-0" >
+                                                                <div className='d-flex justify-content-between align-items-center'>
+                                                                  {replymessage?.AuthorName} - {replymessage?.Created}
+                                                                  <span className='d-flex'>
+                                                                    <a title='Edit'
+                                                                      onClick={() => this.EditReplyComment(replymessage, k, 0, false, i, index)
+                                                                      }
+                                                                    >
+                                                                      <span className='svg__iconbox svg__icon--edit'></span>
+                                                                    </a>
+                                                                    <a title='Delete'
+                                                                      onClick={() => this.clearReplycomment(false, k, 0, i, index)
+                                                                      }
+                                                                    >
+                                                                      <span className='svg__iconbox svg__icon--trash'></span></a>
+                                                                  </span>
+                                                                </div>
+                                                                <div><span dangerouslySetInnerHTML={{ __html: replymessage?.Title.replace(/\n/g, "<br />") }}></span></div>
+                                                              </div>
+                                                            </div>
+
+                                                          )
+                                                        })}
+                                                      </div>
+                                                    </div>
+
+
+                                                  </div>
+
+
+                                                })}
+                                              </div>
+
+                                            </div>
+                                          </div>
+                                          {this.state.showhideCommentBoxIndex == i && <div className='SpfxCheckRadio'>
+                                            <div className="col-sm-12 mt-2 p-0" style={{ display: this.state.showcomment }} >
+                                              {this.state.Result["Approver"]?.Id == this?.currentUser[0]?.Id && <label className='label--checkbox'><input type='checkbox' className='checkbox' name='approval' checked={this.state.ApprovalCommentcheckbox} onChange={(e) => this.setState({ ApprovalCommentcheckbox: e.target.checked })} />
+                                                Mark as Approval Comment</label>}
+                                            </div>
+                                            <div className="align-items-center d-flex"
+                                              style={{ display: this.state.showcomment }}
+                                            >  <textarea id="txtComment" onChange={(e) => this.handleInputChange(e)} className="form-control full-width"></textarea>
+                                              <button type="button" className={this.state.Result["Approver"]?.Id == this.currentUser[0]?.Id ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => this.PostButtonClick(fbData, i)}>Post</button>
+                                            </div>
+                                          </div>}
+
                                         </div>
 
-                                        <div className="border p-2 full-width text-break"
-                                          title={fbData.ApproverData != undefined && fbData.ApproverData.length > 0 ? fbData.ApproverData[fbData.ApproverData.length - 1].isShowLight : ""}>
+                                        {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext']?.map((fbSubData: any, j: any) => {
+                                          return <div className="col-sm-12 p-0 mb-2" style={{ width: '100%' }}>
+                                            <div className='justify-content-between d-flex'>
+                                              <div>
+                                                {this.state.ApprovalStatus ?
+                                                  <span className="MR5">
+                                                    <span title="Rejected"
+                                                      onClick={() => this.changeTrafficLigthsubtext(i, j, "Reject")}
+                                                      className={fbSubData.isShowLight == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
+                                                    >
+                                                    </span>
+                                                    <span title="Maybe"
+                                                      onClick={() => this.changeTrafficLigthsubtext(i, j, "Maybe")}
+                                                      className={fbSubData?.isShowLight == "Maybe" ? "circlelight br_yellow pull-left yellow" : "circlelight br_yellow pull-left"}>
+                                                    </span>
+                                                    <span title="Approved"
+                                                      onClick={() => this.changeTrafficLigthsubtext(i, j, "Approve")}
+                                                      className={fbSubData?.isShowLight == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
 
-                                          <span dangerouslySetInnerHTML={{ __html: fbData?.Title?.replace(/\n/g, "<br />") }}></span>
-                                          <div className="col">
-                                            {fbData['Comments'] != null && fbData['Comments']?.length > 0 && fbData['Comments']?.map((fbComment: any, k: any) => {
-                                              return <div className={fbComment.isShowLight != undefined && fbComment.isApprovalComment ? `col add_cmnt my-1 ${fbComment.isShowLight}` : "col add_cmnt my-1"}>
-                                                <div className="">
-                                                  <div className="d-flex p-0">
-                                                    <div className="col-1 p-0">
-                                                      <img className="workmember" src={fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ?
-                                                        fbComment.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
-                                                    </div>
-                                                    <div className="col-11 pe-0" >
-                                                      <div className='d-flex justify-content-between align-items-center'>
-                                                        {fbComment?.AuthorName} - {fbComment?.Created}
-                                                        <span className='d-flex'>
-                                                          <a className="ps-1" title="Comment Reply" >
-                                                            <div data-toggle="tooltip" id={buttonId + "-" + i + k}
-                                                              onClick={() => this.openReplycommentPopup(i, k)}
-                                                              data-placement="bottom"
-                                                            >
-                                                              <ImReply />
-                                                            </div>
-                                                          </a>
-                                                          <a title='Edit'
-                                                            onClick={() => this.openEditModal(fbComment, k, 0, false, i)}
-                                                          >
-                                                            <span className='svg__iconbox svg__icon--edit'></span>
-                                                          </a>
-                                                          <a title='Delete'
-                                                            onClick={() => this.clearComment(false, k, 0, i)}
-                                                          >
-                                                            <span className='svg__iconbox svg__icon--trash'></span></a>
-                                                        </span>
-                                                      </div>
-                                                      <div><span dangerouslySetInnerHTML={{ __html: fbComment?.Title.replace(/\n/g, "<br />") }}></span></div>
-                                                    </div>
-                                                  </div>
-                                                  <div className="col-12 ps-3 pe-0">
-                                                    {fbComment?.ReplyMessages != undefined && fbComment?.ReplyMessages.length > 0 && fbComment?.ReplyMessages?.map((replymessage: any, index: any) => {
-                                                      return (
-                                                        <div className="d-flex border ms-3 p-2  mb-1">
-                                                          <div className="col-1 p-0 mx-1">
-                                                            <img className="workmember" src={replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != '' ?
-                                                              replymessage.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
+                                                    </span>
+                                                    {fbSubData.ApproverData != undefined && fbSubData.ApproverData.length > 0 && <span className='px-3'>
+                                                      <a
+                                                        onClick={() => this.ShowApprovalHistory(fbSubData, i, j)}
+                                                      >Pre-approved by -</a>
+                                                      <img className="workmember" src={fbSubData?.ApproverData[fbSubData?.ApproverData?.length - 1]?.ImageUrl}></img>
+                                                    </span>}
+                                                  </span>
+                                                  : null
+                                                }
+                                              </div>
+                                              <div>
+                                                <a className="d-block text-end">
+                                                  <a style={{ cursor: 'pointer' }}
+                                                    onClick={(e) => this.showhideCommentBoxOfSubText(j, i)}
+                                                  >Add Comment</a>
+                                                </a>
+                                              </div>
+                                            </div>
+
+                                            <div className="d-flex pe-0 FeedBack-comment">
+                                              <div className="border p-1 me-1">
+                                                <span >{i + 1}.{j + 1}</span>
+                                                <ul className="list-none">
+                                                  <li>
+                                                    {fbSubData?.Completed != null && fbSubData?.Completed &&
+                                                      <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/Completed.png'></img></span>
+                                                    }
+                                                  </li>
+                                                  <li>
+                                                    {fbSubData?.HighImportance != null && fbSubData?.HighImportance &&
+                                                      <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/highPriorty.png'></img></span>
+                                                    }
+                                                  </li>
+                                                  <li>
+                                                    {fbSubData?.LowImportance != null && fbSubData?.LowImportance &&
+                                                      <span><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/lowPriority.png'></img></span>
+                                                    }
+                                                  </li>
+                                                  <li>
+                                                    {fbSubData?.Phone != null && fbSubData?.Phone &&
+                                                      <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/Phone.png'></img></span>
+                                                    }
+                                                  </li>
+                                                </ul>
+                                              </div>
+
+                                              <div className="border p-2 full-width text-break"
+                                                title={fbSubData?.ApproverData != undefined && fbSubData?.ApproverData?.length > 0 ? fbSubData?.ApproverData[fbSubData?.ApproverData.length - 1]?.isShowLight : ""}>
+                                                <span ><span dangerouslySetInnerHTML={{ __html: fbSubData?.Title?.replace(/\n/g, "<br />") }}></span></span>
+                                                <div className="feedbackcomment col-sm-12 PadR0 mt-10">
+                                                  {fbSubData?.Comments != null && fbSubData.Comments.length > 0 && fbSubData?.Comments?.map((fbComment: any, k: any) => {
+                                                    return <div className={fbComment?.isShowLight != undefined && fbComment.isApprovalComment ? `col-sm-12  mb-2 add_cmnt my-1 ${fbComment?.isShowLight}` : "col-sm-12  mb-2 add_cmnt my-1 "}>
+                                                      <div className="">
+                                                        <div className="d-flex p-0">
+                                                          <div className="col-sm-1 padL-0 wid35">
+                                                            <img className="workmember" src={fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ?
+                                                              fbComment.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
                                                           </div>
-                                                          <div className="col-11 pe-0" >
-                                                            <div className='d-flex justify-content-between align-items-center'>
-                                                              {replymessage?.AuthorName} - {replymessage?.Created}
+                                                          <div className="col-sm-11 pad0" key={k}>
+                                                            <div className="d-flex justify-content-between align-items-center">
+                                                              {fbComment?.AuthorName} - {fbComment?.Created}
                                                               <span className='d-flex'>
-                                                                <a title='Edit'
-                                                                  onClick={() => this.EditReplyComment(replymessage, k, 0, false, i, index)
-                                                                  }
+                                                                <a className="ps-1" title="Comment Reply" >
+                                                                  <div data-toggle="tooltip" id={buttonId + "-" + i + j + k}
+                                                                    onClick={() => this.openReplySubcommentPopup(i, j, k)}
+                                                                    data-placement="bottom"
+                                                                  >
+                                                                    <ImReply />
+                                                                  </div>
+                                                                </a>
+                                                                <a title="Edit"
+                                                                  onClick={() => this.openEditModal(fbComment, k, j, true, i)}
                                                                 >
+
                                                                   <span className='svg__iconbox svg__icon--edit'></span>
                                                                 </a>
                                                                 <a title='Delete'
-                                                                  onClick={() => this.clearReplycomment(false, k, 0, i, index)
-                                                                  }
-                                                                >
-                                                                  <span className='svg__iconbox svg__icon--trash'></span></a>
+                                                                  onClick={() => this.clearComment(true, k, j, i)}
+                                                                ><span className='svg__iconbox svg__icon--trash'></span></a>
                                                               </span>
                                                             </div>
-                                                            <div><span dangerouslySetInnerHTML={{ __html: replymessage?.Title.replace(/\n/g, "<br />") }}></span></div>
+                                                            <div ><span dangerouslySetInnerHTML={{ __html: fbComment?.Title.replace(/\n/g, "<br />") }}></span></div>
                                                           </div>
                                                         </div>
+                                                        <div className="col-12 ps-3 pe-0">
+                                                          {fbComment?.ReplyMessages != undefined && fbComment?.ReplyMessages.length > 0 && fbComment?.ReplyMessages?.map((replymessage: any, ReplyIndex: any) => {
+                                                            return (
+                                                              <div className="d-flex border ms-3 p-2  mb-1">
+                                                                <div className="col-1 p-0 mx-1">
+                                                                  <img className="workmember" src={replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != '' ?
+                                                                    replymessage.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
+                                                                </div>
+                                                                <div className="col-11 pe-0" >
+                                                                  <div className='d-flex justify-content-between align-items-center'>
+                                                                    {replymessage?.AuthorName} - {replymessage?.Created}
+                                                                    <span className='d-flex'>
+                                                                      <a title='Edit'
 
-                                                      )
-                                                    })}
-                                                  </div>
+                                                                        onClick={() => this.EditReplyComment(replymessage, k, 0, true, i, ReplyIndex)
+                                                                        }
+                                                                      >
+                                                                        <span className='svg__iconbox svg__icon--edit'></span>
+                                                                      </a>
+                                                                      <a title='Delete'
+                                                                        onClick={() => this.clearReplycomment(true, k, j, i, ReplyIndex)}
+
+                                                                      >
+                                                                        <span className='svg__iconbox svg__icon--trash'></span></a>
+                                                                    </span>
+                                                                  </div>
+                                                                  <div><span dangerouslySetInnerHTML={{ __html: replymessage?.Title.replace(/\n/g, "<br />") }}></span></div>
+                                                                </div>
+                                                              </div>
+
+                                                            )
+                                                          })}
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  })}
                                                 </div>
-
+                                              </div>
+                                            </div>
+                                            {this.state?.subchildcomment == j && this.state?.subchildParentIndex == i ? <div className='SpfxCheckRadio' >
+                                              <div className="col-sm-12 mt-2 p-0  "
+                                              //  style={{ display: this.state.showcomment_subtext }}
+                                              >
+                                                {this.state.Result["Approver"]?.Id == this.currentUser[0]?.Id && <label className='label--checkbox'><input type='checkbox' className='checkbox' checked={this.state?.ApprovalCommentcheckbox} onChange={(e) => this.setState({ ApprovalCommentcheckbox: e.target?.checked })} />Mark as Approval Comment</label>}
 
                                               </div>
 
+                                              <div className="align-items-center d-flex"
+                                              //  style={{ display: this.state.showcomment_subtext }}
+                                              >  <textarea id="txtCommentSubtext" onChange={(e) => this.handleInputChange(e)} className="form-control full-width" ></textarea>
+                                                <button type="button" className={this.state.Result["Approver"]?.Id == this.currentUser[0]?.Id ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => this.SubtextPostButtonClick(j, i)}>Post</button>
+                                              </div>
+                                            </div> : null}
 
-                                            })}
                                           </div>
+                                        })}
 
-                                        </div>
+                                        <Panel
+                                          onRenderHeader={this.onRenderCustomHeadereditcomment}
+                                          isOpen={this.state.isEditModalOpen ? this.state.isEditModalOpen : this.state.isEditReplyModalOpen}
+                                          onDismiss={this.Closecommentpopup}
+                                          isBlocking={this.state.isEditModalOpen ? !this.state.isEditModalOpen : !this.state.isEditReplyModalOpen}>
+                                          <div className="modal-body">
+                                            <div className='col'><textarea id="txtUpdateComment" rows={6} className="full-width" onChange={(e) => this.handleUpdateComment(e)}  >{this.state?.CommenttoUpdate}</textarea></div>
+                                          </div>
+                                          <footer className='modal-footer'>
+                                            <button className='btn btn-default ms-1' onClick={this.Closecommentpopup}>Cancel</button>
+                                            <button className="btn btn-primary ms-1" onClick={(e) => this.updateComment()}>Save</button>
+
+                                          </footer>
+
+
+                                        </Panel>
+
+                                        {this.state.ApprovalHistoryPopup ? <ApprovalHistoryPopup
+                                          ApprovalPointUserData={this.state.ApprovalPointUserData}
+                                          ApprovalPointCurrentIndex={this.state.ApprovalPointCurrentParentIndex}
+                                          ApprovalPointHistoryStatus={this.state.ApprovalHistoryPopup}
+                                          currentArrayIndex={this.state.currentArraySubTextIndex}
+                                          callBack={() => this.ApprovalHistoryPopupCallBack()}
+                                        />
+                                          : null}
                                       </div>
-                                      {this.state.showhideCommentBoxIndex == i && <div className='SpfxCheckRadio'>
-                                        <div className="col-sm-12 mt-2 p-0" style={{ display: this.state.showcomment }} >
-                                          {this.state.Result["Approver"]?.Id == this?.currentUser[0]?.Id && <label className='label--checkbox'><input type='checkbox' className='checkbox' name='approval' checked={this.state.ApprovalCommentcheckbox} onChange={(e) => this.setState({ ApprovalCommentcheckbox: e.target.checked })} />
-                                            Mark as Approval Comment</label>}
-                                        </div>
-                                        <div className="align-items-center d-flex"
-                                          style={{ display: this.state.showcomment }}
-                                        >  <textarea id="txtComment" onChange={(e) => this.handleInputChange(e)} className="form-control full-width"></textarea>
-                                          <button type="button" className={this.state.Result["Approver"]?.Id == this.currentUser[0]?.Id ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => this.PostButtonClick(fbData, i)}>Post</button>
-                                        </div>
-                                      </div>}
-
-                                    </div>
-
-                                    {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext']?.map((fbSubData: any, j: any) => {
-                                      return <div className="col-sm-12 p-0 mb-2" style={{ width: '100%' }}>
-                                        <div className='justify-content-between d-flex'>
-                                          <div>
-                                            {this.state.ApprovalStatus ?
-                                              <span className="MR5">
-                                                <span title="Rejected"
-                                                  onClick={() => this.changeTrafficLigthsubtext(i, j, "Reject")}
-                                                  className={fbSubData.isShowLight == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
-                                                >
-                                                </span>
-                                                <span title="Maybe"
-                                                  onClick={() => this.changeTrafficLigthsubtext(i, j, "Maybe")}
-                                                  className={fbSubData?.isShowLight == "Maybe" ? "circlelight br_yellow pull-left yellow" : "circlelight br_yellow pull-left"}>
-                                                </span>
-                                                <span title="Approved"
-                                                  onClick={() => this.changeTrafficLigthsubtext(i, j, "Approve")}
-                                                  className={fbSubData?.isShowLight == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
-
-                                                </span>
-                                                {fbSubData.ApproverData != undefined && fbSubData.ApproverData.length > 0 && <span className='px-3'>
-                                                  <a
-                                                    onClick={() => this.ShowApprovalHistory(fbSubData, i, j)}
-                                                  >Pre-approved by -</a>
-                                                  <img className="workmember" src={fbSubData?.ApproverData[fbSubData?.ApproverData?.length - 1]?.ImageUrl}></img>
-                                                </span>}
-                                              </span>
-                                              : null
-                                            }
-                                          </div>
-                                          <div>
-                                            <a className="d-block text-end">
-                                              <a style={{ cursor: 'pointer' }}
-                                                onClick={(e) => this.showhideCommentBoxOfSubText(j, i)}
-                                              >Add Comment</a>
-                                            </a>
-                                          </div>
-                                        </div>
-
-                                        <div className="d-flex pe-0 FeedBack-comment">
-                                          <div className="border p-1 me-1">
-                                            <span >{i + 1}.{j + 1}</span>
-                                            <ul className="list-none">
-                                              <li>
-                                                {fbSubData?.Completed != null && fbSubData?.Completed &&
-                                                  <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/Completed.png'></img></span>
-                                                }
-                                              </li>
-                                              <li>
-                                                {fbSubData?.HighImportance != null && fbSubData?.HighImportance &&
-                                                  <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/highPriorty.png'></img></span>
-                                                }
-                                              </li>
-                                              <li>
-                                                {fbSubData?.LowImportance != null && fbSubData?.LowImportance &&
-                                                  <span><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/lowPriority.png'></img></span>
-                                                }
-                                              </li>
-                                              <li>
-                                                {fbSubData?.Phone != null && fbSubData?.Phone &&
-                                                  <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/Phone.png'></img></span>
-                                                }
-                                              </li>
-                                            </ul>
-                                          </div>
-
-                                          <div className="border p-2 full-width text-break"
-                                            title={fbSubData?.ApproverData != undefined && fbSubData?.ApproverData?.length > 0 ? fbSubData?.ApproverData[fbSubData?.ApproverData.length - 1]?.isShowLight : ""}>
-                                            <span ><span dangerouslySetInnerHTML={{ __html: fbSubData?.Title?.replace(/\n/g, "<br />") }}></span></span>
-                                            <div className="feedbackcomment col-sm-12 PadR0 mt-10">
-                                              {fbSubData?.Comments != null && fbSubData.Comments.length > 0 && fbSubData?.Comments?.map((fbComment: any, k: any) => {
-                                                return <div className={fbComment?.isShowLight != undefined && fbComment.isApprovalComment ? `col-sm-12  mb-2 add_cmnt my-1 ${fbComment?.isShowLight}` : "col-sm-12  mb-2 add_cmnt my-1 "}>
-                                                  <div className="">
-                                                    <div className="d-flex p-0">
-                                                      <div className="col-sm-1 padL-0 wid35">
-                                                        <img className="workmember" src={fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ?
-                                                          fbComment.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
-                                                      </div>
-                                                      <div className="col-sm-11 pad0" key={k}>
-                                                        <div className="d-flex justify-content-between align-items-center">
-                                                          {fbComment?.AuthorName} - {fbComment?.Created}
-                                                          <span className='d-flex'>
-                                                            <a className="ps-1" title="Comment Reply" >
-                                                              <div data-toggle="tooltip" id={buttonId + "-" + i + j + k}
-                                                                onClick={() => this.openReplySubcommentPopup(i, j, k)}
-                                                                data-placement="bottom"
-                                                              >
-                                                                <ImReply />
-                                                              </div>
-                                                            </a>
-                                                            <a title="Edit"
-                                                              onClick={() => this.openEditModal(fbComment, k, j, true, i)}
-                                                            >
-
-                                                              <span className='svg__iconbox svg__icon--edit'></span>
-                                                            </a>
-                                                            <a title='Delete'
-                                                              onClick={() => this.clearComment(true, k, j, i)}
-                                                            ><span className='svg__iconbox svg__icon--trash'></span></a>
-                                                          </span>
-                                                        </div>
-                                                        <div ><span dangerouslySetInnerHTML={{ __html: fbComment?.Title.replace(/\n/g, "<br />") }}></span></div>
-                                                      </div>
-                                                    </div>
-                                                    <div className="col-12 ps-3 pe-0">
-                                                      {fbComment?.ReplyMessages != undefined && fbComment?.ReplyMessages.length > 0 && fbComment?.ReplyMessages?.map((replymessage: any, ReplyIndex: any) => {
-                                                        return (
-                                                          <div className="d-flex border ms-3 p-2  mb-1">
-                                                            <div className="col-1 p-0 mx-1">
-                                                              <img className="workmember" src={replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != '' ?
-                                                                replymessage.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
-                                                            </div>
-                                                            <div className="col-11 pe-0" >
-                                                              <div className='d-flex justify-content-between align-items-center'>
-                                                                {replymessage?.AuthorName} - {replymessage?.Created}
-                                                                <span className='d-flex'>
-                                                                  <a title='Edit'
-
-                                                                    onClick={() => this.EditReplyComment(replymessage, k, 0, true, i, ReplyIndex)
-                                                                    }
-                                                                  >
-                                                                    <span className='svg__iconbox svg__icon--edit'></span>
-                                                                  </a>
-                                                                  <a title='Delete'
-                                                                    onClick={() => this.clearReplycomment(true, k, j, i, ReplyIndex)}
-
-                                                                  >
-                                                                    <span className='svg__iconbox svg__icon--trash'></span></a>
-                                                                </span>
-                                                              </div>
-                                                              <div><span dangerouslySetInnerHTML={{ __html: replymessage?.Title.replace(/\n/g, "<br />") }}></span></div>
-                                                            </div>
-                                                          </div>
-
-                                                        )
-                                                      })}
-                                                    </div>
-                                                  </div>
-                                                </div>
-                                              })}
-                                            </div>
-                                          </div>
-                                        </div>
-                                        {this.state?.subchildcomment == j && this.state?.subchildParentIndex == i ? <div className='SpfxCheckRadio' >
-                                          <div className="col-sm-12 mt-2 p-0  "
-                                          //  style={{ display: this.state.showcomment_subtext }}
-                                          >
-                                            {this.state.Result["Approver"]?.Id == this.currentUser[0]?.Id && <label className='label--checkbox'><input type='checkbox' className='checkbox' checked={this.state?.ApprovalCommentcheckbox} onChange={(e) => this.setState({ ApprovalCommentcheckbox: e.target?.checked })} />Mark as Approval Comment</label>}
-
-                                          </div>
-
-                                          <div className="align-items-center d-flex"
-                                          //  style={{ display: this.state.showcomment_subtext }}
-                                          >  <textarea id="txtCommentSubtext" onChange={(e) => this.handleInputChange(e)} className="form-control full-width" ></textarea>
-                                            <button type="button" className={this.state.Result["Approver"]?.Id == this.currentUser[0]?.Id ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => this.SubtextPostButtonClick(j, i)}>Post</button>
-                                          </div>
-                                        </div> : null}
-
-                                      </div>
-                                    })}
-
-                                    <Panel
-                                      onRenderHeader={this.onRenderCustomHeadereditcomment}
-                                      isOpen={this.state.isEditModalOpen ? this.state.isEditModalOpen : this.state.isEditReplyModalOpen}
-                                      onDismiss={this.Closecommentpopup}
-                                      isBlocking={this.state.isEditModalOpen ? !this.state.isEditModalOpen : !this.state.isEditReplyModalOpen}>
-                                      <div className="modal-body">
-                                        <div className='col'><textarea id="txtUpdateComment" rows={6} className="full-width" onChange={(e) => this.handleUpdateComment(e)}  >{this.state?.CommenttoUpdate}</textarea></div>
-                                      </div>
-                                      <footer className='modal-footer'>
-                                        <button className='btn btn-default ms-1' onClick={this.Closecommentpopup}>Cancel</button>
-                                        <button className="btn btn-primary ms-1" onClick={(e) => this.updateComment()}>Save</button>
-
-                                      </footer>
 
 
-                                    </Panel>
-
-                                    {this.state.ApprovalHistoryPopup ? <ApprovalHistoryPopup
-                                      ApprovalPointUserData={this.state.ApprovalPointUserData}
-                                      ApprovalPointCurrentIndex={this.state.ApprovalPointCurrentParentIndex}
-                                      ApprovalPointHistoryStatus={this.state.ApprovalHistoryPopup}
-                                      currentArrayIndex={this.state.currentArraySubTextIndex}
-                                      callBack={() => this.ApprovalHistoryPopupCallBack()}
-                                    />
-                                      : null}
-                                  </div>
-
-
-                                </>
-                              )
-                            }
-                          })}
+                                    </>
+                                  )
+                                }
+                              })}
+                            </div>
+                          }
                         </div>
-                      }
+                      </div>
                     </div>
-                  </div>
-                </div>
 
-                {/*===================Backgroundimage code and comment========== */}
+                    {/*===================Backgroundimage code and comment========== */}
 
-                {this.backGroundComment && <div className="col mt-2">
-                  <div className="Taskaddcomment row">
-                    {this.state.Result["OffshoreImageUrl"] != null && this.state.Result["OffshoreImageUrl"].length > 0 &&
-                      <div className="bg-white col-sm-4 mt-2 p-0">
-                        {this.state.Result["OffshoreImageUrl"] != null && this.state.Result["OffshoreImageUrl"]?.map((imgData: any, i: any) => {
-                          return <div className="taskimage border mb-3">
-                            <a className='images' target="_blank" data-interception="off" href={imgData?.ImageUrl}>
-                              <img alt={imgData?.ImageName} src={imgData?.Url}
-                                onMouseOver={(e) => this.OpenModal(e, imgData)}
-                                onMouseOut={(e) => this.CloseModal(e)} ></img>
-                            </a>
+                    {this.backGroundComment && <div className="col mt-2">
+                      <div className="Taskaddcomment row">
+                        {this.state.Result["OffshoreImageUrl"] != null && this.state.Result["OffshoreImageUrl"].length > 0 &&
+                          <div className="bg-white col-sm-4 mt-2 p-0">
+                            {this.state.Result["OffshoreImageUrl"] != null && this.state.Result["OffshoreImageUrl"]?.map((imgData: any, i: any) => {
+                              return <div className="taskimage border mb-3">
+                                <a className='images' target="_blank" data-interception="off" href={imgData?.ImageUrl}>
+                                  <img alt={imgData?.ImageName} src={imgData?.Url}
+                                    onMouseOver={(e) => this.OpenModal(e, imgData)}
+                                    onMouseOut={(e) => this.CloseModal(e)} ></img>
+                                </a>
 
 
-                            <div className="Footerimg d-flex align-items-center bg-fxdark justify-content-between p-2 ">
-                              <div className='usericons'>
-                                <span>
-                                  <span >
-                                    {imgData?.ImageName?.length > 15 ? imgData?.ImageName?.substring(0, 15) + '...' : imgData?.ImageName}
-                                  </span>
+                                <div className="Footerimg d-flex align-items-center bg-fxdark justify-content-between p-2 ">
+                                  <div className='usericons'>
+                                    <span>
+                                      <span >
+                                        {imgData?.ImageName?.length > 15 ? imgData?.ImageName?.substring(0, 15) + '...' : imgData?.ImageName}
+                                      </span>
 
 
-                                </span>
+                                    </span>
+                                  </div>
+                                  <div className="expandicon">
+                                    <span >{imgData?.UploadeDate}</span>
+                                    <span className='round px-1'>
+                                      {imgData?.UserImage !== null &&
+                                        <img className='align-self-start' title={imgData?.UserName} src={imgData?.UserImage} />
+                                      }
+                                    </span>
+                                  </div>
+                                </div>
+
                               </div>
-                              <div className="expandicon">
-                                <span >{imgData?.UploadeDate}</span>
+                            })}
+                          </div>
+                        }
+                        {this.state.Result["OffshoreComments"] != null && this.state.Result["OffshoreComments"] != undefined && this.state.Result["OffshoreComments"].length > 0 && <div className="col-sm-8 pe-0 mt-2">
+                          <fieldset className='border p-1'>
+                            <legend className="border-bottom fs-6">Background Comments</legend>
+                            {this.state.Result["OffshoreComments"] != null && this.state.Result["OffshoreComments"].length > 0 && this.state.Result["OffshoreComments"]?.map((item: any, index: any) => {
+                              return <div>
+
+
                                 <span className='round px-1'>
-                                  {imgData?.UserImage !== null &&
-                                    <img className='align-self-start' title={imgData?.UserName} src={imgData?.UserImage} />
+                                  {item.AuthorImage != null &&
+                                    <img className='align-self-start' title={item?.AuthorName} src={item?.AuthorImage} />
                                   }
                                 </span>
+
+                                <span className="pe-1">{item.AuthorName}</span>
+                                <span className="pe-1" >{moment(item?.Created).format("DD/MM/YY")}</span>
+                                <div style={{ paddingLeft: "30px" }} className=" mb-4 text-break"><span dangerouslySetInnerHTML={{ __html: item?.Body }}></span>
+                                </div>
+
+
                               </div>
-                            </div>
+                            })} </fieldset>
 
-                          </div>
-                        })}
+                        </div>}
                       </div>
-                    }
-                    {this.state.Result["OffshoreComments"] != null && this.state.Result["OffshoreComments"] != undefined && this.state.Result["OffshoreComments"].length > 0 && <div className="col-sm-8 pe-0 mt-2">
-                      <fieldset className='border p-1'>
-                        <legend className="border-bottom fs-6">Background Comments</legend>
-                        {this.state.Result["OffshoreComments"] != null && this.state.Result["OffshoreComments"].length > 0 && this.state.Result["OffshoreComments"]?.map((item: any, index: any) => {
-                          return <div>
-
-
-                            <span className='round px-1'>
-                              {item.AuthorImage != null &&
-                                <img className='align-self-start' title={item?.AuthorName} src={item?.AuthorImage} />
-                              }
-                            </span>
-
-                            <span className="pe-1">{item.AuthorName}</span>
-                            <span className="pe-1" >{moment(item?.Created).format("DD/MM/YY")}</span>
-                            <div style={{ paddingLeft: "30px" }} className=" mb-4 text-break"><span dangerouslySetInnerHTML={{ __html: item?.Body }}></span>
-                            </div>
-
-
-                          </div>
-                        })} </fieldset>
-
                     </div>}
+
+                  </section>
+
+                </div>
+                <div className="col-3">
+                  <div>
+                    {this.state.Result != undefined && AllListId != undefined && <CommentCard siteUrl={this.props.siteUrl} AllListId={AllListId} Context={this.props.Context}></CommentCard>}
+                    {this.state.Result?.Id != undefined && AllListId != undefined && <>
+                      <AncTool item={this?.state?.Result} callBack={this.AncCallback} AllListId={AllListId} Context={this.props.Context} />
+                    </>}
                   </div>
-                </div> }
+                  <div>{this.state.Result.Id && <SmartInformation ref={this.smartInfoRef} Id={this.state.Result.Id} AllListId={AllListId} Context={this.props?.Context} taskTitle={this.state.Result?.Title} listName={this.state.Result?.listName} />}</div>
+                  <div> {this.state.Result.Id != undefined && <RelevantDocuments ref={this?.relevantDocRef} AllListId={AllListId} Context={this.props?.Context} siteUrl={this.props.siteUrl} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments>}</div>
 
-              </section>
-
-            </div>
-            <div className="col-3">
-              <div>
-                {this.state.Result != undefined && AllListId != undefined && <CommentCard siteUrl={this.props.siteUrl} AllListId={AllListId} Context={this.props.Context}></CommentCard>}
-                {this.state.Result?.Id != undefined && AllListId != undefined && <>
-                  <AncTool item={this?.state?.Result} callBack={this.AncCallback} AllListId={AllListId} Context={this.props.Context} />
-                </>}
-              </div>
-              <div>{this.state.Result.Id && <SmartInformation ref={this.smartInfoRef} Id={this.state.Result.Id} AllListId={AllListId} Context={this.props?.Context} taskTitle={this.state.Result?.Title} listName={this.state.Result?.listName} />}</div>
-              <div> {this.state.Result != undefined && <RelevantDocuments ref={this?.relevantDocRef}AllListId={AllListId}Context={this.props?.Context} siteUrl={this.props.siteUrl} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments>}</div>
-
-            </div>
-
-          </div>
-        </section></section>
-        <section className='TableContentSection'>
-          <div className="row">
-            {this.state.Result != undefined && this.state.Result.Id != undefined && this.state.Result.SharewebTaskType != "" && this.state.Result.SharewebTaskType != undefined && this.state.Result.SharewebTaskType != 'Task' ? <TasksTable props={this.state.Result} AllListId={AllListId} Context={this.props?.Context} /> : ''}
-          </div>
-          <div className='row'>
-            {/* {this.state.Result?.Portfolio_x0020_Type!=undefined &&<TaskWebparts props={this.state.Result}/>} */}
-            {this.state.Result != undefined &&
-              <div className="ItemInfo mb-20" style={{ paddingTop: '15px' }}>
-
-                <div>Created <span >{(moment(this.state.Result['Creation']).format('DD MMM YYYY HH:mm '))}</span> by <span className="siteColor">{this.state.Result['Author'] != null && this.state.Result['Author'].length > 0 && this.state.Result['Author'][0].Title}</span>
                 </div>
-                <div>Last modified <span >{(moment(this.state.Result['Modified']).format('DD MMM YYYY HH:mm '))}</span> by <span className="siteColor">{this.state.Result['ModifiedBy'] != null && this.state.Result['ModifiedBy'].Title}</span>
-                  {/* <div>Last modified <span >{this.ConvertLocalTOServerDate(this.state.Result['Modified'], 'DD MMM YYYY hh:mm')}</span> by <span className="siteColor">{this.state.Result['ModifiedBy'] != null && this.state.Result['ModifiedBy'].Title}</span> */}
-                  <span>{this.state.itemID ? <VersionHistoryPopup taskId={this.state.itemID} listId={this.state.Result.listId} siteUrls={this.state.Result.siteUrl} isOpen={this.state.isopenversionHistory} /> : ''}</span>
-                </div>
-              </div>
-            }
-          </div>
-        </section>
 
-        <div className='imghover' style={{ display: this.state.showPopup }}>
-          <div className="popup">
-            <div className="parentDiv">
-              <span style={{ color: 'white' }}>{this.state.imageInfo["ImageName"]}</span>
-              <img style={{ maxWidth: '100%' }} src={this.state.imageInfo["ImageUrl"]}></img>
+              </div>
+            </section></section>
+          <section className='TableContentSection'>
+            {console.log("context data ================", MyContext)}
+            <div className="row">
+              <div> {this.state.Result.Id != undefined && <KeyDocuments ref={this?.relevantDocRef} AllListId={AllListId} Context={this.props?.Context} siteUrl={this.props.siteUrl} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} keyDoc={true}></KeyDocuments>}</div>
+            </div>
+            <div className="row">
+              {this.state.Result != undefined && this.state.Result.Id != undefined && this.state.Result.SharewebTaskType != "" && this.state.Result.SharewebTaskType != undefined && this.state.Result.SharewebTaskType != 'Task' ? <TasksTable props={this.state.Result} AllListId={AllListId} Context={this.props?.Context} /> : ''}
+            </div>
+            <div className='row'>
+              {/* {this.state.Result?.Portfolio_x0020_Type!=undefined &&<TaskWebparts props={this.state.Result}/>} */}
+              {this.state.Result != undefined &&
+                <div className="ItemInfo mb-20" style={{ paddingTop: '15px' }}>
+
+                  <div>Created <span >{(moment(this.state.Result['Creation']).format('DD MMM YYYY HH:mm '))}</span> by <span className="siteColor">{this.state.Result['Author'] != null && this.state.Result['Author'].length > 0 && this.state.Result['Author'][0].Title}</span>
+                  </div>
+                  <div>Last modified <span >{(moment(this.state.Result['Modified']).format('DD MMM YYYY HH:mm '))}</span> by <span className="siteColor">{this.state.Result['ModifiedBy'] != null && this.state.Result['ModifiedBy'].Title}</span>
+                    {/* <div>Last modified <span >{this.ConvertLocalTOServerDate(this.state.Result['Modified'], 'DD MMM YYYY hh:mm')}</span> by <span className="siteColor">{this.state.Result['ModifiedBy'] != null && this.state.Result['ModifiedBy'].Title}</span> */}
+                    <span>{this.state.itemID ? <VersionHistoryPopup taskId={this.state.itemID} listId={this.state.Result.listId} siteUrls={this.state.Result.siteUrl} isOpen={this.state.isopenversionHistory} /> : ''}</span>
+                  </div>
+                </div>
+              }
+            </div>
+          </section>
+
+          <div className='imghover' style={{ display: this.state.showPopup }}>
+            <div className="popup">
+              <div className="parentDiv">
+                <span style={{ color: 'white' }}>{this.state.imageInfo["ImageName"]}</span>
+                <img style={{ maxWidth: '100%' }} src={this.state.imageInfo["ImageUrl"]}></img>
+              </div>
             </div>
           </div>
-        </div>
-        {this?.state?.isCalloutVisible ? (
+          {this?.state?.isCalloutVisible ? (
 
-          <FocusTrapCallout
-            className='p-2 replyTooltip'
-            role="alertdialog"
-            // className={this.styles.callout}
-            gapSpace={0}
-            target={`#${buttonId}-${this.state.currentDataIndex}`}
-            onDismiss={() => this.setState({
-              isCalloutVisible: false
-            })}
-            setInitialFocus
-          >
-            <Text block variant="xLarge" className='subheading m-0 f-15'
-            //  className={this.styles.title}
+            <FocusTrapCallout
+              className='p-2 replyTooltip'
+              role="alertdialog"
+              // className={this.styles.callout}
+              gapSpace={0}
+              target={`#${buttonId}-${this.state.currentDataIndex}`}
+              onDismiss={() => this.setState({
+                isCalloutVisible: false
+              })}
+              setInitialFocus
             >
-              Comment Reply
-            </Text>
-            <Text block variant="small">
-              <div className="d-flex my-2">
-                <textarea className="form-control" value={this?.state?.replyTextComment}
-                  onChange={(e) => this.updateReplyMessagesFunction(e)}
-                ></textarea>
-              </div>
+              <Text block variant="xLarge" className='subheading m-0 f-15'
+              //  className={this.styles.title}
+              >
+                Comment Reply
+              </Text>
+              <Text block variant="small">
+                <div className="d-flex my-2">
+                  <textarea className="form-control" value={this?.state?.replyTextComment}
+                    onChange={(e) => this.updateReplyMessagesFunction(e)}
+                  ></textarea>
+                </div>
 
-            </Text>
-            <FocusZone handleTabKey={FocusZoneTabbableElements.all} isCircularNavigation>
-              <Stack
-                className='modal-footer'
-                gap={8} horizontal>
+              </Text>
+              <FocusZone handleTabKey={FocusZoneTabbableElements.all} isCircularNavigation>
+                <Stack
+                  className='modal-footer'
+                  gap={8} horizontal>
 
-                <button className='btn btn-default'
-                  onClick={() => this.setState({
-                    isCalloutVisible: false
-                  })}
-                >Cancel</button>
-                <button className='btn btn-primary'
-                  onClick={this.SaveReplyMessageFunction}
-                >Save</button>
-              </Stack>
-            </FocusZone>
-          </FocusTrapCallout>
+                  <button className='btn btn-default'
+                    onClick={() => this.setState({
+                      isCalloutVisible: false
+                    })}
+                  >Cancel</button>
+                  <button className='btn btn-primary'
+                    onClick={this.SaveReplyMessageFunction}
+                  >Save</button>
+                </Stack>
+              </FocusZone>
+            </FocusTrapCallout>
 
-        ) : null
-        }
-        {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} context={this.props.Context} AllListId={AllListId} Call={(Type: any) => { this.CallBack(Type) }} /> : ''}
-        {/* {this.state.isTimeEntry ? <TimeEntry props={this.state.Result} isopen={this.state.isTimeEntry} CallBackTimesheet={() => { this.CallBackTimesheet() }} /> : ''} */}
-        {this.state.EditSiteCompositionStatus ? <EditSiteComposition EditData={this.state.Result} context={this.props.Context} ServicesTaskCheck={this.state.Result["Services"] != undefined && this.state.Result["Services"].length > 0 ? true : false} AllListId={AllListId} Call={(Type: any) => { this.CallBack(Type) }} /> : ''}
-        {this.state?.emailcomponentopen && countemailbutton == 0 && <EmailComponenet approvalcallback={() => { this.approvalcallback() }} Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus} currentUser={this?.currentUser} items={this.state?.Result} />}
-      </div>
+          ) : null
+          }
+          {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} context={this.props.Context} AllListId={AllListId} Call={(Type: any) => { this.CallBack(Type) }} /> : ''}
+          {/* {this.state.isTimeEntry ? <TimeEntry props={this.state.Result} isopen={this.state.isTimeEntry} CallBackTimesheet={() => { this.CallBackTimesheet() }} /> : ''} */}
+          {this.state.EditSiteCompositionStatus ? <EditSiteComposition EditData={this.state.Result} context={this.props.Context} ServicesTaskCheck={this.state.Result["Services"] != undefined && this.state.Result["Services"].length > 0 ? true : false} AllListId={AllListId} Call={(Type: any) => { this.CallBack(Type) }} /> : ''}
+          {this.state?.emailcomponentopen && countemailbutton == 0 && <EmailComponenet approvalcallback={() => { this.approvalcallback() }} Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus} currentUser={this?.currentUser} items={this.state?.Result} />}
+        </div>
+      </MyContext.Provider>
     );
   }
 }
+export default Taskprofile
+export { MyContext }

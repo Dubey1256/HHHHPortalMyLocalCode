@@ -45,6 +45,7 @@ const EditDocumentpanel=(props:any)=>{
     const handleClosedoc = () => {
         setEditdocpanel(false)
         props.callbackeditpopup();
+        
         // handleClose();
       }
       let ItemRank = [
@@ -137,8 +138,14 @@ const EditDocumentpanel=(props:any)=>{
             }
             // handleClose();
             setallSetValue({ ...allValue, EditTaskpopupstatus: false })
+
             setEditdocpanel(false);
-            props.callbackeditpopup();
+            if(props.Keydoc){
+              props.callbackeditpopup(EditdocumentsData);
+            }else{
+              props.callbackeditpopup();
+            }
+           
             // GetResult();
           }).catch((err: any) => {
             console.log(err)
@@ -187,6 +194,15 @@ const EditDocumentpanel=(props:any)=>{
           setisopencomonentservicepopup(false);
         }
       }, [])
+      const opencomonentservicepopup=()=>{
+        if(componentpopup||servicespopup){
+          setisopencomonentservicepopup(true)
+        }else{
+          alert("Please Choose Component/Service")
+          console.log("test")
+        }
+     
+      }
 return(
   <>
     <Panel onRenderHeader={onRenderCustomHeaderDocuments}
@@ -207,7 +223,7 @@ return(
           onSelect={imageta}
         >
 
-          <Tab eventKey="BASICINFORMATION" title="BASICINFORMATION">
+          <Tab eventKey="BASICINFORMATION" title="BASIC INFORMATION">
 
             <div className='border border-top-0 p-2'>
               {EditdocumentsData?.Url?.Url && <div className='d-flex'>
@@ -262,20 +278,20 @@ return(
 
                   {allValue?.componentservicesetdataTag == undefined && <input type="text" className="form-control" readOnly />}
                   <span className="input-group-text" title="Linked Component Task Popup">
-                    <span className="svg__iconbox svg__icon--editBox" onClick={(e) => setisopencomonentservicepopup(true)}></span>
+                    <span className="svg__iconbox svg__icon--editBox" onClick={(e) => opencomonentservicepopup()}></span>
                   </span>
                 </div>
-                <div className="input-group"><label className="full-width ">Document Type </label>
+                {/* <div className="input-group"><label className="full-width ">Document Type </label>
                   <input type="text" className="form-control" value={EditdocumentsData?.ItemType} onChange={(e) => { setEditdocumentsData({ ...EditdocumentsData, ItemType: e.target.value }) }} />
                   <span className="input-group-text" title="Linked Component Task Popup">
                     <span className="svg__iconbox svg__icon--editBox"></span>
                   </span>
-                </div>
+                </div> */}
               </div>
 
             </div>
           </Tab>
-          <Tab eventKey="IMAGEINFORMATION" title="IMAGEINFORMATION" >
+          <Tab eventKey="IMAGEINFORMATION" title="IMAGE INFORMATION" >
             <div className='border border-top-0 p-2'>
 
               {isOpenImageTab &&<ImageTabComponenet EditdocumentsData={EditdocumentsData} AllListId={props.AllListId} Context={props.Context} callBack={imageTabCallBack} />}

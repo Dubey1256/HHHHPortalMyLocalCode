@@ -108,7 +108,7 @@ export function Filter({
     const columnFilterValue = column.getFilterValue();
     // style={{ width: placeholder?.size }}
     return (
-        <input style={{ width: "100%" }} className="me-1 mb-1 mx-1 on-search-cross"
+        <input style={{ width: "100%" }} className="me-1 my-1 mx-1 on-search-cross"
             // type="text"
             title={placeholder?.placeholder}
             type="search"
@@ -726,7 +726,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
     return (
         <>
-            {showHeader === true && <div className='tbl-headings justify-content-between mb-1'>
+            {showHeader === true && <div className='tbl-headings justify-content-between mb-1 fixed-Header top-0' style={{ background: '#e9e9e9' }}>
                 <span className='leftsec'>
                     {showingAllPortFolioCount === true ? <div className='mb-1'>
                         <label style={{ color: `${portfolioColor}` }}>
@@ -744,7 +744,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
 
                         <span className="popover__wrapper ms-1" style={{ position: "unset" }} data-bs-toggle="tooltip" data-bs-placement="auto">
-                            {/* <FaInfoCircle style={{ color: `${portfolioColor}` }} /> */}
                             <span className='svg__iconbox svg__icon--info alignIcon dark'></span>
                             <span className="popover__content mt-3 m-3 mx-3" style={{ zIndex: 100 }}>
                                 <label style={{ color: `${portfolioColor}` }}>
@@ -846,7 +845,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
             </div>}
 
             <table className="SortingTable table table-hover mb-0" id='my-table' style={{ width: "100%" }}>
-                <thead className='fixed-Header top-0'>
+                <thead className={showHeader === true ? 'fixedSmart-Header top-0' : 'fixed-Header top-0'}>
                     {table.getHeaderGroups().map((headerGroup: any) => (
                         <tr key={headerGroup.id} >
                             {headerGroup.headers.map((header: any) => {
