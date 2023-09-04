@@ -1097,11 +1097,11 @@ const CreateWS = (props: any) => {
         })
     if(LetestLevelData.length  ==  0){
         Tasklevel = 1
-        TaskID = props?.props?.TaskID + '-W'+ WorstreamLatestId;
+        TaskID = props?.props?.TaskID + '-W'+ 1;
     }
     else{
         Tasklevel = LetestLevelData.length + 1
-         TaskID = props?.props?.TaskID + '-W'+ WorstreamLatestId;
+         TaskID = props?.props?.TaskID + '-W'+ Tasklevel;
     }
 
 
