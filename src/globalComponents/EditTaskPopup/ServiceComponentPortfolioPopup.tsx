@@ -141,7 +141,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                             {row?.original?.SiteIcon != undefined ?
                                 <a className="hreflink" title="Show All Child" data-toggle="modal">
                                     <img className="icon-sites-img ml20 me-1" src={row?.original?.SiteIcon}></img>
-                                </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</>
+                                </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons me-1'>{row?.original?.SiteIconTitle}</div> : ""}</>
                             }
                             {getValue()}
                         </>
@@ -190,7 +190,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
             {
                 accessorFn: (row) => row?.TeamLeaderUser?.map((val: any) => val.Title).join("-"),
                 cell: ({ row }) => (
-                    <div className="alignCenter">
+                    <div>
                         <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={AllUsers} />
                     </div>
                 ),
