@@ -99,7 +99,18 @@ const Tabless = (props: any) => {
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
                     <div>
-                        <a className={row.original.Services.length >= 1 && 'text-success'} style={{textDecoration:'none',cursor:'pointer'}} target="_blank" href={`${props.Items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.site}`}>{row?.original?.Title}</a>
+                        {/* <a className={row.original.Services.length >= 1 && 'text-success'} style={{textDecoration:'none',cursor:'pointer'}} target="_blank" href={`${props.Items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.site}`}>{row?.original?.Title}</a> */}
+                        <a
+                        className={row.original.Services.length >= 1 && 'text-success'} style={{textDecoration:'none',cursor:'pointer'}}
+       href={`${props.Items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.site}`}
+        rel='noopener noreferrer'
+        onClick={(e:any) => {
+          e.preventDefault();
+          openInNewTab(e.target.href);
+        }}
+      >
+ {row?.original?.Title}
+      </a>
                     </div>
                 )
             },
@@ -1016,6 +1027,12 @@ const excelSelectFunc=(e:any)=>{
         getTaskUserData();
        }, []);
    
+       const openInNewTab = (url:any) => {
+        const newWindow = window.open();
+        newWindow.opener = null;
+        newWindow.location.href = url;
+      };
+    
 
     return (
       
@@ -1023,7 +1040,20 @@ const excelSelectFunc=(e:any)=>{
            
              <div className='row'>
               <div className='col'><h3 className="siteColor">Created By - {queryId}</h3></div>
-              <div className='col d-flex justify-content-end align-items-end'><a target='_blank'  href={`${props.Items.siteUrl}/SitePages/Tasks%20View.aspx?CreatedBy=${queryId}`} className="siteColor list-unstyled fw-bold">Old Task View</a></div>
+              <div className='col d-flex justify-content-end align-items-end'>
+                {/* <a target='_blank'  href={`${props.Items.siteUrl}/SitePages/Tasks%20View.aspx?CreatedBy=${queryId}`} className="siteColor list-unstyled fw-bold">Old Task View</a> */}
+                <a
+        href={`${props.Items.siteUrl}/SitePages/Tasks%20View.aspx?CreatedBy=${queryId}`}
+        rel='noopener noreferrer'
+        onClick={(e:any) => {
+          e.preventDefault();
+          openInNewTab(e.target.href);
+        }}
+        className="siteColor list-unstyled fw-bold"
+      >
+        Old Task View
+      </a>
+                </div>
              </div>
            
             <div  className='Alltable mt-2 ' id={tablecontiner}>

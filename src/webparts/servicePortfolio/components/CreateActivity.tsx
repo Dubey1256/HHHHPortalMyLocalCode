@@ -963,24 +963,24 @@ const CreateActivity = (props: any) => {
                               .get()
                           console.log(componentDetails)
                           var LatestId = componentDetails[0].Id + 1;
-                          LatestId += newIndex;
-
+                          Tasklevel = LatestId
+                          TaskID = props?.props?.PortfolioStructureID + '-A' + LatestId 
                      
 
-                        AllItems?.subRows?.forEach((vall: any) => {
-                            if (vall?.TaskType?.Title == 'Activities' || vall?.SharewebTaskType?.Title == 'Activities') {
-                                LetestLevelData.push(vall)
-                            }
+                        // AllItems?.subRows?.forEach((vall: any) => {
+                        //     if (vall?.TaskType?.Title == 'Activities' || vall?.SharewebTaskType?.Title == 'Activities') {
+                        //         LetestLevelData.push(vall)
+                        //     }
 
-                        })
-                        if (LetestLevelData.length == 0) {
-                            Tasklevel = 1
-                            TaskID = props?.props?.PortfolioStructureID + '-A' + Tasklevel 
-                        }
-                        else {
-                            Tasklevel = LetestLevelData.length + 1
-                            TaskID = props?.props?.PortfolioStructureID + '-A' + Tasklevel 
-                        }
+                        // })
+                        // if (LetestLevelData.length == 0) {
+                        //     Tasklevel = 1
+                        //     TaskID = props?.props?.PortfolioStructureID + '-A' + Tasklevel 
+                        // }
+                        // else {
+                        //     Tasklevel = LetestLevelData.length + 1
+                        //     TaskID = props?.props?.PortfolioStructureID + '-A' + Tasklevel 
+                        // }
 
                         // if (AllItems.Title == undefined) {
                         //     alert("Enter The Task Name");

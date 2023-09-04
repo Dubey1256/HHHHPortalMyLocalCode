@@ -33,7 +33,7 @@ import Tooltip from '../../../globalComponents/Tooltip'
 import ApprovalHistoryPopup from '../../../globalComponents/EditTaskPopup/ApprovalHistoryPopup';
 import { Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import { ImReply } from 'react-icons/im';
-import KeyDocuments from './KeyDocument';
+import KeyDocuments from './KeyDocument'
 
 // import {MyContext} from './myContext'
 const MyContext:any = React.createContext<any>({})
@@ -1804,11 +1804,16 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       </>
     );
   };
-  private contextCall = (data:any, path:any) => {
-     this.setState({
-         keydoc:data,
-         FileDirRef:path
-     })
+  private contextCall = (data:any, path:any,component:any) => {
+    if(data!=null &&path!=null){
+      this.setState({
+        keydoc:data,
+        FileDirRef:path
+    })
+    }
+     if(component){
+      this?.relevantDocRef?.current?.loadAllSitesDocuments()
+     }
   };
 
   public render(): React.ReactElement<ITaskprofileProps> {
