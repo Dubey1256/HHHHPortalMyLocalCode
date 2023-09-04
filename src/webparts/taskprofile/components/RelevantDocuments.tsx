@@ -4,10 +4,12 @@ import { Web } from "sp-pnp-js";
 import moment from 'moment';
 import EditDocument from './EditDocunentPanel'
 import { useState, useEffect,forwardRef,useImperativeHandle,createContext } from 'react';
+import {MyContext} from './Taskprofile'
 
-const MyContext:any = createContext<any>(null);
 const RelevantDocuments = (props: any,ref:any) => {
+    const myContextData2:any=React.useContext<any>(MyContext)
     const [documentData, setDocumentData] = useState([]);
+   
     // const [FileName, setFileName] = useState(props?.folderName);
     const [Fileurl, setFileurl] = useState("");
     (true);
@@ -38,16 +40,22 @@ const RelevantDocuments = (props: any,ref:any) => {
           .expand("Author,Editor,SharewebTask").filter(`${props?.siteName}/Id eq ${props?.ID}`).top(4999)
           .get()
             .then((Data: any[]) => {
-              
+              let keydoc:any=[];
                 Data?.map((item: any, index: any) => {
                     item.siteType = 'sp'
                     item.Author = item?.Author?.Title;
                     item.Editor = item?.Editor?.Title;
                     item.ModifiedDate = moment(item?.ModifiedDate).format("'DD/MM/YYYY HH:mm'");
-                    
+                    if(item.ItemRank===6){
+                        keydoc.push(item)
+                    }
                 })
                 console.log("document data", Data);
-                setDocumentData(Data);
+                myContextData2.FunctionCall(keydoc,Data[0]?.FileDirRef,false)
+               
+                var releventData=Data.filter((d)=>d.ItemRank!=6)
+                setDocumentData(releventData);
+              
                 setFileurl(Data[0]?.FileDirRef)
             })
             // .catch((err) => {
@@ -71,11 +79,14 @@ const RelevantDocuments = (props: any,ref:any) => {
       }
     return (
         <>
-       <MyContext.Provider value={setDocumentData}>
-            {documentData!=undefined&&documentData?.length>0 && <div className='mb-3 card commentsection'>
+              
+            {documentData!=undefined&&documentData?.length>0 && props?.keyDoc==undefined && 
+            <div className='mb-3 card commentsection'>
                 <div className='card-header'>
-                    <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Relevant Documents<span><Tooltip /></span></div>
+                    <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Relevant Documents<span><Tooltip ComponentId={'359'}/></span></div>
                 </div>
+
+           
                 {documentData?.map((item: any, index: any) => {
                     return (
                         <div className='card-body p-1'>
@@ -115,7 +126,8 @@ const RelevantDocuments = (props: any,ref:any) => {
                
             </div>
              }
-            {documentData?.length>0 &&<div className='mb-3 card commentsection'>
+              
+            {documentData?.length>0 &&props?.keyDoc==undefined&&<div className='mb-3 card commentsection'>
                 <div className='card-header'>
                     <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Main Folder<span><Tooltip /></span></div>
                 </div>
@@ -130,7 +142,7 @@ const RelevantDocuments = (props: any,ref:any) => {
               }
 
               {editdocpanel &&<EditDocument editData={EditdocData} AllListId={props.AllListId}Context={props.Context}editdocpanel={editdocpanel}callbackeditpopup={callbackeditpopup}/>}       
-              </MyContext.Provider>
+             
         </>
     
     )

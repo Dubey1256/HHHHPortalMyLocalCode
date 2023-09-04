@@ -6,6 +6,7 @@ import * as moment from 'moment';
 import { GlobalConstants } from '../globalComponents/LocalCommon';
 import { PageContext } from "@microsoft/sp-page-context";
 import { spfi } from "@pnp/sp/presets/all";
+import { MSGraphClientV3 } from '@microsoft/sp-http';
 
 export const pageContext = async () => {
     let result;
@@ -28,7 +29,67 @@ export const docxUint8Array = async () => {
     })
     return result
 }
+export const SendTeamMessage = async (mention_To: any, txtComment: any, Context: any) => {
+    try {
+        let pageContent = await pageContext()
+        let web = new Web(pageContent?.WebFullUrl);
+        let currentUser = await web.currentUser?.get()
+        // const client: MSGraphClientV3 = await Context.msGraphClientFactory.getClient();
+        await Context.msGraphClientFactory.getClient().then((client: MSGraphClientV3) => {
+            client.api(`/users`).version("v1.0").get(async (err: any, res: any) => {
+                if (err)
+                    console.error("MSGraphAPI Error")
+                let TeamUser: any[] = [];
+                let participants: any = []
+                TeamUser = res?.value;
+                let CurrentUserChatInfo = TeamUser.filter((items: any) => {
+                    if (items.userPrincipalName != undefined && currentUser.Email != undefined && items.userPrincipalName.toLowerCase() == currentUser.Email.toLowerCase())
+                        return items
+                })
+                currentUser.ChatId = CurrentUserChatInfo[0]?.id;
+                var SelectedUser: any[] = []
 
+                for (let index = 0; index < mention_To?.length; index++) {
+                    for (let TeamUserIndex = 0; TeamUserIndex < TeamUser?.length; TeamUserIndex++) {
+                        if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index].toLowerCase() == TeamUser[TeamUserIndex].userPrincipalName.toLowerCase())
+                            SelectedUser.push(TeamUser[TeamUserIndex])
+                        if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index].toLowerCase() == 'stefan.hochhuth@hochhuth-consulting.de' && TeamUser[TeamUserIndex].id == 'b0f99ab1-aef3-475c-98bd-e68229168489')
+                            SelectedUser.push(TeamUser[TeamUserIndex])
+                    }
+                }
+                let obj = {
+                    "@odata.type": "#microsoft.graph.aadUserConversationMember", "roles": ["owner"], "user@odata.bind": `https://graph.microsoft.com/v1.0/users('${currentUser?.ChatId}')`
+                }
+                participants.push(obj)
+                if (SelectedUser != undefined && SelectedUser.length > 0) {
+                    SelectedUser?.forEach((item: any) => {
+                        let obj = {
+                            "@odata.type": "#microsoft.graph.aadUserConversationMember", "roles": ["owner"], "user@odata.bind": `https://graph.microsoft.com/v1.0/users('${item?.id}')`
+                        }
+                        participants.push(obj)
+                    })
+                }
+                const chat_payload: any = {
+                    "members": participants
+                }
+                mention_To != undefined && mention_To?.length == 1 ? chat_payload.chatType = 'oneOnOne' : chat_payload.chatType = 'group'
+                let new_chat_resp = await client.api('/chats').version('v1.0').post(chat_payload)
+                const message_payload = {
+                    "body": {
+                        contentType: 'html',
+                        content: `${txtComment}`,
+                        //content: 'test',
+                    }
+                }
+                let result = await client.api('/chats/' + new_chat_resp?.id + '/messages').post(message_payload)
+                return result;
+            });
+        });
+    } catch (error) {
+        return Promise.reject(error);
+    }
+
+}
 
 export const PopHoverBasedOnTaskId = (item: any) => {
     let returnObj = { ...item }

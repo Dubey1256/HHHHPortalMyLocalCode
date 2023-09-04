@@ -1,5 +1,7 @@
 import * as React from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
+import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
+import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import { Web } from "sp-pnp-js";
 import pnp, { PermissionKind } from "sp-pnp-js";
 import "@pnp/sp/sputilities";
@@ -14,6 +16,9 @@ import { GlobalConstants } from '../../../globalComponents/LocalCommon';
 import * as globalCommon from '../../../globalComponents/globalCommon';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { Reference } from 'react-popper';
+import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
+import { ColumnDef } from '@tanstack/react-table';
+import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
 let AllMetadata: any = []
 let siteConfig: any = []
 let AssignedToUsers: any = []
@@ -77,7 +82,7 @@ function CreateTaskComponent(props: any) {
         GetSmartMetadata();
     }, [])
     React.useEffect(() => {
-       
+
         AllListId = {
             MasterTaskListID: props?.SelectedProp?.MasterTaskListID,
             TaskUsertListID: props?.SelectedProp?.TaskUsertListID,
@@ -94,14 +99,9 @@ function CreateTaskComponent(props: any) {
         try {
             isShowTimeEntry = props?.SelectedProp?.TimeEntry != "" ? JSON.parse(props?.SelectedProp?.TimeEntry) : "";
             isShowSiteCompostion = props?.SelectedProp?.SiteCompostion != "" ? JSON.parse(props?.SelectedProp?.SiteCompostion) : "";
-            AllListId.isShowTimeEntry=isShowTimeEntry;
-            AllListId.isShowSiteCompostion=isShowSiteCompostion;
-
-            if (AllListId?.siteUrl?.toLowerCase() == 'https://hhhhteams.sharepoint.com/sites/hhhh/sp') {
-                oldTaskIrl = `${AllListId.siteUrl}/SitePages/CreateTask.aspx`
-            } else {
-                oldTaskIrl = `${AllListId.siteUrl}/SitePages/CreateTask-old.aspx`
-            }
+            AllListId.isShowTimeEntry = isShowTimeEntry;
+            AllListId.isShowSiteCompostion = isShowSiteCompostion;
+            oldTaskIrl = `${AllListId.siteUrl}/SitePages/CreateTask-old.aspx`
         } catch (error: any) {
             console.log(error)
         }
@@ -287,10 +287,7 @@ function CreateTaskComponent(props: any) {
 
             if (paramSiteUrl != undefined) {
                 let baseUrl = window.location.href;
-                if (baseUrl.indexOf('CreateTaskSpfx') > -1) {
-                    let QueryString = baseUrl.split(base_Url + "/SitePages/CreateTaskSpfx.aspx")[1]
-                    oldTaskIrl = oldTaskIrl + QueryString
-                }
+                
                 PageName = paramSiteUrl?.split('aspx')[0].split("").reverse().join("").split('/')[0].split("").reverse().join("");
                 PageName = PageName + 'aspx'
                 // await loadRelevantTask(PageName, "PageTask")
@@ -409,7 +406,7 @@ function CreateTaskComponent(props: any) {
                 await globalCommon.getData(site?.siteUrl?.Url, site?.listId, query).then((data: any) => {
                     data?.map((item: any) => {
 
-                        item.siteCover = site?.Item_x005F_x0020_Cover?.Url
+                        item.SiteIcon = site?.Item_x005F_x0020_Cover?.Url
                         item.siteType = site?.siteName;
                         item.TaskName = item.Title;
                         item.siteUrl = site?.siteUrl?.Url
@@ -423,9 +420,6 @@ function CreateTaskComponent(props: any) {
                             }
 
                         })
-
-                        item.Author = item.Author.Title;
-                        item.Editor = item.Editor.Title;
                         item.PercentComplete = item?.PercentComplete * 100;
                         item.Priority = item.Priority_x0020_Rank * 1;
                         if (item.Categories == null)
@@ -434,13 +428,11 @@ function CreateTaskComponent(props: any) {
                         //type.Component = type.Component.results[0].Title,
                         item.ComponentTitle = '';
                         if (item?.Component?.length > 0) {
-                            item.ComponentTitle = item.Component[0].Title;
-                            item.newComponentId = item.Component[0].Id;
+                            item.portfolio = item.Component[0];
                         }
-                        else {
-                            item.ComponentTitle = '';
+                        if (item?.Services?.length > 0) {
+                            item.portfolio = item.Services[0];
                         }
-
                         if (item?.Component?.results?.length > 0) {
                             item['Portfoliotype'] = 'Component';
                         }
@@ -453,14 +445,15 @@ function CreateTaskComponent(props: any) {
 
                         item.Shareweb_x0020_ID = globalCommon.getTaskId(item);
 
-                        item.TaskDueDate = moment(item?.DueDate).format('YYYY-MM-DD');
-                        if (item.TaskDueDate == "Invalid date" || item.TaskDueDate == undefined) {
-                            item.TaskDueDate = '';
+                        item.DisplayDueDate = moment(item?.DueDate).format('DD/MM/YYYY');
+                        if (item.DisplayDueDate == "Invalid date" || item.DisplayDueDate == undefined) {
+                            item.DisplayDueDate = '';
                         }
-                        item.CreateDate = moment(item?.Created).format('YYYY-MM-DD');
+                        item.CreateDate = moment(item?.Created).format('DD/MM/YYYY');
                         item.CreatedSearch = item.CreateDate + '' + item.Author;
+                        item.bodys = item.Body != null && item.Body.split('<p><br></p>').join('');
                         item.DateModified = item.Modified;
-                        item.ModifiedDate = moment(item?.Modified).format('YYYY-MM-DD');
+                        item.ModifiedDate = moment(item?.Modified).format('DD/MM/YYYY');
                         item.ModifiedSearch = item.ModifiedDate + '' + item.Editor;
                         if (item.siteType != 'Offshore Tasks') {
                             try {
@@ -537,7 +530,7 @@ function CreateTaskComponent(props: any) {
         setTiming(Timing)
         setpriorityRank(Priority)
 
-      
+
         TaskTypes?.map((task: any) => {
             if (task.ParentID !== undefined && task.ParentID === 0 && task.Title !== 'Phone') {
                 Task.push(task);
@@ -666,10 +659,10 @@ function CreateTaskComponent(props: any) {
             alert("Please Enter The Task Name")
         } else if (save.siteType.length <= 0) {
             alert("Please Select the Site ")
-        } else if(save.taskName.length > 56){
+        } else if (save.taskName.length > 56) {
             alert("Task Title is too long. Please chose a shorter name and enter the details into the task description.")
         }
-        else{
+        else {
             let CategoryTitle: any;
             let TeamMembersIds: any[] = [];
             sharewebCat?.map((cat: any) => {
@@ -727,13 +720,13 @@ function CreateTaskComponent(props: any) {
                     }
                 });
             }
-            let selectedCC:any=[];
-            let postClientTime:any;
-            let siteCompositionDetails:any;
+            let selectedCC: any = [];
+            let postClientTime: any;
+            let siteCompositionDetails: any;
             try {
                 let selectedComponent: any[] = [];
-                
-               
+                let portfolioId :any ='';
+
                 let CopyUrl;
                 if (save.taskUrl != undefined && save.taskUrl.length > 255) {
                     CopyUrl = save.taskUrl
@@ -753,12 +746,13 @@ function CreateTaskComponent(props: any) {
                             if (save.Component !== undefined && save.Component.length >= 0) {
                                 $.each(save.Component, function (index: any, smart: any) {
                                     selectedComponent.push(smart.Id);
-                                    if(selectedSite?.Parent?.Title=="SDC Sites"){
-                                        postClientTime=JSON.parse(smart?.Sitestagging);
-                                        siteCompositionDetails=smart?.SiteCompositionSettings;
-                                        smart?.ClientCategory?.map((cc:any)=>{
-                                            if(cc.Id!=undefined){
-                                                selectedCC.push(cc.Id) 
+                                    portfolioId=smart?.Id
+                                    if (selectedSite?.Parent?.Title == "SDC Sites") {
+                                        postClientTime = JSON.parse(smart?.Sitestagging);
+                                        siteCompositionDetails = smart?.SiteCompositionSettings;
+                                        smart?.ClientCategory?.map((cc: any) => {
+                                            if (cc.Id != undefined) {
+                                                selectedCC.push(cc.Id)
                                             }
                                         })
                                     }
@@ -772,12 +766,13 @@ function CreateTaskComponent(props: any) {
                             if (save.linkedServices !== undefined && save.linkedServices.length >= 0) {
                                 $.each(save.linkedServices, function (index: any, smart: any) {
                                     selectedService.push(smart.Id);
-                                    if(selectedSite?.Parent?.Title=="SDC Sites"){
-                                        postClientTime=JSON.parse(smart?.Sitestagging);
-                                        siteCompositionDetails=smart?.SiteCompositionSettings;
-                                        smart?.ClientCategory?.map((cc:any)=>{
-                                            if(cc.Id!=undefined){
-                                                selectedCC.push(cc.Id) 
+                                    portfolioId=smart?.Id
+                                    if (selectedSite?.Parent?.Title == "SDC Sites") {
+                                        postClientTime = JSON.parse(smart?.Sitestagging);
+                                        siteCompositionDetails = smart?.SiteCompositionSettings;
+                                        smart?.ClientCategory?.map((cc: any) => {
+                                            if (cc.Id != undefined) {
+                                                selectedCC.push(cc.Id)
                                             }
                                         })
                                     }
@@ -785,8 +780,8 @@ function CreateTaskComponent(props: any) {
                             }
                         })
                     }
-                    postClientTime?.map((items:any)=>{
-                        items.SiteName=items.Title
+                    postClientTime?.map((items: any) => {
+                        items.SiteName = items.Title
                     })
                     let priorityRank = 4;
                     if (save.rank === undefined || parseInt(save.rank) <= 0) {
@@ -823,8 +818,8 @@ function CreateTaskComponent(props: any) {
                         TeamMembersIds.push(49);
                     }
                     var newCopyUrl = CopyUrl != undefined ? CopyUrl : '';
-                   
-                   
+
+
                     var item = {
                         "Title": save.taskName,
                         "Priority": priority,
@@ -835,16 +830,17 @@ function CreateTaskComponent(props: any) {
                         ComponentId: { "results": (selectedComponent !== undefined && selectedComponent?.length > 0) ? selectedComponent : [] },
                         ServicesId: { "results": (selectedService !== undefined && selectedService?.length > 0) ? selectedService : [] },
                         Responsible_x0020_TeamId: { "results": AssignedIds },
+                        PortfolioId: portfolioId,
                         Team_x0020_MembersId: { "results": TeamMembersIds },
                         // SharewebComponentId: { "results": $scope.SharewebComponent },
                         SharewebCategoriesId: { "results": sharewebCat },
                         ClientCategoryId: { "results": selectedCC },
                         // LinkServiceTaskId: { "results": $scope.SaveServiceTaskItemId },
                         "Priority_x0020_Rank": priorityRank,
-                        SiteCompositionSettings:siteCompositionDetails!=undefined?siteCompositionDetails: '',
+                        SiteCompositionSettings: siteCompositionDetails != undefined ? siteCompositionDetails : '',
                         AssignedToId: { "results": AssignedToIds },
                         SharewebTaskTypeId: 2,
-                        ClientTime: postClientTime!=undefined?JSON.stringify(postClientTime):'',
+                        ClientTime: postClientTime != undefined ? JSON.stringify(postClientTime) : '',
                         component_x0020_link: {
                             __metadata: { 'type': 'SP.FieldUrlValue' },
                             Description: save.taskUrl?.length > 0 ? save.taskUrl : null,
@@ -1058,57 +1054,59 @@ function CreateTaskComponent(props: any) {
 
     const UrlPasteTitle = (e: any) => {
         let TestUrl = e.target.value;
-        let saveValue = save;
-        saveValue.taskUrl = TestUrl;
-        if (SitesTypes?.length > 1) {
-            let selectedSiteTitle = ''
-            var testarray = e.target.value.split('&');
-            // TestUrl = $scope.component_x0020_link;
-            var item = '';
-            if (TestUrl !== undefined) {
-                for (let index = 0; index < SitesTypes.length; index++) {
-                    let site = SitesTypes[index];
-                    if (TestUrl.toLowerCase().indexOf('.com') > -1)
-                        TestUrl = TestUrl.split('.com')[1];
-                    else if (TestUrl.toLowerCase().indexOf('.ch') > -1)
-                        TestUrl = TestUrl.split('.ch')[1];
-                    else if (TestUrl.toLowerCase().indexOf('.de') > -1)
-                        TestUrl = TestUrl.split('.de')[1];
+            let saveValue = save;
+            saveValue.taskUrl = TestUrl;
+            if (SitesTypes?.length > 1) {
+                let selectedSiteTitle = ''
+                var testarray = e.target.value.split('&');
+                // TestUrl = $scope.component_x0020_link;
+                var item = '';
+                if (TestUrl !== undefined) {
+                    for (let index = 0; index < SitesTypes.length; index++) {
+                        let site = SitesTypes[index];
+                        if (TestUrl.toLowerCase().indexOf('.com') > -1)
+                            TestUrl = TestUrl.split('.com')[1];
+                        else if (TestUrl.toLowerCase().indexOf('.ch') > -1)
+                            TestUrl = TestUrl.split('.ch')[1];
+                        else if (TestUrl.toLowerCase().indexOf('.de') > -1)
+                            TestUrl = TestUrl.split('.de')[1];
 
-                    let Isfound = false;
-                    if (TestUrl !== undefined && ((TestUrl.toLowerCase().indexOf('/' + site.Title.toLowerCase() + '/')) > -1 || (site.AlternativeTitle != null && (TestUrl.toLowerCase().indexOf(site.AlternativeTitle.toLowerCase())) > -1))) {
-                        item = site.Title;
-                        selectedSiteTitle = site.Title;
-                        Isfound = true;
-                    }
+                        let Isfound = false;
+                        if (TestUrl !== undefined && ((TestUrl.toLowerCase().indexOf('/' + site.Title.toLowerCase() + '/')) > -1 || (site.AlternativeTitle != null && (TestUrl.toLowerCase().indexOf(site.AlternativeTitle.toLowerCase())) > -1))) {
+                            item = site.Title;
+                            selectedSiteTitle = site.Title;
+                            Isfound = true;
+                        }
 
-                    if (!Isfound) {
-                        if (TestUrl !== undefined && site.AlternativeTitle != null) {
-                            let sitesAlterNatives = site.AlternativeTitle.toLowerCase().split(';');
-                            for (let j = 0; j < sitesAlterNatives.length; j++) {
-                                let element = sitesAlterNatives[j];
-                                if (TestUrl.toLowerCase().indexOf(element) > -1) {
-                                    item = site.Title;
-                                    selectedSiteTitle = site.Title;
-                                    Isfound = true;
+                        if (!Isfound) {
+                            if (TestUrl !== undefined && site.AlternativeTitle != null) {
+                                let sitesAlterNatives = site.AlternativeTitle.toLowerCase().split(';');
+                                for (let j = 0; j < sitesAlterNatives.length; j++) {
+                                    let element = sitesAlterNatives[j];
+                                    if (TestUrl.toLowerCase().indexOf(element) > -1) {
+                                        item = site.Title;
+                                        selectedSiteTitle = site.Title;
+                                        Isfound = true;
+                                    }
+
                                 }
-
                             }
                         }
                     }
+
                 }
 
+                saveValue.siteType = selectedSiteTitle;
+                setSave(saveValue)
+                if (selectedSiteTitle !== undefined) {
+                    setIsActive({ ...isActive, siteType: true });
+                }
+                else {
+                    setIsActive({ ...isActive, siteType: false });
+                }
             }
+        
 
-            saveValue.siteType = selectedSiteTitle;
-            setSave(saveValue)
-            if (selectedSiteTitle !== undefined) {
-                setIsActive({ ...isActive, siteType: true });
-            }
-            else {
-                setIsActive({ ...isActive, siteType: false });
-            }
-        }
     }
 
     const setActiveTile = (item: keyof typeof save, isActiveItem: keyof typeof isActive, title: any) => {
@@ -1209,73 +1207,338 @@ function CreateTaskComponent(props: any) {
 
     }
 
-    const columns: GridColDef[] = [
-        { field: 'siteType', headerName: 'Site', width: 60, renderCell: (params) => <img className="client-icons" src={params?.row?.siteCover} /> },
-        { field: 'Shareweb_x0020_ID', headerName: 'Task Id', width: 75 },
-        {
-            field: 'Title', headerName: 'Title', width: 300, renderCell: (params) => {
-                return (
-                    <div>
-                        <span><a data-interception="off" target="blank" href={`${base_Url}/SitePages/Task-Profile.aspx?taskId=${params?.row?.Id}&Site=${params?.row?.siteType}`}>{params?.row?.Title}</a></span>
-                    </div>
-                )
-            }
-        },
-        {
-            field: 'ComponentTitle', headerName: 'Component', width: 150, renderCell: (params) => {
-                return (
-                    <div>
-                        <span><a data-interception="off" target="blank" href={`${base_Url}/SitePages/Portfolio-Profile.aspx?taskId=${params?.row?.newComponentId}`}>{params?.row?.ComponentTitle}</a></span>
-                    </div>
-                )
-            }
-        },
-        {
-            field: 'PercentComplete', headerName: '% Complete', width: 100, renderCell: (params) => {
-                return (
-                    <div>
-                        <span>{params?.row?.PercentComplete}%</span>
-                    </div>
-                )
-            }
-        },
-        { field: 'Priority', headerName: 'Priority', width: 80 },
-        { field: 'Categories', headerName: 'Categories', width: 120 },
 
-        { field: 'TaskDueDate', headerName: 'Due Date', width: 115 },
-        {
-            field: 'Created', headerName: 'Created', width: 120, renderCell: (params) => {
-                return (
-                    <div>
-                        {params?.row?.AuthorCover != undefined ? <img className="client-icons" title={params?.row?.Author} src={params?.row?.AuthorCover} alt='' /> : ''}
+    const inlineCallBack = React.useCallback((item: any) => {
 
-                        {params.row.CreateDate}
-                    </div>
-                )
-            }
-        },
-        {
-            field: 'Modified', headerName: 'Modified', width: 120, renderCell: (params) => {
-                return (
-                    <div>
-                        {params?.row?.EditorCover != undefined ? <img className="client-icons" title={params?.row?.Editor} src={params?.row?.EditorCover} alt='' /> : ''}
+    }, []);
+    const column2 = React.useMemo<ColumnDef<any, unknown>[]>(
+        () => [
+            {
+                accessorFn: (row) => row?.siteType,
+                cell: ({ row }) => (
+                    <span>
+                        <img className='circularImage rounded-circle' src={row?.original?.SiteIcon} />
+                    </span>
+                ),
+                id: "Site",
+                placeholder: "Site",
+                header: "",
+                resetSorting: false,
+                resetColumnFilters: false,
+                size: 50
+            },
+            {
+                accessorKey: "Shareweb_x0020_ID",
+                placeholder: "Task Id",
+                header: "",
+                resetColumnFilters: false,
+                resetSorting: false,
+                size: 70,
+                cell: ({ row, getValue }) => (
+                    <>
+                        <span className="d-flex">
+                            {row?.original?.Shareweb_x0020_ID}
+                        </span>
+                    </>
+                ),
+            },
+            {
+                accessorFn: (row) => row?.Title,
+                cell: ({ row, column, getValue }) => (
+                    <>
+                        <span className='d-flex'>
+                            {row.original.Services.length >= 1 ? (
+                                <a
+                                    className="hreflink text-success"
+                                    href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                                    data-interception="off"
+                                    target="_blank"
+                                >
+                                    {row?.original?.Title}
+                                </a>
+                            ) : (
+                                <a
+                                    className="hreflink"
+                                    href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                                    data-interception="off"
+                                    target="_blank"
+                                >
+                                    {row?.original?.Title}
+                                </a>
+                            )}
+                            {row?.original?.Body !== null && row?.original?.Body != undefined ? <InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} /> : ''}
+                        </span>
+                    </>
+                ),
+                id: "Title",
+                placeholder: "Title",
+                resetColumnFilters: false,
+                resetSorting: false,
+                header: "",
+            },
+            {
+                accessorFn: (row) => row?.Portfolio,
+                cell: ({ row }) => (
+                    <span>
+                        {row.original.Services.length >= 1 ? (
+                            <a
+                                className="hreflink text-success"
+                                data-interception="off"
+                                target="blank"
+                                href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
+                            >
+                                {row?.original?.portfolio?.Title}
+                            </a>
+                        ) : (
+                            <a
+                                className="hreflink"
+                                data-interception="off"
+                                target="blank"
+                                href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
+                            >
+                                {row?.original?.portfolio?.Title}
+                            </a>
+                        )}
+                    </span>
+                ),
+                id: "Portfolio",
+                placeholder: "Portfolio",
+                resetColumnFilters: false,
+                resetSorting: false,
+                header: ""
+            },
+            {
+                accessorFn: (row) => row?.Priority_x0020_Rank,
+                cell: ({ row }) => (
+                    <span>
+                        <InlineEditingcolumns
+                            AllListId={AllListId}
+                            type='Task'
+                            callBack={inlineCallBack}
+                            columnName='Priority'
+                            item={row?.original}
+                            TaskUsers={taskUsers}
+                            pageName={'ProjectManagment'}
+                        />
+                    </span>
+                ),
+                placeholder: "Priority",
+                id: 'Priority',
+                header: "",
+                resetColumnFilters: false,
+                resetSorting: false,
+                size: 75
+            },
+            {
+                accessorFn: (row) => row?.DueDate,
+                cell: ({ row }) => (
+                    <InlineEditingcolumns
+                        AllListId={AllListId}
+                        callBack={inlineCallBack}
+                        columnName='DueDate'
+                        item={row?.original}
+                        TaskUsers={taskUsers}
+                        pageName={'ProjectManagment'}
+                    />
+                ),
+                id: 'DueDate',
+                resetColumnFilters: false,
+                resetSorting: false,
+                placeholder: "Due Date",
+                header: "",
+                size: 80
+            },
+            {
+                accessorKey: "descriptionsSearch",
+                placeholder: "descriptionsSearch",
+                header: "",
+                resetColumnFilters: false,
+                size: 100,
+                id: "descriptionsSearch",
+            },
+            {
+                accessorKey: "commentsSearch",
+                placeholder: "commentsSearch",
+                header: "",
+                resetColumnFilters: false,
+                size: 100,
+                id: "commentsSearch",
+            },
+            {
+                accessorFn: (row) => row?.PercentComplete,
+                cell: ({ row }) => (
+                    <span>
+                        <InlineEditingcolumns
+                            AllListId={AllListId}
+                            callBack={inlineCallBack}
+                            columnName='PercentComplete'
+                            item={row?.original}
+                            TaskUsers={taskUsers}
+                            pageName={'ProjectManagment'}
+                        />
+                    </span>
+                ),
+                id: 'PercentComplete',
+                placeholder: "% Complete",
+                resetColumnFilters: false,
+                resetSorting: false,
+                header: "",
+                size: 55
+            },
+            {
+                accessorFn: (row) => row?.CreatedSearch,
+                cell: ({ row }) => (
+                    <span>
+                        {row.original.Services.length >= 1 ? (
+                            <span className='ms-1 text-success'>{row?.original?.CreateDate} </span>
+                        ) : (
+                            <span className='ms-1'>{row?.original?.CreateDate} </span>
+                        )}
 
-                        {params.row.ModifiedDate}
-                    </div>
-                )
-            }
-        },
-        {
-            field: '', headerName: '', width: 40, renderCell: (params) => {
-                return (
-                    <div>
-                        <span onClick={() => EditPopup(params?.row)} className="svg__iconbox svg__icon--edit"></span>
-                        {/* <img onClick={() => EditPopup(params?.row)} src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"></img> */}
-                    </div>
-                )
-            }
-        },
-    ];
+                        {row?.original?.AuthorCover != undefined ? (
+                            <>
+                                <a
+                                    href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                                    target="_blank"
+                                    data-interception="off"
+                                >
+                                    <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.AuthorCover} />
+                                </a>
+                            </>
+                        ) : (
+                            <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
+                        )}
+                    </span>
+                ),
+                id: 'Created',
+                canSort: false,
+                resetColumnFilters: false,
+                resetSorting: false,
+                placeholder: "Created",
+                header: "",
+                size: 125
+            },
+            {
+                accessorFn: (row) => row?.ModifiedSearch,
+                cell: ({ row }) => (
+                    <span>
+                        {row.original.Services.length >= 1 ? (
+                            <span className='ms-1 text-success'>{row?.original?.ModifiedDate} </span>
+                        ) : (
+                            <span className='ms-1'>{row?.original?.ModifiedDate} </span>
+                        )}
+
+                        {row?.original?.EditorCover != undefined ? (
+                            <>
+                                <a
+                                    href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}
+                                    target="_blank"
+                                    data-interception="off"
+                                >
+                                    <img title={row?.original?.Editor?.Title} className="workmember ms-1" src={row?.original?.EditorCover} />
+                                </a>
+                            </>
+                        ) : (
+                            <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Editor?.Title}></span>
+                        )}
+                    </span>
+                ),
+                id: 'Modified',
+                canSort: false,
+                resetColumnFilters: false,
+                resetSorting: false,
+                placeholder: "Modified",
+                header: "",
+                size: 125
+            },
+            {
+                cell: ({ row }) => (
+                    <span className='d-flex'>
+                        <span
+                            title='Edit Task'
+                            onClick={() => EditPopup(row?.original)}
+                            className='svg__iconbox svg__icon--edit hreflink'
+                        ></span>
+                    </span>
+                ),
+                id: 'Actions',
+                accessorKey: "",
+                canSort: false,
+                resetSorting: false,
+                resetColumnFilters: false,
+                placeholder: "",
+                size: 35
+            },
+        ],
+        []
+    );
+    // const columns: GridColDef[] = [
+    //     { field: 'siteType', headerName: 'Site', width: 60, renderCell: (params) => <img className="client-icons" src={params?.row?.siteCover} /> },
+    //     { field: 'Shareweb_x0020_ID', headerName: 'Task Id', width: 75 },
+    //     {
+    //         field: 'Title', headerName: 'Title', width: 300, renderCell: (params) => {
+    //             return (
+    //                 <div>
+    //                     <span><a data-interception="off" target="blank" href={`${base_Url}/SitePages/Task-Profile.aspx?taskId=${params?.row?.Id}&Site=${params?.row?.siteType}`}>{params?.row?.Title}</a></span>
+    //                 </div>
+    //             )
+    //         }
+    //     },
+    //     {
+    //         field: 'ComponentTitle', headerName: 'Component', width: 150, renderCell: (params) => {
+    //             return (
+    //                 <div>
+    //                     <span><a data-interception="off" target="blank" href={`${base_Url}/SitePages/Portfolio-Profile.aspx?taskId=${params?.row?.newComponentId}`}>{params?.row?.ComponentTitle}</a></span>
+    //                 </div>
+    //             )
+    //         }
+    //     },
+    //     {
+    //         field: 'PercentComplete', headerName: '% Complete', width: 100, renderCell: (params) => {
+    //             return (
+    //                 <div>
+    //                     <span>{params?.row?.PercentComplete}%</span>
+    //                 </div>
+    //             )
+    //         }
+    //     },
+    //     { field: 'Priority', headerName: 'Priority', width: 80 },
+    //     { field: 'Categories', headerName: 'Categories', width: 120 },
+
+    //     { field: 'TaskDueDate', headerName: 'Due Date', width: 115 },
+    //     {
+    //         field: 'Created', headerName: 'Created', width: 120, renderCell: (params) => {
+    //             return (
+    //                 <div>
+    //                     {params?.row?.AuthorCover != undefined ? <img className="client-icons" title={params?.row?.Author} src={params?.row?.AuthorCover} alt='' /> : ''}
+
+    //                     {params.row.CreateDate}
+    //                 </div>
+    //             )
+    //         }
+    //     },
+    //     {
+    //         field: 'Modified', headerName: 'Modified', width: 120, renderCell: (params) => {
+    //             return (
+    //                 <div>
+    //                     {params?.row?.EditorCover != undefined ? <img className="client-icons" title={params?.row?.Editor} src={params?.row?.EditorCover} alt='' /> : ''}
+
+    //                     {params.row.ModifiedDate}
+    //                 </div>
+    //             )
+    //         }
+    //     },
+    //     {
+    //         field: '', headerName: '', width: 40, renderCell: (params) => {
+    //             return (
+    //                 <div>
+    //                     <span onClick={() => EditPopup(params?.row)} className="svg__iconbox svg__icon--edit"></span>
+    //                     {/* <img onClick={() => EditPopup(params?.row)} src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"></img> */}
+    //                 </div>
+    //             )
+    //         }
+    //     },
+    // ];
     const CallBack = React.useCallback((items) => {
         setEditTaskPopupData({
             isOpenEditPopup: false,
@@ -1283,8 +1546,8 @@ function CreateTaskComponent(props: any) {
         })
         if (items) {
             window.open(base_Url + "/SitePages/Task-Profile.aspx?taskId=" + createdTask?.Id + "&Site=" + createdTask?.siteType, "_self")
-              createdTask = {};
-        }else{
+            createdTask = {};
+        } else {
             location.reload();
         }
 
@@ -1758,13 +2021,19 @@ function CreateTaskComponent(props: any) {
 
     }
     const changeTitle = (e: any) => {
-        setSave(prevSave => ({
-            ...prevSave,
-            taskName: e.target.value
-        }));
-
+        if(e.target.value.length > 56){
+            alert("Task Title is too long. Please chose a shorter name and enter the details into the task description.")
+        }else{
+            setSave(prevSave => ({
+                ...prevSave,
+                taskName: e.target.value
+            }));
+        }
     }
-    //
+
+    const callBackData = (a: any) => {
+        console.log();
+    }
 
     return (
         <>  <div className={save.portfolioType == "Service" ? "serviepannelgreena" : ''}>
@@ -1782,18 +2051,18 @@ function CreateTaskComponent(props: any) {
                         <input type="text" placeholder='Enter task Name' className='full-width' value={save.taskName} onChange={(e) => { changeTitle(e) }}></input>
                     </div>
                     <div className='col-sm-2 p-0 mt-4'>
-                    <label className='SpfxCheckRadio'>
-                        <input
-                            type="radio" className="radio" checked={save.portfolioType === 'Component'}
-                            name="taskcategory" onChange={() => selectPortfolioType('Component')} />
-                        Component</label>
+                        <label className='SpfxCheckRadio'>
+                            <input
+                                type="radio" className="radio" checked={save.portfolioType === 'Component'}
+                                name="taskcategory" onChange={() => selectPortfolioType('Component')} />
+                            Component</label>
                         {
                             burgerMenuTaskDetails?.ComponentID == undefined ? <>
-                              <label className='SpfxCheckRadio ms-3'>
-                            <input
-                                type="radio" className="radio" checked={save.portfolioType === 'Service'}
-                                name="taskcategory" onChange={() => selectPortfolioType('Service')} />
-                               Service </label></> : ''
+                                <label className='SpfxCheckRadio ms-3'>
+                                    <input
+                                        type="radio" className="radio" checked={save.portfolioType === 'Service'}
+                                        name="taskcategory" onChange={() => selectPortfolioType('Service')} />
+                                    Service </label></> : ''
                         }
                     </div>
                     <div className='col-sm-4 pe-0'>{
@@ -1886,31 +2155,38 @@ function CreateTaskComponent(props: any) {
                                 : ''}
                         </ul>
                         <div className="border border-top-0 clearfix p-3 tab-content " id="myTabContent">
-                            {burgerMenuTaskDetails?.Siteurl != undefined ? <div className="tab-pane  show active" id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
+                            {burgerMenuTaskDetails?.Siteurl != undefined ? <div className="tab-pane Alltable mx-height show active" id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
                                 {relevantTasks?.TaskUrlRelevantTask?.length > 0 ?
                                     <>
                                         <div className={relevantTasks?.TaskUrlRelevantTask?.length > 0 ? 'fxhg' : ''}>
-                                            <DataGrid rows={relevantTasks?.TaskUrlRelevantTask} columns={columns} getRowId={(row: any) => row.Shareweb_x0020_ID} />
+                                            {/* ?ComponentID=1682&Siteurl=https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskDashboard.aspx */}
+                                            <GlobalCommanTable columns={column2} data={relevantTasks?.TaskUrlRelevantTask} paginatedTable={true} callBackData={callBackData} />
+                                            {/* <GlobalCommanTable AllListId={ContextValue} callBackData={callBackData} columns={columns} data={relevantTasks?.TaskUrlRelevantTask} TaskUsers={taskUsers} showHeader={true} fixedWidth={true} showingAllPortFolioCount={true} showCreationAllButton={true} /> */}
+                                            {/* <DataGrid rows={relevantTasks?.TaskUrlRelevantTask} columns={columns} getRowId={(row: any) => row.Shareweb_x0020_ID} /> */}
                                         </div>
                                     </> : ''
                                 }
                             </div> : ''}
-                            {burgerMenuTaskDetails?.Siteurl != undefined ? <div className="tab-pane " id="PageTasks" role="tabpanel" aria-labelledby="PageTasks">
+                            {burgerMenuTaskDetails?.Siteurl != undefined ? <div className="tab-pane Alltable mx-height" id="PageTasks" role="tabpanel" aria-labelledby="PageTasks">
                                 {relevantTasks?.PageRelevantTask?.length > 0 ?
                                     <>
                                         <div className={relevantTasks?.PageRelevantTask?.length > 0 ? 'fxhg' : ''}>
-                                            <DataGrid rows={relevantTasks?.PageRelevantTask} columns={columns} getRowId={(row: any) => row.Shareweb_x0020_ID} />
+                                            <GlobalCommanTable columns={column2} data={relevantTasks?.PageRelevantTask} paginatedTable={true} callBackData={callBackData} />
+                                            {/* <GlobalCommanTable AllListId={ContextValue} columns={columns} data={relevantTasks?.PageRelevantTask} TaskUsers={taskUsers} showHeader={true} fixedWidth={true} showingAllPortFolioCount={true} showCreationAllButton={true} /> */}
+                                            {/* <DataGrid rows={relevantTasks?.PageRelevantTask} columns={columns} getRowId={(row: any) => row.Shareweb_x0020_ID} /> */}
                                         </div>
                                     </> : ''
                                 }
                             </div> : ''}
                             {burgerMenuTaskDetails?.ComponentID != undefined ?
-                                <div className="tab-pane" id="ComponentTasks" role="tabpanel" aria-labelledby="ComponentTasks">
+                                <div className="tab-pane Alltable mx-height" id="ComponentTasks" role="tabpanel" aria-labelledby="ComponentTasks">
 
                                     {relevantTasks?.ComponentRelevantTask?.length > 0 ?
                                         <>
                                             <div className={relevantTasks?.ComponentRelevantTask?.length > 0 ? 'fxhg' : ''}>
-                                                <DataGrid rows={relevantTasks?.ComponentRelevantTask} columns={columns} getRowId={(row: any) => row.Shareweb_x0020_ID} />
+                                                <GlobalCommanTable columns={column2} data={relevantTasks?.ComponentRelevantTask} paginatedTable={true} callBackData={callBackData} />
+                                                {/* <GlobalCommanTable AllListId={ContextValue} columns={columns} data={relevantTasks?.ComponentRelevantTask} TaskUsers={taskUsers} showHeader={true} fixedWidth={true} showingAllPortFolioCount={true} showCreationAllButton={true} /> */}
+                                                {/* <DataGrid rows={relevantTasks?.ComponentRelevantTask} columns={columns} getRowId={(row: any) => row.Shareweb_x0020_ID} /> */}
                                             </div>
                                         </> : ''
                                     }
@@ -1982,7 +2258,7 @@ function CreateTaskComponent(props: any) {
                                                     {subCategory?.map((item: any) => {
                                                         return (
                                                             <>
-                                                                 {Task.Id === item.ParentID && <>
+                                                                {Task.Id === item.ParentID && <>
                                                                     {/* onClick={() => selectSubTaskCategory(item.Title, item.Id)} */}
                                                                     <a onClick={() => selectSubTaskCategory(item.Title, item.Id, item)} id={"subcategorytasks" + item.Id} className={item.ActiveTile ? 'bg-siteColor subcategoryTask selectedTaskList text-center' : 'bg-siteColor subcategoryTask text-center'} >
 

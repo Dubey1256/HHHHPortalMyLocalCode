@@ -113,8 +113,8 @@ function ShowTaskTeamMembers(item: any) {
               ? ItemNew["TeamLeader"].map((rcData: any, i: any) => {
                 return (
                   <>
-                    <span className="user_Member_img">
-                      <a
+                    <span className="user_Member_img alignCenter">
+                      <a className="alignCenter"
                         href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${rcData?.AssingedToUserId}&Name=${rcData.Title}`}
                         target="_blank"
                         data-interception="off"
