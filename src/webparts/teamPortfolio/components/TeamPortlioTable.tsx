@@ -246,7 +246,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     .getById(config.listId)
                     .items.select("ParentTask/Title", "ParentTask/Id", "ItemRank", "TaskLevel", "OffshoreComments", "TeamMembers/Id", "ClientCategory/Id", "ClientCategory/Title",
                         "TaskID", "ResponsibleTeam/Id", "ResponsibleTeam/Title", "ParentTask/TaskID", "TaskType/Level", "PriorityRank", "TeamMembers/Title", "FeedBack", "Title", "Id", "ID", "DueDate", "Comments", "Categories", "Status", "Body",
-                        "PercentComplete", "ClientCategory", "Priority", "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title",
+                        "PercentComplete", "ClientCategory", "Priority", "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType","Portfolio/PortfolioStructureID", "Portfolio/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title",
                         "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title",
                     )
                     .expand(
@@ -363,17 +363,30 @@ function TeamPortlioTable(SelectedProp: any) {
                                 result.ClientCategorySearch = ''
                             }
                             // if (result.Id === 1441) console.log(result);
-                            // result["TaskID"] = globalCommon.getTaskId(result);
+                            result["TaskID"] = globalCommon.GetTaskId(result);
                             // if (result["TaskID"] == undefined) {
                             //     result["TaskID"] = "";
                             // }
                             // && result.PortfolioType != undefined
-                            taskTypeDataItem?.map((type: any) => {
-                                if (result?.TaskType?.Title === type.Title) {
-                                    type[type.Title + 'number'] += 1;
-                                }
-                            })
 
+                            if (isUpdated === "") {
+                                taskTypeDataItem?.map((type: any) => {
+                                    if (result?.TaskType?.Title === type.Title) {
+                                        type[type.Title + 'number'] += 1;
+                                    }
+                                })
+                            } else if (isUpdated != "") {
+                                let findPortfolio = AllComponetsData?.filter((elem: any) => elem.Id === result?.Portfolio?.Id);
+                                if (findPortfolio.length > 0) {
+                                    if (findPortfolio[0]?.Id === result?.Portfolio?.Id && isUpdated?.toLowerCase() === findPortfolio[0]?.PortfolioType?.Title?.toLowerCase()) {
+                                        taskTypeDataItem?.map((type: any) => {
+                                            if (result?.TaskType?.Title === type.Title) {
+                                                type[type.Title + 'number'] += 1;
+                                            }
+                                        })
+                                    }
+                                }
+                            }
                             if (result.Project) {
                                 result.ProjectTitle = result?.Project?.Title;
                                 result.ProjectId = result?.Project?.Id;
@@ -444,6 +457,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 result.SiteIconTitle = result?.Item_x0020_Type?.charAt(0);
             }
             result["TaskID"] = result?.PortfolioStructureID;
+
             result.DueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
             if (result.DueDate == "Invalid date" || "") {
                 result.DueDate = result?.DueDate.replaceAll("Invalid date", "");
@@ -674,14 +688,14 @@ function TeamPortlioTable(SelectedProp: any) {
         let findTasks = smartAllFilterData?.filter((elem1: any) => elem1?.TaskType?.Id != levelType.Id && elem1?.Portfolio?.Id === items?.Id);
         findActivity?.forEach((act: any) => {
             act.subRows = [];
-            let worstreamAndTask = findTasks?.filter((taskData: any) => taskData?.ParentTask?.Id === act?.Id && taskData?.siteType === act?.siteType)
+            let worstreamAndTask = smartAllFilterData?.filter((taskData: any) => taskData?.ParentTask?.Id === act?.Id && taskData?.siteType === act?.siteType)
             // findTasks = findTasks?.filter((taskData: any) => taskData?.ParentTask?.Id != act?.Id && taskData?.siteType != act?.siteType);
             if (worstreamAndTask.length > 0) {
                 act.subRows = act?.subRows?.concat(worstreamAndTask);
             }
             worstreamAndTask?.forEach((wrkst: any) => {
                 wrkst.subRows = wrkst.subRows === undefined ? [] : wrkst.subRows;
-                let allTasksData = findTasks?.filter((elem: any) => elem?.ParentTask?.Id === wrkst?.Id && elem?.siteType === wrkst?.siteType);
+                let allTasksData = smartAllFilterData?.filter((elem: any) => elem?.ParentTask?.Id === wrkst?.Id && elem?.siteType === wrkst?.siteType);
                 // findTasks = findTasks?.filter((elem: any) => elem?.ParentTask?.Id != wrkst?.Id && elem?.siteType != wrkst?.siteType);
                 if (allTasksData.length > 0) {
                     wrkst.subRows = wrkst?.subRows?.concat(allTasksData)
