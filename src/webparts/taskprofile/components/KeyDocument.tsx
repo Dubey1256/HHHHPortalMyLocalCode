@@ -41,9 +41,12 @@ const RelevantDocuments = (props: any, ref: any) => {
         if(EditdocumentsData?.ItemType!=6){
             if (MyContextdata?.keyDoc?.length > 0) {
                 let updatedData:any=MyContextdata?.keyDoc?.filter((item:any)=>item.Id!=EditdocumentsData.Id)
-                MyContextdata.FunctionCall(updatedData,Fileurl)
+                MyContextdata.FunctionCall(updatedData,Fileurl,true)
             }
         }
+        // else if(EditdocumentsData=='delete'){
+        //     MyContextdata.FunctionCall(null,null,true) 
+        // }
        
 },[])
     return (

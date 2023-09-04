@@ -86,7 +86,12 @@ const EditDocumentpanel=(props:any)=>{
             //   GetResult();
             //   handleClose();
               setEditdocpanel(false);
-              props.callbackeditpopup();
+              if(props.Keydoc){
+                props.callbackeditpopup("delete");
+              }else{
+                props.callbackeditpopup();
+              }
+            
             })
             .catch((err) => {
               console.log(err.message);
@@ -162,13 +167,14 @@ const EditDocumentpanel=(props:any)=>{
     
     
     const onRenderCustomHeaderDocuments = () => {
+      
         return (
           <>
     
-            <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+            <div className='ps-4 siteColor subheading'>
               {Editdocpanel ? `Edit Document Metadata - ${EditdocumentsData?.FileLeafRef}` : null}
             </div>
-            <Tooltip ComponentId='3300' />
+            <Tooltip ComponentId={'359'} />
           </>
         );
       };
@@ -199,7 +205,6 @@ const EditDocumentpanel=(props:any)=>{
           setisopencomonentservicepopup(true)
         }else{
           alert("Please Choose Component/Service")
-          console.log("test")
         }
      
       }
@@ -210,7 +215,7 @@ return(
         type={PanelType.custom}
         customWidth="1091px"
         onDismiss={handleClosedoc}
-        isBlocking={!isopencomonentservicepopup}
+        isBlocking={false}
         className={servicespopup == true ? "serviepannelgreena" : "siteColor"}
       >
         
@@ -308,7 +313,7 @@ return(
             </div>
 
             <div className='col-sm-6 mt-2 p-0'>
-              <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/Documents/Forms/EditForm.aspx?ID=${EditdocumentsData?.Id != null ? EditdocumentsData?.Id : null}`}>Open out-of-the-box form |</a></span>
+              <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/Documents/Forms/EditForm.aspx?ID=${EditdocumentsData?.Id != null ? EditdocumentsData?.Id : null}`}>Open out-of-the-box form</a></span>
 
               <Button className='btn btn-primary ms-1  mx-2' 
               onClick={updateDocumentsData}

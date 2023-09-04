@@ -19,7 +19,7 @@ const RelevantDocuments = (props: any,ref:any) => {
 
     useEffect(() => {
         loadAllSitesDocuments();
-    }, [myContextData2?.length])
+    }, [])
     useImperativeHandle(ref,()=>({
         loadAllSitesDocuments
     }))
@@ -51,7 +51,7 @@ const RelevantDocuments = (props: any,ref:any) => {
                     }
                 })
                 console.log("document data", Data);
-                myContextData2.FunctionCall(keydoc,Data[0]?.FileDirRef)
+                myContextData2.FunctionCall(keydoc,Data[0]?.FileDirRef,false)
                
                 var releventData=Data.filter((d)=>d.ItemRank!=6)
                 setDocumentData(releventData);
