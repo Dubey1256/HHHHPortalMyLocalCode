@@ -1831,3 +1831,14 @@ export const getParameterByName = async (name: any) => {
     return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 
 }
+
+export const GetTaskId = (Item: any) => {
+    let taskIds = '';
+    if (Item?.Portfolio?.PortfolioStructureID != undefined) {
+        taskIds = Item?.Portfolio?.PortfolioStructureID + '-' + Item.TaskID;
+    } else {
+        taskIds = Item.TaskID;
+    }
+
+    return taskIds;
+}
