@@ -212,14 +212,14 @@ let AllAvailableTitle: any = [];
                                                 <td style={{ width: "20%" }}>
                                                     <img className='workmember '  src={items.AuthorImage}></img>
                                                 </td>
-                                                <td style={{ width: "80%" }} colSpan={2}><span className='px-2'>Total Time</span>{items.hoverTime}<span className='mx-1'>{items.hoverTime>1?'hour':'hours'}</span></td>
+                                                <td style={{ width: "80%" }} colSpan={2}><span className='px-2'>Total Time</span>{items.hoverTime}<span className='mx-1'>{items.hoverTime>1?'hours':'hour'}</span></td>
                                             </tr>
 
                                             {items?.additionaltime2?.length > 0 && items?.additionaltime2?.map((details: any) => {
                                                 return (
                                                     <>       <tr>
                                                         <td style={{ width: "20%" }}>{details.TaskDate}</td>
-                                                        <td style={{ width: "10%" }}>{details?.TaskTime}<span className='mx-1'>{details?.TaskTime>"1"?'hour':'hours'}</span></td>
+                                                        <td style={{ width: "10%" }}>{details?.TaskTime}<span className='mx-1'>{details?.TaskTime>1?'hours':'hour'}</span></td>
                                                         <td style={{ width: "70%" }}>{details.Description}</td>
                                                     </tr>
                                                     </>
