@@ -917,7 +917,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
               elem.childs = [];
               elem.subRows = [];
               AllTasks?.forEach((task: any) => {
-                if (elem.Id === task.Id) {
+                if (elem.Id === task.Id && elem?.siteType === task?.siteType) {
                   task.isTagged = false;
                 }
                 if (elem?.ID == task?.ParentTask?.Id && elem?.siteType === task?.siteType) {
@@ -932,7 +932,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                 val.childs = val.childs === undefined ? [] : val.childs;
                 val.subRows = val.subRows === undefined ? [] : val.subRows;
                 AllTasks?.forEach((task: any) => {
-                  if (val.Id === task.Id) {
+                  if (val.Id === task.Id && val?.siteType === task?.siteType) {
                     task.isTagged = false;
                   }
                   if (val?.ID == task?.ParentTask?.Id && val?.siteType === task?.siteType) {

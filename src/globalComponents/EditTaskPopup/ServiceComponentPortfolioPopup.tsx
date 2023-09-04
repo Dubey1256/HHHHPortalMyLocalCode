@@ -114,7 +114,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     const CustomFooter = () => {
         return (
             <footer className={ComponentType == "Service" ? "me-3 p-2 serviepannelgreena text-end" : "me-3 p-2 text-end"}>  
-               
+                
                 <button type="button" className="btn btn-primary me-1" onClick={setModalIsOpenToOK}>OK</button>
                 <button type="button" className="btn btn-default" onClick={setModalIsOpenToFalse}>Cancel</button>
             </footer>
@@ -190,7 +190,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
             {
                 accessorFn: (row) => row?.TeamLeaderUser?.map((val: any) => val.Title).join("-"),
                 cell: ({ row }) => (
-                    <div>
+                    <div className="alignCenter">
                         <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={AllUsers} />
                     </div>
                 ),
@@ -291,7 +291,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                         </div>
                         <div className="col-sm-12 p-0 smart">
                             <div className="wrapper">
-                                <GlobalCommanTable columns={columns} data={data} selectedData={selectedDataArray} callBackData={callBackData} multiSelect={selectionType == 'Multi' ? true : false} />
+                                <GlobalCommanTable columns={columns}  showHeader={true} data={data} selectedData={selectedDataArray} callBackData={callBackData} multiSelect={selectionType == 'Multi' ? true : false} />
                             </div>
                         </div>
                     </div>

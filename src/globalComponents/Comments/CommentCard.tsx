@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Web } from "sp-pnp-js";
-import { MSGraphClientV3 } from '@microsoft/sp-http';
+
 /*
 import 'setimmediate'; 
 import { Editor } from "react-draft-wysiwyg";
@@ -15,6 +15,7 @@ import "@pnp/sp/sputilities";
 import * as moment from "moment-timezone";
 import HtmlEditorCard from '../HtmlEditor/HtmlEditor';
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
+import * as globalCommon from '../../globalComponents/globalCommon';
 import { getSP } from '../../spservices/pnpjsConfig';
 import { spfi, SPFx as spSPFx } from "@pnp/sp";
 let color: any = false;
@@ -56,7 +57,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   private currentUser: any;
   private mentionUsers: any = [];
   private topCommenters: any = [];
-  private TeamUser: any = [];
 
   private params1: any;
   constructor(props: ICommentCardProps) {
@@ -110,9 +110,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       taskDetails = await web.lists.getById(this.state.listId).items.getById(this.state.itemID).select("ID", "Title", "DueDate", "Portfolio_x0020_Type", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Comments")
         .expand("Team_x0020_Members", "Author", "ClientCategory", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor")
         .get()
-    }
-    //await this.GetTeamId()
-    //await this.getTeamUser()
+    }   
     await this.GetTaskUsers();
     console.log("this is result function")
     //this.currentUser = this.GetUserObject(this.props.Context.pageContext.user.displayName);
@@ -240,30 +238,10 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           this.currentUser = this.taskUsers[index];
       }
       console.log(this.topCommenters);
-      console.log(this.mentionUsers);
-      await this.getTeamUser()
+      console.log(this.mentionUsers);     
     }
   }
-
-  private async getTeamUser() {
-    try {
-      this.props.Context.msGraphClientFactory.getClient().then((client: MSGraphClientV3) => {
-        client.api(`/users`).version("v1.0").get((err: any, res: any) => {
-          if (err)
-            console.error("MSGraphAPI Error")
-          this.TeamUser = res?.value;
-          var CurrentUserChatInfo = this.TeamUser.filter((items: any) => {
-            if (items.userPrincipalName != undefined && this.currentUser.Email != undefined && items.userPrincipalName.toLowerCase() == this.currentUser.Email.toLowerCase()) {
-              return items
-            }
-          })
-          this.currentUser.ChatId = CurrentUserChatInfo[0]?.id;
-        });
-      });
-    } catch (e) {
-      console.log(e)
-    }
-  }
+ 
 
   private handleInputChange(e: any) {
     this.setState({ CommenttoPost: e.target.value });
@@ -578,66 +556,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     this.setState({
       mentionValue: e.target.value
     }, () => { console.log(this.state.mentionValue) })
-  }
-  private async SendTeamMsg(mention_To: any, txtComment: any) {
-    var SelectedUser: any[] = []
-    for (let index = 0; index < mention_To.length; index++) {
-
-      for (let TeamUserIndex = 0; TeamUserIndex < this.TeamUser.length; TeamUserIndex++) {
-
-        if (mention_To[index] != undefined && this.TeamUser[TeamUserIndex] != undefined && mention_To[index].toLowerCase() == this.TeamUser[TeamUserIndex].userPrincipalName.toLowerCase())
-
-          SelectedUser.push(this.TeamUser[TeamUserIndex])
-
-        if (mention_To[index] != undefined && this.TeamUser[TeamUserIndex] != undefined && mention_To[index].toLowerCase() == 'stefan.hochhuth@hochhuth-consulting.de' && this.TeamUser[TeamUserIndex].id == 'b0f99ab1-aef3-475c-98bd-e68229168489')
-
-          SelectedUser.push(this.TeamUser[TeamUserIndex])
-
-      }
-
-    }
-
-    try {
-      const client: MSGraphClientV3 = await this.props.Context.msGraphClientFactory.getClient();
-      let participants = []
-      let obj = {
-        "@odata.type": "#microsoft.graph.aadUserConversationMember",
-        "roles": ["owner"],
-        "user@odata.bind": `https://graph.microsoft.com/v1.0/users('${this.currentUser?.ChatId}')`
-      }
-      participants.push(obj)
-      if (SelectedUser != undefined && SelectedUser.length > 0) {
-        SelectedUser?.forEach((item: any) => {
-          let obj = {
-            "@odata.type": "#microsoft.graph.aadUserConversationMember",
-            "roles": ["owner"],
-            "user@odata.bind": `https://graph.microsoft.com/v1.0/users('${item?.id}')`
-          }
-          participants.push(obj)
-        })
-
-      }
-      const chat_payload: any = {
-        "members": participants
-      }
-      mention_To != undefined && mention_To.length == 1 ? chat_payload.chatType = 'oneOnOne' : chat_payload.chatType = 'group'
-      let new_chat_resp = await client.api('/chats').version('v1.0').post(chat_payload)
-      const message_payload = {
-        "body": {
-          contentType: 'html',
-          content: `${txtComment}  </br> <a href=${window.location.href}>${window.location.href}</a>`,
-          //content: 'test',
-        }
-      }
-      await client.api('/chats/' + new_chat_resp?.id + '/messages').post(message_payload)
-    } catch (error) {
-      console.error('Error creating group:', error);
-    }
-
-
-
-  }
-  private GetEmailObjects(txtComment: any) {
+  } 
+  private async GetEmailObjects(txtComment: any) {
 
     if (this.state.mentionValue != '') {
       //Get All To's
@@ -679,7 +599,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             Body: this.state.Result["Title"]
           }
           console.log(emailprops);
-          this.SendTeamMsg(mention_To, txtComment);
+          let TeamMsg = txtComment + `</br> <a href=${window.location.href}>${window.location.href}</a>`
+          await globalCommon.SendTeamMessage(mention_To, TeamMsg, this.props.Context)
           this.SendEmail(emailprops);
 
 
