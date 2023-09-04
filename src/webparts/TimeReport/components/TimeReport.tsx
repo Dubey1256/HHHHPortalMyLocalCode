@@ -608,7 +608,7 @@ const TimeReport = (props:any) => {
                 }
 
             })
-            TotleTaskTime = QATime + DevloperTime + DesignTime
+            TotleTaskTime = QATime + DevloperTime + DesignTime + leaveUsers
         }
         todayLeaveUsers?.forEach((items:any)=>{
             SelectedTime.push(items)
@@ -922,7 +922,7 @@ const TimeReport = (props:any) => {
         var To:any=[]
         var MyDate:any=''
         var ApprovalId:any = []
-        var TotlaTime = QATime + DevloperTime + DesignTime
+        var TotlaTime = QATime + DevloperTime + DesignTime + leaveUsers
 
         AllUsers?.forEach((items:any)=>{
             if(CurrentUserId == items.AssingedToUserId){

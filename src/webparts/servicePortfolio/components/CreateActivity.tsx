@@ -955,16 +955,16 @@ const CreateActivity = (props: any) => {
                           componentDetails = await web.lists
                               .getById(value.listId)
                               .items
-                              .select("Id,Title,SharewebTaskType/Id,SharewebTaskType/Title")
+                              .select("Id,Title,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskLevel1No")
                               .expand('SharewebTaskType')
                               .orderBy("Id", false)
                               .filter("SharewebTaskType/Title eq 'Activities'")
                               .top(1)
                               .get()
                           console.log(componentDetails)
-                          var LatestId = componentDetails[0].Id + 1;
+                          var LatestId = componentDetails[0].SharewebTaskLevel1No + 1;
                           Tasklevel = LatestId
-                          TaskID = props?.props?.PortfolioStructureID + '-A' + LatestId 
+                          TaskID =  'A' + LatestId 
                      
 
                         // AllItems?.subRows?.forEach((vall: any) => {
