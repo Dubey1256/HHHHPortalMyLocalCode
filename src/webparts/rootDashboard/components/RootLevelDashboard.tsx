@@ -169,8 +169,8 @@ const RootLevelDashboard = (props: any) => {
           smartmeta = await web.lists
             .getById(config?.listId)
             .items
-            .select("Id,Title,Priority_x0020_Rank,Project/Priority_x0020_Rank,Project/Id,Project/Title,Events/Id,EventsId,workingThisWeek,EstimatedTime,SharewebTaskLevel1No,SharewebTaskLevel2No,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,SiteCompositionSettings,IsTodaysTask,Body,Component/Id,Component/Title,Services/Id,Services/Title,PercentComplete,ComponentId,Categories,ServicesId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
-            .expand('AssignedTo,Events,Project,Author,Editor,Component,Services,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory')
+            .select("Id,Title,PriorityRank,Project/PriorityRank,Project/Id,Project/Title,Events/Id,EventsId,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,SiteCompositionSettings,IsTodaysTask,Body,Component/Id,Component/Title,Services/Id,Services/Title,PercentComplete,ComponentId,Categories,ServicesId,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+            .expand('AssignedTo,Events,Project,Author,Editor,Component,Services,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory')
             .top(4999)
             .get();
           arraycount++;
@@ -207,7 +207,7 @@ const RootLevelDashboard = (props: any) => {
             items["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
             if (items?.Project?.Title != undefined) {
               items["ProjectTitle"] = items?.Project?.Title;
-              items["ProjectPriority"] = items?.Project?.Priority_x0020_Rank;
+              items["ProjectPriority"] = items?.Project?.PriorityRank;
             } else {
               items["ProjectTitle"] = '';
               items["ProjectPriority"] = 0;
@@ -240,13 +240,13 @@ const RootLevelDashboard = (props: any) => {
             //         items.Component.length > 0
             //         ? getComponentasString(items.Component)
             //         : "";
-            items.Shareweb_x0020_ID = globalCommon.getTaskId(items);
+            items.TaskID = globalCommon.getTaskId(items);
             // AllTaskUsers?.map((user: any) => {
             //     if (user.AssingedToUserId == items.Author.Id) {
             //         items.createdImg = user?.Item_x0020_Cover?.Url;
             //     }
-            //     if (items.Team_x0020_Members != undefined) {
-            //         items.Team_x0020_Members.map((taskUser: any) => {
+            //     if (items.TeamMembers != undefined) {
+            //         items.TeamMembers.map((taskUser: any) => {
             //             var newuserdata: any = {};
             //             if (user.AssingedToUserId == taskUser.Id) {
             //                 newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
@@ -265,7 +265,7 @@ const RootLevelDashboard = (props: any) => {
           let setCount = siteConfig?.length
           if (arraycount === setCount) {
             AllTask.sort((a: any, b: any) => {
-              return b?.Priority_x0020_Rank - a?.Priority_x0020_Rank;
+              return b?.PriorityRank - a?.PriorityRank;
             })
             const mergedArray = [...AllTasks, ...allSitesTasks]
             setAllTasks(sortOnCreated(mergedArray));
@@ -355,10 +355,10 @@ const RootLevelDashboard = (props: any) => {
       },
 
       {
-        accessorKey: "Shareweb_x0020_ID",
+        accessorKey: "TaskID",
         placeholder: "Task Id",
         header: "",
-        id: 'Shareweb_x0020_ID',
+        id: 'TaskID',
         resetColumnFilters: false,
         resetSorting: false,
         size: 140,
@@ -367,9 +367,9 @@ const RootLevelDashboard = (props: any) => {
             <span className="d-flex">
               <div className='tooltipSec popover__wrapper me-1' data-bs-toggle='tooltip' data-bs-placement='auto'>
                 {row.original.Services.length >= 1 ? (
-                  <span className='text-success'>{row?.original?.Shareweb_x0020_ID}</span>
+                  <span className='text-success'>{row?.original?.TaskID}</span>
                 ) : (
-                  <span>{row?.original?.Shareweb_x0020_ID}</span>
+                  <span>{row?.original?.TaskID}</span>
                 )}
               </div>
             </span>
@@ -455,7 +455,7 @@ const RootLevelDashboard = (props: any) => {
       },
 
       {
-        accessorFn: (row) => row?.Priority_x0020_Rank,
+        accessorFn: (row) => row?.PriorityRank,
         cell: ({ row }) => (
           <span>
             <InlineEditingcolumns
@@ -465,7 +465,7 @@ const RootLevelDashboard = (props: any) => {
               item={row?.original}
               pageName={'ProjectManagment'}
             />
-            {/* {row?.original?.Priority_x0020_Rank} */}
+            {/* {row?.original?.PriorityRank} */}
           </span>
         ),
         placeholder: "Priority",

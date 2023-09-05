@@ -122,16 +122,16 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 .getById(this.props?.ItemInfo?.listId || this.props?.ItemInfo?.listName)
                 .items
                 .getById(this.props.ItemInfo.Id)
-                .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "Component/Id", "Component/Title", "Services/Id", "Services/Title")
-                .expand("Team_x0020_Members", "AssignedTo", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services")
+                .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "TeamMembers/Title", "TeamMembers/Id", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "Component/Id", "Component/Title", "Services/Id", "Services/Title")
+                .expand("TeamMembers", "AssignedTo", "ResponsibleTeam", "TaskType", "Component", "Services")
                 .get()
         } else {
             taskDetails = await web.lists
                 .getByTitle(this.props?.ItemInfo?.siteType)
                 .items
                 .getById(this.props.ItemInfo.Id)
-                .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "Component/Id", "Component/Title", "Services/Id", "Services/Title")
-                .expand("Team_x0020_Members", "AssignedTo", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services")
+                .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "TeamMembers/Title", "TeamMembers/Id", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "Component/Id", "Component/Title", "Services/Id", "Services/Title")
+                .expand("TeamMembers", "AssignedTo", "ResponsibleTeam", "TaskType", "Component", "Services")
                 .get()
         }
 
@@ -168,9 +168,9 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         let taskUsers = this.state.taskUsers;
         let self = this;
 
-        if (Item.Responsible_x0020_Team != undefined) {
+        if (Item.ResponsibleTeam != undefined) {
             if (self.ResponsibleTeam != undefined && self.ResponsibleTeam.length > 0) {
-                let TeamLeaderData = self.getUsersWithImage(Item.Responsible_x0020_Team);
+                let TeamLeaderData = self.getUsersWithImage(Item.ResponsibleTeam);
                 TeamLeaderData.forEach(function (item: any) {
                     if (!self.isItemExists(self.ResponsibleTeam, item.Id)) {
                         self.ResponsibleTeam.push(item);
@@ -178,16 +178,16 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 });
             }
             else {
-                self.ResponsibleTeam = self.getUsersWithImage(Item.Responsible_x0020_Team);
+                self.ResponsibleTeam = self.getUsersWithImage(Item.ResponsibleTeam);
             }
             self.NewTeamConfigurations.push({ Title: 'Task Leader', childs: self.ResponsibleTeam });
         }
         console.log('Team Leader');
         console.log(this.NewTeamConfigurations);
 
-        if (Item.Team_x0020_Members != undefined) {
+        if (Item.TeamMembers != undefined) {
             if (self.TeamMemberUsers != undefined && self.TeamMemberUsers.length > 0) {
-                let TeamMemberUsersData = self.getUsersWithImage(Item.Team_x0020_Members);
+                let TeamMemberUsersData = self.getUsersWithImage(Item.TeamMembers);
                 TeamMemberUsersData.forEach(function (item: any) {
                     if (!self.isItemExists(self.TeamMemberUsers, item.Id)) {
                         self.TeamMemberUsers.push(item);
@@ -195,7 +195,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 });
             }
             else {
-                self.TeamMemberUsers = self.getUsersWithImage(Item.Team_x0020_Members);
+                self.TeamMemberUsers = self.getUsersWithImage(Item.TeamMembers);
             }
             self.NewTeamConfigurations.push({ Title: 'Team Members', childs: self.TeamMemberUsers });
         }

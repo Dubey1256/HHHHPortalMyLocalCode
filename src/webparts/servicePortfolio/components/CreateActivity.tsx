@@ -278,21 +278,21 @@ const CreateActivity = (props: any) => {
                 componentDetails = await web.lists
                     .getById(AllItems.listId)
                     .items
-                    .select("FolderID,SharewebTaskLevel1No,SharewebTaskLevel2No,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,Priority,Created,Modified,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,ParentTask/Id,ParentTask/Title,Author/Id,Author/Title,Editor/Id,Editor/Title")
-                    .expand("SharewebTaskType,ParentTask,Author,Editor,AssignedTo")
-                    .filter(("SharewebTaskType/Title eq 'Workstream'") && ("ParentTask/Id eq '" + AllItems?.Id + "'"))
+                    .select("FolderID,TaskLevel,TaskLevel,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,FileLeafRef,Title,Id,PriorityRank,PercentComplete,Priority,Created,Modified,TaskType/Id,TaskType/Title,TaskType/Level,TaskType/Prefix,ParentTask/Id,ParentTask/Title,Author/Id,Author/Title,Editor/Id,Editor/Title")
+                    .expand("TaskType,ParentTask,Author,Editor,AssignedTo")
+                    .filter(("TaskType/Title eq 'Workstream'") && ("ParentTask/Id eq '" + AllItems?.Id + "'"))
                     .orderBy("Created", false)
                     .top(4999)
                     .get()
                 console.log(componentDetails)
                 if (componentDetails?.length == 0) {
-                    WorstreamLatestId = AllItems?.SharewebTaskLevel2No;
+                    WorstreamLatestId = AllItems?.TaskLevel;
                 } else {
-                    if (AllItems?.SharewebTaskType.Title != undefined ? AllItems?.SharewebTaskType.Title != 'Workstream' : AllItems?.SharewebTaskType != "Workstream") {
-                        WorstreamLatestId = componentDetails[0]?.SharewebTaskLevel2No + 1;
+                    if (AllItems?.TaskType.Title != undefined ? AllItems?.TaskType.Title != 'Workstream' : AllItems?.TaskType != "Workstream") {
+                        WorstreamLatestId = componentDetails[0]?.TaskLevel + 1;
                     }
                     else {
-                        WorstreamLatestId = componentDetails[0]?.SharewebTaskLevel2No != undefined ? componentDetails[0]?.SharewebTaskLevel2No : AllItems?.SharewebTaskLevel2No;
+                        WorstreamLatestId = componentDetails[0]?.TaskLevel != undefined ? componentDetails[0]?.TaskLevel : AllItems?.TaskLevel;
                     }
 
                 }
@@ -455,7 +455,7 @@ const CreateActivity = (props: any) => {
                     }
 
                 })
-                item1.SharewebCategories?.map((itenn: any) => {
+                item1.TaskCategories?.map((itenn: any) => {
                     CategoriesData.push(itenn)
                 })
 
@@ -712,10 +712,10 @@ const CreateActivity = (props: any) => {
         componentDetails = await web.lists
             .getById(item?.listId)
             .items
-            .select("FolderID,SharewebTaskLevel1No,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,StartDate,DueDate,Status,Body,PercentComplete,Attachments,Priority,Created,Modified,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,ParentTask/Id,ParentTask/Title,Author/Id,Author/Title,Editor/Id,Editor/Title")
-            .expand("SharewebTaskType,ParentTask,AssignedTo,AttachmentFiles,Author,Editor")
-            .filter("SharewebTaskType/Title eq 'Activities'")
-            .orderBy("SharewebTaskLevel1No", false)
+            .select("FolderID,TaskLevel,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,Title,Id,PriorityRank,PercentComplete,StartDate,DueDate,Status,Body,PercentComplete,Attachments,Priority,Created,Modified,TaskType/Id,TaskType/Title,TaskType/Level,TaskType/Prefix,ParentTask/Id,ParentTask/Title,Author/Id,Author/Title,Editor/Id,Editor/Title")
+            .expand("TaskType,ParentTask,AssignedTo,AttachmentFiles,Author,Editor")
+            .filter("TaskType/Title eq 'Activities'")
+            .orderBy("TaskLevel", false)
             .top(4999)
             .get()
         console.log(componentDetails)
@@ -723,7 +723,7 @@ const CreateActivity = (props: any) => {
             LatestTaskNumber = 1;
             item.LatestTaskNumber = LatestTaskNumber
         } else {
-            LatestTaskNumber = componentDetails[0].SharewebTaskLevel1No;
+            LatestTaskNumber = componentDetails[0].TaskLevel;
             LatestTaskNumber += 1;
             item.LatestTaskNumber = LatestTaskNumber
         }
@@ -752,9 +752,9 @@ const CreateActivity = (props: any) => {
                     componentDetails = await web.lists
                         .getById(val.listId)
                         .items
-                        .select("FolderID,SharewebTaskLevel1No,SharewebTaskLevel2No,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,Priority,Created,Modified,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,ParentTask/Id,ParentTask/Title,Author/Id,Author/Title,Editor/Id,Editor/Title")
-                        .expand("SharewebTaskType,ParentTask,Author,Editor,AssignedTo")
-                        .filter(`(SharewebTaskType/Title eq 'Workstream')&&(ParentTask/Id eq ${val.Id})`)
+                        .select("FolderID,TaskLevel,TaskLevel,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,FileLeafRef,Title,Id,PriorityRank,PercentComplete,Priority,Created,Modified,TaskType/Id,TaskType/Title,TaskType/Level,TaskType/Prefix,ParentTask/Id,ParentTask/Title,Author/Id,Author/Title,Editor/Id,Editor/Title")
+                        .expand("TaskType,ParentTask,Author,Editor,AssignedTo")
+                        .filter(`(TaskType/Title eq 'Workstream')&&(ParentTask/Id eq ${val.Id})`)
                         .orderBy("Created", false)
                         .top(4999)
                         .get()
@@ -762,7 +762,7 @@ const CreateActivity = (props: any) => {
                     if (componentDetails.length == 0) {
                         WorstreamLatestId = 1;
                     } else {
-                        WorstreamLatestId = componentDetails[0].SharewebTaskLevel2No + 1;
+                        WorstreamLatestId = componentDetails[0].TaskLevel + 1;
                     }
                     getTasktype();
                 }
@@ -832,7 +832,7 @@ const CreateActivity = (props: any) => {
 
             }
             smartComponentData?.forEach((com: any) => {
-                if (smartComponentData[0] != undefined && smartComponentData[0].SharewebTaskType != undefined && smartComponentData[0].SharewebTaskType.Title == 'Workstream') {
+                if (smartComponentData[0] != undefined && smartComponentData[0].TaskType != undefined && smartComponentData[0].TaskType.Title == 'Workstream') {
                     $.each(com.Component, function (index: any, smart: any) {
                         Component.push(smart.Id)
                     })
@@ -841,7 +841,7 @@ const CreateActivity = (props: any) => {
             var RelevantPortfolioIds: any = []
             var Component: any = []
             smartComponentData?.forEach((com: any) => {
-                if (smartComponentData[0] != undefined && smartComponentData[0].SharewebTaskType != undefined && smartComponentData[0].SharewebTaskType.Title == 'Workstream') {
+                if (smartComponentData[0] != undefined && smartComponentData[0].TaskType != undefined && smartComponentData[0].TaskType.Title == 'Workstream') {
                     $.each(com.Component, function (index: any, smart: any) {
                         Component.push(smart.Id)
                     })
@@ -863,7 +863,7 @@ const CreateActivity = (props: any) => {
             if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
                 linkedComponentData?.map((com: any) => {
                     if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
-                        if (linkedComponentData[0] != undefined && linkedComponentData[0].SharewebTaskType != undefined && linkedComponentData[0].SharewebTaskType.Title == 'Workstream' || linkedComponentData[0].SharewebTaskType == 'Workstream') {
+                        if (linkedComponentData[0] != undefined && linkedComponentData[0].TaskType != undefined && linkedComponentData[0].TaskType.Title == 'Workstream' || linkedComponentData[0].TaskType == 'Workstream') {
                             $.each(com.Services, function (index: any, smart: any) {
                                 RelevantPortfolioIds.push(smart.Id)
                             })
@@ -910,8 +910,8 @@ const CreateActivity = (props: any) => {
                     })
                 }
             }
-            if (AllItems?.Team_x0020_Members != undefined && AllItems?.Team_x0020_Members?.length > 0) {
-                AllItems.Team_x0020_Members.forEach((obj: any) => {
+            if (AllItems?.TeamMembers != undefined && AllItems?.TeamMembers?.length > 0) {
+                AllItems.TeamMembers.forEach((obj: any) => {
                     TeamMemberIds.push(obj.Id);
                 })
             }
@@ -922,8 +922,8 @@ const CreateActivity = (props: any) => {
                     })
                 }
             }
-            if (AllItems?.Responsible_x0020_Team != undefined && AllItems?.Responsible_x0020_Team?.length > 0) {
-                AllItems.Responsible_x0020_Team.forEach((obj: any) => {
+            if (AllItems?.ResponsibleTeam != undefined && AllItems?.ResponsibleTeam?.length > 0) {
+                AllItems.ResponsibleTeam.forEach((obj: any) => {
                     ResponsibleTeamIds.push(obj.Id);
                 })
             }
@@ -955,20 +955,20 @@ const CreateActivity = (props: any) => {
                           componentDetails = await web.lists
                               .getById(value.listId)
                               .items
-                              .select("Id,Title,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskLevel1No")
-                              .expand('SharewebTaskType')
+                              .select("Id,Title,TaskType/Id,TaskType/Title,TaskLevel")
+                              .expand('TaskType')
                               .orderBy("Id", false)
-                              .filter("SharewebTaskType/Title eq 'Activities'")
+                              .filter("TaskType/Title eq 'Activities'")
                               .top(1)
                               .get()
                           console.log(componentDetails)
-                          var LatestId = componentDetails[0].SharewebTaskLevel1No + 1;
+                          var LatestId = componentDetails[0].TaskLevel + 1;
                           Tasklevel = LatestId
                           TaskID =  'A' + LatestId 
                      
 
                         // AllItems?.subRows?.forEach((vall: any) => {
-                        //     if (vall?.TaskType?.Title == 'Activities' || vall?.SharewebTaskType?.Title == 'Activities') {
+                        //     if (vall?.TaskType?.Title == 'Activities' || vall?.TaskType?.Title == 'Activities') {
                         //         LetestLevelData.push(vall)
                         //     }
 
@@ -1005,23 +1005,23 @@ const CreateActivity = (props: any) => {
                         if (SharewebTasknewTypeId == 2 || SharewebTasknewTypeId == 6) {
 
 
-                            if (Task?.Portfolio_x0020_Type != undefined && Task?.Portfolio_x0020_Type == 'Component' || Task?.Component != undefined && Task?.Component?.length > 0 && AllItems.SharewebTaskLevel1No != undefined) {
-                                SharewebID = 'A' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
+                            if (Task?.Portfolio_x0020_Type != undefined && Task?.Portfolio_x0020_Type == 'Component' || Task?.Component != undefined && Task?.Component?.length > 0 && AllItems.TaskLevel != undefined) {
+                                SharewebID = 'A' + AllItems.TaskLevel + '-T' + LatestId;
                             }
-                            if (Task?.Services != undefined && Task?.Portfolio_x0020_Type == 'Service' || Task?.Services != undefined && Task?.Services?.length > 0 && AllItems.SharewebTaskLevel1No != undefined) {
-                                SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
+                            if (Task?.Services != undefined && Task?.Portfolio_x0020_Type == 'Service' || Task?.Services != undefined && Task?.Services?.length > 0 && AllItems.TaskLevel != undefined) {
+                                SharewebID = 'SA' + AllItems.TaskLevel + '-T' + LatestId;
                             }
-                            if ((Task?.Services != undefined && Task?.Portfolio_x0020_Type == 'Service') || (Task?.Services != undefined && Task?.Services?.length > 0) && (Task.SharewebTaskType.Title == "Workstream" || Task.SharewebTaskType == 'Workstream')) {
-                                SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-W' + WorstreamLatestId + '-T' + LatestId;
+                            if ((Task?.Services != undefined && Task?.Portfolio_x0020_Type == 'Service') || (Task?.Services != undefined && Task?.Services?.length > 0) && (Task.TaskType.Title == "Workstream" || Task.TaskType == 'Workstream')) {
+                                SharewebID = 'SA' + AllItems.TaskLevel + '-W' + WorstreamLatestId + '-T' + LatestId;
                             }
 
                             if (Task?.Events != undefined && Task?.Portfolio_x0020_Type == 'Events') {
-                                SharewebID = 'EA' + AllItems?.SharewebTaskLevel1No + '-T' + LatestId;
+                                SharewebID = 'EA' + AllItems?.TaskLevel + '-T' + LatestId;
                             }
-                            if (AllItems.SharewebTaskLevel1No == undefined && Task?.Portfolio_x0020_Type.toLowerCase() == 'service') {
+                            if (AllItems.TaskLevel == undefined && Task?.Portfolio_x0020_Type.toLowerCase() == 'service') {
                                 SharewebID = 'SA' + LatestId;
                             }
-                            if (AllItems.SharewebTaskLevel1No == undefined && Task?.Portfolio_x0020_Type == 'Component') {
+                            if (AllItems.TaskLevel == undefined && Task?.Portfolio_x0020_Type == 'Component') {
                                 SharewebID = 'CA' + LatestId;
                             }
                         }
@@ -1047,7 +1047,7 @@ const CreateActivity = (props: any) => {
                             SharewebTaskTypeId: 1,
                             Body: AllItems.Body,
                             FeedBack: FeedBackItemArray[0] != "" ? JSON.stringify(FeedBackItemArray) : null,
-                            SharewebTaskLevel1No: value.LatestTaskNumber,
+                            TaskLevel: value.LatestTaskNumber,
                             AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
                             Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
                             Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] },
@@ -1059,8 +1059,8 @@ const CreateActivity = (props: any) => {
                         }).then((res: any) => {
                             res.data['SiteIcon'] = value.Item_x005F_x0020_Cover?.Url
                             res.data['listId'] = value?.listId
-                            res.data['SharewebTaskType'] = { Title: 'Activities' }
-                            res.data['Shareweb_x0020_ID'] = SharewebID;
+                            res.data['TaskType'] = { Title: 'Activities' }
+                            res.data['TaskID'] = SharewebID;
                             res.data['PortfolioType'] =  portFolioTypeId == undefined ? null : portFolioTypeId[0],
                                 res.data['Portfolio'] = { 'Id': portFolio };
                             res.data['TaskType'] = { 'Id': res.data.TaskTypeId };
@@ -1072,13 +1072,13 @@ const CreateActivity = (props: any) => {
                             res.data.ClientCategory = []
                             res.data.AssignedTo = []
                             var MyData = res.data;
-                            res.data.Responsible_x0020_Team = []
-                            res.data.Team_x0020_Members = []
+                            res.data.ResponsibleTeam = []
+                            res.data.TeamMembers = []
                             if (res?.data?.Team_x0020_MembersId?.length > 0) {
                                 res.data?.Team_x0020_MembersId?.map((teamUser: any) => {
                                     let elementFound = props?.TaskUsers?.filter((User: any) => {
                                         if (User?.AssingedToUser?.Id == teamUser) {
-                                            res.data.Team_x0020_Members.push(User?.AssingedToUser)
+                                            res.data.TeamMembers.push(User?.AssingedToUser)
                                         }
                                     })
 
@@ -1088,7 +1088,7 @@ const CreateActivity = (props: any) => {
                                 res.data?.Responsible_x0020_TeamId?.map((teamUser: any) => {
                                     let elementFound = props?.TaskUsers?.filter((User: any) => {
                                         if (User?.AssingedToUser?.Id == teamUser) {
-                                            res.data.Responsible_x0020_Team.push(User?.AssingedToUser);
+                                            res.data.ResponsibleTeam.push(User?.AssingedToUser);
                                         }
                                     })
 
@@ -1203,7 +1203,7 @@ const CreateActivity = (props: any) => {
                         }
                         var PortfolioStructureId = ''
                         AllItems?.subRows?.forEach((vall: any) => {
-                            if (vall?.TaskType?.Title == 'Task' || vall?.SharewebTaskType?.Title == 'Task') {
+                            if (vall?.TaskType?.Title == 'Task' || vall?.TaskType?.Title == 'Task') {
                                 LetestLevelData.push(vall)
                             }
 
@@ -1219,23 +1219,23 @@ const CreateActivity = (props: any) => {
                         if (SharewebTasknewTypeId == 2 || SharewebTasknewTypeId == 6) {
                             var SharewebID = '';
                             if (Task?.Portfolio_x0020_Type != undefined && Task?.Portfolio_x0020_Type == 'Component' || Task?.Component != undefined && Task?.Component?.length > 0) {
-                                SharewebID = 'A' + AllItems.SharewebTaskLevel1No + '-W' + WorstreamLatestId + '-T' + LatestId;
+                                SharewebID = 'A' + AllItems.TaskLevel + '-W' + WorstreamLatestId + '-T' + LatestId;
                             }
                             if (Task?.Services != undefined && Task?.Portfolio_x0020_Type?.toLowerCase() == 'service' || Task?.Services != undefined && Task?.Services?.length > 0) {
-                                SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
+                                SharewebID = 'SA' + AllItems.TaskLevel + '-T' + LatestId;
                             }
-                            if ((Task?.Services != undefined && Task?.Services?.length > 0) && (Task?.SharewebTaskType?.Title == "Workstream" || Task?.SharewebTaskType == 'Workstream')) {
-                                SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-W' + WorstreamLatestId + '-T' + LatestId;
+                            if ((Task?.Services != undefined && Task?.Services?.length > 0) && (Task?.TaskType?.Title == "Workstream" || Task?.TaskType == 'Workstream')) {
+                                SharewebID = 'SA' + AllItems.TaskLevel + '-W' + WorstreamLatestId + '-T' + LatestId;
                             }
-                            if ((Task?.Services == undefined) && (Task?.SharewebTaskType?.Title == "Workstream" || Task?.SharewebTaskType == 'Workstream')) {
-                                SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-W' + WorstreamLatestId + '-T' + LatestId;
+                            if ((Task?.Services == undefined) && (Task?.TaskType?.Title == "Workstream" || Task?.TaskType == 'Workstream')) {
+                                SharewebID = 'SA' + AllItems.TaskLevel + '-W' + WorstreamLatestId + '-T' + LatestId;
                             }
 
                             if (Task?.Events != undefined && Task?.Portfolio_x0020_Type == 'Events') {
-                                SharewebID = 'EA' + AllItems?.SharewebTaskLevel1No + '-T' + LatestId;
+                                SharewebID = 'EA' + AllItems?.TaskLevel + '-T' + LatestId;
                             }
-                            if (AllItems.SharewebTaskLevel1No == undefined) {
-                                WorstreamLatestId = AllItems?.SharewebTaskLevel1No;
+                            if (AllItems.TaskLevel == undefined) {
+                                WorstreamLatestId = AllItems?.TaskLevel;
                             }
                         } else { SharewebID = 'A' + AllItems.Id; SharewebTasknewTypeId = 2; WorstreamLatestId = undefined; }
                         // var Portfolio: any = []
@@ -1254,7 +1254,7 @@ const CreateActivity = (props: any) => {
                             Title: save.Title != undefined && save.Title != '' ? save.Title : post.Title,
                             ComponentId: { "results": Component },
                             Categories: categoriesItem ? categoriesItem : null,
-                            Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
+                            PriorityRank: AllItems.PriorityRank,
                             // DueDate: date != undefined ? new Date(date).toDateString() : date,
                             DueDate: date != undefined ? Moment(date).format("MM-DD-YYYY") : null,
                             ServicesId: { "results": RelevantPortfolioIds },
@@ -1267,10 +1267,10 @@ const CreateActivity = (props: any) => {
                             SharewebTaskTypeId: SharewebTasknewTypeId,
                             Body: AllItems?.Description,
                             FeedBack: FeedBackItemArray[0] != "" ? JSON.stringify(FeedBackItemArray) : null,
-                            //Shareweb_x0020_ID: SharewebID,
+                            //TaskID: SharewebID,
                             Priority: AllItems.Priority,
-                            SharewebTaskLevel2No: WorstreamLatestId,
-                            SharewebTaskLevel1No: AllItems.SharewebTaskLevel1No,
+                            TaskLevel: WorstreamLatestId,
+                            TaskLevel: AllItems.TaskLevel,
                             AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
                             Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
                             Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] },
@@ -1283,8 +1283,8 @@ const CreateActivity = (props: any) => {
                             let data = res.data;
                             data.ParentTaskId = AllItems.Id
                             data['SiteIcon'] = value.Item_x005F_x0020_Cover?.Url
-                            data['SharewebTaskType'] = { Title: 'Task' }
-                            res.data['Shareweb_x0020_ID'] = SharewebID;
+                            data['TaskType'] = { Title: 'Task' }
+                            res.data['TaskID'] = SharewebID;
 
                            
                                 res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0]:null
@@ -1301,13 +1301,13 @@ const CreateActivity = (props: any) => {
                             }
                             data.listId = value.listId
                             data.AssignedTo = []
-                            data.Responsible_x0020_Team = []
-                            data.Team_x0020_Members = []
+                            data.ResponsibleTeam = []
+                            data.TeamMembers = []
                             if (data?.Team_x0020_MembersId?.length > 0) {
                                 data?.Team_x0020_MembersId?.map((teamUser: any) => {
                                     let elementFound = props?.TaskUsers?.filter((User: any) => {
                                         if (User?.AssingedToUser?.Id == teamUser) {
-                                            data.Team_x0020_Members.push(User?.AssingedToUser)
+                                            data.TeamMembers.push(User?.AssingedToUser)
                                         }
                                     })
                                 })
@@ -1316,7 +1316,7 @@ const CreateActivity = (props: any) => {
                                 data?.Responsible_x0020_TeamId?.map((teamUser: any) => {
                                     let elementFound = props?.TaskUsers?.filter((User: any) => {
                                         if (User?.AssingedToUser?.Id == teamUser) {
-                                            data.Responsible_x0020_Team.push(User?.AssingedToUser);
+                                            data.ResponsibleTeam.push(User?.AssingedToUser);
                                         }
                                     })
                                 })

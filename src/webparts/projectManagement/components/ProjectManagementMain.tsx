@@ -217,8 +217,8 @@ const ProjectManagementMain = (props: any) => {
         let web = new Web(props?.siteUrl);
         await web.lists
           .getById(AllListId?.MasterTaskListID)
-          .items.select("ComponentCategory/Id", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "Deliverable_x002d_Synonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "Admin_x0020_Notes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "SharewebCategories/Id", "SharewebCategories/Title", "Priority_x0020_Rank", "Reference_x0020_Item_x0020_Json", "Team_x0020_Members/Title", "Team_x0020_Members/Name", "Component/Id", "Services/Id", "Services/Title", "Services/ItemType", "Component/Title", "Component/ItemType", "Team_x0020_Members/Id", "Item_x002d_Image", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
-          .expand("ClientCategory", "ComponentCategory", "AssignedTo", "Component", "Services", "AttachmentFiles", "Author", "Editor", "Team_x0020_Members", "SharewebComponent", "SharewebCategories", "Parent")
+          .items.select("ComponentCategory/Id", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "DeliverableSynonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "AdminNotes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "TaskCategories/Id", "TaskCategories/Title", "PriorityRank", "Reference_x0020_Item_x0020_Json", "TeamMembers/Title", "TeamMembers/Name", "Component/Id", "Services/Id", "Services/Title", "Services/ItemType", "Component/Title", "Component/ItemType", "TeamMembers/Id", "Item_x002d_Image", "ComponentLink", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
+          .expand("ClientCategory", "ComponentCategory", "AssignedTo", "Component", "Services", "AttachmentFiles", "Author", "Editor", "TeamMembers", "SharewebComponent", "TaskCategories", "Parent")
           .getById(QueryId)
           .get().then((fetchedProject: any) => {
             if ((fetchedProject.PercentComplete != undefined)) {
@@ -256,14 +256,14 @@ const ProjectManagementMain = (props: any) => {
             });
             fetchedProject.AssignedUser = [];
             fetchedProject.AssignedTo = [];
-            fetchedProject.Team_x0020_Members = [];
-            fetchedProject.Responsible_x0020_Team = [];
+            fetchedProject.TeamMembers = [];
+            fetchedProject.ResponsibleTeam = [];
             AllUser?.map((user: any) => {
               if (fetchedProject?.Team_x0020_MembersId != undefined) {
                 fetchedProject?.Team_x0020_MembersId?.map((taskUser: any) => {
                   if (user.AssingedToUserId == taskUser) {
                     user.Id = user?.AssingedToUserId;
-                    fetchedProject?.Team_x0020_Members?.push(user)
+                    fetchedProject?.TeamMembers?.push(user)
                   }
                 })
               }
@@ -271,7 +271,7 @@ const ProjectManagementMain = (props: any) => {
                 fetchedProject?.Responsible_x0020_TeamId?.map((taskUser: any) => {
                   if (user.AssingedToUserId == taskUser) {
                     user.Id = user.AssingedToUserId;
-                    fetchedProject?.Responsible_x0020_Team?.push(user)
+                    fetchedProject?.ResponsibleTeam?.push(user)
                   }
                 })
               }
@@ -361,7 +361,7 @@ const ProjectManagementMain = (props: any) => {
 
   const untagTask = async (item: any) => {
     let confirmation = confirm(
-      "Are you sure you want to untag " + `${item?.Shareweb_x0020_ID} - ${item?.Title}` + " from this project ?"
+      "Are you sure you want to untag " + `${item?.TaskID} - ${item?.Title}` + " from this project ?"
     );
     if (confirmation == true) {
       const web = new Web(item?.siteUrl);
@@ -426,11 +426,11 @@ const ProjectManagementMain = (props: any) => {
           smartmeta = await web.lists
             .getById(config.listId)
             .items
-            .select("Id,Title,Priority_x0020_Rank,Remark,Project/Priority_x0020_Rank,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,SharewebTaskLevel1No,SharewebTaskLevel2No,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Component/Id,Component/Title,Services/Id,Services/Title,PercentComplete,ComponentId,Categories,ServicesId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
-            .expand('AssignedTo,Project,SmartInformation,Author,Component,Services,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory')
+            .select("Id,Title,PriorityRank,Remark,Project/PriorityRank,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Component/Id,Component/Title,Services/Id,Services/Title,PercentComplete,ComponentId,Categories,ServicesId,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+            .expand('AssignedTo,Project,SmartInformation,Author,Component,Services,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory')
             .top(4999)
             .filter("ProjectId eq " + QueryId)
-            .orderBy("Priority_x0020_Rank", false)
+            .orderBy("PriorityRank", false)
             .get();
           arraycount++;
           smartmeta.map((items: any) => {
@@ -508,13 +508,13 @@ const ProjectManagementMain = (props: any) => {
                 items.Component.length > 0
                 ? getComponentasString(items.Component)
                 : "";
-            items.Shareweb_x0020_ID = globalCommon.getTaskId(items);
+            items.TaskID = globalCommon.getTaskId(items);
             AllUser?.map((user: any) => {
               if (user.AssingedToUserId == items.Author.Id) {
                 items.createdImg = user?.Item_x0020_Cover?.Url;
               }
-              if (items.Team_x0020_Members != undefined) {
-                items.Team_x0020_Members.map((taskUser: any) => {
+              if (items.TeamMembers != undefined) {
+                items.TeamMembers.map((taskUser: any) => {
                   var newuserdata: any = {};
                   if (user.AssingedToUserId == taskUser.Id) {
                     newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
@@ -561,8 +561,8 @@ const ProjectManagementMain = (props: any) => {
     let web = new Web(AllListId?.siteUrl);
     MasterListData = await web.lists
       .getById(AllListId?.MasterTaskListID)
-      .items.select("ComponentCategory/Id", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "Deliverable_x002d_Synonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "Admin_x0020_Notes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "SharewebCategories/Id", "SharewebCategories/Title", "Priority_x0020_Rank", "Reference_x0020_Item_x0020_Json", "Team_x0020_Members/Title", "Team_x0020_Members/Name", "Component/Id", "Services/Id", "Services/Title", "Services/ItemType", "Component/Title", "Component/ItemType", "Team_x0020_Members/Id", "Item_x002d_Image", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
-      .expand("ClientCategory", "ComponentCategory", "AssignedTo", "Component", "Services", "AttachmentFiles", "Author", "Editor", "Team_x0020_Members", "SharewebComponent", "SharewebCategories", "Parent")
+      .items.select("ComponentCategory/Id", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "DeliverableSynonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "AdminNotes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "TaskCategories/Id", "TaskCategories/Title", "PriorityRank", "Reference_x0020_Item_x0020_Json", "TeamMembers/Title", "TeamMembers/Name", "Component/Id", "Services/Id", "Services/Title", "Services/ItemType", "Component/Title", "Component/ItemType", "TeamMembers/Id", "Item_x002d_Image", "ComponentLink", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
+      .expand("ClientCategory", "ComponentCategory", "AssignedTo", "Component", "Services", "AttachmentFiles", "Author", "Editor", "TeamMembers", "SharewebComponent", "TaskCategories", "Parent")
       .top(4999)
       .get()
 
@@ -615,8 +615,8 @@ const ProjectManagementMain = (props: any) => {
             let smartmeta = [];
             await web.lists
               .getById(config.listId)
-              .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Body", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Modified")
-              .expand("Team_x0020_Members", "Approver", "ParentTask", "ClientCategory", "AssignedTo", "SharewebCategories", "Author", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services")
+              .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Modified")
+              .expand("TeamMembers", "Approver", "ParentTask", "ClientCategory", "AssignedTo", "TaskCategories", "Author", "ResponsibleTeam", "TaskType", "Component", "Services")
               .getAll().then((data: any) => {
                 smartmeta = data;
                 smartmeta.map((task: any) => {
@@ -650,7 +650,7 @@ const ProjectManagementMain = (props: any) => {
                       task.Component.length > 0
                       ? getComponentasString(task.Component)
                       : "";
-                  task.Shareweb_x0020_ID = globalCommon.getTaskId(task);
+                  task.TaskID = globalCommon.getTaskId(task);
 
 
                   AllSiteTasks.push(task)
@@ -870,7 +870,7 @@ const ProjectManagementMain = (props: any) => {
         id: 'Id',
       },
       {
-        accessorKey: "Shareweb_x0020_ID",
+        accessorKey: "TaskID",
         placeholder: "Task Id",
         header: "",
         resetColumnFilters: false,
@@ -879,7 +879,7 @@ const ProjectManagementMain = (props: any) => {
         cell: ({ row, getValue }) => (
           <>
             <span className="d-flex">
-              <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
+              <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
             </span>
           </>
         ),
@@ -964,7 +964,7 @@ const ProjectManagementMain = (props: any) => {
         header: ""
       },
       {
-        accessorFn: (row) => row?.Priority_x0020_Rank,
+        accessorFn: (row) => row?.PriorityRank,
         cell: ({ row }) => (
           <span>
             <InlineEditingcolumns
@@ -1592,7 +1592,7 @@ const ProjectManagementMain = (props: any) => {
                                 <dl>
                                   <dt className="bg-fxdark">Assigned To</dt>
                                   <dd className="bg-light">
-                                    {Masterdata?.AssignedTo?.length > 0 || Masterdata?.Team_x0020_Members?.length > 0 || Masterdata?.Responsible_x0020_Team?.length > 0 ? <ShowTaskTeamMembers props={Masterdata} TaskUsers={AllTaskUsers} /> : ''}
+                                    {Masterdata?.AssignedTo?.length > 0 || Masterdata?.TeamMembers?.length > 0 || Masterdata?.ResponsibleTeam?.length > 0 ? <ShowTaskTeamMembers props={Masterdata} TaskUsers={AllTaskUsers} /> : ''}
                                   </dd>
                                 </dl>
                                 <dl>
