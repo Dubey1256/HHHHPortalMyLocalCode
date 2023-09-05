@@ -932,9 +932,9 @@ console.log(userIdByQuery)
           let results = await web.lists
             .getByTitle(itemtype.ListName)
             .items
-            .select('ParentTask/Title', 'ParentTask/Id', 'Services/Title', 'ClientTime', 'Services/Id', 'Events/Id', 'Events/Title', 'ItemRank', 'Portfolio_x0020_Type', 'SiteCompositionSettings', 'SharewebTaskLevel1No', 'SharewebTaskLevel2No', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'Shareweb_x0020_ID', 'Responsible_x0020_Team/Id', 'Responsible_x0020_Team/Title', 'ClientCategory/Id', 'ClientCategory/Title', 'SharewebCategories/Id', 'SharewebCategories/Title', 'ParentTask/Shareweb_x0020_ID', 'SharewebTaskType/Id', 'SharewebTaskType/Title', 'SharewebTaskType/Level', 'SharewebTaskType/Prefix', 'Priority_x0020_Rank', 'Reference_x0020_Item_x0020_Json', 'Team_x0020_Members/Title', 'Team_x0020_Members/Name', 'Component/Id', 'Component/Title', 'Component/ItemType', 'Team_x0020_Members/Id', 'Item_x002d_Image', 'component_x0020_link', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id', 'AttachmentFiles/FileName', 'FileLeafRef', 'FeedBack', 'Title', 'Id', 'PercentComplete', 'Company', 'StartDate', 'DueDate', 'Comments', 'Categories', 'Status', 'WebpartId', 'Body', 'Mileage', 'PercentComplete', 'Attachments', 'Priority', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
+            .select('ParentTask/Title', 'ParentTask/Id', 'Services/Title', 'ClientTime', 'Services/Id', 'Events/Id', 'Events/Title', 'ItemRank', 'Portfolio_x0020_Type', 'SiteCompositionSettings', 'TaskLevel', 'TaskLevel', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'TaskID', 'ResponsibleTeam/Id', 'ResponsibleTeam/Title', 'ClientCategory/Id', 'ClientCategory/Title', 'TaskCategories/Id', 'TaskCategories/Title', 'ParentTask/TaskID', 'TaskType/Id', 'TaskType/Title', 'TaskType/Level', 'TaskType/Prefix', 'PriorityRank', 'Reference_x0020_Item_x0020_Json', 'TeamMembers/Title', 'TeamMembers/Name', 'Component/Id', 'Component/Title', 'Component/ItemType', 'TeamMembers/Id', 'Item_x002d_Image', 'ComponentLink', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id', 'AttachmentFiles/FileName', 'FileLeafRef', 'FeedBack', 'Title', 'Id', 'PercentComplete', 'Company', 'StartDate', 'DueDate', 'Comments', 'Categories', 'Status', 'WebpartId', 'Body', 'Mileage', 'PercentComplete', 'Attachments', 'Priority', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
             .filter(queryType.replace('filter=', '').trim())
-            .expand('ParentTask', 'Events', 'Services', 'SharewebTaskType', 'AssignedTo', 'Component', 'AttachmentFiles', 'Author', 'Editor', 'Team_x0020_Members', 'Responsible_x0020_Team', 'ClientCategory', 'SharewebCategories')
+            .expand('ParentTask', 'Events', 'Services', 'TaskType', 'AssignedTo', 'Component', 'AttachmentFiles', 'Author', 'Editor', 'TeamMembers', 'ResponsibleTeam', 'ClientCategory', 'TaskCategories')
             .orderBy('Id', false)
             .getAll(4999);
           console.log(results);
@@ -996,8 +996,8 @@ console.log(userIdByQuery)
 
             filterItem.PercentComplete = getItem.PercentComplete;
             filterItem.ItemRank = getItem.ItemRank;
-            filterItem.Priority_x0020_Rank = getItem.Priority_x0020_Rank;
-            filterItem.Shareweb_x0020_ID = ''//SharewebCommonFactoryService.getSharewebId(getItem);
+            filterItem.PriorityRank = getItem.PriorityRank;
+            filterItem.TaskID = ''//SharewebCommonFactoryService.getSharewebId(getItem);
             filterItem.Portfolio_x0020_Type = getItem.Portfolio_x0020_Type;
             filterItem.Created = getItem.Created;
             filterItem.ListId = getItem.ListId

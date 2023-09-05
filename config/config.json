@@ -277,6 +277,14 @@
         }
       ]
     },
+    "test-web-part-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/testWebPart/TestWebPartWebPart.js",
+          "manifest": "./src/webparts/testWebPart/TestWebPartWebPart.manifest.json"
+        }
+      ]
+    },
     "root-dashboard-web-part": {
       "components": [
         {
@@ -363,6 +371,7 @@
     "CreatedByTablesWebPartStrings": "lib/webparts/createdByTables/loc/{locale}.js",
     "CalendarWebPartStrings": "lib/webparts/calendar/loc/{locale}.js",
     "TeamleaderDashboardWebPartStrings": "lib/webparts/teamleaderDashboard/loc/{locale}.js",
+    "TestWebPartWebPartStrings": "lib/webparts/testWebPart/loc/{locale}.js",
     "RootDashboardWebPartStrings": "lib/webparts/rootDashboard/loc/{locale}.js",
     "SmartMetaSearchWebPartStrings": "lib/webparts/smartMetaSearch/loc/{locale}.js",
     "DocumentSearchWebPartStrings": "lib/webparts/documentSearch/loc/{locale}.js",

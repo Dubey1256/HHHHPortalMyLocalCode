@@ -102,7 +102,7 @@ class TasksViewApp extends React.Component<ITasksViewAppProps, ITasksViewAppStat
                 TaskId: this.getTaskId(resTaskItem),
                 TaskTitle: resTaskItem.Title || "",
                 PortfolioType: resTaskItem.Portfolio_x0020_Type || this.getPortfolioType(resTaskItem.ComponentId, resTaskItem.ServicesId, resTaskItem.EventsId),
-                Categories: this.getCategories(resTaskItem.SharewebCategories),
+                Categories: this.getCategories(resTaskItem.TaskCategories),
                 Percentage: resTaskItem.PercentComplete || 0,
                 Priority: resTaskItem.Priority,
                 DueDate: this.formatDate(resTaskItem.DueDate),                
@@ -115,7 +115,7 @@ class TasksViewApp extends React.Component<ITasksViewAppProps, ITasksViewAppStat
                     Date: this.formatDate(resTaskItem.Created),
                     ...this.getUserInfo(resTaskItem.Author.Id)
                 },
-                TeamUsers: this.getTeamUsers(resTaskItem.Responsible_x0020_Team, resTaskItem.AssignedTo, resTaskItem.Team_x0020_Members)
+                TeamUsers: this.getTeamUsers(resTaskItem.ResponsibleTeam, resTaskItem.AssignedTo, resTaskItem.TeamMembers)
             };
             allTasks.push(taskItem)
         });
@@ -215,9 +215,9 @@ class TasksViewApp extends React.Component<ITasksViewAppProps, ITasksViewAppStat
 
         let _taskId: string = "";
         const _taskItemId: number = _taskItem.Id;
-        const _taskLevel1Num: number = _taskItem.SharewebTaskLevel1No;
-        const _taskLevel2Num: number = _taskItem.SharewebTaskLevel2No;
-        let _taskType: string = _taskItem.SharewebTaskType ? _taskItem.SharewebTaskType.Title : "";
+        const _taskLevel1Num: number = _taskItem.TaskLevel;
+        const _taskLevel2Num: number = _taskItem.TaskLevel;
+        let _taskType: string = _taskItem.TaskType ? _taskItem.TaskType.Title : "";
 
         let _components = _taskItem.Component;
         let _events = _taskItem.Events;

@@ -503,12 +503,12 @@ const Tabless = (props: any) => {
               let localArray: any = [];
               newData?.map((alldataitem: any) => {
                 checkTeamMembers?.map((item: any) => {
-                  alldataitem.Team_x0020_Members?.forEach((element:any) => {
+                  alldataitem.TeamMembers?.forEach((element:any) => {
                     if(element.Title == item){
                       localArray.push(alldataitem);
                     }
                   });
-                  alldataitem.Responsible_x0020_Team?.forEach((element:any) => {
+                  alldataitem.ResponsibleTeam?.forEach((element:any) => {
                     if(element.Title == item){
                       localArray.push(alldataitem);
                     }
@@ -845,8 +845,8 @@ const Tabless = (props: any) => {
         const web = new Web(items.siteUrl);
         await web.lists
             .getById(items.listId)
-            .items.select("Title","PercentComplete","SharewebTaskType/Title","SharewebTaskType/Id","Categories","Priority_x0020_Rank","DueDate","Created","Modified","Component/Title","Component/Id","Services/Title","Services/Id","Team_x0020_Members/Id","Team_x0020_Members/Title","ID","Responsible_x0020_Team/Id","Responsible_x0020_Team/Title","Editor/Title","Editor/Id","Author/Title","Author/Id","AssignedTo/Id","AssignedTo/Title")
-            .expand("Team_x0020_Members","Author","SharewebTaskType","Editor","Responsible_x0020_Team","AssignedTo","Component","Services")
+            .items.select("Title","PercentComplete","TaskType/Title","TaskType/Id","Categories","PriorityRank","DueDate","Created","Modified","Component/Title","Component/Id","Services/Title","Services/Id","TeamMembers/Id","TeamMembers/Title","ID","ResponsibleTeam/Id","ResponsibleTeam/Title","Editor/Title","Editor/Id","Author/Title","Author/Id","AssignedTo/Id","AssignedTo/Title")
+            .expand("TeamMembers","Author","TaskType","Editor","ResponsibleTeam","AssignedTo","Component","Services")
             .filter(`(substringof('${QueryId}', Author/Title)) and PercentComplete le 0.96`).top(5000)
             .getAll()
             .then((data: any) => {
@@ -854,17 +854,17 @@ const Tabless = (props: any) => {
                     userlists?.map((userItem: any) => {
                         dataItem.percentage = dataItem.PercentComplete * 100 + "%";
             
-                        if ((dataItem.SharewebTaskType == undefined  ? null  : dataItem.SharewebTaskType.Title) === "Activities") {
+                        if ((dataItem.TaskType == undefined  ? null  : dataItem.TaskType.Title) === "Activities") {
                           dataItem.idType = "A" + dataItem.Id;
-                        } else if ((dataItem.SharewebTaskType == undefined  ? null  : dataItem.SharewebTaskType.Title) === "MileStone") {
+                        } else if ((dataItem.TaskType == undefined  ? null  : dataItem.TaskType.Title) === "MileStone") {
                           dataItem.idType = "M" + dataItem.Id;
-                        } else if ((dataItem.SharewebTaskType == undefined  ? null  : dataItem.SharewebTaskType.Title) === "Project") {
+                        } else if ((dataItem.TaskType == undefined  ? null  : dataItem.TaskType.Title) === "Project") {
                           dataItem.idType = "P" + dataItem.Id;
-                        } else if ((dataItem.SharewebTaskType == undefined  ? null  : dataItem.SharewebTaskType.Title) === "Step") {
+                        } else if ((dataItem.TaskType == undefined  ? null  : dataItem.TaskType.Title) === "Step") {
                           dataItem.idType = "S" + dataItem.Id;
-                        } else if ((dataItem.SharewebTaskType == undefined  ? null  : dataItem.SharewebTaskType.Title) === "Task") {
+                        } else if ((dataItem.TaskType == undefined  ? null  : dataItem.TaskType.Title) === "Task") {
                           dataItem.idType = "T" + dataItem.Id;
-                        } else if ((dataItem.SharewebTaskType == undefined  ? null  : dataItem.SharewebTaskType.Title) === "Workstream") {
+                        } else if ((dataItem.TaskType == undefined  ? null  : dataItem.TaskType.Title) === "Workstream") {
                           dataItem.idType = "W" + dataItem.Id;
                         } else {
                           dataItem.idType = "T" + dataItem.Id;
@@ -897,12 +897,12 @@ const Tabless = (props: any) => {
                         siteUrl: items.siteUrl,
                         Id: dataItem.Id,
                         ID: dataItem.Id,
-                        priority:dataItem.Priority_x0020_Rank,
+                        priority:dataItem.PriorityRank,
                         Author: dataItem.Author,
                         Editor: dataItem.Editor,
                         Editorss:dataItem.Editor.Title,
-                        Team_x0020_Members: dataItem.Team_x0020_Members,
-                        Responsible_x0020_Team: dataItem.Responsible_x0020_Team,
+                        TeamMembers: dataItem.TeamMembers,
+                        ResponsibleTeam: dataItem.ResponsibleTeam,
                         AssignedTo: dataItem.AssignedTo,
                         created: dataItem.Created,
                         modified: dataItem.Modified,

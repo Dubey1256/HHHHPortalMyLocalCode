@@ -361,7 +361,7 @@ const GlobalCommanTable = (items: any) => {
                 <tbody>
                     {table?.getRowModel()?.rows?.map((row: any) => {
                         return (
-                            <tr className={pageName == 'ProjectOverviewGrouped' ? (row.original.Item_x0020_Type == "tasks" ? "a-bg" : "") : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Component" ? "c-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "SubComponent" ? "s-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Feature" ? "f-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Activities" ? "a-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Workstream" ? "w-bg" : "")))))}
+                            <tr className={pageName == 'ProjectOverviewGrouped' ? (row.original.Item_x0020_Type == "tasks" ? "a-bg" : "") : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Component" ? "c-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "SubComponent" ? "s-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Feature" ? "f-bg" : (row?.getIsExpanded() == true && row.original.TaskType?.Title == "Activities" ? "a-bg" : (row?.getIsExpanded() == true && row.original.TaskType?.Title == "Workstream" ? "w-bg" : "")))))}
                                 key={row.id}>
                                 {row.getVisibleCells().map((cell: any) => {
                                     return (

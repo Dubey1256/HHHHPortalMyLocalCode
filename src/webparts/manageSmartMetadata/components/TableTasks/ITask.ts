@@ -8,9 +8,9 @@ export default interface ITask {
     DueDate?: Date;
     "odata.editlink"?: string;
     SharewebCategoriesId?: number[];
-    SharewebTaskType?: {Title?:string,Level?:number,Id?:number};
-    SharewebTaskLevel1No?: string;
-    SharewebTaskLevel2No?: string;
+    TaskType?: {Title?:string,Level?:number,Id?:number};
+    TaskLevel?: string;
+    TaskLevel?: string;
     ComponentId?: {results: number[]} | undefined;
     EventsId?: {results: number[]} | undefined;
     ServicesId?: {results: number[]} | undefined;

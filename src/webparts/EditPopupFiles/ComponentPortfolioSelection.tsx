@@ -93,21 +93,21 @@ const ComponentPortPolioPopup = ({ props, Dynamic, Call }: any) => {
         "Author/Title",
         "Parent/Title",
         "Portfolio_x0020_Type",
-        "SharewebCategories/Id",
-        "SharewebCategories/Title",
+        "TaskCategories/Id",
+        "TaskCategories/Title",
         "AssignedTo/Id",
         "AssignedTo/Title",
-        "Team_x0020_Members/Id",
-        "Team_x0020_Members/Title",
+        "TeamMembers/Id",
+        "TeamMembers/Title",
         "ClientCategory/Id",
         "ClientCategory/Title"
       )
       .expand(
-        "Team_x0020_Members",
+        "TeamMembers",
         "Author",
         "ClientCategory",
         "Parent",
-        "SharewebCategories",
+        "TaskCategories",
         "AssignedTo",
         "ClientCategory"
       )
@@ -150,10 +150,10 @@ const ComponentPortPolioPopup = ({ props, Dynamic, Call }: any) => {
         });
       }
       if (
-        result.Team_x0020_Members != undefined &&
-        result.Team_x0020_Members.length > 0
+        result.TeamMembers != undefined &&
+        result.TeamMembers.length > 0
       ) {
-        $.each(result.Team_x0020_Members, function (index: any, Assig: any) {
+        $.each(result.TeamMembers, function (index: any, Assig: any) {
           if (Assig.Id != undefined) {
             $.each(Response, function (index: any, users: any) {
               if (
@@ -173,7 +173,7 @@ const ComponentPortPolioPopup = ({ props, Dynamic, Call }: any) => {
         result.ClientCategory != undefined &&
         result.ClientCategory.length > 0
       ) {
-        $.each(result.Team_x0020_Members, function (index: any, catego: any) {
+        $.each(result.TeamMembers, function (index: any, catego: any) {
           result.ClientCategory.push(catego);
         });
       }

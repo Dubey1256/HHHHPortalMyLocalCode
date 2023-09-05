@@ -335,20 +335,20 @@ function PortfolioTable(SelectedProp: any) {
             );
         } else {
             if (MeetingItems[0] != undefined) {
-                if (MeetingItems[0].SharewebTaskType != undefined) {
-                    if (MeetingItems[0].SharewebTaskType.Title == "Activities") {
+                if (MeetingItems[0].TaskType != undefined) {
+                    if (MeetingItems[0].TaskType.Title == "Activities") {
                         setWSPopup(true);
                     }
                 }
                 if (
                     MeetingItems != undefined &&
-                    MeetingItems[0].SharewebTaskType?.Title == "Workstream"
+                    MeetingItems[0].TaskType?.Title == "Workstream"
                 ) {
                     setActivityPopup(true);
                 }
                 if (
                     MeetingItems[0].Portfolio_x0020_Type == "Service" &&
-                    MeetingItems[0].SharewebTaskType == undefined &&
+                    MeetingItems[0].TaskType == undefined &&
                     childsData[0] == undefined
                 ) {
                     MeetingItems[0]["NoteCall"] = "Activities";
@@ -356,7 +356,7 @@ function PortfolioTable(SelectedProp: any) {
                 }
                 if (
                     MeetingItems[0].Portfolio_x0020_Type == "Component" &&
-                    MeetingItems[0].SharewebTaskType == undefined &&
+                    MeetingItems[0].TaskType == undefined &&
                     childsData[0] == undefined
                 ) {
                     setActivityPopup(true);
@@ -366,9 +366,9 @@ function PortfolioTable(SelectedProp: any) {
 
         if (
             childsData[0] != undefined &&
-            childsData[0].SharewebTaskType != undefined
+            childsData[0].TaskType != undefined
         ) {
-            if (childsData[0].SharewebTaskType.Title == "Activities") {
+            if (childsData[0].TaskType.Title == "Activities") {
                 setWSPopup(true);
                 MeetingItems.push(childsData[0]);
                 //setMeetingItems(childsData)
@@ -377,7 +377,7 @@ function PortfolioTable(SelectedProp: any) {
 
         if (
             childsData[0] != undefined &&
-            childsData[0].SharewebTaskType.Title == "Workstream"
+            childsData[0].TaskType.Title == "Workstream"
         ) {
             setActivityPopup(true);
             MeetingItems.push(childsData[0]);
@@ -884,30 +884,30 @@ function PortfolioTable(SelectedProp: any) {
                         "ItemRank",
                         "Portfolio_x0020_Type",
                         "SiteCompositionSettings",
-                        "SharewebTaskLevel1No",
-                        "SharewebTaskLevel2No",
+                        "TaskLevel",
+                        "TaskLevel",
                         "TimeSpent",
                         "BasicImageInfo",
                         "OffshoreComments",
                         "OffshoreImageUrl",
                         "CompletedDate",
-                        "Shareweb_x0020_ID",
-                        "Responsible_x0020_Team/Id",
-                        "Responsible_x0020_Team/Title",
-                        "SharewebCategories/Id",
-                        "SharewebCategories/Title",
-                        "ParentTask/Shareweb_x0020_ID",
-                        "SharewebTaskType/Id",
-                        "SharewebTaskType/Title",
-                        "SharewebTaskType/Level",
-                        "Priority_x0020_Rank",
-                        "Team_x0020_Members/Title",
-                        "Team_x0020_Members/Name",
+                        "TaskID",
+                        "ResponsibleTeam/Id",
+                        "ResponsibleTeam/Title",
+                        "TaskCategories/Id",
+                        "TaskCategories/Title",
+                        "ParentTask/TaskID",
+                        "TaskType/Id",
+                        "TaskType/Title",
+                        "TaskType/Level",
+                        "PriorityRank",
+                        "TeamMembers/Title",
+                        "TeamMembers/Name",
                         "Component/Id",
                         "Component/Title",
                         "Component/ItemType",
-                        "Team_x0020_Members/Id",
-                        "component_x0020_link",
+                        "TeamMembers/Id",
+                        "ComponentLink",
                         "IsTodaysTask",
                         "AssignedTo/Title",
                         "AssignedTo/Name",
@@ -941,15 +941,15 @@ function PortfolioTable(SelectedProp: any) {
                         "ParentTask",
                         "Events",
                         "Services",
-                        "SharewebTaskType",
+                        "TaskType",
                         "AssignedTo",
                         "Component",
                         "ClientCategory",
                         "Author",
                         "Editor",
-                        "Team_x0020_Members",
-                        "Responsible_x0020_Team",
-                        "SharewebCategories"
+                        "TeamMembers",
+                        "ResponsibleTeam",
+                        "TaskCategories"
                     )
                     .filter("Status ne 'Completed'")
                     .orderBy("orderby", false)
@@ -968,10 +968,10 @@ function PortfolioTable(SelectedProp: any) {
                         item.childs = [];
                         item.listId = config.listId;
                         item.siteUrl = ContextValue.siteUrl;
-                        if (item.SharewebCategories.results != undefined) {
-                            if (item.SharewebCategories.results.length > 0) {
+                        if (item.TaskCategories.results != undefined) {
+                            if (item.TaskCategories.results.length > 0) {
                                 $.each(
-                                    item.SharewebCategories.results,
+                                    item.TaskCategories.results,
                                     function (ind: any, value: any) {
                                         if (value.Title.toLowerCase() == "draft") {
                                             item.isDrafted = true;
@@ -1030,10 +1030,10 @@ function PortfolioTable(SelectedProp: any) {
                                 });
                             }
                             if (
-                                result.Responsible_x0020_Team != undefined &&
-                                result.Responsible_x0020_Team.length > 0
+                                result.ResponsibleTeam != undefined &&
+                                result.ResponsibleTeam.length > 0
                             ) {
-                                map(result.Responsible_x0020_Team, (Assig: any) => {
+                                map(result.ResponsibleTeam, (Assig: any) => {
                                     if (Assig.Id != undefined) {
                                         map(TaskUsers, (users: any) => {
                                             if (
@@ -1050,10 +1050,10 @@ function PortfolioTable(SelectedProp: any) {
                                 });
                             }
                             if (
-                                result.Team_x0020_Members != undefined &&
-                                result.Team_x0020_Members.length > 0
+                                result.TeamMembers != undefined &&
+                                result.TeamMembers.length > 0
                             ) {
-                                map(result.Team_x0020_Members, (Assig: any) => {
+                                map(result.TeamMembers, (Assig: any) => {
                                     if (Assig.Id != undefined) {
                                         map(TaskUsers, (users: any) => {
                                             if (
@@ -1075,24 +1075,24 @@ function PortfolioTable(SelectedProp: any) {
                             //   result.ClientCategory != undefined &&
                             //   result.ClientCategory.length > 0
                             // ) {
-                            //   map(result.Team_x0020_Members, (catego: any) => {
+                            //   map(result.TeamMembers, (catego: any) => {
                             //     result.ClientCategory.push(catego);
                             //   });
                             // }
                             if (result.Id === 1441) console.log(result);
-                            result["Shareweb_x0020_ID"] = globalCommon.getTaskId(result);
-                            if (result["Shareweb_x0020_ID"] == undefined) {
-                                result["Shareweb_x0020_ID"] = "";
+                            result["TaskID"] = globalCommon.getTaskId(result);
+                            if (result["TaskID"] == undefined) {
+                                result["TaskID"] = "";
                             }
                             result["Item_x0020_Type"] = "Task";
                             TasksItem.push(result);
                         });
 
                         AllActivitysData = AllTasks?.filter(
-                            (elem: any) => elem?.SharewebTaskType?.Title == "Activities"
+                            (elem: any) => elem?.TaskType?.Title == "Activities"
                         );
                         AllWorkStreamData = AllTasks?.filter(
-                            (elem: any) => elem?.SharewebTaskType?.Title == "Workstream"
+                            (elem: any) => elem?.TaskType?.Title == "Workstream"
                         );
                         AllActivitysData?.forEach((elem: any) => {
                             elem.childs = [];
@@ -1496,7 +1496,7 @@ function PortfolioTable(SelectedProp: any) {
                 "PortfolioLevel",
                 "PortfolioStructureID",
                 "PortfolioStructureID",
-                "component_x0020_link",
+                "ComponentLink",
                 "Package",
                 "Comments",
                 "DueDate",
@@ -1515,7 +1515,7 @@ function PortfolioTable(SelectedProp: any) {
                 "Idea",
                 "ValueAdded",
                 "CategoryItem",
-                "Priority_x0020_Rank",
+                "PriorityRank",
                 "Priority",
                 "TaskDueDate",
                 "PercentComplete",
@@ -1541,32 +1541,32 @@ function PortfolioTable(SelectedProp: any) {
                 "Editor/Title",
                 "Events/Title",
                 "Events/ItemType",
-                "SharewebCategories/Id",
-                "SharewebTaskType/Title",
-                "SharewebCategories/Title",
+                "TaskCategories/Id",
+                "TaskType/Title",
+                "TaskCategories/Title",
                 "AssignedTo/Id",
                 "AssignedTo/Title",
-                "Team_x0020_Members/Id",
-                "Team_x0020_Members/Title",
+                "TeamMembers/Id",
+                "TeamMembers/Title",
                 "ClientCategory/Id",
                 "ClientCategory/Title",
                 // 'ClientCategory/Color_x0020_Tag',
-                "Responsible_x0020_Team/Id",
-                "Responsible_x0020_Team/Title"
+                "ResponsibleTeam/Id",
+                "ResponsibleTeam/Title"
             )
             .expand(
                 "Parent",
                 "Events",
                 "Services",
-                "SharewebTaskType",
+                "TaskType",
                 "AssignedTo",
                 "Component",
                 "ClientCategory",
                 "Author",
                 "Editor",
-                "Team_x0020_Members",
-                "Responsible_x0020_Team",
-                "SharewebCategories"
+                "TeamMembers",
+                "ResponsibleTeam",
+                "TaskCategories"
             )
             .top(4999)
             .filter(filt)
@@ -1606,10 +1606,10 @@ function PortfolioTable(SelectedProp: any) {
                 });
             }
             if (
-                result.Responsible_x0020_Team != undefined &&
-                result.Responsible_x0020_Team.length > 0
+                result.ResponsibleTeam != undefined &&
+                result.ResponsibleTeam.length > 0
             ) {
-                map(result.Responsible_x0020_Team, (Assig: any) => {
+                map(result.ResponsibleTeam, (Assig: any) => {
                     if (Assig.Id != undefined) {
                         map(TaskUsers, (users: any) => {
                             if (
@@ -1625,10 +1625,10 @@ function PortfolioTable(SelectedProp: any) {
                 });
             }
             if (
-                result.Team_x0020_Members != undefined &&
-                result.Team_x0020_Members.length > 0
+                result.TeamMembers != undefined &&
+                result.TeamMembers.length > 0
             ) {
-                $.each(result.Team_x0020_Members, function (index: any, Assig: any) {
+                $.each(result.TeamMembers, function (index: any, Assig: any) {
                     if (Assig.Id != undefined) {
                         $.each(TaskUsers, function (index: any, users: any) {
                             if (
@@ -1764,7 +1764,7 @@ function PortfolioTable(SelectedProp: any) {
                             ) {
                                 task.PortfolioStructureID = crntItem.PortfolioStructureID;
                                 task.ShowTooltipSharewebId =
-                                    crntItem.PortfolioStructureID + "-" + task.Shareweb_x0020_ID;
+                                    crntItem.PortfolioStructureID + "-" + task.TaskID;
                             }
                             if (crntItem.Portfolio_x0020_Type == "Service") {
                                 task.isService = true;
@@ -1808,7 +1808,7 @@ function PortfolioTable(SelectedProp: any) {
                         ) {
                             task.PortfolioStructureID = crntItem.PortfolioStructureID;
                             task.ShowTooltipSharewebId =
-                                crntItem.PortfolioStructureID + "-" + task.Shareweb_x0020_ID;
+                                crntItem.PortfolioStructureID + "-" + task.TaskID;
                         }
                         if (crntItem.Portfolio_x0020_Type == "Events") {
                             task.isService = true;
@@ -1849,7 +1849,7 @@ function PortfolioTable(SelectedProp: any) {
                         ) {
                             task.PortfolioStructureID = crntItem.PortfolioStructureID;
                             task.ShowTooltipSharewebId =
-                                crntItem.PortfolioStructureID + "-" + task.Shareweb_x0020_ID;
+                                crntItem.PortfolioStructureID + "-" + task.TaskID;
                         }
                         if (crntItem.Portfolio_x0020_Type == "Component") {
                             task.isService = true;
@@ -1956,10 +1956,10 @@ function PortfolioTable(SelectedProp: any) {
                 });
             }
             if (
-                result.Team_x0020_Members != undefined &&
-                result.Team_x0020_Members.length > 0
+                result.TeamMembers != undefined &&
+                result.TeamMembers.length > 0
             ) {
-                $.each(result.Team_x0020_Members, function (index: any, Assig: any) {
+                $.each(result.TeamMembers, function (index: any, Assig: any) {
                     if (Assig.Id != undefined) {
                         $.each(TaskUsers, function (index: any, users: any) {
                             if (
@@ -1976,11 +1976,11 @@ function PortfolioTable(SelectedProp: any) {
                 });
             }
             if (
-                result.Responsible_x0020_Team != undefined &&
-                result.Responsible_x0020_Team.length > 0
+                result.ResponsibleTeam != undefined &&
+                result.ResponsibleTeam.length > 0
             ) {
                 $.each(
-                    result.Responsible_x0020_Team,
+                    result.ResponsibleTeam,
                     function (index: any, Assig: any) {
                         if (Assig.Id != undefined) {
                             $.each(TaskUsers, function (index: any, users: any) {
@@ -2002,9 +2002,9 @@ function PortfolioTable(SelectedProp: any) {
                 result.PortfolioStructureID != null &&
                 result.PortfolioStructureID != undefined
             ) {
-                result["Shareweb_x0020_ID"] = result.PortfolioStructureID;
+                result["TaskID"] = result.PortfolioStructureID;
             } else {
-                result["Shareweb_x0020_ID"] = "";
+                result["TaskID"] = "";
             }
             if (result.Item_x0020_Type == "Root Component") {
                 result["childs"] =
@@ -2201,9 +2201,9 @@ function PortfolioTable(SelectedProp: any) {
             SelectedLevel.forEach((item: any) => {
                 TasksItem.forEach((task: any) => {
                     if (
-                        task.SharewebTaskType != undefined &&
-                        task.SharewebTaskType.Title != undefined &&
-                        item.Title == task.SharewebTaskType.Title
+                        task.TaskType != undefined &&
+                        task.TaskType.Title != undefined &&
+                        item.Title == task.TaskType.Title
                     ) {
                         AllTaggedTask.push(task);
                     }
@@ -2230,7 +2230,7 @@ function PortfolioTable(SelectedProp: any) {
                         task["Events"] != undefined &&
                         task["Events"].length === 0
                     ) {
-                        // if (task.SharewebTaskType != undefined && task.SharewebTaskType.Title && (task.SharewebTaskType.Title == "Activities" || task.SharewebTaskType.Title == "Workstream" || task.SharewebTaskType.Title == "Task"))
+                        // if (task.TaskType != undefined && task.TaskType.Title && (task.TaskType.Title == "Activities" || task.TaskType.Title == "Workstream" || task.TaskType.Title == "Task"))
                         ComponetsData["allUntaggedTasks"].push(task);
                     }
                 }
@@ -2244,7 +2244,7 @@ function PortfolioTable(SelectedProp: any) {
                         task["Services"] != undefined &&
                         task["Services"].length == 0
                     ) {
-                        // if (task.SharewebTaskType != undefined && task.SharewebTaskType.Title && (task.SharewebTaskType.Title == "Activities" || task.SharewebTaskType.Title == "Workstream" || task.SharewebTaskType.Title == "Task"))
+                        // if (task.TaskType != undefined && task.TaskType.Title && (task.TaskType.Title == "Activities" || task.TaskType.Title == "Workstream" || task.TaskType.Title == "Task"))
                         ComponetsData["allUntaggedTasks"].push(task);
                     }
                 }
@@ -2258,7 +2258,7 @@ function PortfolioTable(SelectedProp: any) {
                         task["Events"] != undefined &&
                         task["Events"].length == 0
                     ) {
-                        // if (task.SharewebTaskType != undefined && task.SharewebTaskType.Title && (task.SharewebTaskType.Title == "Activities" || task.SharewebTaskType.Title == "Workstream" || task.SharewebTaskType.Title == "Task"))
+                        // if (task.TaskType != undefined && task.TaskType.Title && (task.TaskType.Title == "Activities" || task.TaskType.Title == "Workstream" || task.TaskType.Title == "Task"))
                         ComponetsData["allUntaggedTasks"].push(task);
                     }
                 }
@@ -2593,16 +2593,16 @@ function PortfolioTable(SelectedProp: any) {
         const checked = eTarget;
         if (checked == true) {
             // itrm.chekBox = true;
-            if (itrm.SharewebTaskType == undefined) {
+            if (itrm.TaskType == undefined) {
                 setActivityDisable(false);
                 itrm["siteUrl"] = ContextValue?.siteUrl;
                 itrm["listName"] = "Master Tasks";
                 MeetingItems.push(itrm);
                 //setMeetingItems(itrm);
             }
-            if (itrm.SharewebTaskType != undefined) {
+            if (itrm.TaskType != undefined) {
                 if (
-                    itrm?.SharewebTaskType?.Title == "Activities" || itrm.SharewebTaskType.Title == "Workstream") {
+                    itrm?.TaskType?.Title == "Activities" || itrm.TaskType.Title == "Workstream") {
                     setActivityDisable(false);
                     itrm["siteUrl"] = ContextValue?.siteUrl;
                     // itrm['listName'] = 'Master Tasks';
@@ -2611,8 +2611,8 @@ function PortfolioTable(SelectedProp: any) {
                     childsData.push(itrm);
                 }
             }
-            if (itrm?.SharewebTaskType != undefined) {
-                if (itrm?.SharewebTaskType?.Title == "Task") {
+            if (itrm?.TaskType != undefined) {
+                if (itrm?.TaskType?.Title == "Task") {
                     setActivityDisable(true);
                 }
             }
@@ -2669,7 +2669,7 @@ function PortfolioTable(SelectedProp: any) {
                 obj.data.subRows = [];
                 obj.data.flag = true;
                 obj.data.TitleNew = obj.data.Title;
-                // obj.data.Team_x0020_Members=item.TeamMembersIds;
+                // obj.data.TeamMembers=item.TeamMembersIds;
                 // obj.AssignedTo =item.AssignedIds;
                 obj.data.siteType = "Master Tasks";
                 if (
@@ -2688,7 +2688,7 @@ function PortfolioTable(SelectedProp: any) {
                     obj.data.Item_x0020_Type === "Feature"
                 )
                     obj.data.SiteIconTitle = "F"; // obj.data.Portfolio_x0020_Type != undefined && obj.data.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/feature_icon.png';
-                obj.data["Shareweb_x0020_ID"] = obj.data.PortfolioStructureID;
+                obj.data["TaskID"] = obj.data.PortfolioStructureID;
                 if (
                     item.props != undefined &&
                     item.props.SelectedItem != undefined &&
@@ -2778,7 +2778,7 @@ function PortfolioTable(SelectedProp: any) {
                 item.data.SiteIconTitle = "F"; // item.data.Portfolio_x0020_Type != undefined && item.data.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/feature_icon.png';
 
             // item.data['SiteIcon'] = GetIconImageUrl(item.data.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/', undefined);
-            item.data["Shareweb_x0020_ID"] = item.data.PortfolioStructureID;
+            item.data["TaskID"] = item.data.PortfolioStructureID;
 
             // if (checkedList != undefined && checkedList.length > 0)
             //     checkedList[0].childs.unshift(item.data);
@@ -2815,7 +2815,7 @@ function PortfolioTable(SelectedProp: any) {
             item.data.Item_x0020_Type === "Feature"
         )
             item.data.SiteIconTitle = "F"; // item.data.Portfolio_x0020_Type != undefined && item.data.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/feature_icon.png';
-        item.data["Shareweb_x0020_ID"] = item.data.PortfolioStructureID;
+        item.data["TaskID"] = item.data.PortfolioStructureID;
         if (checkedList != undefined && checkedList.length > 0)
             checkedList[0].childs.unshift(item.data);
         else array.unshift(item.data);
@@ -3265,7 +3265,7 @@ function PortfolioTable(SelectedProp: any) {
                 })
                 .then((res: any) => {
                     if (ChengedItemTitl === undefined) {
-                        checkedList[0].Shareweb_x0020_ID = PortfolioStructureIDs;
+                        checkedList[0].TaskID = PortfolioStructureIDs;
                         checkedList[0].PortfolioStructureID = PortfolioStructureIDs;
                         checkedList[0].PortfolioLevel = PortfolioLevelNum;
                         if (Item.childs != undefined) {
@@ -3324,7 +3324,7 @@ function PortfolioTable(SelectedProp: any) {
                         }
                     });
                     checkedList[0].PortfolioStructureID = PortfolioStructureIDs;
-                    checkedList[0].Shareweb_x0020_ID = PortfolioStructureIDs;
+                    checkedList[0].TaskID = PortfolioStructureIDs;
                     checkedList[0].PortfolioLevel = PortfolioLevelNum;
                     checkedList[0].IsNew = true;
                     checkedList[0].Item_x0020_Type = ChengedItemTitl;
@@ -3401,7 +3401,7 @@ function PortfolioTable(SelectedProp: any) {
                 size: 7,
                 canSort: false,
                 placeholder: "",
-                id: 'Shareweb_x0020_ID',
+                id: 'TaskID',
                 // header: ({ table }: any) => (
                 //   <>
                 //     <button className='border-0 bg-Ff'
@@ -3439,7 +3439,7 @@ function PortfolioTable(SelectedProp: any) {
                                 <a className="hreflink" title="Show All Child" data-toggle="modal">
                                     <img className="icon-sites-img ml20 me-1" src={row?.original?.siteIcon}></img>
                                 </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</>}
-                                <span>{row?.original?.Shareweb_x0020_ID}</span>
+                                <span>{row?.original?.TaskID}</span>
                             </>
                             {getValue()}
                         </>
@@ -3559,8 +3559,8 @@ function PortfolioTable(SelectedProp: any) {
                             )}{" "}
                             {row?.original?.SiteIcon != undefined ? (
                                 <a className="hreflink" title="Show All Child" data-toggle="modal" >
-                                    <img className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 icon-sites-img ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 icon-sites-img ml20 me-1" : row?.original?.SharewebTaskType?.Title == "Activities" ? "ml-36 icon-sites-img ml20 me-1" :
-                                        row?.original?.SharewebTaskType?.Title == "Workstream" ? "ml-48 icon-sites-img ml20 me-1" : row?.original?.SharewebTaskType?.Title == "Task" ? "ml-60 icon-sites-img ml20 me-1" : "icon-sites-img ml20 me-1"
+                                    <img className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 icon-sites-img ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 icon-sites-img ml20 me-1" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 icon-sites-img ml20 me-1" :
+                                        row?.original?.TaskType?.Title == "Workstream" ? "ml-48 icon-sites-img ml20 me-1" : row?.original?.TaskType?.Title == "Task" ? "ml-60 icon-sites-img ml20 me-1" : "icon-sites-img ml20 me-1"
                                     }
                                         src={row?.original?.SiteIcon}>
                                     </img>
@@ -3568,8 +3568,8 @@ function PortfolioTable(SelectedProp: any) {
                             ) : (
                                 <>
                                     {row?.original?.Title != "Others" ? (
-                                        <div className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons" : row?.original?.SharewebTaskType?.Title == "Activities" ? "ml-36 Dyicons" :
-                                            row?.original?.SharewebTaskType?.Title == "Workstream" ? "ml-48 Dyicons" : row?.original?.SharewebTaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons"
+                                        <div className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 Dyicons" :
+                                            row?.original?.TaskType?.Title == "Workstream" ? "ml-48 Dyicons" : row?.original?.TaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons"
                                         }>
                                             {row?.original?.SiteIconTitle}
                                         </div>
@@ -3645,11 +3645,11 @@ function PortfolioTable(SelectedProp: any) {
                 size: 145,
             },
             {
-                accessorFn: (row) => row?.Shareweb_x0020_ID,
+                accessorFn: (row) => row?.TaskID,
                 cell: ({ row }) => (
                     <>
                         <div className="tooltipSec popover__wrapper me-1">
-                            <span onMouseOver={(e) => handleSuffixHover(row)}>{row?.original?.Shareweb_x0020_ID}</span>
+                            <span onMouseOver={(e) => handleSuffixHover(row)}>{row?.original?.TaskID}</span>
                             <div className="popover__content" style={{ display: showPopHover }}>
                                 <div>
                                     <div className="tootltip-title">{row?.original?.Title}</div>
@@ -3662,13 +3662,13 @@ function PortfolioTable(SelectedProp: any) {
                         </div>
                     </>
                 ),
-                id: "Shareweb_x0020_ID",
+                id: "TaskID",
                 placeholder: "ID",
                 header: "",
                 size: 130,
             },
             // {
-            //   accessorKey: "Shareweb_x0020_ID",
+            //   accessorKey: "TaskID",
             //   placeholder: "ID",
             //   header: "",
             //   size: 130,
@@ -3971,59 +3971,59 @@ function PortfolioTable(SelectedProp: any) {
         // Com.ChlidLenghtVal = Com?.subRows?.length ? Com?.subRows?.length : 0;
         Com?.subRows?.map((Sub: any) => {
             // Sub.ChlidLenghtVal = Sub?.subRows?.length ? Sub?.subRows?.length : 0;
-            if (Sub?.SharewebTaskType?.Title == "Activities") {
+            if (Sub?.TaskType?.Title == "Activities") {
                 activity = activity + 1;
             }
-            if (Sub?.SharewebTaskType?.Title == "Workstream") {
+            if (Sub?.TaskType?.Title == "Workstream") {
                 workstrim = workstrim + 1;
             }
-            if (Sub?.SharewebTaskType?.Title == "Task") {
+            if (Sub?.TaskType?.Title == "Task") {
                 task = task + 1;
             }
 
             Sub?.subRows?.map((feat: any) => {
                 // feat.ChlidLenghtVal = feat?.subRows?.length ? feat?.subRows?.length : 0;
-                if (feat?.SharewebTaskType?.Title == "Activities") {
+                if (feat?.TaskType?.Title == "Activities") {
                     activity = activity + 1;
                 }
-                if (feat?.SharewebTaskType?.Title == "Workstream") {
+                if (feat?.TaskType?.Title == "Workstream") {
                     workstrim = workstrim + 1;
                 }
-                if (feat?.SharewebTaskType?.Title == "Task") {
+                if (feat?.TaskType?.Title == "Task") {
                     task = task + 1;
                 }
                 feat?.subRows?.map((acti: any) => {
 
                     // acti.ChlidLenghtVal = acti?.subRows?.length ? acti?.subRows?.length : 0;
-                    if (acti?.SharewebTaskType?.Title == "Activities") {
+                    if (acti?.TaskType?.Title == "Activities") {
                         activity = activity + 1;
                     }
-                    if (acti?.SharewebTaskType?.Title == "Workstream") {
+                    if (acti?.TaskType?.Title == "Workstream") {
                         workstrim = workstrim + 1;
                     }
-                    if (acti?.SharewebTaskType?.Title == "Task") {
+                    if (acti?.TaskType?.Title == "Task") {
                         task = task + 1;
                     }
                     acti?.subRows?.map((works: any) => {
                         // works.ChlidLenghtVal = works?.subRows?.length ? works?.subRows?.length : 0;
-                        if (works?.SharewebTaskType?.Title == "Activities") {
+                        if (works?.TaskType?.Title == "Activities") {
                             activity = activity + 1;
                         }
-                        if (works?.SharewebTaskType?.Title == "Workstream") {
+                        if (works?.TaskType?.Title == "Workstream") {
                             workstrim = workstrim + 1;
                         }
-                        if (works?.SharewebTaskType?.Title == "Task") {
+                        if (works?.TaskType?.Title == "Task") {
                             task = task + 1;
                         }
                         works?.subRows?.map((taskss: any) => {
                             // taskss.ChlidLenghtVal = taskss?.subRows?.length ? taskss?.subRows?.length : 0;
-                            if (taskss?.SharewebTaskType?.Title == "Activities") {
+                            if (taskss?.TaskType?.Title == "Activities") {
                                 activity = activity + 1;
                             }
-                            if (taskss?.SharewebTaskType?.Title == "Workstream") {
+                            if (taskss?.TaskType?.Title == "Workstream") {
                                 workstrim = workstrim + 1;
                             }
-                            if (taskss?.SharewebTaskType?.Title == "Task") {
+                            if (taskss?.TaskType?.Title == "Task") {
                                 task = task + 1;
                             }
                         });
@@ -4046,7 +4046,7 @@ function PortfolioTable(SelectedProp: any) {
         AfterSearch?.map((Comp: any) => {
             if (
                 Comp.columnFilters.Title == true ||
-                Comp.columnFilters.Shareweb_x0020_ID == true ||
+                Comp.columnFilters.TaskID == true ||
                 Comp.columnFilters.ClientCategory == true ||
                 Comp.columnFilters.TeamLeaderUser == true ||
                 Comp.columnFilters.PercentComplete == true ||
@@ -4068,13 +4068,13 @@ function PortfolioTable(SelectedProp: any) {
                 if (Comp?.original?.Item_x0020_Type == "Feature") {
                     FeatureCopy = FeatureCopy + 1;
                 }
-                if (Comp?.original?.SharewebTaskType?.Title == "Activities") {
+                if (Comp?.original?.TaskType?.Title == "Activities") {
                     activityCopy = activityCopy + 1;
                 }
-                if (Comp?.original?.SharewebTaskType?.Title == "Workstream") {
+                if (Comp?.original?.TaskType?.Title == "Workstream") {
                     workstrimCopy = workstrimCopy + 1;
                 }
-                if (Comp?.original?.SharewebTaskType?.Title == "Task") {
+                if (Comp?.original?.TaskType?.Title == "Task") {
                     taskCopy = taskCopy + 1;
                 }
             }
@@ -4407,11 +4407,11 @@ function PortfolioTable(SelectedProp: any) {
                                                                 //       row.original.Item_x0020_Type == "Feature"
                                                                 //       ? "f-bg"
                                                                 //       : row?.getIsExpanded() == true &&
-                                                                //         row.original.SharewebTaskType?.Title ==
+                                                                //         row.original.TaskType?.Title ==
                                                                 //         "Activities"
                                                                 //         ? ""
                                                                 //         : row?.getIsExpanded() == true &&
-                                                                //           row.original.SharewebTaskType?.Title ==
+                                                                //           row.original.TaskType?.Title ==
                                                                 //           "Workstream"
                                                                 //           ? ""
                                                                 //           : ""
@@ -4526,7 +4526,7 @@ function PortfolioTable(SelectedProp: any) {
                     >
                         <div id="portfolio" className="section-event pt-0">
                             {childsData != undefined &&
-                                childsData[0]?.SharewebTaskType?.Title == "Workstream" ? (
+                                childsData[0]?.TaskType?.Title == "Workstream" ? (
                                 <ul className="quick-actions">
                                     <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
                                         <div onClick={(e) => CreateMeetingPopups("Task")}>
