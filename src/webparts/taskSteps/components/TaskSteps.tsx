@@ -59,31 +59,30 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
       .getByTitle(this.state.listName)
       .items
       .getById(this.state.itemID)
-      .select("ID","Title","SharewebTaskLevel1No")
+      .select("ID","Title","TaskLevel")
       .get();
       
-    console.log("SharewebTaskLevel1No - " +taskInfo['SharewebTaskLevel1No']);
+    console.log("TaskLevel - " +taskInfo['TaskLevel']);
     console.log('test again 2');
    
     let taskDetails = [];    
     taskDetails = await web.lists
       .getByTitle(this.state.listName)
       .items
-      .filter("SharewebTaskLevel1No eq '"+ taskInfo['SharewebTaskLevel1No'] +"'")
-      .select("ID","Title","DueDate","PercentComplete","Shareweb_x0020_ID","SharewebTaskType/Title","Component/Title","ParentTask/Id","ParentTask/Title","SharewebTaskLevel1No","SharewebTaskLevel2No","StepNo")
-      .expand("SharewebTaskType","Component","ParentTask")
+      .filter("TaskLevel eq '"+ taskInfo['TaskLevel'] +"'")
+      .select("ID","Title","DueDate","PercentComplete","TaskID","TaskType/Title","Component/Title","ParentTask/Id","ParentTask/Title","TaskLevel","TaskLevel","StepNo")
+      .expand("TaskType","Component","ParentTask")
       .get();
 
     let tempTask = taskDetails.map((i:any)=>{
       return({      
         ID: i.ID,
         Title: i.Title,
-        SharewebID : i.Shareweb_x0020_ID,      
-        SharewebTaskType : i.SharewebTaskType,
+        SharewebID : i.TaskID,      
+        TaskType : i.TaskType,
         ParentTask: i.ParentTask != undefined ? i.ParentTask : null,
         Component:  i.Component,
-        SharewebTaskLevel1No : i.SharewebTaskLevel1No,
-        SharewebTaskLevel2No : i.SharewebTaskLevel2No,
+        TaskLevel : i.TaskLevel,
         StepNo : i.StepNo != null ? i.StepNo : 1,
         PercentComplete : i.PercentComplete * 100,
         DueDate : i.DueDate != null ? (new Date(i.DueDate)).toLocaleDateString() : '',
@@ -144,7 +143,7 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
        }
 
        let childOfMainParent = arrayDictionary["children"].filter(function (item:any, i:any){       
-            return item.SharewebTaskType.Title == "Task"
+            return item.TaskType.Title == "Task"
         })
 
         maxChildCount = (maxChildCount > childOfMainParent.length) ? maxChildCount : childOfMainParent.length; 
@@ -160,7 +159,7 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
     plandt = {
       ID : arrayDictionary.ID,
       TaskTitle : arrayDictionary.Title,
-      SharewebTaskLevel1No : arrayDictionary.SharewebTaskLevel1No,
+      TaskLevel : arrayDictionary.TaskLevel,
       child:[]
     }
     plannedData.push(plandt);
@@ -168,7 +167,7 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
     //set child Task of main element
     for (let i = 0; i < arrayDictionary["children"].length; i++){
       const children = arrayDictionary["children"][i];
-      if (children.SharewebTaskType.Title == "Task")
+      if (children.TaskType.Title == "Task")
       {
         let child = {
           ID : children.ID,
@@ -184,7 +183,7 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
         let plandt = {
           ID : children.ID,
           TaskTitle : children.Title,
-          SharewebTaskLevel1No : children.SharewebTaskLevel1No,
+          TaskLevel : children.TaskLevel,
           child:[] as any[]
         }
         plannedData.push(plandt);
@@ -269,9 +268,9 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
     taskInfo = await web.lists
       .getByTitle(this.state.listName)     
       .items
-      .filter("SharewebTaskType/Title eq 'Task'")
-      .select("ID","Title","SharewebTaskType/Title","ParentTask/Title")
-      .expand("SharewebTaskType","ParentTask")
+      .filter("TaskType/Title eq 'Task'")
+      .select("ID","Title","TaskType/Title","ParentTask/Title")
+      .expand("TaskType","ParentTask")
       .getAll(4000);
 
     console.log('All Item Count - '+taskInfo.length);
@@ -345,7 +344,7 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
               .items
               .getById(this.state.selectedID).update({
                 ParentTaskId: this.state.ParentTaskOnModal.ID,
-                SharewebTaskLevel1No : this.state.ParentTaskOnModal.SharewebTaskLevel1No,
+                TaskLevel : this.state.ParentTaskOnModal.TaskLevel,
                 StepNo : this.state.cellNo
               });
       }
@@ -355,9 +354,9 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
               .add({
                 Title: this.state.selectedText,
                 ParentTaskId: this.state.ParentTaskOnModal.ID,
-                SharewebTaskLevel1No : this.state.ParentTaskOnModal.SharewebTaskLevel1No,
+                TaskLevel : this.state.ParentTaskOnModal.TaskLevel,
                 StepNo : this.state.cellNo,
-                SharewebTaskTypeId : 2
+                TaskTypeId : 2
               });
       }      
 

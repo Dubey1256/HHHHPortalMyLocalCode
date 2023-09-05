@@ -276,108 +276,108 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
     }
 
     const  getSharewebId = function (item:any) {
-        let Shareweb_x0020_ID:any = '';
-        if (item?.SharewebTaskType?.Title === undefined) {
-            Shareweb_x0020_ID = 'T' + item.Id;
+        let TaskID:any = '';
+        if (item?.TaskType?.Title === undefined) {
+            TaskID = 'T' + item.Id;
         }
-        else if (item?.SharewebTaskType && (item.SharewebTaskType.Title === 'Task' || item.SharewebTaskType.Title === 'MileStone') && item.SharewebTaskLevel1No == undefined && item.SharewebTaskLevel2No == undefined) {
-            Shareweb_x0020_ID = 'T' + item.Id;
-            if (item?.SharewebTaskType?.Title === 'MileStone')
-                Shareweb_x0020_ID = 'M' + item.Id;
+        else if (item?.TaskType && (item.TaskType.Title === 'Task' || item.TaskType.Title === 'MileStone') && item.TaskLevel == undefined && item.TaskLevel == undefined) {
+            TaskID = 'T' + item.Id;
+            if (item?.TaskType?.Title === 'MileStone')
+                TaskID = 'M' + item.Id;
         }
-        else if (item?.SharewebTaskType !== undefined && (item.SharewebTaskType.Title === 'Activities' || item.SharewebTaskType.Title === 'Project') && item.SharewebTaskLevel1No != undefined) {
+        else if (item?.TaskType !== undefined && (item.TaskType.Title === 'Activities' || item.TaskType.Title === 'Project') && item.TaskLevel != undefined) {
             if (item?.Component?.results?.length > 0) {
-                Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No;
+                TaskID = 'CA' + item.TaskLevel;
             }
             if (item?.Services?.results?.length > 0) {
                 
-                Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No;
+                TaskID = 'SA' + item.TaskLevel;
                 
             }
             if (item?.Events?.results?.length > 0) {
               
-                Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No;
+                TaskID = 'EA' + item.TaskLevel;
                
             }
             if (item?.Events?.results?.length > 0 && item?.Services?.results?.length > 0 && item?.Component?.results?.length > 0)
                 
-                Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No;
+                TaskID = 'A' + item.TaskLevel;
                
             if (item.Component == undefined && item.Events == undefined && item.Services == undefined) {
-                Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No;
+                TaskID = 'A' + item.TaskLevel;
             }
-            if (item?.SharewebTaskType?.Title == 'Project')
-                Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No;
+            if (item?.TaskType?.Title == 'Project')
+                TaskID = 'P' + item.TaskLevel;
 
         }
-        else if (item?.SharewebTaskType && (item.SharewebTaskType.Title === 'Workstream' || item.SharewebTaskType.Title === 'Step') && item?.SharewebTaskLevel1No && item?.SharewebTaskLevel2No) {
+        else if (item?.TaskType && (item.TaskType.Title === 'Workstream' || item.TaskType.Title === 'Step') && item?.TaskLevel && item?.TaskLevel) {
             if (item?.Events?.results?.length > 0 && item?.Services?.results?.length > 0 && item?.Component?.results?.length > 0) {
                
-                Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
+                TaskID = 'A' + item.TaskLevel + '-W' + item.TaskLevel;
                 
             }
             if (item?.Component?.results?.length > 0) {                
-                Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;               
+                TaskID = 'CA' + item.TaskLevel + '-W' + item.TaskLevel;               
             }
             if (item?.Services?.results?.length > 0) {
                
-                Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
+                TaskID = 'SA' + item.TaskLevel + '-W' + item.TaskLevel;
                 
             }
             if (item?.Events?.results?.length > 0) {
               
-                Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
+                TaskID = 'EA' + item.TaskLevel + '-W' + item.TaskLevel;
               
             }
             if (item.Component == undefined && item.Services == undefined && item.Events == undefined) {
-                Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
+                TaskID = 'A' + item.TaskLevel + '-W' + item.TaskLevel;
             }
-            if (item?.SharewebTaskType?.Title == 'Step')
-                Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-S' + item.SharewebTaskLevel2No;
+            if (item?.TaskType?.Title == 'Step')
+                TaskID = 'P' + item.TaskLevel + '-S' + item.TaskLevel;
 
         }
-        else if (item?.SharewebTaskType && (item.SharewebTaskType.Title === 'Task' || item.SharewebTaskType.Title === 'MileStone') && item?.SharewebTaskLevel1No && item?.SharewebTaskLevel2No) {
+        else if (item?.TaskType && (item.TaskType.Title === 'Task' || item.TaskType.Title === 'MileStone') && item?.TaskLevel && item?.TaskLevel) {
             if (item?.Events?.results?.length > 0 && item?.Services?.results?.length > 0 && item?.Component?.results?.length > 0) {              
-                Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;               
+                TaskID = 'A' + item.TaskLevel + '-W' + item.TaskLevel + '-T' + item.Id;               
             }
             if (item?.Component?.results?.length > 0) {                
-                Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;             
+                TaskID = 'CA' + item.TaskLevel + '-W' + item.TaskLevel + '-T' + item.Id;             
             }
             if (item?.Services?.results?.length > 0) {
                
-                Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
+                TaskID = 'SA' + item.TaskLevel + '-W' + item.TaskLevel + '-T' + item.Id;
                 
             }
             if (item?.Events?.results?.length > 0 ) {
                 
-                Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
+                TaskID = 'EA' + item.TaskLevel + '-W' + item.TaskLevel + '-T' + item.Id;
                 
             }
             if (item.Component == undefined && item.Services == undefined && item.Events == undefined) {
-                Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
+                TaskID = 'A' + item.TaskLevel + '-W' + item.TaskLevel + '-T' + item.Id;
             }
-            if (item?.SharewebTaskType?.Title == 'MileStone') {
-                Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-S' + item.SharewebTaskLevel2No + '-M' + item.Id;
+            if (item?.TaskType?.Title == 'MileStone') {
+                TaskID = 'P' + item.TaskLevel + '-S' + item.TaskLevel + '-M' + item.Id;
             }
         }
-        else if (item?.SharewebTaskType  && (item.SharewebTaskType.Title === 'Task' || item.SharewebTaskType.Title === 'MileStone') && item?.SharewebTaskLevel1No && item.SharewebTaskLevel2No == undefined) {
+        else if (item?.TaskType  && (item.TaskType.Title === 'Task' || item.TaskType.Title === 'MileStone') && item?.TaskLevel && item.TaskLevel == undefined) {
             if (item?.Events?.results?.length > 0 && item?.Services?.results?.length > 0 && item?.Component?.results?.length > 0) {
-                Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-T' + item.Id;
+                TaskID = 'A' + item.TaskLevel + '-T' + item.Id;
             }
             if (item?.Component?.results?.length > 0) {
-                Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-T' + item.Id;
+                TaskID = 'CA' + item.TaskLevel + '-T' + item.Id;
             }
             if (item?.Services?.results?.length > 0) {
-                Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-T' + item.Id;
+                TaskID = 'SA' + item.TaskLevel + '-T' + item.Id;
             }
             if (item?.Events?.results?.length > 0) {
-                Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-T' + item.Id;
+                TaskID = 'EA' + item.TaskLevel + '-T' + item.Id;
             }
             if (item.Component == undefined && item.Services == undefined && item.Events == undefined) {
-                Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-T' + item.Id;
+                TaskID = 'A' + item.TaskLevel + '-T' + item.Id;
             }
         }
-        return Shareweb_x0020_ID;
+        return TaskID;
     }
 
     const LoadAllSiteTasks=(siteconfig1:any)=>{
@@ -387,12 +387,12 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
             try {
               for (const listitem of siteconfig1) {
                 if(listitem.Title==='Master Task'){
-                    var query = "Deliverables,TechnicalExplanations,ValueAdded,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title";
-                    var expandlookup = "ComponentPortfolio,ServicePortfolio,ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebCategories,Parent"
+                    var query = "Deliverables,TechnicalExplanations,ValueAdded,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,Component/Id,Component/Title,Component/ItemType,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title";
+                    var expandlookup = "ComponentPortfolio,ServicePortfolio,ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,TeamMembers,TaskCategories,Parent"
                 }
                 else{
-                    var query = "WebpartId,FeedBack,FolderID,Portfolio_x0020_Type,Comments,component_x0020_link,Shareweb_x0020_ID,SharewebTaskLevel1No,SharewebTaskLevel2No,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,StartDate,Team_x0020_Members/Id,Team_x0020_Members/Title,DueDate,Status,Body,Priority,Created,Modified,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,Author/Id,Author/Title,Editor/Id,Editor/Title,Component/Id,Component/Title,Services/Id,Services/Title,Events/Id,Events/Title,Categories,SharewebCategories/Id,SharewebCategories/Title,ClientCategory/Id,ClientCategory/Title";        
-                    var expandlookup="ClientCategory,SharewebTaskType,SharewebCategories,Component,Services,Events,AssignedTo,Team_x0020_Members,Author,Editor"
+                    var query = "WebpartId,FeedBack,FolderID,Portfolio_x0020_Type,Comments,ComponentLink,TaskID,TaskLevel,TaskLevel,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,FileLeafRef,Title,Id,PriorityRank,PercentComplete,StartDate,TeamMembers/Id,TeamMembers/Title,DueDate,Status,Body,Priority,Created,Modified,TaskType/Id,TaskType/Title,TaskType/Level,TaskType/Prefix,Author/Id,Author/Title,Editor/Id,Editor/Title,Component/Id,Component/Title,Services/Id,Services/Title,Events/Id,Events/Title,Categories,TaskCategories/Id,TaskCategories/Title,ClientCategory/Id,ClientCategory/Title";        
+                    var expandlookup="ClientCategory,TaskType,TaskCategories,Component,Services,Events,AssignedTo,TeamMembers,Author,Editor"
                 }
                 if(listitem?.listId){                   
                     const list = web.lists.getById(listitem?.listId);
@@ -440,8 +440,8 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
                             taskitems.userImageTitle = useritems.Title;
                         }
                     })                
-                    if(taskitems?.Shareweb_x0020_ID === null)
-                      taskitems.Shareweb_x0020_ID = getSharewebId(taskitems);                                           
+                    if(taskitems?.TaskID === null)
+                      taskitems.TaskID = getSharewebId(taskitems);                                           
                     taskitems.Created = moment(taskitems.Created).format('MM/DD/YYYY');                
                     taskitems.Modified = moment(taskitems.Modified).format('MM/DD/YYYY');
                     if(taskitems?.DueDate)
