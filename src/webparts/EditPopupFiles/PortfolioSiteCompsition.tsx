@@ -449,8 +449,8 @@ const SiteCompositionComponent = (Props: any) => {
             tempArray = await web.lists
                 .getById(ListId)
                 .items
-                .select('Id,Title,SiteCompositionSettings,ClientTime,ParentTask/Title,ParentTask/Id,ComponentId,Component/Id,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,ServicesId,Services/Id,Services/Title,SharewebTaskType/Id,SharewebTaskType/Title,SharewebCategories/Id,SharewebCategories/Title,ClientCategory/Id,ClientCategory/Title')
-                .expand('Component,Services,ClientCategory,RelevantPortfolio,ParentTask,SharewebCategories,SharewebTaskType')
+                .select('Id,Title,SiteCompositionSettings,ClientTime,ParentTask/Title,ParentTask/Id,ComponentId,Component/Id,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,ServicesId,Services/Id,Services/Title,TaskType/Id,TaskType/Title,TaskCategories/Id,TaskCategories/Title,ClientCategory/Id,ClientCategory/Title')
+                .expand('Component,Services,ClientCategory,RelevantPortfolio,ParentTask,TaskCategories,TaskType')
                 .getAll();
             if (tempArray?.length > 0) {
                 tempArray?.map((allSiteData: any) => {
@@ -1109,7 +1109,7 @@ const SiteCompositionComponent = (Props: any) => {
                     finalItems.ListId = AllListIdData.MasterTaskListID;
                     MasterTaskTempArray.push(finalItems);
                 }
-                if (finalItems.SharewebTaskType?.Title == "Task" || finalItems.SharewebTaskType?.Title == "Activities" || finalItems.SharewebTaskType?.Title == "Workstream") {
+                if (finalItems.TaskType?.Title == "Task" || finalItems.TaskType?.Title == "Activities" || finalItems.TaskType?.Title == "Workstream") {
                     finalItems.ListId = UpdateCCDetailsForTaskList.listId;
                     SiteTaskTempArray.push(finalItems);
                 }

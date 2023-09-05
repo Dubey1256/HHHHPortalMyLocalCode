@@ -1702,11 +1702,11 @@ const RestructuringCom = (props: any, ref: any) => {
 
             array?.map((obj: any, index: any) => {
               obj.isRestructureActive = false;
-              if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+              if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                 obj.subRows.push(...latestCheckedList);
                 checkUpdate = checkUpdate + 1;
               }
-              if (obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+              if (obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                 array.splice(index, 1);
                 checkUpdate = checkUpdate + 1;
               }
@@ -1714,11 +1714,11 @@ const RestructuringCom = (props: any, ref: any) => {
               if (obj.subRows != undefined && obj.subRows.length > 0) {
                 obj.subRows.forEach((sub: any, indexsub: any) => {
                   sub.isRestructureActive = false;
-                  if (sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                  if (sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                     sub.subRows.push(...latestCheckedList);
                     checkUpdate = checkUpdate + 1;
                   }
-                  if (sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                  if (sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                     array[index]?.subRows.splice(indexsub, 1);
                     checkUpdate = checkUpdate + 1;
                   }
@@ -1726,11 +1726,11 @@ const RestructuringCom = (props: any, ref: any) => {
                   if (sub.subRows != undefined && sub.subRows.length > 0) {
                     sub.subRows.forEach((newsub: any, lastIndex: any) => {
                       newsub.isRestructureActive = false;
-                      if (newsub.Id === newItemBackUp?.Id && newsub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && newsub.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                      if (newsub.Id === newItemBackUp?.Id && newsub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && newsub.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                         newsub.subRows.push(...latestCheckedList);
                         checkUpdate = checkUpdate + 1;
                       }
-                      if (newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && newsub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                      if (newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && newsub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                         array[index]?.subRows[indexsub]?.subRows.splice(lastIndex, 1);
                         checkUpdate = checkUpdate + 1;
                       }
@@ -1738,11 +1738,11 @@ const RestructuringCom = (props: any, ref: any) => {
                       if (newsub.subRows != undefined && newsub.subRows.length > 0) {
                         newsub.subRows.forEach((activity: any, activityIndex: any) => {
                           activity.isRestructureActive = false;
-                          if (activity.Id === newItemBackUp?.Id && activity.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && activity.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                          if (activity.Id === newItemBackUp?.Id && activity.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && activity.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                             activity.subRows.push(...latestCheckedList);
                             checkUpdate = checkUpdate + 1;
                           }
-                          if (activity.Id === backupCheckedList[0]?.Id && activity.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && activity.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                          if (activity.Id === backupCheckedList[0]?.Id && activity.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && activity.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                             array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows.splice(activityIndex, 1);
                             checkUpdate = checkUpdate + 1;
                           }
@@ -1750,11 +1750,11 @@ const RestructuringCom = (props: any, ref: any) => {
                           if (activity.subRows != undefined && activity.subRows.length > 0) {
                             activity.subRows.forEach((workstream: any, workstreamIndex: any) => {
                               workstream.isRestructureActive = false;
-                              if (workstream.Id === newItemBackUp?.Id && workstream.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && workstream.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                              if (workstream.Id === newItemBackUp?.Id && workstream.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && workstream.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                                 workstream.subRows.push(...latestCheckedList);
                                 checkUpdate = checkUpdate + 1;
                               }
-                              if (workstream.Id === backupCheckedList[0]?.Id && workstream.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && workstream.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                              if (workstream.Id === backupCheckedList[0]?.Id && workstream.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && workstream.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                                 array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows[activityIndex]?.subRows.splice(workstreamIndex, 1);
                                 checkUpdate = checkUpdate + 1;
                               }
@@ -1762,11 +1762,11 @@ const RestructuringCom = (props: any, ref: any) => {
                               if (activity.subRows != undefined && activity.subRows.length > 0) {
                                 activity.subRows.forEach((task: any, taskIndex: any) => {
                                   task.isRestructureActive = false;
-                                  if (task.Id === newItemBackUp?.Id && task.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && task.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                                  if (task.Id === newItemBackUp?.Id && task.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && task.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                                     task.subRows.push(...latestCheckedList);
                                     checkUpdate = checkUpdate + 1;
                                   }
-                                  if (task.Id === backupCheckedList[0]?.Id && task.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && task.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                                  if (task.Id === backupCheckedList[0]?.Id && task.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && task.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                                     array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows[activityIndex]?.subRows[workstreamIndex].subRows?.splice(taskIndex, 1);
                                     checkUpdate = checkUpdate + 1;
                                   }
@@ -1852,11 +1852,11 @@ const RestructuringCom = (props: any, ref: any) => {
 
             array?.map((obj: any, index: any) => {
               obj.isRestructureActive = false;
-              if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+              if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                 obj.subRows.push(...latestCheckedList);
                 checkUpdate = checkUpdate + 1;
               }
-              if (obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+              if (obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                 array.splice(index, 1);
                 checkUpdate = checkUpdate + 1;
               }
@@ -1864,11 +1864,11 @@ const RestructuringCom = (props: any, ref: any) => {
               if (obj.subRows != undefined && obj.subRows.length > 0) {
                 obj.subRows.forEach((sub: any, indexsub: any) => {
                   sub.isRestructureActive = false;
-                  if (sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                  if (sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                     sub.subRows.push(...latestCheckedList);
                     checkUpdate = checkUpdate + 1;
                   }
-                  if (sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                  if (sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                     array[index]?.subRows.splice(indexsub, 1);
                     checkUpdate = checkUpdate + 1;
                   }
@@ -1876,11 +1876,11 @@ const RestructuringCom = (props: any, ref: any) => {
                   if (sub.subRows != undefined && sub.subRows.length > 0) {
                     sub.subRows.forEach((newsub: any, lastIndex: any) => {
                       newsub.isRestructureActive = false;
-                      if (newsub.Id === newItemBackUp?.Id && newsub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && newsub.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                      if (newsub.Id === newItemBackUp?.Id && newsub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && newsub.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                         newsub.subRows.push(...latestCheckedList);
                         checkUpdate = checkUpdate + 1;
                       }
-                      if (newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && newsub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                      if (newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && newsub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                         array[index]?.subRows[indexsub]?.subRows.splice(lastIndex, 1);
                         checkUpdate = checkUpdate + 1;
                       }
@@ -1888,11 +1888,11 @@ const RestructuringCom = (props: any, ref: any) => {
                       if (newsub.subRows != undefined && newsub.subRows.length > 0) {
                         newsub.subRows.forEach((activity: any, activityIndex: any) => {
                           activity.isRestructureActive = false;
-                          if (activity.Id === newItemBackUp?.Id && activity.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && activity.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                          if (activity.Id === newItemBackUp?.Id && activity.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && activity.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                             activity.subRows.push(...latestCheckedList);
                             checkUpdate = checkUpdate + 1;
                           }
-                          if (activity.Id === backupCheckedList[0]?.Id && activity.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && activity.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                          if (activity.Id === backupCheckedList[0]?.Id && activity.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && activity.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                             array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows.splice(activityIndex, 1);
                             checkUpdate = checkUpdate + 1;
                           }
@@ -1900,11 +1900,11 @@ const RestructuringCom = (props: any, ref: any) => {
                           if (activity.subRows != undefined && activity.subRows.length > 0) {
                             activity.subRows.forEach((workstream: any, workstreamIndex: any) => {
                               workstream.isRestructureActive = false;
-                              if (workstream.Id === newItemBackUp?.Id && workstream.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && workstream.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                              if (workstream.Id === newItemBackUp?.Id && workstream.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && workstream.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                                 workstream.subRows.push(...latestCheckedList);
                                 checkUpdate = checkUpdate + 1;
                               }
-                              if (workstream.Id === backupCheckedList[0]?.Id && workstream.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && workstream.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                              if (workstream.Id === backupCheckedList[0]?.Id && workstream.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && workstream.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                                 array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows[activityIndex]?.subRows.splice(workstreamIndex, 1);
                                 checkUpdate = checkUpdate + 1;
                               }
@@ -1912,11 +1912,11 @@ const RestructuringCom = (props: any, ref: any) => {
                               if (activity.subRows != undefined && activity.subRows.length > 0) {
                                 activity.subRows.forEach((task: any, taskIndex: any) => {
                                   task.isRestructureActive = false;
-                                  if (task.Id === newItemBackUp?.Id && task.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && task.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                                  if (task.Id === newItemBackUp?.Id && task.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && task.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                                     task.subRows.push(...latestCheckedList);
                                     checkUpdate = checkUpdate + 1;
                                   }
-                                  if (task.Id === backupCheckedList[0]?.Id && task.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && task.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                                  if (task.Id === backupCheckedList[0]?.Id && task.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && task.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                                     array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows[activityIndex]?.subRows[workstreamIndex].subRows?.splice(taskIndex, 1);
                                     checkUpdate = checkUpdate + 1;
                                   }
@@ -1956,13 +1956,13 @@ const RestructuringCom = (props: any, ref: any) => {
 
     array.forEach((obj: any) => {
       let object: any = {};
-      if (obj.Shareweb_x0020_ID === item.Shareweb_x0020_ID && obj.Id === item.Id) {
+      if (obj.TaskID === item.TaskID && obj.Id === item.Id) {
         object = { Title: obj.Title, Id: obj.Id, TaskType: { Id: obj.TaskType?.Id == undefined ? '' : obj.TaskType?.Id }, Item_x0020_Type: obj.Item_x0020_Type, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle }
         TestArray.push(object);
       }
       if (obj.subRows != undefined && obj.subRows.length > 0) {
         obj.subRows.forEach((sub: any) => {
-          if (sub.Shareweb_x0020_ID === item.Shareweb_x0020_ID && sub.Id === item.Id) {
+          if (sub.TaskID === item.TaskID && sub.Id === item.Id) {
             object = {
               Title: obj.Title, TaskType: { Id: obj.TaskType?.Id == undefined ? '' : obj.TaskType?.Id }, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle,
               newSubChild: { Title: sub.Title, TaskType: { Id: sub.TaskType?.Id == undefined ? '' : sub.TaskType?.Id }, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle === undefined ? sub.SiteIcon : sub.SiteIconTitle }
@@ -1971,7 +1971,7 @@ const RestructuringCom = (props: any, ref: any) => {
           }
           if (sub.subRows != undefined && sub.subRows.length > 0) {
             sub.subRows.forEach((newsub: any) => {
-              if (newsub.Shareweb_x0020_ID === item.Shareweb_x0020_ID && newsub.Id === item.Id) {
+              if (newsub.TaskID === item.TaskID && newsub.Id === item.Id) {
                 object = {
                   Title: obj.Title, TaskType: { Id: obj.TaskType?.Id == undefined ? '' : obj.TaskType?.Id }, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle,
                   newSubChild: {
@@ -1983,7 +1983,7 @@ const RestructuringCom = (props: any, ref: any) => {
               }
               if (newsub.subRows != undefined && newsub.subRows.length > 0) {
                 newsub.subRows.forEach((activity: any) => {
-                  if (activity.Shareweb_x0020_ID === item.Shareweb_x0020_ID && activity.Id === item.Id) {
+                  if (activity.TaskID === item.TaskID && activity.Id === item.Id) {
                     object = {
                       Title: obj.Title, TaskType: { Id: obj.TaskType?.Id == undefined ? '' : obj.TaskType?.Id }, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle,
                       newSubChild: {
@@ -1998,7 +1998,7 @@ const RestructuringCom = (props: any, ref: any) => {
                   }
                   if (newsub.subRows != undefined && newsub.subRows.length > 0) {
                     activity?.subRows?.forEach((wrkstrm: any) => {
-                      if (wrkstrm.Shareweb_x0020_ID === item.Shareweb_x0020_ID && wrkstrm.Id === item.Id) {
+                      if (wrkstrm.TaskID === item.TaskID && wrkstrm.Id === item.Id) {
                         object = {
                           Title: obj.Title, TaskType: { Id: obj.TaskType?.Id == undefined ? '' : obj.TaskType?.Id }, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle,
                           newSubChild: {
@@ -2154,7 +2154,7 @@ const RestructuringCom = (props: any, ref: any) => {
             items.PortfolioLevel = postData.PortfolioLevel,
               items.PortfolioStructureID = postData.PortfolioStructureID,
               items.Item_x0020_Type = postData.Item_x0020_Type
-            items.Shareweb_x0020_ID = postData.PortfolioStructureID,
+            items.TaskID = postData.PortfolioStructureID,
               items.SiteIconTitle = siteIcon
           })
 
@@ -2268,11 +2268,11 @@ const RestructuringCom = (props: any, ref: any) => {
 
           array?.map((obj: any, index: any) => {
             obj.isRestructureActive = false;
-            if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+            if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
               obj.subRows.push(...latestCheckedList);
               checkUpdate = checkUpdate + 1;
             }
-            if (obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+            if (obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
               array.splice(index, 1);
               checkUpdate = checkUpdate + 1;
             }
@@ -2280,11 +2280,11 @@ const RestructuringCom = (props: any, ref: any) => {
             if (obj.subRows != undefined && obj.subRows.length > 0) {
               obj.subRows.forEach((sub: any, indexsub: any) => {
                 sub.isRestructureActive = false;
-                if (sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                if (sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                   sub.subRows.push(...latestCheckedList);
                   checkUpdate = checkUpdate + 1;
                 }
-                if (sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                if (sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                   array[index]?.subRows.splice(indexsub, 1);
                   checkUpdate = checkUpdate + 1;
                 }
@@ -2292,11 +2292,11 @@ const RestructuringCom = (props: any, ref: any) => {
                 if (sub.subRows != undefined && sub.subRows.length > 0) {
                   sub.subRows.forEach((newsub: any, lastIndex: any) => {
                     newsub.isRestructureActive = false;
-                    if (newsub.Id === newItemBackUp?.Id && newsub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && newsub.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                    if (newsub.Id === newItemBackUp?.Id && newsub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && newsub.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                       newsub.subRows.push(...latestCheckedList);
                       checkUpdate = checkUpdate + 1;
                     }
-                    if (newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && newsub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                    if (newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && newsub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                       array[index]?.subRows[indexsub]?.subRows.splice(lastIndex, 1);
                       checkUpdate = checkUpdate + 1;
                     }
@@ -2304,11 +2304,11 @@ const RestructuringCom = (props: any, ref: any) => {
                     if (newsub.subRows != undefined && newsub.subRows.length > 0) {
                       newsub.subRows.forEach((activity: any, activityIndex: any) => {
                         activity.isRestructureActive = false;
-                        if (activity.Id === newItemBackUp?.Id && activity.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && activity.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                        if (activity.Id === newItemBackUp?.Id && activity.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && activity.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                           activity.subRows.push(...latestCheckedList);
                           checkUpdate = checkUpdate + 1;
                         }
-                        if (activity.Id === backupCheckedList[0]?.Id && activity.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && activity.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                        if (activity.Id === backupCheckedList[0]?.Id && activity.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && activity.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                           array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows.splice(activityIndex, 1);
                           checkUpdate = checkUpdate + 1;
                         }
@@ -2316,11 +2316,11 @@ const RestructuringCom = (props: any, ref: any) => {
                         if (activity.subRows != undefined && activity.subRows.length > 0) {
                           activity.subRows.forEach((workstream: any, workstreamIndex: any) => {
                             workstream.isRestructureActive = false;
-                            if (workstream.Id === newItemBackUp?.Id && workstream.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && workstream.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                            if (workstream.Id === newItemBackUp?.Id && workstream.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && workstream.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                               workstream.subRows.push(...latestCheckedList);
                               checkUpdate = checkUpdate + 1;
                             }
-                            if (workstream.Id === backupCheckedList[0]?.Id && workstream.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && workstream.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                            if (workstream.Id === backupCheckedList[0]?.Id && workstream.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && workstream.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                               array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows[activityIndex]?.subRows.splice(workstreamIndex, 1);
                               checkUpdate = checkUpdate + 1;
                             }
@@ -2328,11 +2328,11 @@ const RestructuringCom = (props: any, ref: any) => {
                             if (activity.subRows != undefined && activity.subRows.length > 0) {
                               activity.subRows.forEach((task: any, taskIndex: any) => {
                                 task.isRestructureActive = false;
-                                if (task.Id === newItemBackUp?.Id && task.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && task.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                                if (task.Id === newItemBackUp?.Id && task.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && task.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                                   task.subRows.push(...latestCheckedList);
                                   checkUpdate = checkUpdate + 1;
                                 }
-                                if (task.Id === backupCheckedList[0]?.Id && task.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && task.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                                if (task.Id === backupCheckedList[0]?.Id && task.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && task.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                                   array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows[activityIndex]?.subRows[workstreamIndex].subRows?.splice(taskIndex, 1);
                                   checkUpdate = checkUpdate + 1;
                                 }
@@ -2414,11 +2414,11 @@ const RestructuringCom = (props: any, ref: any) => {
 
           array?.map((obj: any, index: any) => {
             obj.isRestructureActive = false;
-            if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+            if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
               obj.subRows.push(...latestCheckedList);
               checkUpdate = checkUpdate + 1;
             }
-            if (obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+            if (obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
               array.splice(index, 1);
               checkUpdate = checkUpdate + 1;
             }
@@ -2426,11 +2426,11 @@ const RestructuringCom = (props: any, ref: any) => {
             if (obj.subRows != undefined && obj.subRows.length > 0) {
               obj.subRows.forEach((sub: any, indexsub: any) => {
                 sub.isRestructureActive = false;
-                if (sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                if (sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                   sub.subRows.push(...latestCheckedList);
                   checkUpdate = checkUpdate + 1;
                 }
-                if (sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                if (sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                   array[index]?.subRows.splice(indexsub, 1);
                   checkUpdate = checkUpdate + 1;
                 }
@@ -2438,11 +2438,11 @@ const RestructuringCom = (props: any, ref: any) => {
                 if (sub.subRows != undefined && sub.subRows.length > 0) {
                   sub.subRows.forEach((newsub: any, lastIndex: any) => {
                     newsub.isRestructureActive = false;
-                    if (newsub.Id === newItemBackUp?.Id && newsub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && newsub.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                    if (newsub.Id === newItemBackUp?.Id && newsub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && newsub.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                       newsub.subRows.push(...latestCheckedList);
                       checkUpdate = checkUpdate + 1;
                     }
-                    if (newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && newsub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                    if (newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && newsub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                       array[index]?.subRows[indexsub]?.subRows.splice(lastIndex, 1);
                       checkUpdate = checkUpdate + 1;
                     }
@@ -2450,11 +2450,11 @@ const RestructuringCom = (props: any, ref: any) => {
                     if (newsub.subRows != undefined && newsub.subRows.length > 0) {
                       newsub.subRows.forEach((activity: any, activityIndex: any) => {
                         activity.isRestructureActive = false;
-                        if (activity.Id === newItemBackUp?.Id && activity.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && activity.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                        if (activity.Id === newItemBackUp?.Id && activity.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && activity.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                           activity.subRows.push(...latestCheckedList);
                           checkUpdate = checkUpdate + 1;
                         }
-                        if (activity.Id === backupCheckedList[0]?.Id && activity.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && activity.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                        if (activity.Id === backupCheckedList[0]?.Id && activity.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && activity.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                           array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows.splice(activityIndex, 1);
                           checkUpdate = checkUpdate + 1;
                         }
@@ -2462,11 +2462,11 @@ const RestructuringCom = (props: any, ref: any) => {
                         if (activity.subRows != undefined && activity.subRows.length > 0) {
                           activity.subRows.forEach((workstream: any, workstreamIndex: any) => {
                             workstream.isRestructureActive = false;
-                            if (workstream.Id === newItemBackUp?.Id && workstream.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && workstream.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                            if (workstream.Id === newItemBackUp?.Id && workstream.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && workstream.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                               workstream.subRows.push(...latestCheckedList);
                               checkUpdate = checkUpdate + 1;
                             }
-                            if (workstream.Id === backupCheckedList[0]?.Id && workstream.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && workstream.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                            if (workstream.Id === backupCheckedList[0]?.Id && workstream.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && workstream.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                               array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows[activityIndex]?.subRows.splice(workstreamIndex, 1);
                               checkUpdate = checkUpdate + 1;
                             }
@@ -2474,11 +2474,11 @@ const RestructuringCom = (props: any, ref: any) => {
                             if (activity.subRows != undefined && activity.subRows.length > 0) {
                               activity.subRows.forEach((task: any, taskIndex: any) => {
                                 task.isRestructureActive = false;
-                                if (task.Id === newItemBackUp?.Id && task.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && task.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                                if (task.Id === newItemBackUp?.Id && task.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && task.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                                   task.subRows.push(...latestCheckedList);
                                   checkUpdate = checkUpdate + 1;
                                 }
-                                if (task.Id === backupCheckedList[0]?.Id && task.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && task.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                                if (task.Id === backupCheckedList[0]?.Id && task.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && task.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                                   array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows[activityIndex]?.subRows[workstreamIndex].subRows?.splice(taskIndex, 1);
                                   checkUpdate = checkUpdate + 1;
                                 }
@@ -2570,11 +2570,11 @@ const RestructuringCom = (props: any, ref: any) => {
 
         array?.map((obj: any, index: any) => {
           obj.isRestructureActive = false;
-          if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+          if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
             obj.subRows.push(...latestCheckedList);
             checkUpdate = checkUpdate + 1;
           }
-          if (obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+          if (obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
             array.splice(index, 1);
             checkUpdate = checkUpdate + 1;
           }
@@ -2582,11 +2582,11 @@ const RestructuringCom = (props: any, ref: any) => {
           if (obj.subRows != undefined && obj.subRows.length > 0) {
             obj.subRows.forEach((sub: any, indexsub: any) => {
               sub.isRestructureActive = false;
-              if (sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+              if (sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                 sub.subRows.push(...latestCheckedList);
                 checkUpdate = checkUpdate + 1;
               }
-              if (sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+              if (sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                 array[index]?.subRows.splice(indexsub, 1);
                 checkUpdate = checkUpdate + 1;
               }
@@ -2594,11 +2594,11 @@ const RestructuringCom = (props: any, ref: any) => {
               if (sub.subRows != undefined && sub.subRows.length > 0) {
                 sub.subRows.forEach((newsub: any, lastIndex: any) => {
                   newsub.isRestructureActive = false;
-                  if (newsub.Id === newItemBackUp?.Id && newsub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && newsub.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                  if (newsub.Id === newItemBackUp?.Id && newsub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && newsub.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                     newsub.subRows.push(...latestCheckedList);
                     checkUpdate = checkUpdate + 1;
                   }
-                  if (newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && newsub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                  if (newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && newsub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                     array[index]?.subRows[indexsub]?.subRows.splice(lastIndex, 1);
                     checkUpdate = checkUpdate + 1;
                   }
@@ -2606,11 +2606,11 @@ const RestructuringCom = (props: any, ref: any) => {
                   if (newsub.subRows != undefined && newsub.subRows.length > 0) {
                     newsub.subRows.forEach((activity: any, activityIndex: any) => {
                       activity.isRestructureActive = false;
-                      if (activity.Id === newItemBackUp?.Id && activity.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && activity.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                      if (activity.Id === newItemBackUp?.Id && activity.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && activity.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                         activity.subRows.push(...latestCheckedList);
                         checkUpdate = checkUpdate + 1;
                       }
-                      if (activity.Id === backupCheckedList[0]?.Id && activity.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && activity.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                      if (activity.Id === backupCheckedList[0]?.Id && activity.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && activity.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                         array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows.splice(activityIndex, 1);
                         checkUpdate = checkUpdate + 1;
                       }
@@ -2618,11 +2618,11 @@ const RestructuringCom = (props: any, ref: any) => {
                       if (activity.subRows != undefined && activity.subRows.length > 0) {
                         activity.subRows.forEach((workstream: any, workstreamIndex: any) => {
                           workstream.isRestructureActive = false;
-                          if (workstream.Id === newItemBackUp?.Id && workstream.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && workstream.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                          if (workstream.Id === newItemBackUp?.Id && workstream.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && workstream.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                             workstream.subRows.push(...latestCheckedList);
                             checkUpdate = checkUpdate + 1;
                           }
-                          if (workstream.Id === backupCheckedList[0]?.Id && workstream.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && workstream.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                          if (workstream.Id === backupCheckedList[0]?.Id && workstream.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && workstream.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                             array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows[activityIndex]?.subRows.splice(workstreamIndex, 1);
                             checkUpdate = checkUpdate + 1;
                           }
@@ -2630,11 +2630,11 @@ const RestructuringCom = (props: any, ref: any) => {
                           if (activity.subRows != undefined && activity.subRows.length > 0) {
                             activity.subRows.forEach((task: any, taskIndex: any) => {
                               task.isRestructureActive = false;
-                              if (task.Id === newItemBackUp?.Id && task.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && task.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                              if (task.Id === newItemBackUp?.Id && task.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && task.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                                 task.subRows.push(...latestCheckedList);
                                 checkUpdate = checkUpdate + 1;
                               }
-                              if (task.Id === backupCheckedList[0]?.Id && task.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && task.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                              if (task.Id === backupCheckedList[0]?.Id && task.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && task.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                                 array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows[activityIndex]?.subRows[workstreamIndex].subRows?.splice(taskIndex, 1);
                                 checkUpdate = checkUpdate + 1;
                               }

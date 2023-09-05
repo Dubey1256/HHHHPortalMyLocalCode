@@ -89,14 +89,14 @@ const inlineEditingcolumns = (props: any) => {
             setEditDate(props?.item?.DueDate);
         }
         let selectedCategoryId: any = [];
-        props?.item?.SharewebCategories?.map((category: any) => {
+        props?.item?.TaskCategories?.map((category: any) => {
             selectedCategoryId.push(category.Id);
         })
         setTaskAssignedTo(props?.item?.AssignedTo)
-        setTaskTeamMembers(props?.item?.Team_x0020_Members)
-        setTaskResponsibleTeam(props?.item?.Responsible_x0020_Team)
+        setTaskTeamMembers(props?.item?.TeamMembers)
+        setTaskResponsibleTeam(props?.item?.ResponsibleTeam)
         setSelectedCatId(selectedCategoryId);
-        setTaskPriority(props?.item?.Priority_x0020_Rank);
+        setTaskPriority(props?.item?.PriorityRank);
         setFeedback(props?.item?.Remark);
         setEstimatedTimeProps()
         if (props?.item?.PercentComplete != undefined) {
@@ -365,12 +365,12 @@ const inlineEditingcolumns = (props: any) => {
         await web.lists.getById(props?.item?.listId).items.getById(props?.item?.Id).update({
             PercentComplete: taskStatusInNumber/100,
             AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds.length > 0) ? AssignedToIds : [] },
-            Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0) ? ResponsibleTeamIds : [] },
-            Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds.length > 0) ? TeamMemberIds : [] },
+            ResponsibleTeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0) ? ResponsibleTeamIds : [] },
+            TeamMembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds.length > 0) ? TeamMemberIds : [] },
             ApproverId: { "results": (ApproverIds != undefined && ApproverIds.length > 0) ? ApproverIds : [] },
             "Priority": priority,
             "Categories": CategoryTitle,
-            "Priority_x0020_Rank": priorityRank,
+            "PriorityRank": priorityRank,
             SharewebCategoriesId: { "results": selectedCatId },
             DueDate: newDueDate,
             Remark: feedback,
@@ -378,8 +378,8 @@ const inlineEditingcolumns = (props: any) => {
         })
             .then((res: any) => {
 
-                web.lists.getById(props?.item?.listId).items.select("ID", "Title", "EstimatedTime", "Comments", "Remark", "DueDate", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified")
-                    .expand("Team_x0020_Members", "Approver", "ParentTask", "AssignedTo", "SharewebCategories", "Author", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor")
+                web.lists.getById(props?.item?.listId).items.select("ID", "Title", "EstimatedTime", "Comments", "Remark", "DueDate", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified")
+                    .expand("TeamMembers", "Approver", "ParentTask", "AssignedTo", "TaskCategories", "Author", "ResponsibleTeam", "TaskType", "Component", "Services", "Editor")
                     .getById(props?.item?.Id).get().then((task) => {
                         task.AllTeamMember = [];
                         task.siteType = props?.item?.siteType;
@@ -409,8 +409,8 @@ const inlineEditingcolumns = (props: any) => {
                             });
                         });
                         task.TeamMembersId = [];
-                        task.Shareweb_x0020_ID = globalCommon.getTaskId(task);
-                        task?.Team_x0020_MembersId?.map((taskUser: any) => {
+                        task.TaskID = globalCommon.getTaskId(task);
+                        task?.TeamMembersId?.map((taskUser: any) => {
                             task.TeamMembersId.push(taskUser);
                             var newuserdata: any = {};
                             AllTaskUser?.map((user: any) => {
@@ -570,8 +570,8 @@ const inlineEditingcolumns = (props: any) => {
 
         if (StatusData.value == 80) {
             // let tempArray: any = [];
-            if (props?.item?.Team_x0020_Members != undefined && props?.item?.Team_x0020_Members?.length > 0) {
-                setWorkingMemberFromTeam(props?.item?.Team_x0020_Members, "QA", 143);
+            if (props?.item?.TeamMembers != undefined && props?.item?.TeamMembers?.length > 0) {
+                setWorkingMemberFromTeam(props?.item?.TeamMembers, "QA", 143);
             } else {
                 setWorkingMember(143);
             }
@@ -582,8 +582,8 @@ const inlineEditingcolumns = (props: any) => {
         if (StatusData.value == 5) {
             // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
             //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
-            // } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
-            //     setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
+            // } else if (EditData.TeamMembers != undefined && EditData.TeamMembers?.length > 0) {
+            //     setWorkingMemberFromTeam(EditData.TeamMembers, "Development", 156);
 
             // } else {
             //     setWorkingMember(156);
@@ -606,8 +606,8 @@ const inlineEditingcolumns = (props: any) => {
         // if (StatusData.value == 70) {
         // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
         //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
-        // } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
-        //     setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
+        // } else if (EditData.TeamMembers != undefined && EditData.TeamMembers?.length > 0) {
+        //     setWorkingMemberFromTeam(EditData.TeamMembers, "Development", 156);
         // } else {
         //     setWorkingMember(156);
         // }
@@ -624,8 +624,8 @@ const inlineEditingcolumns = (props: any) => {
         }
         if (StatusData.value == 90) {
             let DesignStatus = false;
-            if (props?.item?.SharewebCategories?.length > 0) {
-                DesignStatus = isItemExistTitle('Design', props?.item?.SharewebCategories?.length)
+            if (props?.item?.TaskCategories?.length > 0) {
+                DesignStatus = isItemExistTitle('Design', props?.item?.TaskCategories?.length)
             }
             if (props?.item?.siteType == 'Offshore Tasks') {
                 setWorkingMember(36);
@@ -772,7 +772,7 @@ const inlineEditingcolumns = (props: any) => {
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <img className="imgWid29 pe-1 mb-1 " src={props?.item?.SiteIcon} />
                     <span className="siteColor">
-                        {`Update ${columnName} - ${props?.item?.Shareweb_x0020_ID} ${props?.item?.Title}`}
+                        {`Update ${columnName} - ${props?.item?.TaskID} ${props?.item?.Title}`}
                     </span>
                 </div>
             </div>
@@ -803,9 +803,9 @@ const inlineEditingcolumns = (props: any) => {
                     <>
                         <span className={ServicesTaskCheck && props?.pageName !== 'ProjectOverView' ? "serviepannelgreena hreflink" : "hreflink"} style={{ display: "flex", width: "100%", height: "100%" }} onClick={() => setTaskPriorityPopup(true)} >
                             &nbsp;
-                            {props?.item?.Priority_x0020_Rank}
+                            {props?.item?.PriorityRank}
                             {
-                                props?.item?.SharewebCategories?.map((category: any) => {
+                                props?.item?.TaskCategories?.map((category: any) => {
                                     if (category?.Title == 'Immediate') {
                                         return (
                                             <a title="Immediate">

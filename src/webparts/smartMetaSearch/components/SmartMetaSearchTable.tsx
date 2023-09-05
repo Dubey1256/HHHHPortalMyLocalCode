@@ -201,7 +201,7 @@ const SmartMetaSearchTable = (props:any) => {
                 let temparr:any = [];
                 selecteditems?.child.map((childitem:any)=>{
                     resultitem.forEach((taskitems:any)=>{
-                        if(childitem == taskitems.Priority_x0020_Rank){
+                        if(childitem == taskitems.PriorityRank){
                             if(!checkDuplicateItem(temparr,taskitems))
                                 temparr.push(taskitems); 
                         }
@@ -216,7 +216,7 @@ const SmartMetaSearchTable = (props:any) => {
                 let temparr:any = [];
                 selecteditems?.child.map((childitem:any)=>{
                     resultitem?.map((taskitems:any)=>{
-                        if(childitem == taskitems?.SharewebTaskType?.Title){
+                        if(childitem == taskitems?.TaskType?.Title){
                             if(!checkDuplicateItem(temparr,taskitems))
                                 temparr.push(taskitems); 
                         }
@@ -232,8 +232,8 @@ const SmartMetaSearchTable = (props:any) => {
                 let temparr:any = [];
                 selecteditems?.child.map((childitem:any)=>{
                     resultitem?.map((taskitems:any)=>{
-                        if(taskitems?.SharewebCategories?.length>0){
-                            taskitems.SharewebCategories.map((ctype:any)=>{
+                        if(taskitems?.TaskCategories?.length>0){
+                            taskitems.TaskCategories.map((ctype:any)=>{
                                 if(ctype.Title === childitem){
                                     if(!checkDuplicateItem(temparr,taskitems))
                                         temparr.push(taskitems);
@@ -369,8 +369,8 @@ const SmartMetaSearchTable = (props:any) => {
         if(tableitems?.isShowItem == true){
             if(resultitem?.length>0){
                 resultitem = resultitem.sort((a:any, b:any) => {
-                    if (a.Shareweb_x0020_ID < b.Shareweb_x0020_ID) return 1;
-                    if (a.Shareweb_x0020_ID > b.Shareweb_x0020_ID) return -1;
+                    if (a.TaskID < b.TaskID) return 1;
+                    if (a.TaskID > b.TaskID) return -1;
                     return 0;
                 });
                 setAllTask(resultitem);
@@ -412,9 +412,9 @@ const SmartMetaSearchTable = (props:any) => {
     [
         { cell: ({ row }) => (
             <>
-                <a> <img className='workmember ' src={row.original.siteurl} /></a>{row.original.Shareweb_x0020_ID}
+                <a> <img className='workmember ' src={row.original.siteurl} /></a>{row.original.TaskID}
             </>
-        ),accessorKey: "Shareweb_x0020_ID", placeholder: "TaskID", header: "", size: 70, },
+        ),accessorKey: "TaskID", placeholder: "TaskID", header: "", size: 70, },
         { cell: ({ row }) => (
             <>
                 <a target='_blank' href={`${parenturl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.siteType}`}>{row.original.Title}</a>
@@ -427,7 +427,7 @@ const SmartMetaSearchTable = (props:any) => {
         ), accessorKey: "tagComponentTitle", placeholder: "Component", header: "", size: 70, },
         { accessorKey: "Categories", placeholder: "Categories", header: "", size: 70, },
         { accessorKey: "PercentComplete", placeholder: "%", header: "", size: 70, },
-        { accessorKey: "Priority_x0020_Rank", placeholder: "Priority", header: "", size: 70, },
+        { accessorKey: "PriorityRank", placeholder: "Priority", header: "", size: 70, },
         { accessorKey: "Modified", placeholder: "Modified", header: "", size: 70, cell: ({ row }) => (
             <>
                 {row.original.Modified}<a target='_blank' href={`${web}/SitePages/TeamLeader-Dashboard.aspx?UserId=${row.original.userImageId}&Name=${row.original.userImageTitle}`}><img className='workmember ' src={row.original.userImageUrl} /></a>
