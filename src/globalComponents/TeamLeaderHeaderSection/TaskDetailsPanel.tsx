@@ -49,7 +49,7 @@ const TaskDetailsPanel = (props: any) => {
         id: 'Id',
     },
       {
-        accessorKey: "Shareweb_x0020_ID",
+        accessorKey: "TaskID",
         placeholder: "Task Id",
         header: "",
         resetColumnFilters: false,
@@ -58,8 +58,8 @@ const TaskDetailsPanel = (props: any) => {
         cell: ({ row, getValue }) => (
           <>
             <span className="d-flex">
-              {row?.original?.Shareweb_x0020_ID}
-              {/* <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} /> */}
+              {row?.original?.TaskID}
+              {/* <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} /> */}
             </span>
           </>
         ),
@@ -144,7 +144,7 @@ const TaskDetailsPanel = (props: any) => {
         header: ""
       },
       {
-        accessorFn: (row) => row?.Priority_x0020_Rank,
+        accessorFn: (row) => row?.PriorityRank,
         cell: ({ row }) => (
           <span>
 
@@ -157,7 +157,7 @@ const TaskDetailsPanel = (props: any) => {
                   TaskUsers={AllUser}
                   pageName={'ProjectManagment'}
                 /> */}
-            {row?.original?.Priority_x0020_Rank}
+            {row?.original?.PriorityRank}
           </span>
         ),
         placeholder: "Priority",

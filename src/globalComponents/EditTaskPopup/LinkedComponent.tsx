@@ -62,8 +62,8 @@ const LinkedServices = ({ props, Dynamic, Call }: any) => {
         componentDetails = await web.lists
             .getById(Dynamic.MasterTaskListID)
             .items
-            .select("ID", "Title", "DueDate", "Status", "Portfolio_x0020_Type", "ItemRank", "Item_x0020_Type", "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "SharewebCategories/Id", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title")
-            .expand("Team_x0020_Members", "Author", "ClientCategory", "Parent", "SharewebCategories", "AssignedTo", "ClientCategory")
+            .select("ID", "Title", "DueDate", "Status", "Portfolio_x0020_Type", "ItemRank", "Item_x0020_Type", "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "TaskCategories/Id", "TaskCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title")
+            .expand("TeamMembers", "Author", "ClientCategory", "Parent", "TaskCategories", "AssignedTo", "ClientCategory")
             .top(4999)
             .get()
 
@@ -95,8 +95,8 @@ const LinkedServices = ({ props, Dynamic, Call }: any) => {
                         }
                     })
                 }
-                if (result.Team_x0020_Members != undefined && result.Team_x0020_Members.length > 0) {
-                    $.each(result.Team_x0020_Members, function (index: any, Assig: any) {
+                if (result.TeamMembers != undefined && result.TeamMembers.length > 0) {
+                    $.each(result.TeamMembers, function (index: any, Assig: any) {
                         if (Assig.Id != undefined) {
                             $.each(Response, function (index: any, users: any) {
                                 if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
@@ -110,7 +110,7 @@ const LinkedServices = ({ props, Dynamic, Call }: any) => {
                 }
 
                 if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
-                    $.each(result.Team_x0020_Members, function (index: any, categoryData: any) {
+                    $.each(result.TeamMembers, function (index: any, categoryData: any) {
                         result.ClientCategory.push(categoryData);
                     })
                 }

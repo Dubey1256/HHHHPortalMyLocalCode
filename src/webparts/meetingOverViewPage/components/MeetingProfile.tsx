@@ -172,15 +172,15 @@ const MeetingProfile = (props: any) => {
 
                 .items.getById(AllListId?.meetingId)
 
-                .select("Id", "Title", "DueDate", "AssignedTo/Id","Attachments","Sitestagging", "FeedBack", "PortfolioStructureID","AssignedTo/Title", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", 'AttachmentFiles', "ShortDescriptionVerified", "SharewebTaskType/Title", "BasicImageInfo", 'Author/Id', 'Author/Title', "Editor/Title", "Editor/Id", "OffshoreComments", "OffshoreImageUrl", "Team_x0020_Members/Id", "Team_x0020_Members/Title")
+                .select("Id", "Title", "DueDate", "AssignedTo/Id","Attachments","Sitestagging", "FeedBack", "PortfolioStructureID","AssignedTo/Title", "ResponsibleTeam/Title", "ResponsibleTeam/Id", 'AttachmentFiles', "ShortDescriptionVerified", "TaskType/Title", "BasicImageInfo", 'Author/Id', 'Author/Title', "Editor/Title", "Editor/Id", "OffshoreComments", "OffshoreImageUrl", "TeamMembers/Id", "TeamMembers/Title")
 
                 // .top(5000)
 
-                .expand("AssignedTo", 'Responsible_x0020_Team', "AttachmentFiles", "Author", 'SharewebTaskType', "Editor", "Team_x0020_Members").get()
+                .expand("AssignedTo", 'ResponsibleTeam', "AttachmentFiles", "Author", 'TaskType', "Editor", "TeamMembers").get()
             // await web.lists
             //     .getById(AllListId?.MasterTaskListID)
-            //     .items.select("Id", "Title", "DueDate", "AssignedTo/Id", "AssignedTo/Title", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id",'Attachments', 'AttachmentFiles', "ShortDescriptionVerified", "SharewebTaskType/Title", "BasicImageInfo", 'Author/Id', 'Author/Title', "Editor/Title", "Editor/Id", "OffshoreComments", "OffshoreImageUrl", "Team_x0020_Members/Id", "Team_x0020_Members/Title")
-            //     .expand("AssignedTo", 'Responsible_x0020_Team', "AttachmentFiles", "Author", 'SharewebTaskType', "Editor", "Team_x0020_Members")
+            //     .items.select("Id", "Title", "DueDate", "AssignedTo/Id", "AssignedTo/Title", "ResponsibleTeam/Title", "ResponsibleTeam/Id",'Attachments', 'AttachmentFiles', "ShortDescriptionVerified", "TaskType/Title", "BasicImageInfo", 'Author/Id', 'Author/Title', "Editor/Title", "Editor/Id", "OffshoreComments", "OffshoreImageUrl", "TeamMembers/Id", "TeamMembers/Title")
+            //     .expand("AssignedTo", 'ResponsibleTeam', "AttachmentFiles", "Author", 'TaskType', "Editor", "TeamMembers")
             //     .getById(AllListId?.meetingId)
             //     .get()
                 .then((taskDetails: any) => {
@@ -188,10 +188,10 @@ const MeetingProfile = (props: any) => {
                     
     if (taskDetails["AssignedTo"] != undefined) {
         taskDetails["AssignedTo"]?.map((item: any, index: any) => {
-          if (taskDetails?.Team_x0020_Members != undefined) {
-            for (let i = 0; i < taskDetails?.Team_x0020_Members?.length; i++) {
-              if (item.Id == taskDetails?.Team_x0020_Members[i]?.Id) {
-                taskDetails?.Team_x0020_Members?.splice(i, true);
+          if (taskDetails?.TeamMembers != undefined) {
+            for (let i = 0; i < taskDetails?.TeamMembers?.length; i++) {
+              if (item.Id == taskDetails?.TeamMembers[i]?.Id) {
+                taskDetails?.TeamMembers?.splice(i, true);
                 i--;
               }
             }
@@ -203,8 +203,8 @@ const MeetingProfile = (props: any) => {
       }
   
       var array2: any = taskDetails["AssignedTo"] != undefined ? taskDetails["AssignedTo"] : []
-      if (taskDetails["Team_x0020_Members"] != undefined) {
-        taskDetails.array = array2.concat(taskDetails["Team_x0020_Members"]?.filter((item: any) => array2?.Id != item?.Id))
+      if (taskDetails["TeamMembers"] != undefined) {
+        taskDetails.array = array2.concat(taskDetails["TeamMembers"]?.filter((item: any) => array2?.Id != item?.Id))
   
       }
                  
@@ -224,8 +224,8 @@ const MeetingProfile = (props: any) => {
                         BasicImageInfo:GetAllImages(JSON.parse(taskDetails["BasicImageInfo"]), taskDetails["AttachmentFiles"], taskDetails["Attachments"]),
                         // GetAllImages(JSON.parse(taskDetails["BasicImageInfo"]), taskDetails["AttachmentFiles"], taskDetails["Attachments"])
                         FeedBack: JSON.parse(taskDetails["FeedBack"]),
-                        SharewebTaskType: taskDetails["SharewebTaskType"] != null ? taskDetails["SharewebTaskType"]?.Title : '',
-                        TeamLeader: taskDetails["Responsible_x0020_Team"] != null ? GetUserObjectFromCollection(taskDetails["Responsible_x0020_Team"]) : null,
+                        TaskType: taskDetails["TaskType"] != null ? taskDetails["TaskType"]?.Title : '',
+                        TeamLeader: taskDetails["ResponsibleTeam"] != null ? GetUserObjectFromCollection(taskDetails["ResponsibleTeam"]) : null,
                         TeamMembers: taskDetails.array != null ? GetUserObjectFromCollection(taskDetails.array) : null,
                         AssignedTo: taskDetails["AssignedTo"] != null ? GetUserObjectFromCollection(taskDetails["AssignedTo"]) : null,
                     }
@@ -746,7 +746,7 @@ const MeetingProfile = (props: any) => {
           //    Id:task?.Id,
           //    Title:task?.Title,
           //    siteType:task?.siteType,
-          //    Priority_x0020_Rank:task?.Priority_x0020_Rank,
+          //    PriorityRank:task?.PriorityRank,
           //    Component:task?.Component
           //   }
           //   meetingTagTask.push(data);
@@ -937,8 +937,8 @@ const MeetingProfile = (props: any) => {
                             }
                             {/*feedback comment section code */}
                             <div className={resultData?.BasicImageInfo != null && resultData?.BasicImageInfo?.length > 0 ? "col-sm-8 pe-0 mt-2" : "col-sm-12 pe-0 mt-2"}>
-                                {resultData["SharewebTaskType"] != null && (resultData["SharewebTaskType"] == '' ||
-                                    resultData["SharewebTaskType"] == 'Task' || resultData["SharewebTaskType"] == "Workstream" || resultData["SharewebTaskType"] == "Activities") && resultData["FeedBack"] != undefined && resultData["FeedBack"].length > 0 && resultData["FeedBack"][0].FeedBackDescriptions != undefined &&
+                                {resultData["TaskType"] != null && (resultData["TaskType"] == '' ||
+                                    resultData["TaskType"] == 'Task' || resultData["TaskType"] == "Workstream" || resultData["TaskType"] == "Activities") && resultData["FeedBack"] != undefined && resultData["FeedBack"].length > 0 && resultData["FeedBack"][0].FeedBackDescriptions != undefined &&
                                     resultData["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
                                     resultData["FeedBack"][0]?.FeedBackDescriptions[0]?.Title != '' &&
                                     <div className={"Addcomment " + "manage_gap"}>

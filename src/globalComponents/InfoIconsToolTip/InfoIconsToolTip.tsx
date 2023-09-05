@@ -65,7 +65,7 @@ export default function InfoIconsToolTip({ Discription, row }: any) {
                 <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container p-0 m-0" })}>
 
                     <div>
-                        <div className="tootltip-title">{row?.Shareweb_x0020_ID  !=undefined ? row?.Shareweb_x0020_ID : ""} :- {row?.Title}</div>
+                        <div className="tootltip-title">{row?.TaskID  !=undefined ? row?.TaskID : ""} :- {row?.Title}</div>
                         <button className="toolTipCross" onClick={handleCloseClick}><div className="popHoverCross">×</div></button>
                     </div>
                     <div className="toolsbox"><span dangerouslySetInnerHTML={{ __html: tooltiphierarchy, }}></span></div>
