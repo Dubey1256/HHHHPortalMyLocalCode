@@ -1969,13 +1969,16 @@ console.log(userIdByQuery)
                       </label>
                       <div className='d-flex'>
                         {users.childs.length > 0 && users.childs.map((item: any, i: number) => {
-                          return <div className="marginR41 ng-scope">
-                            {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined &&
+                          return <div className="alignCenter">
+                            {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined ?
                               <span>
                                 <img id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg ProirityAssignedUserPhoto' : 'ProirityAssignedUserPhoto'} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
                                   title={item.AssingedToUser.Title}
                                   src={item.Item_x0020_Cover.Url} />
-                              </span>
+                              </span>:
+                                <span className={item?.AssingedToUserId == user?.Id ? 'activeimg suffix_Usericon' : 'suffix_Usericon'} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
+                                title={item?.AssingedToUser?.Title}
+                               >{item?.Suffix}</span>
                             }
 
                           </div>
