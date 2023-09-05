@@ -45,7 +45,7 @@ export interface IUserTimeEntryState {
   columns: ColumnDef<any, unknown>[];
 }
 var user: any = ''
-var userIdByQuery:any=''
+var userIdByQuery: any = ''
 export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, IUserTimeEntryState> {
   public constructor(props: IUserTimeEntryProps, state: IUserTimeEntryState) {
     super(props);
@@ -86,12 +86,12 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
   private async GetResult() {
     var queryString = window.location.search;
 
-// Create a URLSearchParams object to parse the query string
-var params = new URLSearchParams(queryString);
+    // Create a URLSearchParams object to parse the query string
+    var params = new URLSearchParams(queryString);
 
-// Get the value of the 'userId' parameter from the query string
- userIdByQuery = params.get('userId');
-console.log(userIdByQuery)
+    // Get the value of the 'userId' parameter from the query string
+    userIdByQuery = params.get('userId');
+    console.log(userIdByQuery)
     await this.GetTaskUsers();
     await this.LoadAllMetaDataFilter();
     await this.DefaultValues()
@@ -99,14 +99,14 @@ console.log(userIdByQuery)
 
   private async DefaultValues() {
     let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
-   
+
     let ImageSelectedUsers = this.state.ImageSelectedUsers;
-    if(userIdByQuery != undefined && userIdByQuery != ''){
-      user ={"Id":userIdByQuery}
+    if (userIdByQuery != undefined && userIdByQuery != '') {
+      user = { "Id": userIdByQuery }
     }
-    else{
+    else {
       user = await web.currentUser.get();
-      
+
     }
     if (user?.Id != null) {
       for (let i = 0; i < this.state.taskUsers.length; i++) {
@@ -1969,15 +1969,11 @@ console.log(userIdByQuery)
                       </label>
                       <div className='d-flex'>
                         {users.childs.length > 0 && users.childs.map((item: any, i: number) => {
-                          return <div className="marginR41 ng-scope">
-                            {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined &&
+                          return <div className="alignCenter">
+                            {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined ?
                               <span>
-                                <img id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg ProirityAssignedUserPhoto' : 'ProirityAssignedUserPhoto'} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
-                                  title={item.AssingedToUser.Title}
-                                  src={item.Item_x0020_Cover.Url} />
-                              </span>
+                                <img id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg ProirityAssignedUserPhoto' : 'ProirityAssignedUserPhoto'} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)" title={item.AssingedToUser.Title} src={item.Item_x0020_Cover.Url} /> </span> : <span className={item?.AssingedToUserId == user?.Id ? 'activeimg suffix_Usericon' : 'suffix_Usericon'} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)" title={item?.AssingedToUser?.Title} >{item?.Suffix}</span>
                             }
-
                           </div>
                         })}
                       </div>
@@ -2122,7 +2118,7 @@ console.log(userIdByQuery)
                                 </span>
                                 <hr></hr>
                               </label>
-                             
+
 
 
                               <CheckboxTree
