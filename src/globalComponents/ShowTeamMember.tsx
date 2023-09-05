@@ -55,16 +55,16 @@ function ShowTeamMembers(item: any) {
     let array: any = [];
     item?.props?.map((items: any) => {
       newTaskUsers?.map((taskuser: any) => {
-        if (items?.original?.Team_x0020_Members?.length > 0) {
-          items?.original?.Team_x0020_Members?.map((item: any) => {
+        if (items?.original?.TeamMembers?.length > 0) {
+          items?.original?.TeamMembers?.map((item: any) => {
             if (item?.Id == taskuser?.AssingedToUser?.Id) {
               array.push(taskuser);
             }
           });
         }
 
-        if (items?.original.Responsible_x0020_Team?.length > 0) {
-          items?.original.Responsible_x0020_Team?.map((item: any) => {
+        if (items?.original.ResponsibleTeam?.length > 0) {
+          items?.original.ResponsibleTeam?.map((item: any) => {
             if (item?.Id == taskuser?.AssingedToUser?.Id) {
               array.push(taskuser);
             }

@@ -251,8 +251,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         // .getByTitle("Master Tasks")
         .getById(this.props.MasterTaskListID)
         .items
-        .select('ComponentCategory/Id', 'PortfolioStructureID', 'SharewebTaskType/Id', "SharewebTaskType/Title", 'Portfolio_x0020_Type', 'ComponentCategory/Title', 'Id', 'ValueAdded', 'Idea', 'Sitestagging', 'TechnicalExplanations', 'Short_x0020_Description_x0020_On', 'Short_x0020_Description_x0020__x', 'Short_x0020_description_x0020__x0', 'Admin_x0020_Notes', 'Background', 'Help_x0020_Information', 'Item_x0020_Type', 'Title', 'Parent/Id', 'Parent/Title')
-        .expand('Parent', 'ComponentCategory', 'SharewebTaskType')
+        .select('ComponentCategory/Id', 'PortfolioStructureID', 'TaskType/Id', "TaskType/Title", 'Portfolio_x0020_Type', 'ComponentCategory/Title', 'Id', 'ValueAdded', 'Idea', 'Sitestagging', 'TechnicalExplanations', 'Short_x0020_Description_x0020_On', 'Short_x0020_Description_x0020__x', 'Short_x0020_description_x0020__x0', 'AdminNotes', 'Background', 'Help_x0020_Information', 'Item_x0020_Type', 'Title', 'Parent/Id', 'Parent/Title')
+        .expand('Parent', 'ComponentCategory', 'TaskType')
         .filter(query.replace('filter=', ''))
         .orderBy('Modified', false)
         .getAll(4000);
@@ -284,14 +284,14 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       // .getByTitle("Master Tasks")
       .getById(this.props.MasterTaskListID)
       .items
-      .select('ComponentCategory/Id', 'PortfolioStructureID', "SharewebTaskType/Id", "SharewebTaskType/Title", 'Portfolio_x0020_Type', 'ComponentCategory/Title', 'Id', 'ValueAdded', 'Idea', 'Sitestagging', 'TechnicalExplanations', 'Short_x0020_Description_x0020_On', 'Short_x0020_Description_x0020__x', 'Short_x0020_description_x0020__x0', 'Admin_x0020_Notes', 'Background', 'Help_x0020_Information', 'Item_x0020_Type', 'Title', 'Parent/Id', 'Parent/Title')
-      .expand('Parent', 'ComponentCategory', 'SharewebTaskType')
+      .select('ComponentCategory/Id', 'PortfolioStructureID', "TaskType/Id", "TaskType/Title", 'Portfolio_x0020_Type', 'ComponentCategory/Title', 'Id', 'ValueAdded', 'Idea', 'Sitestagging', 'TechnicalExplanations', 'Short_x0020_Description_x0020_On', 'Short_x0020_Description_x0020__x', 'Short_x0020_description_x0020__x0', 'AdminNotes', 'Background', 'Help_x0020_Information', 'Item_x0020_Type', 'Title', 'Parent/Id', 'Parent/Title')
+      .expand('Parent', 'ComponentCategory', 'TaskType')
       .filter(query.replace('filter=', ''))
       .orderBy('Modified', false)
       .getAll(4000);
 
     Data.forEach(function (Item: any) {
-      // Item['Shareweb_x0020_ID'] = globalCommon.getTaskId( Item)
+      // Item['TaskID'] = globalCommon.getTaskId( Item)
       AllDataMatches.push(Item);
     });
 
@@ -343,8 +343,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       .getByTitle(this.state?.listName)
       .items
       .getById(this.state?.itemID)
-      .select("ID", "Title", "Comments", "ApproverHistory", "EstimatedTime", "DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "Approver/Id", "Approver/Title", "ParentTask/Id", "Project/Id", "Project/Title", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
-      .expand("Team_x0020_Members", "Project", "Approver", "ParentTask", "SmartInformation", "AssignedTo", "SharewebCategories", "Author", "ClientCategory", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor", "AttachmentFiles")
+      .select("ID", "Title", "Comments", "ApproverHistory", "EstimatedTime", "DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "Approver/Id", "Approver/Title", "ParentTask/Id", "Project/Id", "Project/Title", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
+      .expand("TeamMembers", "Project", "Approver", "ParentTask", "SmartInformation", "AssignedTo", "TaskCategories", "Author", "ClientCategory", "ResponsibleTeam", "TaskType", "Component", "Services", "Editor", "AttachmentFiles")
       .get()
     AllListId = {
       MasterTaskListID: this.props.MasterTaskListID,
@@ -365,8 +365,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
     taskDetails.TaskId = globalCommon.getTaskId(taskDetails);
     var category = ""
-    if (taskDetails["SharewebCategories"] != undefined && taskDetails["SharewebCategories"].length > 0) {
-      taskDetails["SharewebCategories"]?.map((item: any, index: any) => {
+    if (taskDetails["TaskCategories"] != undefined && taskDetails["TaskCategories"].length > 0) {
+      taskDetails["TaskCategories"]?.map((item: any, index: any) => {
         category = category + item?.Title + ";"
         let ApprovalCheck = category?.search("Approval");
         if (ApprovalCheck >= 0) {
@@ -385,10 +385,10 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
     if (taskDetails["AssignedTo"] != undefined) {
       taskDetails["AssignedTo"]?.map((item: any, index: any) => {
-        if (taskDetails?.Team_x0020_Members != undefined) {
-          for (let i = 0; i < taskDetails?.Team_x0020_Members?.length; i++) {
-            if (item.Id == taskDetails?.Team_x0020_Members[i]?.Id) {
-              taskDetails?.Team_x0020_Members?.splice(i, true);
+        if (taskDetails?.TeamMembers != undefined) {
+          for (let i = 0; i < taskDetails?.TeamMembers?.length; i++) {
+            if (item.Id == taskDetails?.TeamMembers[i]?.Id) {
+              taskDetails?.TeamMembers?.splice(i, true);
               i--;
             }
           }
@@ -400,8 +400,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     }
 
     var array2: any = taskDetails["AssignedTo"] != undefined ? taskDetails["AssignedTo"] : []
-    if (taskDetails["Team_x0020_Members"] != undefined) {
-      taskDetails.array = array2.concat(taskDetails["Team_x0020_Members"]?.filter((item: any) => array2?.Id != item?.Id))
+    if (taskDetails["TeamMembers"] != undefined) {
+      taskDetails.array = array2.concat(taskDetails["TeamMembers"]?.filter((item: any) => array2?.Id != item?.Id))
     } else {
       taskDetails.array = array2;
     }
@@ -479,17 +479,17 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       Status: taskDetails["Status"],
       StartDate: taskDetails["StartDate"] != null ? moment(taskDetails["StartDate"]).format("DD/MM/YYYY") : "",
       CompletedDate: taskDetails["CompletedDate"] != null ? moment(taskDetails["CompletedDate"])?.format("DD/MM/YYYY") : "",
-      TeamLeader: taskDetails["Responsible_x0020_Team"] != null ? this.GetUserObjectFromCollection(taskDetails["Responsible_x0020_Team"]) : null,
+      TeamLeader: taskDetails["ResponsibleTeam"] != null ? this.GetUserObjectFromCollection(taskDetails["ResponsibleTeam"]) : null,
       TeamMembers: taskDetails.array != null ? this.GetUserObjectFromCollection(taskDetails.array) : null,
       ItemRank: taskDetails["ItemRank"],
       PercentComplete: (taskDetails["PercentComplete"] * 100),
       Priority: taskDetails["Priority"],
       Created: taskDetails["Created"],
       Author: this.GetUserObject(taskDetails["Author"]?.Title),
-      component_url: taskDetails["component_x0020_link"],
+      component_url: taskDetails["ComponentLink"],
       BasicImageInfo: this.GetAllImages(JSON.parse(taskDetails["BasicImageInfo"]), taskDetails["AttachmentFiles"], taskDetails["Attachments"]),
       FeedBack: JSON.parse(taskDetails["FeedBack"]),
-      SharewebTaskType: taskDetails["SharewebTaskType"] != null ? taskDetails["SharewebTaskType"]?.Title : '',
+      TaskType: taskDetails["TaskType"] != null ? taskDetails["TaskType"]?.Title : '',
       EstimatedTimeDescriptionArray: tempEstimatedArrayData,
       TotalEstimatedTime: TotalEstimatedTime,
       Component: taskDetails["Component"],
@@ -498,8 +498,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       Modified: taskDetails["Modified"],
       ModifiedBy: taskDetails["Editor"],
       listId: listInfo.Id,
-      SharewebTaskLevel1No: taskDetails["SharewebTaskLevel1No"],
-      SharewebTaskLevel2No: taskDetails['SharewebTaskLevel2No'],
+      TaskLevel: taskDetails["TaskLevel"],
+      TaskLevel: taskDetails['TaskLevel'],
       Attachments: taskDetails["Attachments"],
       AttachmentFiles: taskDetails["AttachmentFiles"],
       SmartInformationId: taskDetails["SmartInformation"],
@@ -979,9 +979,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       .getByTitle(this.site)
       // .getById(this.props.SiteTaskListID)
       .items
-      .select('Shareweb_x0020_ID', 'SharewebTaskType/Id', "AssignedTo/Id", "AssignedTo/Title", 'SharewebTaskType/Title', 'Team_x0020_Members/Id', 'Team_x0020_Members/Title', 'Team_x0020_Members/Name', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id', 'AttachmentFiles/FileName', 'Component/Id', 'Component/Title', 'Component/ItemType', 'Services/Id', 'Services/Title', 'Services/ItemType', 'OffshoreComments', 'Portfolio_x0020_Type', 'Categories', 'FeedBack', 'component_x0020_link', 'FileLeafRef', 'Title', 'Id', 'Comments', 'CompletedDate', 'StartDate', 'DueDate', 'Status', 'Body', 'Company', 'Mileage', 'PercentComplete', 'FeedBack', 'Attachments', 'Priority', 'Created', 'Modified', 'BasicImageInfo', 'SharewebCategories/Id', 'SharewebCategories/Title', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title', 'Events/Id', 'Events/Title', 'Events/ItemType', 'SharewebTaskLevel1No', 'SharewebTaskLevel2No', 'ParentTask/Id', 'ParentTask/Title', 'Responsible_x0020_Team/Id', 'Responsible_x0020_Team/Title', 'Responsible_x0020_Team/Name')
-      .filter("(SharewebTaskType/Title eq 'Activities') or (SharewebTaskType/Title eq 'Workstream') or (SharewebTaskType/Title eq 'Task') or (SharewebTaskType/Title eq 'Project') or (SharewebTaskType/Title eq 'Step') or (SharewebTaskType/Title eq 'MileStone')")
-      .expand('Responsible_x0020_Team', "AssignedTo", 'ParentTask', 'AssignedTo', 'Component', 'Services', 'Events', 'AttachmentFiles', 'Author', 'Team_x0020_Members', 'Editor', 'SharewebCategories', 'SharewebTaskType')
+      .select('TaskID', 'TaskType/Id', "AssignedTo/Id", "AssignedTo/Title", 'TaskType/Title', 'TeamMembers/Id', 'TeamMembers/Title', 'TeamMembers/Name', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id', 'AttachmentFiles/FileName', 'Component/Id', 'Component/Title', 'Component/ItemType', 'Services/Id', 'Services/Title', 'Services/ItemType', 'OffshoreComments', 'Portfolio_x0020_Type', 'Categories', 'FeedBack', 'ComponentLink', 'FileLeafRef', 'Title', 'Id', 'Comments', 'CompletedDate', 'StartDate', 'DueDate', 'Status', 'Body', 'Company', 'Mileage', 'PercentComplete', 'FeedBack', 'Attachments', 'Priority', 'Created', 'Modified', 'BasicImageInfo', 'TaskCategories/Id', 'TaskCategories/Title', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title', 'Events/Id', 'Events/Title', 'Events/ItemType', 'TaskLevel', 'TaskLevel', 'ParentTask/Id', 'ParentTask/Title', 'ResponsibleTeam/Id', 'ResponsibleTeam/Title', 'ResponsibleTeam/Name')
+      .filter("(TaskType/Title eq 'Activities') or (TaskType/Title eq 'Workstream') or (TaskType/Title eq 'Task') or (TaskType/Title eq 'Project') or (TaskType/Title eq 'Step') or (TaskType/Title eq 'MileStone')")
+      .expand('ResponsibleTeam', "AssignedTo", 'ParentTask', 'AssignedTo', 'Component', 'Services', 'Events', 'AttachmentFiles', 'Author', 'TeamMembers', 'Editor', 'TaskCategories', 'TaskType')
       .getAll(4000);
 
     for (let index = 0; index < results.length; index++) {
@@ -1136,8 +1136,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
   private breadcrumbOtherHierarchy(breadcrumbitem: any) {
     let self = this;
     this.allDataOfTask?.forEach(function (value: any) {
-      if (self.taskResult?.SharewebTaskType != undefined) {
-        if (self.taskResult?.SharewebTaskType?.Title == 'Activities' || self.taskResult?.SharewebTaskType?.Title == 'Project') {
+      if (self.taskResult?.TaskType != undefined) {
+        if (self.taskResult?.TaskType?.Title == 'Activities' || self.taskResult?.TaskType?.Title == 'Project') {
           if (self.taskResult?.ParentTask == undefined) {
             if (value?.Id == self.taskResult?.Id) {
               value.isLastNode = true;
@@ -1145,7 +1145,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
             }
           }
 
-        } else if (self.taskResult?.SharewebTaskType?.Title == 'Workstream' || self.taskResult?.SharewebTaskType?.Title == 'Step') {
+        } else if (self.taskResult?.TaskType?.Title == 'Workstream' || self.taskResult?.TaskType?.Title == 'Step') {
           if (self.taskResult?.ParentTask?.Id != undefined) {
             if (self.taskResult?.ParentTask?.Id == value?.Id) {
               self.taskResult.isLastNode = true;
@@ -1153,14 +1153,14 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
               breadcrumbitem.ChildTask = self.taskResult;
             }
           }
-        } else if (self.taskResult?.SharewebTaskType?.Title == 'Task' || self.taskResult?.SharewebTaskType?.Title == 'MileStone') {
+        } else if (self.taskResult?.TaskType?.Title == 'Task' || self.taskResult?.TaskType?.Title == 'MileStone') {
           if (self.taskResult?.ParentTask != undefined && self.taskResult?.ParentTask?.Id != undefined) {
-            if (self.taskResult?.ParentTask?.Id == value?.Id && (value?.SharewebTaskType?.Title == 'Activities' || value?.SharewebTaskType?.Title == 'Project')) {
+            if (self.taskResult?.ParentTask?.Id == value?.Id && (value?.TaskType?.Title == 'Activities' || value?.TaskType?.Title == 'Project')) {
               self.taskResult.isLastNode = true;
               breadcrumbitem.ParentTask = value;
               breadcrumbitem.ChildTask = self.taskResult;
             }
-            if (self.taskResult?.ParentTask?.Id == value?.Id && (value?.SharewebTaskType?.Title == 'Workstream' || value?.SharewebTaskType?.Title == 'Step')) {
+            if (self.taskResult?.ParentTask?.Id == value?.Id && (value?.TaskType?.Title == 'Workstream' || value?.TaskType?.Title == 'Step')) {
               self.taskResult.isLastNode = true;
               breadcrumbitem.ChildTask = value;
               breadcrumbitem.SubChildTask = self.taskResult;
@@ -1168,7 +1168,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
             }
             if (breadcrumbitem?.ChildTask != undefined) {
               self.allDataOfTask?.forEach(function (values: any) {
-                if (breadcrumbitem?.ChildTask?.ParentTask?.Id == values?.Id && (breadcrumbitem?.ChildTask?.SharewebTaskType?.Title == 'Workstream' || breadcrumbitem?.ChildTask?.SharewebTaskType?.Title == 'Step')) {
+                if (breadcrumbitem?.ChildTask?.ParentTask?.Id == values?.Id && (breadcrumbitem?.ChildTask?.TaskType?.Title == 'Workstream' || breadcrumbitem?.ChildTask?.TaskType?.Title == 'Step')) {
                   breadcrumbitem.ParentTask = values;
                 }
               });
@@ -1180,19 +1180,19 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         }
       }
     })
-    if (this.taskResult.SharewebTaskType == undefined) {
+    if (this.taskResult.TaskType == undefined) {
       this.taskResult.isLastNode = true;
       breadcrumbitem.ParentTask = this.taskResult;
     }
     if (breadcrumbitem != undefined) {
-      if (breadcrumbitem?.ParentTask != undefined && breadcrumbitem?.ParentTask?.Shareweb_x0020_ID != undefined && breadcrumbitem?.ChildTask == undefined && breadcrumbitem?.SubChildTask == undefined) {
+      if (breadcrumbitem?.ParentTask != undefined && breadcrumbitem?.ParentTask?.TaskID != undefined && breadcrumbitem?.ChildTask == undefined && breadcrumbitem?.SubChildTask == undefined) {
 
-        TaskIdAW = (breadcrumbitem?.ParentTask?.Shareweb_x0020_ID)?.replace("-", ">")
+        TaskIdAW = (breadcrumbitem?.ParentTask?.TaskID)?.replace("-", ">")
       }
       if (breadcrumbitem.ChildTask != undefined && breadcrumbitem.SubChildTask == undefined) {
-        if (breadcrumbitem.ChildTask.Shareweb_x0020_ID != undefined) {
+        if (breadcrumbitem.ChildTask.TaskID != undefined) {
           if (TaskIdAW != "" || TaskIdAW == "") {
-            TaskIdAW = TaskIdAW + ">" + breadcrumbitem?.ChildTask?.Shareweb_x0020_ID;
+            TaskIdAW = TaskIdAW + ">" + breadcrumbitem?.ChildTask?.TaskID;
           }
         }
         else if (breadcrumbitem?.ChildTask != undefined && breadcrumbitem?.ChildTask?.TaskId != undefined && breadcrumbitem?.SubChildTask == undefined) {
@@ -1874,7 +1874,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                           <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem.Subchild.Id}`}>{breadcrumbitem?.Subchild?.Title}</a>
                         </li>
                       }
-                      {breadcrumbitem.ParentTask != undefined && breadcrumbitem.ParentTask.Shareweb_x0020_ID != undefined && this.state.Result["ParentTask"] != undefined &&
+                      {breadcrumbitem.ParentTask != undefined && breadcrumbitem.ParentTask.TaskID != undefined && this.state.Result["ParentTask"] != undefined &&
                         <li  >
 
                           <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${breadcrumbitem.ParentTask.Id}&Site=${breadcrumbitem?.ParentTask?.siteType}`}>{breadcrumbitem?.ParentTask?.Title}</a>
@@ -2239,8 +2239,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                         }
                         {/*feedback comment section code */}
                         <div className={this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.length > 0 ? "col-sm-8 pe-0 mt-2" : "col-sm-12 pe-0 mt-2"}>
-                          {this.state.Result["SharewebTaskType"] != null && (this.state.Result["SharewebTaskType"] == '' ||
-                            this.state.Result["SharewebTaskType"] == 'Task' || this.state.Result["SharewebTaskType"] == "Workstream" || this.state.Result["SharewebTaskType"] == "Activities") && this.state.Result["FeedBack"] != undefined && this.state.Result["FeedBack"].length > 0 && this.state.Result["FeedBack"][0].FeedBackDescriptions != undefined &&
+                          {this.state.Result["TaskType"] != null && (this.state.Result["TaskType"] == '' ||
+                            this.state.Result["TaskType"] == 'Task' || this.state.Result["TaskType"] == "Workstream" || this.state.Result["TaskType"] == "Activities") && this.state.Result["FeedBack"] != undefined && this.state.Result["FeedBack"].length > 0 && this.state.Result["FeedBack"][0].FeedBackDescriptions != undefined &&
                             this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
                             this.state.Result["FeedBack"][0]?.FeedBackDescriptions[0]?.Title != '' && this.state.countfeedback >= 0 &&
                             <div className={"Addcomment " + "manage_gap"}>
@@ -2711,7 +2711,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
               <div> {this.state.Result.Id != undefined && <KeyDocuments ref={this?.relevantDocRef} AllListId={AllListId} Context={this.props?.Context} siteUrl={this.props.siteUrl} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} keyDoc={true}></KeyDocuments>}</div>
             </div>
             <div className="row">
-              {this.state.Result != undefined && this.state.Result.Id != undefined && this.state.Result.SharewebTaskType != "" && this.state.Result.SharewebTaskType != undefined && this.state.Result.SharewebTaskType != 'Task' ? <TasksTable props={this.state.Result} AllListId={AllListId} Context={this.props?.Context} /> : ''}
+              {this.state.Result != undefined && this.state.Result.Id != undefined && this.state.Result.TaskType != "" && this.state.Result.TaskType != undefined && this.state.Result.TaskType != 'Task' ? <TasksTable props={this.state.Result} AllListId={AllListId} Context={this.props?.Context} /> : ''}
             </div>
             <div className='row'>
               {/* {this.state.Result?.Portfolio_x0020_Type!=undefined &&<TaskWebparts props={this.state.Result}/>} */}

@@ -294,7 +294,7 @@ function EditProjectPopup(item: any) {
             CategoriesData.push(itenn);
           }
         });
-        item?.SharewebCategories.map((itenn: any) => {
+        item?.TaskCategories.map((itenn: any) => {
           CategoriesData.push(itenn);
         });
 
@@ -462,19 +462,19 @@ function EditProjectPopup(item: any) {
   };
 
   const getpriority = function (item: any) {
-    if (item.Priority_x0020_Rank >= 0 && item.Priority_x0020_Rank <= 3) {
+    if (item.PriorityRank >= 0 && item.PriorityRank <= 3) {
       item.Priority = "(3) Low";
     }
-    if (item.Priority_x0020_Rank >= 4 && item.Priority_x0020_Rank <= 7) {
+    if (item.PriorityRank >= 4 && item.PriorityRank <= 7) {
       item.Priority = "(2) Normal";
     }
-    if (item.Priority_x0020_Rank >= 8) {
+    if (item.PriorityRank >= 8) {
       item.Priority = "(1) High";
     }
   };
 
   var getMasterTaskListTasks = async function () {
-    //  var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,Deliverable_x002d_Synonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title";
+    //  var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,DeliverableSynonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,Component/Id,Component/Title,Component/ItemType,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title";
     let web = new Web(AllListId?.siteUrl);
     let componentDetails = [];
     componentDetails = await web.lists
@@ -493,7 +493,7 @@ function EditProjectPopup(item: any) {
         "descriptionVerified",
         "Synonyms",
         "BasicImageInfo",
-        "Deliverable_x002d_Synonyms",
+        "DeliverableSynonyms",
         "OffshoreComments",
         "OffshoreImageUrl",
         "HelpInformationVerified",
@@ -514,26 +514,26 @@ function EditProjectPopup(item: any) {
         "Short_x0020_Description_x0020_On",
         "Short_x0020_Description_x0020__x",
         "Short_x0020_description_x0020__x0",
-        "Admin_x0020_Notes",
+        "AdminNotes",
         "AdminStatus",
         "Background",
         "Help_x0020_Information",
         "SharewebComponent/Id",
-        "SharewebCategories/Id",
-        "SharewebCategories/Title",
-        "Priority_x0020_Rank",
+        "TaskCategories/Id",
+        "TaskCategories/Title",
+        "PriorityRank",
         "Reference_x0020_Item_x0020_Json",
-        "Team_x0020_Members/Title",
-        "Team_x0020_Members/Name",
+        "TeamMembers/Title",
+        "TeamMembers/Name",
         "Component/Id",
         "Services/Id",
         "Services/Title",
         "Services/ItemType",
         "Component/Title",
         "Component/ItemType",
-        "Team_x0020_Members/Id",
+        "TeamMembers/Id",
         "Item_x002d_Image",
-        "component_x0020_link",
+        "ComponentLink",
         "IsTodaysTask",
         "AssignedTo/Title",
         "AssignedTo/Name",
@@ -574,16 +574,16 @@ function EditProjectPopup(item: any) {
         "AttachmentFiles",
         "Author",
         "Editor",
-        "Team_x0020_Members",
+        "TeamMembers",
         "SharewebComponent",
-        "SharewebCategories",
+        "TaskCategories",
         "Parent"
       )
       .filter("Id eq " + item.props.Id + "")
       .get();
     console.log(componentDetails);
 
-    // var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,Deliverable_x002d_Synonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title&$expand=ClientCategory,ComponentCategory,AssignedTo,Component,ComponentPortfolio,ServicePortfolio,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebComponent,SharewebCategories,Parent&$filter=Id eq " + item.props.Id + "";
+    // var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,DeliverableSynonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,Component/Id,Component/Title,Component/ItemType,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title&$expand=ClientCategory,ComponentCategory,AssignedTo,Component,ComponentPortfolio,ServicePortfolio,AttachmentFiles,Author,Editor,TeamMembers,SharewebComponent,TaskCategories,Parent&$filter=Id eq " + item.props.Id + "";
     // $.ajax({
     //     url: "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('ec34b38f-0669-480a-910c-f84e92e58adf')/items?$select=" + query + "",
     //     method: "GET",
@@ -608,16 +608,16 @@ function EditProjectPopup(item: any) {
       item.Creatednewdate = moment(item.Created).format("MM-DD-YYYY"); //ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY HH:mm');
       // item.Modified = moment(item.Modified).format('DD/MM/YYYY');
       //ConvertLocalTOServerDate(item.Modified, 'DD/MM/YYYY HH:mm');
-      if (item.Priority_x0020_Rank == undefined && item.Priority != undefined) {
+      if (item.PriorityRank == undefined && item.Priority != undefined) {
         switch (item.Priority) {
           case "(1) High":
-            item.Priority_x0020_Rank = 8;
+            item.PriorityRank = 8;
             break;
           case "(2) Normal":
-            item.Priority_x0020_Rank = 4;
+            item.PriorityRank = 4;
             break;
           case "(3) Low":
-            item.Priority_x0020_Rank = 1;
+            item.PriorityRank = 1;
             break;
         }
       }
@@ -661,9 +661,9 @@ function EditProjectPopup(item: any) {
           }
         });
       });
-      if (item.SharewebCategories != undefined) {
-        if (item.SharewebCategories.results != undefined) {
-          map(item.SharewebCategories.results, (bj) => {
+      if (item.TaskCategories != undefined) {
+        if (item.TaskCategories.results != undefined) {
+          map(item.TaskCategories.results, (bj) => {
             if (bj.Title != undefined)
               item.smartCategories.push({ Title: bj.Title, Id: bj.Id });
           });
@@ -683,11 +683,11 @@ function EditProjectPopup(item: any) {
         item.DueDate = moment(item.DueDate).format("MM-DD-YYYY");
         // setDate(item.DueDate);
       }
-      if (item.SharewebCategories != null) {
-        setCategoriesData(item.SharewebCategories);
+      if (item.TaskCategories != null) {
+        setCategoriesData(item.TaskCategories);
       }
-      if (item.SharewebCategories != null) {
-        item.SharewebCategories.forEach(function (type: any) {
+      if (item.TaskCategories != null) {
+        item.TaskCategories.forEach(function (type: any) {
           CheckCategory.forEach(function (val: any) {
             if (type.Id == val.Id) {
               val.isChecked = true;
@@ -714,8 +714,8 @@ function EditProjectPopup(item: any) {
       //   item.StartDate = moment(item.StartDate).format("MM-DD-YYYY");
       //   //setStartdate(item.StartDate);
       // }
-      if (item.component_x0020_link != null) {
-        item.component_x0020_link = item.component_x0020_link.Url;
+      if (item.ComponentLink != null) {
+        item.ComponentLink = item.ComponentLink.Url;
         //setStartdate(item.StartDate);
       }
       if (item.CompletedDate != undefined) {
@@ -871,21 +871,21 @@ function EditProjectPopup(item: any) {
         "Author/Id",
         "Author/Title",
         "Parent/Title",
-        "SharewebCategories/Id",
-        "SharewebCategories/Title",
+        "TaskCategories/Id",
+        "TaskCategories/Title",
         "AssignedTo/Id",
         "AssignedTo/Title",
-        "Team_x0020_Members/Id",
-        "Team_x0020_Members/Title",
+        "TeamMembers/Id",
+        "TeamMembers/Title",
         "ClientCategory/Id",
         "ClientCategory/Title"
       )
       .expand(
-        "Team_x0020_Members",
+        "TeamMembers",
         "Author",
         "ClientCategory",
         "Parent",
-        "SharewebCategories",
+        "TaskCategories",
         "AssignedTo"
       )
       .top(4999)
@@ -1102,14 +1102,14 @@ function EditProjectPopup(item: any) {
       }
     } else {
       alert("Status not should be greater than 100");
-      setEditData({ ...EditData, Priority_x0020_Rank: 0 })
+      setEditData({ ...EditData, PriorityRank: 0 })
     }
 
 
     // value: 5, status: "05% Acknowledged", taskStatusComment: "Acknowledged"
   }
   const setPriority = function (item: any, val: number) {
-    item.Priority_x0020_Rank = val;
+    item.PriorityRank = val;
     getpriority(item);
 
     setComponent((EditData) => [...EditData]);
@@ -1150,33 +1150,33 @@ function EditProjectPopup(item: any) {
     setSharewebComponent(item);
   };
   const setPriorityNew = function (e: any, item: any) {
-    item.Priority_x0020_Rank = e.target.value;
-    if (item.Priority_x0020_Rank <= 10) {
+    item.PriorityRank = e.target.value;
+    if (item.PriorityRank <= 10) {
       if (
-        item.Priority_x0020_Rank == 8 ||
-        item.Priority_x0020_Rank == 9 ||
-        item.Priority_x0020_Rank == 10
+        item.PriorityRank == 8 ||
+        item.PriorityRank == 9 ||
+        item.PriorityRank == 10
       ) {
         item.Priority = "(1) High";
       }
       if (
-        item.Priority_x0020_Rank == 4 ||
-        item.Priority_x0020_Rank == 5 ||
-        item.Priority_x0020_Rank == 6 ||
-        item.Priority_x0020_Rank == 7
+        item.PriorityRank == 4 ||
+        item.PriorityRank == 5 ||
+        item.PriorityRank == 6 ||
+        item.PriorityRank == 7
       ) {
         item.Priority = "(2) Normal";
       }
       if (
-        item.Priority_x0020_Rank == 1 ||
-        item.Priority_x0020_Rank == 2 ||
-        item.Priority_x0020_Rank == 3 ||
-        item.Priority_x0020_Rank == 0
+        item.PriorityRank == 1 ||
+        item.PriorityRank == 2 ||
+        item.PriorityRank == 3 ||
+        item.PriorityRank == 0
       ) {
         item.Priority = "(3) Low";
       }
     } else {
-      item.Priority_x0020_Rank = "";
+      item.PriorityRank = "";
       alert("Please Enter priority between 0 to 10");
     }
     // getpriority(item);
@@ -1317,7 +1317,7 @@ function EditProjectPopup(item: any) {
         Title: Items.Title,
 
         ItemRank: ItemRank,
-        Priority_x0020_Rank: Items.Priority_x0020_Rank,
+        PriorityRank: Items.PriorityRank,
         ComponentId: {
           results:
             selectedComponent !== undefined && selectedComponent?.length > 0
@@ -1330,7 +1330,7 @@ function EditProjectPopup(item: any) {
               ? selectedService
               : [],
         },
-        Deliverable_x002d_Synonyms: Items.Deliverable_x002d_Synonyms,
+        DeliverableSynonyms: Items.DeliverableSynonyms,
         StartDate: EditData.StartDate
           ? moment(EditData.StartDate).format("MM-DD-YYYY")
           : null,
@@ -1356,15 +1356,15 @@ function EditProjectPopup(item: any) {
         ValueAdded: Items.ValueAdded,
         Idea: Items.Idea,
         Background: Items.Background,
-        Admin_x0020_Notes: Items.Admin_x0020_Notes,
-        component_x0020_link: {
+        AdminNotes: Items.AdminNotes,
+        ComponentLink: {
           Description:
-            Items.component_x0020_link != undefined
-              ? Items.component_x0020_link
+            Items.ComponentLink != undefined
+              ? Items.ComponentLink
               : null,
           Url:
-            Items.component_x0020_link != undefined
-              ? Items.component_x0020_link
+            Items.ComponentLink != undefined
+              ? Items.ComponentLink
               : null,
         },
         TechnicalExplanations:
@@ -1797,7 +1797,7 @@ function EditProjectPopup(item: any) {
                     <label className="form-label full-width">Deliverable-Synonyms</label>
 
                     <input type="text" className="form-control"
-                        defaultValue={EditData.Deliverable_x002d_Synonyms != undefined ? EditData.Deliverable_x002d_Synonyms : ""} onChange={(e) => EditData.Deliverable_x002d_Synonyms = e.target.value} />
+                        defaultValue={EditData.DeliverableSynonyms != undefined ? EditData.DeliverableSynonyms : ""} onChange={(e) => EditData.DeliverableSynonyms = e.target.value} />
                 </div>
             </div> */}
                           {EditData?.Item_x0020_Type == "Project" && (
@@ -2342,7 +2342,7 @@ function EditProjectPopup(item: any) {
                             <input
                               type="text"
                               className="form-control"
-                              value={EditData.Priority_x0020_Rank}
+                              value={EditData.PriorityRank}
                               onChange={(e) => setPriorityNew(e, EditData)}
                               maxLength={2}
                             />
@@ -2460,12 +2460,12 @@ function EditProjectPopup(item: any) {
                             type="text"
                             className="form-control"
                             defaultValue={
-                              EditData.component_x0020_link != null
-                                ? EditData.component_x0020_link
+                              EditData.ComponentLink != null
+                                ? EditData.ComponentLink
                                 : ""
                             }
                             onChange={(e) =>
-                              (EditData.component_x0020_link = e.target.value)
+                              (EditData.ComponentLink = e.target.value)
                             }
                             placeholder="Url"
                           ></input>
@@ -2820,7 +2820,7 @@ function EditProjectPopup(item: any) {
                       <a
                         target="_blank"
                         data-interception="off"
-                        href={`mailto:?subject=${"Test"}&body=${EditData.component_x0020_link
+                        href={`mailto:?subject=${"Test"}&body=${EditData.ComponentLink
                           }`}
                       >
                         {" "}

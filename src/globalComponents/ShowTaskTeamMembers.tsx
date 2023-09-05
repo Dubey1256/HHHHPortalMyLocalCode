@@ -46,11 +46,11 @@ function ShowTaskTeamMembers(item: any) {
       });
     }
     if (
-      Item.Team_x0020_Members != undefined &&
-      Item.Team_x0020_Members != undefined &&
-      Item.Team_x0020_Members.length > 0
+      Item.TeamMembers != undefined &&
+      Item.TeamMembers != undefined &&
+      Item.TeamMembers.length > 0
     ) {
-      Item.Team_x0020_Members.forEach((Assig: any) => {
+      Item.TeamMembers.forEach((Assig: any) => {
         if (Assig.Id != undefined) {
           TaskUsers.forEach((users: any) => {
             if (
@@ -70,11 +70,11 @@ function ShowTaskTeamMembers(item: any) {
       });
     }
     if (
-      Item.Responsible_x0020_Team != undefined &&
-      Item.Responsible_x0020_Team != undefined &&
-      Item.Responsible_x0020_Team.length > 0
+      Item.ResponsibleTeam != undefined &&
+      Item.ResponsibleTeam != undefined &&
+      Item.ResponsibleTeam.length > 0
     ) {
-      Item.Responsible_x0020_Team.forEach((Assig: any) => {
+      Item.ResponsibleTeam.forEach((Assig: any) => {
         if (Assig.Id != undefined) {
           TaskUsers.forEach((users: any) => {
             if (

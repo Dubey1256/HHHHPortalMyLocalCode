@@ -40,7 +40,7 @@ import GlobalCommanTable from '../../../globalComponents/GroupByReactTableCompon
               id: 'Id',
           },
           {
-              accessorKey: "Shareweb_x0020_ID",
+              accessorKey: "TaskID",
               placeholder: "Task Id",
               header: "",
               resetColumnFilters: false,
@@ -49,7 +49,7 @@ import GlobalCommanTable from '../../../globalComponents/GroupByReactTableCompon
               cell: ({ row, getValue }) => (
                   <>
                       <span className="d-flex">
-                          {row?.original?.Shareweb_x0020_ID}
+                          {row?.original?.TaskID}
                       </span>
                   </>
               ),
@@ -134,10 +134,10 @@ import GlobalCommanTable from '../../../globalComponents/GroupByReactTableCompon
               header: ""
           },
           {
-              accessorFn: (row) => row?.Priority_x0020_Rank,
+              accessorFn: (row) => row?.PriorityRank,
               cell: ({ row }) => (
                   <span>
-                      {row?.original?.Priority_x0020_Rank}
+                      {row?.original?.PriorityRank}
                   </span>
               ),
               placeholder: "Priority",

@@ -101,12 +101,7 @@ function CreateTaskComponent(props: any) {
             isShowSiteCompostion = props?.SelectedProp?.SiteCompostion != "" ? JSON.parse(props?.SelectedProp?.SiteCompostion) : "";
             AllListId.isShowTimeEntry = isShowTimeEntry;
             AllListId.isShowSiteCompostion = isShowSiteCompostion;
-
-            if (AllListId?.siteUrl?.toLowerCase() == 'https://hhhhteams.sharepoint.com/sites/hhhh/sp') {
-                oldTaskIrl = `${AllListId.siteUrl}/SitePages/CreateTask.aspx`
-            } else {
-                oldTaskIrl = `${AllListId.siteUrl}/SitePages/CreateTask-old.aspx`
-            }
+            oldTaskIrl = `${AllListId.siteUrl}/SitePages/CreateTask-old.aspx`
         } catch (error: any) {
             console.log(error)
         }
@@ -122,8 +117,8 @@ function CreateTaskComponent(props: any) {
             //.getByTitle('Master Tasks')
             .items
             //.getById(this.state.itemID)
-            .select("ID", "Title", "DueDate", "Status", "ItemRank", "Item_x0020_Type", "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "SharewebCategories/Id", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title")
-            .expand("Team_x0020_Members", "Author", "ClientCategory", "Parent", "SharewebCategories", "AssignedTo", "ClientCategory")
+            .select("ID", "Title", "DueDate", "Status", "ItemRank", "Item_x0020_Type", "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "TaskCategories/Id", "TaskCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title")
+            .expand("TeamMembers", "Author", "ClientCategory", "Parent", "TaskCategories", "AssignedTo", "ClientCategory")
             .top(4999)
             .get()
         return componentDetails;
@@ -292,10 +287,7 @@ function CreateTaskComponent(props: any) {
 
             if (paramSiteUrl != undefined) {
                 let baseUrl = window.location.href;
-                if (baseUrl.indexOf('CreateTaskSpfx') > -1) {
-                    let QueryString = baseUrl.split(base_Url + "/SitePages/CreateTaskSpfx.aspx")[1]
-                    oldTaskIrl = oldTaskIrl + QueryString
-                }
+                
                 PageName = paramSiteUrl?.split('aspx')[0].split("").reverse().join("").split('/')[0].split("").reverse().join("");
                 PageName = PageName + 'aspx'
                 // await loadRelevantTask(PageName, "PageTask")
@@ -402,9 +394,9 @@ function CreateTaskComponent(props: any) {
     const loadRelevantTask = async (Condition: any, type: any) => {
         let query = '';
         if (type == 'ComponentId') {
-            query = "Categories,AssignedTo/Title,AssignedTo/Name,Component/Id,Priority_x0020_Rank,SharewebTaskType/Id,SharewebTaskType/Title,Component/Title,Services/Id,Services/Title,AssignedTo/Id,AttachmentFiles/FileName,component_x0020_link/Url,FileLeafRef,SharewebTaskLevel1No,SharewebTaskLevel2No,Title,Id,Priority_x0020_Rank,PercentComplete,Company,WebpartId,StartDate,DueDate,Status,Body,WebpartId,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=AssignedTo,AttachmentFiles,SharewebTaskType,Component,Services,Author,Editor&$orderby=Modified desc" + Condition
+            query = "Categories,AssignedTo/Title,AssignedTo/Name,Component/Id,PriorityRank,TaskType/Id,TaskType/Title,Component/Title,Services/Id,Services/Title,AssignedTo/Id,AttachmentFiles/FileName,ComponentLink/Url,FileLeafRef,TaskLevel,TaskLevel,Title,Id,PriorityRank,PercentComplete,Company,WebpartId,StartDate,DueDate,Status,Body,WebpartId,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=AssignedTo,AttachmentFiles,TaskType,Component,Services,Author,Editor&$orderby=Modified desc" + Condition
         } else {
-            query = "Categories,AssignedTo/Title,AssignedTo/Name,Component/Id,Priority_x0020_Rank,SharewebTaskType/Id,SharewebTaskType/Title,Component/Title,Services/Id,Services/Title,AssignedTo/Id,AttachmentFiles/FileName,component_x0020_link/Url,FileLeafRef,SharewebTaskLevel1No,SharewebTaskLevel2No,Title,Id,Priority_x0020_Rank,PercentComplete,Company,WebpartId,StartDate,DueDate,Status,Body,WebpartId,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=AssignedTo,AttachmentFiles,SharewebTaskType,Component,Services,Author,Editor&$orderby=Modified desc"
+            query = "Categories,AssignedTo/Title,AssignedTo/Name,Component/Id,PriorityRank,TaskType/Id,TaskType/Title,Component/Title,Services/Id,Services/Title,AssignedTo/Id,AttachmentFiles/FileName,ComponentLink/Url,FileLeafRef,TaskLevel,TaskLevel,Title,Id,PriorityRank,PercentComplete,Company,WebpartId,StartDate,DueDate,Status,Body,WebpartId,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=AssignedTo,AttachmentFiles,TaskType,Component,Services,Author,Editor&$orderby=Modified desc"
         }
         let setRelTask = relevantTasks;
         try {
@@ -429,7 +421,7 @@ function CreateTaskComponent(props: any) {
 
                         })
                         item.PercentComplete = item?.PercentComplete * 100;
-                        item.Priority = item.Priority_x0020_Rank * 1;
+                        item.Priority = item.PriorityRank * 1;
                         if (item.Categories == null)
                             item.Categories = '';
                         //type.Priority = type.Priority.split('')[1];
@@ -451,7 +443,7 @@ function CreateTaskComponent(props: any) {
                             item['Portfoliotype'] = 'Component';
                         }
 
-                        item.Shareweb_x0020_ID = globalCommon.getTaskId(item);
+                        item.TaskID = globalCommon.getTaskId(item);
 
                         item.DisplayDueDate = moment(item?.DueDate).format('DD/MM/YYYY');
                         if (item.DisplayDueDate == "Invalid date" || item.DisplayDueDate == undefined) {
@@ -466,7 +458,7 @@ function CreateTaskComponent(props: any) {
                         if (item.siteType != 'Offshore Tasks') {
                             try {
                                 if (type == 'PageTask' || type == "UrlTask") {
-                                    if (item?.component_x0020_link?.Url.indexOf(Condition) > -1) {
+                                    if (item?.ComponentLink?.Url.indexOf(Condition) > -1) {
                                         SiteTaskTaggedToComp.push(item);
                                     }
                                 } else {
@@ -733,7 +725,7 @@ function CreateTaskComponent(props: any) {
             let siteCompositionDetails: any;
             try {
                 let selectedComponent: any[] = [];
-
+                let portfolioId :any =null;
 
                 let CopyUrl;
                 if (save.taskUrl != undefined && save.taskUrl.length > 255) {
@@ -754,6 +746,7 @@ function CreateTaskComponent(props: any) {
                             if (save.Component !== undefined && save.Component.length >= 0) {
                                 $.each(save.Component, function (index: any, smart: any) {
                                     selectedComponent.push(smart.Id);
+                                    portfolioId=smart?.Id
                                     if (selectedSite?.Parent?.Title == "SDC Sites") {
                                         postClientTime = JSON.parse(smart?.Sitestagging);
                                         siteCompositionDetails = smart?.SiteCompositionSettings;
@@ -773,6 +766,7 @@ function CreateTaskComponent(props: any) {
                             if (save.linkedServices !== undefined && save.linkedServices.length >= 0) {
                                 $.each(save.linkedServices, function (index: any, smart: any) {
                                     selectedService.push(smart.Id);
+                                    portfolioId=smart?.Id
                                     if (selectedSite?.Parent?.Title == "SDC Sites") {
                                         postClientTime = JSON.parse(smart?.Sitestagging);
                                         siteCompositionDetails = smart?.SiteCompositionSettings;
@@ -836,18 +830,18 @@ function CreateTaskComponent(props: any) {
                         ComponentId: { "results": (selectedComponent !== undefined && selectedComponent?.length > 0) ? selectedComponent : [] },
                         ServicesId: { "results": (selectedService !== undefined && selectedService?.length > 0) ? selectedService : [] },
                         Responsible_x0020_TeamId: { "results": AssignedIds },
-                        PortfolioId: selectedComponent?.length > 0 ? selectedComponent[0].Id : (selectedService?.length > 0 ? selectedService[0].Id : ''),
+                        PortfolioId: portfolioId,
                         Team_x0020_MembersId: { "results": TeamMembersIds },
                         // SharewebComponentId: { "results": $scope.SharewebComponent },
                         SharewebCategoriesId: { "results": sharewebCat },
                         ClientCategoryId: { "results": selectedCC },
                         // LinkServiceTaskId: { "results": $scope.SaveServiceTaskItemId },
-                        "Priority_x0020_Rank": priorityRank,
+                        "PriorityRank": priorityRank,
                         SiteCompositionSettings: siteCompositionDetails != undefined ? siteCompositionDetails : '',
                         AssignedToId: { "results": AssignedToIds },
                         SharewebTaskTypeId: 2,
                         ClientTime: postClientTime != undefined ? JSON.stringify(postClientTime) : '',
-                        component_x0020_link: {
+                        ComponentLink: {
                             __metadata: { 'type': 'SP.FieldUrlValue' },
                             Description: save.taskUrl?.length > 0 ? save.taskUrl : null,
                             Url: save.taskUrl?.length > 0 ? save.taskUrl : null,
@@ -892,10 +886,10 @@ function CreateTaskComponent(props: any) {
                     //Old itm Code 
                     // {
                     //     Title: save.taskName,
-                    //     Priority_x0020_Rank: priorityRank,
+                    //     PriorityRank: priorityRank,
                     //     Priority: priority,
                     //     PercentComplete: 0,
-                    //     component_x0020_link: {
+                    //     ComponentLink: {
                     //         __metadata: { 'type': 'SP.FieldUrlValue' },
                     //         Description: save.taskUrl?.length > 0 ? save.taskUrl : null,
                     //         Url: save.taskUrl?.length > 0 ? save.taskUrl : null,
@@ -1060,15 +1054,12 @@ function CreateTaskComponent(props: any) {
 
     const UrlPasteTitle = (e: any) => {
         let TestUrl = e.target.value;
-        if (TestUrl?.length > 0 && TestUrl?.length > 56) {
-            alert("Task Title is too long. Please chose a shorter name and enter the details into the task description.")
-        } else if (TestUrl?.length > 0 && TestUrl?.length <= 56) {
             let saveValue = save;
             saveValue.taskUrl = TestUrl;
             if (SitesTypes?.length > 1) {
                 let selectedSiteTitle = ''
                 var testarray = e.target.value.split('&');
-                // TestUrl = $scope.component_x0020_link;
+                // TestUrl = $scope.ComponentLink;
                 var item = '';
                 if (TestUrl !== undefined) {
                     for (let index = 0; index < SitesTypes.length; index++) {
@@ -1114,7 +1105,7 @@ function CreateTaskComponent(props: any) {
                     setIsActive({ ...isActive, siteType: false });
                 }
             }
-        }
+        
 
     }
 
@@ -1160,11 +1151,11 @@ function CreateTaskComponent(props: any) {
 
 
         let activeCategoryArray = activeCategory;
-        let SharewebCategories: any[] = sharewebCat;
+        let TaskCategories: any[] = sharewebCat;
         if (item.ActiveTile) {
             item.ActiveTile = !item.ActiveTile;
             activeCategoryArray = activeCategoryArray.filter((category: any) => category !== title);
-            SharewebCategories = SharewebCategories.filter((category: any) => category !== Id);
+            TaskCategories = TaskCategories.filter((category: any) => category !== Id);
 
         } else if (!item.ActiveTile) {
             if (title === 'Email Notification' || title === 'Immediate' || title === 'Bug') {
@@ -1208,11 +1199,11 @@ function CreateTaskComponent(props: any) {
             }
             item.ActiveTile = !item.ActiveTile;
             activeCategoryArray.push(title);
-            SharewebCategories.push(Id)
+            TaskCategories.push(Id)
         }
         setIsActiveCategory(!isActiveCategory)
         setActiveCategory(activeCategoryArray)
-        setSharewebCat(SharewebCategories)
+        setSharewebCat(TaskCategories)
 
     }
 
@@ -1237,7 +1228,7 @@ function CreateTaskComponent(props: any) {
                 size: 50
             },
             {
-                accessorKey: "Shareweb_x0020_ID",
+                accessorKey: "TaskID",
                 placeholder: "Task Id",
                 header: "",
                 resetColumnFilters: false,
@@ -1246,7 +1237,7 @@ function CreateTaskComponent(props: any) {
                 cell: ({ row, getValue }) => (
                     <>
                         <span className="d-flex">
-                            {row?.original?.Shareweb_x0020_ID}
+                            {row?.original?.TaskID}
                         </span>
                     </>
                 ),
@@ -1317,7 +1308,7 @@ function CreateTaskComponent(props: any) {
                 header: ""
             },
             {
-                accessorFn: (row) => row?.Priority_x0020_Rank,
+                accessorFn: (row) => row?.PriorityRank,
                 cell: ({ row }) => (
                     <span>
                         <InlineEditingcolumns
@@ -1481,7 +1472,73 @@ function CreateTaskComponent(props: any) {
         ],
         []
     );
-   
+    // const columns: GridColDef[] = [
+    //     { field: 'siteType', headerName: 'Site', width: 60, renderCell: (params) => <img className="client-icons" src={params?.row?.siteCover} /> },
+    //     { field: 'TaskID', headerName: 'Task Id', width: 75 },
+    //     {
+    //         field: 'Title', headerName: 'Title', width: 300, renderCell: (params) => {
+    //             return (
+    //                 <div>
+    //                     <span><a data-interception="off" target="blank" href={`${base_Url}/SitePages/Task-Profile.aspx?taskId=${params?.row?.Id}&Site=${params?.row?.siteType}`}>{params?.row?.Title}</a></span>
+    //                 </div>
+    //             )
+    //         }
+    //     },
+    //     {
+    //         field: 'ComponentTitle', headerName: 'Component', width: 150, renderCell: (params) => {
+    //             return (
+    //                 <div>
+    //                     <span><a data-interception="off" target="blank" href={`${base_Url}/SitePages/Portfolio-Profile.aspx?taskId=${params?.row?.newComponentId}`}>{params?.row?.ComponentTitle}</a></span>
+    //                 </div>
+    //             )
+    //         }
+    //     },
+    //     {
+    //         field: 'PercentComplete', headerName: '% Complete', width: 100, renderCell: (params) => {
+    //             return (
+    //                 <div>
+    //                     <span>{params?.row?.PercentComplete}%</span>
+    //                 </div>
+    //             )
+    //         }
+    //     },
+    //     { field: 'Priority', headerName: 'Priority', width: 80 },
+    //     { field: 'Categories', headerName: 'Categories', width: 120 },
+
+    //     { field: 'TaskDueDate', headerName: 'Due Date', width: 115 },
+    //     {
+    //         field: 'Created', headerName: 'Created', width: 120, renderCell: (params) => {
+    //             return (
+    //                 <div>
+    //                     {params?.row?.AuthorCover != undefined ? <img className="client-icons" title={params?.row?.Author} src={params?.row?.AuthorCover} alt='' /> : ''}
+
+    //                     {params.row.CreateDate}
+    //                 </div>
+    //             )
+    //         }
+    //     },
+    //     {
+    //         field: 'Modified', headerName: 'Modified', width: 120, renderCell: (params) => {
+    //             return (
+    //                 <div>
+    //                     {params?.row?.EditorCover != undefined ? <img className="client-icons" title={params?.row?.Editor} src={params?.row?.EditorCover} alt='' /> : ''}
+
+    //                     {params.row.ModifiedDate}
+    //                 </div>
+    //             )
+    //         }
+    //     },
+    //     {
+    //         field: '', headerName: '', width: 40, renderCell: (params) => {
+    //             return (
+    //                 <div>
+    //                     <span onClick={() => EditPopup(params?.row)} className="svg__iconbox svg__icon--edit"></span>
+    //                     {/* <img onClick={() => EditPopup(params?.row)} src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"></img> */}
+    //                 </div>
+    //             )
+    //         }
+    //     },
+    // ];
     const CallBack = React.useCallback((items) => {
         setEditTaskPopupData({
             isOpenEditPopup: false,
@@ -1546,7 +1603,7 @@ function CreateTaskComponent(props: any) {
                     }
                     if (ToEmails.length > 0) {
                         var query = '';
-                        query += "AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,Component/Id,Component/Title,Component/ItemType,component_x0020_link,Categories,FeedBack,component_x0020_link,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,Services/Id,Services/Title,Events/Id,Events/Title,SharewebTaskType/Id,SharewebTaskType/Title,Shareweb_x0020_ID,CompletedDate,SharewebTaskLevel1No,SharewebTaskLevel2No&$expand=AssignedTo,Component,AttachmentFiles,Author,Editor,SharewebCategories,SharewebTaskType,Services,Events&$filter=Id eq " + itemId;
+                        query += "AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,Component/Id,Component/Title,Component/ItemType,ComponentLink,Categories,FeedBack,ComponentLink,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,Services/Id,Services/Title,Events/Id,Events/Title,TaskType/Id,TaskType/Title,TaskID,CompletedDate,TaskLevel,TaskLevel&$expand=AssignedTo,Component,AttachmentFiles,Author,Editor,TaskCategories,TaskType,Services,Events&$filter=Id eq " + itemId;
                         await getData(siteUrl, listId, query)
                             .then(async (data: any) => {
                                 data?.map((item: any) => {
@@ -1582,7 +1639,7 @@ function CreateTaskComponent(props: any) {
                                     }
                                     UpdateItem.siteType = siteType;
                                 }
-                                UpdateItem.Shareweb_x0020_ID = globalCommon.getTaskId(UpdateItem);
+                                UpdateItem.TaskID = globalCommon.getTaskId(UpdateItem);
                                 if (UpdateItem?.Author != undefined) {
                                     UpdateItem.Author1 = '';
                                     UpdateItem.Author1 = UpdateItem.Author.Title;
@@ -1593,8 +1650,8 @@ function CreateTaskComponent(props: any) {
                                     UpdateItem.Editor1 = UpdateItem.Editor.Title;
                                 } else
                                     UpdateItem.Editor1 = '';
-                                if (UpdateItem?.component_x0020_link?.Url != undefined)
-                                    UpdateItem.URL = UpdateItem?.component_x0020_link?.Url;
+                                if (UpdateItem?.ComponentLink?.Url != undefined)
+                                    UpdateItem.URL = UpdateItem?.ComponentLink?.Url;
                                 else
                                     UpdateItem.URL = '';
 
@@ -1649,8 +1706,8 @@ function CreateTaskComponent(props: any) {
                                 }
                                 UpdateItem.Category = '';
                                 UpdateItem.Categories = '';
-                                if (UpdateItem?.SharewebCategories != undefined) {
-                                    UpdateItem.SharewebCategories.map((item: any) => {
+                                if (UpdateItem?.TaskCategories != undefined) {
+                                    UpdateItem.TaskCategories.map((item: any) => {
                                         UpdateItem.Categories += item.Title + ';';
                                         UpdateItem.Category += item.Title + ',';
                                     })
@@ -1828,7 +1885,7 @@ function CreateTaskComponent(props: any) {
                                     '<tbody>' +
                                     '<tr>'
                                     + '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Task Id:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-                                    UpdateItem?.Shareweb_x0020_ID + '</span></td>' +
+                                    UpdateItem?.TaskID + '</span></td>' +
                                     '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Component:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
                                     UpdateItem?.ComponentName + '</span> </td>' +
                                     '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Priority:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
@@ -1964,11 +2021,14 @@ function CreateTaskComponent(props: any) {
 
     }
     const changeTitle = (e: any) => {
-        setSave(prevSave => ({
-            ...prevSave,
-            taskName: e.target.value
-        }));
-
+        if(e.target.value.length > 56){
+            alert("Task Title is too long. Please chose a shorter name and enter the details into the task description.")
+        }else{
+            setSave(prevSave => ({
+                ...prevSave,
+                taskName: e.target.value
+            }));
+        }
     }
 
     const callBackData = (a: any) => {
@@ -2066,6 +2126,8 @@ function CreateTaskComponent(props: any) {
                                     }) : null}
                                     <span className="input-group-text">
                                         <span onClick={(e) => EditPortfolio(save, 'Service')} className="svg__iconbox svg__icon--edit"></span>
+                                        {/* <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                        onClick={(e) => EditLinkedServices(save, 'Component')} /> */}
                                     </span>
                                 </div> : ''
                         }
@@ -2097,8 +2159,11 @@ function CreateTaskComponent(props: any) {
                                 {relevantTasks?.TaskUrlRelevantTask?.length > 0 ?
                                     <>
                                         <div className={relevantTasks?.TaskUrlRelevantTask?.length > 0 ? 'fxhg' : ''}>
+                                            {/* ?ComponentID=1682&Siteurl=https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskDashboard.aspx */}
                                             <GlobalCommanTable columns={column2} data={relevantTasks?.TaskUrlRelevantTask} paginatedTable={true} callBackData={callBackData} />
-                                         </div>
+                                            {/* <GlobalCommanTable AllListId={ContextValue} callBackData={callBackData} columns={columns} data={relevantTasks?.TaskUrlRelevantTask} TaskUsers={taskUsers} showHeader={true} fixedWidth={true} showingAllPortFolioCount={true} showCreationAllButton={true} /> */}
+                                            {/* <DataGrid rows={relevantTasks?.TaskUrlRelevantTask} columns={columns} getRowId={(row: any) => row.TaskID} /> */}
+                                        </div>
                                     </> : ''
                                 }
                             </div> : ''}
@@ -2107,6 +2172,8 @@ function CreateTaskComponent(props: any) {
                                     <>
                                         <div className={relevantTasks?.PageRelevantTask?.length > 0 ? 'fxhg' : ''}>
                                             <GlobalCommanTable columns={column2} data={relevantTasks?.PageRelevantTask} paginatedTable={true} callBackData={callBackData} />
+                                            {/* <GlobalCommanTable AllListId={ContextValue} columns={columns} data={relevantTasks?.PageRelevantTask} TaskUsers={taskUsers} showHeader={true} fixedWidth={true} showingAllPortFolioCount={true} showCreationAllButton={true} /> */}
+                                            {/* <DataGrid rows={relevantTasks?.PageRelevantTask} columns={columns} getRowId={(row: any) => row.TaskID} /> */}
                                         </div>
                                     </> : ''
                                 }
@@ -2118,6 +2185,8 @@ function CreateTaskComponent(props: any) {
                                         <>
                                             <div className={relevantTasks?.ComponentRelevantTask?.length > 0 ? 'fxhg' : ''}>
                                                 <GlobalCommanTable columns={column2} data={relevantTasks?.ComponentRelevantTask} paginatedTable={true} callBackData={callBackData} />
+                                                {/* <GlobalCommanTable AllListId={ContextValue} columns={columns} data={relevantTasks?.ComponentRelevantTask} TaskUsers={taskUsers} showHeader={true} fixedWidth={true} showingAllPortFolioCount={true} showCreationAllButton={true} /> */}
+                                                {/* <DataGrid rows={relevantTasks?.ComponentRelevantTask} columns={columns} getRowId={(row: any) => row.TaskID} /> */}
                                             </div>
                                         </> : ''
                                     }
@@ -2307,7 +2376,16 @@ function CreateTaskComponent(props: any) {
                     }
                     <button type="button" className='btnCol btn btn-primary' onClick={() => createTask()}>Submit</button>
                 </div>
-             
+                {/* {IsComponent && <ServiceComponentPortfolioPopup props={ShareWebComponent} Call={Call} Dynamic={AllListId} AllListId={AllListId} smartComponentData={smartComponentData} ></ServiceComponentPortfolioPopup>}
+                {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call} AllListId={AllListId} Dynamic={AllListId} linkedComponentData={linkedComponentData}  ></LinkedComponent>} */}
+                {/* {IsComponent &&
+                    <ServiceComponentPortfolioPopup
+                        props={ShareWebComponent}
+                        Dynamic={AllListId}
+                        ComponentType={"Component"}
+                        Call={ComponentServicePopupCallBack}
+                    />
+                } */}
                 {IsOpenPortfolio &&
                     <ServiceComponentPortfolioPopup
                         props={ShareWebComponent}

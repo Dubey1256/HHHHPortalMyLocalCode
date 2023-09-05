@@ -291,8 +291,8 @@ function TeamDashboard(props: any) {
                         let smartmeta = [];
                         await web.lists
                             .getById(config.listId)
-                            .items.select("ID", "Title", "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "EstimatedTimeDescription", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Body", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified")
-                            .expand("Team_x0020_Members", "Approver", "ParentTask", "AssignedTo", "SharewebCategories", "Author", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor")
+                            .items.select("ID", "Title", "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "EstimatedTimeDescription", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified")
+                            .expand("TeamMembers", "Approver", "ParentTask", "AssignedTo", "TaskCategories", "Author", "ResponsibleTeam", "TaskType", "Component", "Services", "Editor")
                             .getAll().then((data: any) => {
                                 smartmeta = data;
                                 smartmeta.map((task: any) => {
@@ -327,7 +327,7 @@ function TeamDashboard(props: any) {
                                             task.Component.length > 0
                                             ? getComponentasString(task.Component)
                                             : "";
-                                    task.Shareweb_x0020_ID = globalCommon.getTaskId(task);
+                                    task.TaskID = globalCommon.getTaskId(task);
                                     task.ApproverIds = [];
                                     task?.Approver?.map((approverUser: any) => {
                                         task.ApproverIds.push(approverUser?.Id);
@@ -358,7 +358,7 @@ function TeamDashboard(props: any) {
                                     })
 
 
-                                    task?.Team_x0020_Members?.map((taskUser: any) => {
+                                    task?.TeamMembers?.map((taskUser: any) => {
                                         task.TeamMembersId.push(taskUser.Id);
                                         task.AllTaskMember.push(taskUser.Id)
                                         task.TaskDistribution.push(taskUser.Id)
@@ -379,7 +379,7 @@ function TeamDashboard(props: any) {
                                         });
                                     });
                                     task.ResponsibleTeamMember = []
-                                    task.Responsible_x0020_Team?.map((items: any) => {
+                                    task.ResponsibleTeam?.map((items: any) => {
                                         task.ResponsibleTeamMember.push(items.Id)
                                         task.AllTaskMember.push(items.Id)
                                     })

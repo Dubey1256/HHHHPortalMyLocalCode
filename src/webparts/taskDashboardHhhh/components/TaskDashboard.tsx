@@ -403,8 +403,8 @@ const TaskDashboard = (props: any) => {
                         let smartmeta = [];
                         await web.lists
                             .getById(config.listId)
-                            .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Body", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Modified")
-                            .expand("Team_x0020_Members", "Approver", "ParentTask", "ClientCategory", "AssignedTo", "SharewebCategories", "Author", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services")
+                            .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Modified")
+                            .expand("TeamMembers", "Approver", "ParentTask", "ClientCategory", "AssignedTo", "TaskCategories", "Author", "ResponsibleTeam", "TaskType", "Component", "Services")
                             .getAll().then((data: any) => {
                                 smartmeta = data;
                                 smartmeta.map((task: any) => {
@@ -438,7 +438,7 @@ const TaskDashboard = (props: any) => {
                                             task.Component.length > 0
                                             ? getComponentasString(task.Component)
                                             : "";
-                                    task.Shareweb_x0020_ID = globalCommon.getTaskId(task);
+                                    task.TaskID = globalCommon.getTaskId(task);
                                     if (task?.ClientCategory?.length > 0) {
                                         task.ClientCategorySearch = task?.ClientCategory?.map((elem: any) => elem.Title).join(" ")
                                     } else {
@@ -471,7 +471,7 @@ const TaskDashboard = (props: any) => {
                                         }
                                     })
 
-                                    task?.Team_x0020_Members?.map((taskUser: any) => {
+                                    task?.TeamMembers?.map((taskUser: any) => {
                                         task.TeamMembersId.push(taskUser.Id);
                                         var newuserdata: any = {};
                                         taskUsers?.map((user: any) => {
@@ -490,9 +490,9 @@ const TaskDashboard = (props: any) => {
                                         });
                                     });
 
-                                    const isBottleneckTask = checkUserExistence('Bottleneck', task?.SharewebCategories);
-                                    const isImmediate = checkUserExistence('Immediate', task?.SharewebCategories);
-                                    const isEmailNotification = checkUserExistence('Email Notification', task?.SharewebCategories);
+                                    const isBottleneckTask = checkUserExistence('Bottleneck', task?.TaskCategories);
+                                    const isImmediate = checkUserExistence('Immediate', task?.TaskCategories);
+                                    const isEmailNotification = checkUserExistence('Email Notification', task?.TaskCategories);
                                     const isCurrentUserApprover = task?.ApproverIds?.includes(currentUserId);
                                     if (isCurrentUserApprover && task?.PercentComplete == '1') {
                                         approverTask.push(task)
@@ -509,7 +509,7 @@ const TaskDashboard = (props: any) => {
                                     if (task.ClientActivityJson != undefined) {
                                         SharewebTask.push(task)
                                     }
-                                    if (parseInt(task.Priority_x0020_Rank) >= 8 && parseInt(task.Priority_x0020_Rank) <= 10) {
+                                    if (parseInt(task.PriorityRank) >= 8 && parseInt(task.PriorityRank) <= 10) {
                                         AllPriority.push(task);
                                     }
                                     AllSiteTasks.push(task)
@@ -562,8 +562,8 @@ const TaskDashboard = (props: any) => {
         let web = new Web(AllListId?.siteUrl);
         MasterListData = await web.lists
             .getById(AllListId?.MasterTaskListID)
-            .items.select("ComponentCategory/Id", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "Deliverable_x002d_Synonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "Admin_x0020_Notes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "SharewebCategories/Id", "SharewebCategories/Title", "Priority_x0020_Rank", "Reference_x0020_Item_x0020_Json", "Team_x0020_Members/Title", "Team_x0020_Members/Name", "Component/Id", "Services/Id", "Services/Title", "Services/ItemType", "Component/Title", "Component/ItemType", "Team_x0020_Members/Id", "Item_x002d_Image", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
-            .expand("ClientCategory", "ComponentCategory", "AssignedTo", "Component", "Services", "AttachmentFiles", "Author", "Editor", "Team_x0020_Members", "SharewebComponent", "SharewebCategories", "Parent")
+            .items.select("ComponentCategory/Id", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "DeliverableSynonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "AdminNotes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "TaskCategories/Id", "TaskCategories/Title", "PriorityRank", "Reference_x0020_Item_x0020_Json", "TeamMembers/Title", "TeamMembers/Name", "Component/Id", "Services/Id", "Services/Title", "Services/ItemType", "Component/Title", "Component/ItemType", "TeamMembers/Id", "Item_x002d_Image", "ComponentLink", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
+            .expand("ClientCategory", "ComponentCategory", "AssignedTo", "Component", "Services", "AttachmentFiles", "Author", "Editor", "TeamMembers", "SharewebComponent", "TaskCategories", "Parent")
             .top(4999)
             .get().then((data) => {
                 data?.forEach((val: any) => {
@@ -618,9 +618,9 @@ const TaskDashboard = (props: any) => {
         if (AllTasks?.length > 0 && currentUserId != undefined && currentUserId != '') {
             AllTasks?.map((task: any) => {
                 const isCurrentUserAssigned = task?.AssignedToIds?.includes(currentUserId);
-                const isImmediate = checkUserExistence('Immediate', task?.SharewebCategories);
-                const isEmailNotfication = checkUserExistence('Email Notification', task?.SharewebCategories);
-                const isBottleneckTask = checkUserExistence('Bottleneck', task?.SharewebCategories);
+                const isImmediate = checkUserExistence('Immediate', task?.TaskCategories);
+                const isEmailNotfication = checkUserExistence('Email Notification', task?.TaskCategories);
+                const isBottleneckTask = checkUserExistence('Bottleneck', task?.TaskCategories);
 
                 // Testing Only Please Remove Before deployement
                 // const isCurrentUserApprover = task?.ApproverIds?.includes(currentUserId);
@@ -687,12 +687,12 @@ const TaskDashboard = (props: any) => {
         () => [
             {
                 internalHeader: "Task Id",
-                accessor: "Shareweb_x0020_ID",
+                accessor: "TaskID",
                 style: { width: '70px' },
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
                     <span>
-                        <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesTask} AllListId={props?.props}/>
+                        <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesTask} AllListId={props?.props}/>
                     </span>
 
                 ),
@@ -761,7 +761,7 @@ const TaskDashboard = (props: any) => {
                 internalHeader: "Priority",
                 isSorted: true,
                 isSortedDesc: true,
-                accessor: "Priority_x0020_Rank",
+                accessor: "PriorityRank",
                 style: { width: '100px' },
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
@@ -863,13 +863,13 @@ const TaskDashboard = (props: any) => {
         () => [
             {
                 internalHeader: "Task Id",
-                accessor: "Shareweb_x0020_ID",
+                accessor: "TaskID",
                 style: { width: '70px' },
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
                     <span>
 
-                        <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesTask} AllListId={ props?.props}/>
+                        <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesTask} AllListId={ props?.props}/>
 
                     </span>
                 ),
@@ -910,7 +910,7 @@ const TaskDashboard = (props: any) => {
             //     internalHeader: "Priority",
             //     isSorted: true,
             //     isSortedDesc: true,
-            //     accessor: "Priority_x0020_Rank",
+            //     accessor: "PriorityRank",
             //     style: { width: '100px' },
             //     showSortIcon: true,
             //     Cell: ({ row }: any) => (
@@ -1595,32 +1595,32 @@ const TaskDashboard = (props: any) => {
                 task.workingThisWeek = true;
                 UpdateTaskStatus(task);
                 thisWeekTask.push(task)
-                todayTasks = todayTasks.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
-                allTasks = allTasks.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
+                todayTasks = todayTasks.filter(taskItem => taskItem.TaskID != dragedTask.taskId)
+                allTasks = allTasks.filter(taskItem => taskItem.TaskID != dragedTask.taskId)
             }
             if (destination == 'workingToday' && (task?.IsTodaysTask == false || task?.IsTodaysTask == undefined)) {
                 task.IsTodaysTask = true;
                 task.workingThisWeek = false;
                 UpdateTaskStatus(task);
                 todayTasks.push(task)
-                thisWeekTask = thisWeekTask.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
-                allTasks = allTasks.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
+                thisWeekTask = thisWeekTask.filter(taskItem => taskItem.TaskID != dragedTask.taskId)
+                allTasks = allTasks.filter(taskItem => taskItem.TaskID != dragedTask.taskId)
             }
             if (destination == 'AllTasks' && (task?.IsTodaysTask == true || task?.workingThisWeek == true)) {
                 task.IsTodaysTask = false;
                 task.workingThisWeek = false;
                 UpdateTaskStatus(task);
-                todayTasks = todayTasks.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
-                thisWeekTask = thisWeekTask.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
+                todayTasks = todayTasks.filter(taskItem => taskItem.TaskID != dragedTask.taskId)
+                thisWeekTask = thisWeekTask.filter(taskItem => taskItem.TaskID != dragedTask.taskId)
             }
             if (destination == 'UnAssign') {
                 task.IsTodaysTask = false;
                 task.workingThisWeek = false;
                 task.AssignedToIds = task?.AssignedToIds?.filter((user: string) => user != currentUserId)
                 UpdateTaskStatus(task);
-                todayTasks = todayTasks.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
-                thisWeekTask = thisWeekTask.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
-                allTasks = allTasks.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
+                todayTasks = todayTasks.filter(taskItem => taskItem.TaskID != dragedTask.taskId)
+                thisWeekTask = thisWeekTask.filter(taskItem => taskItem.TaskID != dragedTask.taskId)
+                allTasks = allTasks.filter(taskItem => taskItem.TaskID != dragedTask.taskId)
             }
             setAllAssignedTasks(allTasks);
             setThisWeekTasks(thisWeekTask);
@@ -1686,7 +1686,7 @@ const TaskDashboard = (props: any) => {
             }
         });
         tasksCopy.sort((a: any, b: any) => {
-            return b.Priority_x0020_Rank - a.Priority_x0020_Rank;
+            return b.PriorityRank - a.PriorityRank;
         });
         let confirmation = confirm('Your' + ' ' + input + ' ' + 'will be automatically shared with your approver' + ' ' + '(' + userApprover + ')' + '.' + '\n' + 'Do you want to continue?')
         if (confirmation) {
@@ -1695,7 +1695,7 @@ const TaskDashboard = (props: any) => {
                 var subject = currentLoginUser + '-Today Working Tasks';
                 tasksCopy?.map((item: any) => {
                     let teamUsers: any = [];
-                    item?.Team_x0020_Members?.map((item1: any) => {
+                    item?.TeamMembers?.map((item1: any) => {
                         teamUsers.push(item1?.Title)
                     });
                     if (item.DueDate != undefined) {
@@ -1713,11 +1713,11 @@ const TaskDashboard = (props: any) => {
                     text =
                         '<tr>' +
                         '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.siteType + '</td>'
-                        + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Shareweb_x0020_ID + '</td>'
+                        + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.TaskID + '</td>'
                         + '<td style="line-height:24px;font-size:13px;padding:15px;">' + '<p style="margin-top:0px; margin-bottom:2px;font-size:14px; color:#333;">' + '<a href =' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item.Id + '&Site=' + item.siteType + '><span style="font-size:13px; font-weight:600">' + item.Title + '</span></a>' + '</p>' + '</td>'
                         + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Categories + '</td>'
                         + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.PercentComplete + '</td>'
-                        + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Priority_x0020_Rank + '</td>'
+                        + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.PriorityRank + '</td>'
                         + '<td style="line-height:24px;font-size:13px;padding:15px;">' + teamUsers + '</td>'
                         + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.TaskDueDatenew + '</td>'
                         + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.EstimatedTime + '</td>'
@@ -1761,7 +1761,7 @@ const TaskDashboard = (props: any) => {
                 text =
                     '<tr>'
                     + '<td style="line-height:18px;font-size:13px;padding:15px;;">' + item?.siteType + '</td>'
-                    + '<td style="line-height:18px;font-size:13px;padding:15px;;">' + item?.Shareweb_x0020_ID + '</td>'
+                    + '<td style="line-height:18px;font-size:13px;padding:15px;;">' + item?.TaskID + '</td>'
                     + '<td style="line-height:18px;font-size:13px;padding:15px;;">' + '<p style="margin-top:0px; margin-bottom:2px;font-size:14px; color:#333;">' + '<a href =' + item?.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item?.Id + '&Site=' + item?.siteType + '><span style="font-size:13px; font-weight:600">' + item?.Title + '</span></a>' + '</p>' + '</td>'
                     + '<td style="line-height:18px;font-size:13px;padding:15px;">' + item?.TaskTime + '</td>'
                     + '<td style="line-height:18px;font-size:13px;padding:15px;">' + item?.Description + '</td>'
@@ -1907,11 +1907,11 @@ const TaskDashboard = (props: any) => {
                                     text =
                                         '<tr>' +
                                         '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.siteType + '</td>'
-                                        + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Shareweb_x0020_ID + '</td>'
+                                        + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.TaskID + '</td>'
                                         + '<td style="line-height:24px;font-size:13px;padding:15px;">' + '<p style="margin-top:0px; margin-bottom:2px;font-size:14px; color:#333;">' + '<a href =' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item.Id + '&Site=' + item.siteType + '><span style="font-size:13px; font-weight:600">' + item.Title + '</span></a>' + '</p>' + '</td>'
                                         + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Categories + '</td>'
                                         + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.PercentComplete + '</td>'
-                                        + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Priority_x0020_Rank + '</td>'
+                                        + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.PriorityRank + '</td>'
                                         + '<td style="line-height:24px;font-size:13px;padding:15px;">' + teamUsers + '</td>'
                                         + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.TaskDueDatenew + '</td>'
                                         + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.EstimatedTime + '</td>'
@@ -2204,7 +2204,7 @@ const TaskDashboard = (props: any) => {
                                                             prepareRowToday(row);
                                                             return (
                                                                 <tr onClick={() => { selectedInlineTask = { table: "workingToday", taskId: row?.original?.Id } }} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''} draggable data-value={row?.original}
-                                                                    onDragStart={(e) => startDrag(row?.original, row?.original.Shareweb_x0020_ID, 'workingToday')}
+                                                                    onDragStart={(e) => startDrag(row?.original, row?.original.TaskID, 'workingToday')}
                                                                     onDragOver={(e) => e.preventDefault()} key={row?.original.Id}{...row.getRowProps()}>
                                                                     {row.cells.map(
                                                                         (cell: {
@@ -2274,7 +2274,7 @@ const TaskDashboard = (props: any) => {
                                                             prepareRowWeek(row);
                                                             return (
                                                                 <tr onClick={() => { selectedInlineTask = { table: "workingThisWeek", taskId: row?.original?.Id } }} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''} draggable data-value={row?.original}
-                                                                    onDragStart={(e) => startDrag(row?.original, row?.original.Shareweb_x0020_ID, 'thisWeek')}
+                                                                    onDragStart={(e) => startDrag(row?.original, row?.original.TaskID, 'thisWeek')}
                                                                     onDragOver={(e) => e.preventDefault()} key={row?.original.Id}{...row.getRowProps()}>
                                                                     {row.cells.map(
                                                                         (cell: {
@@ -2479,7 +2479,7 @@ const TaskDashboard = (props: any) => {
                                                             prepareRowAll(row);
                                                             return (
                                                                 <tr onClick={() => { selectedInlineTask = { table: "allAssignedTask", taskId: row?.original?.Id } }} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''} draggable data-value={row?.original}
-                                                                    onDragStart={(e) => startDrag(row?.original, row?.original.Shareweb_x0020_ID, 'AllTasks')}
+                                                                    onDragStart={(e) => startDrag(row?.original, row?.original.TaskID, 'AllTasks')}
                                                                     onDragOver={(e) => e.preventDefault()} key={row?.original.Id}{...row.getRowProps()}>
                                                                     {row.cells.map(
                                                                         (cell: {

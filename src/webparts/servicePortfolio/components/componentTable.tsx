@@ -335,20 +335,20 @@ function ComponentTable(SelectedProp: any) {
       );
     } else {
       if (checkedList[0] != undefined) {
-        if (checkedList[0].SharewebTaskType != undefined) {
-          if (checkedList[0].SharewebTaskType.Title === "Activities") {
+        if (checkedList[0].TaskType != undefined) {
+          if (checkedList[0].TaskType.Title === "Activities") {
             setWSPopup(true);
           }
         }
         if (
           checkedList != undefined &&
-          checkedList[0].SharewebTaskType?.Title === "Workstream"
+          checkedList[0].TaskType?.Title === "Workstream"
         ) {
           setActivityPopup(true);
         }
         if (
           checkedList[0].Portfolio_x0020_Type === "Service" &&
-          checkedList[0].SharewebTaskType === undefined
+          checkedList[0].TaskType === undefined
           // &&
           // checkedList[0] === undefined
         ) {
@@ -357,7 +357,7 @@ function ComponentTable(SelectedProp: any) {
         }
         if (
           checkedList[0].Portfolio_x0020_Type === "Component" &&
-          checkedList[0].SharewebTaskType === undefined
+          checkedList[0].TaskType === undefined
           // &&
           // checkedList[0] == undefined
         ) {
@@ -368,9 +368,9 @@ function ComponentTable(SelectedProp: any) {
 
     if (
       checkedList[0] != undefined &&
-      checkedList[0].SharewebTaskType != undefined
+      checkedList[0].TaskType != undefined
     ) {
-      if (checkedList[0].SharewebTaskType.Title == "Activities") {
+      if (checkedList[0].TaskType.Title == "Activities") {
         setWSPopup(true);
         // checkedList.push(checkedList[0]);
         //setMeetingItems(childsData)
@@ -379,7 +379,7 @@ function ComponentTable(SelectedProp: any) {
 
     if (
       checkedList[0] != undefined &&
-      checkedList[0].SharewebTaskType.Title == "Workstream"
+      checkedList[0].TaskType.Title == "Workstream"
     ) {
       setActivityPopup(true);
       // checkedList.push(checkedList[0]);
@@ -900,30 +900,30 @@ function ComponentTable(SelectedProp: any) {
             "ItemRank",
             "Portfolio_x0020_Type",
             "SiteCompositionSettings",
-            "SharewebTaskLevel1No",
-            "SharewebTaskLevel2No",
+            "TaskLevel",
+            "TaskLevel",
             "TimeSpent",
             "BasicImageInfo",
             "OffshoreComments",
             "OffshoreImageUrl",
             "CompletedDate",
-            "Shareweb_x0020_ID",
-            "Responsible_x0020_Team/Id",
-            "Responsible_x0020_Team/Title",
-            "SharewebCategories/Id",
-            "SharewebCategories/Title",
-            "ParentTask/Shareweb_x0020_ID",
-            "SharewebTaskType/Id",
-            "SharewebTaskType/Title",
-            "SharewebTaskType/Level",
-            "Priority_x0020_Rank",
-            "Team_x0020_Members/Title",
-            "Team_x0020_Members/Name",
+            "TaskID",
+            "ResponsibleTeam/Id",
+            "ResponsibleTeam/Title",
+            "TaskCategories/Id",
+            "TaskCategories/Title",
+            "ParentTask/TaskID",
+            "TaskType/Id",
+            "TaskType/Title",
+            "TaskType/Level",
+            "PriorityRank",
+            "TeamMembers/Title",
+            "TeamMembers/Name",
             "Component/Id",
             "Component/Title",
             "Component/ItemType",
-            "Team_x0020_Members/Id",
-            "component_x0020_link",
+            "TeamMembers/Id",
+            "ComponentLink",
             "IsTodaysTask",
             "AssignedTo/Title",
             "AssignedTo/Name",
@@ -957,15 +957,15 @@ function ComponentTable(SelectedProp: any) {
             "ParentTask",
             "Events",
             "Services",
-            "SharewebTaskType",
+            "TaskType",
             "AssignedTo",
             "Component",
             "ClientCategory",
             "Author",
             "Editor",
-            "Team_x0020_Members",
-            "Responsible_x0020_Team",
-            "SharewebCategories"
+            "TeamMembers",
+            "ResponsibleTeam",
+            "TaskCategories"
           )
           .filter("Status ne 'Completed'")
           .orderBy("orderby", false)
@@ -984,10 +984,10 @@ function ComponentTable(SelectedProp: any) {
             item.childs = [];
             item.listId = config.listId;
             item.siteUrl = ContextValue.siteUrl;
-            if (item.SharewebCategories.results != undefined) {
-              if (item.SharewebCategories.results.length > 0) {
+            if (item.TaskCategories.results != undefined) {
+              if (item.TaskCategories.results.length > 0) {
                 $.each(
-                  item.SharewebCategories.results,
+                  item.TaskCategories.results,
                   function (ind: any, value: any) {
                     if (value.Title.toLowerCase() == "draft") {
                       item.isDrafted = true;
@@ -1044,10 +1044,10 @@ function ComponentTable(SelectedProp: any) {
                 });
               }
               if (
-                result.Responsible_x0020_Team != undefined &&
-                result.Responsible_x0020_Team.length > 0
+                result.ResponsibleTeam != undefined &&
+                result.ResponsibleTeam.length > 0
               ) {
-                map(result.Responsible_x0020_Team, (Assig: any) => {
+                map(result.ResponsibleTeam, (Assig: any) => {
                   if (Assig.Id != undefined) {
                     map(TaskUsers, (users: any) => {
                       if (
@@ -1064,10 +1064,10 @@ function ComponentTable(SelectedProp: any) {
                 });
               }
               if (
-                result.Team_x0020_Members != undefined &&
-                result.Team_x0020_Members.length > 0
+                result.TeamMembers != undefined &&
+                result.TeamMembers.length > 0
               ) {
-                map(result.Team_x0020_Members, (Assig: any) => {
+                map(result.TeamMembers, (Assig: any) => {
                   if (Assig.Id != undefined) {
                     map(TaskUsers, (users: any) => {
                       if (
@@ -1094,24 +1094,24 @@ function ComponentTable(SelectedProp: any) {
               //   result.ClientCategory != undefined &&
               //   result.ClientCategory.length > 0
               // ) {
-              //   map(result.Team_x0020_Members, (catego: any) => {
+              //   map(result.TeamMembers, (catego: any) => {
               //     result.ClientCategory.push(catego);
               //   });
               // }
               if (result.Id === 1441) console.log(result);
-              result["Shareweb_x0020_ID"] = globalCommon.getTaskId(result);
-              if (result["Shareweb_x0020_ID"] == undefined) {
-                result["Shareweb_x0020_ID"] = "";
+              result["TaskID"] = globalCommon.getTaskId(result);
+              if (result["TaskID"] == undefined) {
+                result["TaskID"] = "";
               }
               result["Item_x0020_Type"] = "Task";
               TasksItem.push(result);
             });
 
             AllActivitysData = AllTasks?.filter(
-              (elem: any) => elem?.SharewebTaskType?.Title == "Activities"
+              (elem: any) => elem?.TaskType?.Title == "Activities"
             );
             AllWorkStreamData = AllTasks?.filter(
-              (elem: any) => elem?.SharewebTaskType?.Title == "Workstream"
+              (elem: any) => elem?.TaskType?.Title == "Workstream"
             );
 
             AllActivitysData?.forEach((elem: any) => {
@@ -1517,7 +1517,7 @@ function ComponentTable(SelectedProp: any) {
         "PortfolioLevel",
         "PortfolioStructureID",
         "PortfolioStructureID",
-        "component_x0020_link",
+        "ComponentLink",
         "Package",
         "Comments",
         "DueDate",
@@ -1536,7 +1536,7 @@ function ComponentTable(SelectedProp: any) {
         "Idea",
         "ValueAdded",
         "CategoryItem",
-        "Priority_x0020_Rank",
+        "PriorityRank",
         "Priority",
         "TaskDueDate",
         "PercentComplete",
@@ -1562,32 +1562,32 @@ function ComponentTable(SelectedProp: any) {
         "Editor/Title",
         "Events/Title",
         "Events/ItemType",
-        "SharewebCategories/Id",
-        "SharewebTaskType/Title",
-        "SharewebCategories/Title",
+        "TaskCategories/Id",
+        "TaskType/Title",
+        "TaskCategories/Title",
         "AssignedTo/Id",
         "AssignedTo/Title",
-        "Team_x0020_Members/Id",
-        "Team_x0020_Members/Title",
+        "TeamMembers/Id",
+        "TeamMembers/Title",
         "ClientCategory/Id",
         "ClientCategory/Title",
         // 'ClientCategory/Color_x0020_Tag',
-        "Responsible_x0020_Team/Id",
-        "Responsible_x0020_Team/Title"
+        "ResponsibleTeam/Id",
+        "ResponsibleTeam/Title"
       )
       .expand(
         "Parent",
         "Events",
         "Services",
-        "SharewebTaskType",
+        "TaskType",
         "AssignedTo",
         "Component",
         "ClientCategory",
         "Author",
         "Editor",
-        "Team_x0020_Members",
-        "Responsible_x0020_Team",
-        "SharewebCategories"
+        "TeamMembers",
+        "ResponsibleTeam",
+        "TaskCategories"
       )
       .top(4999)
       .filter(filt)
@@ -1627,10 +1627,10 @@ function ComponentTable(SelectedProp: any) {
         });
       }
       if (
-        result.Responsible_x0020_Team != undefined &&
-        result.Responsible_x0020_Team.length > 0
+        result.ResponsibleTeam != undefined &&
+        result.ResponsibleTeam.length > 0
       ) {
-        map(result.Responsible_x0020_Team, (Assig: any) => {
+        map(result.ResponsibleTeam, (Assig: any) => {
           if (Assig.Id != undefined) {
             map(TaskUsers, (users: any) => {
               if (
@@ -1646,10 +1646,10 @@ function ComponentTable(SelectedProp: any) {
         });
       }
       if (
-        result.Team_x0020_Members != undefined &&
-        result.Team_x0020_Members.length > 0
+        result.TeamMembers != undefined &&
+        result.TeamMembers.length > 0
       ) {
-        $.each(result.Team_x0020_Members, function (index: any, Assig: any) {
+        $.each(result.TeamMembers, function (index: any, Assig: any) {
           if (Assig.Id != undefined) {
             $.each(TaskUsers, function (index: any, users: any) {
               if (
@@ -1790,7 +1790,7 @@ function ComponentTable(SelectedProp: any) {
                 crntItem.PortfolioStructureID != ""
               ) {
                 task.PortfolioStructureID = crntItem.PortfolioStructureID;
-                task.ShowTooltipSharewebId = crntItem.PortfolioStructureID + "-" + task.Shareweb_x0020_ID;
+                task.ShowTooltipSharewebId = crntItem.PortfolioStructureID + "-" + task.TaskID;
               }
               if (crntItem.Portfolio_x0020_Type == "Service") {
                 task.isService = true;
@@ -1834,7 +1834,7 @@ function ComponentTable(SelectedProp: any) {
             ) {
               task.PortfolioStructureID = crntItem.PortfolioStructureID;
               task.ShowTooltipSharewebId =
-                crntItem.PortfolioStructureID + "-" + task.Shareweb_x0020_ID;
+                crntItem.PortfolioStructureID + "-" + task.TaskID;
             }
             if (crntItem.Portfolio_x0020_Type == "Events") {
               task.isService = true;
@@ -1875,7 +1875,7 @@ function ComponentTable(SelectedProp: any) {
             ) {
               task.PortfolioStructureID = crntItem.PortfolioStructureID;
               task.ShowTooltipSharewebId =
-                crntItem.PortfolioStructureID + "-" + task.Shareweb_x0020_ID;
+                crntItem.PortfolioStructureID + "-" + task.TaskID;
             }
             if (crntItem.Portfolio_x0020_Type == "Component") {
               task.isService = true;
@@ -1982,10 +1982,10 @@ function ComponentTable(SelectedProp: any) {
         });
       }
       if (
-        result.Team_x0020_Members != undefined &&
-        result.Team_x0020_Members.length > 0
+        result.TeamMembers != undefined &&
+        result.TeamMembers.length > 0
       ) {
-        $.each(result.Team_x0020_Members, function (index: any, Assig: any) {
+        $.each(result.TeamMembers, function (index: any, Assig: any) {
           if (Assig.Id != undefined) {
             $.each(TaskUsers, function (index: any, users: any) {
               if (
@@ -2002,11 +2002,11 @@ function ComponentTable(SelectedProp: any) {
         });
       }
       if (
-        result.Responsible_x0020_Team != undefined &&
-        result.Responsible_x0020_Team.length > 0
+        result.ResponsibleTeam != undefined &&
+        result.ResponsibleTeam.length > 0
       ) {
         $.each(
-          result.Responsible_x0020_Team,
+          result.ResponsibleTeam,
           function (index: any, Assig: any) {
             if (Assig.Id != undefined) {
               $.each(TaskUsers, function (index: any, users: any) {
@@ -2028,9 +2028,9 @@ function ComponentTable(SelectedProp: any) {
         result.PortfolioStructureID != null &&
         result.PortfolioStructureID != undefined
       ) {
-        result["Shareweb_x0020_ID"] = result.PortfolioStructureID;
+        result["TaskID"] = result.PortfolioStructureID;
       } else {
-        result["Shareweb_x0020_ID"] = "";
+        result["TaskID"] = "";
       }
       if (result.Item_x0020_Type == "Root Component") {
         result["childs"] =
@@ -2227,9 +2227,9 @@ function ComponentTable(SelectedProp: any) {
       SelectedLevel.forEach((item: any) => {
         TasksItem.forEach((task: any) => {
           // if (
-          //   task.SharewebTaskType != undefined &&
-          //   task.SharewebTaskType.Title != undefined &&
-          //   item.Title == task.SharewebTaskType.Title
+          //   task.TaskType != undefined &&
+          //   task.TaskType.Title != undefined &&
+          //   item.Title == task.TaskType.Title
           // ) {
           AllTaggedTask.push(task);
           // }
@@ -2256,7 +2256,7 @@ function ComponentTable(SelectedProp: any) {
             task["Events"] != undefined &&
             task["Events"].length === 0
           ) {
-            // if (task.SharewebTaskType != undefined && task.SharewebTaskType.Title && (task.SharewebTaskType.Title == "Activities" || task.SharewebTaskType.Title == "Workstream" || task.SharewebTaskType.Title == "Task"))
+            // if (task.TaskType != undefined && task.TaskType.Title && (task.TaskType.Title == "Activities" || task.TaskType.Title == "Workstream" || task.TaskType.Title == "Task"))
             ComponetsData["allUntaggedTasks"].push(task);
           }
         }
@@ -2270,7 +2270,7 @@ function ComponentTable(SelectedProp: any) {
             task["Services"] != undefined &&
             task["Services"].length == 0
           ) {
-            // if (task.SharewebTaskType != undefined && task.SharewebTaskType.Title && (task.SharewebTaskType.Title == "Activities" || task.SharewebTaskType.Title == "Workstream" || task.SharewebTaskType.Title == "Task"))
+            // if (task.TaskType != undefined && task.TaskType.Title && (task.TaskType.Title == "Activities" || task.TaskType.Title == "Workstream" || task.TaskType.Title == "Task"))
             ComponetsData["allUntaggedTasks"].push(task);
           }
         }
@@ -2284,7 +2284,7 @@ function ComponentTable(SelectedProp: any) {
             task["Events"] != undefined &&
             task["Events"].length == 0
           ) {
-            // if (task.SharewebTaskType != undefined && task.SharewebTaskType.Title && (task.SharewebTaskType.Title == "Activities" || task.SharewebTaskType.Title == "Workstream" || task.SharewebTaskType.Title == "Task"))
+            // if (task.TaskType != undefined && task.TaskType.Title && (task.TaskType.Title == "Activities" || task.TaskType.Title == "Workstream" || task.TaskType.Title == "Task"))
             ComponetsData["allUntaggedTasks"].push(task);
           }
         }
@@ -2613,7 +2613,7 @@ function ComponentTable(SelectedProp: any) {
           obj.data.Item_x0020_Type === "Feature"
         )
           obj.data.SiteIconTitle = "F"; // obj.data.Portfolio_x0020_Type != undefined && obj.data.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/feature_icon.png';
-        obj.data["Shareweb_x0020_ID"] = obj.data.PortfolioStructureID;
+        obj.data["TaskID"] = obj.data.PortfolioStructureID;
         if (
           item.props != undefined &&
           item.props.SelectedItem != undefined &&
@@ -2702,7 +2702,7 @@ function ComponentTable(SelectedProp: any) {
         item.data.SiteIconTitle = "F"; // item.data.Portfolio_x0020_Type != undefined && item.data.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/feature_icon.png';
 
       // item.data['SiteIcon'] = GetIconImageUrl(item.data.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/', undefined);
-      item.data["Shareweb_x0020_ID"] = item.data.PortfolioStructureID;
+      item.data["TaskID"] = item.data.PortfolioStructureID;
 
       array.unshift(item.data);
       setData((array) => [...array]);
@@ -2736,7 +2736,7 @@ function ComponentTable(SelectedProp: any) {
       item.data.Item_x0020_Type === "Feature"
     )
       item.data.SiteIconTitle = "F"; // item.data.Portfolio_x0020_Type != undefined && item.data.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/feature_icon.png';
-    item.data["Shareweb_x0020_ID"] = item.data.PortfolioStructureID;
+    item.data["TaskID"] = item.data.PortfolioStructureID;
     if (checkedList != undefined && checkedList.length > 0)
       checkedList[0].childs.unshift(item.data);
     else array.unshift(item.data);
@@ -2773,7 +2773,7 @@ function ComponentTable(SelectedProp: any) {
           let newObj: any = {};
           let newarrays: any = [];
           maidataBackup.forEach((obj) => {
-            if (items?.Id !== obj.Id && obj.SharewebTaskType?.Title !== "Task" && obj.SharewebTaskType?.Title !== "Activities") {
+            if (items?.Id !== obj.Id && obj.TaskType?.Title !== "Task" && obj.TaskType?.Title !== "Activities") {
               newarrays.push(obj);
               setCheckSubChilds(obj);
               setRestructuredItemarray(newarrays);
@@ -2785,7 +2785,7 @@ function ComponentTable(SelectedProp: any) {
             }
             if (obj.childs != undefined && obj.childs.length > 0) {
               obj.childs.forEach((sub: any) => {
-                if (sub.Item_x0020_Type === "SubComponent" && sub.SharewebTaskType?.Title !== "Task" && sub.SharewebTaskType?.Title !== "Activities") {
+                if (sub.Item_x0020_Type === "SubComponent" && sub.TaskType?.Title !== "Task" && sub.TaskType?.Title !== "Activities") {
                   sub.isRestructureActive = true;
                 }
               });
@@ -2794,7 +2794,7 @@ function ComponentTable(SelectedProp: any) {
         } else if (items.Item_x0020_Type === "SubComponent") {
           let newObj: any = {}
           maidataBackup.forEach((obj) => {
-            if (obj.SharewebTaskType?.Title !== "Task" && obj.SharewebTaskType?.Title !== "Activities") {
+            if (obj.TaskType?.Title !== "Task" && obj.TaskType?.Title !== "Activities") {
               obj.isRestructureActive = true;
             }
             if (obj.childs != undefined && obj.childs.length > 0) {
@@ -2807,8 +2807,8 @@ function ComponentTable(SelectedProp: any) {
                   setRestructuredItemarray(newarrays);
                   setComponentRestruct(true);
                   newObj = {
-                    Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle, SharewebTaskType: obj.SharewebTaskType,
-                    newChild: { Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle, SharewebTaskType: sub.SharewebTaskType, }
+                    Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle, TaskType: obj.TaskType,
+                    newChild: { Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle, TaskType: sub.TaskType, }
                   };
                   newChildarray.push(newObj.newChild)
                   setRestructureChecked(newChildarray);
@@ -2826,7 +2826,7 @@ function ComponentTable(SelectedProp: any) {
         } else if (items.Item_x0020_Type === "Feature") {
           let newObj: any = {}
           maidataBackup.forEach((obj) => {
-            if (obj.SharewebTaskType?.Title !== "Task" && obj.SharewebTaskType?.Title !== "Activities") {
+            if (obj.TaskType?.Title !== "Task" && obj.TaskType?.Title !== "Activities") {
               obj.isRestructureActive = true;
             }
 
@@ -2844,9 +2844,9 @@ function ComponentTable(SelectedProp: any) {
                   sub.isRestructureActive = false;
                   setRestructuredItemarray(newarrays);
                   newObj = {
-                    Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle, SharewebTaskType: obj.SharewebTaskType,
+                    Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle, TaskType: obj.TaskType,
                     newChild: {
-                      Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle, SharewebTaskType: sub.SharewebTaskType,
+                      Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle, TaskType: sub.TaskType,
                     }
                   };
                   setComponentRestruct(true);
@@ -2863,10 +2863,10 @@ function ComponentTable(SelectedProp: any) {
                       sub.isRestructureActive = false;
                       setRestructuredItemarray(newarrays);
                       newObj = {
-                        Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle, SharewebTaskType: obj.SharewebTaskType,
+                        Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle, TaskType: obj.TaskType,
                         newChild: {
-                          Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle, SharewebTaskType: sub.SharewebTaskType,
-                          newFchild: { Title: newsub.Title, Item_x0020_Type: newsub.Item_x0020_Type, Id: newsub.Id, siteIcon: newsub.SiteIconTitle, SharewebTaskType: newsub.SharewebTaskType, }
+                          Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle, TaskType: sub.TaskType,
+                          newFchild: { Title: newsub.Title, Item_x0020_Type: newsub.Item_x0020_Type, Id: newsub.Id, siteIcon: newsub.SiteIconTitle, TaskType: newsub.TaskType, }
                         }
                       };
                       setComponentRestruct(true);
@@ -2879,14 +2879,14 @@ function ComponentTable(SelectedProp: any) {
               });
             }
           });
-        } else if (items.SharewebTaskType?.Title === "Activities" && items.Item_x0020_Type === "Task") {
+        } else if (items.TaskType?.Title === "Activities" && items.Item_x0020_Type === "Task") {
           let newObj: any = {}
           maidataBackup.forEach((obj) => {
             let newChildarray: any = [];
             let newarrays: any = [];
-            if (obj.SharewebTaskType?.Title !== "Task" && obj?.Id == items?.Id && obj?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID && obj?.ShowTooltipSharewebId == items?.ShowTooltipSharewebId) {
+            if (obj.TaskType?.Title !== "Task" && obj?.Id == items?.Id && obj?.TaskID == items?.TaskID && obj?.ShowTooltipSharewebId == items?.ShowTooltipSharewebId) {
               newObj = {
-                Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIcon, SharewebTaskType: obj.SharewebTaskType,
+                Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIcon, TaskType: obj.TaskType,
               }
               newarrays.push(obj);
               setRestructuredItemarray(newarrays);
@@ -2894,21 +2894,21 @@ function ComponentTable(SelectedProp: any) {
               setRestructureChecked(newChildarray);
               ArrayTest.push(newObj);
             }
-            if (obj.SharewebTaskType?.Title !== "Task" && obj?.Shareweb_x0020_ID !== items?.Shareweb_x0020_ID && obj?.Id !== items?.Id) {
+            if (obj.TaskType?.Title !== "Task" && obj?.TaskID !== items?.TaskID && obj?.Id !== items?.Id) {
               obj.isRestructureActive = true
             }
-            if ((obj.SharewebTaskType?.Title == "Activities" || obj.SharewebTaskType?.Title == "Workstream") && obj?.siteType !== items?.siteType) {
+            if ((obj.TaskType?.Title == "Activities" || obj.TaskType?.Title == "Workstream") && obj?.siteType !== items?.siteType) {
               obj.isRestructureActive = false;
             }
             if (obj?.childs != undefined && obj?.childs?.length > 0) {
               obj.childs.forEach((sub: any) => {
                 let newChildarray: any = [];
                 let newarrays: any = [];
-                if (sub.SharewebTaskType?.Title !== "Task" && sub?.Id == items?.Id && sub?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID && sub?.ShowTooltipSharewebId == items?.ShowTooltipSharewebId) {
+                if (sub.TaskType?.Title !== "Task" && sub?.Id == items?.Id && sub?.TaskID == items?.TaskID && sub?.ShowTooltipSharewebId == items?.ShowTooltipSharewebId) {
                   newObj = {
-                    Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle, SharewebTaskType: obj.SharewebTaskType,
+                    Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle, TaskType: obj.TaskType,
                     newChild: {
-                      Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIcon, SharewebTaskType: sub.SharewebTaskType,
+                      Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIcon, TaskType: sub.TaskType,
                     }
                   }
                   newarrays.push(obj);
@@ -2917,10 +2917,10 @@ function ComponentTable(SelectedProp: any) {
                   setRestructureChecked(newChildarray);
                   ArrayTest.push(newObj);
                 }
-                if (sub.SharewebTaskType?.Title !== "Task" && sub?.Shareweb_x0020_ID !== items?.Shareweb_x0020_ID && sub?.Id !== items?.Id) {
+                if (sub.TaskType?.Title !== "Task" && sub?.TaskID !== items?.TaskID && sub?.Id !== items?.Id) {
                   sub.isRestructureActive = true
                 }
-                if ((sub.SharewebTaskType?.Title == "Activities" || sub.SharewebTaskType?.Title == "Workstream") && sub?.siteType !== items?.siteType) {
+                if ((sub.TaskType?.Title == "Activities" || sub.TaskType?.Title == "Workstream") && sub?.siteType !== items?.siteType) {
                   sub.isRestructureActive = false;
                 }
                 if (sub.childs != undefined && sub.childs.length > 0) {
@@ -2928,15 +2928,15 @@ function ComponentTable(SelectedProp: any) {
                     let newChildarray: any = [];
                     let newarrays: any = [];
                     setComponentRestruct(true);
-                    if (newsub.SharewebTaskType?.Title !== "Task" && newsub?.Id == items?.Id && newsub?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID && newsub?.ShowTooltipSharewebId == items?.ShowTooltipSharewebId) {
+                    if (newsub.TaskType?.Title !== "Task" && newsub?.Id == items?.Id && newsub?.TaskID == items?.TaskID && newsub?.ShowTooltipSharewebId == items?.ShowTooltipSharewebId) {
                       newarrays.push(obj);
                       setRestructuredItemarray(newarrays);
                       newObj = {
-                        Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle, SharewebTaskType: obj.SharewebTaskType,
+                        Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle, TaskType: obj.TaskType,
                         newChild: {
-                          Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle === undefined ? sub.SiteIcon : sub.SiteIconTitle, SharewebTaskType: sub.SharewebTaskType,
+                          Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle === undefined ? sub.SiteIcon : sub.SiteIconTitle, TaskType: sub.TaskType,
                           newFchild: {
-                            Title: newsub.Title, Item_x0020_Type: newsub.Item_x0020_Type, Id: newsub.Id, siteIcon: newsub.SiteIcon, SharewebTaskType: newsub.SharewebTaskType,
+                            Title: newsub.Title, Item_x0020_Type: newsub.Item_x0020_Type, Id: newsub.Id, siteIcon: newsub.SiteIcon, TaskType: newsub.TaskType,
                           }
                         }
                       }
@@ -2944,29 +2944,29 @@ function ComponentTable(SelectedProp: any) {
                       setRestructureChecked(newChildarray);
                       ArrayTest.push(newObj);
                     }
-                    if (newsub.SharewebTaskType?.Title !== "Task" && newsub?.Shareweb_x0020_ID !== items?.Shareweb_x0020_ID && newsub?.Id !== items?.Id) {
+                    if (newsub.TaskType?.Title !== "Task" && newsub?.TaskID !== items?.TaskID && newsub?.Id !== items?.Id) {
 
                       newsub.isRestructureActive = true
                     }
-                    if ((newsub.SharewebTaskType?.Title == "Activities" || newsub.SharewebTaskType?.Title == "Workstream") && newsub?.siteType !== items?.siteType) {
+                    if ((newsub.TaskType?.Title == "Activities" || newsub.TaskType?.Title == "Workstream") && newsub?.siteType !== items?.siteType) {
                       newsub.isRestructureActive = false;
                     }
                     if (newsub.childs != undefined && newsub.childs.length > 0) {
                       let newChildarray: any = [];
                       let newarrays: any = [];
                       newsub.childs.forEach((activity: any) => {
-                        if (activity.SharewebTaskType?.Title !== "Task" && activity?.Id == items?.Id && activity?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID && activity?.ShowTooltipSharewebId == items?.ShowTooltipSharewebId) {
+                        if (activity.TaskType?.Title !== "Task" && activity?.Id == items?.Id && activity?.TaskID == items?.TaskID && activity?.ShowTooltipSharewebId == items?.ShowTooltipSharewebId) {
                           newarrays.push(obj);
                           setRestructuredItemarray(newarrays);
                           activity.isRestructureActive = false;
                           newsub.isRestructureActive = false;
                           newObj = {
-                            Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle, SharewebTaskType: obj.SharewebTaskType,
+                            Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle, TaskType: obj.TaskType,
                             newChild: {
-                              Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle, SharewebTaskType: sub.SharewebTaskType,
+                              Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle, TaskType: sub.TaskType,
                               newFchild: {
-                                Title: newsub.Title, Item_x0020_Type: newsub.Item_x0020_Type, Id: newsub.Id, siteIcon: newsub.SiteIconTitle, SharewebTaskType: newsub.SharewebTaskType,
-                                newActChild: { Title: activity.Title, Item_x0020_Type: activity.Item_x0020_Type, Id: activity.Id, siteIcon: activity.SiteIcon, SharewebTaskType: activity.SharewebTaskType }
+                                Title: newsub.Title, Item_x0020_Type: newsub.Item_x0020_Type, Id: newsub.Id, siteIcon: newsub.SiteIconTitle, TaskType: newsub.TaskType,
+                                newActChild: { Title: activity.Title, Item_x0020_Type: activity.Item_x0020_Type, Id: activity.Id, siteIcon: activity.SiteIcon, TaskType: activity.TaskType }
                               }
                             }
                           };
@@ -2974,13 +2974,13 @@ function ComponentTable(SelectedProp: any) {
                           setRestructureChecked(newChildarray);
                           ArrayTest.push(newObj);
                         } else {
-                          if (activity.SharewebTaskType?.Title !== "Task" && activity?.siteType == items?.siteType) {
+                          if (activity.TaskType?.Title !== "Task" && activity?.siteType == items?.siteType) {
                             activity.isRestructureActive = true;
                           }
                         }
                         if (activity?.childs != undefined && activity?.childs?.length > 0) {
                           activity?.childs?.forEach((wrkstrm: any) => {
-                            if (wrkstrm.SharewebTaskType?.Title !== "Task" && wrkstrm?.siteType == items?.siteType) {
+                            if (wrkstrm.TaskType?.Title !== "Task" && wrkstrm?.siteType == items?.siteType) {
                               wrkstrm.isRestructureActive = true;
                             }
                           })
@@ -2992,14 +2992,14 @@ function ComponentTable(SelectedProp: any) {
               });
             }
           });
-        } else if (items.SharewebTaskType?.Title === "Workstream" && items.Item_x0020_Type === "Task") {
+        } else if (items.TaskType?.Title === "Workstream" && items.Item_x0020_Type === "Task") {
           let newObj: any = {}
           maidataBackup.forEach((obj) => {
             let newChildarray: any = [];
             let newarrays: any = [];
-            if (obj.SharewebTaskType?.Title !== "Task" && obj?.Id == items?.Id && obj?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID && obj?.ShowTooltipSharewebId == items?.ShowTooltipSharewebId) {
+            if (obj.TaskType?.Title !== "Task" && obj?.Id == items?.Id && obj?.TaskID == items?.TaskID && obj?.ShowTooltipSharewebId == items?.ShowTooltipSharewebId) {
               newObj = {
-                Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIcon, SharewebTaskType: obj.SharewebTaskType,
+                Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIcon, TaskType: obj.TaskType,
               }
               newarrays.push(obj);
               setRestructuredItemarray(newarrays);
@@ -3007,21 +3007,21 @@ function ComponentTable(SelectedProp: any) {
               setRestructureChecked(newChildarray);
               ArrayTest.push(newObj);
             }
-            if (obj.SharewebTaskType?.Title !== "Task" && obj?.Shareweb_x0020_ID !== items?.Shareweb_x0020_ID && obj?.Id !== items?.Id) {
+            if (obj.TaskType?.Title !== "Task" && obj?.TaskID !== items?.TaskID && obj?.Id !== items?.Id) {
               obj.isRestructureActive = true;
             }
-            if ((obj.SharewebTaskType?.Title == "Activities" || obj.SharewebTaskType?.Title == "Workstream") && obj?.siteType !== items?.siteType) {
+            if ((obj.TaskType?.Title == "Activities" || obj.TaskType?.Title == "Workstream") && obj?.siteType !== items?.siteType) {
               obj.isRestructureActive = false;
             }
             if (obj?.childs != undefined && obj?.childs?.length > 0) {
               obj.childs.forEach((sub: any) => {
                 let newChildarray: any = [];
                 let newarrays: any = [];
-                if (sub.SharewebTaskType?.Title !== "Task" && sub?.Id == items?.Id && sub?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID && sub?.ShowTooltipSharewebId == items?.ShowTooltipSharewebId) {
+                if (sub.TaskType?.Title !== "Task" && sub?.Id == items?.Id && sub?.TaskID == items?.TaskID && sub?.ShowTooltipSharewebId == items?.ShowTooltipSharewebId) {
                   newObj = {
-                    Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle, SharewebTaskType: obj.SharewebTaskType,
+                    Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle, TaskType: obj.TaskType,
                     newChild: {
-                      Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIcon, SharewebTaskType: sub.SharewebTaskType,
+                      Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIcon, TaskType: sub.TaskType,
                     }
                   }
                   newarrays.push(obj);
@@ -3030,25 +3030,25 @@ function ComponentTable(SelectedProp: any) {
                   setRestructureChecked(newChildarray);
                   ArrayTest.push(newObj);
                 }
-                if (sub.SharewebTaskType?.Title !== "Task" && sub?.Shareweb_x0020_ID !== items?.Shareweb_x0020_ID && sub?.Id !== items?.Id) {
+                if (sub.TaskType?.Title !== "Task" && sub?.TaskID !== items?.TaskID && sub?.Id !== items?.Id) {
                   sub.isRestructureActive = true;
                 }
-                if ((sub.SharewebTaskType?.Title == "Activities" || sub.SharewebTaskType?.Title == "Workstream") && sub?.siteType !== items?.siteType) {
+                if ((sub.TaskType?.Title == "Activities" || sub.TaskType?.Title == "Workstream") && sub?.siteType !== items?.siteType) {
                   sub.isRestructureActive = false;
                 }
                 if (sub.childs != undefined && sub.childs.length > 0) {
                   sub.childs.forEach((newsub: any) => {
                     let newChildarray: any = [];
                     let newarrays: any = [];
-                    if (newsub.SharewebTaskType?.Title !== "Task" && newsub?.Id == items?.Id && newsub?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID && newsub?.ShowTooltipSharewebId == items?.ShowTooltipSharewebId) {
+                    if (newsub.TaskType?.Title !== "Task" && newsub?.Id == items?.Id && newsub?.TaskID == items?.TaskID && newsub?.ShowTooltipSharewebId == items?.ShowTooltipSharewebId) {
                       newarrays.push(obj);
                       setRestructuredItemarray(newarrays);
                       newObj = {
-                        Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle, SharewebTaskType: obj.SharewebTaskType,
+                        Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle, TaskType: obj.TaskType,
                         newChild: {
-                          Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle === undefined ? sub.SiteIcon : sub.SiteIconTitle, SharewebTaskType: sub.SharewebTaskType,
+                          Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle === undefined ? sub.SiteIcon : sub.SiteIconTitle, TaskType: sub.TaskType,
                           newFchild: {
-                            Title: newsub.Title, Item_x0020_Type: newsub.Item_x0020_Type, Id: newsub.Id, siteIcon: newsub.SiteIcon, SharewebTaskType: newsub.SharewebTaskType,
+                            Title: newsub.Title, Item_x0020_Type: newsub.Item_x0020_Type, Id: newsub.Id, siteIcon: newsub.SiteIcon, TaskType: newsub.TaskType,
                           }
                         }
                       }
@@ -3056,28 +3056,28 @@ function ComponentTable(SelectedProp: any) {
                       setRestructureChecked(newChildarray);
                       ArrayTest.push(newObj);
                     }
-                    if (newsub.SharewebTaskType?.Title !== "Task" && newsub?.Shareweb_x0020_ID !== items?.Shareweb_x0020_ID && newsub?.Id !== items?.Id) {
+                    if (newsub.TaskType?.Title !== "Task" && newsub?.TaskID !== items?.TaskID && newsub?.Id !== items?.Id) {
                       newsub.isRestructureActive = true;
                     }
-                    if ((newsub.SharewebTaskType?.Title == "Activities" || newsub.SharewebTaskType?.Title == "Workstream") && newsub?.siteType !== items?.siteType) {
+                    if ((newsub.TaskType?.Title == "Activities" || newsub.TaskType?.Title == "Workstream") && newsub?.siteType !== items?.siteType) {
                       newsub.isRestructureActive = false;
                     }
                     if (newsub.childs != undefined && newsub.childs.length > 0) {
                       let newChildarray: any = [];
                       let newarrays: any = [];
                       newsub.childs.forEach((activity: any) => {
-                        if (activity.SharewebTaskType?.Title !== "Task" && activity?.Id == items?.Id && activity?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID && activity?.ShowTooltipSharewebId == items?.ShowTooltipSharewebId) {
+                        if (activity.TaskType?.Title !== "Task" && activity?.Id == items?.Id && activity?.TaskID == items?.TaskID && activity?.ShowTooltipSharewebId == items?.ShowTooltipSharewebId) {
                           newarrays.push(obj);
                           setRestructuredItemarray(newarrays);
                           activity.isRestructureActive = false;
                           newsub.isRestructureActive = false;
                           newObj = {
-                            Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle, SharewebTaskType: obj.SharewebTaskType,
+                            Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle, TaskType: obj.TaskType,
                             newChild: {
-                              Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle === undefined ? sub.SiteIcon : sub.SiteIconTitle, SharewebTaskType: sub.SharewebTaskType,
+                              Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle === undefined ? sub.SiteIcon : sub.SiteIconTitle, TaskType: sub.TaskType,
                               newFchild: {
-                                Title: newsub.Title, Item_x0020_Type: newsub.Item_x0020_Type, Id: newsub.Id, siteIcon: newsub.SiteIconTitle === undefined ? newsub.SiteIcon : newsub.SiteIconTitle, SharewebTaskType: newsub.SharewebTaskType,
-                                newActChild: { Title: activity.Title, Item_x0020_Type: activity.Item_x0020_Type, Id: activity.Id, siteIcon: activity.SiteIcon, SharewebTaskType: activity.SharewebTaskType }
+                                Title: newsub.Title, Item_x0020_Type: newsub.Item_x0020_Type, Id: newsub.Id, siteIcon: newsub.SiteIconTitle === undefined ? newsub.SiteIcon : newsub.SiteIconTitle, TaskType: newsub.TaskType,
+                                newActChild: { Title: activity.Title, Item_x0020_Type: activity.Item_x0020_Type, Id: activity.Id, siteIcon: activity.SiteIcon, TaskType: activity.TaskType }
                               }
                             }
                           };
@@ -3085,28 +3085,28 @@ function ComponentTable(SelectedProp: any) {
                           setRestructureChecked(newChildarray);
                           ArrayTest.push(newObj);
                         }
-                        if (activity.SharewebTaskType?.Title !== "Task" && activity?.Shareweb_x0020_ID !== items?.Shareweb_x0020_ID && activity?.Id !== items?.Id) {
+                        if (activity.TaskType?.Title !== "Task" && activity?.TaskID !== items?.TaskID && activity?.Id !== items?.Id) {
                           activity.isRestructureActive = true;
                         }
-                        if ((activity.SharewebTaskType?.Title == "Activities" || activity.SharewebTaskType?.Title == "Workstream") && activity?.siteType !== items?.siteType) {
+                        if ((activity.TaskType?.Title == "Activities" || activity.TaskType?.Title == "Workstream") && activity?.siteType !== items?.siteType) {
                           activity.isRestructureActive = false;
                         }
                         setComponentRestruct(true);
                         if (activity?.childs != undefined && activity?.childs?.length > 0) {
                           activity?.childs?.forEach((wrkstrm: any) => {
-                            if (wrkstrm.SharewebTaskType?.Title !== "Task" && wrkstrm?.Id == items?.Id && wrkstrm?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID && wrkstrm?.ShowTooltipSharewebId == items?.ShowTooltipSharewebId) {
+                            if (wrkstrm.TaskType?.Title !== "Task" && wrkstrm?.Id == items?.Id && wrkstrm?.TaskID == items?.TaskID && wrkstrm?.ShowTooltipSharewebId == items?.ShowTooltipSharewebId) {
                               newarrays.push(obj);
                               setRestructuredItemarray(newarrays);
                               wrkstrm.isRestructureActive = false;
                               newObj = {
-                                Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle, SharewebTaskType: obj.SharewebTaskType,
+                                Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle, TaskType: obj.TaskType,
                                 newChild: {
-                                  Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle, SharewebTaskType: sub.SharewebTaskType,
+                                  Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle, TaskType: sub.TaskType,
                                   newFchild: {
-                                    Title: newsub.Title, Item_x0020_Type: newsub.Item_x0020_Type, Id: newsub.Id, siteIcon: newsub.SiteIconTitle, SharewebTaskType: newsub.SharewebTaskType,
+                                    Title: newsub.Title, Item_x0020_Type: newsub.Item_x0020_Type, Id: newsub.Id, siteIcon: newsub.SiteIconTitle, TaskType: newsub.TaskType,
                                     newActChild: {
-                                      Title: activity.Title, Item_x0020_Type: activity.Item_x0020_Type, Id: activity.Id, siteIcon: activity.SiteIcon, SharewebTaskType: activity.SharewebTaskType,
-                                      newWrkChild: { Title: wrkstrm.Title, Item_x0020_Type: wrkstrm.Item_x0020_Type, Id: wrkstrm.Id, siteIcon: wrkstrm.SiteIcon, SharewebTaskType: wrkstrm.SharewebTaskType, }
+                                      Title: activity.Title, Item_x0020_Type: activity.Item_x0020_Type, Id: activity.Id, siteIcon: activity.SiteIcon, TaskType: activity.TaskType,
+                                      newWrkChild: { Title: wrkstrm.Title, Item_x0020_Type: wrkstrm.Item_x0020_Type, Id: wrkstrm.Id, siteIcon: wrkstrm.SiteIcon, TaskType: wrkstrm.TaskType, }
                                     }
                                   }
                                 }
@@ -3116,7 +3116,7 @@ function ComponentTable(SelectedProp: any) {
                               setRestructureChecked(newChildarray);
                               ArrayTest.push(newObj);
                             } else {
-                              if (wrkstrm.SharewebTaskType?.Title !== "Task" && wrkstrm?.siteType == items?.siteType) {
+                              if (wrkstrm.TaskType?.Title !== "Task" && wrkstrm?.siteType == items?.siteType) {
                                 wrkstrm.isRestructureActive = true;
                               }
                             }
@@ -3131,15 +3131,15 @@ function ComponentTable(SelectedProp: any) {
               });
             }
           });
-        } else if (items.SharewebTaskType?.Title === "Task" && items.Item_x0020_Type === "Task") {
+        } else if (items.TaskType?.Title === "Task" && items.Item_x0020_Type === "Task") {
           let newObj: any = {}
           maidataBackup.forEach((obj) => {
 
             let newChildarray: any = [];
             let newarrays: any = [];
-            if (obj.SharewebTaskType?.Title == "Task" && obj?.Id == items?.Id && obj?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID && obj?.ShowTooltipSharewebId == items?.ShowTooltipSharewebId) {
+            if (obj.TaskType?.Title == "Task" && obj?.Id == items?.Id && obj?.TaskID == items?.TaskID && obj?.ShowTooltipSharewebId == items?.ShowTooltipSharewebId) {
               newObj = {
-                Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIcon, SharewebTaskType: obj.SharewebTaskType,
+                Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIcon, TaskType: obj.TaskType,
               }
               newarrays.push(obj);
               setRestructuredItemarray(newarrays);
@@ -3147,10 +3147,10 @@ function ComponentTable(SelectedProp: any) {
               setRestructureChecked(newChildarray);
               ArrayTest.push(newObj);
             }
-            if (obj.SharewebTaskType?.Title !== "Task") {
+            if (obj.TaskType?.Title !== "Task") {
               obj.isRestructureActive = true;
             }
-            if ((obj.SharewebTaskType?.Title == "Activities" || obj.SharewebTaskType?.Title == "Workstream") && obj?.siteType !== items?.siteType) {
+            if ((obj.TaskType?.Title == "Activities" || obj.TaskType?.Title == "Workstream") && obj?.siteType !== items?.siteType) {
               obj.isRestructureActive = false;
             }
             if (obj?.childs != undefined && obj?.childs?.length > 0) {
@@ -3158,11 +3158,11 @@ function ComponentTable(SelectedProp: any) {
 
                 let newChildarray: any = [];
                 let newarrays: any = [];
-                if (sub.SharewebTaskType?.Title == "Task" && sub?.Id == items?.Id && sub?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID && sub?.ShowTooltipSharewebId == items?.ShowTooltipSharewebId) {
+                if (sub.TaskType?.Title == "Task" && sub?.Id == items?.Id && sub?.TaskID == items?.TaskID && sub?.ShowTooltipSharewebId == items?.ShowTooltipSharewebId) {
                   newObj = {
-                    Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle, SharewebTaskType: obj.SharewebTaskType,
+                    Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle, TaskType: obj.TaskType,
                     newChild: {
-                      Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIcon, SharewebTaskType: sub.SharewebTaskType,
+                      Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIcon, TaskType: sub.TaskType,
                     }
                   }
                   newarrays.push(obj);
@@ -3172,25 +3172,25 @@ function ComponentTable(SelectedProp: any) {
                   ArrayTest.push(newObj);
                 }
 
-                if (sub.SharewebTaskType?.Title !== "Task") {
+                if (sub.TaskType?.Title !== "Task") {
                   sub.isRestructureActive = true;
                 }
-                if ((sub.SharewebTaskType?.Title == "Activities" || sub.SharewebTaskType?.Title == "Workstream") && sub?.siteType !== items?.siteType) {
+                if ((sub.TaskType?.Title == "Activities" || sub.TaskType?.Title == "Workstream") && sub?.siteType !== items?.siteType) {
                   sub.isRestructureActive = false;
                 }
                 if (sub.childs != undefined && sub.childs.length > 0) {
                   sub.childs.forEach((newsub: any) => {
                     let newChildarray: any = [];
                     let newarrays: any = [];
-                    if (newsub.SharewebTaskType?.Title == "Task" && newsub?.Id == items?.Id && newsub?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID && newsub?.ShowTooltipSharewebId == items?.ShowTooltipSharewebId) {
+                    if (newsub.TaskType?.Title == "Task" && newsub?.Id == items?.Id && newsub?.TaskID == items?.TaskID && newsub?.ShowTooltipSharewebId == items?.ShowTooltipSharewebId) {
                       newarrays.push(obj);
                       setRestructuredItemarray(newarrays);
                       newObj = {
-                        Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle, SharewebTaskType: obj.SharewebTaskType,
+                        Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle, TaskType: obj.TaskType,
                         newChild: {
-                          Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle === undefined ? sub.SiteIcon : sub.SiteIconTitle, SharewebTaskType: sub.SharewebTaskType,
+                          Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle === undefined ? sub.SiteIcon : sub.SiteIconTitle, TaskType: sub.TaskType,
                           newFchild: {
-                            Title: newsub.Title, Item_x0020_Type: newsub.Item_x0020_Type, Id: newsub.Id, siteIcon: newsub.SiteIcon, SharewebTaskType: newsub.SharewebTaskType,
+                            Title: newsub.Title, Item_x0020_Type: newsub.Item_x0020_Type, Id: newsub.Id, siteIcon: newsub.SiteIcon, TaskType: newsub.TaskType,
                           }
                         }
                       }
@@ -3199,10 +3199,10 @@ function ComponentTable(SelectedProp: any) {
                       ArrayTest.push(newObj);
                     }
 
-                    if (newsub.SharewebTaskType?.Title !== "Task") {
+                    if (newsub.TaskType?.Title !== "Task") {
                       newsub.isRestructureActive = true;
                     }
-                    if ((newsub.SharewebTaskType?.Title == "Activities" || newsub.SharewebTaskType?.Title == "Workstream") && newsub?.siteType !== items?.siteType) {
+                    if ((newsub.TaskType?.Title == "Activities" || newsub.TaskType?.Title == "Workstream") && newsub?.siteType !== items?.siteType) {
                       newsub.isRestructureActive = false;
                     }
                     if (newsub.childs != undefined && newsub.childs.length > 0) {
@@ -3210,18 +3210,18 @@ function ComponentTable(SelectedProp: any) {
                       let newarrays: any = [];
                       newsub.childs.forEach((activity: any) => {
 
-                        if (activity.SharewebTaskType?.Title == "Task" && activity?.Id == items?.Id && activity?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID && activity?.ShowTooltipSharewebId == items?.ShowTooltipSharewebId) {
+                        if (activity.TaskType?.Title == "Task" && activity?.Id == items?.Id && activity?.TaskID == items?.TaskID && activity?.ShowTooltipSharewebId == items?.ShowTooltipSharewebId) {
                           newarrays.push(obj);
                           setRestructuredItemarray(newarrays);
                           activity.isRestructureActive = false;
                           newsub.isRestructureActive = false;
                           newObj = {
-                            Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle, SharewebTaskType: obj.SharewebTaskType,
+                            Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle, TaskType: obj.TaskType,
                             newChild: {
-                              Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle === undefined ? sub.SiteIcon : sub.SiteIconTitle, SharewebTaskType: sub.SharewebTaskType,
+                              Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle === undefined ? sub.SiteIcon : sub.SiteIconTitle, TaskType: sub.TaskType,
                               newFchild: {
-                                Title: newsub.Title, Item_x0020_Type: newsub.Item_x0020_Type, Id: newsub.Id, siteIcon: newsub.SiteIconTitle === undefined ? newsub.SiteIcon : newsub.SiteIconTitle, SharewebTaskType: newsub.SharewebTaskType,
-                                newActChild: { Title: activity.Title, Item_x0020_Type: activity.Item_x0020_Type, Id: activity.Id, siteIcon: activity.SiteIcon, SharewebTaskType: activity.SharewebTaskType }
+                                Title: newsub.Title, Item_x0020_Type: newsub.Item_x0020_Type, Id: newsub.Id, siteIcon: newsub.SiteIconTitle === undefined ? newsub.SiteIcon : newsub.SiteIconTitle, TaskType: newsub.TaskType,
+                                newActChild: { Title: activity.Title, Item_x0020_Type: activity.Item_x0020_Type, Id: activity.Id, siteIcon: activity.SiteIcon, TaskType: activity.TaskType }
                               }
                             }
                           };
@@ -3229,28 +3229,28 @@ function ComponentTable(SelectedProp: any) {
                           setRestructureChecked(newChildarray);
                           ArrayTest.push(newObj);
                         }
-                        if (activity.SharewebTaskType?.Title !== "Task") {
+                        if (activity.TaskType?.Title !== "Task") {
                           activity.isRestructureActive = true;
                         }
-                        if ((activity.SharewebTaskType?.Title == "Activities" || activity.SharewebTaskType?.Title == "Workstream") && activity?.siteType !== items?.siteType) {
+                        if ((activity.TaskType?.Title == "Activities" || activity.TaskType?.Title == "Workstream") && activity?.siteType !== items?.siteType) {
                           activity.isRestructureActive = false;
                         }
                         setComponentRestruct(true);
                         if (activity?.childs != undefined && activity?.childs?.length > 0) {
                           activity?.childs?.forEach((wrkstrm: any) => {
-                            if (wrkstrm.SharewebTaskType?.Title == "Task" && wrkstrm?.Id == items?.Id && wrkstrm?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID && wrkstrm?.ShowTooltipSharewebId == items?.ShowTooltipSharewebId) {
+                            if (wrkstrm.TaskType?.Title == "Task" && wrkstrm?.Id == items?.Id && wrkstrm?.TaskID == items?.TaskID && wrkstrm?.ShowTooltipSharewebId == items?.ShowTooltipSharewebId) {
                               newarrays.push(obj);
                               setRestructuredItemarray(newarrays);
                               wrkstrm.isRestructureActive = false;
                               newObj = {
-                                Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle, SharewebTaskType: obj.SharewebTaskType,
+                                Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle, TaskType: obj.TaskType,
                                 newChild: {
-                                  Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle === undefined ? sub.SiteIcon : sub.SiteIconTitle, SharewebTaskType: sub.SharewebTaskType,
+                                  Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle === undefined ? sub.SiteIcon : sub.SiteIconTitle, TaskType: sub.TaskType,
                                   newFchild: {
-                                    Title: newsub.Title, Item_x0020_Type: newsub.Item_x0020_Type, Id: newsub.Id, siteIcon: newsub.SiteIconTitle === undefined ? newsub.SiteIcon : newsub.SiteIconTitle, SharewebTaskType: newsub.SharewebTaskType,
+                                    Title: newsub.Title, Item_x0020_Type: newsub.Item_x0020_Type, Id: newsub.Id, siteIcon: newsub.SiteIconTitle === undefined ? newsub.SiteIcon : newsub.SiteIconTitle, TaskType: newsub.TaskType,
                                     newActChild: {
-                                      Title: activity.Title, Item_x0020_Type: activity.Item_x0020_Type, Id: activity.Id, siteIcon: activity.SiteIcon, SharewebTaskType: activity.SharewebTaskType,
-                                      newWrkChild: { Title: wrkstrm.Title, Item_x0020_Type: wrkstrm.Item_x0020_Type, Id: wrkstrm.Id, siteIcon: wrkstrm.SiteIcon, SharewebTaskType: wrkstrm.SharewebTaskType, }
+                                      Title: activity.Title, Item_x0020_Type: activity.Item_x0020_Type, Id: activity.Id, siteIcon: activity.SiteIcon, TaskType: activity.TaskType,
+                                      newWrkChild: { Title: wrkstrm.Title, Item_x0020_Type: wrkstrm.Item_x0020_Type, Id: wrkstrm.Id, siteIcon: wrkstrm.SiteIcon, TaskType: wrkstrm.TaskType, }
                                     }
                                   }
                                 }
@@ -3262,22 +3262,22 @@ function ComponentTable(SelectedProp: any) {
                             }
                             if (wrkstrm?.childs != undefined && wrkstrm?.childs?.length > 0) {
                               wrkstrm?.childs?.forEach((task: any) => {
-                                if (task.SharewebTaskType?.Title == "Task" && task?.Id == items?.Id && task?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID && task?.ShowTooltipSharewebId == items?.ShowTooltipSharewebId) {
+                                if (task.TaskType?.Title == "Task" && task?.Id == items?.Id && task?.TaskID == items?.TaskID && task?.ShowTooltipSharewebId == items?.ShowTooltipSharewebId) {
                                   newarrays.push(obj);
                                   setRestructuredItemarray(newarrays);
                                   wrkstrm.isRestructureActive = false;
                                   task.isRestructureActive = false;
                                   newObj = {
-                                    Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle, SharewebTaskType: obj.SharewebTaskType,
+                                    Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle, TaskType: obj.TaskType,
                                     newChild: {
-                                      Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle === undefined ? sub.SiteIcon : sub.SiteIconTitle, SharewebTaskType: sub.SharewebTaskType,
+                                      Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle === undefined ? sub.SiteIcon : sub.SiteIconTitle, TaskType: sub.TaskType,
                                       newFchild: {
-                                        Title: newsub.Title, Item_x0020_Type: newsub.Item_x0020_Type, Id: newsub.Id, siteIcon: newsub.SiteIconTitle === undefined ? newsub.SiteIcon : newsub.SiteIconTitle, SharewebTaskType: newsub.SharewebTaskType,
+                                        Title: newsub.Title, Item_x0020_Type: newsub.Item_x0020_Type, Id: newsub.Id, siteIcon: newsub.SiteIconTitle === undefined ? newsub.SiteIcon : newsub.SiteIconTitle, TaskType: newsub.TaskType,
                                         newActChild: {
-                                          Title: activity.Title, Item_x0020_Type: activity.Item_x0020_Type, Id: activity.Id, siteIcon: activity.SiteIcon, SharewebTaskType: activity.SharewebTaskType,
+                                          Title: activity.Title, Item_x0020_Type: activity.Item_x0020_Type, Id: activity.Id, siteIcon: activity.SiteIcon, TaskType: activity.TaskType,
                                           newWrkChild: {
-                                            Title: wrkstrm.Title, Item_x0020_Type: wrkstrm.Item_x0020_Type, Id: wrkstrm.Id, siteIcon: wrkstrm.SiteIcon, SharewebTaskType: wrkstrm.SharewebTaskType,
-                                            newTskChild: { Title: task.Title, Item_x0020_Type: task.Item_x0020_Type, Id: task.Id, siteIcon: task.SiteIcon, SharewebTaskType: task.SharewebTaskType, }
+                                            Title: wrkstrm.Title, Item_x0020_Type: wrkstrm.Item_x0020_Type, Id: wrkstrm.Id, siteIcon: wrkstrm.SiteIcon, TaskType: wrkstrm.TaskType,
+                                            newTskChild: { Title: task.Title, Item_x0020_Type: task.Item_x0020_Type, Id: task.Id, siteIcon: task.SiteIcon, TaskType: task.TaskType, }
                                           }
                                         }
                                       }
@@ -3287,7 +3287,7 @@ function ComponentTable(SelectedProp: any) {
                                   setRestructureChecked(newChildarray);
                                   ArrayTest.push(newObj);
                                 } else {
-                                  if (wrkstrm.SharewebTaskType?.Title !== "Task" && wrkstrm?.siteType == items?.siteType) {
+                                  if (wrkstrm.TaskType?.Title !== "Task" && wrkstrm?.siteType == items?.siteType) {
                                     task.isRestructureActive = false;
                                   }
                                 }
@@ -3334,13 +3334,13 @@ function ComponentTable(SelectedProp: any) {
     setNewItemBackUp(item);
     maidataBackup.forEach((obj) => {
       let object: any = {};
-      if (obj.ShowTooltipSharewebId === item.ShowTooltipSharewebId && obj.Shareweb_x0020_ID === item.Shareweb_x0020_ID && obj.Id === item.Id && obj.SharewebTaskType?.Title === item.SharewebTaskType?.Title) {
+      if (obj.ShowTooltipSharewebId === item.ShowTooltipSharewebId && obj.TaskID === item.TaskID && obj.Id === item.Id && obj.TaskType?.Title === item.TaskType?.Title) {
         object = { Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle }
         TestArray.push(object);
       }
       if (obj.childs != undefined && obj.childs.length > 0) {
         obj.childs.forEach((sub: any) => {
-          if (sub.ShowTooltipSharewebId === item.ShowTooltipSharewebId && sub.Shareweb_x0020_ID === item.Shareweb_x0020_ID && sub.Id === item.Id && sub.SharewebTaskType?.Title === item.SharewebTaskType?.Title) {
+          if (sub.ShowTooltipSharewebId === item.ShowTooltipSharewebId && sub.TaskID === item.TaskID && sub.Id === item.Id && sub.TaskType?.Title === item.TaskType?.Title) {
             object = {
               Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle,
               newChild: { Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle === undefined ? sub.SiteIcon : sub.SiteIconTitle }
@@ -3349,7 +3349,7 @@ function ComponentTable(SelectedProp: any) {
           }
           if (sub.childs != undefined && sub.childs.length > 0) {
             sub.childs.forEach((newsub: any) => {
-              if (newsub.ShowTooltipSharewebId === item.ShowTooltipSharewebId && newsub.Shareweb_x0020_ID === item.Shareweb_x0020_ID && newsub.Id === item.Id && newsub.SharewebTaskType?.Title === item.SharewebTaskType?.Title) {
+              if (newsub.ShowTooltipSharewebId === item.ShowTooltipSharewebId && newsub.TaskID === item.TaskID && newsub.Id === item.Id && newsub.TaskType?.Title === item.TaskType?.Title) {
                 object = {
                   Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle,
                   newChild: {
@@ -3361,7 +3361,7 @@ function ComponentTable(SelectedProp: any) {
               }
               if (newsub.childs != undefined && newsub.childs.length > 0) {
                 newsub.childs.forEach((activity: any) => {
-                  if (activity.ShowTooltipSharewebId === item.ShowTooltipSharewebId && activity.Shareweb_x0020_ID === item.Shareweb_x0020_ID && activity.Id === item.Id && activity.SharewebTaskType?.Title === item.SharewebTaskType?.Title) {
+                  if (activity.ShowTooltipSharewebId === item.ShowTooltipSharewebId && activity.TaskID === item.TaskID && activity.Id === item.Id && activity.TaskType?.Title === item.TaskType?.Title) {
                     object = {
                       Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle,
                       newChild: {
@@ -3376,7 +3376,7 @@ function ComponentTable(SelectedProp: any) {
                   }
                   if (newsub.childs != undefined && newsub.childs.length > 0) {
                     activity.childs.forEach((wrkstrm: any) => {
-                      if (wrkstrm.ShowTooltipSharewebId === item.ShowTooltipSharewebId && wrkstrm.Shareweb_x0020_ID === item.Shareweb_x0020_ID && wrkstrm.Id === item.Id) {
+                      if (wrkstrm.ShowTooltipSharewebId === item.ShowTooltipSharewebId && wrkstrm.TaskID === item.TaskID && wrkstrm.Id === item.Id) {
                         object = {
                           Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle,
                           newChild: {
@@ -3417,16 +3417,16 @@ function ComponentTable(SelectedProp: any) {
     let data: any = []
     item?.map((items: any) => {
       if (items != undefined && title === "SubComponent") {
-        data.push({ Id: items.Id, Item_x0020_Type: "SubComponent", SharewebTaskType: items.SharewebTaskType, Title: items.Title, siteIcon: "S" })
+        data.push({ Id: items.Id, Item_x0020_Type: "SubComponent", TaskType: items.TaskType, Title: items.Title, siteIcon: "S" })
       }
       if (items != undefined && title === "Feature") {
-        data.push({ Id: items.Id, Item_x0020_Type: "Feature", SharewebTaskType: items.SharewebTaskType, Title: items.Title, siteIcon: "F" })
+        data.push({ Id: items.Id, Item_x0020_Type: "Feature", TaskType: items.TaskType, Title: items.Title, siteIcon: "F" })
       }
       if (items != undefined && title === "Workstream") {
-        data.push({ Id: items.Id, Item_x0020_Type: "Task", SharewebTaskType: { Title: "Workstream", Id: items.SharewebTaskType.Id }, Title: items.Title, siteIcon: items.siteIcon })
+        data.push({ Id: items.Id, Item_x0020_Type: "Task", TaskType: { Title: "Workstream", Id: items.TaskType.Id }, Title: items.Title, siteIcon: items.siteIcon })
       }
       if (items != undefined && title === "Task") {
-        data.push({ Id: items.Id, Item_x0020_Type: "Task", SharewebTaskType: { Title: "Task", Id: items.SharewebTaskType.Id }, Title: items.Title, siteIcon: items.siteIcon })
+        data.push({ Id: items.Id, Item_x0020_Type: "Task", TaskType: { Title: "Task", Id: items.TaskType.Id }, Title: items.Title, siteIcon: items.siteIcon })
       }
     })
     array.push(...data);
@@ -3445,8 +3445,8 @@ function ComponentTable(SelectedProp: any) {
     let ChengedItemTitle: any = "";
     let siteIcon: any = '';
     let PortfolioLevelNum: any = 0;
-    let SharewebTaskLevel1No: number = 0;
-    let Shareweb_x0020_ID: any;
+    let TaskLevel: number = 0;
+    let TaskID: any;
 
     AllDataRender = [];
 
@@ -3457,7 +3457,7 @@ function ComponentTable(SelectedProp: any) {
 
     }
 
-    if (RestructureChecked != undefined && RestructureChecked?.length > 0 && (RestructureChecked[0].SharewebTaskType?.Title == "Workstream" || RestructureChecked[0].SharewebTaskType?.Title == "Task")) {
+    if (RestructureChecked != undefined && RestructureChecked?.length > 0 && (RestructureChecked[0].TaskType?.Title == "Workstream" || RestructureChecked[0].TaskType?.Title == "Task")) {
       ChengedItemTitle = "Activities";
     }
 
@@ -3472,24 +3472,24 @@ function ComponentTable(SelectedProp: any) {
       })
     }
 
-    if (RestructureChecked != undefined && RestructureChecked?.length > 0 && (RestructureChecked[0].SharewebTaskType?.Title == "Workstream" || RestructureChecked[0].SharewebTaskType?.Title == "Task")) {
+    if (RestructureChecked != undefined && RestructureChecked?.length > 0 && (RestructureChecked[0].TaskType?.Title == "Workstream" || RestructureChecked[0].TaskType?.Title == "Task")) {
       maidataBackup.map((obj: any) => {
         if (obj.childs.length > 0 && obj.childs != undefined) {
           obj.childs.map((sub: any) => {
             if (checkedList[0].ParentTask?.Id === sub.Id) {
-              if (SharewebTaskLevel1No <= sub.SharewebTaskLevel1No) {
-                SharewebTaskLevel1No = sub.SharewebTaskLevel1No + 1;
+              if (TaskLevel <= sub.TaskLevel) {
+                TaskLevel = sub.TaskLevel + 1;
                 PortfolioStructureIDs = sub.PortfolioStructureID;
-                Shareweb_x0020_ID = 'SA' + SharewebTaskLevel1No;
+                TaskID = 'SA' + TaskLevel;
               }
             }
             if (sub.childs.length > 0 && sub.childs != undefined) {
               sub.childs.map((newsub: any) => {
                 if (checkedList[0].ParentTask?.Id === newsub.Id) {
-                  if (SharewebTaskLevel1No <= newsub.SharewebTaskLevel1No) {
-                    SharewebTaskLevel1No = newsub.SharewebTaskLevel1No + 1;
+                  if (TaskLevel <= newsub.TaskLevel) {
+                    TaskLevel = newsub.TaskLevel + 1;
                     PortfolioStructureIDs = newsub.PortfolioStructureID;
-                    Shareweb_x0020_ID = 'SA' + SharewebTaskLevel1No;
+                    TaskID = 'SA' + TaskLevel;
                   }
 
                 }
@@ -3497,10 +3497,10 @@ function ComponentTable(SelectedProp: any) {
                 if (newsub.childs.length > 0 && newsub.childs != undefined) {
                   newsub.childs.map((feature: any) => {
                     if (checkedList[0].ParentTask?.Id === feature.Id) {
-                      if (SharewebTaskLevel1No <= feature.SharewebTaskLevel1No) {
-                        SharewebTaskLevel1No = feature.SharewebTaskLevel1No + 1;
+                      if (TaskLevel <= feature.TaskLevel) {
+                        TaskLevel = feature.TaskLevel + 1;
                         PortfolioStructureIDs = feature.PortfolioStructureID;
-                        Shareweb_x0020_ID = 'SA' + SharewebTaskLevel1No;
+                        TaskID = 'SA' + TaskLevel;
                       }
 
                     }
@@ -3522,7 +3522,7 @@ function ComponentTable(SelectedProp: any) {
         Item_x0020_Type: ChengedItemTitle,
         PortfolioStructureID: PortfolioStructureIDs,
         PortfolioLevel: PortfolioLevelNum,
-        Shareweb_x0020_ID: PortfolioStructureIDs,
+        TaskID: PortfolioStructureIDs,
         ParentId: null
 
       };
@@ -3548,7 +3548,7 @@ function ComponentTable(SelectedProp: any) {
             items.PortfolioLevel = postData.PortfolioLevel,
               items.PortfolioStructureID = postData.PortfolioStructureID,
               items.Item_x0020_Type = postData.Item_x0020_Type
-            items.Shareweb_x0020_ID = postData.PortfolioStructureID,
+            items.TaskID = postData.PortfolioStructureID,
               items.SiteIconTitle = siteIcon,
               items.Parent = { Id: null, Title: null }
           })
@@ -3603,12 +3603,12 @@ function ComponentTable(SelectedProp: any) {
         });
     }
 
-    if (ChengedItemTitle != undefined && ChengedItemTitle != "" && (RestructureChecked[0].SharewebTaskType?.Title == "Workstream" || RestructureChecked[0].SharewebTaskType?.Title == "Task")) {
+    if (ChengedItemTitle != undefined && ChengedItemTitle != "" && (RestructureChecked[0].TaskType?.Title == "Workstream" || RestructureChecked[0].TaskType?.Title == "Task")) {
       let web = new Web(ContextValue.siteUrl);
       var postData: any = {
         SharewebTaskTypeId: taskTypeId[0].Id,
-        SharewebTaskLevel1No: SharewebTaskLevel1No,
-        Shareweb_x0020_ID: Shareweb_x0020_ID,
+        TaskLevel: TaskLevel,
+        TaskID: TaskID,
         ParentTaskId: null
       };
 
@@ -3631,22 +3631,22 @@ function ComponentTable(SelectedProp: any) {
 
           latestCheckedList?.map((items: any) => {
             items.PortfolioStructureID = postData.PortfolioStructureID,
-              items.Shareweb_x0020_ID = postData.Shareweb_x0020_ID,
-              items.ParentTask = { Id: null, Title: null, Shareweb_x0020_ID: null },
-              items.SharewebTaskLevel1No = postData.SharewebTaskLevel1No,
-              items.SharewebTaskType = { Id: taskTypeId[0].Id, Level: taskTypeId[0].Level, Title: taskTypeId[0].Title }
+              items.TaskID = postData.TaskID,
+              items.ParentTask = { Id: null, Title: null, TaskID: null },
+              items.TaskLevel = postData.TaskLevel,
+              items.TaskType = { Id: taskTypeId[0].Id, Level: taskTypeId[0].Level, Title: taskTypeId[0].Title }
           })
 
 
 
           array?.map((obj: any, index: any) => {
             obj.isRestructureActive = false;
-            if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+            if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
               obj.subRows.push(...latestCheckedList);
               obj.childs.push(...latestCheckedList);
               checkUpdate = checkUpdate + 1;
             }
-            if (obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+            if (obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
               array.splice(index, 1);
               checkUpdate = checkUpdate + 1;
             }
@@ -3654,12 +3654,12 @@ function ComponentTable(SelectedProp: any) {
             if (obj.subRows != undefined && obj.subRows.length > 0) {
               obj.subRows.forEach((sub: any, indexsub: any) => {
                 sub.isRestructureActive = false;
-                if (sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                if (sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                   sub.subRows.push(...latestCheckedList);
                   sub.childs.push(...latestCheckedList);
                   checkUpdate = checkUpdate + 1;
                 }
-                if (sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                if (sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                   array[index]?.subRows.splice(indexsub, 1);
                   array[index]?.childs.splice(indexsub, 1);
                   checkUpdate = checkUpdate + 1;
@@ -3668,12 +3668,12 @@ function ComponentTable(SelectedProp: any) {
                 if (sub.subRows != undefined && sub.subRows.length > 0) {
                   sub.subRows.forEach((newsub: any, lastIndex: any) => {
                     newsub.isRestructureActive = false;
-                    if (newsub.Id === newItemBackUp?.Id && newsub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && newsub.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                    if (newsub.Id === newItemBackUp?.Id && newsub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && newsub.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                       newsub.subRows.push(...latestCheckedList);
                       newsub.childs.push(...latestCheckedList);
                       checkUpdate = checkUpdate + 1;
                     }
-                    if (newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && newsub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                    if (newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && newsub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                       array[index]?.subRows[indexsub]?.subRows.splice(lastIndex, 1);
                       array[index]?.childs[indexsub]?.childs.splice(lastIndex, 1);
                       checkUpdate = checkUpdate + 1;
@@ -3682,12 +3682,12 @@ function ComponentTable(SelectedProp: any) {
                     if (newsub.subRows != undefined && newsub.subRows.length > 0) {
                       newsub.subRows.forEach((activity: any, activityIndex: any) => {
                         activity.isRestructureActive = false;
-                        if (activity.Id === newItemBackUp?.Id && activity.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && activity.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                        if (activity.Id === newItemBackUp?.Id && activity.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && activity.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                           activity.subRows.push(...latestCheckedList);
                           activity.childs.push(...latestCheckedList);
                           checkUpdate = checkUpdate + 1;
                         }
-                        if (activity.Id === backupCheckedList[0]?.Id && activity.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && activity.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                        if (activity.Id === backupCheckedList[0]?.Id && activity.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && activity.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                           array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows.splice(activityIndex, 1);
                           array[index]?.childs[indexsub]?.childs[lastIndex].childs.splice(activityIndex, 1);
                           checkUpdate = checkUpdate + 1;
@@ -3696,12 +3696,12 @@ function ComponentTable(SelectedProp: any) {
                         if (activity.subRows != undefined && activity.subRows.length > 0) {
                           activity.subRows.forEach((workstream: any, workstreamIndex: any) => {
                             workstream.isRestructureActive = false;
-                            if (workstream.Id === newItemBackUp?.Id && workstream.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && workstream.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                            if (workstream.Id === newItemBackUp?.Id && workstream.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && workstream.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                               workstream.subRows.push(...latestCheckedList);
                               workstream.childs.push(...latestCheckedList);
                               checkUpdate = checkUpdate + 1;
                             }
-                            if (workstream.Id === backupCheckedList[0]?.Id && workstream.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && workstream.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                            if (workstream.Id === backupCheckedList[0]?.Id && workstream.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && workstream.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                               array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows[activityIndex]?.subRows.splice(workstreamIndex, 1);
                               array[index]?.childs[indexsub]?.childs[lastIndex].childs[activityIndex]?.childs.splice(workstreamIndex, 1);
                               checkUpdate = checkUpdate + 1;
@@ -3710,12 +3710,12 @@ function ComponentTable(SelectedProp: any) {
                             if (activity.subRows != undefined && activity.subRows.length > 0) {
                               activity.subRows.forEach((task: any, taskIndex: any) => {
                                 task.isRestructureActive = false;
-                                if (task.Id === newItemBackUp?.Id && task.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && task.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                                if (task.Id === newItemBackUp?.Id && task.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && task.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                                   task.subRows.push(...latestCheckedList);
                                   task.childs.push(...latestCheckedList);
                                   checkUpdate = checkUpdate + 1;
                                 }
-                                if (task.Id === backupCheckedList[0]?.Id && task.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && task.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                                if (task.Id === backupCheckedList[0]?.Id && task.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && task.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                                   array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows[activityIndex]?.subRows[workstreamIndex]?.subRows.splice(taskIndex, 1);
                                   array[index]?.childs[indexsub]?.childs[lastIndex].childs[activityIndex]?.childs[workstreamIndex].childs?.splice(taskIndex, 1);
                                   checkUpdate = checkUpdate + 1;
@@ -3773,9 +3773,9 @@ function ComponentTable(SelectedProp: any) {
     let Title: any = newItemBackUp.Title;
     let PortfolioStructureID = newItemBackUp.PortfolioStructureID;
     let ServicesId: any ;
-    let SharewebTaskType: any = RestructureChecked[0].SharewebTaskType?.Title;
+    let TaskType: any = RestructureChecked[0].TaskType?.Title;
     let Item_x0020_Type = RestructureChecked[0].Item_x0020_Type;
-    let Shareweb_x0020_ID: any;
+    let TaskID: any;
     let ShowTooltipSharewebId: any;
     let siteIcon: any = RestructureChecked[0].Item_x0020_Type;
     ServicesId = (newItemBackUp?.Services[0]?.length > 0 ? "Service" : (newItemBackUp?.Component[0]?.length > 0 ? "Component" : newItemBackUp?.Portfolio_x0020_Type));
@@ -3784,13 +3784,13 @@ function ComponentTable(SelectedProp: any) {
 
 
 
-    if (newItemBackUp?.SharewebTaskType?.Title !== "Activities" && newItemBackUp?.SharewebTaskType?.Title !== "Workstream") {
+    if (newItemBackUp?.TaskType?.Title !== "Activities" && newItemBackUp?.TaskType?.Title !== "Workstream") {
       let numbers: any;
 
       if (newItemBackUp.childs.length > 0) {
         newItemBackUp.childs.map((items: any) => {
-          if (items?.SharewebTaskType?.Title == "Activities") {
-            numbers = items?.SharewebTaskLevel1No + 1;
+          if (items?.TaskType?.Title == "Activities") {
+            numbers = items?.TaskLevel + 1;
           } else {
             numbers = 1;
           }
@@ -3802,8 +3802,8 @@ function ComponentTable(SelectedProp: any) {
       }
 
 
-      Shareweb_x0020_ID = `SA${numbers}`
-      ShowTooltipSharewebId = newItemBackUp?.PortfolioStructureID + "-" + Shareweb_x0020_ID;
+      TaskID = `SA${numbers}`
+      ShowTooltipSharewebId = newItemBackUp?.PortfolioStructureID + "-" + TaskID;
 
       let web = new Web(ContextValue.siteUrl);
       await web.lists
@@ -3820,8 +3820,8 @@ function ComponentTable(SelectedProp: any) {
               : { results: [] },
           ParentTaskId: null,
           SharewebTaskTypeId: taskTypeId[0].Id,
-          SharewebTaskLevel1No: numbers,
-          Shareweb_x0020_ID: Shareweb_x0020_ID,
+          TaskLevel: numbers,
+          TaskID: TaskID,
         })
         .then((res: any) => {
 
@@ -3838,9 +3838,9 @@ function ComponentTable(SelectedProp: any) {
           latestCheckedList?.map((items: any) => {
             checkedList[0].Services?.length > 0 ? items.Services = { Id: Ids, Title: Title } : items.Component = { Id: Ids, Title: Title },
               items.Parent = null,
-              items.SharewebTaskLevel1No = numbers,
-              items.Shareweb_x0020_ID = Shareweb_x0020_ID,
-              items.SharewebTaskType = { Id: taskTypeId[0].Id, Level: taskTypeId[0].Level, Title: taskTypeId[0].Title },
+              items.TaskLevel = numbers,
+              items.TaskID = TaskID,
+              items.TaskType = { Id: taskTypeId[0].Id, Level: taskTypeId[0].Level, Title: taskTypeId[0].Title },
               items.SiteIconTitle = siteIcon,
               items.PortfolioStructureID = PortfolioStructureID,
               items.Item_x0020_Type = Item_x0020_Type
@@ -3849,12 +3849,12 @@ function ComponentTable(SelectedProp: any) {
 
           array?.map((obj: any, index: any) => {
             obj.isRestructureActive = false;
-            if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+            if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
               obj.subRows.push(...latestCheckedList);
               obj.childs.push(...latestCheckedList);
               checkUpdate = checkUpdate + 1;
             }
-            if (obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+            if (obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
               array.splice(index, 1);
               checkUpdate = checkUpdate + 1;
             }
@@ -3862,12 +3862,12 @@ function ComponentTable(SelectedProp: any) {
             if (obj.subRows != undefined && obj.subRows.length > 0) {
               obj.subRows.forEach((sub: any, indexsub: any) => {
                 sub.isRestructureActive = false;
-                if (sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                if (sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                   sub.subRows.push(...latestCheckedList);
                   sub.childs.push(...latestCheckedList);
                   checkUpdate = checkUpdate + 1;
                 }
-                if (sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                if (sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                   array[index]?.subRows.splice(indexsub, 1);
                   array[index]?.childs.splice(indexsub, 1);
                   checkUpdate = checkUpdate + 1;
@@ -3876,12 +3876,12 @@ function ComponentTable(SelectedProp: any) {
                 if (sub.subRows != undefined && sub.subRows.length > 0) {
                   sub.subRows.forEach((newsub: any, lastIndex: any) => {
                     newsub.isRestructureActive = false;
-                    if (newsub.Id === newItemBackUp?.Id && newsub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && newsub.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                    if (newsub.Id === newItemBackUp?.Id && newsub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && newsub.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                       newsub.subRows.push(...latestCheckedList);
                       newsub.childs.push(...latestCheckedList);
                       checkUpdate = checkUpdate + 1;
                     }
-                    if (newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && newsub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                    if (newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && newsub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                       array[index]?.subRows[indexsub]?.subRows.splice(lastIndex, 1);
                       array[index]?.childs[indexsub]?.childs.splice(lastIndex, 1);
                       checkUpdate = checkUpdate + 1;
@@ -3890,12 +3890,12 @@ function ComponentTable(SelectedProp: any) {
                     if (newsub.subRows != undefined && newsub.subRows.length > 0) {
                       newsub.subRows.forEach((activity: any, activityIndex: any) => {
                         activity.isRestructureActive = false;
-                        if (activity.Id === newItemBackUp?.Id && activity.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && activity.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                        if (activity.Id === newItemBackUp?.Id && activity.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && activity.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                           activity.subRows.push(...latestCheckedList);
                           activity.childs.push(...latestCheckedList);
                           checkUpdate = checkUpdate + 1;
                         }
-                        if (activity.Id === backupCheckedList[0]?.Id && activity.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && activity.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                        if (activity.Id === backupCheckedList[0]?.Id && activity.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && activity.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                           array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows.splice(activityIndex, 1);
                           array[index]?.childs[indexsub]?.childs[lastIndex].childs.splice(activityIndex, 1);
                           checkUpdate = checkUpdate + 1;
@@ -3904,12 +3904,12 @@ function ComponentTable(SelectedProp: any) {
                         if (activity.subRows != undefined && activity.subRows.length > 0) {
                           activity.subRows.forEach((workstream: any, workstreamIndex: any) => {
                             workstream.isRestructureActive = false;
-                            if (workstream.Id === newItemBackUp?.Id && workstream.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && workstream.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                            if (workstream.Id === newItemBackUp?.Id && workstream.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && workstream.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                               workstream.subRows.push(...latestCheckedList);
                               workstream.childs.push(...latestCheckedList);
                               checkUpdate = checkUpdate + 1;
                             }
-                            if (workstream.Id === backupCheckedList[0]?.Id && workstream.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && workstream.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                            if (workstream.Id === backupCheckedList[0]?.Id && workstream.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && workstream.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                               array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows[activityIndex]?.subRows.splice(workstreamIndex, 1);
                               array[index]?.childs[indexsub]?.childs[lastIndex].childs[activityIndex]?.childs.splice(workstreamIndex, 1);
                               checkUpdate = checkUpdate + 1;
@@ -3918,12 +3918,12 @@ function ComponentTable(SelectedProp: any) {
                             if (activity.subRows != undefined && activity.subRows.length > 0) {
                               activity.subRows.forEach((task: any, taskIndex: any) => {
                                 task.isRestructureActive = false;
-                                if (task.Id === newItemBackUp?.Id && task.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && task.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                                if (task.Id === newItemBackUp?.Id && task.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && task.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                                   task.subRows.push(...latestCheckedList);
                                   task.childs.push(...latestCheckedList);
                                   checkUpdate = checkUpdate + 1;
                                 }
-                                if (task.Id === backupCheckedList[0]?.Id && task.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && task.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                                if (task.Id === backupCheckedList[0]?.Id && task.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && task.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                                   array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows[activityIndex]?.subRows[workstreamIndex]?.subRows.splice(taskIndex, 1);
                                   array[index]?.childs[indexsub]?.childs[lastIndex].childs[activityIndex]?.childs[workstreamIndex].childs?.splice(taskIndex, 1);
                                   checkUpdate = checkUpdate + 1;
@@ -3968,25 +3968,25 @@ function ComponentTable(SelectedProp: any) {
       if (newItemBackUp.childs.length > 0) {
         newItemBackUp.childs.map((items: any) => {
 
-          if (newItemBackUp?.SharewebTaskType?.Title == "Activities") {
-            if (RestructureChecked[0].SharewebTaskType?.Title === 'Activities') {
-              if (items?.SharewebTaskType?.Title == "Workstream") {
-                numbers1 = items?.SharewebTaskLevel2No + 1;
+          if (newItemBackUp?.TaskType?.Title == "Activities") {
+            if (RestructureChecked[0].TaskType?.Title === 'Activities') {
+              if (items?.TaskType?.Title == "Workstream") {
+                numbers1 = items?.TaskLevel + 1;
 
               } else {
                 numbers1 = 1;
               }
 
             } else {
-              if (RestructureChecked[0].SharewebTaskType?.Title === items?.SharewebTaskType?.Title) {
-                numbers1 = items?.SharewebTaskLevel2No + 1;
+              if (RestructureChecked[0].TaskType?.Title === items?.TaskType?.Title) {
+                numbers1 = items?.TaskLevel + 1;
               } else {
                 numbers1 = 1;
               }
             }
-          } else if (newItemBackUp?.SharewebTaskType?.Title == "Workstream") {
-            if (items?.SharewebTaskType?.Title == "Task") {
-              numbers1 = items?.SharewebTaskLevel2No + 1;
+          } else if (newItemBackUp?.TaskType?.Title == "Workstream") {
+            if (items?.TaskType?.Title == "Task") {
+              numbers1 = items?.TaskLevel + 1;
             }
 
           } else {
@@ -3998,15 +3998,15 @@ function ComponentTable(SelectedProp: any) {
       }
 
 
-      if (SharewebTaskType === "Activities") {
+      if (TaskType === "Activities") {
         SharewebTaskTypeId = taskTypeId[2];
       } else {
-        SharewebTaskTypeId = SharewebTaskType === "Task" ? taskTypeId[1] : taskTypeId[2];
+        SharewebTaskTypeId = TaskType === "Task" ? taskTypeId[1] : taskTypeId[2];
       }
 
-      numbers = newItemBackUp.SharewebTaskLevel1No;
-      Shareweb_x0020_ID = newItemBackUp.Shareweb_x0020_ID + "-" + `W${numbers1}`
-      // ShowTooltipSharewebId =newItemBackUp?.PortfolioStructureID + Shareweb_x0020_ID;
+      numbers = newItemBackUp.TaskLevel;
+      TaskID = newItemBackUp.TaskID + "-" + `W${numbers1}`
+      // ShowTooltipSharewebId =newItemBackUp?.PortfolioStructureID + TaskID;
 
 
       let web = new Web(ContextValue.siteUrl);
@@ -4022,9 +4022,9 @@ function ComponentTable(SelectedProp: any) {
           ServicesId === "Component"
               ? { results: [Ids] }
               : { results: [] },
-          Shareweb_x0020_ID: Shareweb_x0020_ID,
-          SharewebTaskLevel1No: numbers,
-          SharewebTaskLevel2No: numbers1,
+          TaskID: TaskID,
+          TaskLevel: numbers,
+          TaskLevel: numbers1,
           SharewebTaskTypeId: SharewebTaskTypeId.Id,
           ParentTaskId: Ids
         })
@@ -4040,22 +4040,22 @@ function ComponentTable(SelectedProp: any) {
 
           latestCheckedList?.map((items: any) => {
             checkedList[0].Services?.length > 0 ? items.Services = { Id: Ids, Title: Title } : items.Component = { Id: Ids, Title: Title },
-              items.Parent = { Id: Ids, Shareweb_x0020_ID: Shareweb_x0020_ID, Title: Title },
-              items.SharewebTaskLevel1No = numbers,
-              items.Shareweb_x0020_ID = Shareweb_x0020_ID,
-              items.SharewebTaskLevel2No = numbers1,
-              items.SharewebTaskType = { Id: SharewebTaskTypeId.Id, Level: SharewebTaskTypeId.Level, Title: SharewebTaskTypeId.Title },
+              items.Parent = { Id: Ids, TaskID: TaskID, Title: Title },
+              items.TaskLevel = numbers,
+              items.TaskID = TaskID,
+              items.TaskLevel = numbers1,
+              items.TaskType = { Id: SharewebTaskTypeId.Id, Level: SharewebTaskTypeId.Level, Title: SharewebTaskTypeId.Title },
               items.Item_x0020_Type = Item_x0020_Type
           })
 
           array?.map((obj: any, index: any) => {
             obj.isRestructureActive = false;
-            if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+            if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
               obj.subRows.push(...latestCheckedList);
               obj.childs.push(...latestCheckedList);
               checkUpdate = checkUpdate + 1;
             }
-            if (obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+            if (obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
               array.splice(index, 1);
               checkUpdate = checkUpdate + 1;
             }
@@ -4063,12 +4063,12 @@ function ComponentTable(SelectedProp: any) {
             if (obj.subRows != undefined && obj.subRows.length > 0) {
               obj.subRows.forEach((sub: any, indexsub: any) => {
                 sub.isRestructureActive = false;
-                if (sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                if (sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                   sub.subRows.push(...latestCheckedList);
                   sub.childs.push(...latestCheckedList);
                   checkUpdate = checkUpdate + 1;
                 }
-                if (sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                if (sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                   array[index]?.subRows.splice(indexsub, 1);
                   array[index]?.childs.splice(indexsub, 1);
                   checkUpdate = checkUpdate + 1;
@@ -4077,12 +4077,12 @@ function ComponentTable(SelectedProp: any) {
                 if (sub.subRows != undefined && sub.subRows.length > 0) {
                   sub.subRows.forEach((newsub: any, lastIndex: any) => {
                     newsub.isRestructureActive = false;
-                    if (newsub.Id === newItemBackUp?.Id && newsub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && newsub.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                    if (newsub.Id === newItemBackUp?.Id && newsub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && newsub.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                       newsub.subRows.push(...latestCheckedList);
                       newsub.childs.push(...latestCheckedList);
                       checkUpdate = checkUpdate + 1;
                     }
-                    if (newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && newsub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                    if (newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && newsub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                       array[index]?.subRows[indexsub]?.subRows.splice(lastIndex, 1);
                       array[index]?.childs[indexsub]?.childs.splice(lastIndex, 1);
                       checkUpdate = checkUpdate + 1;
@@ -4091,12 +4091,12 @@ function ComponentTable(SelectedProp: any) {
                     if (newsub.subRows != undefined && newsub.subRows.length > 0) {
                       newsub.subRows.forEach((activity: any, activityIndex: any) => {
                         activity.isRestructureActive = false;
-                        if (activity.Id === newItemBackUp?.Id && activity.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && activity.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                        if (activity.Id === newItemBackUp?.Id && activity.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && activity.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                           activity.subRows.push(...latestCheckedList);
                           activity.childs.push(...latestCheckedList);
                           checkUpdate = checkUpdate + 1;
                         }
-                        if (activity.Id === backupCheckedList[0]?.Id && activity.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && activity.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                        if (activity.Id === backupCheckedList[0]?.Id && activity.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && activity.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                           array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows.splice(activityIndex, 1);
                           array[index]?.childs[indexsub]?.childs[lastIndex].childs.splice(activityIndex, 1);
                           checkUpdate = checkUpdate + 1;
@@ -4105,12 +4105,12 @@ function ComponentTable(SelectedProp: any) {
                         if (activity.subRows != undefined && activity.subRows.length > 0) {
                           activity.subRows.forEach((workstream: any, workstreamIndex: any) => {
                             workstream.isRestructureActive = false;
-                            if (workstream.Id === newItemBackUp?.Id && workstream.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && workstream.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                            if (workstream.Id === newItemBackUp?.Id && workstream.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && workstream.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                               workstream.subRows.push(...latestCheckedList);
                               workstream.childs.push(...latestCheckedList);
                               checkUpdate = checkUpdate + 1;
                             }
-                            if (workstream.Id === backupCheckedList[0]?.Id && workstream.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && workstream.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                            if (workstream.Id === backupCheckedList[0]?.Id && workstream.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && workstream.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                               array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows[activityIndex]?.subRows.splice(workstreamIndex, 1);
                               array[index]?.childs[indexsub]?.childs[lastIndex].childs[activityIndex]?.childs.splice(workstreamIndex, 1);
                               checkUpdate = checkUpdate + 1;
@@ -4119,12 +4119,12 @@ function ComponentTable(SelectedProp: any) {
                             if (activity.subRows != undefined && activity.subRows.length > 0) {
                               activity.subRows.forEach((task: any, taskIndex: any) => {
                                 task.isRestructureActive = false;
-                                if (task.Id === newItemBackUp?.Id && task.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && task.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3) {
+                                if (task.Id === newItemBackUp?.Id && task.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && task.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                                   task.subRows.push(...latestCheckedList);
                                   task.childs.push(...latestCheckedList);
                                   checkUpdate = checkUpdate + 1;
                                 }
-                                if (task.Id === backupCheckedList[0]?.Id && task.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && task.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                                if (task.Id === backupCheckedList[0]?.Id && task.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && task.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                                   array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows[activityIndex]?.subRows[workstreamIndex].subRows?.splice(taskIndex, 1);
                                   array[index]?.childs[indexsub]?.childs[lastIndex].childs[activityIndex]?.childs[workstreamIndex].childs?.splice(taskIndex, 1);
                                   checkUpdate = checkUpdate + 1;
@@ -4286,7 +4286,7 @@ function ComponentTable(SelectedProp: any) {
             items.PortfolioLevel = postData.PortfolioLevel,
               items.PortfolioStructureID = postData.PortfolioStructureID,
               items.Item_x0020_Type = postData.Item_x0020_Type
-            items.Shareweb_x0020_ID = postData.PortfolioStructureID,
+            items.TaskID = postData.PortfolioStructureID,
               items.SiteIconTitle = siteIcon
           })
 
@@ -4524,8 +4524,8 @@ function ComponentTable(SelectedProp: any) {
               </span>
               {row?.original?.SiteIcon != undefined ? (
                 <a className="hreflink" title="Show All Child" data-toggle="modal" >
-                  <img className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 icon-sites-img ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 icon-sites-img ml20 me-1" : row?.original?.SharewebTaskType?.Title == "Activities" ? "ml-36 icon-sites-img ml20 me-1" :
-                    row?.original?.SharewebTaskType?.Title == "Workstream" ? "ml-48 icon-sites-img ml20 me-1" : row?.original?.SharewebTaskType?.Title == "Task" || row?.original?.Item_x0020_Type === "Task" && row?.original?.SharewebTaskType == undefined ? "ml-60 icon-sites-img ml20 me-1" : "icon-sites-img ml20 me-1"
+                  <img className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 icon-sites-img ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 icon-sites-img ml20 me-1" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 icon-sites-img ml20 me-1" :
+                    row?.original?.TaskType?.Title == "Workstream" ? "ml-48 icon-sites-img ml20 me-1" : row?.original?.TaskType?.Title == "Task" || row?.original?.Item_x0020_Type === "Task" && row?.original?.TaskType == undefined ? "ml-60 icon-sites-img ml20 me-1" : "icon-sites-img ml20 me-1"
                   }
                     src={row?.original?.SiteIcon}>
                   </img>
@@ -4533,8 +4533,8 @@ function ComponentTable(SelectedProp: any) {
               ) : (
                 <>
                   {row?.original?.Title != "Others" ? (
-                    <div className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons" : row?.original?.SharewebTaskType?.Title == "Activities" ? "ml-36 Dyicons" :
-                      row?.original?.SharewebTaskType?.Title == "Workstream" ? "ml-48 Dyicons" : row?.original?.SharewebTaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons"
+                    <div className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 Dyicons" :
+                      row?.original?.TaskType?.Title == "Workstream" ? "ml-48 Dyicons" : row?.original?.TaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons"
                     }>
                       {row?.original?.SiteIconTitle}
                     </div>
@@ -4554,13 +4554,13 @@ function ComponentTable(SelectedProp: any) {
         size: 145,
       },
       {
-        accessorFn: (row) => row?.Shareweb_x0020_ID,
+        accessorFn: (row) => row?.TaskID,
         cell: ({ row, getValue }) => (
           <>
             <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={ContextValue}/>
           </>
         ),
-        id: "Shareweb_x0020_ID",
+        id: "TaskID",
         placeholder: "ID",
         header: "",
         size: 130,
@@ -4699,9 +4699,9 @@ function ComponentTable(SelectedProp: any) {
                   {
                     checkedList[0].Portfolio_x0020_Type === "Service" && checkedList[0].Item_x0020_Type !== "Task" ?
                       <img className="icon-sites-img" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png" /> :
-                      (checkedList[0].Services.length > 0 && checkedList[0].SharewebTaskType?.Title === "Task" && checkedList[0].SharewebTaskType?.Title === "Workstream" ?
+                      (checkedList[0].Services.length > 0 && checkedList[0].TaskType?.Title === "Task" && checkedList[0].TaskType?.Title === "Workstream" ?
                         <img className="icon-sites-img" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png" /> :
-                        (checkedList[0].SharewebTaskType?.Title !== "Activities" ? <img className="icon-sites-img" src='https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png' /> : "")
+                        (checkedList[0].TaskType?.Title !== "Activities" ? <img className="icon-sites-img" src='https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png' /> : "")
                       )
                   }
                 </span>
@@ -4863,21 +4863,21 @@ function ComponentTable(SelectedProp: any) {
         elem.original.Id = elem.original.ID;
         itrm = elem.original;
         if (elem?.getCanSelect() == true) {
-          if (itrm.SharewebTaskType == undefined) {
+          if (itrm.TaskType == undefined) {
             setActivityDisable(false);
             itrm["siteUrl"] = ContextValue?.siteUrl;
             itrm["listName"] = "Master Tasks";
           }
-          if (itrm.SharewebTaskType != undefined) {
+          if (itrm.TaskType != undefined) {
             if (
-              itrm?.SharewebTaskType?.Title == "Activities" || itrm.SharewebTaskType.Title == "Workstream") {
+              itrm?.TaskType?.Title == "Activities" || itrm.TaskType.Title == "Workstream") {
               setActivityDisable(false);
               itrm["siteUrl"] = ContextValue?.siteUrl;
               itrm["PortfolioId"] = parentDataCopy.Id ? parentDataCopy?.Id : 'parent';
             }
           }
-          // if (itrm?.SharewebTaskType != undefined) {
-          //   if (itrm?.SharewebTaskType?.Title == "Task") {
+          // if (itrm?.TaskType != undefined) {
+          //   if (itrm?.TaskType?.Title == "Task") {
           //     setActivityDisable(true);
           //   }
           // }
@@ -4976,20 +4976,20 @@ function ComponentTable(SelectedProp: any) {
           Sub.toolTitle = Com.Title + ' > ' + Sub.Title;
           Sub.toolSharewebId = Sub.PortfolioStructureID;
         }
-        if (Sub?.SharewebTaskType?.Title === "Activities") {
+        if (Sub?.TaskType?.Title === "Activities") {
           Sub.toolTitle = Com.Title + ' > ' + Sub.Title;
           Sub.toolSharewebId = Sub.ShowTooltipSharewebId;
           activity = activity + 1;
         }
-        if (Sub?.SharewebTaskType?.Title == "Workstream") {
+        if (Sub?.TaskType?.Title == "Workstream") {
           Sub.toolTitle = Com.Title + ' > ' + Sub.Title;
           // Sub.toolSharewebId = Sub.PortfolioStructureID;
-          Sub.toolSharewebId = Com.PortfolioStructureID + '-' + Sub?.Shareweb_x0020_ID;
+          Sub.toolSharewebId = Com.PortfolioStructureID + '-' + Sub?.TaskID;
           workstrim = workstrim + 1;
         }
-        if (Sub?.SharewebTaskType?.Title == "Task") {
+        if (Sub?.TaskType?.Title == "Task") {
           Sub.toolTitle = Com.Title + ' > ' + Sub.Title;
-          Sub.toolSharewebId = Com.PortfolioStructureID + '-' + Sub?.Shareweb_x0020_ID;
+          Sub.toolSharewebId = Com.PortfolioStructureID + '-' + Sub?.TaskID;
           task = task + 1;
         }
 
@@ -5002,19 +5002,19 @@ function ComponentTable(SelectedProp: any) {
             feat.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title;
             feat.toolSharewebId = feat.PortfolioStructureID;
           }
-          if (feat?.SharewebTaskType?.Title == "Activities") {
+          if (feat?.TaskType?.Title == "Activities") {
             feat.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title;
             feat.toolSharewebId = feat.ShowTooltipSharewebId;
             activity = activity + 1;
           }
-          if (feat?.SharewebTaskType?.Title == "Workstream") {
+          if (feat?.TaskType?.Title == "Workstream") {
             feat.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title;
-            feat.toolSharewebId = Sub.toolSharewebId + '-' + feat?.Shareweb_x0020_ID?.slice(-2);
+            feat.toolSharewebId = Sub.toolSharewebId + '-' + feat?.TaskID?.slice(-2);
             workstrim = workstrim + 1;
           }
-          if (feat?.SharewebTaskType?.Title == "Task") {
+          if (feat?.TaskType?.Title == "Task") {
             feat.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title;
-            feat.toolSharewebId = Sub.toolSharewebId + '-' + extractValueShareWebTaskId(feat?.Shareweb_x0020_ID);
+            feat.toolSharewebId = Sub.toolSharewebId + '-' + extractValueShareWebTaskId(feat?.TaskID);
             task = task + 1;
           }
           feat?.subRows?.map((acti: any) => {
@@ -5028,19 +5028,19 @@ function ComponentTable(SelectedProp: any) {
               acti.toolSharewebId = acti.PortfolioStructureID;
 
             }
-            if (acti?.SharewebTaskType?.Title == "Activities") {
+            if (acti?.TaskType?.Title == "Activities") {
               acti.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title;
               acti.toolSharewebId = acti.ShowTooltipSharewebId;
               activity = activity + 1;
             }
-            if (acti?.SharewebTaskType?.Title == "Workstream") {
+            if (acti?.TaskType?.Title == "Workstream") {
               acti.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title;
-              acti.toolSharewebId = feat.toolSharewebId + '-' + acti?.Shareweb_x0020_ID?.slice(-2);
+              acti.toolSharewebId = feat.toolSharewebId + '-' + acti?.TaskID?.slice(-2);
               workstrim = workstrim + 1;
             }
-            if (acti?.SharewebTaskType?.Title == "Task") {
+            if (acti?.TaskType?.Title == "Task") {
               acti.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title;
-              acti.toolSharewebId = feat.toolSharewebId + '-' + extractValueShareWebTaskId(acti?.Shareweb_x0020_ID)
+              acti.toolSharewebId = feat.toolSharewebId + '-' + extractValueShareWebTaskId(acti?.TaskID)
               task = task + 1;
             }
             acti?.subRows?.map((works: any) => {
@@ -5052,19 +5052,19 @@ function ComponentTable(SelectedProp: any) {
                 works.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title + ' > ' + works.Title;
                 works.toolSharewebId = works.PortfolioStructureID;
               }
-              if (works?.SharewebTaskType?.Title == "Activities") {
+              if (works?.TaskType?.Title == "Activities") {
                 works.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title + ' > ' + works.Title;
                 works.toolSharewebId = works.ShowTooltipSharewebId;
                 activity = activity + 1;
               }
-              if (works?.SharewebTaskType?.Title == "Workstream") {
+              if (works?.TaskType?.Title == "Workstream") {
                 works.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title + ' > ' + works.Title;
-                works.toolSharewebId = acti.toolSharewebId + '-' + works?.Shareweb_x0020_ID?.slice(-2);
+                works.toolSharewebId = acti.toolSharewebId + '-' + works?.TaskID?.slice(-2);
                 workstrim = workstrim + 1;
               }
-              if (works?.SharewebTaskType?.Title == "Task") {
+              if (works?.TaskType?.Title == "Task") {
                 works.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title + ' > ' + works.Title;
-                works.toolSharewebId = acti.toolSharewebId + '-' + works?.Shareweb_x0020_ID;
+                works.toolSharewebId = acti.toolSharewebId + '-' + works?.TaskID;
                 task = task + 1;
               }
               works?.subRows?.map((taskss: any) => {
@@ -5076,19 +5076,19 @@ function ComponentTable(SelectedProp: any) {
                   taskss.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title + ' > ' + works.Title + ' > ' + taskss.Title;
                   taskss.toolSharewebId = taskss.PortfolioStructureID
                 }
-                if (taskss?.SharewebTaskType?.Title == "Activities") {
+                if (taskss?.TaskType?.Title == "Activities") {
                   taskss.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title + ' > ' + works.Title + ' > ' + taskss.Title;
                   taskss.toolSharewebId = taskss.ShowTooltipSharewebId;
                   activity = activity + 1;
                 }
-                if (taskss?.SharewebTaskType?.Title == "Workstream") {
+                if (taskss?.TaskType?.Title == "Workstream") {
                   taskss.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title + ' > ' + works.Title + ' > ' + taskss.Title;
-                  taskss.toolSharewebId = works.toolSharewebId + '-' + taskss?.Shareweb_x0020_ID?.slice(-2);
+                  taskss.toolSharewebId = works.toolSharewebId + '-' + taskss?.TaskID?.slice(-2);
                   workstrim = workstrim + 1;
                 }
-                if (taskss?.SharewebTaskType?.Title == "Task") {
+                if (taskss?.TaskType?.Title == "Task") {
                   taskss.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title + ' > ' + works.Title + ' > ' + taskss.Title;
-                  taskss.toolSharewebId = works.toolSharewebId + '-' + extractValueShareWebTaskId(taskss?.Shareweb_x0020_ID);
+                  taskss.toolSharewebId = works.toolSharewebId + '-' + extractValueShareWebTaskId(taskss?.TaskID);
                   task = task + 1;
                 }
               });
@@ -5111,7 +5111,7 @@ function ComponentTable(SelectedProp: any) {
     AfterSearch?.map((Comp: any) => {
       if (
         Comp.columnFilters.Title == true ||
-        Comp.columnFilters.Shareweb_x0020_ID == true ||
+        Comp.columnFilters.TaskID == true ||
         Comp.columnFilters.ClientCategory == true ||
         Comp.columnFilters.TeamLeaderUser == true ||
         Comp.columnFilters.PercentComplete == true ||
@@ -5133,13 +5133,13 @@ function ComponentTable(SelectedProp: any) {
         if (Comp?.original?.Item_x0020_Type == "Feature") {
           FeatureCopy = FeatureCopy + 1;
         }
-        if (Comp?.original?.SharewebTaskType?.Title == "Activities") {
+        if (Comp?.original?.TaskType?.Title == "Activities") {
           activityCopy = activityCopy + 1;
         }
-        if (Comp?.original?.SharewebTaskType?.Title == "Workstream") {
+        if (Comp?.original?.TaskType?.Title == "Workstream") {
           workstrimCopy = workstrimCopy + 1;
         }
-        if (Comp?.original?.SharewebTaskType?.Title == "Task") {
+        if (Comp?.original?.TaskType?.Title == "Task") {
           taskCopy = taskCopy + 1;
         }
       }
@@ -5755,9 +5755,9 @@ function ComponentTable(SelectedProp: any) {
                   <span className="toolbox mx-auto">
                     {table?.getSelectedRowModel()?.flatRows?.length === 1 &&
                       table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Feature" &&
-                      table?.getSelectedRowModel()?.flatRows[0]?.original?.SharewebTaskType?.Title != "Activities" &&
-                      table?.getSelectedRowModel()?.flatRows[0]?.original?.SharewebTaskType?.Title != "Workstream" &&
-                      table?.getSelectedRowModel()?.flatRows[0]?.original?.SharewebTaskType?.Title != "Task" ||
+                      table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Activities" &&
+                      table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Workstream" &&
+                      table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task" ||
                       table?.getSelectedRowModel()?.flatRows?.length === 0 ? (
                       <button
                         type="button"
@@ -6268,12 +6268,12 @@ function ComponentTable(SelectedProp: any) {
                 ""
               )}
               {
-                newItemBackUp?.SharewebTaskType?.Title == "Activities" && newItemBackUp?.Item_x0020_Type == "Task" && (checkedList[0]?.SharewebTaskType?.Title == "Activities" || checkedList[0]?.SharewebTaskType?.Title == "Workstream" || checkedList[0]?.SharewebTaskType?.Title == "Task") ?
+                newItemBackUp?.TaskType?.Title == "Activities" && newItemBackUp?.Item_x0020_Type == "Task" && (checkedList[0]?.TaskType?.Title == "Activities" || checkedList[0]?.TaskType?.Title == "Workstream" || checkedList[0]?.TaskType?.Title == "Task") ?
                   <div className="d-flex flex-column"> <span>
                     {
-                      RestructureChecked[0]?.SharewebTaskType?.Title === "Activities"
+                      RestructureChecked[0]?.TaskType?.Title === "Activities"
                         && RestructureChecked[0]?.Item_x0020_Type === "Task" ? <span>All below selected items will be added as Workstream inside</span> :
-                        <span>All below selected items will be added as <span className="me-1">{RestructureChecked[0]?.SharewebTaskType?.Title}</span>
+                        <span>All below selected items will be added as <span className="me-1">{RestructureChecked[0]?.TaskType?.Title}</span>
                           inside </span>
                     }
 
@@ -6295,7 +6295,7 @@ function ComponentTable(SelectedProp: any) {
                     </a></span>
                     <span className="ms-1">please click Submit to continue.</span> </div> : (
 
-                    newItemBackUp?.SharewebTaskType?.Title == "Workstream" && checkedList[0]?.SharewebTaskType?.Title == "Activities" ?
+                    newItemBackUp?.TaskType?.Title == "Workstream" && checkedList[0]?.TaskType?.Title == "Activities" ?
                       <div className="d-flex flex-column"> <span>
                         All below selected items will be added as Task inside
                         <div className="Dyicons m-0 ms-1 me-1">
@@ -6475,8 +6475,8 @@ function ComponentTable(SelectedProp: any) {
                 checkedList != undefined &&
                   checkedList?.length > 0 &&
                   checkedList[0]?.Item_x0020_Type === "Task" &&
-                  newItemBackUp?.SharewebTaskType?.Title == "Activities" && newItemBackUp?.Item_x0020_Type == "Task" &&
-                  (checkedList[0]?.SharewebTaskType?.Title == "Activities" || checkedList[0]?.SharewebTaskType?.Title == "Workstream" || checkedList[0]?.SharewebTaskType?.Title == "Task") ?
+                  newItemBackUp?.TaskType?.Title == "Activities" && newItemBackUp?.Item_x0020_Type == "Task" &&
+                  (checkedList[0]?.TaskType?.Title == "Activities" || checkedList[0]?.TaskType?.Title == "Workstream" || checkedList[0]?.TaskType?.Title == "Task") ?
                   <span>
                     <span>
 
@@ -6486,9 +6486,9 @@ function ComponentTable(SelectedProp: any) {
                         name="fav_language"
                         value="Workstream"
                         checked={
-                          RestructureChecked[0]?.SharewebTaskType?.Title == "Workstream"
+                          RestructureChecked[0]?.TaskType?.Title == "Workstream"
                             ? true
-                            : (RestructureChecked[0]?.SharewebTaskType?.Title == "Activities" ? true : false)
+                            : (RestructureChecked[0]?.TaskType?.Title == "Activities" ? true : false)
                         }
                         onChange={(e) =>
                           setRestructure(RestructureChecked, "Workstream")
@@ -6503,7 +6503,7 @@ function ComponentTable(SelectedProp: any) {
                         name="fav_language"
                         value="SubComponent"
                         checked={
-                          RestructureChecked[0]?.SharewebTaskType?.Title === "Task"
+                          RestructureChecked[0]?.TaskType?.Title === "Task"
                             ? true
                             : false
                         }
@@ -6567,7 +6567,7 @@ function ComponentTable(SelectedProp: any) {
           <div>
             {RestructureChecked?.map((item: any) => <span>
               {
-                item?.Item_x0020_Type === 'SubComponent' && item?.SharewebTaskType == undefined ? <span>
+                item?.Item_x0020_Type === 'SubComponent' && item?.TaskType == undefined ? <span>
                   {
                     restructuredItemarray != undefined && restructuredItemarray.length > 0 && restructuredItemarray?.map((obj: any) => <span>
                       {
@@ -6594,18 +6594,18 @@ function ComponentTable(SelectedProp: any) {
                     </span>)
                   }
                 </span> : (
-                  item?.Item_x0020_Type === 'Feature' && item?.SharewebTaskType == undefined ? <span>
+                  item?.Item_x0020_Type === 'Feature' && item?.TaskType == undefined ? <span>
                     After restructuring selected Features becomes Component
                   </span> : (
-                    item?.Item_x0020_Type === 'Task' && item?.SharewebTaskType?.Title == "Activities" ? <span>
+                    item?.Item_x0020_Type === 'Task' && item?.TaskType?.Title == "Activities" ? <span>
                       <span>All below selected items will be upgraded as Activities please click Submit to continue.</span>
                       <span className=""><img width={"25px"} height={"25px"} src={item?.siteIcon} /></span>   <span>{item?.Title}</span>
                     </span> :
-                      (item?.Item_x0020_Type === 'Task' && item?.SharewebTaskType?.Title == "Workstream" ? <span>
+                      (item?.Item_x0020_Type === 'Task' && item?.TaskType?.Title == "Workstream" ? <span>
                         <span>All below selected items will be upgraded as Activities please click Submit to continue.</span>
                         <span className=""><img width={"25px"} height={"25px"} src={item?.siteIcon} /></span>   <span>{item?.Title}</span>
                       </span> :
-                        (item?.Item_x0020_Type === 'Task' && item?.SharewebTaskType?.Title == "Task" ? <span>
+                        (item?.Item_x0020_Type === 'Task' && item?.TaskType?.Title == "Task" ? <span>
                           <span>All below selected items will be upgraded as Activities please click Submit to continue.</span>
                           <span className=""><img width={"25px"} height={"25px"} src={item?.siteIcon} /></span>   <span>{item?.Title}</span>
                         </span> : ""))
