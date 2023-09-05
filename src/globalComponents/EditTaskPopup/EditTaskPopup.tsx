@@ -2342,8 +2342,8 @@ const EditTaskPopup = (Items: any) => {
             Mileage: (EditData.Mileage ? EditData.Mileage : ''),
             ServicesId: { "results": (SmartServicesId != undefined && SmartServicesId.length > 0) ? SmartServicesId : [] },
             AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds.length > 0) ? AssignedToIds : [] },
-            Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0) ? ResponsibleTeamIds : [] },
-            Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds.length > 0) ? TeamMemberIds : [] },
+            ResponsibleTeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0) ? ResponsibleTeamIds : [] },
+            TeamMembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds.length > 0) ? TeamMemberIds : [] },
             FeedBack: updateFeedbackArray?.length > 0 ? JSON.stringify(updateFeedbackArray) : null,
             ComponentLink: {
                 "__metadata": { type: "SP.FieldUrlValue" },

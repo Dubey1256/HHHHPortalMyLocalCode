@@ -2603,7 +2603,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     if (RestructureChecked[0].Item_x0020_Type === "Task") {
       let web = new Web(NextProp.siteUrl);
       var postData: any = {
-        SharewebTaskTypeId: taskTypeId[0].Id,
+        TaskTypeId: taskTypeId[0].Id,
         TaskLevel: TaskLevel,
         TaskID: TaskID,
         ServicesId: checkedList[0].Services?.length > 0
@@ -3572,7 +3572,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
               ? { results: [Ids] }
               : { results: [] },
           ParentTaskId: null,
-          SharewebTaskTypeId: taskTypeId[0].Id,
+          TaskTypeId: taskTypeId[0].Id,
           TaskLevel: numbers,
           TaskID: TaskID,
         })
@@ -3707,7 +3707,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
       let numbers: any;
       let numbers1: any;
-      let SharewebTaskTypeId: any;
+      let TaskTypeId: any;
 
       if (newItemBackUp.subRows.length > 0) {
         newItemBackUp.subRows.map((items: any) => {
@@ -3743,9 +3743,9 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
 
       if (TaskType === "Activities") {
-        SharewebTaskTypeId = taskTypeId[2];
+        TaskTypeId = taskTypeId[2];
       } else {
-        SharewebTaskTypeId = TaskType === "Task" ? taskTypeId[1] : taskTypeId[2];
+        TaskTypeId = TaskType === "Task" ? taskTypeId[1] : taskTypeId[2];
       }
 
       numbers = newItemBackUp.TaskLevel;
@@ -3768,8 +3768,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
               : { results: [] },
           TaskID: TaskID,
           TaskLevel: numbers,
-          TaskLevel: numbers1,
-          SharewebTaskTypeId: SharewebTaskTypeId.Id,
+          TaskTypeId: TaskTypeId.Id,
           ParentTaskId: Ids
         })
         .then((res: any) => {
@@ -3788,7 +3787,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
               items.TaskLevel = numbers,
               items.TaskID = TaskID,
               items.TaskLevel = numbers1,
-              items.TaskType = { Id: SharewebTaskTypeId.Id, Level: SharewebTaskTypeId.Level, Title: SharewebTaskTypeId.Title },
+              items.TaskType = { Id: TaskTypeId.Id, Level: TaskTypeId.Level, Title: TaskTypeId.Title },
               items.Item_x0020_Type = Item_x0020_Type
           })
 
