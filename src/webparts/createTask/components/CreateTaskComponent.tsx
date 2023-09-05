@@ -28,6 +28,7 @@ let AllComponents: any = []
 let taskUsers: any = [];
 // let taskCreated = false;
 let createdTask: any = {}
+let QueryPortfolioId:any=null;
 let loggedInUser: any;
 let oldTaskIrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx";
 let Isapproval;
@@ -35,6 +36,7 @@ var ContextValue: any = {};
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
 var AllListId: any = {}
+let DirectTask=false;
 function CreateTaskComponent(props: any) {
     let base_Url = props?.pageContext?._web?.absoluteUrl;
     const [editTaskPopupData, setEditTaskPopupData] = React.useState({
@@ -275,9 +277,11 @@ function CreateTaskComponent(props: any) {
             let previousTaggedTaskToComp: any[] = []
             if (paramComponentId == undefined && paramSiteUrl != undefined && paramType == undefined) {
                 paramComponentId = "756";
+                QueryPortfolioId='756';
             }
             else if (paramComponentId == undefined && paramServiceId == undefined && paramSiteUrl != undefined && paramType == 'Service') {
                 paramServiceId = "4497";
+                QueryPortfolioId='4497';
             }
             BurgerMenuData.ComponentID = paramComponentId;
             BurgerMenuData.Siteurl = paramSiteUrl;
@@ -296,7 +300,7 @@ function CreateTaskComponent(props: any) {
 
 
             if (paramComponentId != undefined) {
-
+                QueryPortfolioId=paramComponentId;
                 AllComponents?.map((item: any) => {
                     if (item?.Id == paramComponentId) {
                         setComponent.push(item)
@@ -306,6 +310,7 @@ function CreateTaskComponent(props: any) {
                 })
 
                 if (paramTaskType == 'Bug') {
+                    DirectTask=true;
                     subCategories?.map((item: any) => {
                         if (item.Title == "Bug") {
                             selectSubTaskCategory(item.Title, item.Id, item)
@@ -326,6 +331,7 @@ function CreateTaskComponent(props: any) {
 
                     createTask();
                 } else if (paramTaskType == 'Design') {
+                    DirectTask=true;
                     subCategories?.map((item: any) => {
                         if (item.Title == "Design") {
                             selectSubTaskCategory(item.Title, item.Id, item)
@@ -779,6 +785,10 @@ function CreateTaskComponent(props: any) {
                                 })
                             }
                         })
+                    }
+                    if(DirectTask==true){
+                        selectedComponent=[QueryPortfolioId];
+                        portfolioId =QueryPortfolioId;
                     }
                     postClientTime?.map((items: any) => {
                         items.SiteName = items.Title
