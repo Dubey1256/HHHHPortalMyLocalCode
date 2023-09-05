@@ -356,7 +356,7 @@ const SmartFilterSearchGlobal = (item: any) => {
             return false;
         } else {
             if (data.Priority !== undefined && data.Priority !== '' && data.Priority !== null) {
-                return checkPriority.some((value: any) => value.Title === data.Priority || value.Title === data.Priority_x0020_Rank);
+                return checkPriority.some((value: any) => value.Title === data.Priority || value.Title === data.PriorityRank);
             }
         }
         return false;

@@ -122,7 +122,7 @@ class MyPendingTasksApp extends React.Component<IMyPendingTasksAppProps, IMyPend
             if(siteType=="Offshore Tasks") {
                 companyType = "OffshoreTask";
             }
-            categories = this.getCategories(taskItem.SharewebCategories);
+            categories = this.getCategories(taskItem.TaskCategories);
             if(categories.indexOf("Draft")>-1) {
                 companyType = "DraftTask";
             }
@@ -140,14 +140,14 @@ class MyPendingTasksApp extends React.Component<IMyPendingTasksAppProps, IMyPend
                 CompletedDate: this.formatDate(taskItem.CompletedDate),
                 Categories: categories,
                 Status: taskItem.Status,
-                ComponentLink: taskItem.component_x0020_link ? taskItem.component_x0020_link.Url : "",
-                SharedWebCategories: taskItem.SharewebCategories,
+                ComponentLink: taskItem.ComponentLink ? taskItem.ComponentLink.Url : "",
+                SharedWebCategories: taskItem.TaskCategories,
                 ShareWebId: this.getShareWebId(),
                 Created: {
                     Date: this.formatDate(taskItem.Created),
                     ...this.getUserInfo(taskItem.Author.Id)
                 },
-                TeamUsers: this.getTeamUsers(taskItem.Responsible_x0020_Team, taskItem.AssignedTo, taskItem.Team_x0020_Members),
+                TeamUsers: this.getTeamUsers(taskItem.ResponsibleTeam, taskItem.AssignedTo, taskItem.TeamMembers),
                 Comments: taskItem.Comments
             };
             if(companyType != "DraftTask") {
@@ -278,8 +278,8 @@ class MyPendingTasksApp extends React.Component<IMyPendingTasksAppProps, IMyPend
     }
 
     private async getPendingTasks(_sMetadataItems: any, _userId: number) {
-        const qSelect: string = "Id,Title,Categories,SharewebTaskLevel1No,Comments,SharewebTaskLevel2No,SharewebTaskType/Id,SharewebTaskType/Title,Priority_x0020_Rank,Component/Id,Component/Title,Services/Id,Services/Title,Events/Id,Events/Title,PercentComplete,ComponentId,ServicesId,EventsId,Portfolio_x0020_Type,Priority,StartDate,CompletedDate,DueDate,Created,Modified,Status,component_x0020_link,Author/Id,Author/Title,Editor/Id,Editor/Title,ParentTask/Id,ParentTask/Title,ParentTask/Shareweb_x0020_ID,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,Approver/Title,Approver/Id,Approver/Name";
-        const qExpand: string = "AssignedTo,Author,Editor,Component,Services,Events,Team_x0020_Members,ParentTask,SharewebCategories,Responsible_x0020_Team,SharewebTaskType,Approver";
+        const qSelect: string = "Id,Title,Categories,TaskLevel,Comments,TaskLevel,TaskType/Id,TaskType/Title,PriorityRank,Component/Id,Component/Title,Services/Id,Services/Title,Events/Id,Events/Title,PercentComplete,ComponentId,ServicesId,EventsId,Portfolio_x0020_Type,Priority,StartDate,CompletedDate,DueDate,Created,Modified,Status,ComponentLink,Author/Id,Author/Title,Editor/Id,Editor/Title,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,Approver/Title,Approver/Id,Approver/Name";
+        const qExpand: string = "AssignedTo,Author,Editor,Component,Services,Events,TeamMembers,ParentTask,TaskCategories,ResponsibleTeam,TaskType,Approver";
         const qFilter: string = `(Approver/Id eq ${_userId}) and (PercentComplete eq .01)`; 
         //const qFilter: string = `(PercentComplete eq .01)`;        
         const qOrderBy: string = "Modified DESC";

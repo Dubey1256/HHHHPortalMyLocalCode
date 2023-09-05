@@ -882,11 +882,11 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                                             ng-click="clearSearchBox('category','searchPriority')">X</span>
                                                         <span className="sortingfilter">
                                                             <span className="ml0">
-                                                                <i className="fa fa-angle-up hreflink {{orderBy=='Priority_x0020_Rank'&&!reverse?'siteColor':''}}"
-                                                                    ng-click="Sortby('Priority_x0020_Rank', false)"></i>
+                                                                <i className="fa fa-angle-up hreflink {{orderBy=='PriorityRank'&&!reverse?'siteColor':''}}"
+                                                                    ng-click="Sortby('PriorityRank', false)"></i>
                                                             </span><span className="ml0">
-                                                                <i className="fa fa-angle-down hreflink {{orderBy=='Priority_x0020_Rank'&&reverse?'siteColor':''}}"
-                                                                    ng-click="Sortby('Priority_x0020_Rank', true)"></i>
+                                                                <i className="fa fa-angle-down hreflink {{orderBy=='PriorityRank'&&reverse?'siteColor':''}}"
+                                                                    ng-click="Sortby('PriorityRank', true)"></i>
                                                             </span>
                                                         </span>
 
@@ -900,7 +900,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                             </li>
                                             <div className="container-new">
                                                 <li className="itemRow for-lis tdrows"
-                                                    ng-repeat="item in filtered = (AllFilteredAvailableComoponent|orderBy:orderBy:reverse | filter:{Title:category.searchTaskName,PercentComplete:category.searchPercentCompletecreatecomponentclear,Priority_x0020_Rank:category.searchPriority})">
+                                                    ng-repeat="item in filtered = (AllFilteredAvailableComoponent|orderBy:orderBy:reverse | filter:{Title:category.searchTaskName,PercentComplete:category.searchPercentCompletecreatecomponentclear,PriorityRank:category.searchPriority})">
                                                     <div style={{ width: "1%" }}></div>
                                                     <div style={{ width: "3%" }} className="padLR">
                                                         <img

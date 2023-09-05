@@ -38,9 +38,9 @@ const TeamLeaderHeader = (props: any) => {
     React.useMemo(() => {
         console.log("Use Effect Function ========")
         if (allTaskData?.length > 0) {
-             TotalImmediatecategory = props?.allTaskData.filter((item: any) => item.SharewebCategories.find((cate: any) => cate.Title == "Immediate"))
-             TotalEmailcategory= props?.allTaskData.filter((item: any) => item.SharewebCategories.find((cate: any) => cate.Title == "Email"))
-             TotalBottleneckcategory = props?.allTaskData.filter((item: any) => item.SharewebCategories.find((cate: any) => cate.Title == "Bottleneck"))
+             TotalImmediatecategory = props?.allTaskData.filter((item: any) => item.TaskCategories.find((cate: any) => cate.Title == "Immediate"))
+             TotalEmailcategory= props?.allTaskData.filter((item: any) => item.TaskCategories.find((cate: any) => cate.Title == "Email"))
+             TotalBottleneckcategory = props?.allTaskData.filter((item: any) => item.TaskCategories.find((cate: any) => cate.Title == "Bottleneck"))
              TotalIsTodaysTask= props?.allTaskData.filter((items: any) => items.IsTodaysTask)
             TotalworkingThisWeek = props?.allTaskData.filter((items: any) => items.workingThisWeek)
             setCategoiesData({

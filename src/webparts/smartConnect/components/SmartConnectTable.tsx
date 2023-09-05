@@ -176,29 +176,29 @@ function SmartConnectTable(SelectedProp: any) {
     };
     const makeFullStructureOfPortfolioTaskDatabase = function (task: any, AllTaskItems: any) {
         var CompleteStructure = "";
-        if ((task.SharewebTaskType != undefined && task.SharewebTaskType.Title == 'Activities') || (task.SharewebTaskType != undefined && task.SharewebTaskType.Title == 'Smart Case')) {
+        if ((task.TaskType != undefined && task.TaskType.Title == 'Activities') || (task.TaskType != undefined && task.TaskType.Title == 'Smart Case')) {
             CompleteStructure = task.Title;
-        } else if (task.SharewebTaskType != undefined && task.SharewebTaskType.Title == 'Workstream') {
+        } else if (task.TaskType != undefined && task.TaskType.Title == 'Workstream') {
             var temp = $.grep(AllTaskItems, ((item: any) => { return item.Id == task.ParentTask.Id }))[0];
             if (temp != undefined)
                 CompleteStructure = temp.Title + " >" + task.Title;
             else
                 CompleteStructure = task.Title;
-        } else if (task.SharewebTaskType != undefined && task.SharewebTaskType.Title == 'Task') {
+        } else if (task.TaskType != undefined && task.TaskType.Title == 'Task') {
             var temp = $.grep(AllTaskItems, ((item: any) => { return item.Id == task.ParentTask.Id }))[0];
             if (temp == undefined || temp == null)
                 CompleteStructure = task.Title;
             else {
-                if ((temp.SharewebTaskType != undefined && temp.SharewebTaskType.Title == 'Activities') || (temp.SharewebTaskType != undefined && temp.SharewebTaskType.Title == 'Smart Case')) {
+                if ((temp.TaskType != undefined && temp.TaskType.Title == 'Activities') || (temp.TaskType != undefined && temp.TaskType.Title == 'Smart Case')) {
                     CompleteStructure = temp.Title + " >" + task.Title;
-                } else if (temp.SharewebTaskType != undefined && temp.SharewebTaskType.Title == 'Workstream') {
+                } else if (temp.TaskType != undefined && temp.TaskType.Title == 'Workstream') {
                     var temp1 = $.grep(AllTaskItems, ((item: any) => { return item.Id == temp.ParentTask.Id }))[0];
                     if (temp1 == undefined) {
                         CompleteStructure = temp.Title + " >" + task.Title;
                     } else {
                         CompleteStructure = temp1.Title + " >" + temp.Title + " >" + task.Title;
                     }
-                } else if (temp.SharewebTaskType != undefined && temp.SharewebTaskType.Title == 'Task') {
+                } else if (temp.TaskType != undefined && temp.TaskType.Title == 'Task') {
                     CompleteStructure = task.ParentTask.Title;
                 }
             }
@@ -356,7 +356,7 @@ function SmartConnectTable(SelectedProp: any) {
         // allitems= [];
         var newSite: any = SiteType;
         var Pageurl = TaskId;
-        var columns = ['ID', 'Id', 'Title', 'DueDate', 'ClientActivity', 'ClientCategory', 'Shareweb_x0020_ID', 'PercentComplete', 'Author', 'Editor', 'Modified', 'Created', 'Services/Title','Services/Id', 'SharewebTaskType', 'ItemRank', 'ItemRank', 'ParentTask', 'SharewebTaskLevel1No', 'SharewebTaskLevel2No', 'ClientCategory', 'ServicePortfolio'];
+        var columns = ['ID', 'Id', 'Title', 'DueDate', 'ClientActivity', 'ClientCategory', 'TaskID', 'PercentComplete', 'Author', 'Editor', 'Modified', 'Created', 'Services/Title','Services/Id', 'TaskType', 'ItemRank', 'ItemRank', 'ParentTask', 'TaskLevel', 'TaskLevel', 'ClientCategory', 'ServicePortfolio'];
         var orderBy = "ItemRank";
         var whereClause = "<View><Query><Where><And><Contains><FieldRef Name='ClientActivity'  /><Value Type='Note'>" + Pageurl + "</Value></Contains><Contains><FieldRef Name='ClientActivity'/><Value Type='Note'>" + newSite + "</Value></Contains></And></Where></Query></View>";
         var listItem = SitesConfig.filter((site: any) => site.Title.toLowerCase() === Mainsiteitem.toLowerCase()) //SharewebCommonFactoryService.getListIdByListName(MainSite, GlobalConstants.CURRENT_SITE_TYPE);
@@ -393,14 +393,14 @@ function SmartConnectTable(SelectedProp: any) {
             if (item.ItemRank != undefined) {
                 item.ItemRank = item.ItemRank;
             }
-            if (item.SharewebTaskLevel1No != undefined) {
-                item.SharewebTaskLevel1No = item.SharewebTaskLevel1No;
+            if (item.TaskLevel != undefined) {
+                item.TaskLevel = item.TaskLevel;
             }
-            if (item.SharewebTaskLevel2No != undefined) {
-                item.SharewebTaskLevel2No = item.SharewebTaskLevel2No;
+            if (item.TaskLevel != undefined) {
+                item.TaskLevel = item.TaskLevel;
             }
-            if (item.SharewebTaskType != undefined) {
-                var newtasktype = item.SharewebTaskType.split('#')[1];
+            if (item.TaskType != undefined) {
+                var newtasktype = item.TaskType.split('#')[1];
                 var newitem: any = {};
                 if (newtasktype == 'Task') {
                     newitem.Id = 2;
@@ -419,7 +419,7 @@ function SmartConnectTable(SelectedProp: any) {
                     newitem.Title = "Workstream";
 
                 }
-                item.SharewebTaskType = newitem;
+                item.TaskType = newitem;
             }
             item.SmartTime = "";
             // if (item.Services != undefined && item.Services != "") {
@@ -448,7 +448,7 @@ function SmartConnectTable(SelectedProp: any) {
 
 
             }
-            item.Shareweb_x0020_ID = globalCommon.getTaskId(item);
+            item.TaskID = globalCommon.getTaskId(item);
             item.NewClientCategory = ''
             if (item.ClientCategory != "" && item.ClientCategory != undefined && item.ClientCategory.results != undefined && item.ClientCategory.results.length > 0) {
                 item.ClientCategory.results.forEach((val: any) => {
@@ -606,13 +606,13 @@ function SmartConnectTable(SelectedProp: any) {
     //     }
 
     //     if (filters != "") {
-    //         angular.forEach($scope.SitesConfig, function (site) { allCalls.push(SharewebListService.getRequest(_spPageContextInfo.webAbsoluteUrl, "/getbyid('" + site.listId + "')/items?$select=Id,Title,SharewebTaskLevel1No,SharewebTaskLevel2No,SharewebTaskType/Id,SharewebTaskType/Title,ItemRank,Component/Id,Services/Id,Events/Id,PercentComplete,ComponentId,ServicesId,EventsId,ItemRank,DueDate,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ParentTask/Id,ParentTask/Title,ParentTask/Shareweb_x0020_ID,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title&$expand=AssignedTo,Author,Editor,Component,Services,Events,Team_x0020_Members,ParentTask,SharewebCategories,Responsible_x0020_Team,SharewebTaskType&$top=4999&$filter=" + filters + "")) });
+    //         angular.forEach($scope.SitesConfig, function (site) { allCalls.push(SharewebListService.getRequest(_spPageContextInfo.webAbsoluteUrl, "/getbyid('" + site.listId + "')/items?$select=Id,Title,TaskLevel,TaskLevel,TaskType/Id,TaskType/Title,ItemRank,Component/Id,Services/Id,Events/Id,PercentComplete,ComponentId,ServicesId,EventsId,ItemRank,DueDate,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title&$expand=AssignedTo,Author,Editor,Component,Services,Events,TeamMembers,ParentTask,TaskCategories,ResponsibleTeam,TaskType&$top=4999&$filter=" + filters + "")) });
     //         $q.all(allCalls).then(function (success) {
     //             angular.forEach(success, function (val, index) {
     //                 angular.forEach(val.d.results, function (item) {
     //                     item.siteType = $scope.SitesConfig[index].Title;
     //                     item.listId = $scope.SitesConfig[index].listId;
-    //                     item.Shareweb_x0020_ID = SharewebCommonFactoryService.getSharewebId(item);
+    //                     item.TaskID = SharewebCommonFactoryService.getSharewebId(item);
     //                     $scope.smartCategories = SharewebCommonFactoryService.getSmartCategories(item, $scope.AllMetaData);
     //                     angular.forEach($scope.smartCategories, function (category) {
     //                         item.CategoryItem = item.CategoryItem != undefined ? item.CategoryItem + ';' + category.Title : category.Title;
@@ -778,7 +778,7 @@ function SmartConnectTable(SelectedProp: any) {
         }
         if (AllDataOfTask == undefined) { AllDataOfTask = []; }
         // angular.forEach($scope.SitesConfig, function (site) {
-        //     allCalls.push(SharewebListService.getRequest(_spPageContextInfo.webAbsoluteUrl, "/getbyid('" + site.listId + "')/items?$select=Id,Title,ItemRank,SharewebTaskLevel1No,SharewebTaskLevel2No,SharewebTaskType/Id,SharewebTaskType/Title,ItemRank,Component/Id,Services/Id,Events/Id,PercentComplete,ComponentId,ServicesId,EventsId,ItemRank,DueDate,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ParentTask/Id,ParentTask/Title,ParentTask/Shareweb_x0020_ID,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title&$expand=ClientCategory,AssignedTo,Author,Editor,Component,Services,Events,Team_x0020_Members,ParentTask,SharewebCategories,Responsible_x0020_Team,SharewebTaskType&$top=4999&$filter=" + filters + ""))
+        //     allCalls.push(SharewebListService.getRequest(_spPageContextInfo.webAbsoluteUrl, "/getbyid('" + site.listId + "')/items?$select=Id,Title,ItemRank,TaskLevel,TaskLevel,TaskType/Id,TaskType/Title,ItemRank,Component/Id,Services/Id,Events/Id,PercentComplete,ComponentId,ServicesId,EventsId,ItemRank,DueDate,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=ClientCategory,AssignedTo,Author,Editor,Component,Services,Events,TeamMembers,ParentTask,TaskCategories,ResponsibleTeam,TaskType&$top=4999&$filter=" + filters + ""))
         // });
         var Counter = 0;
         if (SitesConfig != undefined && SitesConfig.length > 0) {
@@ -788,15 +788,15 @@ function SmartConnectTable(SelectedProp: any) {
                 AllTasksMatches = await web.lists
                     .getById(config.listId)
                     .items
-                    .select('ParentTask/Title', 'ParentTask/Id', 'Services/Title', 'ClientTime', 'Services/Id', 'Events/Id', 'Events/Title', 'ItemRank', 'Portfolio_x0020_Type', 'SiteCompositionSettings', 'SharewebTaskLevel1No',
-                        'SharewebTaskLevel2No', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'Shareweb_x0020_ID',
-                        'Responsible_x0020_Team/Id', 'Responsible_x0020_Team/Title', 'SharewebCategories/Id', 'SharewebCategories/Title', 'ParentTask/Shareweb_x0020_ID', 'SharewebTaskType/Id', 'SharewebTaskType/Title',
-                        'SharewebTaskType/Level', 'Priority_x0020_Rank', 'Team_x0020_Members/Title', 'Team_x0020_Members/Name', 'Component/Id', 'Component/Title', 'Component/ItemType',
-                        'Team_x0020_Members/Id', 'component_x0020_link', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id',
+                    .select('ParentTask/Title', 'ParentTask/Id', 'Services/Title', 'ClientTime', 'Services/Id', 'Events/Id', 'Events/Title', 'ItemRank', 'Portfolio_x0020_Type', 'SiteCompositionSettings', 'TaskLevel',
+                        'TaskLevel', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'TaskID',
+                        'ResponsibleTeam/Id', 'ResponsibleTeam/Title', 'TaskCategories/Id', 'TaskCategories/Title', 'ParentTask/TaskID', 'TaskType/Id', 'TaskType/Title',
+                        'TaskType/Level', 'PriorityRank', 'TeamMembers/Title', 'TeamMembers/Name', 'Component/Id', 'Component/Title', 'Component/ItemType',
+                        'TeamMembers/Id', 'ComponentLink', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id',
                         'ClientCategory/Id', 'ClientCategory/Title', 'FileLeafRef', 'FeedBack', 'Title', 'Id', 'PercentComplete', 'StartDate', 'DueDate', 'Comments', 'Categories', 'Status', 'Body',
                         'Mileage', 'PercentComplete', 'ClientCategory', 'Priority', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title'
                     )
-                    .expand('ParentTask', 'Events', 'Services', 'SharewebTaskType', 'AssignedTo', 'Component', 'ClientCategory', 'Author', 'Editor', 'Team_x0020_Members', 'Responsible_x0020_Team', 'SharewebCategories')
+                    .expand('ParentTask', 'Events', 'Services', 'TaskType', 'AssignedTo', 'Component', 'ClientCategory', 'Author', 'Editor', 'TeamMembers', 'ResponsibleTeam', 'TaskCategories')
                     .filter("Status ne 'Completed'")
                     .orderBy('orderby', false)
                     .getAll(4000);
@@ -813,7 +813,7 @@ function SmartConnectTable(SelectedProp: any) {
                             item.siteType = SitesConfig[index].Title;
                             // item.siteTypeLocal = MainSiteLocal;
                             item.listId = SitesConfig[index].listId;
-                            item.Shareweb_x0020_ID = globalCommon.getTaskId(item);
+                            item.TaskID = globalCommon.getTaskId(item);
                             item['PortfolioItemsId'] = undefined
                             if (item.Component.results.length > 0) {
                                 item['PortfolioItemsId'] = item.Component.results[0].Id;
@@ -975,13 +975,13 @@ function SmartConnectTable(SelectedProp: any) {
             .getById(SelectedProp.MasterTaskListID)
             .items
             .select("ID", "Id", "Title", "Mileage", "TaskListId", "TaskListName", "WorkspaceType", "PortfolioLevel", "PortfolioStructureID", "PortfolioStructureID",
-                "component_x0020_link", "Package", "Comments", "DueDate", "Sitestagging", "Body", "Deliverables", "SiteCompositionSettings", "StartDate",
+                "ComponentLink", "Package", "Comments", "DueDate", "Sitestagging", "Body", "Deliverables", "SiteCompositionSettings", "StartDate",
                 "Created", "Item_x0020_Type", "Help_x0020_Information", "Background", "Categories", "Short_x0020_Description_x0020_On", "TechnicalExplanations", "Idea", "ValueAdded",
-                "CategoryItem", "Priority_x0020_Rank", "Priority", "TaskDueDate", "PercentComplete", "Modified", "CompletedDate", "ItemRank", "Portfolio_x0020_Type", 'Services/Title', 'ClientTime', 'Services/Id', 'Events/Id', 'Events/Title',
+                "CategoryItem", "PriorityRank", "Priority", "TaskDueDate", "PercentComplete", "Modified", "CompletedDate", "ItemRank", "Portfolio_x0020_Type", 'Services/Title', 'ClientTime', 'Services/Id', 'Events/Id', 'Events/Title',
                 "Parent/Id", "Parent/Title", "Component/Id", "Component/Title", "Component/ItemType", "Services/Id", "Services/Title", "Services/ItemType", "Events/Id", "Author/Title", 'Editor/Title',
-                "Events/Title", "Events/ItemType", "SharewebCategories/Id", "SharewebTaskType/Title", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title", 'Responsible_x0020_Team/Id', 'Responsible_x0020_Team/Title',
+                "Events/Title", "Events/ItemType", "TaskCategories/Id", "TaskType/Title", "TaskCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", 'ResponsibleTeam/Id', 'ResponsibleTeam/Title',
             )
-            .expand('Parent', 'Events', 'Services', 'SharewebTaskType', 'AssignedTo', 'Component', 'ClientCategory', 'Author', 'Editor', 'Team_x0020_Members', 'Responsible_x0020_Team', 'SharewebCategories')
+            .expand('Parent', 'Events', 'Services', 'TaskType', 'AssignedTo', 'Component', 'ClientCategory', 'Author', 'Editor', 'TeamMembers', 'ResponsibleTeam', 'TaskCategories')
             .top(4999)
             .getAll()
 
@@ -1002,14 +1002,14 @@ function SmartConnectTable(SelectedProp: any) {
                 i['isEvents'] = false;
             }
             if (i.PortfolioStructureID != null && i.PortfolioStructureID != undefined) {
-                i['Shareweb_x0020_ID'] = i.PortfolioStructureID;
+                i['TaskID'] = i.PortfolioStructureID;
             }
             else {
-                i['Shareweb_x0020_ID'] = '';
+                i['TaskID'] = '';
             }
             i['isNewItem'] = false;
-            if (i.SharewebCategories.length > 0) {
-                i.SharewebCategories.forEach((item: any) => {
+            if (i.TaskCategories.length > 0) {
+                i.TaskCategories.forEach((item: any) => {
                     if (item.Id == 290) {
                         i['isNewItem'] = true;
                     }
@@ -1038,7 +1038,7 @@ function SmartConnectTable(SelectedProp: any) {
             if (i['TaskDueDate'] != undefined) i['DateTaskDueDate'] = new Date(i['TaskDueDate']);
             i['HelpInformation'] = i.Help_x0020_Information;
             i['ShortDescription'] = i.Short_x0020_Description_x0020_On;
-            i['AdminNotes'] = i.Admin_x0020_Notes;
+            i['AdminNotes'] = i.AdminNotes;
             i.PercentComplete = (i.PercentComplete * 100).toFixed(0);
             if (i['CompletedDate'] != undefined) i['DateTaskDueDate'] = new Date(i['CompletedDate']);
             if (i['CompletedDate'] != undefined) i['CompletedDate'] = Moment(i['CompletedDate']).format('DD/MM/YYYY'); //new Date(i['CompletedDate']).format('dd/MM/yyyy');
@@ -1190,7 +1190,7 @@ function SmartConnectTable(SelectedProp: any) {
     // const columns = React.useMemo<ColumnDef<any, unknown>[]>(
     //     () => [
     //         {
-    //             accessorKey: "Shareweb_x0020_ID",
+    //             accessorKey: "TaskID",
     //             placeholder: "Task Id",
     //             header: "",
     //             // size: 175,
@@ -1287,7 +1287,7 @@ function SmartConnectTable(SelectedProp: any) {
                 size: 30,
             },
             {
-                accessorKey: "Shareweb_x0020_ID",
+                accessorKey: "TaskID",
                 cell: ({ row, getValue }) => (
                     <>
                         <span className="d-flex">

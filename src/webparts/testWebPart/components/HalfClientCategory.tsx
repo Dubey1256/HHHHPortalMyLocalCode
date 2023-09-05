@@ -194,8 +194,8 @@ const HalfClientCategory = (props: any) => {
                     smartmeta = await web.lists
                         .getById(config.listId)
                         .items
-                        .select("Id,Title,Priority_x0020_Rank,Project/Priority_x0020_Rank,Project/Id,Project/Title,Events/Id,EventsId,workingThisWeek,EstimatedTime,SharewebTaskLevel1No,SharewebTaskLevel2No,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,SiteCompositionSettings,IsTodaysTask,Body,Component/Id,Component/Title,Services/Id,Services/Title,PercentComplete,ComponentId,Categories,ServicesId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
-                        .expand('AssignedTo,Events,Project,Author,Editor,Component,Services,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory')
+                        .select("Id,Title,PriorityRank,Project/PriorityRank,Project/Id,Project/Title,Events/Id,EventsId,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,SiteCompositionSettings,IsTodaysTask,Body,Component/Id,Component/Title,Services/Id,Services/Title,PercentComplete,ComponentId,Categories,ServicesId,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+                        .expand('AssignedTo,Events,Project,Author,Editor,Component,Services,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory')
                         .top(4999)
                         .get();
                     arraycount++;
@@ -231,7 +231,7 @@ const HalfClientCategory = (props: any) => {
                             items["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
                             if (items?.Project?.Title != undefined) {
                                 items["ProjectTitle"] = items?.Project?.Title;
-                                items["ProjectPriority"] = items?.Project?.Priority_x0020_Rank;
+                                items["ProjectPriority"] = items?.Project?.PriorityRank;
                             } else {
                                 items["ProjectTitle"] = '';
                                 items["ProjectPriority"] = 0;
@@ -273,13 +273,13 @@ const HalfClientCategory = (props: any) => {
                                     items.Component.length > 0
                                     ? getComponentasString(items.Component)
                                     : "";
-                            items.Shareweb_x0020_ID = globalCommon.getTaskId(items);
+                            items.TaskID = globalCommon.getTaskId(items);
                             AllTaskUsers?.map((user: any) => {
                                 if (user.AssingedToUserId == items.Author.Id) {
                                     items.createdImg = user?.Item_x0020_Cover?.Url;
                                 }
-                                if (items.Team_x0020_Members != undefined) {
-                                    items.Team_x0020_Members.map((taskUser: any) => {
+                                if (items.TeamMembers != undefined) {
+                                    items.TeamMembers.map((taskUser: any) => {
                                         var newuserdata: any = {};
                                         if (user.AssingedToUserId == taskUser.Id) {
                                             newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
@@ -299,7 +299,7 @@ const HalfClientCategory = (props: any) => {
                     let setCount = siteConfig?.length
                     if (arraycount === setCount) {
                         AllTask.sort((a: any, b: any) => {
-                            return b?.Priority_x0020_Rank - a?.Priority_x0020_Rank;
+                            return b?.PriorityRank - a?.PriorityRank;
                         })
                         console.log(AllTask)
                         setAllSiteTasks(AllTask);
@@ -326,9 +326,9 @@ const HalfClientCategory = (props: any) => {
             let Alltask: any = [];
             // var AllUsers: any = []
             Alltask = await web.lists.getById(AllListId?.MasterTaskListID).items
-                .select("Deliverables,PortfolioStructureID,ClientCategory/Id,ClientCategory/Title,TechnicalExplanations,ValueAdded,Categories,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,Events/Id,Events/Title,SiteCompositionSettings,ClientTime,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title")
+                .select("Deliverables,PortfolioStructureID,ClientCategory/Id,ClientCategory/Title,TechnicalExplanations,ValueAdded,Categories,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,Events/Id,Events/Title,SiteCompositionSettings,ClientTime,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title")
                 .filter("Item_x0020_Type ne 'Project'")
-                .expand("ComponentCategory,ClientCategory,AssignedTo,Events,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebCategories,Parent").top(4999).getAll();
+                .expand("ComponentCategory,ClientCategory,AssignedTo,Events,AttachmentFiles,Author,Editor,TeamMembers,TaskCategories,Parent").top(4999).getAll();
 
             Alltask.map((items: any) => {
                 if (items?.ClientCategory?.length > 0 || items?.SiteCompositionSettings != undefined || items?.Sitestagging != undefined) {
@@ -337,7 +337,7 @@ const HalfClientCategory = (props: any) => {
                     items.siteUrl = AllListId?.siteUrl;
                     items.listId = AllListId?.MasterTaskListID;
                     items.AssignedUser = []
-                    items.Shareweb_x0020_ID = items?.PortfolioStructureID;
+                    items.TaskID = items?.PortfolioStructureID;
                     items.TeamMembersSearch = '';
                     if (items.AssignedTo != undefined) {
                         items.AssignedTo.map((taskUser: any) => {
@@ -414,7 +414,7 @@ const HalfClientCategory = (props: any) => {
                 id: 'Id',
             },
             {
-                accessorKey: "Shareweb_x0020_ID",
+                accessorKey: "TaskID",
                 placeholder: "Id",
                 resetColumnFilters: false,
                 resetSorting: false,
@@ -422,7 +422,7 @@ const HalfClientCategory = (props: any) => {
                 cell: ({ row, getValue }) => (
                     <div>
                         <>
-                            {row?.original.Shareweb_x0020_ID}
+                            {row?.original.TaskID}
                         </>
                     </div>
                 ),
@@ -549,7 +549,7 @@ const HalfClientCategory = (props: any) => {
                 id: 'Id',
             },
             {
-                accessorKey: "Shareweb_x0020_ID",
+                accessorKey: "TaskID",
                 placeholder: "Id",
                 resetColumnFilters: false,
                 resetSorting: false,
@@ -557,7 +557,7 @@ const HalfClientCategory = (props: any) => {
                 cell: ({ row, getValue }) => (
                     <div>
                         <>
-                            {row?.original.Shareweb_x0020_ID}
+                            {row?.original.TaskID}
                         </>
                     </div>
                 ),
