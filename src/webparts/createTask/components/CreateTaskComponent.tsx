@@ -300,7 +300,7 @@ function CreateTaskComponent(props: any) {
                 AllComponents?.map((item: any) => {
                     if (item?.Id == paramComponentId) {
                         setComponent.push(item)
-                        setSave({ ...save, Component: setComponent });
+                        setSave((prev:any)=>({ ...prev, Component: setComponent }));
                         setSmartComponentData(setComponent);
                     }
                 })
@@ -377,14 +377,14 @@ function CreateTaskComponent(props: any) {
                     if (props?.createComponent?.portfolioType === 'Component') {
                         selectPortfolioType('Component');
                         setComponent.push(item)
-                        setSave({ ...save, portfolioType: 'Component' })
+                        setSave((prev:any)=>({ ...prev, portfolioType: 'Component' }))
                         setSmartComponentData(setComponent);
                     }
 
                     if (props?.createComponent?.portfolioType === 'Service') {
                         selectPortfolioType('Service');
                         setComponent.push(item);
-                        setSave({ ...save, portfolioType: 'Service' })
+                        setSave((prev:any)=>({ ...prev, portfolioType: 'Service' }))
                         setLinkedComponentData(setComponent);
                     }
                 }
@@ -741,10 +741,10 @@ function CreateTaskComponent(props: any) {
                             selectedSite = site;
                         }
                     })
-                    if (save.Component !== undefined && save.Component.length > 0) {
-                        save.Component?.map((com: any) => {
-                            if (save.Component !== undefined && save.Component.length >= 0) {
-                                $.each(save.Component, function (index: any, smart: any) {
+                    if (smartComponentData?.length > 0) {
+                        smartComponentData?.map((com: any) => {
+                            if (smartComponentData !== undefined && smartComponentData.length >= 0) {
+                                $.each(smartComponentData, function (index: any, smart: any) {
                                     selectedComponent.push(smart.Id);
                                     portfolioId=smart?.Id
                                     if (selectedSite?.Parent?.Title == "SDC Sites") {
@@ -761,10 +761,10 @@ function CreateTaskComponent(props: any) {
                         })
                     }
                     let selectedService: any[] = [];
-                    if (save.linkedServices !== undefined && save.linkedServices.length > 0) {
-                        save.linkedServices?.map((com: any) => {
-                            if (save.linkedServices !== undefined && save.linkedServices.length >= 0) {
-                                $.each(save.linkedServices, function (index: any, smart: any) {
+                    if (linkedComponentData?.length > 0) {
+                        linkedComponentData?.map((com: any) => {
+                            if (linkedComponentData !== undefined && linkedComponentData.length >= 0) {
+                                $.each(linkedComponentData, function (index: any, smart: any) {
                                     selectedService.push(smart.Id);
                                     portfolioId=smart?.Id
                                     if (selectedSite?.Parent?.Title == "SDC Sites") {
@@ -839,6 +839,7 @@ function CreateTaskComponent(props: any) {
                         "Priority_x0020_Rank": priorityRank,
                         SiteCompositionSettings: siteCompositionDetails != undefined ? siteCompositionDetails : '',
                         AssignedToId: { "results": AssignedToIds },
+                        TaskTypeId:2,
                         SharewebTaskTypeId: 2,
                         ClientTime: postClientTime != undefined ? JSON.stringify(postClientTime) : '',
                         component_x0020_link: {
@@ -1216,9 +1217,9 @@ function CreateTaskComponent(props: any) {
             {
                 accessorFn: (row) => row?.siteType,
                 cell: ({ row }) => (
-                    <span>
-                        <img className='circularImage rounded-circle' src={row?.original?.SiteIcon} />
-                    </span>
+                  <span>
+                    <img className='circularImage rounded-circle' title={row?.original?.siteType} src={row?.original?.SiteIcon} />
+                  </span>
                 ),
                 id: "Site",
                 placeholder: "Site",
@@ -1226,7 +1227,7 @@ function CreateTaskComponent(props: any) {
                 resetSorting: false,
                 resetColumnFilters: false,
                 size: 50
-            },
+              },
             {
                 accessorKey: "Shareweb_x0020_ID",
                 placeholder: "Task Id",
