@@ -779,8 +779,8 @@ export const makePostDataForApprovalProcess = async (postData: any) => {
             //postData.PercentComplete = 0.01;
             //postData.Status = "For Approval";
             var isAvailable = false;
-            if (postData?.Responsible_x0020_TeamId?.results?.length > 0) {
-                postData.Responsible_x0020_TeamId.results.map((user: any) => {
+            if (postData?.ResponsibleTeamId?.results?.length > 0) {
+                postData.ResponsibleTeamId.results.map((user: any) => {
                     UserManager.map((ID: any) => {
                         if (ID == user) {
                             isAvailable = true;
@@ -790,8 +790,8 @@ export const makePostDataForApprovalProcess = async (postData: any) => {
             }
             if (!isAvailable) {
                 var TeamMembersID: any[] = [];
-                if (postData?.Team_x0020_MembersId?.results?.length > 0) {
-                    postData.Team_x0020_MembersId.results((user: any) => {
+                if (postData?.TeamMembersId?.results?.length > 0) {
+                    postData.TeamMembersId.results((user: any) => {
                         UserManager.map((ID: any) => {
                             if (ID == user) {
                                 TeamMembersID.push(user);
@@ -802,7 +802,7 @@ export const makePostDataForApprovalProcess = async (postData: any) => {
                 UserManager.map((ID: any) => {
                     TeamMembersID.push(ID);
                 })
-                postData.Team_x0020_MembersId = { results: TeamMembersID };
+                postData.TeamMembersId = { results: TeamMembersID };
             }
             if (postData?.AssignedToId?.results?.length > 0 && UserManager?.length > 0) {
                 UserManager.map((ID: any) => {

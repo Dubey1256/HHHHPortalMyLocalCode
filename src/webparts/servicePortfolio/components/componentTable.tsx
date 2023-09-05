@@ -3606,7 +3606,7 @@ function ComponentTable(SelectedProp: any) {
     if (ChengedItemTitle != undefined && ChengedItemTitle != "" && (RestructureChecked[0].TaskType?.Title == "Workstream" || RestructureChecked[0].TaskType?.Title == "Task")) {
       let web = new Web(ContextValue.siteUrl);
       var postData: any = {
-        SharewebTaskTypeId: taskTypeId[0].Id,
+        TaskTypeId: taskTypeId[0].Id,
         TaskLevel: TaskLevel,
         TaskID: TaskID,
         ParentTaskId: null
@@ -3819,7 +3819,7 @@ function ComponentTable(SelectedProp: any) {
               ? { results: [Ids] }
               : { results: [] },
           ParentTaskId: null,
-          SharewebTaskTypeId: taskTypeId[0].Id,
+          TaskTypeId: taskTypeId[0].Id,
           TaskLevel: numbers,
           TaskID: TaskID,
         })
@@ -3963,7 +3963,7 @@ function ComponentTable(SelectedProp: any) {
 
       let numbers: any;
       let numbers1: any;
-      let SharewebTaskTypeId: any;
+      let TaskTypeId: any;
 
       if (newItemBackUp.childs.length > 0) {
         newItemBackUp.childs.map((items: any) => {
@@ -3999,9 +3999,9 @@ function ComponentTable(SelectedProp: any) {
 
 
       if (TaskType === "Activities") {
-        SharewebTaskTypeId = taskTypeId[2];
+        TaskTypeId = taskTypeId[2];
       } else {
-        SharewebTaskTypeId = TaskType === "Task" ? taskTypeId[1] : taskTypeId[2];
+        TaskTypeId = TaskType === "Task" ? taskTypeId[1] : taskTypeId[2];
       }
 
       numbers = newItemBackUp.TaskLevel;
@@ -4024,8 +4024,7 @@ function ComponentTable(SelectedProp: any) {
               : { results: [] },
           TaskID: TaskID,
           TaskLevel: numbers,
-          TaskLevel: numbers1,
-          SharewebTaskTypeId: SharewebTaskTypeId.Id,
+          TaskTypeId: TaskTypeId.Id,
           ParentTaskId: Ids
         })
         .then((res: any) => {
@@ -4044,7 +4043,7 @@ function ComponentTable(SelectedProp: any) {
               items.TaskLevel = numbers,
               items.TaskID = TaskID,
               items.TaskLevel = numbers1,
-              items.TaskType = { Id: SharewebTaskTypeId.Id, Level: SharewebTaskTypeId.Level, Title: SharewebTaskTypeId.Title },
+              items.TaskType = { Id: TaskTypeId.Id, Level: TaskTypeId.Level, Title: TaskTypeId.Title },
               items.Item_x0020_Type = Item_x0020_Type
           })
 

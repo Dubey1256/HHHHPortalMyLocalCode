@@ -83,7 +83,6 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
         ParentTask: i.ParentTask != undefined ? i.ParentTask : null,
         Component:  i.Component,
         TaskLevel : i.TaskLevel,
-        TaskLevel : i.TaskLevel,
         StepNo : i.StepNo != null ? i.StepNo : 1,
         PercentComplete : i.PercentComplete * 100,
         DueDate : i.DueDate != null ? (new Date(i.DueDate)).toLocaleDateString() : '',
@@ -357,7 +356,7 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
                 ParentTaskId: this.state.ParentTaskOnModal.ID,
                 TaskLevel : this.state.ParentTaskOnModal.TaskLevel,
                 StepNo : this.state.cellNo,
-                SharewebTaskTypeId : 2
+                TaskTypeId : 2
               });
       }      
 
