@@ -829,9 +829,9 @@ function CreateTaskComponent(props: any) {
                         PercentComplete: 0,
                         ComponentId: { "results": (selectedComponent !== undefined && selectedComponent?.length > 0) ? selectedComponent : [] },
                         ServicesId: { "results": (selectedService !== undefined && selectedService?.length > 0) ? selectedService : [] },
-                        Responsible_x0020_TeamId: { "results": AssignedIds },
+                        ResponsibleTeamId: { "results": AssignedIds },
                         PortfolioId: portfolioId,
-                        Team_x0020_MembersId: { "results": TeamMembersIds },
+                        TeamMembersId: { "results": TeamMembersIds },
                         // SharewebComponentId: { "results": $scope.SharewebComponent },
                         SharewebCategoriesId: { "results": sharewebCat },
                         ClientCategoryId: { "results": selectedCC },
@@ -839,7 +839,7 @@ function CreateTaskComponent(props: any) {
                         "PriorityRank": priorityRank,
                         SiteCompositionSettings: siteCompositionDetails != undefined ? siteCompositionDetails : '',
                         AssignedToId: { "results": AssignedToIds },
-                        SharewebTaskTypeId: 2,
+                        TaskTypeId: 2,
                         ClientTime: postClientTime != undefined ? JSON.stringify(postClientTime) : '',
                         ComponentLink: {
                             __metadata: { 'type': 'SP.FieldUrlValue' },
@@ -860,7 +860,7 @@ function CreateTaskComponent(props: any) {
                                 ResponsibleTeam.push(10);
                             }
                         }
-                        item.Responsible_x0020_TeamId = { "results": ResponsibleTeam }
+                        item.ResponsibleTeamId = { "results": ResponsibleTeam }
                     }
                     else {
                         ResponsibleTeam = [];
@@ -872,7 +872,7 @@ function CreateTaskComponent(props: any) {
                                 ResponsibleTeam.push(10);
                             }
                         }
-                        item.Responsible_x0020_TeamId = { "results": ResponsibleTeam }
+                        item.ResponsibleTeamId = { "results": ResponsibleTeam }
                     }
                     // if (Tasks != undefined && save.siteType == 'Shareweb') {
                     //     item.SiteCompositionSettings = Tasks[0]?.SiteCompositionSettings!=undefined?Tasks[0]?.SiteCompositionSettings:Tasks?.SiteCompositionSettings;
@@ -900,7 +900,7 @@ function CreateTaskComponent(props: any) {
                     //     ServicesId: { "results": (selectedService !== undefined && selectedService?.length > 0) ? selectedService : [] },
                     //     AssignedToId: { "results": AssignedToIds },
                     //     SharewebCategoriesId: { "results": sharewebCat },
-                    //     Team_x0020_MembersId: { "results": TeamMembersIds },
+                    //     TeamMembersId: { "results": TeamMembersIds },
                     // }
                     //Code End
 
@@ -971,8 +971,8 @@ function CreateTaskComponent(props: any) {
                 //postData.PercentComplete = 0.01;
                 //postData.Status = "For Approval";
                 var isAvailable = false;
-                if (postData?.Responsible_x0020_TeamId?.results?.length > 0) {
-                    postData.Responsible_x0020_TeamId.results.map((user: any) => {
+                if (postData?.ResponsibleTeamId?.results?.length > 0) {
+                    postData.ResponsibleTeamId.results.map((user: any) => {
                         UserManager.map((ID: any) => {
                             if (ID == user) {
                                 isAvailable = true;
@@ -982,8 +982,8 @@ function CreateTaskComponent(props: any) {
                 }
                 if (!isAvailable) {
                     var TeamMembersID: any[] = [];
-                    if (postData?.Team_x0020_MembersId?.results?.length > 0) {
-                        postData.Team_x0020_MembersId.results((user: any) => {
+                    if (postData?.TeamMembersId?.results?.length > 0) {
+                        postData.TeamMembersId.results((user: any) => {
                             UserManager.map((ID: any) => {
                                 if (ID == user) {
                                     TeamMembersID.push(user);
@@ -994,7 +994,7 @@ function CreateTaskComponent(props: any) {
                     UserManager.map((ID: any) => {
                         TeamMembersID.push(ID);
                     })
-                    postData.Team_x0020_MembersId = { results: TeamMembersID };
+                    postData.TeamMembersId = { results: TeamMembersID };
                 }
                 if (postData?.AssignedToId?.results?.length > 0 && UserManager?.length > 0) {
                     UserManager.map((ID: any) => {

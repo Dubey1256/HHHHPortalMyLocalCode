@@ -259,16 +259,16 @@ const ProjectManagementMain = (props: any) => {
             fetchedProject.TeamMembers = [];
             fetchedProject.ResponsibleTeam = [];
             AllUser?.map((user: any) => {
-              if (fetchedProject?.Team_x0020_MembersId != undefined) {
-                fetchedProject?.Team_x0020_MembersId?.map((taskUser: any) => {
+              if (fetchedProject?.TeamMembersId != undefined) {
+                fetchedProject?.TeamMembersId?.map((taskUser: any) => {
                   if (user.AssingedToUserId == taskUser) {
                     user.Id = user?.AssingedToUserId;
                     fetchedProject?.TeamMembers?.push(user)
                   }
                 })
               }
-              if (fetchedProject?.Responsible_x0020_TeamId != undefined) {
-                fetchedProject?.Responsible_x0020_TeamId?.map((taskUser: any) => {
+              if (fetchedProject?.ResponsibleTeamId != undefined) {
+                fetchedProject?.ResponsibleTeamId?.map((taskUser: any) => {
                   if (user.AssingedToUserId == taskUser) {
                     user.Id = user.AssingedToUserId;
                     fetchedProject?.ResponsibleTeam?.push(user)

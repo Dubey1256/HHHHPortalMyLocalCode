@@ -1042,7 +1042,7 @@ function TasksTable(props: any) {
       .update({
         TaskID: checkedList[0].TaskID,
         TaskLevel: checkedList[0].TaskLevel,
-        SharewebTaskTypeId: checkedList[0].TaskType.Id,
+        TaskTypeId: checkedList[0].TaskType.Id,
         ParentTaskId: checkedList[0].ParentTask.Id
       })
       .then((res: any) => {
@@ -1102,7 +1102,7 @@ function TasksTable(props: any) {
 
     let numbers: any;
     let numbers1: any;
-    let SharewebTaskTypeId: any;
+    let TaskTypeId: any;
     let ParentTaskId: any;
     let TaskID: any;
 
@@ -1110,7 +1110,7 @@ function TasksTable(props: any) {
       if (NewArrayBackup[0]?.TaskType?.Title == "Workstream") {
         ParentTaskId = NewArrayBackup[0].Id;
         TaskID = NewArrayBackup[0].TaskID + "-" + "T" + checkedList[0].Id;
-        SharewebTaskTypeId = 2;
+        TaskTypeId = 2;
       }
     }
 
@@ -1120,7 +1120,7 @@ function TasksTable(props: any) {
       .getById(checkedList[0].Id)
       .update({
         TaskID: TaskID,
-        SharewebTaskTypeId: SharewebTaskTypeId,
+        TaskTypeId: TaskTypeId,
         ParentTaskId: ParentTaskId
       })
       .then((res: any) => {

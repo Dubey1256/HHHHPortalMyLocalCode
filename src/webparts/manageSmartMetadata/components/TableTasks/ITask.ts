@@ -10,7 +10,6 @@ export default interface ITask {
     SharewebCategoriesId?: number[];
     TaskType?: {Title?:string,Level?:number,Id?:number};
     TaskLevel?: string;
-    TaskLevel?: string;
     ComponentId?: {results: number[]} | undefined;
     EventsId?: {results: number[]} | undefined;
     ServicesId?: {results: number[]} | undefined;

@@ -499,7 +499,6 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       ModifiedBy: taskDetails["Editor"],
       listId: listInfo.Id,
       TaskLevel: taskDetails["TaskLevel"],
-      TaskLevel: taskDetails['TaskLevel'],
       Attachments: taskDetails["Attachments"],
       AttachmentFiles: taskDetails["AttachmentFiles"],
       SmartInformationId: taskDetails["SmartInformation"],

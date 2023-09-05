@@ -819,7 +819,7 @@ class MyPendingTasksApp extends React.Component<IMyPendingTasksAppProps, IMyPend
                 PercentComplete: 0.03,
                 Status: "Approved",
                 AssignedToId: [],
-                Team_x0020_MembersId: [],
+                TeamMembersId: [],
                 Comments: JSON.stringify(_comments)
             };
         }
@@ -834,7 +834,7 @@ class MyPendingTasksApp extends React.Component<IMyPendingTasksAppProps, IMyPend
                 PercentComplete: 0.02,
                 Status: "Follow up",
                 AssignedToId: [],
-                Team_x0020_MembersId: collTeamMembersId,               
+                TeamMembersId: collTeamMembersId,               
                 Comments: JSON.stringify(_comments)
             };
         }

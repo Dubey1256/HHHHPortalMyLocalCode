@@ -365,8 +365,8 @@ const inlineEditingcolumns = (props: any) => {
         await web.lists.getById(props?.item?.listId).items.getById(props?.item?.Id).update({
             PercentComplete: taskStatusInNumber/100,
             AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds.length > 0) ? AssignedToIds : [] },
-            Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0) ? ResponsibleTeamIds : [] },
-            Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds.length > 0) ? TeamMemberIds : [] },
+            ResponsibleTeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0) ? ResponsibleTeamIds : [] },
+            TeamMembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds.length > 0) ? TeamMemberIds : [] },
             ApproverId: { "results": (ApproverIds != undefined && ApproverIds.length > 0) ? ApproverIds : [] },
             "Priority": priority,
             "Categories": CategoryTitle,
@@ -410,7 +410,7 @@ const inlineEditingcolumns = (props: any) => {
                         });
                         task.TeamMembersId = [];
                         task.TaskID = globalCommon.getTaskId(task);
-                        task?.Team_x0020_MembersId?.map((taskUser: any) => {
+                        task?.TeamMembersId?.map((taskUser: any) => {
                             task.TeamMembersId.push(taskUser);
                             var newuserdata: any = {};
                             AllTaskUser?.map((user: any) => {

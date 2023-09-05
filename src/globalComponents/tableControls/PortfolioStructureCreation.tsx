@@ -532,7 +532,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                         "Portfolio_x0020_Type": self.Portfolio_x0020_Type,
                         "AdminStatus": item.AdminStatus,
                         AssignedToId: { "results": self.AssignedIds },
-                        Team_x0020_MembersId: { "results": self.TeamMembersIds },
+                        TeamMembersId: { "results": self.TeamMembersIds },
                         "PortfolioLevel": item.NextLevel,
                         "PortfolioStructureID": item.PortfolioStructureIDs,
                         ClientCategoryId: { "results": ClientCategoryIds },
