@@ -4024,7 +4024,7 @@ function ComponentTable(SelectedProp: any) {
               : { results: [] },
           TaskID: TaskID,
           TaskLevel: numbers,
-          TaskLevel: numbers1,
+          //TaskLevel: numbers1,
           SharewebTaskTypeId: SharewebTaskTypeId.Id,
           ParentTaskId: Ids
         })
