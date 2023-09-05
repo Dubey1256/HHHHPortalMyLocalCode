@@ -725,7 +725,7 @@ function CreateTaskComponent(props: any) {
             let siteCompositionDetails: any;
             try {
                 let selectedComponent: any[] = [];
-                let portfolioId :any ='';
+                let portfolioId :any =null;
 
                 let CopyUrl;
                 if (save.taskUrl != undefined && save.taskUrl.length > 255) {
