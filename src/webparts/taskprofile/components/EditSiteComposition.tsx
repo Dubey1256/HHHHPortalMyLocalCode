@@ -11,10 +11,10 @@ const EditSiteComposition = (Props: any) => {
     const ServicesTaskCheck = Props.ServicesTaskCheck;
     const AllListIdData = Props.AllListId;
     const siteUrls = Props.AllListId.siteUrl;
-    const callBack = Props.Call;     
+    const callBack = Props.Call;
     const SmartTotalTimeData = Props.SmartTotalTimeData;
     const selectedClientCategory: any = [];
-    const ComponentTaskCheck = Props.ComponentTaskCheck; 
+    const ComponentTaskCheck = Props.ComponentTaskCheck;
     const SitesTaggingData = Props.SitesTaggingData;
     const EditData = Props.EditData;
 
@@ -40,7 +40,7 @@ const EditSiteComposition = (Props: any) => {
             MetaData = await web.lists
                 .getById(AllListIdData.SmartMetadataListID)
                 .items
-                .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,Configurations,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title")
+                .select("Id,Title,listId,siteUrl,siteName,Configurations,Item_x005F_x0020_Cover,ParentID,Configurations,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title")
                 .top(4999)
                 .expand('Author,Editor')
                 .get()
@@ -51,6 +51,24 @@ const EditSiteComposition = (Props: any) => {
                 if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== "SDC Sites") {
                     site.BtnStatus = false;
                     site.isSelected = false;
+                    if (site.Configurations?.length > 5) {
+                        site.ConfigurationsData = JSON.parse(site.Configurations);
+                        let tempArray: any = JSON.parse(site.Configurations);
+                        if (tempArray?.length > 0) {
+                            tempArray?.map((SiteCompoData: any) => {
+                                let TodayDate = new Date();
+                                let StartDate = SiteCompoData.StartDate?.split('/').reverse().join('-');
+                                let EndDate = SiteCompoData.EndDate?.split('/').reverse().join('-');
+                                if (new Date(StartDate) >= TodayDate || new Date(EndDate) <= TodayDate) {
+                                    site.StartEndDateValidation = true;
+                                } else {
+                                    site.StartEndDateValidation = false;
+                                }
+                            })
+                        }
+                    } else {
+                        site.ConfigurationsData = []
+                    }
                     tempArray.push(site);
                 }
             })
@@ -125,11 +143,11 @@ const EditSiteComposition = (Props: any) => {
         return (
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"} >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <span className="ms-3 siteColor">
+                    <span className="siteColor">
                         Edit Site Composition
                     </span>
                 </div>
-                <Tooltip ComponentId="1626" isServiceTask ={ServicesTaskCheck} />
+                <Tooltip ComponentId="1626" />
             </div>
         )
     }
@@ -146,7 +164,6 @@ const EditSiteComposition = (Props: any) => {
 
     return (
         <div>
-
             <Panel
                 onRenderHeader={onRenderEditSCCustomHeader}
                 isOpen={EditSiteCompositionStatus}

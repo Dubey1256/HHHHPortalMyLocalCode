@@ -47,7 +47,10 @@ var backupAllTasks: any = [];
 var MasterListData: any = []
 let taskTaggedServices: any = []
 let taskTaggedComponents: any = []
-var MyAllData: any = []
+var projectPortfolios: any = {
+  components: [],
+  services: []
+}
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
 const ProjectManagementMain = (props: any) => {
@@ -190,7 +193,7 @@ const ProjectManagementMain = (props: any) => {
     AllUser = await loadTaskUsers();
     setAllTaskUsers(AllUser);
     setProjectId(QueryId);
-    GetMasterData();
+    
     GetMetaData();
     console.log(query); //"app=article&act=news_content&aid=160990"
     return false;
@@ -236,6 +239,8 @@ const ProjectManagementMain = (props: any) => {
             } else {
               fetchedProject.DisplayDueDate = '';
             }
+            projectPortfolios.components = fetchedProject?.ComponentId?.length > 0 ? fetchedProject?.ComponentId : [];
+            projectPortfolios.services = fetchedProject?.ServicesId?.length > 0 ? fetchedProject?.ServicesId : [];
             fetchedProject.smartService = [];
             fetchedProject?.ServicesId?.map((item: any) => {
               MasterListData?.map((portfolio: any) => {
@@ -298,6 +303,7 @@ const ProjectManagementMain = (props: any) => {
             if (fetchedProject?.smartComponent != undefined) {
               linkedComponentData = fetchedProject.smartComponent
             }
+            LoadAllSiteTasks();
             setMasterdata((prev: any) => fetchedProject);
           })
 
@@ -339,7 +345,8 @@ const ProjectManagementMain = (props: any) => {
               siteConfig.push(site)
             }
           })
-          LoadAllSiteTasks();
+          GetMasterData();
+          
         } else {
           siteConfig = smartmeta;
         }
@@ -409,8 +416,8 @@ const ProjectManagementMain = (props: any) => {
   }, []);
 
   const LoadAllSiteTasks = async function () {
-    let taskComponent: any = Masterdata?.ComponentId?.length > 0 ? Masterdata?.ComponentId : [];
-    let taskServices: any = Masterdata?.ServicesId?.length > 0 ? Masterdata?.ServicesId : [];
+    let taskComponent: any = projectPortfolios.components;
+    let taskServices: any = projectPortfolios.services;
 
     if (siteConfig?.length > 0) {
       try {
