@@ -92,17 +92,10 @@ const CreateWS = (props: any) => {
         // return new Promise((resolve, reject) => {
         if (Item.Parent != null || Item?.Component != undefined || Item?.Services != undefined) {
 
-<<<<<<< HEAD
             var filt: any = "Id eq " + (Item.Parent != null || undefined ? Item?.Parent?.Id : Item?.Component?.length > 0 ? Item?.Component[0]?.Id : Item?.Services[0]?.Id) + "";
 
         }
         let web = new Web(dynamicList?.siteUrl);
-=======
-                var filt:any = "Id eq " + (Item.Parent != null || undefined ? Item?.Parent?.Id : Item?.Component?.length > 0 ? Item?.Component[0]?.Id : Item?.Services[0]?.Id) + "";
-            
-            }
-            let web = new Web(dynamicList?.siteUrl);
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
         let compo = [];
         web.lists
             .getById(dynamicList?.MasterTaskListID)
@@ -247,19 +240,11 @@ const CreateWS = (props: any) => {
         }
         console.log(Type)
         let web = new Web(dynamicList.siteUrl);
-<<<<<<< HEAD
         let componentDetails: any = [];
         componentDetails = await web.lists
             .getById(AllItems.listId)
             .items
             .select("FolderID,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,TaskLevel,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,Priority,Created,Modified,TaskType/Id,TaskType/Title,ParentTask/Id,ParentTask/Title,Author/Id,Author/Title,Editor/Id,Editor/Title")
-=======
-        let componentDetails:any = [];
-        componentDetails = await web.lists
-            .getById(AllItems.listId)
-            .items
-            .select("FolderID,SharewebTaskLevel1No,SharewebTaskLevel2No,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,Priority,Created,Modified,TaskType/Id,TaskType/Title,ParentTask/Id,ParentTask/Title,Author/Id,Author/Title,Editor/Id,Editor/Title")
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
             .expand("TaskType,ParentTask,Author,Editor,AssignedTo")
             .filter(("TaskType/Title eq 'Workstream'") && ("ParentTask/Id eq '" + AllItems?.Id + "'"))
             .orderBy("Created", false)
@@ -269,7 +254,7 @@ const CreateWS = (props: any) => {
         if (componentDetails.length == 0) {
             WorstreamLatestId = 1;
         } else {
-            WorstreamLatestId = componentDetails[0].SharewebTaskLevel2No + 1;
+            WorstreamLatestId = componentDetails[0].TaskLevel + 1;
         }
         SelectedTasks.forEach((item: any, index: any) => {
             if (item.Title != "") {
@@ -461,11 +446,7 @@ const CreateWS = (props: any) => {
     //         // DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
     //         DueDate: myDate.editDate = myDate.editDate ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy"): '',
     //         SharewebTaskTypeId: SharewebTasknewTypeId,
-<<<<<<< HEAD
     //         Shareweb_x0020_ID: SharewebID,
-=======
-    //         TaskID: SharewebID,
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
     //         SharewebTaskLevel2No: WorstreamLatestId,
     //         SharewebTaskLevel1No: AllItems.SharewebTaskLevel1No,
     //         ClientCategoryId: { "results": InheritClientCategory },
@@ -555,19 +536,7 @@ const CreateWS = (props: any) => {
         if (TaskprofileId == '' || SelectedTasks.length > 0) {
             TaskprofileId = SelectedTasks[0].Id;
         }
-<<<<<<< HEAD
 
-=======
-        // if (Task.Component != undefined && Task.Component.length > 0) {
-        //     SharewebID = 'CA' + Task.SharewebTaskLevel1No + '-W' + WorstreamLatestId;
-        // }
-        // if (Task.Services != undefined && Task.Services.length > 0) {
-        //     SharewebID = 'SA' + Task.SharewebTaskLevel1No + '-W' + WorstreamLatestId;
-        // }
-        // if (Task.SharewebTaskType != undefined && Task.SharewebTaskType.Title != undefined) {
-        //     SharewebID = 'A' + Task.SharewebTaskLevel1No + '-W' + WorstreamLatestId;
-        // }
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
         componentDetails = await web.lists
             .getById(AllItems?.listId)
             .items
@@ -585,25 +554,6 @@ const CreateWS = (props: any) => {
         if (date != undefined) {
             NewDate = new Date(date).toDateString();
         }
-<<<<<<< HEAD
-=======
-        // if (AllItems.Component != undefined && AllItems.Component.length > 0) {
-        //     Component.push(AllItems.Component[0].Id)
-        // }
-        // if (AllItems.Services != undefined && AllItems.Services.length > 0) {
-        //     RelevantPortfolioIds.push(AllItems.Services[0].Id)
-        // }
-        // if (AllItems?.Portfolio_x0020_Type == undefined) {
-        //     if (AllItems.Component != undefined && AllItems.Component.length > 0) {
-        //         smartComponentData.push(AllItems.Component);
-        //     }
-
-        //     if (AllItems.Services != undefined && AllItems.Services.length > 0) {
-        //         linkedComponentData.push(AllItems);
-        //     }
-
-        // }
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
 
         var categoriesItem = '';
         CategoriesData.map((category: { Title: string; }) => {
@@ -617,19 +567,7 @@ const CreateWS = (props: any) => {
             }
 
         })
-<<<<<<< HEAD
 
-=======
-        // if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
-        //     linkedComponentData?.map((com: any) => {
-        //         if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
-        //             $.each(linkedComponentData, function (index: any, smart: any) {
-        //                 RelevantPortfolioIds.push(smart.Id)
-        //             })
-        //         }
-        //     })
-        // }
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
         AllItems?.subRows?.forEach((vall: any) => {
             if (vall?.TaskType?.Title == 'Workstream' || vall?.SharewebTaskType?.Title == 'Workstream') {
                 LetestLevelData.push(vall)
@@ -653,11 +591,7 @@ const CreateWS = (props: any) => {
         }
         if (isDropItemRes == true) {
             if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
-<<<<<<< HEAD
                 TaskAssignedTo.map((taskInfo: any) => {
-=======
-                TaskAssignedTo.map((taskInfo:any) => {
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
                     AssignedToIds.push(taskInfo.Id);
                 })
             }
@@ -669,11 +603,7 @@ const CreateWS = (props: any) => {
         }
         if (isDropItem == true) {
             if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
-<<<<<<< HEAD
                 TaskTeamMembers.map((taskInfo: any) => {
-=======
-                TaskTeamMembers.map((taskInfo:any) => {
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
                     TeamMemberIds.push(taskInfo.Id);
                 })
             }
@@ -685,11 +615,7 @@ const CreateWS = (props: any) => {
         }
         if (isDropItem == true) {
             if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
-<<<<<<< HEAD
                 TaskResponsibleTeam.map((taskInfo: any) => {
-=======
-                TaskResponsibleTeam.map((taskInfo:any) => {
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
                     ResponsibleTeamIds.push(taskInfo.Id);
                 })
             }
@@ -730,13 +656,8 @@ const CreateWS = (props: any) => {
             AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
             ResponsibleTeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
             TeamMembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] },
-<<<<<<< HEAD
             TaskID: TaskID,
             TaskLevel: Tasklevel
-=======
-            TaskID :TaskID,
-            TaskLevel : Tasklevel
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
 
 
         }).then((res: any) => {
@@ -745,15 +666,11 @@ const CreateWS = (props: any) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
-<<<<<<< HEAD
                 res.data['TaskType'] = { 'Id': res.data?.TaskTypeId };
                 res.data['listId'] = AllItems.listId
                 res.data['Shareweb_x0020_ID'] = SharewebID;
                 res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0] : null
                 res.data['Portfolio'] = { 'Id': portFolio };
-=======
-                res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0]:null
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
                 res.data.AssignedTo = []
                 res.data.ResponsibleTeam = []
                 res.data.TeamMembers = []
@@ -840,7 +757,6 @@ const CreateWS = (props: any) => {
         if (TaskprofileId == '' || SelectedTasks.length > 0) {
             TaskprofileId = SelectedTasks[0].Id;
         }
-<<<<<<< HEAD
         let componentDetails: any = [];
         componentDetails = await web.lists
             .getById(AllItems?.listId)
@@ -866,91 +782,8 @@ const CreateWS = (props: any) => {
             .filter(`Id eq '${props.props.Id}'`)
             .get()
         console.log(component)
-=======
-      
-        // if (Task.SharewebTaskType != undefined && Task.SharewebTaskType.Title != undefined) {
-        //     SharewebID = 'A' + Task.SharewebTaskLevel1No + '-W' + WorstreamLatestId;
-        // }
-        componentDetails = await web.lists
-        .getById(AllItems.listId)
-        .items
-        .select("Id,Title")
-        .orderBy("Id", false)
-        .top(1)
-        .get()
-    console.log(componentDetails)
-    var LatestId = componentDetails[0].Id + 1;
-    LatestId += index;
-    if (Task.Component != undefined && Task.Component.length > 0) {
-        SharewebID = 'CA' + Task.SharewebTaskLevel1No + '-T' + LatestId;
-    }
-    if (Task.Services != undefined && Task.Services.length > 0) {
-        SharewebID = 'SA' + Task.SharewebTaskLevel1No + '-T' + LatestId;
-    }
-        var Component: any = []
-        var RelevantPortfolioIds: any = []
-
-        // smartComponentData.forEach((com: any) => {
-        //     if (com != undefined) {
-        //         Component.push(com.Id)
-        //     }
-
-        // })
-        // if (myDate?.editDate != undefined && myDate?.editDate != null) {
-        //     var dateValue = myDate?.editDate?.split("/");
-        //     var dp = dateValue[1] + "/" + dateValue[0] + "/" + dateValue[2];
-        //     var Dateet = new Date(dp)
-        //     NewDate = Moment(Dateet).format("ddd, DD MMM yyyy")
-        // }
-        if (date != undefined) {
-            NewDate = new Date(date).toDateString();
-        }
-        if (AllItems?.Component != undefined && AllItems?.Component.length > 0) {
-            Component.push(AllItems.Component[0].Id)
-        }
-        if (AllItems?.Services != undefined && AllItems?.Services?.length > 0) {
-            RelevantPortfolioIds.push(AllItems.Services[0].Id)
-        }
-        if (AllItems?.Portfolio_x0020_Type == undefined) {
-            if (AllItems?.Component != undefined && AllItems?.Component?.length > 0) {
-                smartComponentData.push(AllItems.Component);
-            }
-
-            if (AllItems?.Services != undefined && AllItems?.Services?.length > 0) {
-                linkedComponentData.push(AllItems);
-            }
-
-        }
-
-        var categoriesItem = '';
-        CategoriesData.map((category: { Title: string; }) => {
-            if (category.Title != undefined) {
-                categoriesItem = categoriesItem == "" ? category.Title : categoriesItem + ';' + category.Title;
-            }
-        })
-        // smartComponentData.forEach((com: any) => {
-        //     if (com != undefined) {
-        //         Component.push(com[0].Id)
-        //     }
-
-        // })
-        // if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
-        //     linkedComponentData?.map((com: any) => {
-        //         if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
-        //             $.each(linkedComponentData, function (index: any, smart: any) {
-        //                 RelevantPortfolioIds.push(smart.Id)
-        //             })
-        //         }
-        //     })
-        // }
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
-        AllItems?.subRows?.forEach((vall: any) => {
-            if (vall?.TaskType?.Title == 'Task' || vall?.SharewebTaskType?.Title == 'Task') {
-                LetestLevelData.push(vall)
-            }
-
-        })
-        if (LetestLevelData.length == 0) {
+       
+        if (component.length == 0) {
             Tasklevel = 1
             TaskID = component[0]?.TaskID + '-T' + LatestId;
         }
@@ -986,35 +819,8 @@ const CreateWS = (props: any) => {
                 categoriesItem = categoriesItem == "" ? category.Title : categoriesItem + ';' + category.Title;
             }
         })
-        // smartComponentData.forEach((com: any) => {
-        //     if (com != undefined) {
-        //         Component.push(com[0].Id)
-        //     }
-
-        // })
-        // if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
-        //     linkedComponentData?.map((com: any) => {
-        //         if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
-        //             $.each(linkedComponentData, function (index: any, smart: any) {
-        //                 RelevantPortfolioIds.push(smart.Id)
-        //             })
-        //         }
-        //     })
-        // }
-        AllItems?.subRows?.forEach((vall: any) => {
-            if (vall?.TaskType?.Title == 'Task' || vall?.SharewebTaskType?.Title == 'Task') {
-                LetestLevelData.push(vall)
-            }
-
-        })
-        if (LetestLevelData.length == 0) {
-            Tasklevel = 1
-            TaskID = props?.props?.TaskID + '-T' + LatestId;
-        }
-        else {
-            Tasklevel = LetestLevelData.length + 1
-            TaskID = props?.props?.TaskID + '-T' + LatestId;
-        }
+       
+       
         var CategoryID: any = []
         CategoriesData.map((category: { Id: any; }) => {
             if (category.Id != undefined) {
@@ -1028,11 +834,7 @@ const CreateWS = (props: any) => {
         }
         if (isDropItemRes == true) {
             if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
-<<<<<<< HEAD
                 TaskAssignedTo.map((taskInfo: any) => {
-=======
-                TaskAssignedTo.map((taskInfo:any) => {
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
                     AssignedToIds.push(taskInfo.Id);
                 })
             }
@@ -1044,11 +846,7 @@ const CreateWS = (props: any) => {
         }
         if (isDropItem == true) {
             if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
-<<<<<<< HEAD
                 TaskTeamMembers.map((taskInfo: any) => {
-=======
-                TaskTeamMembers.map((taskInfo:any) => {
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
                     TeamMemberIds.push(taskInfo.Id);
                 })
             }
@@ -1060,11 +858,7 @@ const CreateWS = (props: any) => {
         }
         if (isDropItem == true) {
             if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
-<<<<<<< HEAD
                 TaskResponsibleTeam.map((taskInfo: any) => {
-=======
-                TaskResponsibleTeam.map((taskInfo:any) => {
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
                     ResponsibleTeamIds.push(taskInfo.Id);
                 })
             }
@@ -1102,13 +896,8 @@ const CreateWS = (props: any) => {
             AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
             ResponsibleTeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
             TeamMembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] },
-<<<<<<< HEAD
             TaskID: TaskID,
             TaskLevel: Tasklevel
-=======
-            TaskID :TaskID,
-            TaskLevel : Tasklevel
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
 
 
         }).then((res: any) => {
@@ -1117,12 +906,8 @@ const CreateWS = (props: any) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Task' }
-<<<<<<< HEAD
                 res.data['TaskType'] = { Title: 'Task' }
                 res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0] : null
-=======
-                res.data['PortfolioType'] =   portFolioTypeId != undefined ? portFolioTypeId[0]:null
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
                 res.data.AssignedTo = []
                 res.data.ResponsibleTeam = []
                 res.data.TeamMembers = []
@@ -1168,11 +953,7 @@ const CreateWS = (props: any) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Task' }
-<<<<<<< HEAD
                 res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0] : null
-=======
-                res.data['PortfolioType'] =  portFolioTypeId != undefined ? portFolioTypeId[0]:null
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
                 res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : null,
                     res.data['siteType'] = AllItems.siteType
                 res.data['Shareweb_x0020_ID'] = SharewebID
@@ -1209,7 +990,6 @@ const CreateWS = (props: any) => {
         if (TaskprofileId == '' || SelectedTasks.length > 0) {
             TaskprofileId = SelectedTasks[0].Id;
         }
-<<<<<<< HEAD
         let LetestLevelData: any = []
         let Tasklevel: any = ''
         let TaskID = ''
@@ -1227,20 +1007,10 @@ const CreateWS = (props: any) => {
 
         AllItems?.subRows?.forEach((vall: any) => {
             if (vall?.TaskType?.Title == 'Workstream' || vall?.SharewebTaskType?.Title == 'Workstream') {
-=======
-        let LetestLevelData:any=[]
-        let Tasklevel:any =''
-        let TaskID  = ''
-
-
-        AllItems?.subRows?.forEach((vall:any)=>{
-            if(vall?.TaskType?.Title == 'Workstream'|| vall?.SharewebTaskType?.Title == 'Workstream'){
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
                 LetestLevelData.push(vall)
             }
 
         })
-<<<<<<< HEAD
         if (LetestLevelData.length == 0) {
             Tasklevel = 1
             TaskID = componentDetails[0]?.TaskID + '-W' + WorstreamLatestId;
@@ -1249,98 +1019,20 @@ const CreateWS = (props: any) => {
             Tasklevel = LetestLevelData.length + 1
             TaskID = componentDetails[0]?.TaskID + '-W' + WorstreamLatestId;
         }
-=======
-    if(LetestLevelData.length  ==  0){
-        Tasklevel = 1
-        TaskID = props?.props?.TaskID + '-W'+ WorstreamLatestId;
-    }
-    else{
-        Tasklevel = LetestLevelData.length + 1
-         TaskID = props?.props?.TaskID + '-W'+ WorstreamLatestId;
-    }
-
-
-        // if (SharewebTasknewTypeId == 3 || SharewebTasknewTypeId == 5) {
-        //     var SharewebID = '';
-        //     if (Task?.Portfolio_x0020_Type != undefined && Task?.Portfolio_x0020_Type == 'Component' || Task?.Component != undefined && Task?.Component?.length > 0) {
-        //         SharewebID = 'A' + AllItems.SharewebTaskLevel1No + '-W' + WorstreamLatestId;
-        //     }
-        //     if (Task?.Services != undefined && Task?.Portfolio_x0020_Type == 'Service' || Task?.Services != undefined && Task?.Services?.length > 0) {
-        //         SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-W' + WorstreamLatestId;
-        //     }
-        //     if ((Task?.Services != undefined && Task?.Portfolio_x0020_Type == 'Service') || (Task?.Services != undefined && Task?.Services?.length > 0) && (Task.SharewebTaskType.Title == "Workstream" || Task.SharewebTaskType == 'Workstream')) {
-        //         SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-W' + WorstreamLatestId
-        //     }
-
-        //     if (Task?.Events != undefined && Task?.Portfolio_x0020_Type == 'Events') {
-        //         SharewebID = 'EA' + AllItems?.SharewebTaskLevel1No + '-T' + WorstreamLatestId;
-        //     }
-            // if (AllItems.SharewebTaskLevel1No == undefined) {
-            //     WorstreamLatestId = AllItems?.SharewebTaskLevel1No;
-            // }
-        //}
-        // else {
-        //     SharewebID = 'A' + WorstreamLatestId;
-        //     SharewebTasknewTypeId = 2;
-        //     WorstreamLatestId = undefined;
-        // }
-        var Component: any = []
-        var RelevantPortfolioIds: any = []
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
 
 
         if (date != undefined) {
             NewDate = new Date(date).toDateString();
         }
-<<<<<<< HEAD
 
 
         var categoriesItem = '';
         CategoriesData.map((category: any) => {
-=======
-        // if (AllItems?.Component != undefined && AllItems?.Component.length > 0) {
-        //     Component.push(AllItems.Component[0].Id)
-        // }
-        // if (AllItems?.Services != undefined && AllItems?.Services.length > 0) {
-        //     RelevantPortfolioIds.push(AllItems.Services[0].Id)
-        // }
-        // if (AllItems?.Portfolio_x0020_Type == undefined) {
-        //     if (AllItems.Component != undefined && AllItems.Component.length > 0) {
-        //         smartComponentData.push(AllItems.Component);
-        //     }
-
-        //     if (AllItems?.Services != undefined && AllItems?.Services.length > 0) {
-        //         linkedComponentData.push(AllItems);
-        //     }
-
-        // }
-
-        var categoriesItem = '';
-        CategoriesData.map((category:any) => {
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
             if (category.Title != undefined) {
                 categoriesItem = categoriesItem == "" ? category.Title : categoriesItem + ';' + category.Title;
             }
         })
-<<<<<<< HEAD
 
-=======
-        // smartComponentData.forEach((com: any) => {
-        //     if (com != undefined) {
-        //         Component.push(com[0].Id)
-        //     }
-
-        // })
-        // if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
-        //     linkedComponentData?.map((com: any) => {
-        //         if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
-        //             $.each(linkedComponentData, function (index: any, smart: any) {
-        //                 RelevantPortfolioIds.push(smart.Id)
-        //             })
-        //         }
-        //     })
-        // }
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
         var CategoryID: any = []
         CategoriesData.map((category: { Id: any; }) => {
             if (category.Id != undefined) {
@@ -1356,11 +1048,7 @@ const CreateWS = (props: any) => {
         }
         if (isDropItemRes == true) {
             if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
-<<<<<<< HEAD
                 TaskAssignedTo.map((taskInfo: any) => {
-=======
-                TaskAssignedTo.map((taskInfo:any) => {
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
                     AssignedToIds.push(taskInfo.Id);
                     AssignedToUser.push(taskInfo);
                 })
@@ -1375,11 +1063,7 @@ const CreateWS = (props: any) => {
         }
         if (isDropItem == true) {
             if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
-<<<<<<< HEAD
                 TaskTeamMembers?.map((taskInfo: any) => {
-=======
-                TaskTeamMembers?.map((taskInfo:any) => {
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
                     TeamMemberIds.push(taskInfo.Id);
                     AllTeamMembers.push(taskInfo);
 
@@ -1394,11 +1078,7 @@ const CreateWS = (props: any) => {
         }
         if (isDropItem == true) {
             if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
-<<<<<<< HEAD
                 TaskResponsibleTeam?.map((taskInfo: any) => {
-=======
-                TaskResponsibleTeam?.map((taskInfo:any) => {
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
                     ResponsibleTeamIds.push(taskInfo.Id);
                     TeamLeaderws.push(taskInfo)
                 })
@@ -1423,11 +1103,7 @@ const CreateWS = (props: any) => {
 
 
         await web.lists.getById(AllItems.listId).items.add({
-<<<<<<< HEAD
             Title: postData.Title != '' && postData.Title != undefined ? postData.Title : AllItems.Title,
-=======
-            Title: postData.Title != '' && postData.Title != undefined ?postData.Title:AllItems.Title,
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
             Categories: categoriesItem ? categoriesItem : null,
             SharewebCategoriesId: { "results": CategoryID },
             Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
@@ -1446,13 +1122,8 @@ const CreateWS = (props: any) => {
             AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
             ResponsibleTeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
             TeamMembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] },
-<<<<<<< HEAD
             TaskID: TaskID,
             TaskLevel: Tasklevel
-=======
-            TaskID :TaskID,
-            TaskLevel : Tasklevel
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
 
         }).then((res: any) => {
             console.log(res);
@@ -1460,10 +1131,7 @@ const CreateWS = (props: any) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
-<<<<<<< HEAD
                 res.data['TaskType'] = { 'Id': res.data?.TaskTypeId };
-=======
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
                 res.data['listId'] = AllItems.listId
                 res.data['Shareweb_x0020_ID'] = SharewebID;
                 res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0] : null
@@ -1488,13 +1156,8 @@ const CreateWS = (props: any) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
-<<<<<<< HEAD
                 res.data['Shareweb_x0020_ID'] = SharewebID;
                 res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0] : null
-=======
-                res.data['TaskID'] = SharewebID;
-                res.data['PortfolioType'] =   portFolioTypeId != undefined ? portFolioTypeId[0]:null
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
                 res.data['Portfolio'] = { 'Id': portFolio };
                 res.data.DueDate = res?.data?.DueDate != null ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : null;
                 res.data['siteType'] = AllItems.siteType
@@ -1630,7 +1293,6 @@ const CreateWS = (props: any) => {
             Tasklevel = LetestLevelData.length + 1
             TaskID = component[0]?.TaskID + '-T' + LatestId;;
         }
-<<<<<<< HEAD
 
 
 
@@ -1749,141 +1411,6 @@ const CreateWS = (props: any) => {
             closeTaskStatusUpdatePoup(res);
         })
 
-=======
-     
-            // var SharewebID = '';
-            // if (Task?.Portfolio_x0020_Type != undefined && Task?.Portfolio_x0020_Type == 'Component') {
-            //     SharewebID = 'A' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
-            // }
-            // if (Task?.Services != undefined && Task.Services.length > 0 || Task?.Portfolio_x0020_Type == 'Service') {
-            //     SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
-            // }
-            // if (Task?.Events != undefined && Task.Events.length > 0 || Task?.Portfolio_x0020_Type == 'Events') {
-            //     SharewebID = 'EA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
-            // }
-            // if (Task?.Component != undefined && Task.Component.length > 0) {
-            //     SharewebID = 'CA' + Task.SharewebTaskLevel1No + '-T' + LatestId;
-            // }
-            // if (Task?.Component == undefined && Task.Services == undefined) {
-            //     SharewebID = 'T' + LatestId;
-            // }
-           
-            var categoriesItem = '';
-            CategoriesData.map((category:any) => {
-                if (category.Title != undefined) {
-                    categoriesItem = categoriesItem == "" ? category.Title : categoriesItem + ';' + category.Title;
-                }
-            })
-            var CategoryID: any = []
-            CategoriesData.map((category:any) => {
-                if (category.Id != undefined) {
-                    CategoryID.push(category.Id)
-                }
-            })
-            if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length > 0) {
-                AllItems.AssignedTo.forEach((obj: any) => {
-                    AssignedToIds.push(obj.Id);
-                    AssignedToUser.push(obj)
-                })
-            }
-            if (isDropItemRes == true) {
-                if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
-                    TaskAssignedTo.map((taskInfo) => {
-                        AssignedToIds.push(taskInfo.Id);
-                        AssignedToUser.push(taskInfo);
-                    })
-                }
-            }
-            if (AllItems?.TeamMembers != undefined && AllItems?.TeamMembers?.length > 0) {
-                AllItems.TeamMembers.forEach((obj: any) => {
-                    TeamMemberIds.push(obj.Id);
-                    AllTeamMembers.push(obj)
-                })
-            }
-            if (isDropItem == true) {
-                if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
-                    TaskTeamMembers.map((taskInfo) => {
-                        TeamMemberIds.push(taskInfo.Id);
-                        AllTeamMembers.push(taskInfo)
-                    })
-                }
-            }
-            if (AllItems?.TeamLeader != undefined && AllItems?.TeamLeader?.length > 0) {
-                AllItems.TeamLeader.forEach((obj: any) => {
-                    ResponsibleTeamIds.push(obj.Id);
-                    TeamLeaderws.push(obj)
-                })
-            }
-            if (isDropItem == true) {
-                if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
-                    TaskResponsibleTeam.map((taskInfo) => {
-                        ResponsibleTeamIds.push(taskInfo.Id);
-                        TeamLeaderws.push(taskInfo)
-                    })
-                }
-            }
-            if (props?.props != undefined && props?.props?.ClientCategory?.length > 0) {
-                if (props?.props?.ClientCategory2 != undefined && props?.props?.ClientCategory2?.results?.length > 0) {
-                    props?.props?.ClientCategory2?.results?.map((items: any) => {
-                        InheritClientCategory.push(items.Id)
-                        clientcaterogiesdata2.push(items)
-                    })
-                } else {
-                    props.props.ClientCategory?.map((items: any) => {
-                        InheritClientCategory.push(items.Id)
-                        clientcaterogiesdata2.push(items)
-                    })
-                }
-            }
-
-           
-            await web.lists.getById(AllItems.listId).items.add({
-                Title: postData.Title != '' && postData.Title != undefined ?postData.Title:AllItems.Title,
-    
-                Categories: categoriesItem ? categoriesItem : null,
-                Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
-                PortfolioId: AllItems.Id,
-                PortfolioTypeId: portFolioTypeId == undefined ?null:portFolioTypeId[0]?.Id,
-                TaskTypeId: SharewebTasknewTypeId,
-                SharewebCategoriesId: { "results": CategoryID },
-                ParentTaskId: AllItems.Id,
-                Body: AllItems.Description,
-        
-                DueDate: myDate.editDate = myDate.editDate != null ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy") : null,
-                Priority: AllItems.Priority,
-                AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
-                ResponsibleTeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
-                TeamMembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] },
-                ClientCategoryId: { "results": InheritClientCategory },
-                SiteCompositionSettings: props?.props?.SiteCompositionSettings != undefined ? props?.props?.SiteCompositionSettings : "",
-                ClientTime: props?.props?.ClientTime != null ? props?.props?.ClientTime : "",
-                TaskID :TaskID,
-                TaskLevel : Tasklevel
-    
-            }).then((res: any) => {
-                console.log(res);
-                res.data['SiteIcon'] = AllItems?.SiteIcon
-                res.data['listId'] = AllItems?.listId
-                res.data['PortfolioType'] =  portFolioTypeId != undefined ? portFolioTypeId[0]:null
-                res.data['Portfolio'] = { 'Id': portFolio };
-                res.data['TaskType'] = { 'Id': res.data?.TaskTypeId };
-                // res.DueDate = NewDate != '' && NewDate != undefined ? NewDate : undefined,
-                res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : null,
-                    res.data['siteType'] = AllItems.siteType
-
-                res.data.Created = new Date();
-                res.data.Author = {
-                    Id: res?.data?.AuthorId
-                }
-                res.data.ClientCategory = clientcaterogiesdata2,
-                    res.data.TeamMembers = AllTeamMembers?.length > 0 ? AllItems?.AllTeamMembers : []
-                res.data.ResponsibleTeam = TeamLeaderws.length > 0 ? TeamLeaderws : []
-                res.data.AssignedTo = AssignedToUser?.length > 0 ? AssignedToUser : []
-                res.Item_x0020_Type = ""
-                closeTaskStatusUpdatePoup(res);
-            })
-        
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
 
     }
     const EditComponentPicker = (item: any) => {
@@ -2054,11 +1581,7 @@ const CreateWS = (props: any) => {
                                 placeholder="Enter Child Item Title" defaultValue={AllItems?.Title} onChange={(e) => setPostData({ ...postData, Title: e.target.value })}
                             />
                         </div>
-<<<<<<< HEAD
 
-=======
-                        
->>>>>>> 8dca79c7f2ee214325278c5d85277909b8989839
                     </div>
                     <div className='row mt-2'>
                         <div className='col-sm-4'>
