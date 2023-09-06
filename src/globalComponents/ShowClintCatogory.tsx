@@ -32,7 +32,7 @@ const ShowClintCatogory = (Item: any) => {
 
     return (
         <>
-            {FilterData && <div>
+            {FilterData && <div className="alignCenter">
                 {FilterData?.ClientCategory?.map((elem: any, index: any) => {
                     return (
                         <>
@@ -45,7 +45,7 @@ const ShowClintCatogory = (Item: any) => {
                 })}
                 {
                     FilterData?.ClientCategory != null && FilterData?.ClientCategory.length > 1 && FilterData?.ClientCategory?.slice(2)?.length != 0 ? (
-                        <span className="position-relative user_Member_img_suffix2 ms-1 popover__wrapper " data-bs-toggle="tooltip" data-bs-placement="auto">
+                        <span className="position-relative user_Member_img_suffix2 popover__wrapper " data-bs-toggle="tooltip" data-bs-placement="auto">
                             +{FilterData?.ClientCategory?.slice(2)?.length}
                             <span className="tooltiptext popover__content p-2" style={{ minWidth: "200px" }}>
                                 <div>

@@ -145,12 +145,12 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                 hasCustomExpanded: true,
                 hasExpanded: true,
                 isHeaderNotAvlable:true,
-                size: 27,
+                size: 30,
                 id: 'Id',
             },
             {
                 accessorKey: "",
-                size: 40,
+                size: 140,
                 canSort: false,
                 placeholder: "",
                 id: 'TaskID',
@@ -160,7 +160,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                             <a className="hreflink" title="Show All Child" data-toggle="modal">
                                 <img className="icon-sites-img ml20 me-1" src={row?.original?.SiteIcon}></img>
                             </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</>}
-                            <span>{row?.original?.TaskID}</span>
+                            <span className="mx-1">{row?.original?.TaskID}</span>
                         </>
                             {getValue()}
                         </>
@@ -180,7 +180,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
             },
             {
                 accessorKey: "",
-                size: 30,
+                size: 27,
                 canSort: false,
                 header: "",
                 placeholder: "",
