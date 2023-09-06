@@ -1447,8 +1447,8 @@ const SiteCompositionComponent = (Props: any) => {
                                                                                 <input type="text"
                                                                                     value={SearchedKeyForEI}
                                                                                     onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EI", 340)}
-                                                                                    style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }}
-                                                                                    className="border-secondary border-end-0 form-control"
+                                                                                    style={siteData.BtnStatus ? {} : { cursor: "not-allowed"}}
+                                                                                    className={siteData.BtnStatus?"border-secondary border-end-0 form-control":"border-secondary form-control"}
                                                                                     placeholder="Search Client Category Here!"
                                                                                     readOnly={siteData.BtnStatus ? false : true} />
                                                                                 {
@@ -1470,7 +1470,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                         value={SearchedKeyForEI}
                                                                         onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EI", 340)}
                                                                         style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }}
-                                                                        className="border-secondary border-end-0 form-control"
+                                                                        className={siteData.BtnStatus ? "border-secondary border-end-0 form-control" : "border-secondary form-control"}
                                                                         placeholder="Search Client Category Here!"
                                                                         readOnly={siteData.BtnStatus ? false : true}
                                                                     />
@@ -1524,7 +1524,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                                     value={SearchedKeyForEPS}
                                                                                     onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EPS", 341)}
                                                                                     style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }}
-                                                                                    className="border-secondary form-control border-end-0"
+                                                                                    className={siteData.BtnStatus ? "border-secondary border-end-0 form-control" : "border-secondary form-control"}
                                                                                     placeholder="Search Client Category Here!"
                                                                                     readOnly={siteData.BtnStatus ? false : true}
                                                                                 />
@@ -1547,7 +1547,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                         value={SearchedKeyForEPS}
                                                                         onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EPS", 341)}
                                                                         style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }}
-                                                                        className="border-secondary border-end-0 form-control"
+                                                                        className={siteData.BtnStatus ? "border-secondary border-end-0 form-control" : "border-secondary form-control"}
                                                                         placeholder="Search Client Category Here!"
                                                                         readOnly={siteData.BtnStatus ? false : true} />
                                                                     {
@@ -1600,8 +1600,8 @@ const SiteCompositionComponent = (Props: any) => {
                                                                                 <input type="text"
                                                                                     value={SearchedKeyForEducation}
                                                                                     onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Education", 344)}
-                                                                                    style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }}
-                                                                                    className="border-secondary border-end-0 form-control"
+                                                                                    style={siteData.BtnStatus ? {} : { cursor: "not-allowed"}}
+                                                                                    className={siteData.BtnStatus ? "border-secondary border-end-0 form-control" : "border-secondary form-control"}
                                                                                     placeholder="Search Client Category Here!"
                                                                                     readOnly={siteData.BtnStatus ? false : true}
                                                                                 />
@@ -1624,7 +1624,8 @@ const SiteCompositionComponent = (Props: any) => {
                                                                         value={SearchedKeyForEducation}
                                                                         onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Education", 344)}
                                                                         style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }}
-                                                                        className="border-secondary form-control border-end-0" placeholder="Search Client Category Here!"
+                                                                        className={siteData.BtnStatus ? "border-secondary border-end-0 form-control" : "border-secondary form-control"}
+                                                                        placeholder="Search Client Category Here!"
                                                                         readOnly={siteData.BtnStatus ? false : true}
                                                                     />
                                                                     {
@@ -1681,7 +1682,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                                     value={SearchedKeyForMigration}
                                                                                     onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Migration", 569)}
                                                                                     style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }}
-                                                                                    className="border-secondary border-end-0 form-control"
+                                                                                    className={siteData.BtnStatus ? "border-secondary border-end-0 form-control" : "border-secondary form-control"}
                                                                                     placeholder="Search Client Category Here!"
                                                                                     readOnly={siteData.BtnStatus ? false : true}
                                                                                 />
@@ -1700,7 +1701,12 @@ const SiteCompositionComponent = (Props: any) => {
                                                                 })}
                                                                 </> :
                                                                 <>
-                                                                    <input type="text" value={SearchedKeyForMigration} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Migration", 569)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary border-end-0 form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
+                                                                    <input type="text" value={SearchedKeyForMigration}
+                                                                        onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Migration", 569)}
+                                                                        style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }}
+                                                                        className={siteData.BtnStatus ? "border-secondary border-end-0 form-control" : "border-secondary form-control"}
+                                                                        placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true}
+                                                                    />
                                                                     {
                                                                         siteData.BtnStatus ?
                                                                             <a className="bg-white border border-secondary"
@@ -1939,34 +1945,7 @@ const SiteCompositionComponent = (Props: any) => {
                 </Panel>
                 : null
             }
-            {/* {IsOpenDateModal ?
-                <Modal
-                    show={IsOpenDateModal}
-                    isOpen={IsOpenDateModal}
-                    size='sm'
-                    isBlocking={IsOpenDateModal}
-                    containerClassName="custommodalpopup p-2"
-                >
-                    <div className="modal-content rounded-0">
-                        <div className="modal-header">
-                            <h5 className="modal-title">Edit Date</h5>
-                            <span onClick={() => closeDateModelFunction()}><i className="svg__iconbox svg__icon--cross crossBtn"></i></span>
-                        </div>
-                        <div className="modal-body p-2">
-                            <div>
-                                <input type="date" />
-                            </div>
-                            <div>
-                                <input type="date" />
-                            </div>
-                        </div>
-                        <footer className='text-end p-2'>
-                            <button className="btn btnPrimary" onClick={SaveDateButtonFunction}>Save</button>
-                            <button className='btn btn-default ms-1' onClick={() => closeDateModelFunction()}>Cancel</button>
-                        </footer>
-                    </div>
-                </Modal> : null
-            } */}
+           
             {isCalloutVisible ? (
                 <FocusTrapCallout
                     role="alertdialog"
@@ -1977,7 +1956,12 @@ const SiteCompositionComponent = (Props: any) => {
                     setInitialFocus
                 >
                     <Text block variant="xLarge" className={styles.title}>
-                        Edit Date
+                        <div className="d-flex justify-content-between">
+                            <div>Edit Date</div>
+                            <div onClick={toggleIsCalloutVisible}>
+                                <span className="svg__icon--cross svg__iconbox"></span>
+                            </div>
+                        </div>
                     </Text>
                     <Text block variant="small">
                         <div className="full-width d-flex">
@@ -2007,12 +1991,12 @@ const SiteCompositionComponent = (Props: any) => {
                         </div>
 
                     </Text>
-                    <FocusZone handleTabKey={FocusZoneTabbableElements.all} isCircularNavigation>
+                    {/* <FocusZone handleTabKey={FocusZoneTabbableElements.all} isCircularNavigation>
                         <Stack className={styles.buttons} gap={8} horizontal>
                             <PrimaryButton onClick={toggleIsCalloutVisible}>Save</PrimaryButton>
                             <DefaultButton onClick={toggleIsCalloutVisible}>Cancel</DefaultButton>
                         </Stack>
-                    </FocusZone>
+                    </FocusZone> */}
                 </FocusTrapCallout>
             ) : null
             }
