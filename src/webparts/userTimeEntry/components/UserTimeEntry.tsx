@@ -1972,7 +1972,13 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                           return <div className="alignCenter">
                             {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined ?
                               <span>
-                                <img id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg ProirityAssignedUserPhoto' : 'ProirityAssignedUserPhoto'} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)" title={item.AssingedToUser.Title} src={item.Item_x0020_Cover.Url} /> </span> : <span className={item?.AssingedToUserId == user?.Id ? 'activeimg suffix_Usericon' : 'suffix_Usericon'} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)" title={item?.AssingedToUser?.Title} >{item?.Suffix}</span>
+                                <img id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg ProirityAssignedUserPhoto' : 'ProirityAssignedUserPhoto'} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
+                                  title={item.AssingedToUser.Title}
+                                  src={item.Item_x0020_Cover.Url} />
+                              </span>:
+                                <span className={item?.AssingedToUserId == user?.Id ? 'activeimg suffix_Usericon' : 'suffix_Usericon'} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
+                                title={item?.AssingedToUser?.Title}
+                               >{item?.Suffix}</span>
                             }
                           </div>
                         })}

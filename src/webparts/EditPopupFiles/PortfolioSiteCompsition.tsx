@@ -53,7 +53,7 @@ const SiteCompositionComponent = (Props: any) => {
     const ServicesTaskCheck = Props.isServiceTask;
     const SiteCompositionSettings = (Props.SiteCompositionSettings != undefined ? JSON.parse(Props.SiteCompositionSettings) : [{ Proportional: true, Manual: false, Protected: false }]);
     const SelectedClientCategoryFromProps = Props.SelectedClientCategory;
-    const [SiteTypes, setSiteTypes] = useState([]);
+    const [SiteTypes, setSiteTypes] = useState<any>([]);
     const [selectedSiteCount, setSelectedSiteCount] = useState(Props.ClientTime?.length ? Props.ClientTime.length : 0);
     const [ProportionalStatus, setProportionalStatus] = useState(true);
     let [ClientTimeData, setClientTimeData] = useState<any>(Props.ClientTime != undefined ? Props.ClientTime : []);
@@ -137,6 +137,11 @@ const SiteCompositionComponent = (Props: any) => {
                             if (ClientItem.Title == data.Title || (ClientItem.Title ==
                                 "DA E+E" && data.Title == "ALAKDigital")) {
                                 data.ClienTimeDescription = ClientItem.ClienTimeDescription;
+                                // if (data.StartEndDateValidation) {
+                                //     data.BtnStatus = false;
+                                // } else {
+                                //     data.BtnStatus = true;
+                                // }
                                 data.BtnStatus = true;
                                 data.Date = ClientItem.Date;
                                 data.readOnly = true;
@@ -311,7 +316,7 @@ const SiteCompositionComponent = (Props: any) => {
                         localSiteComposition: true,
                         SiteImages: TempData.Item_x005F_x0020_Cover?.Url,
                         Date: TempData.Date,
-                        EndDate:TempData.EndDate
+                        EndDate: TempData.EndDate
                     }
                     TempSiteTaggingData.push(object)
                 }
@@ -325,7 +330,7 @@ const SiteCompositionComponent = (Props: any) => {
         callBack(SiteCompositionObject, "dataExits");
     }
 
-    
+
 
     const ChangeSiteCompositionSettings = (Type: any) => {
 
@@ -466,7 +471,6 @@ const SiteCompositionComponent = (Props: any) => {
                 // setSelectedSiteAllData(AllListDataArray);
                 AllSiteDataGlobalArray = AllListDataArray;
                 getChildDataForSelectedTask();
-                console.log("Individual Task Data from list ========================", AllListDataArray);
             }
         } catch (error) {
             console.log("Error", error.message);
@@ -696,7 +700,7 @@ const SiteCompositionComponent = (Props: any) => {
                         ClienTimeDescription: ClientTimeItems.ClienTimeDescription,
                         Selected: true,
                         Date: ClientTimeItems.Date,
-                        EndDate:ClientTimeItems.EndDate,
+                        EndDate: ClientTimeItems.EndDate,
                         Available: true,
                         SiteImages: ClientTimeItems.siteIcons
                     }
@@ -707,13 +711,11 @@ const SiteCompositionComponent = (Props: any) => {
             })
 
         }
-
         if (SiteTaggingJSON?.length > 0) {
             SiteTaggingJSON.map((itemData: any) => {
                 TotalPercentageCount = TotalPercentageCount + Number(itemData.ClienTimeDescription);
             })
         }
-
         if (TotalPercentageCount > 101) {
             TaskShuoldBeUpdate = false;
             TotalPercentageCount = 0
@@ -729,6 +731,20 @@ const SiteCompositionComponent = (Props: any) => {
             }
         }
         if (TaskShuoldBeUpdate) {
+            let UpdateSiteInSMD: any = [];
+            if (SiteTypes?.length > 0) {
+                SiteTypes.map((siteData: any) => {
+                    SiteTaggingJSON?.map((CompositionData: any) => {
+                        if (siteData.Title == CompositionData.Title) {
+                            if (CompositionData.EndDate != undefined || CompositionData.EndDate != null) {
+                                siteData.ConfigurationsData[0].EndDate = CompositionData.EndDate;
+                                UpdateSiteInSMD.push(siteData);
+                                UpdateSmartMetaDataSiteEndDate(siteData);
+                            }
+                        }
+                    })
+                })
+            }
             try {
                 let web = new Web(AllListIdData.siteUrl);
                 await web.lists.getById(AllListIdData.MasterTaskListID).items.getById(ItemId).update({
@@ -744,6 +760,22 @@ const SiteCompositionComponent = (Props: any) => {
             }
         }
 
+    }
+
+    const UpdateSmartMetaDataSiteEndDate = async (siteData: any) => {
+        console.log("Smart Data list all data ======", siteData)
+        let web = new Web(siteData.siteUrl.Url);
+        try {
+            await Promise.all([
+                web.lists.getById(AllListIdData?.SmartMetadataListID).items.getById(siteData.Id).update({
+                    Configurations: JSON.stringify(siteData?.ConfigurationsData)
+                }).then(() => {
+                    console.log("Site End Date Updated in Smart Meta Data List")
+                })
+            ]);
+        } catch (error) {
+            console.error("Error updating client category:", error);
+        }
     }
 
     const removeSelectedClientCategory = (SiteType: any) => {
@@ -1246,31 +1278,31 @@ const SiteCompositionComponent = (Props: any) => {
     let TotalPercent: any = 0;
     return (
         <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
-            <div className="align-items-center col-sm-12 d-flex ps-3">
-                 <label className="SpfxCheckRadio me-2">
-                <input
-                    type="radio"
-                    id="Manual"
-                    name="SiteCompositions"
-                    defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0].Manual : false}
-                    title="add manual Time"
-                    className="radio"
-                    value={SiteCompositionSettings ? SiteCompositionSettings[0].Manual : false}
-                    onChange={() => ChangeSiteCompositionSettings("Manual")}
-                />
-               Manual</label>
-               <label className="SpfxCheckRadio">
-                <input
-                    type="radio"
-                    id="Proportional"
-                    defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0].Proportional : false}
-                    onChange={() => ChangeSiteCompositionSettings("Proportional")}
-                    name="SiteCompositions"
-                    value={SiteCompositionSettings ? SiteCompositionSettings[0].Proportional : false}
-                    title="add Proportional Time"
-                    className="radio"
-                />
-                Proportional</label>
+            <div className="align-items-center col-sm-12 d-flex">
+                <label className="SpfxCheckRadio me-2">
+                    <input
+                        type="radio"
+                        id="Manual"
+                        name="SiteCompositions"
+                        defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0].Manual : false}
+                        title="add manual Time"
+                        className="radio"
+                        value={SiteCompositionSettings ? SiteCompositionSettings[0].Manual : false}
+                        onChange={() => ChangeSiteCompositionSettings("Manual")}
+                    />
+                    Manual</label>
+                <label className="SpfxCheckRadio">
+                    <input
+                        type="radio"
+                        id="Proportional"
+                        defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0].Proportional : false}
+                        onChange={() => ChangeSiteCompositionSettings("Proportional")}
+                        name="SiteCompositions"
+                        value={SiteCompositionSettings ? SiteCompositionSettings[0].Proportional : false}
+                        title="add Proportional Time"
+                        className="radio"
+                    />
+                    Proportional</label>
                 <span className="mx-1 ms-2 siteColor hreflink" onClick={() => alert("We are working on it, This feature will be live soon ...")} title="Click here to calculate allocation and start dates.">
                     Calculated
                 </span>
@@ -1290,7 +1322,7 @@ const SiteCompositionComponent = (Props: any) => {
                     </label>
                 </span>
             </div>
-            <div className="my-2 ps-3">
+            <div className="my-2">
                 <table className="table table-bordered mb-1">
                     {SiteTypes != undefined && SiteTypes.length > 0 ?
                         <tbody>
@@ -1301,28 +1333,30 @@ const SiteCompositionComponent = (Props: any) => {
                                         TotalPercent = TotalPercent + Number(num);
                                     }
                                     return (
-                                        <tr>
+                                        <tr
+                                            className={siteData?.StartEndDateValidation ? "Disabled-Link bg-th" : 'hreflink'}
+                                        >
                                             <td scope="row" className="m-0 p-1 align-middle" style={{ width: "3%" }}>
                                                 {checkBoxStatus ? <input
-                                                    className="form-check-input rounded-0" type="checkbox"
+                                                    className="form-check-input rounded-0 hreflink" type="checkbox"
                                                     checked={siteData.BtnStatus}
                                                     value={siteData.BtnStatus}
                                                     disabled={checkBoxStatus ? true : false}
                                                     style={checkBoxStatus ? { cursor: "not-allowed" } : {}}
                                                     onChange={(e) => selectSiteCompositionFunction(e, index)}
                                                 /> : <input
-                                                    className="form-check-input rounded-0" type="checkbox"
+                                                    className="form-check-input rounded-0 hreflink" type="checkbox"
                                                     checked={siteData.BtnStatus}
                                                     value={siteData.BtnStatus}
                                                     onChange={(e) => selectSiteCompositionFunction(e, index)}
                                                 />}
 
                                             </td>
-                                            <td className="m-0 p-0 align-middle" style={{ width: "30%" }}>
+                                            <td className="m-0 p-0 align-middle" style={{ width: "15%" }}>
                                                 <img src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} style={{ width: '25px' }} className="mx-2" />
                                                 {siteData.Title}
                                             </td>
-                                            <td className="m-0 p-1" style={{ width: "12%" }}>
+                                            <td className="m-0 p-1" style={{ width: "10%" }}>
                                                 {ProportionalStatus ?
                                                     <>{isPortfolioComposition ? <input
                                                         type="number" min="1"
@@ -1348,33 +1382,49 @@ const SiteCompositionComponent = (Props: any) => {
                                             <td className="m-0 p-1 align-middle" style={{ width: "3%" }}>
                                                 <span>{siteData.BtnStatus ? "%" : ''}</span>
                                             </td>
-                                            <td className="m-0 p-1 align-middle" style={checkBoxStatus ? { width: "5%", cursor: "not-allowed", pointerEvents: "none" } : { width: "5%" }}>
-                                                {siteData.BtnStatus ?
-                                                    // <div className="d-flex" style={{ width: "85%" }}>
-                                                    //     {siteData.readOnly == false ? <input type="date" className="border-secondary form-control p-0 py-1"
-                                                    //         defaultValue={siteData.Date != undefined ? siteData.Date.split('/').reverse().join('-') : ""} onChange={(e) => ChangeDateManuallyFunction(e, siteData.Title, "ChangeDate")} /> : <span className="form-control border-secondary p-0 px-2">{siteData.Date ? siteData.Date : ''}</span>}
-                                                    //     <a className="bg-white border border-secondary" onClick={(e) => ChangeDateManuallyFunction(e, siteData.Title, "readOnlyStatus")}
-                                                    //     >
-                                                    //         {siteData.readOnly == true ? <span className="border svg__icon--editBox svg__iconbox"></span> : <span className="border svg__icon--cross svg__iconbox"></span>}
-                                                    //     </a>
-                                                    // </div>
-                                                    <div data-toggle="tooltip" id={buttonId + "-" + index}
-                                                        onClick={() => OpenCallOutFunction(index)}
-                                                        data-placement="bottom"
-                                                    // title={"Edit Date"}
-                                                    >
-                                                        <TooltipHost
-                                                            content={`Start Date : ${siteData.Date} |  End Date : ${siteData.EndDate != undefined ? siteData.EndDate : "NA"}`}
-                                                            id={buttonId + "-" + index}
-                                                            calloutProps={calloutProps}
-                                                            styles={hostStyles}
-                                                        >
-                                                            <span aria-describedby={buttonId + "-" + index}><SlCalender /></span>
-                                                        </TooltipHost>
-                                                    </div>
-                                                    : null}
+                                            <td className="m-0 p-1 align-middle" style={checkBoxStatus ? { width: "35%", cursor: "not-allowed", pointerEvents: "none" } : { width: "35%" }}>
+                                                <div>
+                                                    {siteData?.StartEndDateValidation ?
+                                                        <div>
+                                                            {/* <span>{`${siteData?.ConfigurationsData[0]?.StartDate?.length > 3 ? siteData?.ConfigurationsData[0]?.StartDate : "NA"} To ${siteData?.ConfigurationsData[0]?.EndDate?.length > 3 ? siteData?.ConfigurationsData[0]?.EndDate : "NA"}`}</span> */}
+                                                            <span>Start Date - {siteData?.ConfigurationsData[0]?.StartDate?.length > 3 ? siteData?.ConfigurationsData[0]?.StartDate : "NA"}</span>
+                                                            <span className="mx-1"></span>
+                                                            <span>End Date - {siteData?.ConfigurationsData[0]?.EndDate?.length > 3 ? siteData?.ConfigurationsData[0]?.EndDate : "NA"}</span>
+                                                        </div> :
+                                                        <>
+                                                            {
+                                                                siteData.BtnStatus ?
+                                                                    <div className="d-flex">
+                                                                        {/* <span>{`${siteData.Date?.length > 3 ? siteData.Date : "NA"} ${siteData.EndDate?.length > 3 ? siteData.EndDate : "NA"}`}</span> */}
+                                                                        <span className="mt-1">
+                                                                            <span>Start Date - {siteData.Date?.length > 3 ? siteData.Date : "NA"}</span>
+                                                                            <span className="mx-1"></span>
+                                                                            <span>End Date - {siteData.EndDate?.length > 3 ? siteData.EndDate : "NA"}</span>
+                                                                        </span>
+                                                                        <div data-toggle="tooltip" id={buttonId + "-" + index}
+                                                                            onClick={() => OpenCallOutFunction(index)}
+                                                                            data-placement="bottom"
+                                                                            className="ms-2"
+                                                                        >
+                                                                            {/* <TooltipHost
+                                                                            content={`Start Date : ${siteData.Date} |  End Date : ${siteData.EndDate != undefined ? siteData.EndDate : "NA"}`}
+                                                                            id={buttonId + "-" + index}
+                                                                            calloutProps={calloutProps}
+                                                                            styles={hostStyles}
+                                                                        > */}
+                                                                            <span aria-describedby={buttonId + "-" + index}><SlCalender /></span>
+                                                                            {/* </TooltipHost> */}
+                                                                        </div>
+                                                                    </div>
+                                                                    : null
+                                                            }
+                                                        </>
+
+                                                    }
+                                                </div>
+
                                             </td>
-                                            <td className="m-0 p-1 align-middle" style={{ width: "38%" }}>
+                                            <td className="m-0 p-1 align-middle" style={{ width: "35%" }}>
                                                 {siteData.Title == "EI" ?
                                                     <>
                                                         <div className="input-group block justify-content-between">
@@ -1383,7 +1433,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
                                                                         return (
                                                                             <div className="bg-69 d-flex full-width justify-content-between p-1 ps-2" title={dataItem.Title ? dataItem.Title : null}>
-                                                                                {dataItem.Title ? dataItem.Title.substring(0, 24) + "..." : null}
+                                                                                {dataItem.Title ? dataItem.Title : null}
                                                                                 <a className=""
                                                                                     onClick={() => removeSelectedClientCategory("EI")}
                                                                                 >
@@ -1398,7 +1448,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                                     value={SearchedKeyForEI}
                                                                                     onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EI", 340)}
                                                                                     style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }}
-                                                                                    className="border-secondary form-control"
+                                                                                    className="border-secondary border-end-0 form-control"
                                                                                     placeholder="Search Client Category Here!"
                                                                                     readOnly={siteData.BtnStatus ? false : true} />
                                                                                 {
@@ -1420,7 +1470,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                         value={SearchedKeyForEI}
                                                                         onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EI", 340)}
                                                                         style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }}
-                                                                        className="border-secondary form-control"
+                                                                        className="border-secondary border-end-0 form-control"
                                                                         placeholder="Search Client Category Here!"
                                                                         readOnly={siteData.BtnStatus ? false : true}
                                                                     />
@@ -1459,7 +1509,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
                                                                         return (
                                                                             <div className="bg-69 d-flex full-width justify-content-between p-1 ps-2" title={dataItem.Title ? dataItem.Title : null}>
-                                                                                {dataItem.Title ? dataItem.Title.substring(0, 24) + "..." : null}
+                                                                                {dataItem.Title ? dataItem.Title : null}
                                                                                 <a className=""
                                                                                     onClick={() => removeSelectedClientCategory("EPS")}
                                                                                 >
@@ -1474,7 +1524,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                                     value={SearchedKeyForEPS}
                                                                                     onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EPS", 341)}
                                                                                     style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }}
-                                                                                    className="border-secondary form-control"
+                                                                                    className="border-secondary form-control border-end-0"
                                                                                     placeholder="Search Client Category Here!"
                                                                                     readOnly={siteData.BtnStatus ? false : true}
                                                                                 />
@@ -1497,7 +1547,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                         value={SearchedKeyForEPS}
                                                                         onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EPS", 341)}
                                                                         style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }}
-                                                                        className="border-secondary form-control"
+                                                                        className="border-secondary border-end-0 form-control"
                                                                         placeholder="Search Client Category Here!"
                                                                         readOnly={siteData.BtnStatus ? false : true} />
                                                                     {
@@ -1536,7 +1586,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
                                                                         return (
                                                                             <div className="bg-69 d-flex full-width justify-content-between p-1 ps-2" title={dataItem.Title ? dataItem.Title : null}>
-                                                                                {dataItem.Title ? dataItem.Title.substring(0, 24) + "..." : null}
+                                                                                {dataItem.Title ? dataItem.Title : null}
                                                                                 <a className=""
                                                                                     onClick={() => removeSelectedClientCategory("Education")}
                                                                                 >
@@ -1551,7 +1601,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                                     value={SearchedKeyForEducation}
                                                                                     onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Education", 344)}
                                                                                     style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }}
-                                                                                    className="border-secondary form-control"
+                                                                                    className="border-secondary border-end-0 form-control"
                                                                                     placeholder="Search Client Category Here!"
                                                                                     readOnly={siteData.BtnStatus ? false : true}
                                                                                 />
@@ -1574,7 +1624,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                         value={SearchedKeyForEducation}
                                                                         onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Education", 344)}
                                                                         style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }}
-                                                                        className="border-secondary form-control" placeholder="Search Client Category Here!"
+                                                                        className="border-secondary form-control border-end-0" placeholder="Search Client Category Here!"
                                                                         readOnly={siteData.BtnStatus ? false : true}
                                                                     />
                                                                     {
@@ -1614,7 +1664,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
                                                                         return (
                                                                             <div className="bg-69 d-flex full-width justify-content-between p-1 ps-2" title={dataItem.Title ? dataItem.Title : null}>
-                                                                                {dataItem.Title ? dataItem.Title.substring(0, 24) + "..." : null}
+                                                                                {dataItem.Title ? dataItem.Title : null}
                                                                                 <a className=""
                                                                                     onClick={() => removeSelectedClientCategory("Migration")}
                                                                                 >
@@ -1631,7 +1681,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                                     value={SearchedKeyForMigration}
                                                                                     onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Migration", 569)}
                                                                                     style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }}
-                                                                                    className="border-secondary form-control"
+                                                                                    className="border-secondary border-end-0 form-control"
                                                                                     placeholder="Search Client Category Here!"
                                                                                     readOnly={siteData.BtnStatus ? false : true}
                                                                                 />
@@ -1650,7 +1700,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                 })}
                                                                 </> :
                                                                 <>
-                                                                    <input type="text" value={SearchedKeyForMigration} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Migration", 569)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
+                                                                    <input type="text" value={SearchedKeyForMigration} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Migration", 569)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary border-end-0 form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
                                                                     {
                                                                         siteData.BtnStatus ?
                                                                             <a className="bg-white border border-secondary"
@@ -1689,7 +1739,7 @@ const SiteCompositionComponent = (Props: any) => {
                         </tbody>
                         : null}
                 </table>
-                <footer className="bg-e9 d-flex justify-content-end p-1 shadow-lg">
+                <footer className="bg-e9 d-flex justify-content-end p-1">
                     <div className="bg-body col-sm-2 p-1">
                         <div className="">{isPortfolioComposition == true || ProportionalStatus == false ? `${TotalPercent} %` : "100%"}</div>
                     </div>
