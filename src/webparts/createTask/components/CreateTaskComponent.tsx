@@ -50,7 +50,7 @@ function CreateTaskComponent(props: any) {
     const [subCategory, setsubCategory] = React.useState([])
     const [priorityRank, setpriorityRank] = React.useState([])
     const [openPortfolioType, setOpenPortfolioType] = React.useState("");
-    const [sharewebCat, setSharewebCat] = React.useState([]);
+    const [taskCat, settaskCat] = React.useState([]);
     const [IsOpenPortfolio, setIsOpenPortfolio] = React.useState(false);
     const [smartComponentData, setSmartComponentData] = React.useState([]);
     const [Timing, setTiming] = React.useState([])
@@ -671,7 +671,7 @@ function CreateTaskComponent(props: any) {
         else {
             let CategoryTitle: any;
             let TeamMembersIds: any[] = [];
-            sharewebCat?.map((cat: any) => {
+            taskCat?.map((cat: any) => {
                 subCategories?.map((item: any) => {
                     if (cat === item.Id) {
                         if (CategoryTitle === undefined) {
@@ -843,7 +843,7 @@ function CreateTaskComponent(props: any) {
                         PortfolioId: portfolioId,
                         TeamMembersId: { "results": TeamMembersIds },
                         // SharewebComponentId: { "results": $scope.SharewebComponent },
-                        SharewebCategoriesId: { "results": sharewebCat },
+                        TaskCategoriesId: { "results": taskCat },
                         ClientCategoryId: { "results": selectedCC },
                         // LinkServiceTaskId: { "results": $scope.SaveServiceTaskItemId },
                         "PriorityRank": priorityRank,
@@ -910,7 +910,7 @@ function CreateTaskComponent(props: any) {
                     //     Mileage: save.Mileage,
                     //     ServicesId: { "results": (selectedService !== undefined && selectedService?.length > 0) ? selectedService : [] },
                     //     AssignedToId: { "results": AssignedToIds },
-                    //     SharewebCategoriesId: { "results": sharewebCat },
+                    //     taskCategoriesId: { "results": taskCat },
                     //     TeamMembersId: { "results": TeamMembersIds },
                     // }
                     //Code End
@@ -1162,7 +1162,7 @@ function CreateTaskComponent(props: any) {
 
 
         let activeCategoryArray = activeCategory;
-        let TaskCategories: any[] = sharewebCat;
+        let TaskCategories: any[] = taskCat;
         if (item.ActiveTile) {
             item.ActiveTile = !item.ActiveTile;
             activeCategoryArray = activeCategoryArray.filter((category: any) => category !== title);
@@ -1214,7 +1214,7 @@ function CreateTaskComponent(props: any) {
         }
         setIsActiveCategory(!isActiveCategory)
         setActiveCategory(activeCategoryArray)
-        setSharewebCat(TaskCategories)
+        settaskCat(TaskCategories)
 
     }
 
@@ -1261,7 +1261,7 @@ function CreateTaskComponent(props: any) {
                             {row.original.Services.length >= 1 ? (
                                 <a
                                     className="hreflink text-success"
-                                    href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                                    href={`${row?.original?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                                     data-interception="off"
                                     target="_blank"
                                 >
@@ -1270,7 +1270,7 @@ function CreateTaskComponent(props: any) {
                             ) : (
                                 <a
                                     className="hreflink"
-                                    href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                                    href={`${row?.original?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                                     data-interception="off"
                                     target="_blank"
                                 >
@@ -1296,7 +1296,7 @@ function CreateTaskComponent(props: any) {
                                 className="hreflink text-success"
                                 data-interception="off"
                                 target="blank"
-                                href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
+                                href={`${row?.original?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
                             >
                                 {row?.original?.portfolio?.Title}
                             </a>
@@ -1305,7 +1305,7 @@ function CreateTaskComponent(props: any) {
                                 className="hreflink"
                                 data-interception="off"
                                 target="blank"
-                                href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
+                                href={`${row?.original?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
                             >
                                 {row?.original?.portfolio?.Title}
                             </a>
