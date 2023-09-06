@@ -2103,7 +2103,7 @@ function CreateTaskComponent(props: any) {
                                 }) : null}
 
 
-                                <span className="input-group-text">
+                                <span className="ms-2">
                                     <span onClick={(e) => EditPortfolio(save, 'Component')} style={{ backgroundColor: 'white' }} className="svg__iconbox svg__icon--edit"></span>
                                     {/* <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                         onClick={(e) => EditComponent(save, 'Component')} /> */}
@@ -2135,7 +2135,7 @@ function CreateTaskComponent(props: any) {
                                             </>
                                         )
                                     }) : null}
-                                    <span className="input-group-text">
+                                    <span className="ms-2">
                                         <span onClick={(e) => EditPortfolio(save, 'Service')} className="svg__iconbox svg__icon--edit"></span>
                                         {/* <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                         onClick={(e) => EditLinkedServices(save, 'Component')} /> */}
@@ -2151,7 +2151,7 @@ function CreateTaskComponent(props: any) {
                     </div>
                 </div>
                 {burgerMenuTaskDetails?.Siteurl != undefined && burgerMenuTaskDetails?.ComponentID != undefined ?
-                    <div className={refreshPage != true ? '' : ''}>
+                    <div className={refreshPage != true ? 'row' : 'row'}>
                         <ul className="nav nav-tabs" id="myTab" role="tablist">
                             {burgerMenuTaskDetails?.Siteurl != undefined ?
                                 <button className="nav-link active" id="URL-Tasks" data-bs-toggle="tab" data-bs-target="#URLTasks" type="button" role="tab" aria-controls="URLTasks" aria-selected="true">
