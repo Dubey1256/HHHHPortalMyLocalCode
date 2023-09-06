@@ -1261,7 +1261,7 @@ function CreateTaskComponent(props: any) {
                             {row.original.Services.length >= 1 ? (
                                 <a
                                     className="hreflink text-success"
-                                    href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                                    href={`${row?.original?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                                     data-interception="off"
                                     target="_blank"
                                 >
@@ -1270,7 +1270,7 @@ function CreateTaskComponent(props: any) {
                             ) : (
                                 <a
                                     className="hreflink"
-                                    href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                                    href={`${row?.original?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                                     data-interception="off"
                                     target="_blank"
                                 >
@@ -1296,7 +1296,7 @@ function CreateTaskComponent(props: any) {
                                 className="hreflink text-success"
                                 data-interception="off"
                                 target="blank"
-                                href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
+                                href={`${row?.original?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
                             >
                                 {row?.original?.portfolio?.Title}
                             </a>
@@ -1305,7 +1305,7 @@ function CreateTaskComponent(props: any) {
                                 className="hreflink"
                                 data-interception="off"
                                 target="blank"
-                                href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
+                                href={`${row?.original?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
                             >
                                 {row?.original?.portfolio?.Title}
                             </a>
