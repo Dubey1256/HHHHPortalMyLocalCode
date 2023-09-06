@@ -26,7 +26,7 @@ import SmartInformation from './SmartInformation';
 import VersionHistoryPopup from '../../../globalComponents/VersionHistroy/VersionHistory';
 import TasksTable from './TaskfooterTable';
 import EmailComponenet from './emailComponent';
-import EditSiteComposition from './EditSiteComposition'
+import EditSiteComposition from '../../../globalComponents/EditTaskPopup/EditSiteComposition'
 import AncTool from '../../../globalComponents/AncTool/AncTool'
 
 import Tooltip from '../../../globalComponents/Tooltip'
@@ -36,7 +36,7 @@ import { ImReply } from 'react-icons/im';
 import KeyDocuments from './KeyDocument'
 
 // import {MyContext} from './myContext'
-const MyContext:any = React.createContext<any>({})
+const MyContext: any = React.createContext<any>({})
 var ClientTimeArray: any = [];
 var TaskIdCSF: any = "";
 var TaskIdAW = "";
@@ -464,6 +464,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       IsTodaysTask: taskDetails["IsTodaysTask"],
       EstimatedTime: taskDetails["EstimatedTime"],
       ClientTime: taskDetails["ClientTime"] != null && JSON.parse(taskDetails["ClientTime"]),
+      siteCompositionData: taskDetails["ClientTime"] != null && JSON.parse(taskDetails["ClientTime"]),
       ApproverHistory: taskDetails["ApproverHistory"] != null ? JSON.parse(taskDetails["ApproverHistory"]) : "",
       OffshoreComments: OffshoreComments.length > 0 ? OffshoreComments.reverse() : null,
       OffshoreImageUrl: taskDetails["OffshoreImageUrl"] != null && JSON.parse(taskDetails["OffshoreImageUrl"]),
@@ -1803,16 +1804,16 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       </>
     );
   };
-  private contextCall = (data:any, path:any,component:any) => {
-    if(data!=null &&path!=null){
+  private contextCall = (data: any, path: any, component: any) => {
+    if (data != null && path != null) {
       this.setState({
-        keydoc:data,
-        FileDirRef:path
-    })
+        keydoc: data,
+        FileDirRef: path
+      })
     }
-     if(component){
+    if (component) {
       this?.relevantDocRef?.current?.loadAllSitesDocuments()
-     }
+    }
   };
 
   public render(): React.ReactElement<ITaskprofileProps> {
@@ -1830,7 +1831,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       document.title = "Task Profile"
     }
     return (
-      <MyContext.Provider value={{ ...MyContext, FunctionCall : this.contextCall, keyDoc:this.state.keydoc, FileDirRef:this.state.FileDirRef }}>
+      <MyContext.Provider value={{ ...MyContext, FunctionCall: this.contextCall, keyDoc: this.state.keydoc, FileDirRef: this.state.FileDirRef }}>
         <div className={this.state.Result["Services"] != undefined && this.state.Result["Services"].length > 0 ? 'app component serviepannelgreena' : "app component"}>
           <section className='ContentSection'> {this.state.maincollection != null && this.state.maincollection.length > 0 &&
             <div className='row'>
@@ -2106,18 +2107,18 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                         </dd>
                       </dl>
                       {isShowSiteCompostion && <dl className="Sitecomposition">
-                        {ClientTimeArray != null && ClientTimeArray.length > 0 &&
-                          <div className='dropdown'>
-                            <a className="sitebutton bg-fxdark d-flex">
-                              <span className="arrowicons" onClick={() => this.showhideComposition()}>{this.state.showComposition ? <SlArrowDown /> : <SlArrowRight />}</span>
-                              <div className="d-flex justify-content-between full-width">
-                                <p className="pb-0 mb-0">Site Composition</p>
-                                <p className="input-group-text mb-0 pb-0" title="Edit Site Composition" onClick={() => this.setState({ EditSiteCompositionStatus: true })}>
-                                  <span className="svg__iconbox svg__icon--editBox"></span>
-                                </p>
-                              </div>
+                        <div className='dropdown'>
+                          <a className="sitebutton bg-fxdark d-flex">
+                            <span className="arrowicons" onClick={() => this.showhideComposition()}>{this.state.showComposition ? <SlArrowDown /> : <SlArrowRight />}</span>
+                            <div className="d-flex justify-content-between full-width">
+                              <p className="pb-0 mb-0">Site Composition</p>
+                              <p className="input-group-text mb-0 pb-0" title="Edit Site Composition" onClick={() => this.setState({ EditSiteCompositionStatus: true })}>
+                                <span className="svg__iconbox svg__icon--editBox"></span>
+                              </p>
+                            </div>
 
-                            </a>
+                          </a>
+                          {ClientTimeArray != null && ClientTimeArray.length > 0 &&
                             <div className="spxdropdown-menu" style={{ display: this.state.showComposition ? 'block' : 'none' }}>
                               <ul>
                                 {ClientTimeArray?.map((cltime: any, i: any) => {
@@ -2138,9 +2139,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                   </li>
                                 })}
                               </ul>
-                            </div>
-                          </div>
-                        }
+                            </div>}
+                        </div>
+
                       </dl>}
                       {this.state.Result?.EstimatedTimeDescriptionArray?.length > 0 &&
                         <dl className="Sitecomposition my-2">
