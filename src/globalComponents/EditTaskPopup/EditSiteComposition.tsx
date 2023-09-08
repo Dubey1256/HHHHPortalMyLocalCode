@@ -1,8 +1,8 @@
 import * as React from "react";
 import { useState, useEffect, useCallback } from "react";
 import { Panel, PanelType } from 'office-ui-fabric-react';
-import Tooltip from "../../../globalComponents/Tooltip";
-import SiteCompositionComponent from "../../../globalComponents/EditTaskPopup/SiteCompositionComponent";
+import Tooltip from "../Tooltip";
+import SiteCompositionComponent from "./SiteCompositionComponent";
 import { Web } from "sp-pnp-js";
 
 const EditSiteComposition = (Props: any) => {
@@ -22,7 +22,10 @@ const EditSiteComposition = (Props: any) => {
         getAllSitesData();
         if (EditData.ClientCategory?.length > 0) {
             EditData.ClientCategory?.map((itemData: any) => {
-                itemData.siteName = itemData.SiteName;
+                if (itemData.siteName?.length > 2) {   
+                } else {
+                    itemData.siteName = itemData.SiteName;
+                }
                 selectedClientCategory.push(itemData);
             })
         }
@@ -87,8 +90,6 @@ const EditSiteComposition = (Props: any) => {
         } catch (error) {
             console.log("Error:", error.message);
         }
-
-
     }
     var getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
         var Items: any = [];

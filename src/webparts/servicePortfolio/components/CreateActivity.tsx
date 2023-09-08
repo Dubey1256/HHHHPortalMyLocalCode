@@ -1395,9 +1395,9 @@ const CreateActivity = (props: any) => {
                                 window.location.href = url;
                             }
                             else {
-                                console.log(res);
+                               
                                 closeTaskStatusUpdatePoup(res);
-                                console.log(res);
+                               
                             }
 
                             //closeTaskStatusUpdatePoup(res);

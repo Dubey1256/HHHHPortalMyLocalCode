@@ -409,7 +409,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                     this.PortfolioStructureIDs = tempNumber?.substring(0, tempNumber?.length - (this.NextLevel?.toString()?.length)) + this.NextLevel;
                 }
                 else {
-                    tempNumber = tempItem[0]?.Suffix + ('0000');
+                    tempNumber = tempItem[0]?.Suffix + ('000');
                     this.PortfolioStructureIDs = tempNumber?.substring(0, tempNumber?.length - (this.NextLevel?.toString()?.length)) + this.NextLevel;
                 }
 

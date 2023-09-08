@@ -36,9 +36,7 @@ function Tooltip(props: any) {
      
       
       if (PageUrl != undefined && PageUrl != null) {
-        if (PageUrl == '/sitepages/team-portfolio.aspx') {
-          PageUrl = '/sitepages/component-portfolio.aspx';
-        }
+      
     
           let res=[];
           const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
@@ -65,10 +63,7 @@ function Tooltip(props: any) {
     }
     if (itemType === 'HHHH Bug') {
       if (PageUrl != undefined && PageUrl != null) {
-        if (PageUrl == '/sitepages/team-portfolio.aspx') {
-          PageUrl = '/sitepages/component-portfolio.aspx';
-        }
-    
+     
           let res=[];
           const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
           if(props?.ComponentId!=undefined){
@@ -86,20 +81,17 @@ function Tooltip(props: any) {
           }
         
         if (ComponentData?.Id != undefined) {
-          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Create-Bug.aspx?ComponentID=${ComponentData?.Id}` + "&ComponentTitle=" + ComponentData?.Title + "&Siteurl=" + Href);
+          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?ComponentID=${ComponentData?.Id}` + "&ComponentTitle=" + ComponentData?.Title + "&Siteurl=" + Href+"&TaskType=Bug");
         }
         else {
-          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Create-Bug.aspx?ComponentTitle=${ComponentData?.Title}`);
+          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?ComponentTitle=${ComponentData?.Title}`+ "&Siteurl=" + Href+"&TaskType=Bug");
         }
 
       }
     }
     if (itemType === 'HHHH Design') {
       if (PageUrl != undefined && PageUrl != null) {
-        if (PageUrl == '/sitepages/team-portfolio.aspx') {
-          PageUrl = '/sitepages/component-portfolio.aspx';
-        }
-    
+     
           let res=[];
           const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
           if(props?.ComponentId!=undefined){
@@ -117,20 +109,16 @@ function Tooltip(props: any) {
           }
       
         if (ComponentData?.Id != undefined) {
-          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Create-Design.aspx?ComponentID=${ComponentData?.Id}` + "&ComponentTitle=" + ComponentData?.Title + "&Siteurl=" + Href);
+          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?ComponentID=${ComponentData?.Id}` + "&ComponentTitle=" + ComponentData?.Title + "&Siteurl=" + Href+"&TaskType=Design");
         }
         else {
-          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Create-Design.aspx?ComponentTitle=${ComponentData?.Title}`);
+          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?ComponentTitle=${ComponentData?.Title}`+ "&Siteurl=" + Href+"&TaskType=Design");
         }
       }
     }
     if (itemType === 'HHHH Quick') {
       if (PageUrl != undefined && PageUrl != null) {
-        
-        if (PageUrl == '/sitepages/team-portfolio.aspx') {
-          PageUrl = '/sitepages/component-portfolio.aspx';
-        }
-    
+       
           let res=[];
           const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
           if(props?.ComponentId!=undefined){
@@ -157,10 +145,7 @@ function Tooltip(props: any) {
     }
     if (itemType === 'HHHH Component Page') {
       if (PageUrl != undefined && PageUrl != null) {
-        if (PageUrl == '/sitepages/team-portfolio.aspx') {
-          PageUrl = '/sitepages/component-portfolio.aspx';
-        }
-    
+     
           let res=[];
           const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
           if(props?.ComponentId!=undefined){
@@ -187,10 +172,7 @@ function Tooltip(props: any) {
     }
     if (itemType === 'Call Notes') {
       if (PageUrl != undefined && PageUrl != null) {
-        if (PageUrl == '/sitepages/team-portfolio.aspx') {
-          PageUrl = '/sitepages/component-portfolio.aspx';
-        }
-
+     
         const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
 
         const res = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items

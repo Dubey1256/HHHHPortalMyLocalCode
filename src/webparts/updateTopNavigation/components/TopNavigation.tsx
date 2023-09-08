@@ -4,17 +4,22 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
 import Tooltip from '../../../globalComponents/Tooltip'
+import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
+import {
+    ColumnDef,
+} from "@tanstack/react-table";
 import * as Moment from "moment";
 const TopNavigation = (dynamicData: any) => {
     var ListId = dynamicData.dynamicData.TopNavigationListID
     const [root, setRoot] = React.useState([])
     const [EditPopup, setEditPopup] = React.useState(false);
     const [sortedArray, setSortedArray] = React.useState([]);
+    const [data, setData] = React.useState([]);
     const [AddPopup, setAddPopup] = React.useState(false);
     const [sorting, setSorting] = React.useState(false);
     const [changeroot, setChangeroot] = React.useState(false);
-    const [postData, setPostData] = React.useState({ Title: '', Url: '', Description: '', TaskTime: '', Id: '', ParentId: '' })
-    const [popupData, setPopupData] = React.useState([]);
+    const [postData, setPostData] = React.useState<any>({ Title: '', Url: '', Description: '', TaskTime: '', Id: '', ParentId: '' })
+    const [popupData, setPopupData] = React.useState<any>([]);
     const [sortOrder, setSortOrder] = React.useState<any>()
     const [sortId,setSortId] = React.useState()
     const [value, setValue] = React.useState("")
@@ -107,11 +112,47 @@ const TopNavigation = (dynamicData: any) => {
             setChangeroot(false)
         }
     }
-    const onRenderCustomHeaderMain = () => {
+    const onRenderCustomHeaderUpdate = () => {
         return (
       <>
-       <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+       <div className='subheading' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
                   Update TopNavigation
+                  </div>
+                  <Tooltip ComponentId='1810' />
+                  </>
+              );
+
+            
+    };
+    const onRenderCustomHeaderAdd = () => {
+        return (
+      <>
+       <div className='subheading' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+                 Add TopNavigation
+                  </div>
+                  <Tooltip ComponentId='1810' />
+                  </>
+              );
+
+            
+    };
+    const onRenderCustomHeaderSortOrder = () => {
+        return (
+      <>
+       <div className='subheading' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+                 Update SortOrder
+                  </div>
+                  <Tooltip ComponentId='1810' />
+                  </>
+              );
+
+            
+    };
+    const onRenderCustomHeaderSelect = () => {
+        return (
+      <>
+       <div className='subheading' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+                Select Parent
                   </div>
                   <Tooltip ComponentId='1810' />
                   </>
@@ -141,16 +182,24 @@ const TopNavigation = (dynamicData: any) => {
 
     }
     const deleteDataFunction = async (item: any) => {
-        let web = new Web(dynamicData.dynamicData.siteUrl);
-        await web.lists.getById(ListId).items.getById(item.Id).delete()
-            .then(i => {
-                console.log(i);
-                loadTopNavigation();
-            });
+        var deleteConfirmation = confirm("Are you sure, you want to delete this?")
+       
+        if (deleteConfirmation){
+            let web = new Web(dynamicData.dynamicData.siteUrl);
+            await web.lists.getById(ListId).items.getById(item.Id).delete()
+                .then(i => {
+                    console.log(i);
+                    loadTopNavigation();
+                });
+        }
+    
 
     }
 
     const Additem = async () => {
+        if(popupData[0] == 'New'){
+            popupData[0] = {"ID": 0};
+        }
         let web = new Web(dynamicData.dynamicData.siteUrl);
         await web.lists.getById(ListId).items.add({
             Title: postData.Title,
@@ -176,10 +225,24 @@ const TopNavigation = (dynamicData: any) => {
     }
     const sortItem = (item:any) => {
         var neeArray:any=[]
-        neeArray.push(item)
-        setSortedArray(item)
+        item?.forEach((val:any)=>{
+            val.SortOrder = val?.SortOrder?.toString()
+        })
+        neeArray =  item.sort(customSort);
+        setSortedArray(neeArray)
+        setData(neeArray)
         setSorting(true)
     }
+    function customSort(a:any, b:any) {
+      
+        if (a.SortOrder === undefined || a.SortOrder === null) return -1;
+        if (b.SortOrder === undefined || b.SortOrder === null) return 1;
+      
+       
+        return a.SortOrder - b.SortOrder;
+      }
+
+    
     const ClosesortItem = () => {
         setSorting(false)
     }
@@ -227,11 +290,48 @@ const updateSortOrder=async ()=>{
 
     })
 }
+const column = React.useMemo<ColumnDef<any, unknown>[]>(
+    () => [
+       
+       
+        {
+            header: '',
+            accessorKey: 'Title',
+            placeholder: "Title",
+            size: 160,
+
+        },
+        {
+            header: '',
+            accessorKey: 'SortOrder',
+            placeholder: "SortOrder",
+            size: 100,
+
+        }
+
+    ],
+    [data]
+);
+const callBackData = React.useCallback((elem: any, ShowingData: any) => {
+
+
+}, []);
     return (
         <>
-            <h2>Top Navigation</h2>
-            <div className='container' id='TopNavRound'>
-                <ul className="top-navigate">
+             <div className='row'>
+                <div className='col-sm-3 text-primary'>
+                    <h3 className="heading">Update TopNavigation
+                    </h3>
+                </div>
+                <div className='col-sm-9 text-primary'>
+                    <h6 className='pull-right'><b><a  data-interception="off"
+                    target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/UpdateTopNavigation.aspx">Old Update TopNavigation</a></b>
+                    </h6>
+                </div>
+            </div>
+            <div className='container mt-2' id='TopNavRound'>
+                <ul className="top-navigate mt-4">
+                <li  className='parent' onClick={() => AddNewItem('New')}><span className='svg__iconbox svg__icon--Plus'></span> Add New </li>
                     {root.map((item) => {
                         return (
                             <>
@@ -286,7 +386,7 @@ const updateSortOrder=async ()=>{
 
             </div>
             <Panel
-                onRenderHeader={onRenderCustomHeaderMain}
+                onRenderHeader={onRenderCustomHeaderUpdate}
                 headerText="Edit Category"
                 type={PanelType.custom}
                 customWidth="850px"
@@ -383,7 +483,7 @@ const updateSortOrder=async ()=>{
                             </div>
                         </div>
                         <div className="col-sm-6 text-end p-0">
-                            <a target="_blank"
+                            <a data-interception="off" target="_blank"
                                 href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TopNavigation/EditForm.aspx?ID=${popupData[0]?.Id}`}>
                                 Open out-of-the-box
                                 form
@@ -398,7 +498,7 @@ const updateSortOrder=async ()=>{
                 </div>
             </Panel>
             <Panel
-                onRenderHeader={onRenderCustomHeaderMain}
+                onRenderHeader={onRenderCustomHeaderAdd}
                 headerText="Edit Category"
                 type={PanelType.custom}
                 customWidth="850px"
@@ -496,7 +596,7 @@ const updateSortOrder=async ()=>{
                                     className="siteColor">Santosh</span>
                             </div>
                         </div> */}
-                        <div className="col-sm-6 text-end p-0">
+                        <div className="text-end">
                             {/* <a target="_blank"
                                 ng-if="AdditionalTaskTime.siteListName === 'SP.Data.TasksTimesheet2ListItem'"
                                 href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TaskTimeSheetListNew/EditForm.aspx?ID=112`}>
@@ -513,7 +613,7 @@ const updateSortOrder=async ()=>{
                 </div>
             </Panel>
             <Panel
-                onRenderHeader={onRenderCustomHeaderMain}
+                onRenderHeader={onRenderCustomHeaderSelect}
                 headerText="Edit Category"
                 type={PanelType.custom}
                 customWidth="850px"
@@ -521,7 +621,7 @@ const updateSortOrder=async ()=>{
                 onDismiss={ClosechangePopup}
                 isBlocking={false}
             >
-                <div className="modal-body border" style={{ padding: "10px" }}>
+                <div className="modal-body border p-2" style={{ padding: "10px" }}>
                     <div className='row mt-2'>
                         <div className='col-sm-2'>
                             <label><b>Top Level</b></label>
@@ -604,29 +704,10 @@ const updateSortOrder=async ()=>{
                 </div>
                 <div className="modal-footer mt-3">
                     <div className='row w-100'>
-                        <div className="col-sm-6 ps-0">
-                            <div className="text-left">
-                                Created
-                                <span>12/12/2022</span>
-                                by <span
-                                    className="siteColor">Santosh</span>
-                            </div>
-                            <div className="text-left">
-                                Last modified
-                                <span>12/04/2023</span>
-                                by <span
-                                    className="siteColor">Santosh</span>
-                            </div>
-                        </div>
-                        <div className="col-sm-6 text-end p-0">
-                            <a target="_blank"
-                                ng-if="AdditionalTaskTime.siteListName === 'SP.Data.TasksTimesheet2ListItem'"
-                                href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TaskTimeSheetListNew/EditForm.aspx?ID=112`}>
-                                Open out-of-the-box
-                                form
-                            </a>
+                       
+                        <div className="text-end">
                             <button type="button" className="btn btn-primary ms-2"
-                                onClick={() => ChangeParentItem()} >
+                                onClick={() => UpdateData(popupData[0])} >
                                 Save
                             </button>
                         </div>
@@ -635,7 +716,7 @@ const updateSortOrder=async ()=>{
                 </div>
             </Panel>
             <Panel
-                onRenderHeader={onRenderCustomHeaderMain}
+                onRenderHeader={onRenderCustomHeaderSortOrder}
                 headerText="Edit Category"
                 type={PanelType.custom}
                 customWidth="600px"
@@ -643,88 +724,34 @@ const updateSortOrder=async ()=>{
                 onDismiss={ClosesortItem}
                 isBlocking={false}
             >
-                <div className="modal-body border" style={{ padding: "10px" }}>
+                
                     <div className='Alltable'>
-                        <div className="section-event">
-                            <div className="wrapper">
-                                <table className="table table-hover" style={{ width: "100%" }}>
-                                    <thead>
-                                        <tr>
-                                            <th style={{ width: "80%" }}>
-                                                <div style={{ width: "64%" }} className="smart-relative">
-                                                    <input type="search" placeholder="Title" className="full_width searchbox_height" aria-label="Search" aria-describedby="search-addon"/>
-
-                                                    <span className="sorticon">
-                                                        <span className="up" onClick={()=>sortBy("Title")}>< FaAngleUp /></span>
-                                                        <span className="down"onClick={()=>sortByDng("Title")} >< FaAngleDown /></span>
-                                                    </span>
-
-
-                                                </div>
-                                            </th>
-                                            <th style={{ width: "20%" }}>
-                                                <div style={{ width: "34%" }} className="smart-relative">
-                                                    <input type="search" placeholder="SortOrder" className="full_width searchbox_height" aria-label="Search" aria-describedby="search-addon"/>
-
-                                                    <span className="sorticon">
-                                                        <span className="up"  onClick={()=>sortBy("SortOrder")}>< FaAngleUp /></span>
-                                                        <span className="down" onClick={()=>sortByDng("SortOrder")}>< FaAngleDown /></span>
-                                                    </span>
-
-
-                                                </div>
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {sortedArray?.map((item)=>{
-                                            return(
-                                                <>
-                                                <tr>
-                                                    <td>{item.Title}</td>
-                                                    <td><input type="text" defaultValue={item?.SortOrder} onClick={()=>setSortId(item.Id)} onChange={(e)=>setSortOrder(e.target.value)}></input></td>
-                                                </tr> 
-                                                </>
-                                            )
-                                        })}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                        <GlobalCommanTable columns={column} data={data} callBackData={callBackData} showHeader={false} expandIcon={false}/> 
                     </div>
+
+                
+                    <div className="mt-3">
+                    <footer className='d-flex justify-content-between w-100'>
+                        <div className="mt-2">
+                            <a data-interception="off" target="_blank"
+                                href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TopNavigation/EditForm.aspx?ID=${popupData[0]?.Id}`}>
+                                Open out-of-the-box
+                                form
+                            </a>
+                         </div>
+                         <div className='mt-2'>
+                            <button type="button" className="btn btn-primary ms-2"
+                                onClick={() =>ClosesortItem()}>
+                                Save
+                            </button>
+                            <button type="button" className="btn btn-default ms-2" 
+                                onClick={() => ClosesortItem()} >
+                                Cancel
+                            </button>
+                        </div>
+                    </footer>
 
                 </div>
-            <div className="footer mt-2">
-                <div className='row'>
-                    <div className="col-sm-6 ">
-                        <div className="text-left">
-                            Created
-                            <span>12/12/2022</span>
-                            by <span
-                                className="siteColor">Santosh</span>
-                        </div>
-                        <div className="text-left">
-                            Last modified
-                            <span>12/04/2023</span>
-                            by <span
-                                className="siteColor">Santosh</span>
-                        </div>
-                    </div>
-                    <div className="col-sm-6 text-end">
-                        <a target="_blank"
-                            ng-if="AdditionalTaskTime.siteListName === 'SP.Data.TasksTimesheet2ListItem'"
-                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TaskTimeSheetListNew/EditForm.aspx?ID=112`}>
-                            Open out-of-the-box
-                            form
-                        </a>
-                        <button type="button" className="btn btn-primary ms-2"
-                            onClick={() => updateSortOrder()} >
-                            Save
-                        </button>
-                    </div>
-                </div>
-
-            </div>
         </Panel>
         </>
     )

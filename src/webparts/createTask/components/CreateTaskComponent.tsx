@@ -50,7 +50,7 @@ function CreateTaskComponent(props: any) {
     const [subCategory, setsubCategory] = React.useState([])
     const [priorityRank, setpriorityRank] = React.useState([])
     const [openPortfolioType, setOpenPortfolioType] = React.useState("");
-    const [sharewebCat, setSharewebCat] = React.useState([]);
+    const [taskCat, setTaskCat] = React.useState([]);
     const [IsOpenPortfolio, setIsOpenPortfolio] = React.useState(false);
     const [smartComponentData, setSmartComponentData] = React.useState([]);
     const [Timing, setTiming] = React.useState([])
@@ -265,9 +265,10 @@ function CreateTaskComponent(props: any) {
     const fetchBurgerMenuDetails = async () => {
         AllComponents = await GetComponents();
         let setComponent: any = [];
+        let BurgerMenuData = burgerMenuTaskDetails;
         if (props?.projectId == undefined) {
             const params = new URLSearchParams(window.location.search);
-            let BurgerMenuData = burgerMenuTaskDetails;
+           
 
             let paramSiteUrl = params.get("Siteurl");
             let paramComponentId = params.get('ComponentID');
@@ -286,7 +287,7 @@ function CreateTaskComponent(props: any) {
             BurgerMenuData.ComponentID = paramComponentId;
             BurgerMenuData.Siteurl = paramSiteUrl;
             BurgerMenuData.TaskType = paramTaskType;
-            setBurgerMenuTaskDetails(BurgerMenuData)
+           
             let PageName = '';
 
             if (paramSiteUrl != undefined) {
@@ -356,6 +357,7 @@ function CreateTaskComponent(props: any) {
                     let setTaskTitle = 'Feedback - ' + setComponent[0]?.Title + ' ' + moment(new Date()).format('DD/MM/YYYY');
                     saveValue.taskName = setTaskTitle;
                     saveValue.taskUrl = paramSiteUrl;
+
                     //  setTaskUrl(paramSiteUrl);
                     setSave(saveValue);
                     let e = {
@@ -396,6 +398,7 @@ function CreateTaskComponent(props: any) {
                 }
             })
         }
+        setBurgerMenuTaskDetails(BurgerMenuData)
     }
     const loadRelevantTask = async (Condition: any, type: any) => {
         let query = '';
@@ -671,7 +674,7 @@ function CreateTaskComponent(props: any) {
         else {
             let CategoryTitle: any;
             let TeamMembersIds: any[] = [];
-            sharewebCat?.map((cat: any) => {
+            taskCat?.map((cat: any) => {
                 subCategories?.map((item: any) => {
                     if (cat === item.Id) {
                         if (CategoryTitle === undefined) {
@@ -731,6 +734,7 @@ function CreateTaskComponent(props: any) {
             let siteCompositionDetails: any;
             try {
                 let selectedComponent: any[] = [];
+                let selectedService: any[] = [];
                 let portfolioId :any =null;
 
                 let CopyUrl;
@@ -747,52 +751,57 @@ function CreateTaskComponent(props: any) {
                             selectedSite = site;
                         }
                     })
-                    if (smartComponentData?.length > 0) {
-                        smartComponentData?.map((com: any) => {
-                            if (smartComponentData !== undefined && smartComponentData.length >= 0) {
-                                $.each(smartComponentData, function (index: any, smart: any) {
-                                    selectedComponent.push(smart.Id);
-                                    portfolioId=smart?.Id
-                                    if (selectedSite?.Parent?.Title == "SDC Sites") {
-                                        postClientTime = JSON.parse(smart?.Sitestagging);
-                                        siteCompositionDetails = smart?.SiteCompositionSettings;
-                                        smart?.ClientCategory?.map((cc: any) => {
-                                            if (cc.Id != undefined) {
-                                                selectedCC.push(cc.Id)
-                                            }
-                                        })
-                                    }
-                                })
-                            }
+                  
+                    try{
+                        if (smartComponentData?.length > 0) {
+                            smartComponentData?.map((com: any) => {
+                                if (smartComponentData !== undefined && smartComponentData.length >= 0) {
+                                    $.each(smartComponentData, function (index: any, smart: any) {
+                                        selectedComponent.push(smart.Id);
+                                        portfolioId=smart?.Id
+                                        if (selectedSite?.Parent?.Title == "SDC Sites") {
+                                            postClientTime = JSON.parse(smart?.Sitestagging);
+                                            siteCompositionDetails = smart?.SiteCompositionSettings;
+                                            smart?.ClientCategory?.map((cc: any) => {
+                                                if (cc.Id != undefined) {
+                                                    selectedCC.push(cc.Id)
+                                                }
+                                            })
+                                        }
+                                    })
+                                }
+                            })
+                        }
+                       selectedService= [];
+                        if (linkedComponentData?.length > 0) {
+                            linkedComponentData?.map((com: any) => {
+                                if (linkedComponentData !== undefined && linkedComponentData.length >= 0) {
+                                    $.each(linkedComponentData, function (index: any, smart: any) {
+                                        selectedService.push(smart.Id);
+                                        portfolioId=smart?.Id
+                                        if (selectedSite?.Parent?.Title == "SDC Sites") {
+                                            postClientTime = JSON.parse(smart?.Sitestagging);
+                                            siteCompositionDetails = smart?.SiteCompositionSettings;
+                                            smart?.ClientCategory?.map((cc: any) => {
+                                                if (cc.Id != undefined) {
+                                                    selectedCC.push(cc.Id)
+                                                }
+                                            })
+                                        }
+                                    })
+                                }
+                            })
+                        }
+                        if(DirectTask==true){
+                            selectedComponent=[QueryPortfolioId];
+                            portfolioId =QueryPortfolioId;
+                        }
+                        postClientTime?.map((items: any) => {
+                            items.SiteName = items.Title
                         })
+                    }catch(error:any){
+                        console.log(error , 'Site Comp ')
                     }
-                    let selectedService: any[] = [];
-                    if (linkedComponentData?.length > 0) {
-                        linkedComponentData?.map((com: any) => {
-                            if (linkedComponentData !== undefined && linkedComponentData.length >= 0) {
-                                $.each(linkedComponentData, function (index: any, smart: any) {
-                                    selectedService.push(smart.Id);
-                                    portfolioId=smart?.Id
-                                    if (selectedSite?.Parent?.Title == "SDC Sites") {
-                                        postClientTime = JSON.parse(smart?.Sitestagging);
-                                        siteCompositionDetails = smart?.SiteCompositionSettings;
-                                        smart?.ClientCategory?.map((cc: any) => {
-                                            if (cc.Id != undefined) {
-                                                selectedCC.push(cc.Id)
-                                            }
-                                        })
-                                    }
-                                })
-                            }
-                        })
-                    }
-                    if(DirectTask==true){
-                        selectedComponent=[QueryPortfolioId];
-                        portfolioId =QueryPortfolioId;
-                    }
-                    postClientTime?.map((items: any) => {
-                        items.SiteName = items.Title
-                    })
                     let priorityRank = 4;
                     if (save.rank === undefined || parseInt(save.rank) <= 0) {
                         setSave({ ...save, rank: 4 })
@@ -843,7 +852,7 @@ function CreateTaskComponent(props: any) {
                         PortfolioId: portfolioId,
                         TeamMembersId: { "results": TeamMembersIds },
                         // SharewebComponentId: { "results": $scope.SharewebComponent },
-                        SharewebCategoriesId: { "results": sharewebCat },
+                        TaskCategoriesId: { "results": taskCat },
                         ClientCategoryId: { "results": selectedCC },
                         // LinkServiceTaskId: { "results": $scope.SaveServiceTaskItemId },
                         "PriorityRank": priorityRank,
@@ -910,7 +919,7 @@ function CreateTaskComponent(props: any) {
                     //     Mileage: save.Mileage,
                     //     ServicesId: { "results": (selectedService !== undefined && selectedService?.length > 0) ? selectedService : [] },
                     //     AssignedToId: { "results": AssignedToIds },
-                    //     SharewebCategoriesId: { "results": sharewebCat },
+                    //     taskCategoriesId: { "results": taskCat },
                     //     TeamMembersId: { "results": TeamMembersIds },
                     // }
                     //Code End
@@ -1162,7 +1171,7 @@ function CreateTaskComponent(props: any) {
 
 
         let activeCategoryArray = activeCategory;
-        let TaskCategories: any[] = sharewebCat;
+        let TaskCategories: any[] = taskCat;
         if (item.ActiveTile) {
             item.ActiveTile = !item.ActiveTile;
             activeCategoryArray = activeCategoryArray.filter((category: any) => category !== title);
@@ -1214,7 +1223,7 @@ function CreateTaskComponent(props: any) {
         }
         setIsActiveCategory(!isActiveCategory)
         setActiveCategory(activeCategoryArray)
-        setSharewebCat(TaskCategories)
+        setTaskCat(TaskCategories)
 
     }
 
@@ -1261,7 +1270,7 @@ function CreateTaskComponent(props: any) {
                             {row.original.Services.length >= 1 ? (
                                 <a
                                     className="hreflink text-success"
-                                    href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                                    href={`${row?.original?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                                     data-interception="off"
                                     target="_blank"
                                 >
@@ -1270,7 +1279,7 @@ function CreateTaskComponent(props: any) {
                             ) : (
                                 <a
                                     className="hreflink"
-                                    href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                                    href={`${row?.original?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                                     data-interception="off"
                                     target="_blank"
                                 >
@@ -1296,7 +1305,7 @@ function CreateTaskComponent(props: any) {
                                 className="hreflink text-success"
                                 data-interception="off"
                                 target="blank"
-                                href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
+                                href={`${row?.original?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
                             >
                                 {row?.original?.portfolio?.Title}
                             </a>
@@ -1305,7 +1314,7 @@ function CreateTaskComponent(props: any) {
                                 className="hreflink"
                                 data-interception="off"
                                 target="blank"
-                                href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
+                                href={`${row?.original?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
                             >
                                 {row?.original?.portfolio?.Title}
                             </a>
