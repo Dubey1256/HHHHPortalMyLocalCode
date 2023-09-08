@@ -28,7 +28,7 @@ let AllComponents: any = []
 let taskUsers: any = [];
 // let taskCreated = false;
 let createdTask: any = {}
-let QueryPortfolioId:any=null;
+let QueryPortfolioId: any = null;
 let loggedInUser: any;
 let oldTaskIrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx";
 let Isapproval;
@@ -36,7 +36,7 @@ var ContextValue: any = {};
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
 var AllListId: any = {}
-let DirectTask=false;
+let DirectTask = false;
 function CreateTaskComponent(props: any) {
     let base_Url = props?.pageContext?._web?.absoluteUrl;
     const [editTaskPopupData, setEditTaskPopupData] = React.useState({
@@ -268,7 +268,7 @@ function CreateTaskComponent(props: any) {
         let BurgerMenuData = burgerMenuTaskDetails;
         if (props?.projectId == undefined) {
             const params = new URLSearchParams(window.location.search);
-           
+
 
             let paramSiteUrl = params.get("Siteurl");
             let paramComponentId = params.get('ComponentID');
@@ -278,21 +278,21 @@ function CreateTaskComponent(props: any) {
             let previousTaggedTaskToComp: any[] = []
             if (paramComponentId == undefined && paramSiteUrl != undefined && paramType == undefined) {
                 paramComponentId = "756";
-                QueryPortfolioId='756';
+                QueryPortfolioId = '756';
             }
             else if (paramComponentId == undefined && paramServiceId == undefined && paramSiteUrl != undefined && paramType == 'Service') {
                 paramServiceId = "4497";
-                QueryPortfolioId='4497';
+                QueryPortfolioId = '4497';
             }
             BurgerMenuData.ComponentID = paramComponentId;
             BurgerMenuData.Siteurl = paramSiteUrl;
             BurgerMenuData.TaskType = paramTaskType;
-           
+
             let PageName = '';
 
             if (paramSiteUrl != undefined) {
                 let baseUrl = window.location.href;
-                
+
                 PageName = paramSiteUrl?.split('aspx')[0].split("").reverse().join("").split('/')[0].split("").reverse().join("");
                 PageName = PageName + 'aspx'
                 // await loadRelevantTask(PageName, "PageTask")
@@ -301,17 +301,17 @@ function CreateTaskComponent(props: any) {
 
 
             if (paramComponentId != undefined) {
-                QueryPortfolioId=paramComponentId;
+                QueryPortfolioId = paramComponentId;
                 AllComponents?.map((item: any) => {
                     if (item?.Id == paramComponentId) {
                         setComponent.push(item)
-                        setSave((prev:any)=>({ ...prev, Component: setComponent }));
+                        setSave((prev: any) => ({ ...prev, Component: setComponent }));
                         setSmartComponentData(setComponent);
                     }
                 })
 
                 if (paramTaskType == 'Bug') {
-                    DirectTask=true;
+                    DirectTask = true;
                     subCategories?.map((item: any) => {
                         if (item.Title == "Bug") {
                             selectSubTaskCategory(item.Title, item.Id, item)
@@ -332,7 +332,7 @@ function CreateTaskComponent(props: any) {
 
                     createTask();
                 } else if (paramTaskType == 'Design') {
-                    DirectTask=true;
+                    DirectTask = true;
                     subCategories?.map((item: any) => {
                         if (item.Title == "Design") {
                             selectSubTaskCategory(item.Title, item.Id, item)
@@ -357,7 +357,7 @@ function CreateTaskComponent(props: any) {
                     let setTaskTitle = 'Feedback - ' + setComponent[0]?.Title + ' ' + moment(new Date()).format('DD/MM/YYYY');
                     saveValue.taskName = setTaskTitle;
                     saveValue.taskUrl = paramSiteUrl;
-
+                    BurgerMenuData.TaskType = 'Feedback'
                     //  setTaskUrl(paramSiteUrl);
                     setSave(saveValue);
                     let e = {
@@ -365,6 +365,11 @@ function CreateTaskComponent(props: any) {
                             value: paramSiteUrl
                         }
                     }
+                    subCategories?.map((item: any) => {
+                        if (item.Title == "Feedback") {
+                            selectSubTaskCategory(item.Title, item.Id, item)
+                        }
+                    })
                     UrlPasteTitle(e);
                     await loadRelevantTask(paramSiteUrl, "UrlTask")
                     await loadRelevantTask(PageName, "PageTask")
@@ -385,14 +390,14 @@ function CreateTaskComponent(props: any) {
                     if (props?.createComponent?.portfolioType === 'Component') {
                         selectPortfolioType('Component');
                         setComponent.push(item)
-                        setSave((prev:any)=>({ ...prev, portfolioType: 'Component' }))
+                        setSave((prev: any) => ({ ...prev, portfolioType: 'Component' }))
                         setSmartComponentData(setComponent);
                     }
 
                     if (props?.createComponent?.portfolioType === 'Service') {
                         selectPortfolioType('Service');
                         setComponent.push(item);
-                        setSave((prev:any)=>({ ...prev, portfolioType: 'Service' }))
+                        setSave((prev: any) => ({ ...prev, portfolioType: 'Service' }))
                         setLinkedComponentData(setComponent);
                     }
                 }
@@ -673,9 +678,10 @@ function CreateTaskComponent(props: any) {
         }
         else {
             let CategoryTitle: any;
+            let selectedCATIds: any = taskCat?.length > 0 ? taskCat : [];
             let TeamMembersIds: any[] = [];
-            taskCat?.map((cat: any) => {
-                subCategories?.map((item: any) => {
+            subCategories?.map((item: any) => {
+                selectedCATIds?.map((cat: any) => {
                     if (cat === item.Id) {
                         if (CategoryTitle === undefined) {
                             CategoryTitle = item.Title + ';';
@@ -687,6 +693,7 @@ function CreateTaskComponent(props: any) {
                 })
 
             })
+            setTaskCat((prev: any) => selectedCATIds)
             if (CategoryTitle !== undefined) {
                 CategoryTitle.split(';')?.map((cat: any) => {
                     if (cat.toLowerCase() === 'design') {
@@ -735,7 +742,7 @@ function CreateTaskComponent(props: any) {
             try {
                 let selectedComponent: any[] = [];
                 let selectedService: any[] = [];
-                let portfolioId :any =null;
+                let portfolioId: any = null;
 
                 let CopyUrl;
                 if (save.taskUrl != undefined && save.taskUrl.length > 255) {
@@ -751,14 +758,14 @@ function CreateTaskComponent(props: any) {
                             selectedSite = site;
                         }
                     })
-                  
-                    try{
+
+                    try {
                         if (smartComponentData?.length > 0) {
                             smartComponentData?.map((com: any) => {
                                 if (smartComponentData !== undefined && smartComponentData.length >= 0) {
                                     $.each(smartComponentData, function (index: any, smart: any) {
                                         selectedComponent.push(smart.Id);
-                                        portfolioId=smart?.Id
+                                        portfolioId = smart?.Id
                                         if (selectedSite?.Parent?.Title == "SDC Sites") {
                                             postClientTime = JSON.parse(smart?.Sitestagging);
                                             siteCompositionDetails = smart?.SiteCompositionSettings;
@@ -772,13 +779,13 @@ function CreateTaskComponent(props: any) {
                                 }
                             })
                         }
-                       selectedService= [];
+                        selectedService = [];
                         if (linkedComponentData?.length > 0) {
                             linkedComponentData?.map((com: any) => {
                                 if (linkedComponentData !== undefined && linkedComponentData.length >= 0) {
                                     $.each(linkedComponentData, function (index: any, smart: any) {
                                         selectedService.push(smart.Id);
-                                        portfolioId=smart?.Id
+                                        portfolioId = smart?.Id
                                         if (selectedSite?.Parent?.Title == "SDC Sites") {
                                             postClientTime = JSON.parse(smart?.Sitestagging);
                                             siteCompositionDetails = smart?.SiteCompositionSettings;
@@ -792,15 +799,15 @@ function CreateTaskComponent(props: any) {
                                 }
                             })
                         }
-                        if(DirectTask==true){
-                            selectedComponent=[QueryPortfolioId];
-                            portfolioId =QueryPortfolioId;
+                        if (DirectTask == true) {
+                            selectedComponent = [QueryPortfolioId];
+                            portfolioId = QueryPortfolioId;
                         }
                         postClientTime?.map((items: any) => {
                             items.SiteName = items.Title
                         })
-                    }catch(error:any){
-                        console.log(error , 'Site Comp ')
+                    } catch (error: any) {
+                        console.log(error, 'Site Comp ')
                     }
                     let priorityRank = 4;
                     if (save.rank === undefined || parseInt(save.rank) <= 0) {
@@ -858,7 +865,7 @@ function CreateTaskComponent(props: any) {
                         "PriorityRank": priorityRank,
                         SiteCompositionSettings: siteCompositionDetails != undefined ? siteCompositionDetails : '',
                         AssignedToId: { "results": AssignedToIds },
-                        TaskTypeId:2,
+                        TaskTypeId: 2,
                         SharewebTaskTypeId: 2,
                         ClientTime: postClientTime != undefined ? JSON.stringify(postClientTime) : '',
                         ComponentLink: {
@@ -1074,58 +1081,58 @@ function CreateTaskComponent(props: any) {
 
     const UrlPasteTitle = (e: any) => {
         let TestUrl = e.target.value;
-            let saveValue = save;
-            saveValue.taskUrl = TestUrl;
-            if (SitesTypes?.length > 1) {
-                let selectedSiteTitle = ''
-                var testarray = e.target.value.split('&');
-                // TestUrl = $scope.ComponentLink;
-                var item = '';
-                if (TestUrl !== undefined) {
-                    for (let index = 0; index < SitesTypes.length; index++) {
-                        let site = SitesTypes[index];
-                        if (TestUrl.toLowerCase().indexOf('.com') > -1)
-                            TestUrl = TestUrl.split('.com')[1];
-                        else if (TestUrl.toLowerCase().indexOf('.ch') > -1)
-                            TestUrl = TestUrl.split('.ch')[1];
-                        else if (TestUrl.toLowerCase().indexOf('.de') > -1)
-                            TestUrl = TestUrl.split('.de')[1];
+        let saveValue = save;
+        saveValue.taskUrl = TestUrl;
+        if (SitesTypes?.length > 1) {
+            let selectedSiteTitle = ''
+            var testarray = e.target.value.split('&');
+            // TestUrl = $scope.ComponentLink;
+            var item = '';
+            if (TestUrl !== undefined) {
+                for (let index = 0; index < SitesTypes.length; index++) {
+                    let site = SitesTypes[index];
+                    if (TestUrl.toLowerCase().indexOf('.com') > -1)
+                        TestUrl = TestUrl.split('.com')[1];
+                    else if (TestUrl.toLowerCase().indexOf('.ch') > -1)
+                        TestUrl = TestUrl.split('.ch')[1];
+                    else if (TestUrl.toLowerCase().indexOf('.de') > -1)
+                        TestUrl = TestUrl.split('.de')[1];
 
-                        let Isfound = false;
-                        if (TestUrl !== undefined && ((TestUrl.toLowerCase().indexOf('/' + site.Title.toLowerCase() + '/')) > -1 || (site.AlternativeTitle != null && (TestUrl.toLowerCase().indexOf(site.AlternativeTitle.toLowerCase())) > -1))) {
-                            item = site.Title;
-                            selectedSiteTitle = site.Title;
-                            Isfound = true;
-                        }
+                    let Isfound = false;
+                    if (TestUrl !== undefined && ((TestUrl.toLowerCase().indexOf('/' + site.Title.toLowerCase() + '/')) > -1 || (site.AlternativeTitle != null && (TestUrl.toLowerCase().indexOf(site.AlternativeTitle.toLowerCase())) > -1))) {
+                        item = site.Title;
+                        selectedSiteTitle = site.Title;
+                        Isfound = true;
+                    }
 
-                        if (!Isfound) {
-                            if (TestUrl !== undefined && site.AlternativeTitle != null) {
-                                let sitesAlterNatives = site.AlternativeTitle.toLowerCase().split(';');
-                                for (let j = 0; j < sitesAlterNatives.length; j++) {
-                                    let element = sitesAlterNatives[j];
-                                    if (TestUrl.toLowerCase().indexOf(element) > -1) {
-                                        item = site.Title;
-                                        selectedSiteTitle = site.Title;
-                                        Isfound = true;
-                                    }
-
+                    if (!Isfound) {
+                        if (TestUrl !== undefined && site.AlternativeTitle != null) {
+                            let sitesAlterNatives = site.AlternativeTitle.toLowerCase().split(';');
+                            for (let j = 0; j < sitesAlterNatives.length; j++) {
+                                let element = sitesAlterNatives[j];
+                                if (TestUrl.toLowerCase().indexOf(element) > -1) {
+                                    item = site.Title;
+                                    selectedSiteTitle = site.Title;
+                                    Isfound = true;
                                 }
+
                             }
                         }
                     }
-
                 }
 
-                saveValue.siteType = selectedSiteTitle;
-                setSave(saveValue)
-                if (selectedSiteTitle !== undefined) {
-                    setIsActive({ ...isActive, siteType: true });
-                }
-                else {
-                    setIsActive({ ...isActive, siteType: false });
-                }
             }
-        
+
+            saveValue.siteType = selectedSiteTitle;
+            setSave(saveValue)
+            if (selectedSiteTitle !== undefined) {
+                setIsActive({ ...isActive, siteType: true });
+            }
+            else {
+                setIsActive({ ...isActive, siteType: false });
+            }
+        }
+
 
     }
 
@@ -1236,9 +1243,9 @@ function CreateTaskComponent(props: any) {
             {
                 accessorFn: (row) => row?.siteType,
                 cell: ({ row }) => (
-                  <span>
-                    <img className='circularImage rounded-circle' title={row?.original?.siteType} src={row?.original?.SiteIcon} />
-                  </span>
+                    <span>
+                        <img className='circularImage rounded-circle' title={row?.original?.siteType} src={row?.original?.SiteIcon} />
+                    </span>
                 ),
                 id: "Site",
                 placeholder: "Site",
@@ -1246,7 +1253,7 @@ function CreateTaskComponent(props: any) {
                 resetSorting: false,
                 resetColumnFilters: false,
                 size: 50
-              },
+            },
             {
                 accessorKey: "TaskID",
                 placeholder: "Task Id",
@@ -2041,9 +2048,9 @@ function CreateTaskComponent(props: any) {
 
     }
     const changeTitle = (e: any) => {
-        if(e.target.value.length > 56){
+        if (e.target.value.length > 56) {
             alert("Task Title is too long. Please chose a shorter name and enter the details into the task description.")
-        }else{
+        } else {
             setSave(prevSave => ({
                 ...prevSave,
                 taskName: e.target.value
