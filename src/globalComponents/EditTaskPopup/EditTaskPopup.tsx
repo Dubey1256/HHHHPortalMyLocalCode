@@ -1288,7 +1288,7 @@ const EditTaskPopup = (Items: any) => {
                         }
                         TempArray.push(categoryData)
                         let isExists: any = 0;
-                        if (tempCategoryData != undefined) {
+                        if (tempCategoryData?.length > 0) {
                             isExists = tempCategoryData.search(categoryData.Title);
                         } else {
                             category = category != undefined ? category + ";" + categoryData.Title : categoryData.Title
@@ -2028,7 +2028,7 @@ const EditTaskPopup = (Items: any) => {
                     SubCommentBoxData = []
                     updateFeedbackArray = []
                     tempShareWebTypeData = []
-                    tempCategoryData = []
+                    tempCategoryData = '';
                     SiteTypeBackupArray = []
                     currentUserBackupArray = []
                     AutoCompleteItemsArray = []
@@ -2335,15 +2335,15 @@ const EditTaskPopup = (Items: any) => {
             ComponentId: { "results": (smartComponentsIds != undefined && smartComponentsIds.length > 0) ? smartComponentsIds : [] },
             Categories: CategoriesData ? CategoriesData : null,
             // RelevantPortfolioId: { "results": (RelevantPortfolioIds != undefined && RelevantPortfolioIds?.length > 0) ? RelevantPortfolioIds : [] },
-            SharewebCategoriesId: { "results": (CategoryTypeID != undefined && CategoryTypeID.length > 0) ? CategoryTypeID : [] },
+            TaskCategoriesId: { "results": (CategoryTypeID != undefined && CategoryTypeID.length > 0) ? CategoryTypeID : [] },
             DueDate: EditData.DueDate ? Moment(EditData.DueDate).format("MM-DD-YYYY") : null,
             CompletedDate: EditData.CompletedDate ? Moment(EditData.CompletedDate).format("MM-DD-YYYY") : null,
             Status: taskStatus ? taskStatus : (EditData.Status ? EditData.Status : null),
             Mileage: (EditData.Mileage ? EditData.Mileage : ''),
             ServicesId: { "results": (SmartServicesId != undefined && SmartServicesId.length > 0) ? SmartServicesId : [] },
             AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds.length > 0) ? AssignedToIds : [] },
-            Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0) ? ResponsibleTeamIds : [] },
-            Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds.length > 0) ? TeamMemberIds : [] },
+            ResponsibleTeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0) ? ResponsibleTeamIds : [] },
+            TeamMembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds.length > 0) ? TeamMemberIds : [] },
             FeedBack: updateFeedbackArray?.length > 0 ? JSON.stringify(updateFeedbackArray) : null,
             ComponentLink: {
                 "__metadata": { type: "SP.FieldUrlValue" },
@@ -2470,15 +2470,15 @@ const EditTaskPopup = (Items: any) => {
     }
 
     // ****************** This is used for Delete Task Functions **********************
-    const deleteTaskFunction = async (TaskID: number) => {
+    const deleteTaskFunction = async (TaskID: number, FunctionsType: any) => {
         let deletePost = confirm("Do you really want to delete this Task?")
         if (deletePost) {
-            deleteItemFunction(TaskID);
+            deleteItemFunction(TaskID, FunctionsType);
         } else {
             console.log("Your Task has not been deleted");
         }
     }
-    const deleteItemFunction = async (itemId: any) => {
+    const deleteItemFunction = async (itemId: any, FnType: any) => {
         var site = SelectedSite.replace(/^"|"$/g, '');
         try {
             if (Items.Items.listId != undefined) {
@@ -2503,12 +2503,16 @@ const EditTaskPopup = (Items: any) => {
                 Items.Call(ItmesDelete);
             }
             else {
-                Items.Call("Delete");
+                if (FnType == "Delete-Task") {
+                    Items.Call("Delete");
+                }
             }
             if (newGeneratedId != "" && newGeneratedId != undefined) {
                 let Url = `${siteUrls}/SitePages/Task-Profile.aspx?taskId=${newGeneratedId}&Site=${site}`
                 window.location.href = Url;
-                Items.Call("Delete");
+                if (FnType == "Delete-Task") {
+                    Items.Call("Delete");
+                }
             }
             console.log("Your post has been deleted successfully");
         } catch (error) {
@@ -3179,7 +3183,7 @@ const EditTaskPopup = (Items: any) => {
                             await moveTimeSheet(SelectedSite, res.data);
                         } else {
                             Items.Items.Action = 'Move'
-                            deleteItemFunction(Items.Items.Id);
+                            deleteItemFunction(Items.Items.Id, "Move");
                         }
                     }
                 })
@@ -3220,7 +3224,7 @@ const EditTaskPopup = (Items: any) => {
                 count++
                 if (count == timesheetData.length) {
                     Items.Items.Action = 'Move';
-                    deleteItemFunction(Items.Items.Id);
+                    deleteItemFunction(Items.Items.Id, "Move");
                 }
             })
         })
@@ -3679,7 +3683,7 @@ const EditTaskPopup = (Items: any) => {
                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z" fill="#333333" />
                                 </svg>
                                 {/* <RiDeleteBin6Line /> */}
-                                <span onClick={() => deleteTaskFunction(EditData.ID)}>Delete This Item</span>
+                                <span onClick={() => deleteTaskFunction(EditData.ID, "Delete-Task")}>Delete This Item</span>
                             </a>
                             <span> | </span>
                             <a className="hreflink" onClick={() => CopyAndMovePopupFunction("Copy-Task")}>
@@ -3706,11 +3710,11 @@ const EditTaskPopup = (Items: any) => {
                                 <a className="mx-2 hreflink siteColor" onClick={SaveAndAddTimeSheet} >
                                     Save & Add Time-Sheet
                                 </a>
-                            </span> ||
+                            </span> || 
 
-                            <span className="hreflink siteColor f-mailicons" onClick={() => shareThisTaskFunction(EditData)} >
+                            <span className="hreflink mx-2 siteColor f-mailicons" onClick={() => shareThisTaskFunction(EditData)} >
                                 <span title="Edit Task" className="svg__iconbox svg__icon--mail"></span>
-                                Share This Task
+                                Share This Task 
                             </span> ||
 
                             {Items.Items.siteType == "Offshore Tasks" ? <a target="_blank" className="mx-2" data-interception="off"
@@ -3758,7 +3762,7 @@ const EditTaskPopup = (Items: any) => {
                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z" fill="#333333" />
                                 </svg>
                                 {/* <RiDeleteBin6Line /> */}
-                                <span onClick={() => deleteTaskFunction(EditData.ID)}>Delete This Item</span>
+                                <span onClick={() => deleteTaskFunction(EditData.ID, "Delete-Task")}>Delete This Item</span>
                             </a>
                             <span> | </span>
                             <a className="hreflink" onClick={CopyAndMovePopupFunction}>

@@ -184,7 +184,7 @@ const TaskDistribution = (props: any) => {
             header: ""
           },
           {
-            accessorFn: (row) => row?.PriorityRank,
+            accessorFn: (row) => row?.Priority_x0020_Rank,
             cell: ({ row }) => (
               <span>
     
@@ -197,7 +197,7 @@ const TaskDistribution = (props: any) => {
                       TaskUsers={AllUser}
                       pageName={'ProjectManagment'}
                     /> */}
-                {row?.original?.PriorityRank}
+                {row?.original?.Priority_x0020_Rank}
               </span>
             ),
             placeholder: "Priority",

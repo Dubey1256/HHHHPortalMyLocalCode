@@ -1389,13 +1389,13 @@ function EditProjectPopup(item: any) {
               ? AssignedToIds
               : [],
         },
-        Responsible_x0020_TeamId: {
+        ResponsibleTeamId: {
           results:
             ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0
               ? ResponsibleTeamIds
               : [],
         },
-        Team_x0020_MembersId: {
+        TeamMembersId: {
           results:
             TeamMemberIds != undefined && TeamMemberIds?.length > 0
               ? TeamMemberIds

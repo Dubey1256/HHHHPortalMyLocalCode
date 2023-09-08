@@ -499,7 +499,6 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       ModifiedBy: taskDetails["Editor"],
       listId: listInfo.Id,
       TaskLevel: taskDetails["TaskLevel"],
-      // TaskLevel: taskDetails['TaskLevel'],
       Attachments: taskDetails["Attachments"],
       AttachmentFiles: taskDetails["AttachmentFiles"],
       SmartInformationId: taskDetails["SmartInformation"],
@@ -1892,9 +1891,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                           <a  >
                             <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                               <span title={this.state.Result['Title']}>{truncatedTitle?.length > 0 ? truncatedTitle : this.state.Result['Title']}</span>
-                              <span className="f-13 popover__content" >
+                              {truncatedTitle?.length > 0 &&<span className="f-13 popover__content" >
                                 {this.state.Result['Title']}
-                              </span>
+                              </span>}
                             </span>
 
                           </a>
@@ -1914,9 +1913,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                   {this.state.Result["SiteIcon"] === "" && <img className="imgWid29 pe-1 " src="" />}
                   <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                     <span title={this.state.Result['Title']}>{truncatedTitle?.length > 0 ? truncatedTitle : this.state.Result['Title']}</span>
-                    <span className="f-13 popover__content" >
+                    {truncatedTitle?.length > 0 &&<span className="f-13 popover__content" >
                       {this.state.Result['Title']}
-                    </span>
+                    </span>}
                   </span>
                   <a className="hreflink" title='Edit' onClick={() => this.OpenEditPopUp()}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="25" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
@@ -2006,7 +2005,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                             </div>
                             }
                             {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 2 &&
-                              <div className="position-relative user_Member_img_suffix2" onMouseOver={(e) => this.handleSuffixHover()} onMouseLeave={(e) => this.handleuffixLeave()}>+{this.state.Result["TeamMembers"].length - 1}
+                              <div className="position-relative user_Member_img_suffix2 ms-1 alignCenter" onMouseOver={(e) => this.handleSuffixHover()} onMouseLeave={(e) => this.handleuffixLeave()}>+{this.state.Result["TeamMembers"].length - 1}
                                 <span className="tooltiptext" style={{ display: this.state.Display, padding: '10px' }}>
                                   <div>
                                     {this.state.Result["TeamMembers"].slice(1)?.map((rcData: any, i: any) => {
@@ -2238,7 +2237,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                           </div>
                         }
                         {/*feedback comment section code */}
-                        <div className={this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.length > 0 ? "col-sm-8 pe-0 mt-2" : "col-sm-12 pe-0 mt-2"}>
+                        <div className={this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.length > 0 ? "col-sm-8 pe-0 mt-2" : "col-sm-12 p-0 mt-2"}>
                           {this.state.Result["TaskType"] != null && (this.state.Result["TaskType"] == '' ||
                             this.state.Result["TaskType"] == 'Task' || this.state.Result["TaskType"] == "Workstream" || this.state.Result["TaskType"] == "Activities") && this.state.Result["FeedBack"] != undefined && this.state.Result["FeedBack"].length > 0 && this.state.Result["FeedBack"][0].FeedBackDescriptions != undefined &&
                             this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
@@ -2337,7 +2336,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                   return <div className={fbComment.isShowLight != undefined && fbComment.isApprovalComment ? `col add_cmnt my-1 ${fbComment.isShowLight}` : "col add_cmnt my-1"}>
                                                     <div className="">
                                                       <div className="d-flex p-0">
-                                                        <div className="col-1 p-0">
+                                                        <div className="col-1 p-0 wid30">
                                                           <img className="workmember" src={fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ?
                                                             fbComment.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
                                                         </div>
@@ -2345,12 +2344,12 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                           <div className='d-flex justify-content-between align-items-center'>
                                                             {fbComment?.AuthorName} - {fbComment?.Created}
                                                             <span className='d-flex'>
-                                                              <a className="ps-1" title="Comment Reply" >
+                                                              <a className="px-1" title="Comment Reply" >
                                                                 <div data-toggle="tooltip" id={buttonId + "-" + i + k}
                                                                   onClick={() => this.openReplycommentPopup(i, k)}
                                                                   data-placement="bottom"
                                                                 >
-                                                                  <ImReply />
+                                                               <span className="svg__iconbox svg__icon--reply"></span>
                                                                 </div>
                                                               </a>
                                                               <a title='Edit'
@@ -2498,20 +2497,20 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                     return <div className={fbComment?.isShowLight != undefined && fbComment.isApprovalComment ? `col-sm-12  mb-2 add_cmnt my-1 ${fbComment?.isShowLight}` : "col-sm-12  mb-2 add_cmnt my-1 "}>
                                                       <div className="">
                                                         <div className="d-flex p-0">
-                                                          <div className="col-sm-1 padL-0 wid35">
+                                                          <div className="col-1 p-0 wid30">
                                                             <img className="workmember" src={fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ?
                                                               fbComment.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
                                                           </div>
-                                                          <div className="col-sm-11 pad0" key={k}>
+                                                          <div className="col-11 pad0" key={k}>
                                                             <div className="d-flex justify-content-between align-items-center">
                                                               {fbComment?.AuthorName} - {fbComment?.Created}
                                                               <span className='d-flex'>
-                                                                <a className="ps-1" title="Comment Reply" >
+                                                                <a className="px-1" title="Comment Reply" >
                                                                   <div data-toggle="tooltip" id={buttonId + "-" + i + j + k}
                                                                     onClick={() => this.openReplySubcommentPopup(i, j, k)}
                                                                     data-placement="bottom"
                                                                   >
-                                                                    <ImReply />
+                                                                 <span className="svg__iconbox svg__icon--reply"></span>
                                                                   </div>
                                                                 </a>
                                                                 <a title="Edit"
@@ -2689,7 +2688,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                     </div>}
 
                   </section>
-
+                  <div className="row">
+              <div className='p-0'> {this.state.Result.Id != undefined && <KeyDocuments ref={this?.relevantDocRef} AllListId={AllListId} Context={this.props?.Context} siteUrl={this.props.siteUrl} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} keyDoc={true}></KeyDocuments>}</div>
+            </div>
                 </div>
                 <div className="col-3">
                   <div>
@@ -2702,14 +2703,12 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                   <div> {this.state.Result.Id != undefined && <RelevantDocuments ref={this?.relevantDocRef} AllListId={AllListId} Context={this.props?.Context} siteUrl={this.props.siteUrl} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments>}</div>
 
                 </div>
-
+              
               </div>
             </section></section>
           <section className='TableContentSection'>
             {console.log("context data ================", MyContext)}
-            <div className="row">
-              <div> {this.state.Result.Id != undefined && <KeyDocuments ref={this?.relevantDocRef} AllListId={AllListId} Context={this.props?.Context} siteUrl={this.props.siteUrl} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} keyDoc={true}></KeyDocuments>}</div>
-            </div>
+            
             <div className="row">
               {this.state.Result != undefined && this.state.Result.Id != undefined && this.state.Result.TaskType != "" && this.state.Result.TaskType != undefined && this.state.Result.TaskType != 'Task' ? <TasksTable props={this.state.Result} AllListId={AllListId} Context={this.props?.Context} /> : ''}
             </div>

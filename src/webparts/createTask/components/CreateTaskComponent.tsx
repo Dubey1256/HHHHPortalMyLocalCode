@@ -28,6 +28,7 @@ let AllComponents: any = []
 let taskUsers: any = [];
 // let taskCreated = false;
 let createdTask: any = {}
+let QueryPortfolioId:any=null;
 let loggedInUser: any;
 let oldTaskIrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx";
 let Isapproval;
@@ -35,6 +36,7 @@ var ContextValue: any = {};
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
 var AllListId: any = {}
+let DirectTask=false;
 function CreateTaskComponent(props: any) {
     let base_Url = props?.pageContext?._web?.absoluteUrl;
     const [editTaskPopupData, setEditTaskPopupData] = React.useState({
@@ -275,9 +277,11 @@ function CreateTaskComponent(props: any) {
             let previousTaggedTaskToComp: any[] = []
             if (paramComponentId == undefined && paramSiteUrl != undefined && paramType == undefined) {
                 paramComponentId = "756";
+                QueryPortfolioId='756';
             }
             else if (paramComponentId == undefined && paramServiceId == undefined && paramSiteUrl != undefined && paramType == 'Service') {
                 paramServiceId = "4497";
+                QueryPortfolioId='4497';
             }
             BurgerMenuData.ComponentID = paramComponentId;
             BurgerMenuData.Siteurl = paramSiteUrl;
@@ -296,16 +300,17 @@ function CreateTaskComponent(props: any) {
 
 
             if (paramComponentId != undefined) {
-
+                QueryPortfolioId=paramComponentId;
                 AllComponents?.map((item: any) => {
                     if (item?.Id == paramComponentId) {
                         setComponent.push(item)
-                        setSave({ ...save, Component: setComponent });
+                        setSave((prev:any)=>({ ...prev, Component: setComponent }));
                         setSmartComponentData(setComponent);
                     }
                 })
 
                 if (paramTaskType == 'Bug') {
+                    DirectTask=true;
                     subCategories?.map((item: any) => {
                         if (item.Title == "Bug") {
                             selectSubTaskCategory(item.Title, item.Id, item)
@@ -326,6 +331,7 @@ function CreateTaskComponent(props: any) {
 
                     createTask();
                 } else if (paramTaskType == 'Design') {
+                    DirectTask=true;
                     subCategories?.map((item: any) => {
                         if (item.Title == "Design") {
                             selectSubTaskCategory(item.Title, item.Id, item)
@@ -377,14 +383,14 @@ function CreateTaskComponent(props: any) {
                     if (props?.createComponent?.portfolioType === 'Component') {
                         selectPortfolioType('Component');
                         setComponent.push(item)
-                        setSave({ ...save, portfolioType: 'Component' })
+                        setSave((prev:any)=>({ ...prev, portfolioType: 'Component' }))
                         setSmartComponentData(setComponent);
                     }
 
                     if (props?.createComponent?.portfolioType === 'Service') {
                         selectPortfolioType('Service');
                         setComponent.push(item);
-                        setSave({ ...save, portfolioType: 'Service' })
+                        setSave((prev:any)=>({ ...prev, portfolioType: 'Service' }))
                         setLinkedComponentData(setComponent);
                     }
                 }
@@ -741,10 +747,10 @@ function CreateTaskComponent(props: any) {
                             selectedSite = site;
                         }
                     })
-                    if (save.Component !== undefined && save.Component.length > 0) {
-                        save.Component?.map((com: any) => {
-                            if (save.Component !== undefined && save.Component.length >= 0) {
-                                $.each(save.Component, function (index: any, smart: any) {
+                    if (smartComponentData?.length > 0) {
+                        smartComponentData?.map((com: any) => {
+                            if (smartComponentData !== undefined && smartComponentData.length >= 0) {
+                                $.each(smartComponentData, function (index: any, smart: any) {
                                     selectedComponent.push(smart.Id);
                                     portfolioId=smart?.Id
                                     if (selectedSite?.Parent?.Title == "SDC Sites") {
@@ -761,10 +767,10 @@ function CreateTaskComponent(props: any) {
                         })
                     }
                     let selectedService: any[] = [];
-                    if (save.linkedServices !== undefined && save.linkedServices.length > 0) {
-                        save.linkedServices?.map((com: any) => {
-                            if (save.linkedServices !== undefined && save.linkedServices.length >= 0) {
-                                $.each(save.linkedServices, function (index: any, smart: any) {
+                    if (linkedComponentData?.length > 0) {
+                        linkedComponentData?.map((com: any) => {
+                            if (linkedComponentData !== undefined && linkedComponentData.length >= 0) {
+                                $.each(linkedComponentData, function (index: any, smart: any) {
                                     selectedService.push(smart.Id);
                                     portfolioId=smart?.Id
                                     if (selectedSite?.Parent?.Title == "SDC Sites") {
@@ -779,6 +785,10 @@ function CreateTaskComponent(props: any) {
                                 })
                             }
                         })
+                    }
+                    if(DirectTask==true){
+                        selectedComponent=[QueryPortfolioId];
+                        portfolioId =QueryPortfolioId;
                     }
                     postClientTime?.map((items: any) => {
                         items.SiteName = items.Title
@@ -829,9 +839,9 @@ function CreateTaskComponent(props: any) {
                         PercentComplete: 0,
                         ComponentId: { "results": (selectedComponent !== undefined && selectedComponent?.length > 0) ? selectedComponent : [] },
                         ServicesId: { "results": (selectedService !== undefined && selectedService?.length > 0) ? selectedService : [] },
-                        Responsible_x0020_TeamId: { "results": AssignedIds },
+                        ResponsibleTeamId: { "results": AssignedIds },
                         PortfolioId: portfolioId,
-                        Team_x0020_MembersId: { "results": TeamMembersIds },
+                        TeamMembersId: { "results": TeamMembersIds },
                         // SharewebComponentId: { "results": $scope.SharewebComponent },
                         SharewebCategoriesId: { "results": sharewebCat },
                         ClientCategoryId: { "results": selectedCC },
@@ -839,6 +849,7 @@ function CreateTaskComponent(props: any) {
                         "PriorityRank": priorityRank,
                         SiteCompositionSettings: siteCompositionDetails != undefined ? siteCompositionDetails : '',
                         AssignedToId: { "results": AssignedToIds },
+                        TaskTypeId:2,
                         SharewebTaskTypeId: 2,
                         ClientTime: postClientTime != undefined ? JSON.stringify(postClientTime) : '',
                         ComponentLink: {
@@ -860,7 +871,7 @@ function CreateTaskComponent(props: any) {
                                 ResponsibleTeam.push(10);
                             }
                         }
-                        item.Responsible_x0020_TeamId = { "results": ResponsibleTeam }
+                        item.ResponsibleTeamId = { "results": ResponsibleTeam }
                     }
                     else {
                         ResponsibleTeam = [];
@@ -872,7 +883,7 @@ function CreateTaskComponent(props: any) {
                                 ResponsibleTeam.push(10);
                             }
                         }
-                        item.Responsible_x0020_TeamId = { "results": ResponsibleTeam }
+                        item.ResponsibleTeamId = { "results": ResponsibleTeam }
                     }
                     // if (Tasks != undefined && save.siteType == 'Shareweb') {
                     //     item.SiteCompositionSettings = Tasks[0]?.SiteCompositionSettings!=undefined?Tasks[0]?.SiteCompositionSettings:Tasks?.SiteCompositionSettings;
@@ -900,7 +911,7 @@ function CreateTaskComponent(props: any) {
                     //     ServicesId: { "results": (selectedService !== undefined && selectedService?.length > 0) ? selectedService : [] },
                     //     AssignedToId: { "results": AssignedToIds },
                     //     SharewebCategoriesId: { "results": sharewebCat },
-                    //     Team_x0020_MembersId: { "results": TeamMembersIds },
+                    //     TeamMembersId: { "results": TeamMembersIds },
                     // }
                     //Code End
 
@@ -971,8 +982,8 @@ function CreateTaskComponent(props: any) {
                 //postData.PercentComplete = 0.01;
                 //postData.Status = "For Approval";
                 var isAvailable = false;
-                if (postData?.Responsible_x0020_TeamId?.results?.length > 0) {
-                    postData.Responsible_x0020_TeamId.results.map((user: any) => {
+                if (postData?.ResponsibleTeamId?.results?.length > 0) {
+                    postData.ResponsibleTeamId.results.map((user: any) => {
                         UserManager.map((ID: any) => {
                             if (ID == user) {
                                 isAvailable = true;
@@ -982,8 +993,8 @@ function CreateTaskComponent(props: any) {
                 }
                 if (!isAvailable) {
                     var TeamMembersID: any[] = [];
-                    if (postData?.Team_x0020_MembersId?.results?.length > 0) {
-                        postData.Team_x0020_MembersId.results((user: any) => {
+                    if (postData?.TeamMembersId?.results?.length > 0) {
+                        postData.TeamMembersId.results((user: any) => {
                             UserManager.map((ID: any) => {
                                 if (ID == user) {
                                     TeamMembersID.push(user);
@@ -994,7 +1005,7 @@ function CreateTaskComponent(props: any) {
                     UserManager.map((ID: any) => {
                         TeamMembersID.push(ID);
                     })
-                    postData.Team_x0020_MembersId = { results: TeamMembersID };
+                    postData.TeamMembersId = { results: TeamMembersID };
                 }
                 if (postData?.AssignedToId?.results?.length > 0 && UserManager?.length > 0) {
                     UserManager.map((ID: any) => {
@@ -1216,9 +1227,9 @@ function CreateTaskComponent(props: any) {
             {
                 accessorFn: (row) => row?.siteType,
                 cell: ({ row }) => (
-                    <span>
-                        <img className='circularImage rounded-circle' src={row?.original?.SiteIcon} />
-                    </span>
+                  <span>
+                    <img className='circularImage rounded-circle' title={row?.original?.siteType} src={row?.original?.SiteIcon} />
+                  </span>
                 ),
                 id: "Site",
                 placeholder: "Site",
@@ -1226,7 +1237,7 @@ function CreateTaskComponent(props: any) {
                 resetSorting: false,
                 resetColumnFilters: false,
                 size: 50
-            },
+              },
             {
                 accessorKey: "TaskID",
                 placeholder: "Task Id",
