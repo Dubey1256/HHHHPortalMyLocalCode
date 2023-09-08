@@ -681,7 +681,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
       <>
         <div className={color ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
-          <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+          <div className='subheading'>
 
             <span className="siteColor">
               Update Comment
@@ -696,7 +696,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   private customHeaderforALLcomments() {
     return (
       <div className={color ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1 "}>
-        <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+        <div className='subheading'>
           <span className="siteColor">
             Comment:{Title}{commentlength}
           </span>
@@ -824,12 +824,12 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                                 />
                               </span>
                               {cmtData.Created}</span>
-                            <div className="d-flex ml-auto media-icons " >
+                            <div className="d-flex ml-auto media-icons px-1 " >
                               <a ><div data-toggle="tooltip" id={"Reply-" + i}
                                 onClick={() => this.openReplycommentPopup(cmtData, i)}
                                 data-placement="bottom"
                               >
-                                <ImReply />
+                                <span className="svg__iconbox svg__icon--reply"></span>
                               </div></a>
                               {/* <a onClick={() => this.replyMailFunction(cmtData, i)}><span><ImReply /></span></a> */}
                               <a onClick={() => this.openEditModal(cmtData, i, false)}>
