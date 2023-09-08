@@ -95,7 +95,7 @@ const SelectFilterPanel = (props: any) => {
                                     checked={props?.selectedFilterPannelData.commentsSearch.Selected}
                                     onChange={handleCheckboxChange}
                                 />
-                                commentsSearch
+                                Comments
                             </label>
                             <br />
                             <label>
@@ -105,14 +105,14 @@ const SelectFilterPanel = (props: any) => {
                                     checked={props?.selectedFilterPannelData.descriptionsSearch.Selected}
                                     onChange={handleCheckboxChange}
                                 />
-                                descriptionsSearch
+                                Descriptions
                             </label>
                         </div>
                     </div>
                 </div>
             </div>
             <footer>
-            <button type="button" className="btn btn-default pull-right" style={{ backgroundColor: `${props?.portfolioColor}` }} onClick={setModalIsOpenToFalse}>
+            <button type="button" className="btn btn-default pull-right" style={{ backgroundColor: `${props?.portfolioColor}`, borderColor:`${props?.portfolioColor}` }} onClick={setModalIsOpenToFalse}>
                     Cancel
                 </button>
                 <button type="button" className="btn btn-primary mx-1 pull-right" style={{ backgroundColor: `${props?.portfolioColor}` }} onClick={() => handleChangeData()}>
