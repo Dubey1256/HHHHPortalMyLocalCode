@@ -2005,7 +2005,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                             </div>
                             }
                             {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 2 &&
-                              <div className="position-relative user_Member_img_suffix2" onMouseOver={(e) => this.handleSuffixHover()} onMouseLeave={(e) => this.handleuffixLeave()}>+{this.state.Result["TeamMembers"].length - 1}
+                              <div className="position-relative user_Member_img_suffix2 ms-1 alignCenter" onMouseOver={(e) => this.handleSuffixHover()} onMouseLeave={(e) => this.handleuffixLeave()}>+{this.state.Result["TeamMembers"].length - 1}
                                 <span className="tooltiptext" style={{ display: this.state.Display, padding: '10px' }}>
                                   <div>
                                     {this.state.Result["TeamMembers"].slice(1)?.map((rcData: any, i: any) => {
