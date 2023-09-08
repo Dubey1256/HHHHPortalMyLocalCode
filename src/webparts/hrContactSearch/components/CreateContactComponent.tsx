@@ -24,7 +24,7 @@ const CreateContact = (props: any) => {
     useEffect(()=>{
         geData();
         createContactStaffId();
-       
+    
       },[])  
       const geData=async()=>{
         const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH');
@@ -32,7 +32,7 @@ const CreateContact = (props: any) => {
          .expand("EmployeeID", "Division", "Author", "Editor", "SmartCountries", "Institution")
          .orderBy("Created", true)
          .get()
-         .then((Data: any[])=>{
+         .then((Data: any)=>{
             console.log(Data);
             setSearchData(Data);
             setAllContact(Data);
