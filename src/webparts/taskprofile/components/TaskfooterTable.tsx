@@ -325,7 +325,7 @@ function TasksTable(props: any) {
           if (result['TaskID'] == undefined) {
             result['TaskID'] = "";
           }
-          result['Item_x0020_Type'] = 'Task';
+          result['ItemType'] = 'Task';
 
           result.PortfolioType = 'Component';
 
@@ -384,7 +384,7 @@ function TasksTable(props: any) {
     // })
   }
   const GetComponents = async (Item: any) => {
-    var filt = "Id eq " + (Item.Component.length > 0 ? Item.Component[0].Id : Item.Services[0].Id) + "";
+    var filt = "Id eq " +Item?. Portfolio?.Id + "";
     let web = new Web(props?.AllListId?.siteUrl);
     let compo = [];
     compo = await web.lists
@@ -454,7 +454,7 @@ function TasksTable(props: any) {
     let ParentTaskId: any;
     if (childItem != undefined && childItem.data?.ItmesDelete == undefined) {
 
-      childItem.data.Item_x0020_Type = "Task";
+      childItem.data.ItemType = "Task";
 
 
 
@@ -809,7 +809,7 @@ function TasksTable(props: any) {
       {
         cell: ({ row, getValue }) => (
           <>
-            {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && (
+            {row?.original?.ItemType == "Task" && row?.original?.siteType != "Master Tasks" && (
               <a className='time-icons' onClick={(e) => EditData(e, row?.original)} >
                 <span title='Time' className="svg__iconbox svg__icon--clock"></span>
               </a>
@@ -846,7 +846,7 @@ function TasksTable(props: any) {
             <a className='d-flex'>
               {row?.original?.isRestructureActive && (
                 <span onClick={(e) => OpenModal(row?.original)}><img className="icon-sites-img me-2" src={row?.original?.Restructuring} /> </span>)}
-              {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && (
+              {row?.original?.ItemType == "Task" && row?.original?.siteType != "Master Tasks" && (
                 <span title='Edit' onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit"></span>
               )}
             </a>
@@ -905,7 +905,7 @@ function TasksTable(props: any) {
 
           if (obj.Id === items.Id && obj.TaskType?.Title != undefined) {
             obj.isRestructureActive = false;
-            newobj = { Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIcon, TaskType: obj.TaskType, }
+            newobj = { Title: obj.Title, ItemType: obj.ItemType, Id: obj.Id, siteIcon: obj.SiteIcon, TaskType: obj.TaskType, }
             ArrayTest.push(newobj);
 
           }
@@ -920,9 +920,9 @@ function TasksTable(props: any) {
                 obj.isRestructureActive = false;
                 sub.isRestructureActive = false;
                 newobj = {
-                  Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle, TaskType: obj.TaskType,
+                  Title: obj.Title, ItemType: obj.ItemType, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle, TaskType: obj.TaskType,
                   newChild: {
-                    Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIcon, TaskType: sub.TaskType,
+                    Title: sub.Title, ItemType: sub.ItemType, Id: sub.Id, siteIcon: sub.SiteIcon, TaskType: sub.TaskType,
                   }
                 }
                 ArrayTest.push(newobj);
@@ -1039,14 +1039,14 @@ function TasksTable(props: any) {
             array.push(...{ ...latestCheckedList });
             checkUpdate = checkUpdate + 1;
           }
-          if (obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate1 == 1) {
+          if (obj.Id === backupCheckedList[0]?.Id && obj.ItemType === backupCheckedList[0]?.ItemType && obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate1 == 1) {
             array.splice(index, 1);
             checkUpdate = checkUpdate1 + 1;
           }
           if (obj.childs != undefined && obj.childs.length > 0) {
             obj.childs.forEach((sub: any, indexsub: any) => {
               sub.isRestructureActive = false;
-              if (sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate1 == 1) {
+              if (sub.Id === backupCheckedList[0]?.Id && sub.ItemType === backupCheckedList[0]?.ItemType && sub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate1 == 1) {
                 array[index]?.subRows.splice(indexsub, 1);
                 array[index]?.childs.splice(indexsub, 1);
                 checkUpdate = checkUpdate1 + 1;
@@ -1119,24 +1119,24 @@ function TasksTable(props: any) {
         let array = data;
         array.forEach((obj: any, index: any) => {
           obj.isRestructureActive = false;
-          if (obj.Id === NewArrayBackup[0]?.Id && obj.Item_x0020_Type === NewArrayBackup[0]?.Item_x0020_Type && obj.TaskType?.Title === NewArrayBackup[0]?.TaskType?.Title && checkUpdate != 3) {
+          if (obj.Id === NewArrayBackup[0]?.Id && obj.ItemType === NewArrayBackup[0]?.ItemType && obj.TaskType?.Title === NewArrayBackup[0]?.TaskType?.Title && checkUpdate != 3) {
             obj.subRows.push(...latestCheckedList);
             obj.childs.push(...latestCheckedList);
             checkUpdate = checkUpdate + 1;
           }
-          if (obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
+          if (obj.Id === backupCheckedList[0]?.Id && obj.ItemType === backupCheckedList[0]?.ItemType && obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
             array.splice(index, 1);
             checkUpdate = checkUpdate + 1;
           }
           if (obj.childs != undefined && obj.childs.length > 0) {
             obj.childs.forEach((sub: any, indexsub: any) => {
               sub.isRestructureActive = false;
-              if (sub.Id === NewArrayBackup[0]?.Id && sub.Item_x0020_Type === NewArrayBackup[0]?.Item_x0020_Type && sub.TaskType?.Title === NewArrayBackup[0]?.TaskType?.Title && checkUpdate != 3) {
+              if (sub.Id === NewArrayBackup[0]?.Id && sub.ItemType === NewArrayBackup[0]?.ItemType && sub.TaskType?.Title === NewArrayBackup[0]?.TaskType?.Title && checkUpdate != 3) {
                 sub.subRows.push(...latestCheckedList);
                 sub.childs.push(...latestCheckedList);
                 checkUpdate = checkUpdate + 1;
               }
-              if (sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
+              if (sub.Id === backupCheckedList[0]?.Id && sub.ItemType === backupCheckedList[0]?.ItemType && sub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                 array[index]?.subRows.splice(indexsub, 1);
                 array[index]?.childs.splice(indexsub, 1);
                 checkUpdate = checkUpdate + 1;
@@ -1144,12 +1144,12 @@ function TasksTable(props: any) {
               if (sub.childs != undefined && sub.childs.length > 0) {
                 sub.childs.forEach((newsub: any, lastIndex: any) => {
                   newsub.isRestructureActive = false;
-                  if (newsub.Id === NewArrayBackup[0]?.Id && newsub.Item_x0020_Type === NewArrayBackup[0]?.Item_x0020_Type && newsub.TaskType?.Title === NewArrayBackup[0]?.TaskType?.Title && checkUpdate != 3) {
+                  if (newsub.Id === NewArrayBackup[0]?.Id && newsub.ItemType === NewArrayBackup[0]?.ItemType && newsub.TaskType?.Title === NewArrayBackup[0]?.TaskType?.Title && checkUpdate != 3) {
                     newsub.subRows.push(...latestCheckedList);
                     newsub.childs.push(...latestCheckedList);
                     checkUpdate = checkUpdate + 1;
                   }
-                  if (newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && newsub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
+                  if (newsub.Id === backupCheckedList[0]?.Id && newsub.ItemType === backupCheckedList[0]?.ItemType && newsub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                     array[index]?.subRows[indexsub]?.subRows.splice(lastIndex, 1);
                     array[index]?.childs[indexsub]?.childs.splice(lastIndex, 1);
                     checkUpdate = checkUpdate + 1;
@@ -1326,7 +1326,7 @@ function TasksTable(props: any) {
           }
         });
       }
-      if (itrm?.Item_x0020_Type == "Component") {
+      if (itrm?.ItemType == "Component") {
         // onChangeHandler(itrm, 'parent', eTarget);
       } else {
         // onChangeHandler(itrm, props, eTarget);
