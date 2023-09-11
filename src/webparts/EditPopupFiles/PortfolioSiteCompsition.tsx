@@ -333,7 +333,6 @@ const SiteCompositionComponent = (Props: any) => {
 
 
     const ChangeSiteCompositionSettings = (Type: any) => {
-
         if (Type == "Proportional") {
             const object = { ...SiteCompositionSettings[0], Proportional: true, Manual: false }
             SiteCompositionSettings[0] = object;
@@ -754,6 +753,7 @@ const SiteCompositionComponent = (Props: any) => {
                 }).then(() => {
                     console.log("Site Composition Updated !!!");
                     alert("save successfully !!!");
+                    Props.closePopupCallBack();
                 })
             } catch (error) {
                 console.log("Error : ", error.message)
@@ -763,7 +763,6 @@ const SiteCompositionComponent = (Props: any) => {
     }
 
     const UpdateSmartMetaDataSiteEndDate = async (siteData: any) => {
-        console.log("Smart Data list all data ======", siteData)
         let web = new Web(siteData.siteUrl.Url);
         try {
             await Promise.all([
@@ -1945,7 +1944,34 @@ const SiteCompositionComponent = (Props: any) => {
                 </Panel>
                 : null
             }
-           
+            {/* {IsOpenDateModal ?
+                <Modal
+                    show={IsOpenDateModal}
+                    isOpen={IsOpenDateModal}
+                    size='sm'
+                    isBlocking={IsOpenDateModal}
+                    containerClassName="custommodalpopup p-2"
+                >
+                    <div className="modal-content rounded-0">
+                        <div className="modal-header">
+                            <h5 className="modal-title">Edit Date</h5>
+                            <span onClick={() => closeDateModelFunction()}><i className="svg__iconbox svg__icon--cross crossBtn"></i></span>
+                        </div>
+                        <div className="modal-body p-2">
+                            <div>
+                                <input type="date" />
+                            </div>
+                            <div>
+                                <input type="date" />
+                            </div>
+                        </div>
+                        <footer className='text-end p-2'>
+                            <button className="btn btnPrimary" onClick={SaveDateButtonFunction}>Save</button>
+                            <button className='btn btn-default ms-1' onClick={() => closeDateModelFunction()}>Cancel</button>
+                        </footer>
+                    </div>
+                </Modal> : null
+            } */}
             {isCalloutVisible ? (
                 <FocusTrapCallout
                     role="alertdialog"
