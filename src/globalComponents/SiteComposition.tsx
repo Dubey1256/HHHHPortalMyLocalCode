@@ -17,6 +17,9 @@ export default function Sitecomposition(datas: any) {
   const [smartMetaDataIcon, setsmartMetaDataIcon] = React.useState([]);
   const [selectedClientCategory, setselectedClientCategory] = React.useState([]);
   const [AllSitesData, setAllSitesData] = React.useState([]);
+  const [renderCount, setRenderCount] = React.useState(0);
+  let BackupSiteTaggingData: any = [];
+  let BackupClientCategory: any = [];
   let siteUrl: any = datas?.sitedata?.siteUrl;
   const ServicesTaskCheck: any = false;
   React.useEffect(() => {
@@ -33,7 +36,7 @@ export default function Sitecomposition(datas: any) {
       datas.props.siteCompositionData = [];
     }
 
-  }, [datas?.props?.ClientCategory?.results])
+  }, [])
   const GetSmartMetaData = async (ClientCategory: any, ClientTime: any) => {
     const array2: any[] = [];
     let ClientTime2: any[] = [];
@@ -169,13 +172,16 @@ export default function Sitecomposition(datas: any) {
 
   const ClosePopupCallBack = React.useCallback(() => {
     setEditSiteCompositionStatus(false);
+    if (datas?.props?.ClientCategory?.results?.length > 0 || datas?.props.Sitestagging != undefined) {
+      GetSmartMetaData(datas?.props?.ClientCategory?.results, datas?.props?.Sitestagging);
+    }
+    // setRenderCount(renderCount + 1)
   }, [])
 
   const SiteCompositionCallBack = React.useCallback((Data: any, Type: any) => {
-    console.log("Site Composition final Call back Data =========", Data);
+    datas.props.Sitestagging = Data.ClientTime?.length > 0 ? JSON.stringify(Data.ClientTime) :[];
+    datas.props.ClientCategory.results = Data.selectedClientCategory;
   }, [])
-
-
   return (
     <>
       <dl className="Sitecomposition">
@@ -191,7 +197,6 @@ export default function Sitecomposition(datas: any) {
                 <span className="svg__iconbox svg__icon--editBox"></span>
               </p>
             </div>
-
           </a>
           <div className="spxdropdown-menu"
             style={{ display: showComposition ? 'block' : 'none' }}
