@@ -1842,3 +1842,37 @@ export const GetTaskId = (Item: any) => {
 
     return taskIds;
 }
+export const findTaskHierarchy = (row: any, AllMatsterAndTaskData: any): any[] => {
+    let createGrouping = (row: any): any[] => {
+        for (let i = 0; i < AllMatsterAndTaskData.length; i++) {
+            let Object = AllMatsterAndTaskData[i];
+            if (Object?.Item_x0020_Type?.toLowerCase() != 'task') {
+                Object.SiteIconTitle = Object?.Item_x0020_Type?.charAt(0);
+            }
+            if (Object.Id === row?.ParentTask?.Id && row?.siteType === Object?.siteType) {
+                Object.subRows = [];
+                Object.subRows.push(row);
+                return createGrouping(Object);
+            } else if (Object.Id === row?.Parent?.Id) {
+                Object.subRows = [];
+                Object.subRows.push(row);
+                return createGrouping(Object);
+            } else if (row?.Component != undefined && row?.Component?.length > 0 && Object.Id === row?.Component[0]?.Id) {
+                Object.subRows = [];
+                Object.subRows.push(row);
+                return createGrouping(Object);
+            } else if (row?.Services != undefined && row?.Services?.length > 0 && Object.Id === row?.Services[0]?.Id) {
+                Object.subRows = [];
+                Object.subRows.push(row);
+                return createGrouping(Object);
+            }
+            else if (row?.Portfolio != undefined && Object.Id === row?.Portfolio?.Id) {
+                Object.subRows = [];
+                Object.subRows.push(row);
+                return createGrouping(Object);
+            }
+        }
+        return [row];
+    }
+    return createGrouping(row);
+};
