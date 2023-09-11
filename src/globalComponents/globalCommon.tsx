@@ -1661,8 +1661,8 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
             .getById(Props.MasterTaskListID)
             .items
             .select("ID", "Title", "DueDate", "Status", "Portfolio_x0020_Type", "Sitestagging",
-                "ItemRank", "Item_x0020_Type", 'PortfolioStructureID', 'ClientTime', 'SiteCompositionSettings', "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "TaskCategories/Id", "TaskCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title")
-            .expand("TeamMembers", "Author", "ClientCategory", "Parent", "TaskCategories", "AssignedTo", "ClientCategory")
+                "ItemRank", "Item_x0020_Type", 'PortfolioStructureID', 'ClientTime', 'PortfolioType/Id','PortfolioType/Title','SiteCompositionSettings', "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "TaskCategories/Id", "TaskCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title")
+            .expand("TeamMembers", "Author", "ClientCategory", "Parent", "TaskCategories", "AssignedTo", "ClientCategory",'PortfolioType')
             .top(4999).filter(`Portfolio_x0020_Type eq '${Props?.ComponentType}'`)
             .get();
         // console.log("all Service and Coponent data form global Call=======", componentDetails);
