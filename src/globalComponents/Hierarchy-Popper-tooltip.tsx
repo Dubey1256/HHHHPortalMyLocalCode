@@ -107,7 +107,7 @@ export default function ReactPopperTooltip({ ShareWebId, row, projectToolShow, A
                 placeholder: "",
                 hasCustomExpanded: true,
                 hasExpanded: true,
-                isHeaderNotAvlable:true,
+                isHeaderNotAvlable: true,
                 size: 30,
                 id: 'Id',
             },
@@ -169,6 +169,19 @@ export default function ReactPopperTooltip({ ShareWebId, row, projectToolShow, A
     const callBackData = React.useCallback((elem: any, ShowingData: any) => {
 
     }, []);
+    //*************************** find all Hyrarchy TitleShow  ****************************/
+
+    React.useEffect(() => {
+        let toolTitles:any = '';
+        if (row.getParentRows() != undefined) {
+            if (Array.isArray(row.getParentRows())) {
+                toolTitles = row?.getParentRows()?.map((elem:any) => elem.original.Title).join(' > ');
+            }
+            row.original.toolTitle = toolTitles != "" ?  toolTitles+ ' > ' +row.original.Title : row?.original?.Title;
+        }
+    }, [row]);
+
+    //*************************** find all Hyrarchy TitleShow End  ****************************/
     return (
         <>
             {projectToolShow != true ? <span
@@ -200,11 +213,11 @@ export default function ReactPopperTooltip({ ShareWebId, row, projectToolShow, A
                     <div {...getArrowProps({ className: "tooltip-arrow" })} />
                 </div>
             )}
-            {action === "hover" && visible && projectToolShow != true && row?.original?.toolTitle !=undefined && row?.original?.toolSharewebId !=undefined && (
+            {action === "hover" && visible && projectToolShow != true && row?.original?.toolTitle != undefined && row?.original?.TaskID != undefined && (
                 <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container" })}>
                     <span>
                         <span>
-                            <a>{row.original.toolSharewebId} : </a></span><span><a>{row.original.toolTitle}</a>
+                            <a>{row?.original?.TaskID} : </a></span><span><a>{row?.original?.toolTitle}</a>
                         </span>
                     </span>
                     <div {...getArrowProps({ className: "tooltip-arrow" })} />
