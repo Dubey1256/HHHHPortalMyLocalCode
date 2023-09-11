@@ -420,20 +420,20 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getById(Items.Items.listId)
                     .items
-                    .select("Id,Title,PriorityRank,workingThisWeek,EstimatedTime,EstimatedTimeDescription,waitForResponse,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,TaskLevel,TaskLevel,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,PriorityRank,workingThisWeek,EstimatedTime,EstimatedTimeDescription,waitForResponse,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
-                    .expand('AssignedTo,Author,Editor,Component,Services,Events,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio')
+                    .expand('AssignedTo,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio')
                     .get();
             }
             else {
                 smartMeta = await web.lists
                     .getByTitle(Items.Items.listName)
                     .items
-                    .select("Id,Title,PriorityRank,BasicImageInfo,EstimatedTime,EstimatedTimeDescription,workingThisWeek,OffshoreImageUrl,OffshoreComments,waitForResponse,SiteCompositionSettings,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,TaskLevel,TaskLevel,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,PriorityRank,BasicImageInfo,EstimatedTime,EstimatedTimeDescription,workingThisWeek,OffshoreImageUrl,OffshoreComments,waitForResponse,SiteCompositionSettings,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
-                    .expand('AssignedTo,Author,Editor,Component,Services,Events,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio')
+                    .expand('AssignedTo,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio')
                     .get();
             }
             let statusValue: any
@@ -794,20 +794,20 @@ const EditTaskPopup = (Items: any) => {
                     item.FeedBackArray = tempArray[0]?.FeedBackDescriptions;
                     FeedBackBackupArray = JSON.stringify(tempArray);
                 }
-                if (item.Component?.length > 0) {
-                    setComponentTaskCheck(true)
-                    setSmartComponentData(item.Component);
-                    item.Portfolio_x0020_Type = "Component"
-                } else {
-                    setComponentTaskCheck(false)
-                }
-                if (item.Services?.length > 0) {
-                    setServicesTaskCheck(true)
-                    setSmartServicesData(item.Services);
-                    item.Portfolio_x0020_Type = "Service"
-                } else {
-                    setServicesTaskCheck(false)
-                }
+                // if (item.Component?.length > 0) {
+                //     setComponentTaskCheck(true)
+                //     setSmartComponentData(item.Component);
+                //     item.Portfolio_x0020_Type = "Component"
+                // } else {
+                //     setComponentTaskCheck(false)
+                // }
+                // if (item.Services?.length > 0) {
+                //     setServicesTaskCheck(true)
+                //     setSmartServicesData(item.Services);
+                //     item.Portfolio_x0020_Type = "Service"
+                // } else {
+                //     setServicesTaskCheck(false)
+                // }
 
                 if (item.OffshoreComments != null || item.OffshoreComments != undefined) {
                     let BackgroundComments: any = JSON.parse(item.OffshoreComments);
@@ -837,9 +837,9 @@ const EditTaskPopup = (Items: any) => {
                 }
                 item.ClientCategory = selectedClientCategoryData;
                 setEditData(item)
-                if (item.Component != undefined && item.Component.length > 0) {
-                    let PortfolioId: any = item.Component[0].Id;
-                    GetPortfolioSiteComposition(PortfolioId)
+                if (item.Portfolio != undefined && item.Portfolio?.Title !=undefined) {
+                    let PortfolioId: any = item.Portfolio.Id;
+                    GetPortfolioSiteComposition(PortfolioId,item)
                 }
                 EditDataBackup = item;
                 setPriorityStatus(item.Priority)
@@ -1594,14 +1594,33 @@ const EditTaskPopup = (Items: any) => {
 
 
     // ************************** this is used for getting Site Composition For Selected Portfolio which in Taaged into Task ***********************
-    const GetPortfolioSiteComposition = async (ProtfolioId: any) => {
+    const GetPortfolioSiteComposition = async (ProtfolioId: any,item:any) => {
         let DataFromCall: any;
         let web = new Web(siteUrls);
         try {
             DataFromCall = await web.lists
-                .getById(AllListIdData?.MasterTaskListID).items.select("Sitestagging,SiteCompositionSettings, Title, Id").top(5000).filter(`Id eq ${ProtfolioId}`).get();
+                .getById(AllListIdData?.MasterTaskListID).items.select("Sitestagging,SiteCompositionSettings, Title,Id,PortfolioType/Title").expand('PortfolioType').top(5000).filter(`Id eq ${ProtfolioId}`).get();
             if (DataFromCall != undefined) {
                 let TempSiteCompositionArray: any = [];
+                item.Portfolio_x0020_Type = DataFromCall[0].PortfolioType.Title;
+                if (item.Portfolio_x0020_Type === 'Component') {
+                    var Item: any = {};
+                    Item.Id = item.Portfolio.Id;
+                    Item.Title = item.Portfolio.Title;
+                    let array: any = [];
+                    array.push(Item)
+                    setSmartComponentData(array);
+                    setComponentTaskCheck(true)
+                }
+                if (item.Portfolio_x0020_Type === 'Service') {
+                    var Item: any = {};
+                    Item.Id = item.Portfolio.Id;
+                    Item.Title = item.Portfolio.Title;
+                    let array: any = [];
+                    array.push(Item)
+                    setSmartServicesData(array);
+                    setServicesTaskCheck(true)
+                }
                 if (DataFromCall[0].Sitestagging != undefined) {
                     let tempSiteComposition: any = JSON.parse(DataFromCall[0].Sitestagging != undefined ? DataFromCall[0].Sitestagging : [{}])
                     if (tempSiteComposition != undefined && tempSiteComposition.length > 0) {
@@ -1955,7 +1974,7 @@ const EditTaskPopup = (Items: any) => {
         ApproverIds = []
     }
 
-    var smartComponentsIds: any = [];
+    var smartComponentsIds: any = '';
     var RelevantPortfolioIds: any = [];
     var AssignedToIds: any = [];
     var ResponsibleTeamIds: any = [];
@@ -2000,19 +2019,19 @@ const EditTaskPopup = (Items: any) => {
                         smartMetaCall = await web.lists
                             .getById(Items.Items.listId)
                             .items
-                            .select("Id,Title,PriorityRank,workingThisWeek,waitForResponse,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,TaskLevel,TaskLevel,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+                            .select("Id,Title,PriorityRank,workingThisWeek,waitForResponse,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
                             .top(5000)
                             .filter(`Id eq ${Items.Items.Id}`)
-                            .expand('AssignedTo,Author,Editor,Component,Services,Events,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio')
+                            .expand('AssignedTo,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio')
                             .get();
                     } else {
                         smartMetaCall = await web.lists
                             .getById(Items.Items.listName)
                             .items
-                            .select("Id,Title,PriorityRank,workingThisWeek,waitForResponse,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,TaskLevel,TaskLevel,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+                            .select("Id,Title,PriorityRank,workingThisWeek,waitForResponse,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
                             .top(5000)
                             .filter(`Id eq ${Items.Items.Id}`)
-                            .expand('AssignedTo,Author,Editor,Component,Services,Events,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio')
+                            .expand('AssignedTo,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio')
                             .get();
 
                     }
@@ -2223,7 +2242,7 @@ const EditTaskPopup = (Items: any) => {
             smartComponentData?.map((com: any) => {
                 if (smartComponentData != undefined && smartComponentData?.length >= 0) {
                     $.each(smartComponentData, function (index: any, smart: any) {
-                        smartComponentsIds.push(smart.Id);
+                        smartComponentsIds = smart.Id;
                     })
                 }
             })
@@ -2232,7 +2251,7 @@ const EditTaskPopup = (Items: any) => {
             smartServicesData?.map((com: any) => {
                 if (smartServicesData != undefined && smartServicesData?.length >= 0) {
                     $.each(smartServicesData, function (index: any, smart: any) {
-                        SmartServicesId.push(smart.Id);
+                        smartComponentsIds = smart.Id;
                     })
                 }
             })
@@ -2335,15 +2354,16 @@ const EditTaskPopup = (Items: any) => {
             Priority: Priority,
             StartDate: EditData.StartDate ? Moment(EditData.StartDate).format("MM-DD-YYYY") : null,
             PercentComplete: UpdateTaskInfo.PercentCompleteStatus ? (Number(UpdateTaskInfo.PercentCompleteStatus) / 100) : (EditData.PercentComplete ? (EditData.PercentComplete / 100) : null),
-            ComponentId: { "results": (smartComponentsIds != undefined && smartComponentsIds.length > 0) ? smartComponentsIds : [] },
+          //  ComponentId: { "results": (smartComponentsIds != undefined && smartComponentsIds.length > 0) ? smartComponentsIds : [] },
             Categories: CategoriesData ? CategoriesData : null,
+            PortfolioId: smartComponentsIds ===''?null :smartComponentsIds,
             // RelevantPortfolioId: { "results": (RelevantPortfolioIds != undefined && RelevantPortfolioIds?.length > 0) ? RelevantPortfolioIds : [] },
             TaskCategoriesId: { "results": (CategoryTypeID != undefined && CategoryTypeID.length > 0) ? CategoryTypeID : [] },
             DueDate: EditData.DueDate ? Moment(EditData.DueDate).format("MM-DD-YYYY") : null,
             CompletedDate: EditData.CompletedDate ? Moment(EditData.CompletedDate).format("MM-DD-YYYY") : null,
             Status: taskStatus ? taskStatus : (EditData.Status ? EditData.Status : null),
             Mileage: (EditData.Mileage ? EditData.Mileage : ''),
-            ServicesId: { "results": (SmartServicesId != undefined && SmartServicesId.length > 0) ? SmartServicesId : [] },
+           // ServicesId: { "results": (SmartServicesId != undefined && SmartServicesId.length > 0) ? SmartServicesId : [] },
             AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds.length > 0) ? AssignedToIds : [] },
             ResponsibleTeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0) ? ResponsibleTeamIds : [] },
             TeamMembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds.length > 0) ? TeamMemberIds : [] },
@@ -2712,7 +2732,7 @@ const EditTaskPopup = (Items: any) => {
                 let date = new Date()
                 let timeStamp = date.getTime();
                 let imageIndex = index + 1
-                fileName = 'Image' + imageIndex + "-" + EditData.Title + " " + EditData.Title + timeStamp + ".jpg";
+                fileName = 'Image' + imageIndex + "-" + EditData.Title?.replace(/["':]/g, '')?.slice(0,50) + " "+ timeStamp + ".jpg";
                 let currentUserDataObject: any;
                 if (currentUserBackupArray != null && currentUserBackupArray.length > 0) {
                     currentUserDataObject = currentUserBackupArray[0];
@@ -4531,7 +4551,7 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
 
                                     <div className="col-md-3">
-                                        { AllListIdData.isShowSiteCompostion ?
+                                        {EditData.siteCompositionData != undefined && EditData.siteCompositionData.length > 0 && AllListIdData.isShowSiteCompostion ?
                                             <div className="Sitecomposition">
                                                 <div className='dropdown'>
                                                     <a className="sitebutton bg-fxdark d-flex justify-content-between" >
@@ -4546,7 +4566,7 @@ const EditTaskPopup = (Items: any) => {
                                                             ></span>
                                                         </div>
                                                     </a>
-                                                    {composition && EditData.siteCompositionData != undefined && EditData.siteCompositionData.length > 0 ?
+                                                    {composition ?
                                                         <div className="mt-1 spxdropdown-menu">
                                                             <ul>
                                                                 {EditData.siteCompositionData != undefined && EditData.siteCompositionData.length > 0 ?
@@ -5682,7 +5702,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         ></span>
                                                                     </div>
                                                                 </a>
-                                                                {composition && EditData.siteCompositionData != undefined && EditData.siteCompositionData.length > 0 ?
+                                                                {composition ?
                                                                     <div className="mt-1 spxdropdown-menu">
                                                                         <ul>
                                                                             {EditData.siteCompositionData != undefined && EditData.siteCompositionData.length > 0 ?
