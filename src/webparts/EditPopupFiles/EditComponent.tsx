@@ -1,11 +1,8 @@
 import * as React from "react";
-// import ImagesC from "./Images";
 import {
   Panel,
   PanelType
 } from "office-ui-fabric-react";
-
-// import * as Moment from 'moment';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/js/dist/modal.js";
 import "bootstrap/js/dist/tab.js";
@@ -24,9 +21,9 @@ import { EditorState } from "draft-js";
 import HtmlEditorCard from "../../globalComponents/HtmlEditor/HtmlEditor";
 import TeamConfigurationCard from "./TeamConfigurationPortfolio";
 import Tooltip from "../../globalComponents/Tooltip";
-// import ImagesC from "./ImageInformation";
 import VersionHistoryPopup from "../../globalComponents/VersionHistroy/VersionHistory";
-import SiteCompositionComponent from "./PortfolioSiteCompsition";
+import Sitecomposition from "../../globalComponents/SiteComposition";
+
 import ImagesC from "./ImageInformation";
 var PostTechnicalExplanations = "";
 var PostDeliverables = "";
@@ -2910,6 +2907,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                       </div>
                     </div>
                     <div className="col-sm-2 ">
+                      <div className="col">
+                        <Sitecomposition props={EditData} sitedata={RequireData}/>
+                      </div>
                       <div className="col" title="Priority">
                         <div className="input-group mb-2">
                           <label className="form-label  full-width">
