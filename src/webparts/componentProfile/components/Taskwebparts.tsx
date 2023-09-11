@@ -24,8 +24,6 @@ import PortfolioStructureCreationCard from "../../../globalComponents/tableContr
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
 import ExpndTable from "../../../globalComponents/ExpandTable/Expandtable";
 import { Panel, PanelType } from "office-ui-fabric-react";
-import CreateActivity from "../../servicePortfolio/components/CreateActivity";
-import CreateWS from "../../servicePortfolio/components/CreateWS";
 import SelectedClientCategoryPupup1 from "../../../globalComponents/SelectedClientCategorypopup";
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 import {
@@ -50,8 +48,9 @@ import Loader from "react-loader";
 import ShowTeamMembers from "../../../globalComponents/ShowTeamMember";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
-// import HighlightableCell from "../../../globalComponents/highlight";
-import HighlightableCell from "../../componentPortfolio/components/highlight";
+import HighlightableCell from "../../../globalComponents/highlight";
+import CreateActivity from "../../servicePortfolio/components/CreateActivity";
+import CreateWS from "../../servicePortfolio/components/CreateWS";
 
 
 ///TanstackTable filter And CheckBox 
@@ -1143,7 +1142,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     let componentDetails: any = [];
     let componentDetails1: any = [];
     var select =
-      "ID,Id,Title,Mileage,TaskListId,TaskListName,PortfolioLevel,SiteCompositionSettings,PortfolioStructureID,PortfolioStructureID,ComponentLink,Package,Comments,DueDate,Sitestagging,Body,Deliverables,StartDate,Created,Item_x0020_Type,Help_x0020_Information,Background,Categories,Short_x0020_Description_x0020_On,CategoryItem,PriorityRank,Priority,TaskDueDate,PercentComplete,Modified,CompletedDate,ItemRank,Portfolio_x0020_Type,Services/Title, ClientTime,Services/Id,Events/Id,Events/Title,Parent/Id,Parent/Title,Component/Id,Component/Title,Component/ItemType,Services/Id,Services/Title,Services/ItemType,Events/Id,Author/Title,Author/Id,Editor/Title,Events/Title,Events/ItemType,TaskCategories/Id,TaskType/Title,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ClientCategory/Id,ClientCategory/Title,ResponsibleTeam/Id,ResponsibleTeam/Title&$expand=Parent,Events,Services,TaskType,AssignedTo,Component,ClientCategory,Author,Editor,TeamMembers,ResponsibleTeam,TaskCategories&$filter=" +
+      "ID,Id,Title,Mileage,TaskListId,TaskListName,PortfolioLevel,SiteCompositionSettings,PortfolioStructureID,PortfolioStructureID,ComponentLink,Package,Comments,DueDate,Sitestagging,Body,Deliverables,StartDate,Created,Item_x0020_Type,Help_x0020_Information,Background,Categories,Short_x0020_Description_x0020_On,CategoryItem,PriorityRank,Priority,TaskDueDate,PercentComplete,Modified,CompletedDate,ItemRank,Portfolio_x0020_Type,Services/Title, ClientTime,Services/Id,Events/Id,Events/Title,Parent/Id,Parent/Title,Component/Id,Component/Title,Component/ItemType,Services/Id,Services/Title,Services/ItemType,Events/Id,Author/Title,Author/Id,Editor/Title,Events/Title,Events/ItemType,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ClientCategory/Id,ClientCategory/Title,ResponsibleTeam/Id,ResponsibleTeam/Title&$expand=Parent,Events,Services,AssignedTo,Component,ClientCategory,Author,Editor,TeamMembers,ResponsibleTeam,TaskCategories&$filter=" +
       filt +
       "";
 
