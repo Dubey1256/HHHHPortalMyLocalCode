@@ -5,7 +5,7 @@ import moment from 'moment';
 import EditDocument from './EditDocunentPanel'
 import { useState, useEffect,forwardRef,useImperativeHandle,createContext } from 'react';
 import {MyContext} from './Taskprofile'
-
+let mastertaskdetails:any=[];
 const RelevantDocuments = (props: any,ref:any) => {
     const myContextData2:any=React.useContext<any>(MyContext)
     const [documentData, setDocumentData] = useState([]);
@@ -36,8 +36,8 @@ const RelevantDocuments = (props: any,ref:any) => {
             // .items.select("Id,Title,PriorityRank,Year,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl")
             // .expand("Author,Editor").filter(`${props?.siteName}/Id eq ${props?.ID}`).top(4999)
             // .get()
-            .items.select("Id,Title,PriorityRank,Year,Item_x0020_Cover,SharewebTask/Id,SharewebTask/Title,SharewebTask/ItemType,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl")
-          .expand("Author,Editor,SharewebTask").filter(`${props?.siteName}/Id eq ${props?.ID}`).top(4999)
+            .items.select("Id,Title,PriorityRank,Year,Item_x0020_Cover,SharewebTask/Id,SharewebTask/Title,SharewebTask/ItemType,Portfolios/Id,Portfolios/Title,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl")
+          .expand("Author,Editor,SharewebTask,Portfolios").filter(`${props?.siteName}/Id eq ${props?.ID}`).top(4999)
           .get()
             .then((Data: any[]) => {
               let keydoc:any=[];
@@ -51,12 +51,28 @@ const RelevantDocuments = (props: any,ref:any) => {
                     }
                 })
                 console.log("document data", Data);
+                let smartmetadta:any=[];
                 myContextData2.FunctionCall(keydoc,Data[0]?.FileDirRef,false)
+                LoadMasterTaskList().then((smartData:any)=>{
+                    smartmetadta=smartmetadta.concat(smartData)
+                    Data?.map((servicecomponent: any) => {
+                        if (servicecomponent.Portfolios != undefined && servicecomponent.Portfolios.length > 0) {
+                            smartmetadta.map((mastertask: any) => {
+                            if (mastertask.Id == servicecomponent.Portfolios[0].Id) {
+                              servicecomponent.Portfolio = mastertask
+                            }
+                          })
+                        }
+                      })
                
-                var releventData=Data.filter((d)=>d.ItemRank!=6)
-                setDocumentData(releventData);
+                    var releventData=Data.filter((d)=>d.ItemRank!=6)
+                    setDocumentData(releventData);
+                  
+                    setFileurl(Data[0]?.FileDirRef) 
+                }).catch((error:any)=>{
+                    console.log(error)
+                })
               
-                setFileurl(Data[0]?.FileDirRef)
             })
             // .catch((err) => {
             //     console.log(err.message);
@@ -67,6 +83,36 @@ const RelevantDocuments = (props: any,ref:any) => {
        
 
     }
+    const LoadMasterTaskList = ()=> {
+        return new Promise(function(resolve, reject) {
+    
+        let web = new Web(props.AllListId?.siteUrl);
+         web.lists
+          .getById(props?.AllListId.MasterTaskListID).items
+          .select(
+            "Id",
+            "Title",
+            "Mileage",
+            "TaskListId",
+            "TaskListName",
+            "PortfolioType/Id",
+            "PortfolioType/Title",
+            "PortfolioType/Color",
+          ).expand("PortfolioType").top(4999).get()
+          .then((dataserviccomponent: any) => {
+            console.log(dataserviccomponent)
+            mastertaskdetails = mastertaskdetails.concat(dataserviccomponent);
+        
+           
+            // return dataserviccomponent
+            resolve(dataserviccomponent)
+      
+          }).catch((error: any) => {
+            console.log(error)
+            reject(error)
+          })
+        })
+      }
     const editDocumentsLink = (editData: any) => {
         setEditdocpanel(true);
         console.log(editData)
