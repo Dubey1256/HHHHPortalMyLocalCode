@@ -24,9 +24,7 @@ import PortfolioStructureCreationCard from "../../../globalComponents/tableContr
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
 import ExpndTable from "../../../globalComponents/ExpandTable/Expandtable";
 import { Panel, PanelType } from "office-ui-fabric-react";
-import CreateActivity from "../../servicePortfolio/components/CreateActivity";
-import CreateWS from "../../servicePortfolio/components/CreateWS";
-import SelectedClientCategoryPupup1 from "../../../globalComponents/SelectedClientCategorypopup";
+//import SelectedClientCategoryPupup1 from "../../../globalComponents/SelectedClientCategorypopup";
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 import {
   Column,
@@ -50,11 +48,13 @@ import Loader from "react-loader";
 import ShowTeamMembers from "../../../globalComponents/ShowTeamMember";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
-// import HighlightableCell from "../../../globalComponents/highlight";
-import HighlightableCell from "../../componentPortfolio/components/highlight";
+import HighlightableCell from "../../../globalComponents/highlight";
+// import HighlightableCell from "../../componentPortfolio/components/highlight";
+import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 
-
-///TanstackTable filter And CheckBox 
+import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
+import CreateActivity from '../../servicePortfolio/components/CreateActivity'
+import CreateWS from '../../servicePortfolio/components/CreateWS'
 declare module "@tanstack/table-core" {
   interface FilterFns {
     fuzzy: FilterFn<unknown>;
@@ -183,6 +183,7 @@ let table: any = {};
 let ParentDs: any;
 let countaa = 0;
 let Itemtypes: any;
+let copyDtaArray:any=[]
 let globalFilterHighlited: any;
 let SmartMetaData: any = [];
 // let selectedClientCategoryPopup:any=false;
@@ -192,6 +193,9 @@ let task = 0;
 let AllActivitysData: any = [];
 let AllWorkStreamData: any = [];
 let TimesheetData:any=[];
+let childRefdata: any;
+
+let portfolioColor: any = '';
 export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   if (countaa == 0) {
     ParentDs = props?.Id
@@ -234,6 +238,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   const [IsComponent, setIsComponent] = React.useState(false);
   const [SharewebComponent, setSharewebComponent] = React.useState("");
   const [IsTask, setIsTask] = React.useState(false);
+  const [portfolioTypeData, setPortfolioTypeData] = React.useState([])
   const [SharewebTask, setSharewebTask] = React.useState("");
   const [SharewebTimeComponent, setSharewebTimeComponent] = React.useState([]);
   const [IsTimeEntry, setIsTimeEntry] = React.useState(false);
@@ -241,10 +246,11 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     []
   );
   const [checked, setchecked] = React.useState([]);
-  const [checkedList, setCheckedList] = React.useState([]);
+  const [checkedList1, setCheckedList1] = React.useState([]);
+  const [checkedList, setCheckedList] = React.useState<any>([]);
   const [Isshow, setIsshow] = React.useState(false);
   const [tablecontiner, settablecontiner]: any = React.useState("hundred");
-  const [MeetingPopup, setMeetingPopup] = React.useState(false);
+  const [openActity, setOpenActity] = React.useState(false);
   const [WSPopup, setWSPopup] = React.useState(false);
   const [ActivityPopup, setActivityPopup] = React.useState(false);
   const [ActivityDisable, setActivityDisable] = React.useState(false);
@@ -263,7 +269,11 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   const [comparetool, setcomparetool]: any = React.useState(false);
   // SmartTotalTime
 
+  const childRef = React.useRef<any>();
+  if (childRef != null) {
+      childRefdata = { ...childRef };
 
+  }
 
   // Popover start 
 
@@ -339,7 +349,20 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
     return '';
   }
-
+  const getPortFolioType = async () => {
+    let web = new Web(NextProp.siteUrl);
+    let PortFolioType = [];
+    PortFolioType = await web.lists
+        .getById(NextProp.PortFolioTypeID)
+        .items.select(
+            "Id",
+            "Title",
+            "Color",
+            "IdRange"
+        )
+        .get();
+    setPortfolioTypeData(PortFolioType);
+};
 
   React.useEffect(() => {
     FindAWTDataCount();
@@ -517,9 +540,9 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
   }
 
-  React.useEffect(() => {
-    
+  React.useEffect(() => { 
     SmartMetaDatas();
+    getPortFolioType();
   }, [])
 
 
@@ -819,9 +842,9 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                   ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
                   : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
               result.chekbox = false;
-              if (result.Short_x0020_Description_x0020_On != undefined) {
-                result.Short_x0020_Description_x0020_On =
-                  result.Short_x0020_Description_x0020_On.replace(
+              if (result.Body != undefined) {
+                result.descriptionsSearch =
+                  result.Body.replace(
                     /(<([^>]+)>)/gi,
                     ""
                   );
@@ -1143,7 +1166,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     let componentDetails: any = [];
     let componentDetails1: any = [];
     var select =
-      "ID,Id,Title,Mileage,TaskListId,TaskListName,PortfolioLevel,SiteCompositionSettings,PortfolioStructureID,PortfolioStructureID,ComponentLink,Package,Comments,DueDate,Sitestagging,Body,Deliverables,StartDate,Created,Item_x0020_Type,Help_x0020_Information,Background,Categories,Short_x0020_Description_x0020_On,CategoryItem,PriorityRank,Priority,TaskDueDate,PercentComplete,Modified,CompletedDate,ItemRank,Portfolio_x0020_Type,Services/Title, ClientTime,Services/Id,Events/Id,Events/Title,Parent/Id,Parent/Title,Component/Id,Component/Title,Component/ItemType,Services/Id,Services/Title,Services/ItemType,Events/Id,Author/Title,Author/Id,Editor/Title,Events/Title,Events/ItemType,TaskCategories/Id,TaskType/Title,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ClientCategory/Id,ClientCategory/Title,ResponsibleTeam/Id,ResponsibleTeam/Title&$expand=Parent,Events,Services,TaskType,AssignedTo,Component,ClientCategory,Author,Editor,TeamMembers,ResponsibleTeam,TaskCategories&$filter=" +
+      "ID,Id,Title,Mileage,TaskListId,TaskListName,PortfolioLevel,SiteCompositionSettings,PortfolioStructureID,PortfolioStructureID,ComponentLink,Package,Comments,DueDate,Sitestagging,Body,Deliverables,StartDate,Created,Item_x0020_Type,Help_x0020_Information,Background,PortfolioType/Title,PortfolioType/Id,Categories,Short_x0020_Description_x0020_On,CategoryItem,PriorityRank,Priority,TaskDueDate,PercentComplete,Modified,CompletedDate,ItemRank,Portfolio_x0020_Type, ClientTime,Parent/Id,Parent/Title,Author/Title,Author/Id,Editor/Title,Events/Title,Events/ItemType,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ClientCategory/Id,ClientCategory/Title,ResponsibleTeam/Id,ResponsibleTeam/Title&$expand=Parent,AssignedTo,ClientCategory,Author,Editor,TeamMembers,ResponsibleTeam,TaskCategories&$filter=" +
       filt +
       "";
 
@@ -1290,8 +1313,8 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   const findTaggedComponents = function (task: any) {
     task.Portfolio_x0020_Type = "Component";
     task.isService = false;
-    if (IsUpdated === "Service") {
-      $.each(task["Services"], function (index: any, componentItem: any) {
+    if (IsUpdated === portfolioTypeData[0]?.Title) {
+      $.each(task[portfolioTypeData[0]?.Title], function (index: any, componentItem: any) {
         for (var i = 0; i < ComponetsData["allComponets"].length; i++) {
           let crntItem = ComponetsData["allComponets"][i];
           if (componentItem?.Id == crntItem?.Id) {
@@ -1303,9 +1326,9 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
               task.ShowTooltipSharewebId =
                 crntItem.PortfolioStructureID + "-" + task.TaskID;
             }
-            if (crntItem.Portfolio_x0020_Type == "Service") {
+            if (crntItem.Portfolio_x0020_Type == portfolioTypeData[0]?.Title) {
               task.isService = true;
-              task.Portfolio_x0020_Type = "Service";
+              task.Portfolio_x0020_Type = portfolioTypeData[0]?.Title;
             }
             if (ComponetsData["allComponets"][i]["subRows"] === undefined)
               ComponetsData["allComponets"][i]["subRows"] = [];
@@ -1313,7 +1336,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
               !isItemExistsNew(ComponetsData["allComponets"][i]["subRows"], task)
             ) {
               ComponetsData["allComponets"][i].downArrowIcon =
-                IsUpdated != undefined && IsUpdated == "Service"
+                IsUpdated != undefined && IsUpdated == portfolioTypeData[0]?.Title
                   ? GlobalConstants.MAIN_SITE_URL +
                   "/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png"
                   : GlobalConstants.MAIN_SITE_URL +
@@ -1333,62 +1356,62 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         }
       });
     }
-    if (IsUpdated === "Events") {
-      $.each(task["Events"], function (index: any, componentItem: any) {
-        for (var i = 0; i < ComponetsData["allComponets"].length; i++) {
-          let crntItem = ComponetsData["allComponets"][i];
-          if (componentItem?.Id == crntItem?.Id) {
-            if (
-              crntItem.PortfolioStructureID != undefined &&
-              crntItem.PortfolioStructureID != ""
-            ) {
-              task.PortfolioStructureID = crntItem.PortfolioStructureID;
-              task.ShowTooltipSharewebId =
-                crntItem.PortfolioStructureID + "-" + task.TaskID;
-            }
-            if (crntItem.Portfolio_x0020_Type == "Events") {
-              task.isService = true;
-              task.Portfolio_x0020_Type = "Events";
-            }
-            if (ComponetsData["allComponets"][i]["subRows"] == undefined)
-              ComponetsData["allComponets"][i]["subRows"] = [];
-            if (
-              !isItemExistsNew(ComponetsData["allComponets"][i]["subRows"], task)
-            )
-              ComponetsData["allComponets"][i]["subRows"].push(task);
-            break;
-          }
-        }
-      });
-    }
-    if (IsUpdated === "Component") {
-      $.each(task["Component"], function (index: any, componentItem: any) {
-        for (var i = 0; i < ComponetsData["allComponets"].length; i++) {
-          let crntItem = ComponetsData["allComponets"][i];
-          if (componentItem?.Id == crntItem?.Id) {
-            if (
-              crntItem.PortfolioStructureID != undefined &&
-              crntItem.PortfolioStructureID != ""
-            ) {
-              task.PortfolioStructureID = crntItem.PortfolioStructureID;
-              task.ShowTooltipSharewebId =
-                crntItem.PortfolioStructureID + "-" + task.TaskID;
-            }
-            if (crntItem.Portfolio_x0020_Type == "Component") {
-              task.isService = true;
-              task.Portfolio_x0020_Type = "Component";
-            }
-            if (ComponetsData["allComponets"][i]["subRows"] == undefined)
-              ComponetsData["allComponets"][i]["subRows"] = [];
-            if (
-              !isItemExistsNew(ComponetsData["allComponets"][i]["subRows"], task)
-            )
-              ComponetsData["allComponets"][i]["subRows"].push(task);
-            break;
-          }
-        }
-      });
-    }
+    // if (IsUpdated === "Events") {
+    //   $.each(task["Events"], function (index: any, componentItem: any) {
+    //     for (var i = 0; i < ComponetsData["allComponets"].length; i++) {
+    //       let crntItem = ComponetsData["allComponets"][i];
+    //       if (componentItem?.Id == crntItem?.Id) {
+    //         if (
+    //           crntItem.PortfolioStructureID != undefined &&
+    //           crntItem.PortfolioStructureID != ""
+    //         ) {
+    //           task.PortfolioStructureID = crntItem.PortfolioStructureID;
+    //           task.ShowTooltipSharewebId =
+    //             crntItem.PortfolioStructureID + "-" + task.TaskID;
+    //         }
+    //         if (crntItem.Portfolio_x0020_Type == "Events") {
+    //           task.isService = true;
+    //           task.Portfolio_x0020_Type = "Events";
+    //         }
+    //         if (ComponetsData["allComponets"][i]["subRows"] == undefined)
+    //           ComponetsData["allComponets"][i]["subRows"] = [];
+    //         if (
+    //           !isItemExistsNew(ComponetsData["allComponets"][i]["subRows"], task)
+    //         )
+    //           ComponetsData["allComponets"][i]["subRows"].push(task);
+    //         break;
+    //       }
+    //     }
+    //   });
+    // }
+    // if (IsUpdated === "Component") {
+    //   $.each(task["Component"], function (index: any, componentItem: any) {
+    //     for (var i = 0; i < ComponetsData["allComponets"].length; i++) {
+    //       let crntItem = ComponetsData["allComponets"][i];
+    //       if (componentItem?.Id == crntItem?.Id) {
+    //         if (
+    //           crntItem.PortfolioStructureID != undefined &&
+    //           crntItem.PortfolioStructureID != ""
+    //         ) {
+    //           task.PortfolioStructureID = crntItem.PortfolioStructureID;
+    //           task.ShowTooltipSharewebId =
+    //             crntItem.PortfolioStructureID + "-" + task.TaskID;
+    //         }
+    //         if (crntItem.Portfolio_x0020_Type == "Component") {
+    //           task.isService = true;
+    //           task.Portfolio_x0020_Type = "Component";
+    //         }
+    //         if (ComponetsData["allComponets"][i]["subRows"] == undefined)
+    //           ComponetsData["allComponets"][i]["subRows"] = [];
+    //         if (
+    //           !isItemExistsNew(ComponetsData["allComponets"][i]["subRows"], task)
+    //         )
+    //           ComponetsData["allComponets"][i]["subRows"].push(task);
+    //         break;
+    //       }
+    //     }
+    //   });
+    // }
   };
   //var pageType = 'Service-Portfolio';
 
@@ -1402,6 +1425,8 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   };
   var ComponetsData: any = {};
   ComponetsData.allUntaggedTasks = [];
+
+
   const bindData = function () {
     var RootComponentsData: any[] = [];
     var ComponentsData: any = [];
@@ -1414,17 +1439,17 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       result.CreatedDateImg = [];
       result.childsLength = 0;
       result.TitleNew = result.Title;
-      // result.DueDate = Moment(result.DueDate).format("DD/MM/YYYY");
+      result.DueDate = Moment(result.DueDate).format("DD/MM/YYYY");
       result.flag = true;
-      // if (result.DueDate == "Invalid date" || "") {
-      //   result.DueDate = result.DueDate.replaceAll("Invalid date", "");
-      // }
+      if (result.DueDate == "Invalid date" || "") {
+        result.DueDate = result.DueDate.replaceAll("Invalid date", "");
+      }
 
       // result.siteType = config.Title;
       result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
 
       if (result.Short_x0020_Description_x0020_On != undefined) {
-        result.Short_x0020_Description_x0020_On =
+        result.descriptionsSearch =
           result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/gi, "");
       }
       result["siteType"] = "Master Tasks";
@@ -1957,7 +1982,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
     })
     setData(data => ([...maidataBackup]));
-    setCheckedList(checkedList => ([...list]));
+    setCheckedList((checkedList: any) => ([...list]));
   };
 
 
@@ -2079,154 +2104,150 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
   };
 
-  const Call = React.useCallback((childItem: any) => {
-    // if (MeetingItems.length > 0) {
-    //   MeetingItems = [];
-    // }
-    setRowSelection({})
-    // MeetingItems?.forEach((val: any): any => {
-    //     val.chekBox = false;
-    // })
-    closeTaskStatusUpdatePoup2();
-    setIsComponent(false);;
-    setIsTask(false);
-    setMeetingPopup(false);
-    setWSPopup(false);
+  // const Call = React.useCallback((childItem: any) => {
+   
+  //   setRowSelection({})
+    
+  //   closeTaskStatusUpdatePoup2();
+  //   setIsComponent(false);;
+  //   setIsTask(false);
+  //   setMeetingPopup(false);
+  //   setWSPopup(false);
 
-    var MainId: any = ''
-    let CountArray = 0;
-    let ParentTaskId: any = ''
-    if (childItem != undefined) {
-      childItem.data.Services = []
-      childItem.data.Component = []
-      childItem.data['flag'] = true;
-      childItem.data['TitleNew'] = childItem?.data?.Title;
-      if (childItem?.data?.ServicesId[0] != undefined) {
-        childItem.data.Services.push({ Id: childItem?.data?.ServicesId[0] });
-      }
-      if (childItem?.data?.ComponentId[0] != undefined) {
-        childItem.data.Component.push({ Id: childItem?.data?.ComponentId[0] });
-      }
-      if (childItem?.data?.ServicesId != undefined && childItem?.data?.ServicesId?.length > 0) {
-        MainId = childItem.data.ServicesId[0]
-      }
-      if (childItem.data.ComponentId != undefined && childItem.data.ComponentId.length > 0) {
-        MainId = childItem.data.ComponentId[0]
-      }
-      if (childItem.data.ParentTaskId != undefined && childItem.data.ParentTaskId != "") {
-        ParentTaskId = childItem.data.ParentTaskId
-      }
-      if (childItem?.data?.DueDate != undefined && childItem?.data?.DueDate != "" && childItem?.data?.DueDate != "Invalid date") {
-        childItem.data.DueDate = childItem.data.DueDate ? Moment(childItem?.data?.DueDate).format("MM-DD-YYYY") : null
-      }
+  //   var MainId: any = ''
+  //   let CountArray = 0;
+  //   let ParentTaskId: any = ''
+  //   if (childItem != undefined) {
+  //     childItem.data.Services = []
+  //     childItem.data.Component = []
+  //     childItem.data['flag'] = true;
+  //     childItem.data['TitleNew'] = childItem?.data?.Title;
+  //     if (childItem?.data?.ServicesId[0] != undefined) {
+  //       childItem.data.Services.push({ Id: childItem?.data?.ServicesId[0] });
+  //     }
+  //     if (childItem?.data?.ComponentId[0] != undefined) {
+  //       childItem.data.Component.push({ Id: childItem?.data?.ComponentId[0] });
+  //     }
+  //     if (childItem?.data?.ServicesId != undefined && childItem?.data?.ServicesId?.length > 0) {
+  //       MainId = childItem.data.ServicesId[0]
+  //     }
+  //     if (childItem.data.ComponentId != undefined && childItem.data.ComponentId.length > 0) {
+  //       MainId = childItem.data.ComponentId[0]
+  //     }
+  //     if (childItem.data.ParentTaskId != undefined && childItem.data.ParentTaskId != "") {
+  //       ParentTaskId = childItem.data.ParentTaskId
+  //     }
+  //     if (childItem?.data?.DueDate != undefined && childItem?.data?.DueDate != "" && childItem?.data?.DueDate != "Invalid date") {
+  //       childItem.data.DueDate = childItem.data.DueDate ? Moment(childItem?.data?.DueDate).format("MM-DD-YYYY") : null
+  //     }
 
-      if (AllItems != undefined) {
-        AllItems?.map((comp: any) => {
-          comp.flag = true;
-          comp.show = false;
-          if (comp?.Id == ParentTaskId || comp.ID == ParentTaskId) {
-            comp.subRows = comp.subRows == undefined ? [] : comp.subRows
-            // comp.childs.push(childItem.data)
-            CountArray++;
-            comp.subRows.push(childItem.data)
-            comp.subRows = comp?.subRows?.filter((ele: any, ind: any) => ind === comp?.subRows?.findIndex((elem: { ID: any; }) => elem.ID === ele.ID))
+  //     if (AllItems != undefined) {
+  //       AllItems?.map((comp: any) => {
+  //         comp.flag = true;
+  //         comp.show = false;
+  //         if (comp?.Id == ParentTaskId || comp.ID == ParentTaskId) {
+  //           comp.subRows = comp.subRows == undefined ? [] : comp.subRows
+  //           // comp.childs.push(childItem.data)
+  //           CountArray++;
+  //           comp.subRows.push(childItem.data)
+  //           comp.subRows = comp?.subRows?.filter((ele: any, ind: any) => ind === comp?.subRows?.findIndex((elem: { ID: any; }) => elem.ID === ele.ID))
 
-          }
-          if (comp.subRows != undefined && comp.subRows.length > 0) {
-            comp?.subRows?.map((subComp: any) => {
-              subComp.flag = true;
-              subComp.show = false;
-              if (subComp?.Id == ParentTaskId || subComp.ID == ParentTaskId) {
-                subComp.subRows = subComp.subRows == undefined ? [] : subComp.subRows
-                // subComp.childs.push(childItem.data)
-                CountArray++;
-                subComp.subRows.push(childItem.data)
+  //         }
+  //         if (comp.subRows != undefined && comp.subRows.length > 0) {
+  //           comp?.subRows?.map((subComp: any) => {
+  //             subComp.flag = true;
+  //             subComp.show = false;
+  //             if (subComp?.Id == ParentTaskId || subComp.ID == ParentTaskId) {
+  //               subComp.subRows = subComp.subRows == undefined ? [] : subComp.subRows
+  //               // subComp.childs.push(childItem.data)
+  //               CountArray++;
+  //               subComp.subRows.push(childItem.data)
 
-                subComp.subRows = subComp?.subRows?.filter((ele: any, ind: any) => ind === subComp?.subRows?.findIndex((elem: { ID: any; }) => elem.ID === ele.ID))
-              }
+  //               subComp.subRows = subComp?.subRows?.filter((ele: any, ind: any) => ind === subComp?.subRows?.findIndex((elem: { ID: any; }) => elem.ID === ele.ID))
+  //             }
 
 
-              if (subComp.subRows != undefined && subComp.subRows.length > 0) {
-                subComp?.subRows?.map((Feat: any) => {
-                  if (Feat?.DueDate?.length > 0 && Feat?.DueDate != "Invalid date") {
-                    Feat.DueDate = Feat?.DueDate ? Moment(Feat?.DueDate).format("MM-DD-YYYY") : null
-                  } else {
-                    Feat.DueDate = ''
-                  }
-                  Feat.flag = true;
-                  Feat.show = false;
-                  if (Feat?.Id == ParentTaskId || Feat.ID == ParentTaskId) {
-                    CountArray++;
-                    // Feat.childs = Feat.childs == undefined ? [] : Feat.childs
-                    Feat.subRows = Feat.subRows == undefined ? [] : Feat.subRows
-                    // Feat.childs.push(childItem.data)
-                    Feat.subRows.push(childItem.data)
-                    Feat.subRows = Feat?.subRows?.filter((ele: any, ind: any) => ind === Feat?.subRows?.findIndex((elem: { ID: any; }) => elem.ID === ele.ID))
-                  }
+  //             if (subComp.subRows != undefined && subComp.subRows.length > 0) {
+  //               subComp?.subRows?.map((Feat: any) => {
+  //                 if (Feat?.DueDate?.length > 0 && Feat?.DueDate != "Invalid date") {
+  //                   Feat.DueDate = Feat?.DueDate ? Moment(Feat?.DueDate).format("MM-DD-YYYY") : null
+  //                 } else {
+  //                   Feat.DueDate = ''
+  //                 }
+  //                 Feat.flag = true;
+  //                 Feat.show = false;
+  //                 if (Feat?.Id == ParentTaskId || Feat.ID == ParentTaskId) {
+  //                   CountArray++;
+  //                   // Feat.childs = Feat.childs == undefined ? [] : Feat.childs
+  //                   Feat.subRows = Feat.subRows == undefined ? [] : Feat.subRows
+  //                   // Feat.childs.push(childItem.data)
+  //                   Feat.subRows.push(childItem.data)
+  //                   Feat.subRows = Feat?.subRows?.filter((ele: any, ind: any) => ind === Feat?.subRows?.findIndex((elem: { ID: any; }) => elem.ID === ele.ID))
+  //                 }
 
 
-                  if (Feat.subRows != undefined && Feat.subRows.length > 0) {
-                    Feat?.subRows?.map((Activity: any) => {
-                      if (Activity?.DueDate?.length > 0 && Activity?.DueDate != "Invalid date") {
-                        Activity.DueDate = Activity?.DueDate ? Moment(Activity?.DueDate).format("MM-DD-YYYY") : null
-                      } else {
-                        Activity.DueDate = ''
-                      }
-                      Activity.flag = true;
-                      Activity.show = false;
-                      if (Activity?.Id == ParentTaskId || Activity.ID == ParentTaskId) {
-                        CountArray++;
-                        // Activity.childs = Activity.childs == undefined ? [] : Activity.childs
-                        Activity.subRows = Activity.subRows == undefined ? [] : Activity.subRows
-                        // Activity.childs.push(childItem.data)
-                        Activity.subRows.push(childItem.data)
-                        // Activity.subRows = Activity?.subRows.filter((val: any, id: any, array: any) => {
-                        //     return array.indexOf(val) == id;
-                        // })
-                        Activity.subRows = Activity?.subRows?.filter((ele: any, ind: any) => ind === Activity?.subRows?.findIndex((elem: { ID: any; }) => elem.ID === ele.ID))
-                      }
+  //                 if (Feat.subRows != undefined && Feat.subRows.length > 0) {
+  //                   Feat?.subRows?.map((Activity: any) => {
+  //                     if (Activity?.DueDate?.length > 0 && Activity?.DueDate != "Invalid date") {
+  //                       Activity.DueDate = Activity?.DueDate ? Moment(Activity?.DueDate).format("MM-DD-YYYY") : null
+  //                     } else {
+  //                       Activity.DueDate = ''
+  //                     }
+  //                     Activity.flag = true;
+  //                     Activity.show = false;
+  //                     if (Activity?.Id == ParentTaskId || Activity.ID == ParentTaskId) {
+  //                       CountArray++;
+  //                       // Activity.childs = Activity.childs == undefined ? [] : Activity.childs
+  //                       Activity.subRows = Activity.subRows == undefined ? [] : Activity.subRows
+  //                       // Activity.childs.push(childItem.data)
+  //                       Activity.subRows.push(childItem.data)
+  //                       // Activity.subRows = Activity?.subRows.filter((val: any, id: any, array: any) => {
+  //                       //     return array.indexOf(val) == id;
+  //                       // })
+  //                       Activity.subRows = Activity?.subRows?.filter((ele: any, ind: any) => ind === Activity?.subRows?.findIndex((elem: { ID: any; }) => elem.ID === ele.ID))
+  //                     }
 
 
-                      if (Activity.subRows != undefined && Activity.subRows.length > 0) {
-                        Activity?.subRows?.map((workst: any) => {
-                          if (workst?.DueDate?.length > 0 && workst?.DueDate != "Invalid date") {
-                            workst.DueDate = workst?.DueDate ? Moment(workst?.DueDate).format("MM-DD-YYYY") : null
-                          } else {
-                            workst.DueDate = ''
-                          }
-                          workst.flag = true;
-                          workst.show = false;
-                          if (workst?.Id == ParentTaskId || workst.ID == ParentTaskId) {
-                            CountArray++;
-                            // workst.childs = workst.childs == undefined ? [] : workst.childs
-                            workst.subRows = workst.subRows == undefined ? [] : workst.subRows
-                            // workst.childs.push(childItem.data)
-                            workst.subRows.push(childItem.data)
+  //                     if (Activity.subRows != undefined && Activity.subRows.length > 0) {
+  //                       Activity?.subRows?.map((workst: any) => {
+  //                         if (workst?.DueDate?.length > 0 && workst?.DueDate != "Invalid date") {
+  //                           workst.DueDate = workst?.DueDate ? Moment(workst?.DueDate).format("MM-DD-YYYY") : null
+  //                         } else {
+  //                           workst.DueDate = ''
+  //                         }
+  //                         workst.flag = true;
+  //                         workst.show = false;
+  //                         if (workst?.Id == ParentTaskId || workst.ID == ParentTaskId) {
+  //                           CountArray++;
+  //                           // workst.childs = workst.childs == undefined ? [] : workst.childs
+  //                           workst.subRows = workst.subRows == undefined ? [] : workst.subRows
+  //                           // workst.childs.push(childItem.data)
+  //                           workst.subRows.push(childItem.data)
 
-                            workst.subRows = workst?.subRows?.filter((ele: any, ind: any) => ind === workst?.subRows?.findIndex((elem: { ID: any; }) => elem.ID === ele.ID))
-                          }
+  //                           workst.subRows = workst?.subRows?.filter((ele: any, ind: any) => ind === workst?.subRows?.findIndex((elem: { ID: any; }) => elem.ID === ele.ID))
+  //                         }
 
-                        })
-                      }
-                    })
-                  }
-                })
-              }
+  //                       })
+  //                     }
+  //                   })
+  //                 }
+  //               })
+  //             }
 
-            })
+  //           })
 
-          }
-        })
-        if (CountArray == 0) {
-          AllItems.push(childItem.data)
-        }
-         setData(AllItems => ([...AllItems]))
-        //refreshData();
-        // rerender();
-      }
+  //         }
+  //       })
+  //       if (CountArray == 0) {
+  //         AllItems.push(childItem.data)
+  //       }
+  //        setData(AllItems => ([...AllItems]))
+  //       //refreshData();
+  //       // rerender();
+  //     }
 
-    }
-  }, []);
+  //   }
+  // }, []);
 
 
 
@@ -2379,77 +2400,109 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
     // setMeetingItems([])
   };
-  const CreateMeetingPopups = (item: any) => {
-    setMeetingPopup(true);
-    MeetingItems[0]["NoteCall"] = item;
-  };
-  const openActivity = () => {
-    if (MeetingItems.length == 0 && childsData.length == 0) {
-      MeetingItems.push(props);
+ 
+  const CreateMeetingPopups = (type: any) => {
+    if (checkedList?.TaskType === undefined) {
+        checkedList.NoteCall = type
+        setOpenActity(true)
+
     }
-    if (MeetingItems.length > 1) {
-      alert(
-        "More than 1 Parents selected, Select only 1 Parent to create a child item"
-      );
-    } else {
-      if (MeetingItems[0] != undefined) {
-        let parentcat: any = [];
-
-        if (items != undefined && items.length > 0) {
-          MeetingItems[0].ClientCategory = [];
-          items.forEach((val: any) => {
-            MeetingItems[0].ClientCategory.push(val);
-          });
-        }
-        if (MeetingItems[0].TaskType != undefined) {
-
-          if (MeetingItems[0].TaskType.Title == "Activities") {
-            setWSPopup(true);
-          }
-        }
-
-        if (
-          MeetingItems != undefined &&
-          MeetingItems[0].TaskType?.Title == "Workstream"
-
-        ) {
-          setActivityPopup(true);
-        }
-
-        if (
-          MeetingItems[0].TaskType == undefined &&
-          childsData[0] == undefined
-        ) {
-          setActivityPopup(true);
-        }
-      }
-    }
-
-    if (
-      childsData[0] != undefined &&
-      childsData[0].TaskType != undefined
-    ) {
-      let parentcat: any = [];
-      MeetingItems.push(childsData[0]);
-      if (childsData[0].TaskType.Title == "Activities") {
+    if (checkedList?.TaskType?.Id == 1) {
+        checkedList.NoteCall = type
         setWSPopup(true);
-      }
-      if (
-        childsData[0] != undefined &&
-        childsData[0].TaskType.Title == "Workstream"
-      ) {
-        childsData[0].ClientTime = JSON.parse(childsData[0].ClientTime)
-        MeetingItems.push(childsData[0]);
-        //setActivityPopup(true)
-
-        childsData[0].NoteCall = "Task";
-        setMeetingPopup(true);
-
-
-
-      }
     }
-  };
+    if (checkedList?.TaskType?.Id == 3) {
+        checkedList.NoteCall = type
+        setOpenActity(true);
+
+    }
+    if (checkedList?.TaskType?.Id == 2) {
+
+        alert("You can not create ny item inside Task")
+    }
+}
+const addActivity = (type: any) => {
+  if (checkedList?.TaskType?.Id == undefined || checkedList?.TaskTypeId == undefined) {
+      checkedList.NoteCall = type
+      setActivityPopup(true);
+  }
+  if (checkedList?.TaskTypeId === 3 || checkedList?.TaskType?.Id === 3) {
+      checkedList.NoteCall = 'Task'
+      setActivityPopup(true);
+  }
+  if (checkedList?.TaskType?.Id == 1 || checkedList?.TaskTypeId == 1) {
+      checkedList.NoteCall = 'Workstream'
+      setWSPopup(true);
+  }
+  if (checkedList?.TaskType?.Id == 2) {
+
+      alert("You can not create ny item inside Task")
+  }
+
+}
+const Call = (res: any) => {
+  childRef?.current?.setRowSelection({});
+  setIsComponent(false);
+  setIsTask(false);
+  setActivityPopup(false)
+  setWSPopup(false)
+  setActivityPopup(false)
+  copyDtaArray?.forEach((val: any) => {
+      if (res?.data?.PortfolioId == val.Id) {
+          val.subRows = val.subRows === undefined ? [] : val.subRows;
+
+          val.subRows.push(res.data)
+      }
+      else if (val?.subRows != undefined && val?.subRows.length > 0) {
+          val.subRows?.forEach((ele: any) => {
+              if (res?.data?.PortfolioId == ele?.Id) {
+                  ele.subRows = ele.subRows === undefined ? [] : ele.subRows;
+                  ele.subRows.push(res.data)
+
+              }
+              else {
+                  ele.subRows?.forEach((elev: any) => {
+                      if (res?.data?.PortfolioId == elev.Id) {
+                          elev.subRows = elev.subRows === undefined ? [] : elev.subRows;
+                          elev.subRows.push(res.data)
+
+                      }
+                      else {
+                          elev.subRows?.forEach((child: any) => {
+                              if (res?.data?.PortfolioId == child?.Id) {
+                                  child.subRows = child.subRows === undefined ? [] : child.subRows;
+
+                                  child.subRows.push(res.data)
+
+                              }
+                              else {
+                                  {
+                                      child.subRows?.forEach((Sub: any) => {
+                                          if (res?.data?.PortfolioId == Sub.Id) {
+                                              Sub.subRows = Sub.subRows === undefined ? [] : Sub.subRows;
+
+                                              Sub.subRows.push(res.data)
+
+                                          }
+                                      })
+                                  }
+                              }
+                          })
+                      }
+                  })
+              }
+          })
+      }
+
+  })
+  refreshData();
+
+}
+const closeActivity = () => {
+    setActivityPopup(false)
+    childRef?.current?.setRowSelection({});
+}
+  
 
   const topRestructureClose = () => {
     setComponentRestruct(false);
@@ -3402,6 +3455,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     };
     setOldArrayBackup(ArrayTest);
     setData([...maidataBackup]);
+    copyDtaArray=maidataBackup;
 
     //  }
     // setAddModalOpen(true)
@@ -3889,6 +3943,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
           setCheckedList([]);
           AllItems = AllItems?.concat(array);
           setData((AllItems) => [...AllItems]);
+          copyDtaArray=AllItems;
           refreshData();
           rerender();
 
@@ -4061,6 +4116,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
           // refreshDataTaskLable();
           AllItems = AllItems?.concat(array);
           setData((AllItems) => [...AllItems]);
+          copyDtaArray=AllItems;
           refreshData();
           rerender();
 
@@ -4085,377 +4141,320 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   };
 
   ///react table start function//////
-
-  const columns = React.useMemo<ColumnDef<any, unknown>[]>(
+  const columns: any = React.useMemo<ColumnDef<any, unknown>[]>(
     () => [
-      {
-        accessorKey: "",
-        placeholder: "",
-        size: 35,
-        id: 'Id',
-        header: ({ table }: any) => (
-          <>
-            <button
-              className="border-0 bg-Ff"
-              {...{
-                onClick: table.getToggleAllRowsExpandedHandler(),
-              }}
-            >
-              {table.getIsAllRowsExpanded() ? (
-                <FaChevronDown />) : (<FaChevronRight />)}
-            </button>
-          </>
-        ),
-        cell: ({ row, getValue }) => (
-          <div className="d-flex">
+        {
+            accessorKey: "",
+            placeholder: "",
+            hasCheckbox: true,
+            hasCustomExpanded: true,
+            hasExpanded: true,
+            size: 55,
+            id: 'Id',
+        },
+        {
+            cell: ({ row, getValue }) => (
+                <div className="alignCenter">
+                    {row?.original?.SiteIcon != undefined ? (
+                        <div className="alignCenter" title="Show All Child">
+                            <img title={row?.original?.TaskType?.Title} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 workmember ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 workmember ml20 me-1" :
+                                row?.original?.TaskType?.Title == "Workstream" ? "ml-48 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Task" || row?.original?.Item_x0020_Type === "Task" && row?.original?.TaskType == undefined ? "ml-60 workmember ml20 me-1" : "workmember ml20 me-1"
+                            }
+                                src={row?.original?.SiteIcon}>
+                            </img>
+                        </div>
+                    ) : (
+                        <>
+                            {row?.original?.Title != "Others" ? (
+                                <div title={row?.original?.Item_x0020_Type} style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 Dyicons" :
+                                    row?.original?.TaskType?.Title == "Workstream" ? "ml-48 Dyicons" : row?.original?.TaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons"
+                                }>
+                                    {row?.original?.SiteIconTitle}
+                                </div>
+                            ) : (
+                                ""
+                            )}
+                        </>
+                    )}
+                    {getValue()}
+                </div>
+            ),
+            accessorKey: "",
+            id: "row?.original.Id",
+            canSort: false,
+            placeholder: "",
+            size: 95,
+        },
+        {
+            accessorFn: (row) => row?.TaskID,
+            cell: ({ row, getValue }) => (
+                <>
+                    <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={NextProp}/>
+                </>
+            ),
+            id: "TaskID",
+            placeholder: "ID",
+            header: "",
+            resetColumnFilters: false,
+            size: 195,
+        },
+        {
+            accessorFn: (row) => row?.Title,
+            cell: ({ row, column, getValue }) => (
+                <div className="alignCenter">
+                    <span className="column-description2">
+                        {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== "Others" && (
+                            <a className="text-content hreflink" title={row?.original?.Title} data-interception="off" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
+                                href={NextProp.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.ID} >
+                                <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : globalFilterHighlited} />
+                            </a>
+                        )}
+                        {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== "Others" && (
+                            <a className="text-content hreflink" title={row?.original?.Title} data-interception="off" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
+                                href={NextProp.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + row?.original?.ID + "&Site=" + row?.original?.siteType} >
+                                <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : globalFilterHighlited} />
+                            </a>
+                        )}
+                        {row?.original.Title === "Others" ? (
+                            <span className="text-content" title={row?.original?.Title} style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}>{row?.original?.Title}</span>
+                        ) : (
+                            ""
+                        )}
+                    </span>
+                    {row?.original?.Categories == 'Draft' ?
+                        <FaCompressArrowsAlt style={{ height: '11px', width: '20px', color: `${row?.original?.PortfolioType?.Color}` }} /> : ''}
+                    {row?.original?.subRows?.length > 0 ?
+                        <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
+                    {row?.original?.descriptionsSearch != null && row?.original?.descriptionsSearch != '' && (
+                        <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />
+                    )}
+                </div>
+            ),
+            id: "Title",
+            placeholder: "Title",
+            resetColumnFilters: false,
+            header: "",
+            size: 480,
+        },
+        {
+            accessorFn: (row) => row?.projectStructerId + "." + row?.ProjectTitle,
+            cell: ({ row }) => (
+                <>
+                    {row?.original?.ProjectTitle != (null || undefined) ?
+                        <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${NextProp.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
+                            <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={NextProp} /></a></span>
+                        : ""}
+                </>
+            ),
+            id: 'ProjectTitle',
+            placeholder: "Project",
+            resetColumnFilters: false,
+            header: "",
+            size: 70,
+        },
+        {
+            accessorFn: (row) => row?.ClientCategorySearch,
+            cell: ({ row }) => (
+                <>
+                    <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadata} />
+                </>
+            ),
+            id: "ClientCategorySearch",
+            placeholder: "Client Category",
+            header: "",
+            resetColumnFilters: false,
+            size: 100,
+        },
+        {
+            accessorFn: (row) => row?.AllTeamName,
+            cell: ({ row }) => (
+                <div className="alignCenter">
+                    <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={AllUsers} Context={NextProp?.Context} />
+                </div>
+            ),
+            id: "AllTeamName",
+            placeholder: "Team",
+            resetColumnFilters: false,
+            header: "",
+            size: 131,
+        },
+        {
+            accessorKey: "PercentComplete",
+            placeholder: "Status",
+            header: "",
+            resetColumnFilters: false,
+            size: 42,
+            id: "PercentComplete",
+        },
+        {
+            accessorKey: "ItemRank",
+            placeholder: "Item Rank",
+            header: "",
+            resetColumnFilters: false,
+            size: 42,
+            id: "ItemRank",
+        },
+        {
+            accessorKey: "DueDate",
+            placeholder: "Due Date",
+            header: "",
+            resetColumnFilters: false,
+            size: 100,
+            id: "DueDate",
+        },
+        
+        {
+          accessorFn: (row) =>
+            row?.Created ? Moment(row?.Created).format("DD/MM/YYYY") : "",
+          cell: ({ row, getValue }) => (
             <>
-              {row.getCanExpand() ? (
-                <span
-                  className="border-0"
-                  {...{
-                    onClick: row.getToggleExpandedHandler(),
-                    style: { cursor: "pointer" },
-                  }}
-                >
-                  {row.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
-                </span>
-              ) : (
+              {row?.original?.Created == null ? (
                 ""
-              )}
-              {getValue()}
-            </>
-          </div>
-        ),
-      },
-      {
-        header: ({ table }: any) => (
-          <>
-            <IndeterminateCheckbox className="mx-1 "
-              {...{
-                checked: table.getIsAllRowsSelected(),
-                indeterminate: table.getIsSomeRowsSelected(),
-                onChange: table.getToggleAllRowsSelectedHandler(),
-              }}
-            />
-          </>
-        ),
-        cell: ({ row, getValue }) => (
-          <>
-            <span className="d-flex">
-              {row?.original?.TitleNew != "Tasks" ? (
-                <IndeterminateCheckbox
-                  {...{
-                    checked: row.getIsSelected(),
-                    indeterminate: row.getIsSomeSelected(),
-                    onChange: row.getToggleSelectedHandler(),
-                  }}
-                />
-              ) : (
-                ""
-              )}
-              {row?.original?.SiteIcon != undefined ? (
-                <a className="hreflink" title="Show All Child" data-toggle="modal" >
-                  <img className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 icon-sites-img ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 icon-sites-img ml20 me-1" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 icon-sites-img ml20 me-1" :
-                    row?.original?.TaskType?.Title == "Workstream" ? "ml-48 icon-sites-img ml20 me-1" : row?.original?.TaskType?.Title == "Task" || row?.original?.Item_x0020_Type === "Task" && row?.original?.TaskType == undefined ? "ml-60 icon-sites-img ml20 me-1" : "icon-sites-img ml20 me-1"
-                  }
-                    src={row?.original?.SiteIcon}>
-                  </img>
-                </a>
               ) : (
                 <>
-                  {row?.original?.TitleNew != "Tasks" ? (
-                    <div className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 Dyicons" :
-                      row?.original?.TaskType?.Title == "Workstream" ? "ml-48 Dyicons" : row?.original?.TaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons"
-                    }>
-                      {row?.original?.SiteIconTitle}
-                    </div>
+                  {row?.original?.Author != undefined ? (
+                    <>
+                      <span>
+                        {Moment(row?.original?.Created).format("DD/MM/YYYY")}{" "}
+                      </span>
+                      <img
+                        className="workmember"
+                        title={row?.original?.Author?.Title}
+                        src={findUserByName(row?.original?.Author?.Id)}
+                      />
+                    </>
                   ) : (
-                    ""
+                    <img
+                      className="workmember"
+                      src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"
+                    />
                   )}
                 </>
               )}
-              {getValue()}
-            </span>
-          </>
-        ),
-        accessorKey: "",
-        id: "row?.original.Id",
-        canSort: false,
-        placeholder: "",
-        size: 145,
-      },
-      {
-        accessorFn: (row) => row?.TaskID,
-        cell: ({ row, getValue }) => (
-          <>
-            <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={NextProp}/>
-          </>
-        ),
-        id: "TaskID",
-        placeholder: "ID",
-        header: "",
-        size: 130,
-      },
-      {
-        accessorFn: (row) => row?.Title,
-        cell: ({ row, column, getValue }) => (
-          <>
-            {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== 'Others' && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-              href={NextProp.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.ID}
-            >
-              <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : globalFilterHighlited} />
-            </a>}
-            {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== 'Others' &&
-              <a className="hreflink serviceColor_Active" target="_blank" data-interception="off"
-                href={NextProp.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + row?.original?.ID + "&Site=" + row?.original?.siteType}
-              >
-                <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : globalFilterHighlited} />
-              </a>}
-            {row?.original.TitleNew === "Tasks" ? (
-              <span>{row?.original.TitleNew}</span>
-            ) : (
-              ""
-            )}
-            {row?.original?.Categories == 'Draft' ?
-              <FaCompressArrowsAlt style={{ height: '11px', width: '20px' }} /> : ''}
-            {row?.original?.subRows?.length > 0 ?
-              <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
-
-            {row?.original?.Short_x0020_Description_x0020_On != null &&
-              <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                <span title="Edit" className="svg__iconbox svg__icon--info"></span>
-                {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /> */}
-                <span className="popover__content">
-                  {row?.original?.Short_x0020_Description_x0020_On}
-                </span>
-              </span>}
-
-          </>
-        ),
-        id: "Title",
-        placeholder: "Title",
-        header: "",
-      },
-      {
-
-        accessorFn: (row) => row?.projectStructerId + "." + row?.ProjectTitle,
-
-        cell: ({ row }) => (
-
-            <>
-
-                {row?.original?.ProjectTitle != (null || undefined) ?
-
-                    <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${NextProp.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
-
-                        <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={NextProp} /></a></span>
-
-                    : ""}
-
             </>
-
-        ),
-
-        id: 'ProjectTitle',
-
-        placeholder: "Project",
-
-        header: "",
-
-        size: 70,
-
-    },
-      {
-        accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title).join("-"),
-        cell: ({ row }) => (
-          <>
-            <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadata} />
-            {/* {row?.original?.ClientCategory?.map((elem: any) => {
-              return (
-                <> <span title={elem?.Title} className="ClientCategory-Usericon">{elem?.Title?.slice(0, 2).toUpperCase()}</span></>
-              )
-            })} */}
-          </>
-        ),
-        id: 'ClientCategory',
-        placeholder: "Client Category",
-        header: "",
-        size: 100,
-      },
-      {
-        accessorFn: (row) => row?.TeamLeaderUser?.map((elem: any) => elem.Title).join("-"),
-        cell: ({ row }) => (
-          <div>
-            <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={AllUsers} />
-          </div>
-        ),
-        id: 'TeamLeaderUser',
-        placeholder: "Team",
-        header: "",
-        size: 120,
-      },
-      {
-        accessorKey: "PercentComplete",
-        placeholder: "Status",
-        header: "",
-        size: 42,
-      },
-      {
-        accessorKey: "ItemRank",
-        placeholder: "Item Rank",
-        header: "",
-        size: 42,
-      },
-      {
-        accessorFn: (row) => row?.DueDate ? Moment(row?.DueDate).format("DD/MM/YYYY") : "",
-        cell: ({ row, getValue }) => (
-          <>
-            {row?.original?.DueDate == null ? (""
-            ) : (
-              <>
-                <span>{Moment(row?.original?.DueDate).format("DD/MM/YYYY")}</span>
-              </>
-            )
-            }
-          </>
-        ),
-        id: 'DueDate',
-        placeholder: "Due Date",
-        header: "",
-        size: 100,
-      },
-      {
-        accessorFn: (row) => row?.Created ? Moment(row?.Created).format("DD/MM/YYYY") : "",
-        cell: ({ row, getValue }) => (
-          <>
-            {row?.original?.Created == null ? (""
-            ) : (
-              <>
-                {row?.original?.Author != undefined ? (
-                  <>
-                    <span>{Moment(row?.original?.Created).format("DD/MM/YYYY")} </span>
-                    <img className="workmember" title={row?.original?.Author?.Title} src={findUserByName(row?.original?.Author?.Id)}
-                    />
-
-                  </>
-                ) : (
-                  <img
-                    className="workmember"
-                    src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"
-                  />
-                )}
-
-              </>
-            )
-            }
-          </>
-        ),
-        id: 'Created',
-        placeholder: "Created Date",
-        header: "",
-        size: 127,
-      },
-      // {
-      //   accessorFn: (row) => String(row?.smartTime),
-      //   cell: ({ row }) => (
-      //     <>
-      //       {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && row?.original?.smartTime != undefined && (
-
-      //         <>
-      //           <span>{String(row?.original?.smartTime)}</span>
-      //         </>
-
-      //       )}
-      //     </>
-      //   ),
-      //   id: "smartTime",
-      //   placeholder: "SmartTime",
-      //   header: "",
-      //   size: 56,
-      // },
-      {
-        cell: ({ row, getValue }) => (
-          <>
-            {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && (
-              <a onClick={(e) => EditData(e, row?.original)} >
-                <span className="svg__iconbox svg__icon--clock"></span>
-              </a>
-            )}
-            {getValue()}
-          </>
-        ),
-        id: "row?.original?.Id",
-        canSort: false,
-        placeholder: "",
-        header: "",
-        size: 1,
-      },
-      {
-        header: ({ table }: any) => (
-          <>
-            {
-              componentRestruct ?
-                <span onClick={() => setTopCompoIcon(true)}>
-                  <img
-                    className="icon-sites-img"
-                    src={IsUpdated == "Service" ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png'}
-
-                  />
-                </span>
-                : ''
-            }
-
-          </>
-        ),
-        cell: ({ row, getValue }) => (
-          <>
-
-            {row?.original?.isRestructureActive && (
-              <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" onClick={(e) => OpenModal(row?.original)} title="Edit">
-                {
-                  <img
-                    className="icon-sites-img"
-                    src={IsUpdated == "Service" ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png'}
-
-                  />
+          ),
+          id: "Created",
+          placeholder: "Created Date",
+          header: "",
+          size: 100,
+        },
+        {
+            accessorKey: "descriptionsSearch",
+            placeholder: "descriptionsSearch",
+            header: "",
+            resetColumnFilters: false,
+            size: 100,
+            id: "descriptionsSearch",
+        },
+        {
+            accessorKey: "commentsSearch",
+            placeholder: "commentsSearch",
+            header: "",
+            resetColumnFilters: false,
+            size: 100,
+            id: "commentsSearch",
+        },
+        {
+            cell: ({ row, getValue }) => (
+                <>
+                    {row?.original?.siteType != "Master Tasks" && (
+                        <a className="alignCenter" onClick={(e) => EditData(e, row?.original)}
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="auto"
+                            title="Click To Edit Timesheet">
+                            <span
+                                className="svg__iconbox svg__icon--clock dark"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="bottom"
+                            ></span>
+                        </a>
+                    )}
+                    {getValue()}
+                </>
+            ),
+            id: "row?.original.Id",
+            canSort: false,
+            placeholder: "",
+            header: "",
+            size: 1,
+        },
+        {
+            header: ({ table }: any) => (
+                <>{
+                    topCompoIcon ?
+                        <span style={{ backgroundColor: `${portfolioColor}` }} title="Restructure" className="Dyicons mb-1 mx-1 p-1" onClick={() => trueTopIcon(true)}>
+                            <span className="svg__iconbox svg__icon--re-structure"></span>
+                        </span>
+                        : ''
                 }
-
-              </a>
-            )}
-
-            {getValue()}
-          </>
-        ),
-        id: "row?.original?.Id",
-        canSort: false,
-        placeholder: "",
-        size: 1,
-      },
-      {
-        cell: ({ row, getValue }) => (
-          <>
-
-            <a> {row?.original?.siteType == "Master Tasks" && (
-              <span className="mt-1 svg__iconbox svg__icon--edit" onClick={(e) => EditComponentPopup(row?.original)}> </span>)}
-
-              {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && (
-                <span onClick={(e) => EditItemTaskPopup(row?.original)} className="mt-1 svg__iconbox svg__icon--edit"></span>
-              )}
-            </a>
-
-            {getValue()}
-          </>
-        ),
-        id: "row?.original?.Id",
-        canSort: false,
-        placeholder: "",
-        header: "",
-        size: 1,
-      },
+                </>
+            ),
+            cell: ({ row, getValue }) => (
+                <>
+                    {row?.original?.isRestructureActive && (
+                        <span className="Dyicons p-1" title="Restructure" style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} onClick={() => callChildFunction(row?.original)}>
+                            <span className="svg__iconbox svg__icon--re-structure"> </span>
+                            {/* <img
+                                className="workmember"
+                                src={row?.original?.Restructuring}
+                                
+                            // onClick={()=>callChildFunction(row?.original)}
+                            /> */}
+                        </span>
+                    )}
+                    {getValue()}
+                </>
+            ),
+            id: "row?.original.Id",
+            canSort: false,
+            placeholder: "",
+            size: 1,
+        },
+        {
+            cell: ({ row, getValue }) => (
+                <>
+                    {row?.original?.siteType === "Master Tasks" &&
+                        row?.original?.Title !== "Others" && (
+                            <a
+                                href="#"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="auto"
+                                title={'Edit ' + `${row.original.Title}`}
+                            >
+                                {" "}
+                                <span
+                                    className="svg__iconbox svg__icon--edit"
+                                    onClick={(e) => EditComponentPopup(row?.original)}
+                                ></span>
+                            </a>
+                        )}
+                    {row?.original?.siteType != "Master Tasks" &&
+                        row?.original?.Title !== "Others" && (
+                            <a
+                                href="#"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="auto"
+                                title={'Edit ' + `${row.original.Title}`}
+                            >
+                                {" "}
+                                <span
+                                    className="svg__iconbox svg__icon--edit"
+                                    onClick={(e) => EditItemTaskPopup(row?.original)}
+                                ></span>
+                            </a>
+                        )}
+                    {getValue()}
+                </>
+            ),
+            id: "row?.original.Id",
+            canSort: false,
+            placeholder: "",
+            header: "",
+            size: 30,
+        },
     ],
     [data]
   );
-
 
   const table = useReactTable({
     data,
@@ -4608,6 +4607,32 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   React.useEffect(() => {
 
   }, [Iconssc]);
+  const callChildFunction = (items: any) => {
+    if (childRef.current) {
+        childRef.current.callChildFunction(items);
+    }
+};
+
+
+
+
+const trueTopIcon = (items: any) => {
+  if (childRef.current) {
+      childRef.current.trueTopIcon(items);
+  }
+};
+const callBackData = React.useCallback((checkData: any) => {
+  let array: any = [];
+  if (checkData != undefined) {
+      setCheckedList(checkData);
+      array.push(checkData);
+  } else {
+      // setCheckedList({});
+      array = [];
+  }
+  setCheckedList1(array);
+}, []);
+
 
   return (
     <div
@@ -4620,222 +4645,34 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       }
     >
       <div className="Alltable mt-10">
-        <div className="tbl-headings">
-          <span className="leftsec">
-            <span className="">
-              {Iconssc.map((icon: any) => {
-                return (
-                  <>
-                    <span className="Dyicons" title={icon?.Title} onClick={() => handleupdatedata(icon)}>{icon?.Icon}  </span> <span>{`${icon?.nextIcon != undefined ? icon?.nextIcon : ""}`}</span></>
-                )
-              })}
-
-              <span>{Iconssc[Iconssc?.length - 1]?.Title}</span>
-
-            </span>
-            <span className="g-search">
-              <span>
-                <DebouncedInput
-                  value={globalFilter ?? ""}
-                  onChange={(value) => setGlobalFilter(String(value))}
-                  placeholder="Search All..."
-                />
-              </span>
-            </span>
-          </span>
-          <span className="toolbox mx-auto">
-            {checkedList != undefined &&
-              checkedList.length > 0 &&
-              (checkedList[0].Item_x0020_Type === "Feature" ||
-                checkedList[0].Item_x0020_Type === "Task") ? (
-              <button
-                type="button"
-                disabled={true}
-                className="btn btn-primary"
-                onClick={addModal}
-                title=" Add Structure"
-              >
-                Add Structure
-              </button>
-            ) : (
-              <button
-                type="button"
-                disabled={checkedList.length >= 2 || props?.Item_x0020_Type == 'Feature'}
-                className="btn btn-primary"
-                onClick={addModal}
-                title=" Add Structure"
-              >
-                Add Structure
-              </button>
-            )}
-
-            
-            <button
-              type="button"
-              onClick={() => openActivity()}
-              disabled={ActivityDisable || checkedList.length >= 2}
-              className="btn btn-primary"
-              title=" Add Activity-Task"
-            >
-              Add Activity-Task
-            </button>
-
-            {(table?.getSelectedRowModel()?.flatRows.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Component") ||
-              (table?.getSelectedRowModel()?.flatRows.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.subRows?.length === 0) ? <button
-                type="button"
-                className="btn btn-primary"
-                onClick={buttonRestructuring}
-              >
-              Restructure
-            </button> : <button
-              type="button"
-              disabled={true || checkedList.length >= 2}
-              className="btn btn-primary"
-              onClick={buttonRestructuring}
-            >
-              Restructure
-            </button>}
-            {table?.getSelectedRowModel()?.flatRows?.length > 0 ? <span>
-              <a onClick={() => openTaskAndPortfolioMulti()} className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb"></span></a>
-            </span> : <span><a className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a></span>}
-
-            {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a>
-            </span> : <span><a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team teamIcon"></span></a></span>}
-            <a className="brush" onClick={() => { setGlobalFilter(''); setColumnFilters([]); }}>
-
-              <FaPaintBrush />
-
-            </a>
-            {/* <button
-              type="button"
-               onClick={()=>setcomparetool(true)}
-            >
-              Compare
-            </button> */}
-            <a className="expand">
-              <ExpndTable prop={expndpopup} prop1={tablecontiner} />
-            </a>
-            <a>
-              <Tooltip ComponentId="5756" IsServiceTask={IsUpdated == "Service" ? true : false} />
-            </a>
-          </span>
-
-        </div>
+        
         <div className="col-sm-12 p-0 smart ">
           <div className="wrapper">
-            <table
-              className="SortingTable searchCrossIcon groupTable  table table-hover"
-              style={{ width: "100%" }}
-            >
-              <thead className="fixed-Header top-0">
-                {table?.getHeaderGroups()?.map((headerGroup) => (
-                  <tr key={headerGroup?.id}>
-                    {headerGroup?.headers?.map((header) => {
-                      return (
-                        <th
-                          key={header.id}
-                          colSpan={header.colSpan}
-                          style={header.id != 'Title' ? {
-                            width: header.column.columnDef.size + "px",
-                          } : {}}
-                        >
-                          {header.isPlaceholder ? null : (
-                            <div
-                              className="position-relative"
-                              style={{ display: "flex" }}
-                            >
-                              {flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                              {header.column.getCanFilter() ? (
-                                // <span>
-                                <Filter
-                                  column={header.column}
-                                  table={table}
-                                  placeholder={
-                                    header.column.columnDef
-                                  }
-                                />
-                              ) : // </span>
-                                null}
-                              {header.column.getCanSort() ? (
-                                <div
-                                  {...{
-                                    className:
-                                      header.column.getCanSort()
-                                        ? "cursor-pointer select-none shorticon"
-                                        : "",
-                                    onClick:
-                                      header.column.getToggleSortingHandler(),
-                                  }}
-                                >
-                                  {header.column.getIsSorted() ? (
-                                    {
-                                      asc: <FaSortDown />,
-                                      desc: <FaSortUp />,
-                                    }[
-                                    header.column.getIsSorted() as string
-                                    ] ?? null
-                                  ) : (
-                                    <FaSort />
-                                  )}
-                                </div>
-                              ) : (
-                                ""
-                              )}
-                            </div>
-                          )}
-                        </th>
-                      );
-                    })}
-                  </tr>
-                ))}
-              </thead>
-              <tbody>
-                <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1}
-                  color={
-                    IsUpdated == "Events Portfolio"
-                      ? "#f98b36"
-                      : IsUpdated == "Service Portfolio"
-                        ? "#228b22"
-                        : "#000069"
-                  }
-                  speed={2}
-                  trail={60}
-                  shadow={false}
-                  hwaccel={false}
-                  className="spinner"
-                  zIndex={2e9}
-                  top="28%"
-                  left="50%"
-                  scale={1.0}
-                  loadedClassName="loadedContent"
-                />
+            <GlobalCommanTable
+              //  ref={childRef}
+              pageType='PortfolioType'
+              callChildFunction={callChildFunction}
+              AllListId={props?.AllListId}
+              columns={columns}
+              // restructureCallBack={callBackData1}
+              data={data}
+              callBackData={callBackData}
+              TaskUsers={AllUsers}
+              showHeader={true}
+              // portfolioColor={portfolioColor}
 
-                {table?.getRowModel()?.rows?.map((row: any) => {
-                  return (
-                    <tr className={row?.original?.lableColor} key={row.id} >
-                      {row.getVisibleCells().map((cell: any) => {
-                        return (
-                          <td className={row?.original?.boldRow} key={cell.id}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+              // portfolioTypeData={portfolioTypeDataItem}
+
+              //  taskTypeDataItem={taskTypeDataItem}
+
+              fixedWidth={true}
+              // portfolioTypeConfrigration={portfolioTypeConfrigration }
+              showCreationAllButton={true}
+              OpenAddStructureModal={addModal}
+              addActivity={addActivity}
+            />
           </div>
         </div>
-
-
-
       </div>
       {ShowTeamPopup === true ? <ShowTeamMembers props={checkData} callBack={showTaskTeamCAllBack} TaskUsers={AllUsers} /> : ''}
 
@@ -4853,16 +4690,17 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
           Context={NextProp.Context}
         ></TimeEntryPopup>
       )}
-      {MeetingPopup && (
+      {openActity && (
         <CreateActivity
-          props={MeetingItems[0]}
+        props={checkedList}
           Call={Call}
           LoadAllSiteTasks={LoadAllSiteTasks}
           SelectedProp={NextProp}
+          portfolioTypeData={portfolioTypeData}
         ></CreateActivity>
       )}
       {WSPopup && (
-        <CreateWS props={MeetingItems[0]} SelectedProp={NextProp} Call={Call} data={data}></CreateWS>
+        <CreateWS  props={checkedList} SelectedProp={NextProp} Call={Call} data={data}  portfolioTypeData={portfolioTypeData}></CreateWS>
       )}
 
       <Panel

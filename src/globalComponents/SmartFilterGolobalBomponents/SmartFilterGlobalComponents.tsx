@@ -504,9 +504,9 @@ const SmartFilterSearchGlobal = (item: any) => {
                                                     {filterGroupsData != null && filterGroupsData.length > 0 &&
                                                         filterGroupsData?.map((Group: any, index: any) => {
                                                             return (
-                                                                <td valign="top">
-                                                                    <fieldset>
-                                                                        <legend>
+                                                                <td valign="top" style={{width:"20%"}}>
+                                                                    <fieldset className='smartFilterStyle ps-1'>
+                                                                        <legend className='smartFilterHead'>
                                                                             <span className="mparent d-flex" style={{ borderBottom: "1.5px solid" + portfolioColor, color: portfolioColor }}>
                                                                                 <input className={"form-check-input cursor-pointer"}
                                                                                     style={Group.selectAllChecked == undefined && Group?.values?.length === Group?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
@@ -517,7 +517,7 @@ const SmartFilterSearchGlobal = (item: any) => {
                                                                                 <div className="mx-1">{Group.Title}</div>
                                                                             </span>
                                                                         </legend>
-                                                                    </fieldset>
+                                                                   
                                                                     <div className="custom-checkbox-tree">
                                                                         <CheckboxTree
                                                                             nodes={Group.values}
@@ -537,6 +537,7 @@ const SmartFilterSearchGlobal = (item: any) => {
                                                                             }}
                                                                         />
                                                                     </div>
+                                                                     </fieldset>
                                                                 </td>
                                                             )
                                                         })
