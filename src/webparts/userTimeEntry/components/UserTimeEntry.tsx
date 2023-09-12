@@ -19,8 +19,12 @@ import {
   ColumnDef,
 } from "@tanstack/react-table";
 import { SlArrowRight, SlArrowDown } from "react-icons/sl";
+<<<<<<< HEAD
 import { Row } from 'react-bootstrap';
 import Col from 'reactstrap/es/Col';
+=======
+import { Col, Row } from 'react-bootstrap';
+>>>>>>> bf8938941ce1768c759be1b4e20cab80a22d7d0a
 
 export interface IUserTimeEntryState {
   Result: any;
@@ -933,9 +937,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           let results = await web.lists
             .getByTitle(itemtype.ListName)
             .items
-            .select('ParentTask/Title', 'ParentTask/Id', 'Services/Title', 'ClientTime', 'Services/Id', 'Events/Id', 'Events/Title', 'ItemRank', 'Portfolio_x0020_Type', 'SiteCompositionSettings', 'TaskLevel', 'TaskLevel', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'TaskID', 'ResponsibleTeam/Id', 'ResponsibleTeam/Title', 'ClientCategory/Id', 'ClientCategory/Title', 'TaskCategories/Id', 'TaskCategories/Title', 'ParentTask/TaskID', 'TaskType/Id', 'TaskType/Title', 'TaskType/Level', 'TaskType/Prefix', 'PriorityRank', 'Reference_x0020_Item_x0020_Json', 'TeamMembers/Title', 'TeamMembers/Name', 'Component/Id', 'Component/Title', 'Component/ItemType', 'TeamMembers/Id', 'Item_x002d_Image', 'ComponentLink', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id', 'AttachmentFiles/FileName', 'FileLeafRef', 'FeedBack', 'Title', 'Id', 'PercentComplete', 'Company', 'StartDate', 'DueDate', 'Comments', 'Categories', 'Status', 'WebpartId', 'Body', 'Mileage', 'PercentComplete', 'Attachments', 'Priority', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
+            .select('ParentTask/Title', 'ParentTask/Id',  'ClientTime', 'ItemRank', 'Portfolio/Id','Portfolio/Title', 'SiteCompositionSettings', 'TaskLevel', 'TaskLevel', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'TaskID', 'ResponsibleTeam/Id', 'ResponsibleTeam/Title', 'ClientCategory/Id', 'ClientCategory/Title', 'TaskCategories/Id', 'TaskCategories/Title', 'ParentTask/TaskID', 'TaskType/Id', 'TaskType/Title', 'TaskType/Level', 'TaskType/Prefix', 'PriorityRank', 'Reference_x0020_Item_x0020_Json', 'TeamMembers/Title', 'TeamMembers/Name', 'Component/Id', 'Component/Title', 'Component/ItemType', 'TeamMembers/Id', 'Item_x002d_Image', 'ComponentLink', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id', 'AttachmentFiles/FileName', 'FileLeafRef', 'FeedBack', 'Title', 'Id', 'PercentComplete', 'Company', 'StartDate', 'DueDate', 'Comments', 'Categories', 'Status', 'WebpartId', 'Body', 'Mileage', 'PercentComplete', 'Attachments', 'Priority', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
             .filter(queryType.replace('filter=', '').trim())
-            .expand('ParentTask', 'Events', 'Services', 'TaskType', 'AssignedTo', 'Component', 'AttachmentFiles', 'Author', 'Editor', 'TeamMembers', 'ResponsibleTeam', 'ClientCategory', 'TaskCategories')
+            .expand('ParentTask', 'TaskType', 'AssignedTo', 'Component', 'AttachmentFiles', 'Author', 'Editor', 'TeamMembers', 'ResponsibleTeam', 'ClientCategory', 'TaskCategories', 'Portfolio')
             .orderBy('Id', false)
             .getAll(4999);
           console.log(results);
@@ -997,35 +1001,35 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
 
             filterItem.PercentComplete = getItem.PercentComplete;
             filterItem.ItemRank = getItem.ItemRank;
-            filterItem.PriorityRank = getItem.PriorityRank;
+            filterItem.PriorityRank = getItem?.PriorityRank;
             filterItem.TaskID = ''//SharewebCommonFactoryService.getSharewebId(getItem);
-            filterItem.Portfolio_x0020_Type = getItem.Portfolio_x0020_Type;
+            filterItem.Portfolio = getItem?.Portfolio?.Title;
             filterItem.Created = getItem.Created;
             filterItem.ListId = getItem.ListId
-            if (getItem.Component != undefined && getItem.Component.length > 0) {
-              getItem.Component.forEach(function (cItem: any) {
-                filterItem.ComponentTitle = cItem.Title;
-                filterItem.ComponentIDs = cItem.Id;
-              })
-              filterItem.Portfoliotype = 'Component';
+            if (getItem.Portfolio != undefined) {
+            
+                filterItem.ComponentTitle = getItem.Portfolio?.Title;
+                filterItem.ComponentIDs = getItem.Portfolio?.Id;
+            
+              filterItem.Portfolio = getItem?.Portfolio?.Title
             }
-            if (getItem.Services != undefined && getItem.Services.length > 0) {
-              getItem.Services.forEach(function (sItem: any) {
-                filterItem.ComponentTitle = sItem.Title;
-                filterItem.ComponentIDs = sItem.Id;
-              })
-              filterItem.Portfoliotype = 'Service';
-            }
-            if (getItem.Events != undefined && getItem.Events.results != undefined && getItem.Events.results.length > 0) {
-              getItem.Events.forEach(function (eItem: any) {
-                filterItem.ComponentTitle = eItem.Title;
-                filterItem.ComponentIDs = eItem.Id;
-              })
-              filterItem.Portfoliotype = 'Event';
-            }
-            filterItem.Component = getItem.Component;
-            filterItem.Services = getItem.Services;
-            filterItem.Events = getItem.Events;
+            // if (getItem.Services != undefined && getItem.Services.length > 0) {
+            //   getItem.Services.forEach(function (sItem: any) {
+            //     filterItem.ComponentTitle = sItem.Title;
+            //     filterItem.ComponentIDs = sItem.Id;
+            //   })
+            //   filterItem.Portfoliotype = 'Service';
+            // }
+            // if (getItem.Events != undefined && getItem.Events.results != undefined && getItem.Events.results.length > 0) {
+            //   getItem.Events.forEach(function (eItem: any) {
+            //     filterItem.ComponentTitle = eItem.Title;
+            //     filterItem.ComponentIDs = eItem.Id;
+            //   })
+            //   filterItem.Portfoliotype = 'Event';
+            // }
+            // filterItem.Component = getItem.Component;
+            // filterItem.Services = getItem.Services;
+            // filterItem.Events = getItem.Events;
 
           }
         })
@@ -1934,7 +1938,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       <div>
         <div className="p-0  " style={{ verticalAlign: "top" }}><h2 className="heading d-flex justify-content-between align-items-center"><span> <a>Timesheet</a> </span><span className="text-end fs-6"><a target="_blank" data-interception="off" href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/UserTimeEntry-Old.aspx`}>Old UserTimeEntry</a></span></h2></div>
         <Row className='smartFilter'>
-        <details>
+        <details className='p-0' open>
         <summary><a className="hreflink pull-left mr-5">Task User : </a>
               {this.state.ImageSelectedUsers != null && this.state.ImageSelectedUsers.length > 0 && this.state.ImageSelectedUsers.map((user: any, i: number) => {
                 return <span className="ng-scope">
@@ -1968,13 +1972,13 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           <hr></hr>
           </summary>
 
-            <div style={{ display: "inline" }}>
+            <div style={{ display: "block" }}>
               <div className="taskTeamBox ps-40 ">
                 {this.state.taskUsers != null && this.state.taskUsers.length > 0 && this.state.taskUsers.map((users: any, i: number) => {
-                  return <div className="top-assign " ng-repeat="user in taskUsers">
+                  return <div className="top-assign">
                     <div className="team ">
                       <label className="BdrBtm">
-                        <input style={{ display: 'none' }} className="" type="checkbox" ng-model="user.SelectedGroup" onClick={(e) => this.SelectedGroup(e, users)} />
+                        <input style={{ display: 'none' }} className="" type="checkbox"  onClick={(e) => this.SelectedGroup(e, users)} />
                         {users.childs.length > 0 &&
                           <>
                             {users.Title}
@@ -2192,7 +2196,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                     <button type="button" className="btn btn-default me-1" onClick={() => this.ClearFilters()}>
                       Clear Filters
                     </button>
-                    <button type="button" className="btn btn-primary me-1" onClick={(e) => this.updatefilter()}>
+                    <button type="button" className="btnCol btn btn-primary me-1" onClick={(e) => this.updatefilter()}>
                       Update Filters
                     </button>
                   </div>

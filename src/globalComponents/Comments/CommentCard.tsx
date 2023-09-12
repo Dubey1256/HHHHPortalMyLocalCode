@@ -112,12 +112,12 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         .getByTitle(this.state.listName)
         .items
         .getById(this.state.itemID)
-        .select("ID", "Title", "DueDate", "Portfolio_x0020_Type", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Comments")
-        .expand("Team_x0020_Members", "Author", "ClientCategory", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor")
+        .select("ID", "Title", "DueDate", "PortfolioType/Id","PortfolioType/Title" ,"ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "SharewebTaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID","Editor/Title", "Modified", "Comments")
+        .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam","PortfolioType", "SharewebTaskType", "Portfolio", "Editor")
         .get()
     } else {
-      taskDetails = await web.lists.getById(this.state.listId).items.getById(this.state.itemID).select("ID", "Title", "DueDate", "Portfolio_x0020_Type", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Comments")
-        .expand("Team_x0020_Members", "Author", "ClientCategory", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor")
+      taskDetails = await web.lists.getById(this.state.listId).items.getById(this.state.itemID).select("ID", "Title", "DueDate", "PortfolioType/Id","PortfolioType/Title" , "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "SharewebTaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title","Portfolio/PortfolioStructureID","Editor/Title", "Modified", "Comments")
+        .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "SharewebTaskType","Portfolio","PortfolioType", "Editor")
         .get()
     }
     await this.GetTaskUsers();
@@ -132,8 +132,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       StartDate: taskDetails["StartDate"] != null ? (new Date(taskDetails["StartDate"])).toLocaleDateString() : '',
       CompletedDate: taskDetails["CompletedDate"] != null ? (new Date(taskDetails["CompletedDate"])).toLocaleDateString() : '',
       Status: taskDetails["Status"],
-      TeamLeader: taskDetails["Responsible_x0020_Team"] != null ? this.GetUserObjectFromCollection(taskDetails["Responsible_x0020_Team"]) : null,
-      TeamMembers: taskDetails["Team_x0020_Members"] != null ? this.GetUserObjectFromCollection(taskDetails["Team_x0020_Members"]) : null,
+      TeamLeader: taskDetails["ResponsibleTeam"] != null ? this.GetUserObjectFromCollection(taskDetails["ResponsibleTeam"]) : null,
+      TeamMembers: taskDetails["TeamMembers"] != null ? this.GetUserObjectFromCollection(taskDetails["TeamMembers"]) : null,
       PercentComplete: (taskDetails["PercentComplete"] * 100),
       Priority: taskDetails["Priority"],
       Created: taskDetails["Created"] != null ? (new Date(taskDetails["Created"])).toLocaleDateString() : '',
@@ -146,10 +146,10 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       SharewebTaskType: taskDetails["SharewebTaskType"] != null ? taskDetails["SharewebTaskType"].Title : '',
       Component: taskDetails["Component"],
       Services: taskDetails["Services"],
-      Portfolio_x0020_Type: taskDetails["Portfolio_x0020_Type"],
+      PortfolioType: taskDetails["PortfolioType"],
       TaskUrl: `${this.props.siteUrl}/SitePages/Task-Profile.aspx?taskId=${this.state.itemID}&Site=${this.state.listName}`
     };
-    if (tempTask["Portfolio_x0020_Type"] != undefined && tempTask["Portfolio_x0020_Type"] == "Service") {
+    if (tempTask["PortfolioType"] != undefined && tempTask["PortfolioType"] == "Service") {
       color = true;
     }
     if (tempTask["Comments"] != undefined && tempTask["Comments"].length > 0) {
@@ -681,7 +681,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
       <>
         <div className={color ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
-          <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+          <div className='subheading'>
 
             <span className="siteColor">
               Update Comment
@@ -696,7 +696,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   private customHeaderforALLcomments() {
     return (
       <div className={color ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1 "}>
-        <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+        <div className='subheading'>
           <span className="siteColor">
             Comment:{Title}{commentlength}
           </span>
@@ -824,12 +824,12 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                                 />
                               </span>
                               {cmtData.Created}</span>
-                            <div className="d-flex ml-auto media-icons " >
+                            <div className="d-flex ml-auto media-icons px-1 " >
                               <a ><div data-toggle="tooltip" id={"Reply-" + i}
                                 onClick={() => this.openReplycommentPopup(cmtData, i)}
                                 data-placement="bottom"
                               >
-                                <ImReply />
+                                <span className="svg__iconbox svg__icon--reply"></span>
                               </div></a>
                               {/* <a onClick={() => this.replyMailFunction(cmtData, i)}><span><ImReply /></span></a> */}
                               <a onClick={() => this.openEditModal(cmtData, i, false)}>
@@ -992,7 +992,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                       <div>
                         <div className='d-flex justify-content-between align-items-center'>
                           <span className='comment-date'>
-                            <span className='round  pe-1'> <img className='align-self-start me-1' style={{ height: '35px', width: '35px' }} title={cmtData?.AuthorName}
+                            <span className='round  pe-1'> <img className='align-self-start me-1' title={cmtData?.AuthorName}
                               src={cmtData?.AuthorImage != undefined && cmtData?.AuthorImage != '' ?
                                 cmtData.AuthorImage :
                                 "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}

@@ -85,9 +85,7 @@ function DebouncedInput({
     return (
         <>
             <div className="container-2 mx-1">
-                <span className="icon">
-                <svg style={{ fill: `${portfolioColor}` }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="18px" height="18px"><path d="M 19 3 C 13.488281 3 9 7.488281 9 13 C 9 15.394531 9.839844 17.589844 11.25 19.3125 L 3.28125 27.28125 L 4.71875 28.71875 L 12.6875 20.75 C 14.410156 22.160156 16.605469 23 19 23 C 24.511719 23 29 18.511719 29 13 C 29 7.488281 24.511719 3 19 3 Z M 19 5 C 23.429688 5 27 8.570313 27 13 C 27 17.429688 23.429688 21 19 21 C 14.570313 21 11 17.429688 11 13 C 11 8.570313 14.570313 5 19 5 Z"/></svg>
-                </span>
+                <span className="icon"><BsSearch style={{ color: `${portfolioColor}` }} /></span>
                 <input type="search" id="search" {...props}
                     value={value}
                     onChange={(e) => setValue(e.target.value)} />
@@ -146,13 +144,13 @@ export function IndeterminateCheckbox(
 
 // ********************* function with globlize Expended And Checkbox*******************
 let forceExpanded: any = [];
-const getFirstColHeader = ({ hasCheckbox, hasExpanded, isHeaderNotAvlable }: any) => {
+const getFirstColHeader = ({ hasCheckbox, hasExpanded, isHeaderNotAvlable, portfolioColor }: any) => {
     return ({ table }: any) => (
         <>
             {hasExpanded && isHeaderNotAvlable != true && (<>
                 <span className="border-0 bg-Ff" {...{ onClick: table.getToggleAllRowsExpandedHandler(), }}>
                     {table.getIsAllRowsExpanded() ? (
-                        <SlArrowDown title='Tap to collapse the childs' />) : (<SlArrowRight title='Tap to expand the childs' />)}
+                        <SlArrowDown style={{ color: portfolioColor }} title='Tap to collapse the childs' />) : (<SlArrowRight style={{ color: portfolioColor }} title='Tap to expand the childs' />)}
                 </span>{" "}
             </>)}
             {hasCheckbox && (
@@ -329,7 +327,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     header: getFirstColHeader({
                         hasCheckbox: elem.hasCheckbox,
                         hasExpanded: elem.hasExpanded,
-                        isHeaderNotAvlable: elem.isHeaderNotAvlable
+                        isHeaderNotAvlable: elem.isHeaderNotAvlable,
+                        portfolioColor: portfolioColor
                     }),
                     cell: getFirstColCell({
                         setExpanded,
@@ -401,6 +400,16 @@ const GlobalCommanTable = (items: any, ref: any) => {
             }
         }
     }, [])
+    React.useEffect(() => {
+        if(table?.getRowModel()?.rows.length>0){
+            table?.getRowModel()?.rows.map((elem:any)=>{
+                if (elem?.original?.Title === "Others") {
+                    const newExpandedState = { [elem.id]: true };
+                    setExpanded(newExpandedState);
+                }
+            })
+        }
+    }, [data])
     /****************** defult sorting  part end *******************/
 
     React.useEffect(() => {
@@ -501,34 +510,34 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 restructureFunct(true)
                 table?.getSelectedRowModel()?.flatRows?.map((elem: any) => {
                     if (elem?.getParentRows() != undefined) {
-                        // parentData = elem?.parentRow;
-                        // parentDataCopy = elem?.parentRow?.original
-                        parentDataCopy = elem?.getParentRows()[0]?.original;
-                        // if (parentData != undefined && parentData?.parentRow != undefined) {
+                    // parentData = elem?.parentRow;
+                    // parentDataCopy = elem?.parentRow?.original
+                    parentDataCopy = elem?.getParentRows()[0]?.original;
+                    // if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                        //     parentData = elem?.parentRow?.parentRow
-                        //     parentDataCopy = elem?.parentRow?.parentRow?.original
+                    //     parentData = elem?.parentRow?.parentRow
+                    //     parentDataCopy = elem?.parentRow?.parentRow?.original
 
-                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                        //         parentData = elem?.parentRow?.parentRow?.parentRow
-                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
-                        //     }
-                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                    //         parentData = elem?.parentRow?.parentRow?.parentRow
+                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
+                    //     }
+                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                        //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
-                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                        //     }
-                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                    //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
+                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                    //     }
+                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                        //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                        //     }
-                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
-                        //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                        //     }
-                        // }
+                    //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                    //     }
+                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                    //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                    //     }
+                    // }
                     }
                     if (parentDataCopy) {
                         elem.original.parentDataId = parentDataCopy
@@ -797,8 +806,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 <span className="toolbox">
                     {items.taskProfile != true && items?.showCreationAllButton === true && <>
                         {table?.getSelectedRowModel()?.flatRows?.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Feature" &&
-                            table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Activities" && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Workstream" &&
-                            table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task" || table?.getSelectedRowModel()?.flatRows?.length === 0 ? (
+                            table?.getSelectedRowModel()?.flatRows[0]?.original?.SharewebTaskType?.Title != "Activities" && table?.getSelectedRowModel()?.flatRows[0]?.original?.SharewebTaskType?.Title != "Workstream" &&
+                            table?.getSelectedRowModel()?.flatRows[0]?.original?.SharewebTaskType?.Title != "Task" || table?.getSelectedRowModel()?.flatRows?.length === 0 ? (
                             <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} title=" Add Structure" onClick={() => openCreationAllStructure("Add Structure")}> Add Structure </button>
                         ) : (
                             <button type="button" disabled className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} title=" Add Structure"> Add Structure </button>
@@ -808,7 +817,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
                         {
                             trueRestructuring == true ?
-                                <RestructuringCom portfolioColor={portfolioColor} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
+                                <RestructuringCom style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
                                 : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>
                         }
                     </>

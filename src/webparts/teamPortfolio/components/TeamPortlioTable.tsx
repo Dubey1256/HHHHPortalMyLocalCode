@@ -19,7 +19,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 import Loader from "react-loader";
-import { Bars } from 'react-loader-spinner'
+// import { Bars } from 'react-loader-spinner'
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 import SmartFilterSearchGlobal from "../../../globalComponents/SmartFilterGolobalBomponents/SmartFilterGlobalComponents";
@@ -594,13 +594,13 @@ function TeamPortlioTable(SelectedProp: any) {
             countAllTasksData = [];
             setAllSmartFilterDataBackup(structuredClone(smartAllFilterData));
             if (IsUpdated === "") {
-                portfolioTypeData?.map((port: any) => {
-                    componentGrouping(port?.Id);
+                portfolioTypeData?.map((port: any, index: any) => {
+                    componentGrouping(port?.Id, index);
                 })
             } else if (IsUpdated.length) {
                 portfolioTypeData?.map((port: any) => {
                     if (IsUpdated.toLowerCase() === port?.Title?.toLowerCase()) {
-                        componentGrouping(port?.Id);
+                        componentGrouping(port?.Id, '');
                     }
                 })
             }
@@ -623,17 +623,17 @@ function TeamPortlioTable(SelectedProp: any) {
         return JSON.parse(JSON.stringify(obj));
     }
 
-    const DynamicSort = function (items: any, column: any,orderby:any) {
+    const DynamicSort = function (items: any, column: any, orderby: any) {
         items?.sort(function (a: any, b: any) {
             var aID = a[column];
             var bID = b[column];
-            if(orderby==='asc')
-            return (aID == bID) ? 0 : (aID < bID) ? 1 : -1;
-        else
-            return aID == bID ? 0 : aID > bID ? 1 : -1;
+            if (orderby === 'asc')
+                return (aID == bID) ? 0 : (aID < bID) ? 1 : -1;
+            else
+                return aID == bID ? 0 : aID > bID ? 1 : -1;
         });
     };
-    const componentGrouping = (portId: any) => {
+    const componentGrouping = (portId: any, index: any) => {
         let FinalComponent: any = []
         let AllProtFolioData = smartAllFilterData?.filter((comp: any) => comp?.PortfolioType?.Id === portId && comp.TaskType === undefined);
         let AllComponents = AllProtFolioData?.filter((comp: any) => comp?.Parent?.Id === 0 || comp?.Parent?.Id === undefined);
@@ -664,36 +664,50 @@ function TeamPortlioTable(SelectedProp: any) {
             FinalComponent.push(masterTask)
         })
         componentData = componentData?.concat(FinalComponent);
-        DynamicSort(componentData, 'PortfolioLevel','')
+        DynamicSort(componentData, 'PortfolioLevel', '')
         componentData.forEach((element: any) => {
             if (element?.subRows?.length > 0) {
-                let level = element?.subRows?.filter((obj: any) => obj.Item_x0020_Type != undefined && obj.Item_x0020_Type !="Task");
+                let level = element?.subRows?.filter((obj: any) => obj.Item_x0020_Type != undefined && obj.Item_x0020_Type != "Task");
                 let leveltask = element?.subRows?.filter((obj: any) => obj.Item_x0020_Type === "Task");
-                DynamicSort(level, 'Item_x0020_Type','asc')
+                DynamicSort(level, 'Item_x0020_Type', 'asc')
                 element.subRows = [];
                 element.subRows = level.concat(leveltask)
             }
             if (element?.subRows != undefined) {
                 element?.subRows?.forEach((obj: any) => {
-                    let level1 = obj?.subRows?.filter((obj: any) => obj.Item_x0020_Type != undefined && obj.Item_x0020_Type !="Task");
+                    let level1 = obj?.subRows?.filter((obj: any) => obj.Item_x0020_Type != undefined && obj.Item_x0020_Type != "Task");
                     let leveltask1 = obj?.subRows?.filter((obj: any) => obj.Item_x0020_Type === "Task");
-                    DynamicSort(level1, 'Item_x0020_Type','asc')
+                    DynamicSort(level1, 'Item_x0020_Type', 'asc')
                     obj.subRows = [];
                     obj.subRows = level1?.concat(leveltask1)
                 })
             }
         });
+        if (portfolioTypeData?.length - 1 === index || index === '') {
+            var temp: any = {};
+            temp.Title = "Others";
+            temp.TaskID = "";
+            temp.subRows = [];
+            temp.PercentComplete = "";
+            temp.ItemRank = "";
+            temp.DueDate = "";
+            temp.Project = "";
+            temp.subRows = smartAllFilterData?.filter((elem1: any) => elem1?.TaskType?.Id != undefined && elem1?.ParentTask?.Id === undefined && elem1?.Portfolio?.Title === undefined);
+            countAllTasksData = countAllTasksData.concat(temp.subRows);
+            temp.subRows.forEach((task: any) => {
+                if (task.TaskID === undefined || task.TaskID === '')
+                    task.TaskID = 'T' + task.Id;
+            })
+            componentData.push(temp)
+        }
         setLoaded(true);
         setData(componentData);
         console.log(countAllTasksData);
     }
-
-
     const componentActivity = (levelType: any, items: any) => {
         if (items.ID === 5610) {
             console.log("items", items);
         }
-
         let findActivity = smartAllFilterData?.filter((elem: any) => elem?.TaskType?.Id === levelType.Id && elem?.Portfolio?.Id === items?.Id);
         let findTasks = smartAllFilterData?.filter((elem1: any) => elem1?.TaskType?.Id != levelType.Id && elem1?.Portfolio?.Id === items?.Id);
         countAllTasksData = countAllTasksData.concat(findTasks)
@@ -745,7 +759,10 @@ function TeamPortlioTable(SelectedProp: any) {
         let finalData: any = []
         let finalDataCopy: any = []
         componentDataCopyBackup?.map((comp: any) => {
-            if (comp.Id === filterItem?.Portfolio?.Id) {
+            // if (comp.Id === filterItem?.Portfolio?.Id) {
+            //     comp.filterFlag = true
+            // }
+            if (comp.Id === filterItem?.Id) {
                 comp.filterFlag = true
             }
             comp?.subRows?.map((subComp: any) => {
@@ -1063,7 +1080,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     <>
                         {row?.original?.siteType === "Master Tasks" &&
                             row?.original?.Title !== "Others" && (
-                                <a
+                                <a className="alignCenter"
                                     href="#"
                                     data-bs-toggle="tooltip"
                                     data-bs-placement="auto"
@@ -1078,7 +1095,7 @@ function TeamPortlioTable(SelectedProp: any) {
                             )}
                         {row?.original?.siteType != "Master Tasks" &&
                             row?.original?.Title !== "Others" && (
-                                <a
+                                <a className="alignCenter"
                                     href="#"
                                     data-bs-toggle="tooltip"
                                     data-bs-placement="auto"
@@ -1355,10 +1372,11 @@ function TeamPortlioTable(SelectedProp: any) {
             }
 
         })
-        renderData = [];
-        renderData = renderData.concat(copyDtaArray)
-        refreshData();
-
+        if (res?.data !=undefined) {
+            renderData = [];
+            renderData = renderData.concat(copyDtaArray)
+            refreshData();
+        }
     }
     // new change////
     const CreateActivityPopup = (type: any) => {

@@ -7,7 +7,7 @@ import { GlobalConstants } from '../globalComponents/LocalCommon';
 import { PageContext } from "@microsoft/sp-page-context";
 import { spfi } from "@pnp/sp/presets/all";
 import { MSGraphClientV3 } from '@microsoft/sp-http';
-
+export const myContextValue:any= React.createContext<any>({})
 export const pageContext = async () => {
     let result;
     try {
@@ -595,34 +595,34 @@ export const getTaskId = (item: any) => {
                 TaskID = 'M' + item.Id;
         }
         else if (item.TaskType != undefined && (item.TaskType.Title == 'Activities' || item.TaskType.Title == 'Project') && item.TaskLevel != undefined) {
-            if (item.Component != undefined) {
-                if (item.Component != undefined && item.Component.length > 0) {
+            if (item.Portfolio != undefined) {
+                if (item.Portfolio != undefined) {
                     TaskID = 'CA' + item.TaskLevel;
                 }
             }
-            if (item.Services != undefined) {
-                if (item.Services != undefined && item.Services.length > 0) {
+            if (item?.Services != undefined) {
+                if (item?.Services != undefined && item?.Services?.length > 0) {
                     TaskID = 'SA' + item.TaskLevel;
                 }
             }
-            if (item.Events != undefined) {
-                if (item.Events != undefined && item.Events.length > 0) {
+            if (item?.Events != undefined) {
+                if (item?.Events != undefined && item?.Events?.length > 0) {
                     TaskID = 'EA' + item.TaskLevel;
                 }
             }
             if (item.Component != undefined && item.Events != undefined && item.Services != undefined) {
-                if (item.Events.length > 0 && item.Services.length > 0 && item.Component.length > 0)
+                if (item?.Events?.length > 0 && item?.Services?.length > 0 && item?.Component?.length > 0)
                     TaskID = 'A' + item.TaskLevel;
             }
-            if (item.Component == undefined && item.Events == undefined && item.Services == undefined) {
+            if (item?.Component == undefined && item?.Events == undefined && item?.Services == undefined) {
                 TaskID = 'A' + item.TaskLevel;
             }
-            if (item.TaskType.Title == 'Project')
+            if (item?.TaskType?.Title == 'Project')
                 TaskID = 'P' + item.TaskLevel;
 
-            if (item.Component.length === 0 && item.Services.length === 0) {
-                TaskID = 'A' + item.TaskLevel;
-            }
+            // if (item?.Component?.length === 0 && item?.Services?.length === 0) {
+            //     TaskID = 'A' + item.TaskLevel;
+            // }
         }
         else if (item.TaskType != undefined && (item.TaskType.Title == 'Workstream' || item.TaskType.Title == 'Step') && item.TaskLevel != undefined && item.TaskLevel != undefined) {
             if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
@@ -631,12 +631,12 @@ export const getTaskId = (item: any) => {
                 // }
             }
             if (item.Component != undefined) {
-                if (item.Component != undefined && item.Component.length > 0) {
+                if (item?.Component != undefined && item?.Component?.length > 0) {
                     TaskID = 'CA' + item.TaskLevel + '-W' + item.TaskLevel;
                 }
             }
             if (item.Services != undefined) {
-                if (item.Services != undefined && item.Services.length > 0) {
+                if (item.Services != undefined && item?.Services?.length > 0) {
                     TaskID = 'SA' + item.TaskLevel + '-W' + item.TaskLevel;
                 }
             }
@@ -645,7 +645,7 @@ export const getTaskId = (item: any) => {
                     TaskID = 'EA' + item.TaskLevel + '-W' + item.TaskLevel;
                 }
             }
-            if ((item.Component.length == 0 || item.Component == undefined) && (item.Services.length == 0 || item.Services == undefined) && item.Events == undefined) {
+            if ((item?.Component?.length == 0 || item?.Component == undefined) && (item?.Services?.length == 0 || item?.Services == undefined) && item?.Events == undefined) {
                 TaskID = 'A' + item.TaskLevel + '-W' + item.TaskLevel;
             }
             if (item.TaskType.Title == 'Step')
@@ -659,17 +659,17 @@ export const getTaskId = (item: any) => {
                 //  }
             }
             if (item.Component != undefined) {
-                if (item.Component != undefined && item.Component.length > 0) {
+                if (item.Component != undefined && item?.Component?.length > 0) {
                     TaskID = 'CA' + item.TaskLevel + '-W' + item.TaskLevel + '-T' + item.Id;
                 }
             }
             if (item.Services != undefined) {
-                if (item.Services != undefined && item.Services.length > 0) {
+                if (item.Services != undefined && item?.Services?.length > 0) {
                     TaskID = 'SA' + item.TaskLevel + '-W' + item.TaskLevel + '-T' + item.Id;
                 }
             }
             if (item.Events != undefined) {
-                if (item.Events != undefined && item.Events.length > 0) {
+                if (item.Events != undefined && item?.Events?.length > 0) {
                     TaskID = 'EA' + item.TaskLevel + '-W' + item.TaskLevel + '-T' + item.Id;
                 }
             }
@@ -687,12 +687,12 @@ export const getTaskId = (item: any) => {
                 // }
             }
             if (item.Component != undefined) {
-                if (item.Component != undefined && item.Component.length > 0) {
+                if (item.Component != undefined && item?.Component?.length > 0) {
                     TaskID = 'CA' + item.TaskLevel + '-T' + item.Id;
                 }
             }
             if (item.Services != undefined) {
-                if (item.Services != undefined && item.Services.length > 0) {
+                if (item.Services != undefined && item?.Services?.length > 0) {
                     TaskID = 'SA' + item.TaskLevel + '-T' + item.Id;
                 }
             }
@@ -1661,8 +1661,8 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
             .getById(Props.MasterTaskListID)
             .items
             .select("ID", "Title", "DueDate", "Status", "Portfolio_x0020_Type", "Sitestagging",
-                "ItemRank", "Item_x0020_Type", 'PortfolioStructureID', 'ClientTime', 'SiteCompositionSettings', "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "TaskCategories/Id", "TaskCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title")
-            .expand("TeamMembers", "Author", "ClientCategory", "Parent", "TaskCategories", "AssignedTo", "ClientCategory")
+                "ItemRank", "Item_x0020_Type", 'PortfolioStructureID', 'ClientTime', 'PortfolioType/Id','PortfolioType/Title','SiteCompositionSettings', "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "TaskCategories/Id", "TaskCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title")
+            .expand("TeamMembers", "Author", "ClientCategory", "Parent", "TaskCategories", "AssignedTo", "ClientCategory",'PortfolioType')
             .top(4999).filter(`Portfolio_x0020_Type eq '${Props?.ComponentType}'`)
             .get();
         // console.log("all Service and Coponent data form global Call=======", componentDetails);
@@ -1834,11 +1834,52 @@ export const getParameterByName = async (name: any) => {
 
 export const GetTaskId = (Item: any) => {
     let taskIds = '';
-    if (Item?.Portfolio?.PortfolioStructureID != undefined) {
+    if (Item?.Portfolio?.PortfolioStructureID != undefined &&Item.TaskID!=undefined ) {
         taskIds = Item?.Portfolio?.PortfolioStructureID + '-' + Item.TaskID;
-    } else {
+    }   
+     if (Item?.Portfolio?.PortfolioStructureID != undefined &&Item.TaskID==undefined ) {
+        taskIds = Item?.Portfolio?.PortfolioStructureID + '-T' + Item.Id;
+     }
+    else if(Item.TaskID!=undefined){
         taskIds = Item.TaskID;
+    }
+    else if(Item.TaskID==undefined){
+        taskIds = "T"+Item.Id;
     }
 
     return taskIds;
 }
+export const findTaskHierarchy = (row: any, AllMatsterAndTaskData: any): any[] => {
+    let createGrouping = (row: any): any[] => {
+        for (let i = 0; i < AllMatsterAndTaskData.length; i++) {
+            let Object = AllMatsterAndTaskData[i];
+            if (Object?.Item_x0020_Type?.toLowerCase() != 'task') {
+                Object.SiteIconTitle = Object?.Item_x0020_Type?.charAt(0);
+            }
+            if (Object.Id === row?.ParentTask?.Id && row?.siteType === Object?.siteType) {
+                Object.subRows = [];
+                Object.subRows.push(row);
+                return createGrouping(Object);
+            } else if (Object.Id === row?.Parent?.Id) {
+                Object.subRows = [];
+                Object.subRows.push(row);
+                return createGrouping(Object);
+            } else if (row?.Component != undefined && row?.Component?.length > 0 && Object.Id === row?.Component[0]?.Id) {
+                Object.subRows = [];
+                Object.subRows.push(row);
+                return createGrouping(Object);
+            } else if (row?.Services != undefined && row?.Services?.length > 0 && Object.Id === row?.Services[0]?.Id) {
+                Object.subRows = [];
+                Object.subRows.push(row);
+                return createGrouping(Object);
+            }
+            else if (row?.Portfolio != undefined && Object.Id === row?.Portfolio?.Id) {
+                Object.subRows = [];
+                Object.subRows.push(row);
+                return createGrouping(Object);
+            }
+        }
+        return [row];
+    }
+    return createGrouping(row);
+};

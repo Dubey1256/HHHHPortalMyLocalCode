@@ -26,7 +26,7 @@ import SmartInformation from './SmartInformation';
 import VersionHistoryPopup from '../../../globalComponents/VersionHistroy/VersionHistory';
 import TasksTable from './TaskfooterTable';
 import EmailComponenet from './emailComponent';
-import EditSiteComposition from './EditSiteComposition'
+import EditSiteComposition from '../../../globalComponents/EditTaskPopup/EditSiteComposition'
 import AncTool from '../../../globalComponents/AncTool/AncTool'
 
 import Tooltip from '../../../globalComponents/Tooltip'
@@ -36,7 +36,7 @@ import { ImReply } from 'react-icons/im';
 import KeyDocuments from './KeyDocument'
 
 // import {MyContext} from './myContext'
-const MyContext:any = React.createContext<any>({})
+const MyContext: any = React.createContext<any>({})
 var ClientTimeArray: any = [];
 var TaskIdCSF: any = "";
 var TaskIdAW = "";
@@ -77,6 +77,7 @@ export interface ITaskprofileState {
   ApprovalCommentcheckbox: boolean;
   CommenttoPost: string;
   maincollection: any;
+  breadCrumData: any;
   SharewebTimeComponent: any;
   isopenversionHistory: boolean;
   smarttimefunction: boolean;
@@ -103,6 +104,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
   private smartInfoRef: any;
   private taskUsers: any = [];
   private smartMetaDataIcon: any;
+  private masterTaskData: any = [];
   private currentUser: any;
   private oldTaskLink: any;
   private site: any;
@@ -167,11 +169,26 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       sendMail: false,
       showPopup: 'none',
       maincollection: [],
+      breadCrumData: [],
       SharewebTimeComponent: [],
       smarttimefunction: false,
       ApprovalStatus: false,
       EditSiteCompositionStatus: false
     }
+    let web = new Web(this.props?.siteUrl);
+    web.lists
+      // .getByTitle("Master Tasks")
+      .getById(this.props.MasterTaskListID)
+      .items
+      .select('ComponentCategory/Id', 'PortfolioStructureID', 'PortfolioType/Id', 'PortfolioType/Color', 'PortfolioType/Title', 'Id', 'ValueAdded', 'Idea', 'Sitestagging', 'TechnicalExplanations', 'Short_x0020_Description_x0020_On', 'Short_x0020_Description_x0020__x', 'Short_x0020_description_x0020__x0', 'AdminNotes', 'Background', 'Help_x0020_Information', 'ItemType', 'Title', 'Parent/Id', 'Parent/Title')
+      .expand('Parent', 'ComponentCategory', "PortfolioType")
+
+      .orderBy('Modified', false)
+      .getAll(4000).then((data: any) => {
+        this.masterTaskData = this.masterTaskData.concat(data)
+      }).catch((error: any) => {
+        console.log(error)
+      })
 
     this.GetResult();
   }
@@ -181,132 +198,14 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
   // }
 
-  private gAllDataMatches: any = [];
+
   private taskResult: any;
-  private async loadOtherDetailsForComponents(task: any) {
 
-    if (task.Component.length > 0) {
-      await this.loadComponentsDataForTasks(task);
-      await this.getAllTaskData();
-      if (this.count == 0) {
-        this.breadcrumb();
-        this.count++;
-      }
-      console.log('Array for Breadcrumb');
-      console.log(this.maincollection);
-      this.setState({
-        maincollection: this.maincollection
-      })
-
-    }
-    else if (task.Services.length > 0) {
-      await this.loadComponentsDataForTasks(task);
-      await this.getAllTaskData();
-      if (this.count == 0) {
-        this.breadcrumb();
-        this.count++;
-      }
-
-      this.setState({
-        maincollection: this.maincollection
-      })
-    }
-    else if (task?.Services?.length == 0 && task?.Component?.length == 0) {
-      await this.loadComponentsDataForTasks(task);
-      await this.getAllTaskData();
-      if (this.count == 0) {
-        this.breadcrumb();
-        this.count++;
-      }
-
-      this.setState({
-        maincollection: this.maincollection
-      })
-    }
-  }
   private generateButtonId = () => {
 
     return `callout-button`;
   };
 
-  private async loadComponentsDataForTasks(Items: any) {
-    let DataForQuery = [];
-    if (Items?.Component != undefined && Items?.Component?.length > 0) {
-      DataForQuery = Items?.Component;
-    }
-    if (Items?.Services != undefined && Items?.Services?.length > 0) {
-      DataForQuery = Items.Services;
-    }
-
-    if (DataForQuery?.length > 0) {
-      let query = 'filter=';
-      DataForQuery.forEach(function (item: any) {
-        query += "(Id eq '" + item?.Id + "')or";
-      });
-      query = query.slice(0, query?.length - 2);
-
-      let web = new Web(this.props?.siteUrl);
-      let AllDataMatches = [];
-      AllDataMatches = await web.lists
-        // .getByTitle("Master Tasks")
-        .getById(this.props.MasterTaskListID)
-        .items
-        .select('ComponentCategory/Id', 'PortfolioStructureID', 'TaskType/Id', "TaskType/Title", 'Portfolio_x0020_Type', 'ComponentCategory/Title', 'Id', 'ValueAdded', 'Idea', 'Sitestagging', 'TechnicalExplanations', 'Short_x0020_Description_x0020_On', 'Short_x0020_Description_x0020__x', 'Short_x0020_description_x0020__x0', 'AdminNotes', 'Background', 'Help_x0020_Information', 'Item_x0020_Type', 'Title', 'Parent/Id', 'Parent/Title')
-        .expand('Parent', 'ComponentCategory', 'TaskType')
-        .filter(query.replace('filter=', ''))
-        .orderBy('Modified', false)
-        .getAll(4000);
-      this.gAllDataMatches = AllDataMatches;
-
-      TaskIdCSF = (AllDataMatches[0]?.PortfolioStructureID)?.replace("-", ">");
-      console.log(TaskIdCSF);
-
-
-      if (AllDataMatches[0] != undefined && AllDataMatches[0]?.Item_x0020_Type != undefined && AllDataMatches[0]?.Item_x0020_Type == 'Component') {
-
-        return AllDataMatches;
-      }
-
-      else {
-        let query = 'filter=';
-        AllDataMatches?.forEach(function (item: any) {
-          query += "(Id eq '" + item?.Parent?.Id + "')or";
-        });
-        query = query.slice(0, query?.length - 2);
-        await this.loadOtherComponentsData(query, AllDataMatches);
-      }
-    }
-  }
-
-  private async loadOtherComponentsData(query: any, AllDataMatches: any) {
-    let web = new Web(this.props?.siteUrl);
-    let Data = await web.lists
-      // .getByTitle("Master Tasks")
-      .getById(this.props.MasterTaskListID)
-      .items
-      .select('ComponentCategory/Id', 'PortfolioStructureID', "TaskType/Id", "TaskType/Title", 'Portfolio_x0020_Type', 'ComponentCategory/Title', 'Id', 'ValueAdded', 'Idea', 'Sitestagging', 'TechnicalExplanations', 'Short_x0020_Description_x0020_On', 'Short_x0020_Description_x0020__x', 'Short_x0020_description_x0020__x0', 'AdminNotes', 'Background', 'Help_x0020_Information', 'Item_x0020_Type', 'Title', 'Parent/Id', 'Parent/Title')
-      .expand('Parent', 'ComponentCategory', 'TaskType')
-      .filter(query.replace('filter=', ''))
-      .orderBy('Modified', false)
-      .getAll(4000);
-
-    Data.forEach(function (Item: any) {
-      // Item['TaskID'] = globalCommon.getTaskId( Item)
-      AllDataMatches.push(Item);
-    });
-
-    if (Data[0] != undefined && Data[0]?.Item_x0020_Type != undefined && Data[0]?.Item_x0020_Type == 'SubComponent') {
-      let query = 'filter=';
-      Data.forEach(function (item: any) {
-        query += "(Id eq '" + item?.Parent?.Id + "')or";
-      })
-      query = query.slice(0, query?.length - 2);
-      await this.loadOtherComponentsData(query, AllDataMatches);
-    }
-    else {
-      return AllDataMatches;
-    }
-  }
   private getsmartmetadataIcon = async () => {
     let web = new Web(this.props?.siteUrl);
     await web.lists
@@ -314,9 +213,10 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       .getById(this.props.SmartMetadataListID)
       .items
       .select('Id', 'Title', 'Item_x0020_Cover', 'TaxType', 'siteName', 'siteUrl', 'Item_x005F_x0020_Cover')
-
+    
       .filter("TaxType eq 'Sites'").top(4000)
       .get().then((data: any) => {
+
         this.smartMetaDataIcon = data;
 
       }).catch((error: any) => {
@@ -343,8 +243,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       .getByTitle(this.state?.listName)
       .items
       .getById(this.state?.itemID)
-      .select("ID", "Title", "Comments", "ApproverHistory", "EstimatedTime", "DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "Approver/Id", "Approver/Title", "ParentTask/Id", "Project/Id", "Project/Title", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
-      .expand("TeamMembers", "Project", "Approver", "ParentTask", "SmartInformation", "AssignedTo", "TaskCategories", "Author", "ClientCategory", "ResponsibleTeam", "TaskType", "Component", "Services", "Editor", "AttachmentFiles")
+      .select("ID", "Title", "Comments", "ApproverHistory", "EstimatedTime", "Portfolio/Id", "Portfolio/Title","Portfolio/PortfolioStructureID", "PortfolioType/Id", "DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "Approver/Id", "Approver/Title", "ParentTask/Id", "Project/Id", "Project/Title", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
+      .expand("TeamMembers", "Project", "Approver", "ParentTask", "Portfolio", "PortfolioType", "SmartInformation", "AssignedTo", "TaskCategories", "Author", "ClientCategory", "ResponsibleTeam", "TaskType", "Editor", "AttachmentFiles")
       .get()
     AllListId = {
       MasterTaskListID: this.props.MasterTaskListID,
@@ -363,7 +263,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     taskDetails["siteType"] = this.state?.listName;
     taskDetails["siteUrl"] = this.props?.siteUrl;
 
-    taskDetails.TaskId = globalCommon.getTaskId(taskDetails);
+    taskDetails.TaskId = globalCommon.GetTaskId(taskDetails);
     var category = ""
     if (taskDetails["TaskCategories"] != undefined && taskDetails["TaskCategories"].length > 0) {
       taskDetails["TaskCategories"]?.map((item: any, index: any) => {
@@ -454,12 +354,21 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     if (taskDetails["Title"].length > maxTitleLength) {
       truncatedTitle = taskDetails["Title"].substring(0, maxTitleLength - 3) + "...";
     }
+ 
+    let portfolio:any
+    if(taskDetails?.Portfolio!=undefined){
+ 
+      portfolio =this.masterTaskData.filter((item:any)=>item.Id==taskDetails?.Portfolio?.Id)
+    }
+    
+    console.log(this.masterTaskData)
     let tempTask = {
       SiteIcon: this.GetSiteIcon(this.state?.listName),
       sitePage: this.props.Context?._pageContext?._web?.title,
       Comments: comment != null && comment != undefined ? comment : "",
       Id: taskDetails["ID"],
       ID: taskDetails["ID"],
+      
       Project: taskDetails["Project"],
       IsTodaysTask: taskDetails["IsTodaysTask"],
       EstimatedTime: taskDetails["EstimatedTime"],
@@ -492,8 +401,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       TaskType: taskDetails["TaskType"] != null ? taskDetails["TaskType"]?.Title : '',
       EstimatedTimeDescriptionArray: tempEstimatedArrayData,
       TotalEstimatedTime: TotalEstimatedTime,
-      Component: taskDetails["Component"],
-      Services: taskDetails["Services"],
+   
+      Portfolio: portfolio!=undefined?portfolio[0]:undefined,
+      PortfolioType: taskDetails["PortfolioType"],
       Creation: taskDetails["Created"],
       Modified: taskDetails["Modified"],
       ModifiedBy: taskDetails["Editor"],
@@ -525,9 +435,13 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
 
     }, () => {
-      // this.showhideapproval();
+
       this.getSmartTime();
-      this.loadOtherDetailsForComponents(this.taskResult);
+      if (tempTask.Portfolio != undefined) {
+        this.getAllTaskData();
+      }
+
+
 
     });
   }
@@ -576,10 +490,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                 "https://hhhhteams.sharepoint.com/sites/HHHH"
               );
             }
-            // if(item.ImageUrl!=undefined && item.ImageUrl.toLowerCase().indexOf('https://www.hochhuth-consulting.de/') > -1) {
-            //   var imgurl = item.AuthorImage.split('https://www.hochhuth-consulting.de/')[1];
-            //     item.ImageUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/' + imgurl;
-            // }
+
             if (item?.ImageName == Attach?.FileName) {
               ImagesInfo.push({
                 ImageName: Attach?.FileName,
@@ -629,7 +540,6 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     })
     this.taskUsers = taskUsers;
 
-    // console.log(this.taskUsers);
 
   }
 
@@ -646,18 +556,18 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
     else if (ClientTime != null && ClientTime != "false") {
       ClientTimeArray = JSON.parse(ClientTime);
-      //  console.log(ClientTimeArray);
+
     }
     let web = new Web(this.props?.siteUrl);
     var smartMetaData = await web.lists
-      // .getByTitle('SmartMetadata')
+
       .getById(this.props.SmartMetadataListID)
       .items
       .select('Id', 'Title', 'IsVisible', 'TaxType', 'Parent/Id', 'Parent/Title', 'siteName', 'siteUrl', 'SmartSuggestions', "SmartFilters",)
 
       .expand('Parent').filter("TaxType eq 'Client Category'").top(4000)
       .get();
-    // console.log(smartMetaData);
+
     if (ClientCategory.length > 0) {
       ClientCategory?.map((item: any, index: any) => {
         smartMetaData?.map((items: any, index: any) => {
@@ -782,7 +692,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
   }
 
   private GetUserObject(username: any) {
-    //username = username.Title != undefined ? username.Title : username;
+
     let userDeatails = [];
     if (username != undefined) {
       let senderObject = this.taskUsers.filter(function (user: any, i: any) {
@@ -948,14 +858,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     })
     this.GetResult();
   }
-  // private async approvalcallbackfeedback() {
-  //   // this.showhideapproval();
 
-  //   this.setState({
-  //     sendMail: false,
-  //     emailStatus: ""
-  //   })
-  // }
   private ConvertLocalTOServerDate(LocalDateTime: any, dtformat: any) {
     if (dtformat == undefined || dtformat == '')
       dtformat = "DD/MM/YYYY";
@@ -972,240 +875,49 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
   private maincollection: any = [];
 
   private async getAllTaskData() {
+    let breadCrumData1: any = [];
     let web = new Web(this.props.siteUrl);
     let results = [];
     results = await web.lists
-      .getByTitle(this.site)
+      .getByTitle(this.state?.listName)
       // .getById(this.props.SiteTaskListID)
       .items
-      .select('TaskID', 'TaskType/Id', "AssignedTo/Id", "AssignedTo/Title", 'TaskType/Title', 'TeamMembers/Id', 'TeamMembers/Title', 'TeamMembers/Name', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id', 'AttachmentFiles/FileName', 'Component/Id', 'Component/Title', 'Component/ItemType', 'Services/Id', 'Services/Title', 'Services/ItemType', 'OffshoreComments', 'Portfolio_x0020_Type', 'Categories', 'FeedBack', 'ComponentLink', 'FileLeafRef', 'Title', 'Id', 'Comments', 'CompletedDate', 'StartDate', 'DueDate', 'Status', 'Body', 'Company', 'Mileage', 'PercentComplete', 'FeedBack', 'Attachments', 'Priority', 'Created', 'Modified', 'BasicImageInfo', 'TaskCategories/Id', 'TaskCategories/Title', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title', 'Events/Id', 'Events/Title', 'Events/ItemType', 'TaskLevel', 'TaskLevel', 'ParentTask/Id', 'ParentTask/Title', 'ResponsibleTeam/Id', 'ResponsibleTeam/Title', 'ResponsibleTeam/Name')
-      .filter("(TaskType/Title eq 'Activities') or (TaskType/Title eq 'Workstream') or (TaskType/Title eq 'Task') or (TaskType/Title eq 'Project') or (TaskType/Title eq 'Step') or (TaskType/Title eq 'MileStone')")
-      .expand('ResponsibleTeam', "AssignedTo", 'ParentTask', 'AssignedTo', 'Component', 'Services', 'Events', 'AttachmentFiles', 'Author', 'TeamMembers', 'Editor', 'TaskCategories', 'TaskType')
+      .select("ID", "Title", "Comments", "ApproverHistory", "EstimatedTime", "Portfolio/Id", "Portfolio/Title", "PortfolioType/Id", "Portfolio/PortfolioStructureID","DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "ParentTask/Id", "Project/Id", "Project/Title", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
+      .expand("TeamMembers", "Project", "ParentTask", "Portfolio", "PortfolioType", "SmartInformation", "AssignedTo", "TaskCategories", "Author", "ClientCategory", "ResponsibleTeam", "TaskType", "Editor", "AttachmentFiles")
       .getAll(4000);
 
     for (let index = 0; index < results.length; index++) {
       let item = results[index];
-      item.siteType = this.site;
+      item.siteType = this.state?.listName;
       item.isLastNode = false;
       this.allDataOfTask.push(item);
+      this.masterTaskData.push(item)
     }
-  }
+    let breadCrumData1WithSubRow: any = globalCommon.findTaskHierarchy(this.state.Result, this.masterTaskData)
+    console.log(breadCrumData1WithSubRow)
 
-  private breadcrumb() {
-    let breadcrumbitem: any = {};
-    let flag = false;
-    let gAllDataMatches = this.gAllDataMatches;
-    let self = this;
-    if (this.taskResult != undefined && this.taskResult?.Component != undefined && this.taskResult?.Component?.length > 0) {
-      this.taskResult?.Component?.forEach(function (item: any) {
-        flag = false;
-        gAllDataMatches?.forEach(function (value: any) {
-          if (item?.Id == value?.Id) {
 
-            if (value?.Parent != undefined && value?.Parent?.Id != undefined) {
-              gAllDataMatches.forEach(function (component: any) {
-                if (component?.Id == value?.Parent?.Id) {
-                  if (value?.Item_x0020_Type == "SubComponent") {
-                    flag = true;
-                    breadcrumbitem.Parentitem = component;
-                    breadcrumbitem.Child = item;
-                  } else {
-                    gAllDataMatches?.forEach(function (subchild: any) {
-                      if (component?.Parent?.Id == subchild?.Id) {
-                        flag = true;
-                        breadcrumbitem.Parentitem = subchild;
-                        breadcrumbitem.Child = component;
-                        breadcrumbitem.Subchild = item;
-                      } else if (component?.Parent?.Id == undefined && self.taskResult?.Component[0]?.ItemType == "Feature") {
-                        flag = true
-                        breadcrumbitem.Parentitem = subchild;
-                        breadcrumbitem.Child = undefined;
-                        breadcrumbitem.Subchild = item;
-                      }
-                    })
-                  }
-                }
-              })
-            } else if (value.Parent == undefined) {
-              if (value?.Item_x0020_Type == 'Component') {
-                flag = true;
-                breadcrumbitem.Parentitem = value;
-              }
-            }
-          }
-        })
-        if (flag) {
-          self.breadcrumbOtherHierarchy(breadcrumbitem);
+    let array: any = [];
+    const getValueSubRow = (row: any) => {
+
+      row?.map((items: any) => {
+        array?.push(row[0])
+        if (items?.subRows?.length > 0 && items?.subRows != undefined) {
+          return getValueSubRow(items?.subRows)
         }
-        breadcrumbitem = {};
       })
-
+      return array
     }
-    if (this.taskResult != undefined && this.taskResult?.Services != undefined && this.taskResult?.Services?.length > 0) {
-      this.taskResult?.Services?.forEach(function (item: any) {
-        flag = false;
-        gAllDataMatches?.forEach(function (value: any) {
-
-          if (item?.Id == value?.Id) {
-
-            if (value?.Parent != undefined && value?.Parent?.Id != undefined) {
-              gAllDataMatches?.forEach(function (component: any) {
-                if (component?.Id == value?.Parent?.Id) {
-                  flag = true;
-                  if (value?.Item_x0020_Type == "SubComponent") {
-                    breadcrumbitem.Parentitem = component;
-                    breadcrumbitem.Child = item;
-                  } else {
-                    gAllDataMatches?.forEach(function (subchild: any) {
-                      if (component?.Parent != undefined) {
-                        if (component?.Parent?.Id == subchild?.Id) {
-                          flag = true;
-                          breadcrumbitem.Parentitem = subchild;
-                          breadcrumbitem.Child = component;
-                          breadcrumbitem.Subchild = item;
-                        }
-                      }
-                      else if (component?.Parent?.Id == undefined && self.taskResult?.Services[0]?.ItemType == "Feature") {
-                        flag = true
-                        breadcrumbitem.Parentitem = subchild;
-                        breadcrumbitem.Subchild = item;
-                      }
-                    })
-                  }
-                }
-              })
-            } else if (value.Parent == undefined) {
-              if (value?.Item_x0020_Type == 'Component') {
-                flag = true;
-                breadcrumbitem.Parentitem = value;
-              }
-            }
-          }
-        })
-        if (flag) {
-          self.breadcrumbOtherHierarchy(breadcrumbitem);
-        }
-        breadcrumbitem = {};
-      })
+    if (breadCrumData1WithSubRow.length > 0) {
+      breadCrumData1 = getValueSubRow(breadCrumData1WithSubRow)
     }
-    if (this.taskResult != undefined && this.taskResult?.Events != undefined && this.taskResult?.Events?.length > 0) {
-      this.taskResult?.Events?.forEach(function (item: any) {
-        flag = false;
-        gAllDataMatches?.forEach(function (value: any) {
-          if (item?.Id == value?.Id) {
-            if (value?.Parent?.Id != undefined) {
-              gAllDataMatches.forEach(function (component: any) {
-                if (component?.Id == value?.Parent?.Id) {
-                  if (value?.Item_x0020_Type == "SubComponent") {
-                    flag = true;
-                    breadcrumbitem.Parentitem = component;
-                    breadcrumbitem.Child = item;
-                  } else {
-                    gAllDataMatches?.forEach(function (subchild: any) {
-                      if (component?.Parent?.Id == subchild?.Id) {
-                        flag = true;
-                        breadcrumbitem.Parentitem = subchild;
-                        breadcrumbitem.Child = component;
-                        breadcrumbitem.Subchild = item;
-                      }
-                    })
-                  }
-                }
-              })
-            } else if (value.Parent.Id == undefined) {
-              if (value.Item_x0020_Type == 'Component') {
-                flag = true;
-                breadcrumbitem.Parentitem = value;
-              }
-            }
-          }
-        })
-        if (flag) {
-          self.breadcrumbOtherHierarchy(breadcrumbitem);
-        }
-        breadcrumbitem = {};
-      })
-    }
-    if (this.taskResult.Component.length == 0 && this.taskResult.Services.length == 0 && this.taskResult != undefined && this.taskResult.Events == undefined) {
-      self.breadcrumbOtherHierarchy(breadcrumbitem);
-      breadcrumbitem = {};
-    }
-  }
-
-  private breadcrumbOtherHierarchy(breadcrumbitem: any) {
-    let self = this;
-    this.allDataOfTask?.forEach(function (value: any) {
-      if (self.taskResult?.TaskType != undefined) {
-        if (self.taskResult?.TaskType?.Title == 'Activities' || self.taskResult?.TaskType?.Title == 'Project') {
-          if (self.taskResult?.ParentTask == undefined) {
-            if (value?.Id == self.taskResult?.Id) {
-              value.isLastNode = true;
-              breadcrumbitem.ParentTask = value;
-            }
-          }
-
-        } else if (self.taskResult?.TaskType?.Title == 'Workstream' || self.taskResult?.TaskType?.Title == 'Step') {
-          if (self.taskResult?.ParentTask?.Id != undefined) {
-            if (self.taskResult?.ParentTask?.Id == value?.Id) {
-              self.taskResult.isLastNode = true;
-              breadcrumbitem.ParentTask = value;
-              breadcrumbitem.ChildTask = self.taskResult;
-            }
-          }
-        } else if (self.taskResult?.TaskType?.Title == 'Task' || self.taskResult?.TaskType?.Title == 'MileStone') {
-          if (self.taskResult?.ParentTask != undefined && self.taskResult?.ParentTask?.Id != undefined) {
-            if (self.taskResult?.ParentTask?.Id == value?.Id && (value?.TaskType?.Title == 'Activities' || value?.TaskType?.Title == 'Project')) {
-              self.taskResult.isLastNode = true;
-              breadcrumbitem.ParentTask = value;
-              breadcrumbitem.ChildTask = self.taskResult;
-            }
-            if (self.taskResult?.ParentTask?.Id == value?.Id && (value?.TaskType?.Title == 'Workstream' || value?.TaskType?.Title == 'Step')) {
-              self.taskResult.isLastNode = true;
-              breadcrumbitem.ChildTask = value;
-              breadcrumbitem.SubChildTask = self.taskResult;
-
-            }
-            if (breadcrumbitem?.ChildTask != undefined) {
-              self.allDataOfTask?.forEach(function (values: any) {
-                if (breadcrumbitem?.ChildTask?.ParentTask?.Id == values?.Id && (breadcrumbitem?.ChildTask?.TaskType?.Title == 'Workstream' || breadcrumbitem?.ChildTask?.TaskType?.Title == 'Step')) {
-                  breadcrumbitem.ParentTask = values;
-                }
-              });
-            }
-          } else {
-            self.taskResult.isLastNode = true;
-            breadcrumbitem.ParentTask = self?.taskResult;
-          }
-        }
-      }
+    this.setState({
+      breadCrumData: breadCrumData1
     })
-    if (this.taskResult.TaskType == undefined) {
-      this.taskResult.isLastNode = true;
-      breadcrumbitem.ParentTask = this.taskResult;
-    }
-    if (breadcrumbitem != undefined) {
-      if (breadcrumbitem?.ParentTask != undefined && breadcrumbitem?.ParentTask?.TaskID != undefined && breadcrumbitem?.ChildTask == undefined && breadcrumbitem?.SubChildTask == undefined) {
 
-        TaskIdAW = (breadcrumbitem?.ParentTask?.TaskID)?.replace("-", ">")
-      }
-      if (breadcrumbitem.ChildTask != undefined && breadcrumbitem.SubChildTask == undefined) {
-        if (breadcrumbitem.ChildTask.TaskID != undefined) {
-          if (TaskIdAW != "" || TaskIdAW == "") {
-            TaskIdAW = TaskIdAW + ">" + breadcrumbitem?.ChildTask?.TaskID;
-          }
-        }
-        else if (breadcrumbitem?.ChildTask != undefined && breadcrumbitem?.ChildTask?.TaskId != undefined && breadcrumbitem?.SubChildTask == undefined) {
-          TaskIdAW = (breadcrumbitem?.ChildTask?.TaskId)?.replace("-", ">")
-        }
-      }
-      else if (breadcrumbitem?.SubChildTask != undefined && breadcrumbitem?.SubChildTask?.TaskId != undefined) {
-        TaskIdAW = (breadcrumbitem?.SubChildTask?.TaskId)?.replace("-", ">")
-      }
-    }
-    this.maincollection.push(breadcrumbitem);
-    breadcrumbitem = {};
 
   }
+
 
   private EditData = (e: any, item: any) => {
     this.setState({
@@ -1803,16 +1515,16 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       </>
     );
   };
-  private contextCall = (data:any, path:any,component:any) => {
-    if(data!=null &&path!=null){
+  private contextCall = (data: any, path: any, component: any) => {
+    if (data != null && path != null) {
       this.setState({
-        keydoc:data,
-        FileDirRef:path
-    })
+        keydoc: data,
+        FileDirRef: path
+      })
     }
-     if(component){
+    if (component) {
       this?.relevantDocRef?.current?.loadAllSitesDocuments()
-     }
+    }
   };
 
   public render(): React.ReactElement<ITaskprofileProps> {
@@ -1830,78 +1542,64 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       document.title = "Task Profile"
     }
     return (
-      <MyContext.Provider value={{ ...MyContext, FunctionCall : this.contextCall, keyDoc:this.state.keydoc, FileDirRef:this.state.FileDirRef }}>
-        <div className={this.state.Result["Services"] != undefined && this.state.Result["Services"].length > 0 ? 'app component serviepannelgreena' : "app component"}>
-          <section className='ContentSection'> {this.state.maincollection != null && this.state.maincollection.length > 0 &&
+      <MyContext.Provider value={{ ...MyContext, FunctionCall: this.contextCall, keyDoc: this.state.keydoc, FileDirRef: this.state.FileDirRef }}>
+        <div
+        //  style={{color:`${this.state.Result["serviceComponentColor"]}`}}
+        >
+          <section className='ContentSection'> {this.state.breadCrumData != undefined &&
             <div className='row'>
               <div className="col-sm-12 p-0 ">
 
                 <ul className="spfxbreadcrumb m-0 p-0">
-                  {this.state.maincollection?.map((breadcrumbitem: any) => {
-                    return <>
-                      {(this.state.Result["Component"] != null && this.state.Result["Component"].length > 0) || (this.state.Result["Services"] != null && this.state.Result["Services"].length > 0) ?
+                  {this.state?.Result["Portfolio"] == undefined && this.state.breadCrumData?.length == 0 && this.state.Result.Title!=undefined?
+                    <>
+                      <li  >
+                        <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Dashboard.aspx`}> <span>Dashboard</span> </a>
+                      </li>
+
+
+                      <li>
+                        <a  >
+                          <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                            <span title={this.state.Result['Title']}>{truncatedTitle?.length > 0 ? truncatedTitle : this.state.Result['Title']}</span>
+                            {truncatedTitle?.length > 0 && <span className="f-13 popover__content" >
+                              {this.state.Result['Title']}
+                            </span>}
+                          </span>
+
+                        </a>
+                      </li></> : <>
+
+                      {this.state.Result["Portfolio"] != null && this.state.breadCrumData.length > 0 &&
                         <li >
-                          {this.state.Result["Component"] != null && this.state.Result["Component"].length > 0 &&
+                          {this.state.Result["Portfolio"] != null &&
                             <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Component-Portfolio.aspx`}>Component Portfolio</a>
                           }
-                          {this.state.Result["Services"] != null && this.state.Result["Services"].length > 0 &&
-                            <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Service-Portfolio.aspx`}>Service Portfolio</a>
+
+                        </li>
+                      }
+                      {this.state.breadCrumData?.map((breadcrumbitem: any, index: any) => {
+                        return <>
+                          <li>
+
+                            <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Id}`}>{breadcrumbitem?.Title}</a>
+                          </li>
+                          {this.state.breadCrumData.length == index &&
+                            <li>
+                              <a  >
+                                <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                  <span>{truncatedTitle?.length > 0 ? truncatedTitle : this.state.Result['Title']}</span>
+                                  {truncatedTitle?.length > 0 && <span className="f-13 popover__content" >
+                                    {this.state.Result['Title']}
+                                  </span>}
+                                </span>
+
+                              </a>
+                            </li>
                           }
-                        </li> : null
-                      }
-                      {breadcrumbitem.Subchild == undefined && breadcrumbitem.Child == undefined && this.state.Result["Services"].length == 0 &&
-                        this.state.Result["Component"].length == 0 && breadcrumbitem.ParentTask != undefined &&
-                        <li  >
-                          <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Dashboard.aspx`}> <span>Dashboard</span> </a>
-                        </li>
-                      }
-                      {breadcrumbitem.Parentitem != undefined &&
-                        <li>
-
-                          <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Parentitem?.Id}`}>{breadcrumbitem?.Parentitem?.Title}</a>
-                        </li>
-                      }
-                      {breadcrumbitem.Child != undefined &&
-                        <li>
-
-                          <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Child?.Id}`}>{breadcrumbitem?.Child?.Title}</a>
-                        </li>
-                      }
-                      {breadcrumbitem.Subchild != undefined &&
-                        <li >
-
-                          <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem.Subchild.Id}`}>{breadcrumbitem?.Subchild?.Title}</a>
-                        </li>
-                      }
-                      {breadcrumbitem.ParentTask != undefined && breadcrumbitem.ParentTask.TaskID != undefined && this.state.Result["ParentTask"] != undefined &&
-                        <li  >
-
-                          <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${breadcrumbitem.ParentTask.Id}&Site=${breadcrumbitem?.ParentTask?.siteType}`}>{breadcrumbitem?.ParentTask?.Title}</a>
-                        </li>
-                      }
-                      {/* {breadcrumbitem.ChildTask != undefined &&
-                      <li >
-
-                        <a target="_blank" data-interception="off"  href={`${this.state.Result["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${breadcrumbitem.ChildTask.Id}&Site=${breadcrumbitem?.ChildTask?.siteType}`}>{breadcrumbitem?.ChildTask?.Title}</a>
-                      </li>
-                    } */}
-
-                      {breadcrumbitem.ParentTask != undefined &&
-                        <li>
-                          <a  >
-                            <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                              <span title={this.state.Result['Title']}>{truncatedTitle?.length > 0 ? truncatedTitle : this.state.Result['Title']}</span>
-                              <span className="f-13 popover__content" >
-                                {this.state.Result['Title']}
-                              </span>
-                            </span>
-
-                          </a>
-                        </li>
-                      }
-                    </>
-                  })
-                  }
+                        </>
+                      })
+                      }</>}
                 </ul>
               </div>
             </div>
@@ -1912,10 +1610,10 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                   {this.state.Result["SiteIcon"] != "" && <img className="imgWid29 pe-1 " title={this?.state?.Result?.siteType} src={this.state.Result["SiteIcon"]} />}
                   {this.state.Result["SiteIcon"] === "" && <img className="imgWid29 pe-1 " src="" />}
                   <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                    <span title={this.state.Result['Title']}>{truncatedTitle?.length > 0 ? truncatedTitle : this.state.Result['Title']}</span>
-                    <span className="f-13 popover__content" >
+                    <span >{truncatedTitle?.length > 0 ? truncatedTitle : this.state.Result['Title']}</span>
+                    {truncatedTitle?.length > 0 && <span className="f-13 popover__content" >
                       {this.state.Result['Title']}
-                    </span>
+                    </span>}
                   </span>
                   <a className="hreflink" title='Edit' onClick={() => this.OpenEditPopUp()}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="25" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
@@ -1959,12 +1657,16 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                         <dd className='bg-Ff text-break'>{this.state.Result["Categories"]}</dd>
                       </dl>
                       <dl>
+                        <dt className='bg-Fa'>Item Rank</dt>
+                        <dd className='bg-Ff'>{this.state.Result["ItemRank"]}</dd>
+                      </dl>
+                      {/* <dl>
                         <dt className='bg-Fa'>Estimated Time</dt>
                         <dd className='bg-Ff position-relative' >
                           <span className='tooltipbox' title="hours">{this.state.Result["EstimatedTime"] != undefined ? (this.state.Result["EstimatedTime"].toFixed(1) > 1 ? this.state.Result["EstimatedTime"].toFixed(1) + " hours" : this.state.Result["EstimatedTime"].toFixed(1) + " hour") : "0.0 hour"} </span>
-                          {/* <span className='tooltipbox' title="hours">{this.state.Result["EstimatedTime"] != undefined ? this.state.Result["EstimatedTime"].toFixed(1) + "hours" : "0.0 hour"} </span> */}
+                        
                         </dd>
-                      </dl>
+                      </dl> */}
                       {isShowTimeEntry && <dl>
                         <dt className='bg-Fa'>SmartTime Total</dt>
                         <dd className='bg-Ff'>
@@ -2005,7 +1707,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                             </div>
                             }
                             {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 2 &&
-                              <div className="position-relative user_Member_img_suffix2" onMouseOver={(e) => this.handleSuffixHover()} onMouseLeave={(e) => this.handleuffixLeave()}>+{this.state.Result["TeamMembers"].length - 1}
+                              <div className="position-relative user_Member_img_suffix2 ms-1 alignCenter" onMouseOver={(e) => this.handleSuffixHover()} onMouseLeave={(e) => this.handleuffixLeave()}>+{this.state.Result["TeamMembers"].length - 1}
                                 <span className="tooltiptext" style={{ display: this.state.Display, padding: '10px' }}>
                                   <div>
                                     {this.state.Result["TeamMembers"].slice(1)?.map((rcData: any, i: any) => {
@@ -2049,10 +1751,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                         <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["IsTodaysTask"] ? "Yes" : "No"} </span>
                         </dd>
                       </dl>
-                      <dl>
-                        <dt className='bg-Fa'>Item Rank</dt>
-                        <dd className='bg-Ff'>{this.state.Result["ItemRank"]}</dd>
-                      </dl>
+                      
                       <dl>
                         <dt className='bg-Fa'>% Complete</dt>
                         <dd className='bg-Ff'>{this.state.Result["PercentComplete"] != undefined ? this.state.Result["PercentComplete"].toFixed(0) : 0}</dd>
@@ -2084,18 +1783,16 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
                         <dt className='bg-Fa'>Portfolio</dt>
                         <dd className='bg-Ff full-width'>
-                          {this.state.Result["Component"] != null && this.state.Result["Component"].length > 0 && this.state.Result["Component"]?.map((componentdt: any, i: any) => {
+                          {/* {this.state.Result["Component"] != null && this.state.Result["Component"].length > 0 && this.state.Result["Component"]?.map((componentdt: any, i: any) => {
                             return (
                               <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${componentdt.Id}`}>{componentdt.Title}</a>
 
                             )
-                          })}
-                          {this.state.Result["Services"] != null && this.state.Result["Services"].length > 0 && this.state.Result["Services"]?.map((Servicesdt: any, i: any) => {
-                            return (
-                              <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${Servicesdt.Id}`}>{Servicesdt.Title}</a>
+                          })} */}
+                          {this.state?.Result["Portfolio"] != null &&
 
-                            )
-                          })}
+                            <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${this.state?.Result["Portfolio"].Id}`}>{this.state?.Result["Portfolio"]?.Title}</a>
+                          }
 
                         </dd>
                       </dl>
@@ -2237,7 +1934,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                           </div>
                         }
                         {/*feedback comment section code */}
-                        <div className={this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.length > 0 ? "col-sm-8 pe-0 mt-2" : "col-sm-12 pe-0 mt-2"}>
+                        <div className={this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.length > 0 ? "col-sm-8 pe-0 mt-2" : "col-sm-12 p-0 mt-2"}>
                           {this.state.Result["TaskType"] != null && (this.state.Result["TaskType"] == '' ||
                             this.state.Result["TaskType"] == 'Task' || this.state.Result["TaskType"] == "Workstream" || this.state.Result["TaskType"] == "Activities") && this.state.Result["FeedBack"] != undefined && this.state.Result["FeedBack"].length > 0 && this.state.Result["FeedBack"][0].FeedBackDescriptions != undefined &&
                             this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
@@ -2336,7 +2033,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                   return <div className={fbComment.isShowLight != undefined && fbComment.isApprovalComment ? `col add_cmnt my-1 ${fbComment.isShowLight}` : "col add_cmnt my-1"}>
                                                     <div className="">
                                                       <div className="d-flex p-0">
-                                                        <div className="col-1 p-0">
+                                                        <div className="col-1 p-0 wid30">
                                                           <img className="workmember" src={fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ?
                                                             fbComment.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
                                                         </div>
@@ -2349,7 +2046,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                                   onClick={() => this.openReplycommentPopup(i, k)}
                                                                   data-placement="bottom"
                                                                 >
-                                                                  <ImReply />
+                                                                  <span className="svg__iconbox svg__icon--reply"></span>
                                                                 </div>
                                                               </a>
                                                               <a title='Edit'
@@ -2497,11 +2194,11 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                     return <div className={fbComment?.isShowLight != undefined && fbComment.isApprovalComment ? `col-sm-12  mb-2 add_cmnt my-1 ${fbComment?.isShowLight}` : "col-sm-12  mb-2 add_cmnt my-1 "}>
                                                       <div className="">
                                                         <div className="d-flex p-0">
-                                                          <div className="col-sm-1 padL-0 wid35">
+                                                          <div className="col-1 p-0 wid30">
                                                             <img className="workmember" src={fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ?
                                                               fbComment.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
                                                           </div>
-                                                          <div className="col-sm-11 pad0" key={k}>
+                                                          <div className="col-11 pad0" key={k}>
                                                             <div className="d-flex justify-content-between align-items-center">
                                                               {fbComment?.AuthorName} - {fbComment?.Created}
                                                               <span className='d-flex'>
@@ -2510,7 +2207,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                                     onClick={() => this.openReplySubcommentPopup(i, j, k)}
                                                                     data-placement="bottom"
                                                                   >
-                                                                    <ImReply />
+                                                                    <span className="svg__iconbox svg__icon--reply"></span>
                                                                   </div>
                                                                 </a>
                                                                 <a title="Edit"
@@ -2688,7 +2385,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                     </div>}
 
                   </section>
-
+                  <div className="row">
+                    <div className='p-0'> {this.state.Result.Id != undefined && <KeyDocuments ref={this?.relevantDocRef} AllListId={AllListId} Context={this.props?.Context} siteUrl={this.props.siteUrl} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} keyDoc={true}></KeyDocuments>}</div>
+                  </div>
                 </div>
                 <div className="col-3">
                   <div>
@@ -2706,14 +2405,12 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
             </section></section>
           <section className='TableContentSection'>
             {console.log("context data ================", MyContext)}
-            <div className="row">
-              <div> {this.state.Result.Id != undefined && <KeyDocuments ref={this?.relevantDocRef} AllListId={AllListId} Context={this.props?.Context} siteUrl={this.props.siteUrl} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} keyDoc={true}></KeyDocuments>}</div>
-            </div>
+
             <div className="row">
               {this.state.Result != undefined && this.state.Result.Id != undefined && this.state.Result.TaskType != "" && this.state.Result.TaskType != undefined && this.state.Result.TaskType != 'Task' ? <TasksTable props={this.state.Result} AllListId={AllListId} Context={this.props?.Context} /> : ''}
             </div>
             <div className='row'>
-              {/* {this.state.Result?.Portfolio_x0020_Type!=undefined &&<TaskWebparts props={this.state.Result}/>} */}
+              {/* {this.state.Result?.PortfolioType!=undefined &&<TaskWebparts props={this.state.Result}/>} */}
               {this.state.Result != undefined &&
                 <div className="ItemInfo mb-20" style={{ paddingTop: '15px' }}>
 
