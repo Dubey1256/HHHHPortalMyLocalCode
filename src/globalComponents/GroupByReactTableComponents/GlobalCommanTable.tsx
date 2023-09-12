@@ -144,13 +144,13 @@ export function IndeterminateCheckbox(
 
 // ********************* function with globlize Expended And Checkbox*******************
 let forceExpanded: any = [];
-const getFirstColHeader = ({ hasCheckbox, hasExpanded, isHeaderNotAvlable }: any) => {
+const getFirstColHeader = ({ hasCheckbox, hasExpanded, isHeaderNotAvlable, portfolioColor }: any) => {
     return ({ table }: any) => (
         <>
             {hasExpanded && isHeaderNotAvlable != true && (<>
                 <span className="border-0 bg-Ff" {...{ onClick: table.getToggleAllRowsExpandedHandler(), }}>
                     {table.getIsAllRowsExpanded() ? (
-                        <SlArrowDown title='Tap to collapse the childs' />) : (<SlArrowRight title='Tap to expand the childs' />)}
+                        <SlArrowDown style={{ color: portfolioColor }} title='Tap to collapse the childs' />) : (<SlArrowRight style={{ color: portfolioColor }} title='Tap to expand the childs' />)}
                 </span>{" "}
             </>)}
             {hasCheckbox && (
@@ -327,7 +327,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     header: getFirstColHeader({
                         hasCheckbox: elem.hasCheckbox,
                         hasExpanded: elem.hasExpanded,
-                        isHeaderNotAvlable: elem.isHeaderNotAvlable
+                        isHeaderNotAvlable: elem.isHeaderNotAvlable,
+                        portfolioColor: portfolioColor
                     }),
                     cell: getFirstColCell({
                         setExpanded,
