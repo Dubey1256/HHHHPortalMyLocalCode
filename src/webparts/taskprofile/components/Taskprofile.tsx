@@ -243,7 +243,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       .getByTitle(this.state?.listName)
       .items
       .getById(this.state?.itemID)
-      .select("ID", "Title", "Comments", "ApproverHistory", "EstimatedTime", "Portfolio/Id", "Portfolio/Title", "PortfolioType/Id", "DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "Approver/Id", "Approver/Title", "ParentTask/Id", "Project/Id", "Project/Title", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
+      .select("ID", "Title", "Comments", "ApproverHistory", "EstimatedTime", "Portfolio/Id", "Portfolio/Title","Portfolio/PortfolioStructureID", "PortfolioType/Id", "DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "Approver/Id", "Approver/Title", "ParentTask/Id", "Project/Id", "Project/Title", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
       .expand("TeamMembers", "Project", "Approver", "ParentTask", "Portfolio", "PortfolioType", "SmartInformation", "AssignedTo", "TaskCategories", "Author", "ClientCategory", "ResponsibleTeam", "TaskType", "Editor", "AttachmentFiles")
       .get()
     AllListId = {
@@ -354,12 +354,19 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     if (taskDetails["Title"].length > maxTitleLength) {
       truncatedTitle = taskDetails["Title"].substring(0, maxTitleLength - 3) + "...";
     }
+    let serviceComponent:any;
+    if(taskDetails?.Portfolio!=undefined){
+      serviceComponent= this.masterTaskData.filter((item:any)=>item.Id==taskDetails?.Portfolio?.Id)
+    }
+    
+    console.log(this.masterTaskData)
     let tempTask = {
       SiteIcon: this.GetSiteIcon(this.state?.listName),
       sitePage: this.props.Context?._pageContext?._web?.title,
       Comments: comment != null && comment != undefined ? comment : "",
       Id: taskDetails["ID"],
       ID: taskDetails["ID"],
+      
       Project: taskDetails["Project"],
       IsTodaysTask: taskDetails["IsTodaysTask"],
       EstimatedTime: taskDetails["EstimatedTime"],
@@ -392,7 +399,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       TaskType: taskDetails["TaskType"] != null ? taskDetails["TaskType"]?.Title : '',
       EstimatedTimeDescriptionArray: tempEstimatedArrayData,
       TotalEstimatedTime: TotalEstimatedTime,
-
+      serviceComponentColor:serviceComponent!=undefined?serviceComponent[0]?.PortfolioType?.Color:"",
       Portfolio: taskDetails["Portfolio"],
       PortfolioType: taskDetails["PortfolioType"],
       Creation: taskDetails["Created"],
@@ -873,7 +880,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       .getByTitle(this.state?.listName)
       // .getById(this.props.SiteTaskListID)
       .items
-      .select("ID", "Title", "Comments", "ApproverHistory", "EstimatedTime", "Portfolio/Id", "Portfolio/Title", "PortfolioType/Id", "DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "ParentTask/Id", "Project/Id", "Project/Title", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
+      .select("ID", "Title", "Comments", "ApproverHistory", "EstimatedTime", "Portfolio/Id", "Portfolio/Title", "PortfolioType/Id", "Portfolio/PortfolioStructureID","DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "ParentTask/Id", "Project/Id", "Project/Title", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
       .expand("TeamMembers", "Project", "ParentTask", "Portfolio", "PortfolioType", "SmartInformation", "AssignedTo", "TaskCategories", "Author", "ClientCategory", "ResponsibleTeam", "TaskType", "Editor", "AttachmentFiles")
       .getAll(4000);
 
@@ -1535,7 +1542,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     return (
       <MyContext.Provider value={{ ...MyContext, FunctionCall: this.contextCall, keyDoc: this.state.keydoc, FileDirRef: this.state.FileDirRef }}>
         <div
-        //  className={this.state.Result["Portfolio"] != undefined && this.state.Result["Portfolio"].length > 0 ? 'app component serviepannelgreena' : "app component"}
+         style={{color:`${this.state.Result["serviceComponentColor"]}`}}
         >
           <section className='ContentSection'> {this.state.breadCrumData != undefined &&
             <div className='row'>
@@ -1579,7 +1586,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                             <li>
                               <a  >
                                 <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                  <span title={this.state.Result['Title']}>{truncatedTitle?.length > 0 ? truncatedTitle : this.state.Result['Title']}</span>
+                                  <span>{truncatedTitle?.length > 0 ? truncatedTitle : this.state.Result['Title']}</span>
                                   {truncatedTitle?.length > 0 && <span className="f-13 popover__content" >
                                     {this.state.Result['Title']}
                                   </span>}
@@ -1601,7 +1608,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                   {this.state.Result["SiteIcon"] != "" && <img className="imgWid29 pe-1 " title={this?.state?.Result?.siteType} src={this.state.Result["SiteIcon"]} />}
                   {this.state.Result["SiteIcon"] === "" && <img className="imgWid29 pe-1 " src="" />}
                   <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                    <span title={this.state.Result['Title']}>{truncatedTitle?.length > 0 ? truncatedTitle : this.state.Result['Title']}</span>
+                    <span >{truncatedTitle?.length > 0 ? truncatedTitle : this.state.Result['Title']}</span>
                     {truncatedTitle?.length > 0 && <span className="f-13 popover__content" >
                       {this.state.Result['Title']}
                     </span>}

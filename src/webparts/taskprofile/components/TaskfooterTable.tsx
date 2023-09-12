@@ -174,14 +174,14 @@ function TasksTable(props: any) {
 
   const loadActivityTasks = async (task: any) => {
     let activity: any = [];
-    var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,TaskLevel,ItemRank,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,PortfolioType,ResponsibleTeam,TaskCategories&$filter=Id eq " + task.ParentTask.Id + ""
+    var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,TaskLevel,ItemRank,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,PortfolioType,ResponsibleTeam,TaskCategories&$filter=Id eq " + task.ParentTask.Id + ""
     activity = await globalCommon.getData(props?.AllListId?.siteUrl, task.listId, select)
     if (activity.length > 0)
       GetComponents(activity[0])
     LoadAllSiteTasks(filter);
   }
   const loadWSTasks = async (task: any) => {
-    var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,TaskLevel,ItemRank,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,PortfolioType,ResponsibleTeam,TaskCategories&$filter=ParentTask/Id eq " + task.Id + ""
+    var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,TaskLevel,ItemRank,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,PortfolioType,ResponsibleTeam,TaskCategories&$filter=ParentTask/Id eq " + task.Id + ""
     // var select = "TaskLevel,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,TaskLevel,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Component/Id,Component/Title,Component/ItemType, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,TaskType,AssignedTo,Component,ClientCategory,Author,Editor,TeamMembers,ResponsibleTeam,TaskCategories&$filter=ParentTask/Id eq " + task.Id + ""
     AllWSTasks = await globalCommon.getData(props?.AllListId?.siteUrl, task.listId, select)
     if (AllWSTasks.length === 0)
@@ -231,7 +231,7 @@ function TasksTable(props: any) {
     //     if (config.Title != 'Master Tasks' && config.Title != 'SDC Sites') {
     try {
       let AllTasksMatches = [];
-      var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,TaskLevel,ItemRank,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,PortfolioType,ResponsibleTeam,TaskCategories&$filter=" + filter + ""
+      var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,TaskLevel,ItemRank,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,PortfolioType,ResponsibleTeam,TaskCategories&$filter=" + filter + ""
       // var select = "TaskLevel,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,TaskLevel,Services/Id, Project/Id,Project/PortfolioStructureID, Project/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Component/Id,Component/Title,Component/ItemType, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask, Project,Services,TaskType,AssignedTo,Component,ClientCategory,Author,Editor,TeamMembers,ResponsibleTeam,TaskCategories&$filter=" + filter + ""
       AllTasksMatches = await globalCommon.getData(props?.AllListId?.siteUrl, props.props.listId, select)
       console.log(AllTasksMatches);
@@ -1220,80 +1220,6 @@ function TasksTable(props: any) {
 
   }
 
-
-  // ===========REACT TABLE ==========
-  // const onChangeHandler = (itrm: any, child: any, e: any) => {
-  //   let checked = e
-  //   if (checked == true) {
-  //     setcheckData(itrm)
-
-  //     itrm.chekBox = true
-
-  //     if (itrm.TaskType == undefined) {
-  //       setActivityDisable(false)
-  //       itrm['siteUrl'] = props?.AllListId?.siteUrl;
-  //       itrm['listName'] = 'Master Tasks';
-  //       MeetingItems.push(itrm)
-  //       //setMeetingItems(itrm);
-
-  //     }
-  //     if (itrm.TaskType != undefined) {
-  //       if (itrm.TaskType.Title == 'Activities' || itrm.TaskType.Title == "Workstream") {
-  //         setActivityDisable(false)
-  //         // Arrays.push(itrm)
-  //         itrm['PortfolioId'] = child.Id;
-  //         MeetingItems.push(itrm)
-  //         setCount(count + 2)
-  //       }
-  //       if (itrm.TaskType.Title == 'Task') {
-  //         setActivityDisable(true)
-  //         MeetingItems.push(itrm)
-
-  //       }
-  //     }
-  //   }
-  //   // if (checked == false) {
-  //   //     itrm.chekBox = false;
-  //   //     setcheckData(null)
-  //   //     MeetingItems?.forEach((val: any, index: any) => {
-  //   //         if (val.Id == itrm.Id) {
-  //   //             MeetingItems.splice(index, 1)
-  //   //         }
-  //   //     })
-  //   //     if (itrm.TaskType != undefined) {
-  //   //         if (itrm.TaskType.Title == 'Task') {
-  //   //             setActivityDisable(false)
-
-  //   //         }
-  //   //     }
-  //   //     setCount(count + 2)
-  //   // }
-  //   var list: any = []
-  //   if (checkedList.length > 0) {
-  //     list = checkedList;
-  //   }
-
-  //   var flag = true;
-  //   list?.forEach((obj: any, index: any) => {
-  //     if (obj.Id != undefined && itrm?.Id != undefined && obj.Id === itrm.Id) {
-  //       flag = false;
-  //       list.splice(index, 1);
-  //     }
-  //   })
-  //   if (itrm.TaskType?.Title == 'Task') {
-  //     setActivityDisable(false)
-  //   }
-  //   if (flag)
-  //     list.push(itrm);
-  //   console.log(list);
-  //   // list?.forEach((items:any)=>{
-  //   //     checkedList.push(items)
-  //   // })
-
-  //   setCheckedList(checkedList => (list));
-  //   // if (list.length === 0)
-  //   //   clearreacture();
-  // };
   const findUserByName = (Id: any) => {
     const user = AllUsers.filter((user: any) => user.AssingedToUserId == Id);
     let Image: any;
@@ -1390,69 +1316,7 @@ function TasksTable(props: any) {
         <div className="col-sm-12 pad0 smart" >
           <div className="">
             <div className={`${data.length > 10 ? "wrapper" : "MinHeight"}`}>
-              {/* <table className=" Improvementstable SortingTable table table-hover" style={{ width: "100%" }}>
-                <thead className='fixed-Header top-0'>
-                  {table.getHeaderGroups().map((headerGroup: any) => (
-                    <tr key={headerGroup.id}>
-                      {headerGroup.headers.map((header: any) => {
-                        return (
-                          <th key={header.id} colSpan={header.colSpan} style={{ width: header.column.columnDef.size + "%" }}>
-                            {header.isPlaceholder ? null : (
-                              <div className='position-relative' style={{ display: "flex" }}>
-                                {flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext()
-                                )}
-                                {header.column.getCanFilter() ? (
-
-                                  <Filter column={header.column} table={table} placeholder={header.column.columnDef} />
-
-                                ) : null}
-                                {header.column.getCanSort() ? <div
-                                  {...{
-                                    className: header.column.getCanSort()
-                                      ? "cursor-pointer  select-none shorticon"
-                                      : "",
-                                    onClick: header.column.getToggleSortingHandler(),
-                                  }}
-                                >
-                                  {header.column.getIsSorted()
-                                    ? { asc: <FaSortDown />, desc: <FaSortUp /> }[
-                                    header.column.getIsSorted() as string
-                                    ] ?? null
-                                    : <FaSort />}
-                                </div> : ""}
-                              </div>
-                            )}
-                          </th>
-                        );
-                      })}
-                    </tr>
-                  ))}
-                </thead>
-                <tbody>
-                  <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1} color={IsUpdated == 'Events Portfolio' ? '#f98b36' : (IsUpdated == 'Service Portfolio' ? '#228b22' : '#000069')} speed={2} trail={60} shadow={false}
-                    hwaccel={false} className="spinner" zIndex={2e9} top="28%" left="50%" scale={1.0} loadedClassName="loadedContent" />
-
-                  {table.getRowModel().rows.map((row: any) => {
-                    return (
-                      <tr
-                        key={row.id}>
-                        {row.getVisibleCells().map((cell: any) => {
-                          return (
-                            <td key={cell.id}>
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext()
-                              )}
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table> */}
+          
               <GlobalCommanTable
                 //  ref={childRef}
                 callChildFunction={Call}
