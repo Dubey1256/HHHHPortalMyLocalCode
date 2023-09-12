@@ -21,20 +21,21 @@ const EditDocumentpanel=(props:any)=>{
       })
 
       React.useEffect(() => {
-        if (props?.editData?.SharewebTask != undefined && props?.editData?.SharewebTask?.length > 0) {
+        // if (props?.editData?.SharewebTask != undefined && props?.editData?.SharewebTask?.length > 0) {
     
-            if (props?.editData?.SharewebTask[0]?.Portfolio_x0020_Type == "Component") {
-      
-              setallSetValue({ ...allValue, componentservicesetdataTag: props?.editData?.SharewebTask[0] })
+            // if (props?.editData?.SharewebTask[0]?.Portfolio_x0020_Type == "Component") {
+              if (props?.editData?.Portfolio!=undefined) {
+              setallSetValue({ ...allValue, componentservicesetdataTag: props?.editData?.Portfolio })
               setservicespopup(false);
               setcomponentpopup(true);
-            } else {
-              setallSetValue({ ...allValue, componentservicesetdataTag: props?.editData?.SharewebTask[0] })
+            } 
+            // else {
+            //   setallSetValue({ ...allValue, componentservicesetdataTag: props?.editData?.SharewebTask[0] })
       
-              setservicespopup(true);
-              setcomponentpopup(false);
-            }
-          }
+            //   setservicespopup(true);
+            //   setcomponentpopup(false);
+            // }
+          // }
           if(props?.editData!+undefined)
           {
             props.editData. docTitle= props?.editData.Title.split(props?.editData.File_x0020_Type)[0]
@@ -122,7 +123,7 @@ const EditDocumentpanel=(props:any)=>{
             Year: EditdocumentsData.Year,
             ItemType: EditdocumentsData.ItemType,
     
-            SharewebTaskId: { "results": allValue.componentservicesetdataTag != undefined ? [allValue.componentservicesetdataTag.Id] : [] },
+            PortfoliosId: { "results": allValue.componentservicesetdataTag != undefined ? [allValue.componentservicesetdataTag.Id] : [] },
             Item_x0020_Cover: {
               "__metadata": { type: 'SP.FieldUrlValue' },
               'Description': EditdocumentsData?.Item_x0020_Cover?.Url != "" ? EditdocumentsData?.UrItem_x0020_Coverl?.Url : "",
@@ -270,8 +271,9 @@ return(
                 </div>
                 <div className="input-group mx-4">
                   <label className="form-label full-width">
-                    <span><input type="radio" name="radio" className="form-check-input" value="Component" checked={componentpopup} onClick={(e) => checkradiobutton(e, "Component")} /> Component</span>
-                    <span className='ps-3'><input type="radio" name="radio" className="form-check-input" value="Service" checked={servicespopup} onClick={(e) => checkradiobutton(e, "Service")} /> Service</span>
+                    portfolio
+                    {/* <span><input type="radio" name="radio" className="form-check-input" value="Component" checked={componentpopup} onClick={(e) => checkradiobutton(e, "Component")} /> Component</span>
+                    <span className='ps-3'><input type="radio" name="radio" className="form-check-input" value="Service" checked={servicespopup} onClick={(e) => checkradiobutton(e, "Service")} /> Service</span> */}
                   </label>
 
                   {allValue?.componentservicesetdataTag != undefined &&

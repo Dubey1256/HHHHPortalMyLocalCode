@@ -19,7 +19,7 @@ import { Mention } from 'react-mentions';
 let AllTasktagsmartinfo: any = [];
 let hhhsmartinfoId: any = [];
 let taskUser: any = [];
-let mastertaskdetails: any;
+let mastertaskdetails: any=[];
 let MovefolderItemUrl2 = "";
 const SmartInformation = (props: any,ref:any) => {
   const [show, setShow] = useState(false);
@@ -31,7 +31,7 @@ const SmartInformation = (props: any,ref:any) => {
   const [addSmartInfoPopupAddlinkDoc, setaddSmartInfoPopupAddlinkDoc] = useState(false)
   // const [imageTabOpen, setImageTabOpen] = useState(false);
   const [filterSmartinfo, setFiltersmartinfo] = useState([]);
-  const [masterTaskdetails, setMasterTaskdetails] = useState([]);
+ 
   const [isopencomonentservicepopup, setisopencomonentservicepopup] = useState(false);
   const [componentpopup, setcomponentpopup] = useState(false);
   const [servicespopup, setservicespopup] = useState(false);
@@ -100,9 +100,14 @@ const SmartInformation = (props: any,ref:any) => {
     }if((props?.showHide=="projectManagement")&&props.editSmartInfo==false){
       handleShow(null,"add")
     }
-    GetTaskUsers()
-    GetResult();
-    LoadMasterTaskList();
+    LoadMasterTaskList().then((data:any)=>{
+      console.log(data)
+      GetTaskUsers()
+      GetResult();
+    })
+ 
+    // GetResult();
+  
   }, [show])
   useImperativeHandle(ref,()=>({
     GetResult
@@ -143,8 +148,8 @@ const SmartInformation = (props: any,ref:any) => {
       // .getById(props.AllListId.SiteTaskListID)
       .items
       .getById(props?.Id)
-      .select("Id", "Title", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "SmartInformation/Id", "SmartInformation/Title")
-      .expand("SmartInformation", "Component", "Services")
+      .select("Id", "Title", "Portfolio/Id", "Portfolio/Title", "SmartInformation/Id", "SmartInformation/Title")
+      .expand("SmartInformation", "Portfolio")
       .get()
     console.log(taskDetails);
     if (taskDetails != undefined) {
@@ -159,9 +164,11 @@ const SmartInformation = (props: any,ref:any) => {
 
   }
   // ============master task list  to find the serice or component tag in the documents  ============
-  const LoadMasterTaskList = async (): Promise<any> => {
+  const LoadMasterTaskList = ()=> {
+    return new Promise(function(resolve, reject) {
+
     let web = new Web(props.AllListId?.siteUrl);
-    await web.lists
+     web.lists
       .getById(props?.AllListId.MasterTaskListID).items
       .select(
         "Id",
@@ -169,18 +176,23 @@ const SmartInformation = (props: any,ref:any) => {
         "Mileage",
         "TaskListId",
         "TaskListName",
-        "Portfolio_x0020_Type"
-      ).top(4999).get()
+        "PortfolioType/Id",
+        "PortfolioType/Title",
+        "PortfolioType/Color",
+      ).expand("PortfolioType").top(4999).get()
       .then((dataserviccomponent: any) => {
         console.log(dataserviccomponent)
-        mastertaskdetails = dataserviccomponent;
-        setMasterTaskdetails(dataserviccomponent);
-        setallSetValue({ ...allValue, masterTaskdetails: dataserviccomponent })
-        return dataserviccomponent
+        mastertaskdetails = mastertaskdetails.concat(dataserviccomponent);
+    
+        setallSetValue({ ...allValue, masterTaskdetails: mastertaskdetails })
+        // return dataserviccomponent
+        resolve(dataserviccomponent)
+  
       }).catch((error: any) => {
         console.log(error)
+        reject(error)
       })
-
+    })
   }
 
   //============== AllsmartInformation get in smartInformation list ===========================
@@ -237,7 +249,7 @@ const SmartInformation = (props: any,ref:any) => {
 
   const TagDocument = (allSmartInformationglobal: any) => {
     console.log(mastertaskdetails)
-    console.log(masterTaskdetails);
+ 
     var allSmartInformationglobaltagdocuments: any = [];
     console.log(AllTasktagsmartinfo)
     if (allSmartInformationglobal != undefined && allSmartInformationglobal?.length > 0) {
@@ -246,16 +258,16 @@ const SmartInformation = (props: any,ref:any) => {
 
         const web = new Web(props?.AllListId?.siteUrl);
         await web.lists.getById(props?.AllListId?.DocumentsListID)
-          .items.select("Id,Title,PriorityRank,Year,Item_x0020_Cover,SharewebTask/Id,SharewebTask/Title,SharewebTask/ItemType,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl")
-          .expand("Author,Editor,SharewebTask").filter(`SmartInformation/ID  eq ${items?.Id}`).top(4999)
+          .items.select("Id,Title,PriorityRank,Year,Item_x0020_Cover,Portfolios/Id,Portfolios/Title,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl")
+          .expand("Author,Editor,Portfolios").filter(`SmartInformation/ID  eq ${items?.Id}`).top(4999)
           .get()
           .then(async (result: any[]) => {
             console.log(result);
             result?.map((servicecomponent: any) => {
-              if (servicecomponent.SharewebTask != undefined && servicecomponent.SharewebTask.length > 0) {
+              if (servicecomponent.Portfolios != undefined && servicecomponent.Portfolios.length > 0) {
                 mastertaskdetails.map((mastertask: any) => {
-                  if (mastertask.Id == servicecomponent.SharewebTask[0].Id) {
-                    servicecomponent.SharewebTask[0] = mastertask
+                  if (mastertask.Id == servicecomponent.Portfolios[0].Id) {
+                    servicecomponent.Portfolio = mastertask
                   }
                 })
               }
@@ -816,12 +828,8 @@ const SmartInformation = (props: any,ref:any) => {
         var tagcomponetServicesId: any;
 
 
-        if (taskInfo.Component != undefined && taskInfo.Component.length > 0) {
-          tagcomponetServicesId = taskInfo.Component[0].Id;
-
-        }
-        if (taskInfo.Services != undefined && taskInfo.Services.length > 0) {
-          tagcomponetServicesId = taskInfo.Services[0].Id;
+        if (taskInfo.Portfolio != undefined ) {
+          tagcomponetServicesId = taskInfo.Portfolio.Id;
 
         }
         console.log(PostSmartInfo)
@@ -838,7 +846,7 @@ const SmartInformation = (props: any,ref:any) => {
           .items.getById(res.Id).update({
             SmartInformationId: { "results": smartDocumentpostData != undefined ? [smartDocumentpostData?.Id] : [smartinfoData?.Id] },
             Title: fileName.split(".")[0],
-            SharewebTaskId: { "results": tagcomponetServicesId != undefined ? [tagcomponetServicesId] : [] },
+            PortfoliosId: { "results": tagcomponetServicesId != undefined ? [tagcomponetServicesId] : [] },
 
             Url: {
               "__metadata": { type: 'SP.FieldUrlValue' },
@@ -897,19 +905,20 @@ const SmartInformation = (props: any,ref:any) => {
   const editDocumentsLink = (editData: any) => {
     setEditdocpanel(true);
     console.log(editData)
-    if (editData?.SharewebTask != undefined && editData?.SharewebTask?.length > 0) {
-
-      if (editData?.SharewebTask[0]?.Portfolio_x0020_Type == "Component") {
-
-        setallSetValue({ ...allValue, componentservicesetdataTag: editData?.SharewebTask[0] })
+    if (editData?.Portfolios != undefined && editData?.Portfolios?.length > 0) {
+        
+      // if (editData?.Portfolio?.Portfolio_x0020_Type == "Component") {
+        if (editData?.Portfolio!=undefined) {
+        setallSetValue({ ...allValue, componentservicesetdataTag: editData?.Portfolio })
         setservicespopup(false);
         setcomponentpopup(true);
-      } else {
-        setallSetValue({ ...allValue, componentservicesetdataTag: editData?.SharewebTask[0] })
+      } 
+      // else {
+      //   setallSetValue({ ...allValue, componentservicesetdataTag: editData?.SharewebTask[0] })
 
-        setservicespopup(true);
-        setcomponentpopup(false);
-      }
+      //   setservicespopup(true);
+      //   setcomponentpopup(false);
+      // }
     }
     setEditdocumentsData(editData);
   }
@@ -1037,7 +1046,7 @@ const SmartInformation = (props: any,ref:any) => {
         Year: EditdocumentsData.Year,
         ItemType: EditdocumentsData.ItemType,
 
-        SharewebTaskId: { "results": allValue.componentservicesetdataTag != undefined ? [allValue.componentservicesetdataTag.Id] : [] },
+        PortfoliosId: { "results": allValue.componentservicesetdataTag != undefined ? [allValue.componentservicesetdataTag.Id] : [] },
         Item_x0020_Cover: {
           "__metadata": { type: 'SP.FieldUrlValue' },
           'Description': EditdocumentsData?.Item_x0020_Cover?.Url != "" ? EditdocumentsData?.UrItem_x0020_Coverl?.Url : "",
@@ -1088,7 +1097,7 @@ const SmartInformation = (props: any,ref:any) => {
 
   return (
     <div>
-      {console.log(masterTaskdetails)}
+      
      { (props?.showHide!="projectManagement" && SmartInformation?.length > 0) &&<div className='mb-3 card commentsection'>
         <div className='card-header'>
           <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">SmartInformation
@@ -1438,8 +1447,7 @@ const SmartInformation = (props: any,ref:any) => {
                 </div>
                 <div className="input-group mx-4">
                   <label className="form-label full-width">
-                    <span className='SpfxCheckRadio '><input type="radio" name="radio" className=" radio" value="Component" checked={componentpopup} onClick={(e) => checkradiobutton(e, "Component")} /> Component</span>
-                    <span className='ps-3 SpfxCheckRadio '><input type="radio" name="radio" className="radio" value="Service" checked={servicespopup} onClick={(e) => checkradiobutton(e, "Service")} /> Service</span>
+                      Portfolio
                   </label>
 
                   {allValue?.componentservicesetdataTag != undefined &&
