@@ -416,20 +416,20 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getById(Items.Items.listId)
                     .items
-                    .select("Id,Title,Priority_x0020_Rank,workingThisWeek,EstimatedTime,EstimatedTimeDescription,waitForResponse,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,PriorityRank,workingThisWeek,EstimatedTime,EstimatedTimeDescription,waitForResponse,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,TaskLevel,TaskLevel,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
-                    .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
+                    .expand('AssignedTo,Author,Editor,Component,Services,Events,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio')
                     .get();
             }
             else {
                 smartMeta = await web.lists
                     .getByTitle(Items.Items.listName)
                     .items
-                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,EstimatedTime,EstimatedTimeDescription,workingThisWeek,OffshoreImageUrl,OffshoreComments,waitForResponse,SiteCompositionSettings,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,PriorityRank,BasicImageInfo,EstimatedTime,EstimatedTimeDescription,workingThisWeek,OffshoreImageUrl,OffshoreComments,waitForResponse,SiteCompositionSettings,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,TaskLevel,TaskLevel,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
-                    .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
+                    .expand('AssignedTo,Author,Editor,Component,Services,Events,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio')
                     .get();
             }
             let statusValue: any
@@ -607,16 +607,16 @@ const EditTaskPopup = (Items: any) => {
                 if (item.BasicImageInfo != null && item.Attachments) {
                     saveImage.push(JSON.parse(item.BasicImageInfo))
                 }
-                if (item.Priority_x0020_Rank == undefined || item.Priority_x0020_Rank == null || item.Priority_x0020_Rank == 0) {
+                if (item.PriorityRank == undefined || item.PriorityRank == null || item.PriorityRank == 0) {
                     if (item.Priority != undefined) {
                         if (item.Priority == "(3) Low") {
-                            item.Priority_x0020_Rank = 1
+                            item.PriorityRank = 1
                         }
                         if (item.Priority == "(2) Normal") {
-                            item.Priority_x0020_Rank = 4
+                            item.PriorityRank = 4
                         }
                         if (item.Priority == "(1) High") {
-                            item.Priority_x0020_Rank = 8
+                            item.PriorityRank = 8
                         }
                     }
                 }
@@ -709,16 +709,16 @@ const EditTaskPopup = (Items: any) => {
                         })
                     }
                 }
-                if (item.component_x0020_link != null) {
-                    item.Relevant_Url = item.component_x0020_link.Url
+                if (item.ComponentLink != null) {
+                    item.Relevant_Url = item.ComponentLink.Url
                 }
                 setTaskAssignedTo(item.AssignedTo ? item.AssignedTo : []);
-                setTaskResponsibleTeam(item.Responsible_x0020_Team ? item.Responsible_x0020_Team : []);
+                setTaskResponsibleTeam(item.ResponsibleTeam ? item.ResponsibleTeam : []);
 
                 if (TeamMemberTemp != undefined && TeamMemberTemp.length > 0) {
                     setTaskTeamMembers(TeamMemberTemp);
                 } else {
-                    setTaskTeamMembers(item.Team_x0020_Members ? item.Team_x0020_Members : []);
+                    setTaskTeamMembers(item.TeamMembers ? item.TeamMembers : []);
                 }
                 item.TaskAssignedUsers = AssignedUsers;
                 if (TaskCreatorApproverBackupArray != undefined && TaskCreatorApproverBackupArray.length > 0) {
@@ -732,10 +732,10 @@ const EditTaskPopup = (Items: any) => {
                     item.UploadedImage = saveImage ? saveImage[0] : '';
                     onUploadImageFunction(tempData, tempData?.length);
                 }
-                if (item.SharewebCategories != undefined && item.SharewebCategories?.length > 0) {
+                if (item.TaskCategories != undefined && item.TaskCategories?.length > 0) {
                     let tempArray: any = [];
-                    tempArray = item.SharewebCategories;
-                    setShareWebTypeData(item.SharewebCategories);
+                    tempArray = item.TaskCategories;
+                    setShareWebTypeData(item.TaskCategories);
                     tempArray?.map((tempData: any) => {
                         tempShareWebTypeData.push(tempData);
                     })
@@ -1288,7 +1288,7 @@ const EditTaskPopup = (Items: any) => {
                         }
                         TempArray.push(categoryData)
                         let isExists: any = 0;
-                        if (tempCategoryData != undefined) {
+                        if (tempCategoryData?.length > 0) {
                             isExists = tempCategoryData.search(categoryData.Title);
                         } else {
                             category = category != undefined ? category + ";" + categoryData.Title : categoryData.Title
@@ -1629,8 +1629,8 @@ const EditTaskPopup = (Items: any) => {
             let AllProjects: any = [];
             AllProjects = await web.lists.getById(AllListIdData?.MasterTaskListID)
                 .items
-                .select("Deliverables,TechnicalExplanations,ValueAdded,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title")
-                .expand("ComponentPortfolio,ServicePortfolio,ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebCategories,Parent")
+                .select("Deliverables,TechnicalExplanations,ValueAdded,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,Component/Id,Component/Title,Component/ItemType,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title")
+                .expand("ComponentPortfolio,ServicePortfolio,ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,TeamMembers,TaskCategories,Parent")
                 .top(4999)
                 .filter("Item_x0020_Type eq 'Project'")
                 .getAll();
@@ -1694,8 +1694,8 @@ const EditTaskPopup = (Items: any) => {
                 }
                 if (StatusInput == 80) {
                     // let tempArray: any = [];
-                    if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
-                        setWorkingMemberFromTeam(EditData.Team_x0020_Members, "QA", 143);
+                    if (EditData.TeamMembers != undefined && EditData.TeamMembers?.length > 0) {
+                        setWorkingMemberFromTeam(EditData.TeamMembers, "QA", 143);
                     } else {
                         setWorkingMember(143);
                     }
@@ -1788,7 +1788,7 @@ const EditTaskPopup = (Items: any) => {
             }
         } else {
             alert("Status not should be greater than 100");
-            setEditData({ ...EditData, Priority_x0020_Rank: 0 })
+            setEditData({ ...EditData, PriorityRank: 0 })
         }
 
 
@@ -1828,8 +1828,8 @@ const EditTaskPopup = (Items: any) => {
             // let tempArray: any = [];
             EditData.IsTodaysTask = false;
             EditData.workingThisWeek = false;
-            if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
-                setWorkingMemberFromTeam(EditData.Team_x0020_Members, "QA", 143);
+            if (EditData.TeamMembers != undefined && EditData.TeamMembers?.length > 0) {
+                setWorkingMemberFromTeam(EditData.TeamMembers, "QA", 143);
             } else {
                 setWorkingMember(143);
             }
@@ -1997,19 +1997,19 @@ const EditTaskPopup = (Items: any) => {
                         smartMetaCall = await web.lists
                             .getById(Items.Items.listId)
                             .items
-                            .select("Id,Title,Priority_x0020_Rank,workingThisWeek,waitForResponse,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                            .select("Id,Title,PriorityRank,workingThisWeek,waitForResponse,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,TaskLevel,TaskLevel,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
                             .top(5000)
                             .filter(`Id eq ${Items.Items.Id}`)
-                            .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
+                            .expand('AssignedTo,Author,Editor,Component,Services,Events,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio')
                             .get();
                     } else {
                         smartMetaCall = await web.lists
                             .getById(Items.Items.listName)
                             .items
-                            .select("Id,Title,Priority_x0020_Rank,workingThisWeek,waitForResponse,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                            .select("Id,Title,PriorityRank,workingThisWeek,waitForResponse,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,TaskLevel,TaskLevel,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
                             .top(5000)
                             .filter(`Id eq ${Items.Items.Id}`)
-                            .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
+                            .expand('AssignedTo,Author,Editor,Component,Services,Events,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio')
                             .get();
 
                     }
@@ -2028,7 +2028,7 @@ const EditTaskPopup = (Items: any) => {
                     SubCommentBoxData = []
                     updateFeedbackArray = []
                     tempShareWebTypeData = []
-                    tempCategoryData = []
+                    tempCategoryData = '';
                     SiteTypeBackupArray = []
                     currentUserBackupArray = []
                     AutoCompleteItemsArray = []
@@ -2070,7 +2070,7 @@ const EditTaskPopup = (Items: any) => {
                             let dataEditor: any = {}
                             dataEditor.data = smartMetaCall[0]
                             dataEditor.data.editpopup = true;
-                            dataEditor.data.Shareweb_x0020_ID = EditData.TaskId
+                            dataEditor.data.TaskID = EditData.TaskId
                             dataEditor.data.listId = Items.Items.listId
                             dataEditor.data.FeedBack = JSON.stringify(dataEditor.data.FeedBack)
                             Items.Call(dataEditor)
@@ -2263,8 +2263,8 @@ const EditTaskPopup = (Items: any) => {
         }
 
         let Priority: any;
-        if (EditData.Priority_x0020_Rank) {
-            let rank = EditData.Priority_x0020_Rank
+        if (EditData.PriorityRank) {
+            let rank = EditData.PriorityRank
             if (rank <= 10 && rank >= 8) {
                 Priority = "(1) High"
             }
@@ -2326,7 +2326,7 @@ const EditTaskPopup = (Items: any) => {
             IsTodaysTask: (EditData.IsTodaysTask ? EditData.IsTodaysTask : null),
             workingThisWeek: (EditData.workingThisWeek ? EditData.workingThisWeek : null),
             waitForResponse: (EditData.waitForResponse ? EditData.waitForResponse : null),
-            Priority_x0020_Rank: EditData.Priority_x0020_Rank,
+            PriorityRank: EditData.PriorityRank,
             ItemRank: EditData.ItemRank,
             Title: UpdateTaskInfo.Title ? UpdateTaskInfo.Title : EditData.Title,
             Priority: Priority,
@@ -2335,17 +2335,17 @@ const EditTaskPopup = (Items: any) => {
             ComponentId: { "results": (smartComponentsIds != undefined && smartComponentsIds.length > 0) ? smartComponentsIds : [] },
             Categories: CategoriesData ? CategoriesData : null,
             // RelevantPortfolioId: { "results": (RelevantPortfolioIds != undefined && RelevantPortfolioIds?.length > 0) ? RelevantPortfolioIds : [] },
-            SharewebCategoriesId: { "results": (CategoryTypeID != undefined && CategoryTypeID.length > 0) ? CategoryTypeID : [] },
+            TaskCategoriesId: { "results": (CategoryTypeID != undefined && CategoryTypeID.length > 0) ? CategoryTypeID : [] },
             DueDate: EditData.DueDate ? Moment(EditData.DueDate).format("MM-DD-YYYY") : null,
             CompletedDate: EditData.CompletedDate ? Moment(EditData.CompletedDate).format("MM-DD-YYYY") : null,
             Status: taskStatus ? taskStatus : (EditData.Status ? EditData.Status : null),
             Mileage: (EditData.Mileage ? EditData.Mileage : ''),
             ServicesId: { "results": (SmartServicesId != undefined && SmartServicesId.length > 0) ? SmartServicesId : [] },
             AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds.length > 0) ? AssignedToIds : [] },
-            Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0) ? ResponsibleTeamIds : [] },
-            Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds.length > 0) ? TeamMemberIds : [] },
+            ResponsibleTeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0) ? ResponsibleTeamIds : [] },
+            TeamMembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds.length > 0) ? TeamMemberIds : [] },
             FeedBack: updateFeedbackArray?.length > 0 ? JSON.stringify(updateFeedbackArray) : null,
-            component_x0020_link: {
+            ComponentLink: {
                 "__metadata": { type: "SP.FieldUrlValue" },
                 Description: EditData.Relevant_Url ? EditData.Relevant_Url : '',
                 Url: EditData.Relevant_Url ? EditData.Relevant_Url : ''
@@ -2368,10 +2368,10 @@ const EditTaskPopup = (Items: any) => {
     const ChangePriorityStatusFunction = (e: any) => {
         let value = e.target.value;
         if (Number(value) <= 10) {
-            setEditData({ ...EditData, Priority_x0020_Rank: e.target.value })
+            setEditData({ ...EditData, PriorityRank: e.target.value })
         } else {
             alert("Priority Status not should be greater than 10");
-            setEditData({ ...EditData, Priority_x0020_Rank: 0 })
+            setEditData({ ...EditData, PriorityRank: 0 })
         }
     }
 
@@ -2434,10 +2434,10 @@ const EditTaskPopup = (Items: any) => {
                         }
                     })
                     setTaskTeamMembers(tempArray);
-                    EditData.Team_x0020_Members = tempArray;
+                    EditData.TeamMembers = tempArray;
                 } else {
                     setTaskTeamMembers([]);
-                    EditData.Team_x0020_Members = [];
+                    EditData.TeamMembers = [];
                 }
                 if (teamConfigData?.ResponsibleTeam?.length > 0) {
                     let tempArray: any = [];
@@ -2449,10 +2449,10 @@ const EditTaskPopup = (Items: any) => {
                         }
                     })
                     setTaskResponsibleTeam(tempArray);
-                    EditData.Responsible_x0020_Team = tempArray;
+                    EditData.ResponsibleTeam = tempArray;
                 } else {
                     setTaskResponsibleTeam([]);
-                    EditData.Responsible_x0020_Team = [];
+                    EditData.ResponsibleTeam = [];
                 }
             }
         }
@@ -2470,15 +2470,15 @@ const EditTaskPopup = (Items: any) => {
     }
 
     // ****************** This is used for Delete Task Functions **********************
-    const deleteTaskFunction = async (TaskID: number) => {
+    const deleteTaskFunction = async (TaskID: number, FunctionsType: any) => {
         let deletePost = confirm("Do you really want to delete this Task?")
         if (deletePost) {
-            deleteItemFunction(TaskID);
+            deleteItemFunction(TaskID, FunctionsType);
         } else {
             console.log("Your Task has not been deleted");
         }
     }
-    const deleteItemFunction = async (itemId: any) => {
+    const deleteItemFunction = async (itemId: any, FnType: any) => {
         var site = SelectedSite.replace(/^"|"$/g, '');
         try {
             if (Items.Items.listId != undefined) {
@@ -2503,12 +2503,16 @@ const EditTaskPopup = (Items: any) => {
                 Items.Call(ItmesDelete);
             }
             else {
-                Items.Call("Delete");
+                if (FnType == "Delete-Task") {
+                    Items.Call("Delete");
+                }
             }
             if (newGeneratedId != "" && newGeneratedId != undefined) {
                 let Url = `${siteUrls}/SitePages/Task-Profile.aspx?taskId=${newGeneratedId}&Site=${site}`
                 window.location.href = Url;
-                Items.Call("Delete");
+                if (FnType == "Delete-Task") {
+                    Items.Call("Delete");
+                }
             }
             console.log("Your post has been deleted successfully");
         } catch (error) {
@@ -3179,7 +3183,7 @@ const EditTaskPopup = (Items: any) => {
                             await moveTimeSheet(SelectedSite, res.data);
                         } else {
                             Items.Items.Action = 'Move'
-                            deleteItemFunction(Items.Items.Id);
+                            deleteItemFunction(Items.Items.Id, "Move");
                         }
                     }
                 })
@@ -3220,7 +3224,7 @@ const EditTaskPopup = (Items: any) => {
                 count++
                 if (count == timesheetData.length) {
                     Items.Items.Action = 'Move';
-                    deleteItemFunction(Items.Items.Id);
+                    deleteItemFunction(Items.Items.Id, "Move");
                 }
             })
         })
@@ -3318,7 +3322,7 @@ const EditTaskPopup = (Items: any) => {
             },
             {
                 internalHeader: 'Priority',
-                accessor: 'Priority_x0020_Rank',
+                accessor: 'PriorityRank',
                 showSortIcon: true,
             },
             {
@@ -3679,7 +3683,7 @@ const EditTaskPopup = (Items: any) => {
                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z" fill="#333333" />
                                 </svg>
                                 {/* <RiDeleteBin6Line /> */}
-                                <span onClick={() => deleteTaskFunction(EditData.ID)}>Delete This Item</span>
+                                <span onClick={() => deleteTaskFunction(EditData.ID, "Delete-Task")}>Delete This Item</span>
                             </a>
                             <span> | </span>
                             <a className="hreflink" onClick={() => CopyAndMovePopupFunction("Copy-Task")}>
@@ -3706,11 +3710,11 @@ const EditTaskPopup = (Items: any) => {
                                 <a className="mx-2 hreflink siteColor" onClick={SaveAndAddTimeSheet} >
                                     Save & Add Time-Sheet
                                 </a>
-                            </span> ||
+                            </span> || 
 
-                            <span className="hreflink siteColor f-mailicons" onClick={() => shareThisTaskFunction(EditData)} >
+                            <span className="hreflink mx-2 siteColor f-mailicons" onClick={() => shareThisTaskFunction(EditData)} >
                                 <span title="Edit Task" className="svg__iconbox svg__icon--mail"></span>
-                                Share This Task
+                                Share This Task 
                             </span> ||
 
                             {Items.Items.siteType == "Offshore Tasks" ? <a target="_blank" className="mx-2" data-interception="off"
@@ -3758,7 +3762,7 @@ const EditTaskPopup = (Items: any) => {
                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z" fill="#333333" />
                                 </svg>
                                 {/* <RiDeleteBin6Line /> */}
-                                <span onClick={() => deleteTaskFunction(EditData.ID)}>Delete This Item</span>
+                                <span onClick={() => deleteTaskFunction(EditData.ID, "Delete-Task")}>Delete This Item</span>
                             </a>
                             <span> | </span>
                             <a className="hreflink" onClick={CopyAndMovePopupFunction}>
@@ -4343,7 +4347,7 @@ const EditTaskPopup = (Items: any) => {
                                                     <div className="input-group">
                                                         <input type="text" className="form-control"
                                                             placeholder="Enter Priority"
-                                                            value={EditData.Priority_x0020_Rank ? EditData.Priority_x0020_Rank : ''}
+                                                            value={EditData.PriorityRank ? EditData.PriorityRank : ''}
                                                             onChange={(e) => ChangePriorityStatusFunction(e)}
                                                         />
                                                     </div>
@@ -4352,24 +4356,24 @@ const EditTaskPopup = (Items: any) => {
                                                             <label className="SpfxCheckRadio">
                                                                 <input className="radio"
                                                                     name="radioPriority" type="radio"
-                                                                    checked={EditData.Priority_x0020_Rank <= 10 && EditData.Priority_x0020_Rank >= 8}
-                                                                    onChange={() => setEditData({ ...EditData, Priority_x0020_Rank: 8 })}
+                                                                    checked={EditData.PriorityRank <= 10 && EditData.PriorityRank >= 8}
+                                                                    onChange={() => setEditData({ ...EditData, PriorityRank: 8 })}
                                                                 />
                                                                 High </label>
                                                         </li>
                                                         <li className="form-check ">
                                                             <label className="SpfxCheckRadio">
                                                                 <input className="radio" name="radioPriority"
-                                                                    type="radio" checked={EditData.Priority_x0020_Rank <= 7 && EditData.Priority_x0020_Rank >= 4}
-                                                                    onChange={() => setEditData({ ...EditData, Priority_x0020_Rank: 4 })}
+                                                                    type="radio" checked={EditData.PriorityRank <= 7 && EditData.PriorityRank >= 4}
+                                                                    onChange={() => setEditData({ ...EditData, PriorityRank: 4 })}
                                                                 />
                                                                 Normal </label>
                                                         </li>
                                                         <li className="form-check ">
                                                             <label className="SpfxCheckRadio">
                                                                 <input className="radio" name="radioPriority"
-                                                                    type="radio" checked={EditData.Priority_x0020_Rank <= 3 && EditData.Priority_x0020_Rank > 0}
-                                                                    onChange={() => setEditData({ ...EditData, Priority_x0020_Rank: 1 })}
+                                                                    type="radio" checked={EditData.PriorityRank <= 3 && EditData.PriorityRank > 0}
+                                                                    onChange={() => setEditData({ ...EditData, PriorityRank: 1 })}
                                                                 />
                                                                 Low </label>
                                                         </li>
@@ -4529,10 +4533,10 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="col-12 mb-2 taskurl">
                                             <div className="input-group">
                                                 <label className="form-label full-width ">Relevant URL</label>
-                                                <input type="text" className="form-control" defaultValue={EditData.component_x0020_link != null ? EditData.Relevant_Url : ''} placeholder="Url" onChange={(e) => setEditData({ ...EditData, Relevant_Url: e.target.value })}
+                                                <input type="text" className="form-control" defaultValue={EditData.ComponentLink != null ? EditData.Relevant_Url : ''} placeholder="Url" onChange={(e) => setEditData({ ...EditData, Relevant_Url: e.target.value })}
                                                 />
-                                                <span className={EditData.component_x0020_link != null ? "input-group-text" : "input-group-text Disabled-Link"}>
-                                                    <a target="_blank" href={EditData.component_x0020_link != null ? EditData.component_x0020_link.Url : ''} data-interception="off"
+                                                <span className={EditData.ComponentLink != null ? "input-group-text" : "input-group-text Disabled-Link"}>
+                                                    <a target="_blank" href={EditData.ComponentLink != null ? EditData.ComponentLink.Url : ''} data-interception="off"
                                                     >
                                                         <span className="svg__iconbox svg__icon--link"></span>
                                                     </a>
@@ -4859,7 +4863,7 @@ const EditTaskPopup = (Items: any) => {
                                                 callBack={SubCommentSectionCallBack}
                                                 allUsers={taskUsers}
                                                 ItemId={EditData.Id}
-                                                SiteUrl={EditData.component_x0020_link}
+                                                SiteUrl={EditData.ComponentLink}
                                                 ApprovalStatus={ApprovalStatus}
                                                 SmartLightStatus={SmartLightStatus}
                                                 SmartLightPercentStatus={SmartLightPercentStatus}
@@ -5494,7 +5498,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 <div className="input-group">
                                                                     <input type="text" className="form-control"
                                                                         placeholder="Enter Priority"
-                                                                        value={EditData.Priority_x0020_Rank ? EditData.Priority_x0020_Rank : ''}
+                                                                        value={EditData.PriorityRank ? EditData.PriorityRank : ''}
                                                                         onChange={(e) => ChangePriorityStatusFunction(e)}
                                                                     />
                                                                 </div>
@@ -5502,22 +5506,22 @@ const EditTaskPopup = (Items: any) => {
                                                                     <li className="form-check l-radio">
                                                                         <input className="form-check-input"
                                                                             name="radioPriority" type="radio"
-                                                                            checked={EditData.Priority_x0020_Rank <= 10 && EditData.Priority_x0020_Rank >= 8}
-                                                                            onChange={() => setEditData({ ...EditData, Priority_x0020_Rank: 8 })}
+                                                                            checked={EditData.PriorityRank <= 10 && EditData.PriorityRank >= 8}
+                                                                            onChange={() => setEditData({ ...EditData, PriorityRank: 8 })}
                                                                         />
                                                                         <label className="form-check-label">High</label>
                                                                     </li>
                                                                     <li className="form-check l-radio">
                                                                         <input className="form-check-input" name="radioPriority"
-                                                                            type="radio" checked={EditData.Priority_x0020_Rank <= 7 && EditData.Priority_x0020_Rank >= 4}
-                                                                            onChange={() => setEditData({ ...EditData, Priority_x0020_Rank: 4 })}
+                                                                            type="radio" checked={EditData.PriorityRank <= 7 && EditData.PriorityRank >= 4}
+                                                                            onChange={() => setEditData({ ...EditData, PriorityRank: 4 })}
                                                                         />
                                                                         <label className="form-check-label">Normal</label>
                                                                     </li>
                                                                     <li className="form-check l-radio">
                                                                         <input className="form-check-input" name="radioPriority"
-                                                                            type="radio" checked={EditData.Priority_x0020_Rank <= 3 && EditData.Priority_x0020_Rank > 0}
-                                                                            onChange={() => setEditData({ ...EditData, Priority_x0020_Rank: 1 })}
+                                                                            type="radio" checked={EditData.PriorityRank <= 3 && EditData.PriorityRank > 0}
+                                                                            onChange={() => setEditData({ ...EditData, PriorityRank: 1 })}
                                                                         />
                                                                         <label className="form-check-label">Low</label>
                                                                     </li>
@@ -5676,10 +5680,10 @@ const EditTaskPopup = (Items: any) => {
                                                     <div className="col-12 mb-2">
                                                         <div className="input-group">
                                                             <label className="form-label full-width ">Relevant URL</label>
-                                                            <input type="text" className="form-control" defaultValue={EditData.component_x0020_link != null ? EditData.Relevant_Url : ''} placeholder="Url" onChange={(e) => setEditData({ ...EditData, Relevant_Url: e.target.value })}
+                                                            <input type="text" className="form-control" defaultValue={EditData.ComponentLink != null ? EditData.Relevant_Url : ''} placeholder="Url" onChange={(e) => setEditData({ ...EditData, Relevant_Url: e.target.value })}
                                                             />
-                                                            <span className={EditData.component_x0020_link != null ? "input-group-text" : "input-group-text Disabled-Link"}>
-                                                                <a target="_blank" href={EditData.component_x0020_link != null ? EditData.component_x0020_link.Url : ''} data-interception="off"
+                                                            <span className={EditData.ComponentLink != null ? "input-group-text" : "input-group-text Disabled-Link"}>
+                                                                <a target="_blank" href={EditData.ComponentLink != null ? EditData.ComponentLink.Url : ''} data-interception="off"
                                                                 >
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" fill="none">
                                                                         <path fill-rule="evenodd" clip-rule="evenodd" d="M12.3677 13.2672C11.023 13.7134 9.87201 14.4471 8.99831 15.4154C6.25928 18.4508 6.34631 23.1488 9.19578 26.0801C10.6475 27.5735 12.4385 28.3466 14.4466 28.3466H15.4749V27.2499V26.1532H14.8471C12.6381 26.1532 10.4448 24.914 9.60203 23.1898C8.93003 21.8151 8.9251 19.6793 9.5906 18.3208C10.4149 16.6384 11.9076 15.488 13.646 15.1955C14.7953 15.0022 22.5955 14.9933 23.7189 15.184C26.5649 15.6671 28.5593 18.3872 28.258 21.3748C27.9869 24.0644 26.0094 25.839 22.9861 26.1059L21.9635 26.1961V27.2913V28.3866L23.2682 28.3075C27.0127 28.0805 29.7128 25.512 30.295 21.6234C30.8413 17.9725 28.3779 14.1694 24.8492 13.2166C24.1713 13.0335 23.0284 12.9942 18.5838 13.0006C13.785 13.0075 13.0561 13.0388 12.3677 13.2672ZM23.3224 19.8049C18.7512 20.9519 16.3624 26.253 18.4395 30.6405C19.3933 32.6554 20.9948 34.0425 23.1625 34.7311C23.9208 34.9721 24.5664 35 29.3689 35C34.1715 35 34.8171 34.9721 35.5754 34.7311C38.1439 33.9151 39.9013 32.1306 40.6772 29.5502C41 28.4774 41.035 28.1574 40.977 26.806C40.9152 25.3658 40.8763 25.203 40.3137 24.0261C39.0067 21.2919 36.834 19.8097 33.8475 19.6151L32.5427 19.53V20.6267V21.7236L33.5653 21.8132C35.9159 22.0195 37.6393 23.0705 38.4041 24.7641C39.8789 28.0293 38.2035 31.7542 34.8532 32.6588C33.8456 32.9309 25.4951 32.9788 24.1462 32.7205C22.4243 32.3904 21.0539 31.276 20.2416 29.5453C19.8211 28.6492 19.7822 28.448 19.783 27.1768C19.7837 26.0703 19.8454 25.6485 20.0853 25.1039C20.4635 24.2463 21.3756 23.2103 22.1868 22.7175C22.8985 22.2851 24.7121 21.7664 25.5124 21.7664H26.0541V20.6697V19.573L25.102 19.5851C24.5782 19.5919 23.7775 19.6909 23.3224 19.8049Z" fill="#333333" />
@@ -5980,7 +5984,7 @@ const EditTaskPopup = (Items: any) => {
                                                 callBack={SubCommentSectionCallBack}
                                                 allUsers={taskUsers}
                                                 ItemId={EditData.Id}
-                                                SiteUrl={EditData.component_x0020_link}
+                                                SiteUrl={EditData.ComponentLink}
                                                 ApprovalStatus={ApprovalStatus}
                                                 SmartLightStatus={SmartLightStatus}
                                                 SmartLightPercentStatus={SmartLightPercentStatus}

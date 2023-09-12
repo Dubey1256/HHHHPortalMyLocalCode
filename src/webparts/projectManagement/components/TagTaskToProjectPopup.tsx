@@ -121,8 +121,8 @@ const TagTaskToProjectPopup = (props: any) => {
                 smartmeta = await web.lists
                     .getById(config?.listId)
                     .items
-                    .select("Id,Title,Priority_x0020_Rank,Remark,Project/Priority_x0020_Rank,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,SharewebTaskLevel1No,SharewebTaskLevel2No,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Component/Id,Component/Title,Services/Id,Services/Title,PercentComplete,ComponentId,Categories,ServicesId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
-                    .expand('AssignedTo,Project,SmartInformation,Author,Component,Services,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory')
+                    .select("Id,Title,PriorityRank,Remark,Project/PriorityRank,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Component/Id,Component/Title,Services/Id,Services/Title,PercentComplete,ComponentId,Categories,ServicesId,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+                    .expand('AssignedTo,Project,SmartInformation,Author,Component,Services,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory')
                     .top(4999)
                     // .filter("Project/Id ne " + props.projectId)
                     .get();
@@ -181,13 +181,13 @@ const TagTaskToProjectPopup = (props: any) => {
                             items.Component.length > 0
                             ? getComponentasString(items.Component)
                             : "";
-                    items.Shareweb_x0020_ID = globalCommon.getTaskId(items);
+                    items.TaskID = globalCommon.getTaskId(items);
                     AllUser?.map((user: any) => {
                         if (user.AssingedToUserId == items.Author.Id) {
                             items.createdImg = user?.Item_x0020_Cover?.Url;
                         }
-                        if (items.Team_x0020_Members != undefined) {
-                            items.Team_x0020_Members.map((taskUser: any) => {
+                        if (items.TeamMembers != undefined) {
+                            items.TeamMembers.map((taskUser: any) => {
                                 var newuserdata: any = {};
                                 if (user.AssingedToUserId == taskUser.Id) {
                                     newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
@@ -247,9 +247,9 @@ const TagTaskToProjectPopup = (props: any) => {
         }else{
             selectedTasks?.map(async (item: any, index: any) => {
                 if (index == 0) {
-                    selectedTaskId = selectedTaskId + '(' + item?.siteType + ') ' + item?.Shareweb_x0020_ID
+                    selectedTaskId = selectedTaskId + '(' + item?.siteType + ') ' + item?.TaskID
                 } else {
-                    selectedTaskId = selectedTaskId + ',' + '(' + item?.siteType + ') ' + item?.Shareweb_x0020_ID
+                    selectedTaskId = selectedTaskId + ',' + '(' + item?.siteType + ') ' + item?.TaskID
                 }
             })
     
@@ -301,7 +301,7 @@ const TagTaskToProjectPopup = (props: any) => {
 
 
             <footer className='text-end p-2'>
-                <button type="button" className="btn btn-default ms-1 px-3" onClick={handleClose}>
+                <button type="button" className="btn btn-default me-1 px-3" onClick={handleClose}>
                     Cancel
                 </button>
                 <button className="btn btn-primary px-3"
@@ -360,7 +360,7 @@ const TagTaskToProjectPopup = (props: any) => {
                 id: 'Id',
             },
             {
-                accessorKey: "Shareweb_x0020_ID",
+                accessorKey: "TaskID",
                 placeholder: "Task Id",
                 header: "",
                 resetColumnFilters: false,
@@ -369,7 +369,7 @@ const TagTaskToProjectPopup = (props: any) => {
                 cell: ({ row, getValue }) => (
                     <>
                         <span className="d-flex">
-                            {row?.original?.Shareweb_x0020_ID}
+                            {row?.original?.TaskID}
                         </span>
                     </>
                 ),
@@ -454,7 +454,7 @@ const TagTaskToProjectPopup = (props: any) => {
                 header: ""
             },
             {
-                accessorFn: (row) => row?.Priority_x0020_Rank,
+                accessorFn: (row) => row?.PriorityRank,
                 cell: ({ row }) => (
                     <span>
                         <InlineEditingcolumns

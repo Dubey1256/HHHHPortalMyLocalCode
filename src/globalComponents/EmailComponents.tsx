@@ -252,8 +252,8 @@ const EmailComponent = (props: any) => {
                       </td>
                       <td colSpan={7} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
                         <p><span style={{ fontSize: '10.0pt', color: 'black' }}>
-                          {props.items["component_x0020_link"] != null &&
-                            <a href={props.items["component_x0020_link"].Url} target="_blank">{props.items["component_x0020_link"].Url}</a>
+                          {props.items["ComponentLink"] != null &&
+                            <a href={props.items["ComponentLink"].Url} target="_blank">{props.items["ComponentLink"].Url}</a>
                           }</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                       </td>
                       <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>

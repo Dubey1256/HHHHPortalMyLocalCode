@@ -119,36 +119,83 @@ export default function DocumentSearchPage(Props: any) {
             ),
         },
         {
-            accessorKey: "Title", placeholder: "Title", header: "", size: 30,
+            accessorKey: "Title", placeholder: "Title", header: "",
             cell: ({ row }) => (
                 <>
                     <a target="_blank" href={row?.original?.FileDirRef}>
-                        <img src="/_layouts/15/images/folder.gif"></img>
+                        <span className="alignIcon svg__iconbox svg__icon--folder"></span>
                     </a>
-                     {row?.original?.Title != undefined && row?.original?.Title != null && row?.original?.Title != '' ? <a target="_blank" href={row?.original?.FileDirRef}> {row?.original?.Title} </a> : <a target="_blank" href={row?.original?.FileDirRef}> {row?.original?.FileLeafRef} </a>}
+                    {row?.original?.Title != undefined && row?.original?.Title != null && row?.original?.Title != '' ? <a target="_blank" href={row?.original?.FileDirRef}> {row?.original?.Title} </a> : <a target="_blank" href={row?.original?.FileDirRef}> {row?.original?.FileLeafRef} </a>}
                 </>
             ),
         },
         {
-            accessorKey: "FileLeafRef", placeholder: "Document Url", header: "", size: 25,
+            accessorKey: "FileLeafRef", placeholder: "Document Url", header: "",
             cell: ({ row }) => (
                 <>
                     <a>
+                        {/* {row?.original?.File_x0020_Type == 'pdf' &&
+                            <span className="alignIcon  svg__iconbox svg__icon--folder"></span>
+                        }
+                        {row?.original?.File_x0020_Type == 'docx' &&
+                            <span className="alignIcon  svg__iconbox svg__icon--docx"></span>
+                        }
+                        {row?.original?.File_x0020_Type == 'icmsg' &&
+                            <span className="alignIcon  svg__iconbox svg__icon--mail"></span>
+                        }
                         {row?.original?.File_x0020_Type == 'pdf' &&
-                            <img src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/24/icon_pdf_16.jpg`}></img>}
+                            <span className="alignIcon  svg__iconbox svg__icon--pdf"></span>
+                        }
+                        {row?.original?.File_x0020_Type == 'jpg' &&
+                            <span className="alignIcon  svg__iconbox svg__icon--jpeg"></span>
+                        }
+                         {row?.original?.File_x0020_Type == 'png' &&
+                            <span className="alignIcon  svg__iconbox svg__icon--png"></span>
+                        }
+                           {row?.original?.File_x0020_Type == 'Zip' &&
+                            <span className="alignIcon  svg__iconbox svg__icon--zip"></span>
+                        }
+                           {row?.original?.File_x0020_Type == 'png' &&
+                            <span className="alignIcon  svg__iconbox svg__icon--png"></span>
+                        }
+                            {row?.original?.File_x0020_Type == 'svg' &&
+                            <span className="alignIcon  svg__iconbox svg__icon--svg"></span>
+                        }
+                              {row?.original?.File_x0020_Type == 'pptx' &&
+                            <span className="alignIcon  svg__iconbox svg__icon--pptx"></span>
+                        }
+                                {row?.original?.File_x0020_Type == 'xlsx' &&
+                            <span className="alignIcon  svg__iconbox svg__icon--xlsx"></span>
+                        }
+                               {row?.original?.File_x0020_Type == 'msg' &&
+                            <span className="alignIcon  svg__iconbox svg__icon--smg "></span>
+                        }
+                              {row?.original?.File_x0020_Type == 'zip' &&
+                            <span className="alignIcon  svg__iconbox svg__icon--zip "></span>
+                        }
+                             {row?.original?.File_x0020_Type == 'zip' &&
+                            <span className={`alignIcon  svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`}></span>
+                        }
+                         */}
+                        {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'aspx' && <span className={`alignIcon svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`}></span>}
+                        {row?.original?.File_x0020_Type == 'rar' && <span className="alignIcon  svg__iconbox svg__icon--zip "></span>}
+                        {row?.original?.File_x0020_Type == 'aspx' || row?.original?.File_x0020_Type == 'msg' && <span className="alignIcon  svg__iconbox svg__icon--unknownFile "></span>}
+                        {row?.original?.File_x0020_Type == 'jpeg' || row?.original?.File_x0020_Type == 'jpg' && <span className="alignIcon  svg__iconbox svg__icon--jpeg "></span>}
+                        {row?.original?.File_x0020_Type == 'docx' || row?.original?.File_x0020_Type == 'doc' && <span className="alignIcon  svg__iconbox svg__icon--docx "></span>}
+                        {/* <img src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/24/icon_pdf_16.jpg`}></img> */}
 
-                          {row?.original?.File_x0020_Type != 'flv' && row?.original?.File_x0020_Type != 'js' && row?.original?.File_x0020_Type != 'css' && row?.original?.File_x0020_Type != 'zip' && row?.original?.File_x0020_Type != 'aspx' && row?.original?.File_x0020_Type != 'mp4' && row?.original?.File_x0020_Type != 'pdf' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'png' && row?.original?.File_x0020_Type != 'gif' &&
-                            <img src={`/_layouts/15/images/ic${row?.original?.File_x0020_Type}.png`}></img>}
+                        {/* {row?.original?.File_x0020_Type != 'flv' && row?.original?.File_x0020_Type != 'js' && row?.original?.File_x0020_Type != 'css' && row?.original?.File_x0020_Type != 'zip' && row?.original?.File_x0020_Type != 'aspx' && row?.original?.File_x0020_Type != 'mp4' && row?.original?.File_x0020_Type != 'pdf' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'png' && row?.original?.File_x0020_Type != 'gif' &&
+                            <img src={`/_layouts/15/images/ic${row?.original?.File_x0020_Type}.png`}></img>} */}
 
-                          {row?.original?.File_x0020_Type == 'flv' || row?.original?.File_x0020_Type == 'js' || row?.original?.File_x0020_Type == 'css' || row?.original?.File_x0020_Type == 'zip' || row?.original?.File_x0020_Type == 'aspx' || row?.original?.File_x0020_Type == 'mp4' || row?.original?.File_x0020_Type == 'jpg' || row?.original?.File_x0020_Type == 'png' || row?.original?.File_x0020_Type == 'gif' &&
-                            <img src="/_layouts/15/images/icgen.gif?rev=23"></img>}
+                        {/* {row?.original?.File_x0020_Type == 'flv' || row?.original?.File_x0020_Type == 'js' || row?.original?.File_x0020_Type == 'css' || row?.original?.File_x0020_Type == 'zip' || row?.original?.File_x0020_Type == 'aspx' || row?.original?.File_x0020_Type == 'mp4' || row?.original?.File_x0020_Type == 'jpg' || row?.original?.File_x0020_Type == 'png' || row?.original?.File_x0020_Type == 'gif' &&
+                            <img src="/_layouts/15/images/icgen.gif?rev=23"></img>} */}
                     </a>
-                     <a target="_blank" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.FileLeafRef} </a>
+                    <a target="_blank" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.FileLeafRef} </a>
                 </>
             ),
         },
         {
-            accessorKey: "Created", placeholder: "Created Date", header: "", size: 20,
+            accessorKey: "Created", placeholder: "Created Date", header: "", size: 120,
             cell: ({ row }) => (
                 <>
                     {row?.original?.AllCreatedImages.map((item: any) => (
@@ -160,21 +207,21 @@ export default function DocumentSearchPage(Props: any) {
             ),
         },
         {
-            accessorKey: "Modified", placeholder: "Modified Date", header: "", size: 20,
+            accessorKey: "Modified", placeholder: "Modified Date", header: "", size: 152,
             cell: ({ row }) => (
                 <>
                     {row?.original?.AllModifiedImages.map((item: any) => (
                         <a target="_blank" href={`${PageContext.context._pageContext._web.serverRelativeUrl}/SitePages/TaskDashboard.aspx?UserId=${item.UserId}&Name=${item.Title}`}>
-                            {row?.original?.Modified} {item?.UserImage != undefined && item?.UserImage != '' ?  <img title={item?.Title} className="workmember" src={item?.UserImage}></img> : <img title={item?.Title} className="workmember" src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg`}></img>}
+                            {row?.original?.Modified} {item?.UserImage != undefined && item?.UserImage != '' ? <img title={item?.Title} className="workmember" src={item?.UserImage}></img> : <img title={item?.Title} className="workmember" src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg`}></img>}
                         </a>
                     ))}
                 </>
             ),
         },
         {
+
             cell: ({ row }) => (
                 <>
-                
                     <a onClick={() => EditItem(row.original.Id)} title="Edit"><span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink"></span></a>
                     <a onClick={() => deleteData(row.original)}><span title="Remove Task" className="svg__iconbox svg__icon--cross dark hreflink"></span></a>
                 </>
@@ -184,8 +231,8 @@ export default function DocumentSearchPage(Props: any) {
             placeholder: '',
             header: '',
             id: 'row.original',
-            size: 20,
-        },        
+            size: 50,
+        },
         ],
         [AllDocs]);
     const callBackData = React.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => { }, []);

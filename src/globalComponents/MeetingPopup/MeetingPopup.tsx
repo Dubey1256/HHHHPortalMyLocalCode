@@ -76,9 +76,9 @@ const MeetingPopupComponent = (Props: any) => {
             smartMeta = await web.lists
                 .getById(AllListIdData?.MasterTaskListID)
                 .items
-                .select("Id", "Title", "DueDate", "AssignedTo/Id", "Attachments", "FeedBack", "Created", "Modified", "PortfolioStructureID", "AssignedTo/Title", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", 'AttachmentFiles', "ShortDescriptionVerified", "SharewebTaskType/Title", "BasicImageInfo", 'Author/Id', 'Author/Title', "Editor/Title", "Editor/Id", "OffshoreComments", "OffshoreImageUrl", "Team_x0020_Members/Id", "Team_x0020_Members/Title")
+                .select("Id", "Title", "DueDate", "AssignedTo/Id", "Attachments", "FeedBack", "Created", "Modified", "PortfolioStructureID", "AssignedTo/Title", "ResponsibleTeam/Title", "ResponsibleTeam/Id", 'AttachmentFiles', "ShortDescriptionVerified", "TaskType/Title", "BasicImageInfo", 'Author/Id', 'Author/Title', "Editor/Title", "Editor/Id", "OffshoreComments", "OffshoreImageUrl", "TeamMembers/Id", "TeamMembers/Title")
                 .top(5000)
-                .filter(`Id eq ${Props.Items.Id}`).expand("AssignedTo", 'Responsible_x0020_Team', "AttachmentFiles", "Author", 'SharewebTaskType', "Editor", "Team_x0020_Members").get();
+                .filter(`Id eq ${Props.Items.Id}`).expand("AssignedTo", 'ResponsibleTeam', "AttachmentFiles", "Author", 'TaskType', "Editor", "TeamMembers").get();
 
             let statusValue: any
             smartMeta?.map((item: any) => {
@@ -103,10 +103,10 @@ const MeetingPopupComponent = (Props: any) => {
                 })
                 item.TaskAssignedUsers = AssignedUsers;
                 setTaskAssignedTo(item.AssignedTo ? item.AssignedTo : []);
-                setTaskResponsibleTeam(item.Responsible_x0020_Team ? item.Responsible_x0020_Team : []);
-                setTaskTeamMembers(item.Team_x0020_Members ? item.Team_x0020_Members : []);
-                if (item.component_x0020_link != null) {
-                    item.Relevant_Url = item.component_x0020_link.Url
+                setTaskResponsibleTeam(item.ResponsibleTeam ? item.ResponsibleTeam : []);
+                setTaskTeamMembers(item.TeamMembers ? item.TeamMembers : []);
+                if (item.ComponentLink != null) {
+                    item.Relevant_Url = item.ComponentLink.Url
                 }
                 if (item.BasicImageInfo != null && item.Attachments) {
                     saveImage.push(JSON.parse(item.BasicImageInfo))
@@ -272,8 +272,8 @@ const MeetingPopupComponent = (Props: any) => {
                 DueDate: MeetingData.DueDate ? Moment(MeetingData.DueDate).format("MM-DD-YYYY") : null,
                 FeedBack: updateFeedbackArray?.length > 0 ? JSON.stringify(updateFeedbackArray) : null,
                 AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds.length > 0) ? AssignedToIds : [] },
-                Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0) ? ResponsibleTeamIds : [] },
-                Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds.length > 0) ? TeamMemberIds : [] }
+                ResponsibleTeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0) ? ResponsibleTeamIds : [] },
+                TeamMembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds.length > 0) ? TeamMemberIds : [] }
             }).then(async (res: any) => {
                 console.log("Updated Succesfully !!!!!!", res);
                 closeMeetingPopupFunction();
@@ -586,10 +586,10 @@ const MeetingPopupComponent = (Props: any) => {
                 }
             })
             setTaskTeamMembers(tempArray);
-            MeetingData.Team_x0020_Members = tempArray;
+            MeetingData.TeamMembers = tempArray;
         } else {
             setTaskTeamMembers([]);
-            MeetingData.Team_x0020_Members = [];
+            MeetingData.TeamMembers = [];
         }
         if (dt?.ResponsibleTeam?.length > 0) {
             let tempArray: any = [];
@@ -601,10 +601,10 @@ const MeetingPopupComponent = (Props: any) => {
                 }
             })
             setTaskResponsibleTeam(tempArray);
-            MeetingData.Responsible_x0020_Team = tempArray;
+            MeetingData.ResponsibleTeam = tempArray;
         } else {
             setTaskResponsibleTeam([]);
-            MeetingData.Responsible_x0020_Team = [];
+            MeetingData.ResponsibleTeam = [];
         }
     }
 

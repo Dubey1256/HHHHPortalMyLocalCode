@@ -20,6 +20,7 @@ import {
 } from "@tanstack/react-table";
 import { SlArrowRight, SlArrowDown } from "react-icons/sl";
 import { Row } from 'react-bootstrap';
+import Col from 'reactstrap/es/Col';
 
 export interface IUserTimeEntryState {
   Result: any;
@@ -45,7 +46,7 @@ export interface IUserTimeEntryState {
   columns: ColumnDef<any, unknown>[];
 }
 var user: any = ''
-var userIdByQuery:any=''
+var userIdByQuery: any = ''
 export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, IUserTimeEntryState> {
   public constructor(props: IUserTimeEntryProps, state: IUserTimeEntryState) {
     super(props);
@@ -86,12 +87,12 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
   private async GetResult() {
     var queryString = window.location.search;
 
-// Create a URLSearchParams object to parse the query string
-var params = new URLSearchParams(queryString);
+    // Create a URLSearchParams object to parse the query string
+    var params = new URLSearchParams(queryString);
 
-// Get the value of the 'userId' parameter from the query string
- userIdByQuery = params.get('userId');
-console.log(userIdByQuery)
+    // Get the value of the 'userId' parameter from the query string
+    userIdByQuery = params.get('userId');
+    console.log(userIdByQuery)
     await this.GetTaskUsers();
     await this.LoadAllMetaDataFilter();
     await this.DefaultValues()
@@ -99,14 +100,14 @@ console.log(userIdByQuery)
 
   private async DefaultValues() {
     let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
-   
+
     let ImageSelectedUsers = this.state.ImageSelectedUsers;
-    if(userIdByQuery != undefined && userIdByQuery != ''){
-      user ={"Id":userIdByQuery}
+    if (userIdByQuery != undefined && userIdByQuery != '') {
+      user = { "Id": userIdByQuery }
     }
-    else{
+    else {
       user = await web.currentUser.get();
-      
+
     }
     if (user?.Id != null) {
       for (let i = 0; i < this.state.taskUsers.length; i++) {
@@ -932,9 +933,9 @@ console.log(userIdByQuery)
           let results = await web.lists
             .getByTitle(itemtype.ListName)
             .items
-            .select('ParentTask/Title', 'ParentTask/Id', 'Services/Title', 'ClientTime', 'Services/Id', 'Events/Id', 'Events/Title', 'ItemRank', 'Portfolio_x0020_Type', 'SiteCompositionSettings', 'SharewebTaskLevel1No', 'SharewebTaskLevel2No', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'Shareweb_x0020_ID', 'Responsible_x0020_Team/Id', 'Responsible_x0020_Team/Title', 'ClientCategory/Id', 'ClientCategory/Title', 'SharewebCategories/Id', 'SharewebCategories/Title', 'ParentTask/Shareweb_x0020_ID', 'SharewebTaskType/Id', 'SharewebTaskType/Title', 'SharewebTaskType/Level', 'SharewebTaskType/Prefix', 'Priority_x0020_Rank', 'Reference_x0020_Item_x0020_Json', 'Team_x0020_Members/Title', 'Team_x0020_Members/Name', 'Component/Id', 'Component/Title', 'Component/ItemType', 'Team_x0020_Members/Id', 'Item_x002d_Image', 'component_x0020_link', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id', 'AttachmentFiles/FileName', 'FileLeafRef', 'FeedBack', 'Title', 'Id', 'PercentComplete', 'Company', 'StartDate', 'DueDate', 'Comments', 'Categories', 'Status', 'WebpartId', 'Body', 'Mileage', 'PercentComplete', 'Attachments', 'Priority', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
+            .select('ParentTask/Title', 'ParentTask/Id', 'Services/Title', 'ClientTime', 'Services/Id', 'Events/Id', 'Events/Title', 'ItemRank', 'Portfolio_x0020_Type', 'SiteCompositionSettings', 'TaskLevel', 'TaskLevel', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'TaskID', 'ResponsibleTeam/Id', 'ResponsibleTeam/Title', 'ClientCategory/Id', 'ClientCategory/Title', 'TaskCategories/Id', 'TaskCategories/Title', 'ParentTask/TaskID', 'TaskType/Id', 'TaskType/Title', 'TaskType/Level', 'TaskType/Prefix', 'PriorityRank', 'Reference_x0020_Item_x0020_Json', 'TeamMembers/Title', 'TeamMembers/Name', 'Component/Id', 'Component/Title', 'Component/ItemType', 'TeamMembers/Id', 'Item_x002d_Image', 'ComponentLink', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id', 'AttachmentFiles/FileName', 'FileLeafRef', 'FeedBack', 'Title', 'Id', 'PercentComplete', 'Company', 'StartDate', 'DueDate', 'Comments', 'Categories', 'Status', 'WebpartId', 'Body', 'Mileage', 'PercentComplete', 'Attachments', 'Priority', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
             .filter(queryType.replace('filter=', '').trim())
-            .expand('ParentTask', 'Events', 'Services', 'SharewebTaskType', 'AssignedTo', 'Component', 'AttachmentFiles', 'Author', 'Editor', 'Team_x0020_Members', 'Responsible_x0020_Team', 'ClientCategory', 'SharewebCategories')
+            .expand('ParentTask', 'Events', 'Services', 'TaskType', 'AssignedTo', 'Component', 'AttachmentFiles', 'Author', 'Editor', 'TeamMembers', 'ResponsibleTeam', 'ClientCategory', 'TaskCategories')
             .orderBy('Id', false)
             .getAll(4999);
           console.log(results);
@@ -996,8 +997,8 @@ console.log(userIdByQuery)
 
             filterItem.PercentComplete = getItem.PercentComplete;
             filterItem.ItemRank = getItem.ItemRank;
-            filterItem.Priority_x0020_Rank = getItem.Priority_x0020_Rank;
-            filterItem.Shareweb_x0020_ID = ''//SharewebCommonFactoryService.getSharewebId(getItem);
+            filterItem.PriorityRank = getItem.PriorityRank;
+            filterItem.TaskID = ''//SharewebCommonFactoryService.getSharewebId(getItem);
             filterItem.Portfolio_x0020_Type = getItem.Portfolio_x0020_Type;
             filterItem.Created = getItem.Created;
             filterItem.ListId = getItem.ListId
@@ -1931,9 +1932,21 @@ console.log(userIdByQuery)
     console.log('Checked Sites === ', this.state.checkedSites);
     return (
       <div>
-        <div className="p-0" style={{ verticalAlign: "top" }}><h2 className="heading d-flex justify-content-between align-items-center"><span> <a>Timesheet</a> </span><span className="text-end fs-6"><a target="_blank" data-interception="off" href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/UserTimeEntry-Old.aspx`}>Old UserTimeEntry</a></span></h2></div>
-        <Row>
-          <details open className='border p-0'>
+        <div className="p-0  " style={{ verticalAlign: "top" }}><h2 className="heading d-flex justify-content-between align-items-center"><span> <a>Timesheet</a> </span><span className="text-end fs-6"><a target="_blank" data-interception="off" href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/UserTimeEntry-Old.aspx`}>Old UserTimeEntry</a></span></h2></div>
+        <Row className='smartFilter'>
+        <details>
+        <summary><a className="hreflink pull-left mr-5">Task User : </a>
+              {this.state.ImageSelectedUsers != null && this.state.ImageSelectedUsers.length > 0 && this.state.ImageSelectedUsers.map((user: any, i: number) => {
+                return <span className="ng-scope">
+                  <img className="AssignUserPhoto mr-5" title={user.AssingedToUser.Title} src={user?.Item_x0020_Cover?.Url} />
+                </span>
+              })
+              }
+              <hr></hr>
+            </summary>
+       
+        <Col>
+          <details open className='p-0'>
             <span className="pull-right" style={{ display: 'none' }}>
               <input type="checkbox" className="" onClick={(e) => this.SelectAllGroupMember(e)} />
               <label>Select All </label>
@@ -1941,7 +1954,7 @@ console.log(userIdByQuery)
             {/* <span className="plus-icon hreflink pl-10 pull-left ng-scope" >
                 <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/24/list-icon.png" />
             </span> */}
-            <summary><a className="hreflink pull-left mr-5">Task User : </a>
+            {/* <summary><a className="hreflink pull-left mr-5">Task User : </a>
               {this.state.ImageSelectedUsers != null && this.state.ImageSelectedUsers.length > 0 && this.state.ImageSelectedUsers.map((user: any, i: number) => {
                 return <span className="ng-scope">
                   <img className="AssignUserPhoto mr-5" title={user.AssingedToUser.Title} src={user?.Item_x0020_Cover?.Url} />
@@ -1949,11 +1962,14 @@ console.log(userIdByQuery)
               })
               }
               <span className="ng-binding ng-hide"> </span>
-            </summary>
-
+            </summary> */}
+          <summary>
+          Team members
+          <hr></hr>
+          </summary>
 
             <div style={{ display: "inline" }}>
-              <div className="taskTeamBox p-2">
+              <div className="taskTeamBox ps-40 ">
                 {this.state.taskUsers != null && this.state.taskUsers.length > 0 && this.state.taskUsers.map((users: any, i: number) => {
                   return <div className="top-assign " ng-repeat="user in taskUsers">
                     <div className="team ">
@@ -1969,15 +1985,17 @@ console.log(userIdByQuery)
                       </label>
                       <div className='d-flex'>
                         {users.childs.length > 0 && users.childs.map((item: any, i: number) => {
-                          return <div className="marginR41 ng-scope">
-                            {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined &&
+                          return <div className="alignCenter">
+                            {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined ?
                               <span>
                                 <img id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg ProirityAssignedUserPhoto' : 'ProirityAssignedUserPhoto'} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
                                   title={item.AssingedToUser.Title}
                                   src={item.Item_x0020_Cover.Url} />
-                              </span>
+                              </span>:
+                                <span className={item?.AssingedToUserId == user?.Id ? 'activeimg suffix_Usericon' : 'suffix_Usericon'} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
+                                title={item?.AssingedToUser?.Title}
+                               >{item?.Suffix}</span>
                             }
-
                           </div>
                         })}
                       </div>
@@ -1993,19 +2011,13 @@ console.log(userIdByQuery)
 
             </div>
           </details>
-          <Row className="my-2 p-0">
-            <div className="col-sm-1">
-              <label ng-required="true" className="full_width ng-binding" ng-bind-html="GetColumnDetails('StartDate') | trustedHTML">Start Date</label>
-              <DatePicker selected={this.state.startdate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setStartDate(date)} className="form-control ng-pristine ng-valid ng-touched ng-not-empty" />
-            </div>
-            <div className="col-sm-1 ps-0 ">
-              <label ng-required="true" className="full_width ng-binding" ng-bind-html="GetColumnDetails('EndDate') | trustedHTML" >End Date</label>
-              <DatePicker selected={this.state.enddate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setEndDate(date)} className="form-control ng-pristine ng-valid ng-touched ng-not-empty" />
-            </div>
-            <div className="col-sm-10">
-              <div className='text-end'> <label className="me-1"> <input type="checkbox" className="form-check-input" ng-click="SelectedPortfolio('Component',PortfolioComponent)" /> Component</label><label > <input type="checkbox" className="form-check-input" ng-click="SelectedPortfolio('Component',PortfolioComponent)" /> Component</label></div>
-              <div className="col" style={{ borderBottom: '1px solid #ccc', paddingBottom: '5px' }}>
-              </div>
+          <details open>
+            <summary>
+              Date
+              <hr></hr>
+              </summary>
+              <Row className="ps-30">
+            <div>
               <div className="col TimeReportDays">
                 <span className='SpfxCheckRadio me-2'>
                   <input type="radio" className="radio" name="dateSelection" id="rdCustom" value="Custom" ng-checked="unSelectToday=='Custom'" onClick={() => this.selectDate('Custom')} ng-model="radio" />
@@ -2059,17 +2071,34 @@ console.log(userIdByQuery)
 
               </div>
             </div>
-            <div className="clearfix"></div>
+           
           </Row>
+          <Row className='ps-30 mt-2'>
+          <div className="col">
+              <label ng-required="true" className="full_width ng-binding" ng-bind-html="GetColumnDetails('StartDate') | trustedHTML">Start Date</label>
+              <DatePicker selected={this.state.startdate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setStartDate(date)} className="form-control ng-pristine ng-valid ng-touched ng-not-empty" />
+            </div>
+            <div className="col">
+              <label ng-required="true" className="full_width ng-binding" ng-bind-html="GetColumnDetails('EndDate') | trustedHTML" >End Date</label>
+              <DatePicker selected={this.state.enddate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setEndDate(date)} className="form-control ng-pristine ng-valid ng-touched ng-not-empty" />
+            </div>
+            <div className='col'>
+              <label></label>
+            <div className='mt-1'> <label> <input type="checkbox" className="form-check-input" ng-click="SelectedPortfolio('Component',PortfolioComponent)" /> Component</label>  <label><input type="checkbox" className="form-check-input" ng-click="SelectedPortfolio('Component',PortfolioComponent)" /> Component</label></div>
+            </div>
+          </Row>
+          </details>
+        
 
-          <div id="showFilterBox" className="col mb-2 p-0 border">
+          <div id="showFilterBox" className="col mb-2 p-0 ">
             <div className="togglebox">
               <details open>
                 <summary ng-click="filtershowHide()">
-                  <label>
+                 
                     {/* <img className="hreflink wid22" title="Filter" style={{width:'22px'}} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Filter-12-WF.png"/> */}
                     SmartSearch – Filters
-                  </label>
+                    <hr></hr>
+                 
 
                   <span>
                     {this.state.checkedAll && this.state.filterItems != null && this.state.filterItems.length > 0 &&
@@ -2108,23 +2137,19 @@ console.log(userIdByQuery)
                   </span> */}
                 </summary>
 
-                <div className="togglecontent" style={{ display: "block" }}>
+                <div className="togglecontent ps-30" style={{ display: "block" }}>
                   <div className="smartSearch-Filter-Section">
                     <table width="100%" className="indicator_search">
                       <tbody>
                         <tr>
                           <td valign="top" ng-repeat="item in filterGroups">
                             <div>
-                              <label>
                                 <span className="ng-binding">
                                   <input id='chkAllCategory' defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} type="checkbox" ng-model="item.Selected" className="form-check-input me-1" />
                                   Client Category
                                 </span>
                                 <hr></hr>
-                              </label>
-                             
-
-
+                      
                               <CheckboxTree
                                 nodes={this.state.filterItems}
                                 checked={this.state.checked}
@@ -2139,13 +2164,13 @@ console.log(userIdByQuery)
                           </td>
                           <td valign="top" ng-repeat="item in filterGroups" className="ng-scope">
                             <div>
-                              <label>
+                           
                                 <span>
                                   <input type="checkbox" id='chkAllSites' defaultChecked={this.state.checkedAllSites} onClick={(e) => this.SelectAllSits(e)} ng-model="item.Selected" className="form-check-input me-1" />
                                   Sites
                                 </span>
                                 <hr></hr>
-                              </label>
+                          
                               <CheckboxTree
                                 nodes={this.state.filterSites}
                                 checked={this.state.checkedSites}
@@ -2158,7 +2183,6 @@ console.log(userIdByQuery)
                               />
                             </div>
                           </td>
-
                         </tr>
                       </tbody>
                     </table>
@@ -2178,8 +2202,9 @@ console.log(userIdByQuery)
               </details>
             </div>
           </div>
+        </Col>
+        </details>
         </Row>
-
         {this.state.AllTimeEntry != undefined && this.state.AllTimeEntry.length > 0 &&
           <div className='row'>
             <div className="Alltable p-0">

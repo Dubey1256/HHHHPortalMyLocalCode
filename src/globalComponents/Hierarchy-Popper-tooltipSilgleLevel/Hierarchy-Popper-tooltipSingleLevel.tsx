@@ -103,19 +103,19 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
     };
 
     const openActivityPopup = (row:any) => {
-        if(row.SharewebTaskType == undefined){
+        if(row.TaskType == undefined){
             setOpenActivity(true)
             row['NoteCall'] = 'Task'
             row['PageType'] = 'ProjectManagement'
             checkedData=row;
         }
-        if(row?.SharewebTaskType?.Title == 'Activities'){
+        if(row?.TaskType?.Title == 'Activities'){
             setOpenWS(true)
             row['NoteCall'] = 'Task'
             row['PageType'] = 'ProjectManagement'
             checkedData=row;
         }
-        if(row?.SharewebTaskType?.Title == 'Workstream'){
+        if(row?.TaskType?.Title == 'Workstream'){
             setOpenActivity(true)
             row['NoteCall'] = 'Task'
             row['PageType'] = 'ProjectManagement'
@@ -145,22 +145,22 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                 hasCustomExpanded: true,
                 hasExpanded: true,
                 isHeaderNotAvlable:true,
-                size: 27,
+                size: 30,
                 id: 'Id',
             },
             {
                 accessorKey: "",
-                size: 40,
+                size: 140,
                 canSort: false,
                 placeholder: "",
-                id: 'Shareweb_x0020_ID',
+                id: 'TaskID',
                 cell: ({ row, getValue }) => (
                     <div>
                         <><> {row?.original?.SiteIcon != undefined ?
                             <a className="hreflink" title="Show All Child" data-toggle="modal">
                                 <img className="icon-sites-img ml20 me-1" src={row?.original?.SiteIcon}></img>
                             </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</>}
-                            <span>{row?.original?.Shareweb_x0020_ID}</span>
+                            <span className="mx-1">{row?.original?.TaskID}</span>
                         </>
                             {getValue()}
                         </>
@@ -180,7 +180,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
             },
             {
                 accessorKey: "",
-                size: 30,
+                size: 27,
                 canSort: false,
                 header: "",
                 placeholder: "",

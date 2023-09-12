@@ -126,11 +126,11 @@ const TimeReport = (props:any) => {
         const requests = smartmetaDetails.map((listID: any) => web.lists
             .getById(listID?.listId)
             .items
-            .select("ParentTask/Title", "ParentTask/Id", "Services/Title", "ClientTime", "Services/Id", "Events/Id", "Events/Title", "ItemRank", "Portfolio_x0020_Type", "SiteCompositionSettings", "SharewebTaskLevel1No", "SharewebTaskLevel2No",
-                "TimeSpent", "BasicImageInfo", "OffshoreComments", "OffshoreImageUrl", "CompletedDate", "Shareweb_x0020_ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title",
-                "SharewebCategories/Id", "SharewebCategories/Title", "ParentTask/Shareweb_x0020_ID",
-                "SharewebTaskType/Id", "SharewebTaskType/Title", "SharewebTaskType/Level", "Priority_x0020_Rank", "Team_x0020_Members/Title", "Team_x0020_Members/Name", "Component/Id", "Component/Title", "Component/ItemType", "Team_x0020_Members/Id", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "ClientCategory/Id", "ClientCategory/Title", "FileLeafRef", "FeedBack", "Title", "Id", "ID", "PercentComplete", "StartDate", "DueDate", "Comments", "Categories", "Status", "Body", "Mileage", "PercentComplete", "ClientCategory", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title")
-            .expand("ParentTask", "Events", "Services", "SharewebTaskType", "AssignedTo", "Component", "ClientCategory", "Author", "Editor", "Team_x0020_Members", "Responsible_x0020_Team", "SharewebCategories")
+            .select("ParentTask/Title", "ParentTask/Id", "Services/Title", "ClientTime", "Services/Id", "Events/Id", "Events/Title", "ItemRank", "Portfolio_x0020_Type", "SiteCompositionSettings", "TaskLevel", "TaskLevel",
+                "TimeSpent", "BasicImageInfo", "OffshoreComments", "OffshoreImageUrl", "CompletedDate", "TaskID", "ResponsibleTeam/Id", "ResponsibleTeam/Title",
+                "TaskCategories/Id", "TaskCategories/Title", "ParentTask/TaskID",
+                "TaskType/Id", "TaskType/Title", "TaskType/Level", "PriorityRank", "TeamMembers/Title", "TeamMembers/Name", "Component/Id", "Component/Title", "Component/ItemType", "TeamMembers/Id", "ComponentLink", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "ClientCategory/Id", "ClientCategory/Title", "FileLeafRef", "FeedBack", "Title", "Id", "ID", "PercentComplete", "StartDate", "DueDate", "Comments", "Categories", "Status", "Body", "Mileage", "PercentComplete", "ClientCategory", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title")
+            .expand("ParentTask", "Events", "Services", "TaskType", "AssignedTo", "Component", "ClientCategory", "Author", "Editor", "TeamMembers", "ResponsibleTeam", "TaskCategories")
             .getAll()
         );
 
@@ -543,7 +543,7 @@ const TimeReport = (props:any) => {
                         item.PercentComplete = task.PercentComplete
                         item.Status = task.Status
                         item.Title = task.Title
-                        item.Priority_x0020_Rank = task.Priority_x0020_Rank
+                        item.PriorityRank = task.PriorityRank
                         task?.ClientCategory?.forEach((cat:any)=>{
                             item.ClientCategory = cat.Title;
                         })
@@ -554,7 +554,7 @@ const TimeReport = (props:any) => {
                         item.PercentComplete = task.PercentComplete
                         item.Status = task.Status
                         item.Title = task.Title
-                        item.Priority_x0020_Rank = task.Priority_x0020_Rank
+                        item.PriorityRank = task.PriorityRank
                         task?.ClientCategory?.forEach((cat:any)=>{
                             item.ClientCategory = cat.Title;
                         })
@@ -566,7 +566,7 @@ const TimeReport = (props:any) => {
                         item.PercentComplete = task.PercentComplete
                         item.Status = task.Status
                         item.Title = task.Title
-                        item.Priority_x0020_Rank = task.Priority_x0020_Rank
+                        item.PriorityRank = task.PriorityRank
                         task?.ClientCategory?.forEach((cat:any)=>{
                             item.ClientCategory = cat.Title;
                         })
@@ -578,7 +578,7 @@ const TimeReport = (props:any) => {
                         item.PercentComplete = task.PercentComplete
                         item.Status = task.Status
                         item.Title = task.Title
-                        item.Priority_x0020_Rank = task.Priority_x0020_Rank
+                        item.PriorityRank = task.PriorityRank
                         task?.ClientCategory?.forEach((cat:any)=>{
                             item.ClientCategory = cat.Title;
                         })
@@ -955,8 +955,8 @@ const TimeReport = (props:any) => {
             if (item.Features == undefined || item.Features == '') {
                 item.Features = '';
             }
-            if (item.Priority_x0020_Rank == undefined || item.Priority_x0020_Rank == '') {
-                item.Priority_x0020_Rank = '';
+            if (item.PriorityRank == undefined || item.PriorityRank == '') {
+                item.PriorityRank = '';
             }
             if (item.ClientCategory == undefined || item.ClientCategory == '') {
                 item.ClientCategory = '';
@@ -976,7 +976,7 @@ const TimeReport = (props:any) => {
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Features + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<a href=' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId='+ item.TaskId +'&Site=' + item.siteType +'>' + '<span style="font-size:11px; font-weight:600">' + item.Task + '</span>' + '</a >' + '</td>'
             + '<td align="left" style="border: 1px solid #aeabab;padding: 4px">' + item?.Comments + '</td>'
-            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Priority_x0020_Rank + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.PriorityRank + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Effort + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.PercentComplete + '%' + '</td>'
             + '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item?.Status + '</td>'

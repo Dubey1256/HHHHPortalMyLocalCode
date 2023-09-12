@@ -79,9 +79,9 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
 
 
     const callBackData = React.useCallback((elem: any, ShowingData: any, selectedArray: any) => {
-        MultiSelectedData=[];
-        if (selectionType == "Multi" && elem?.length>0) {
-            elem.map((item:any)=> MultiSelectedData?.push(item?.original))
+        MultiSelectedData = [];
+        if (selectionType == "Multi" && elem?.length > 0) {
+            elem.map((item: any) => MultiSelectedData?.push(item?.original))
             // MultiSelectedData = elem;
         } else {
             if (elem != undefined) {
@@ -100,11 +100,9 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     const onRenderCustomHeader = (
     ) => {
         return (
-            <div className="d-flex full-width pb-1" >
-                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <span>
-                        {`Select ${ComponentType}`}
-                    </span>
+            <div className={ComponentType == "Service" ? "serviepannelgreena d-flex full-width pb-1" : "d-flex full-width pb-1"} >
+                <div className='subheading'>
+                    {`Select ${ComponentType}`}
                 </div>
                 <Tooltip ComponentId="1667" />
             </div>
@@ -113,8 +111,8 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
 
     const CustomFooter = () => {
         return (
-            <footer className={ComponentType == "Service" ? "me-3 p-2 serviepannelgreena text-end" : "me-3 p-2 text-end"}>  
-                
+            <footer className={ComponentType == "Service" ? "me-3 p-2 serviepannelgreena text-end" : "me-3 p-2 text-end"}>
+
                 <button type="button" className="btn btn-primary me-1" onClick={setModalIsOpenToOK}>OK</button>
                 <button type="button" className="btn btn-default" onClick={setModalIsOpenToFalse}>Cancel</button>
             </footer>
@@ -130,11 +128,11 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 hasExpanded: true,
                 size: 55,
                 id: 'Id',
-            },{
+            }, {
                 accessorKey: "PortfolioStructureID",
                 placeholder: "ID",
                 size: 100,
-              
+
                 cell: ({ row, getValue }) => (
                     <div>
                         <>
@@ -291,7 +289,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                         </div>
                         <div className="col-sm-12 p-0 smart">
                             <div className="wrapper">
-                                <GlobalCommanTable columns={columns}  showHeader={true} data={data} selectedData={selectedDataArray} callBackData={callBackData} multiSelect={selectionType == 'Multi' ? true : false} />
+                                <GlobalCommanTable columns={columns} showHeader={true} data={data} selectedData={selectedDataArray} callBackData={callBackData} multiSelect={selectionType == 'Multi' ? true : false} />
                             </div>
                         </div>
                     </div>
