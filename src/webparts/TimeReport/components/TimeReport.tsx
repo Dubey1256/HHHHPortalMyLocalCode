@@ -1151,7 +1151,7 @@ var ReportDate = new Date(a1)
                 </div>
             </div>
             <div className='row'>
-                <div className='col-7 mt-4 showDate'>
+                <div className='col-7 showDate'>
 
                     <input type='date' value={Moment(selectdate!= undefined?selectdate:defaultDate).format("YYYY-MM-DD")} max="9999-12-31 mx-3" onChange={(e) => setSelectDate(e.target.value)} />
                     <label className='mx-2 SpfxCheckRadio'>
