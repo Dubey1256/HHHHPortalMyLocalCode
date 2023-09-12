@@ -263,7 +263,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     taskDetails["siteType"] = this.state?.listName;
     taskDetails["siteUrl"] = this.props?.siteUrl;
 
-    taskDetails.TaskId = globalCommon.getTaskId(taskDetails);
+    taskDetails.TaskId = globalCommon.GetTaskId(taskDetails);
     var category = ""
     if (taskDetails["TaskCategories"] != undefined && taskDetails["TaskCategories"].length > 0) {
       taskDetails["TaskCategories"]?.map((item: any, index: any) => {
@@ -354,9 +354,11 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     if (taskDetails["Title"].length > maxTitleLength) {
       truncatedTitle = taskDetails["Title"].substring(0, maxTitleLength - 3) + "...";
     }
-    let serviceComponent:any;
+ 
+    let portfolio:any
     if(taskDetails?.Portfolio!=undefined){
-      serviceComponent= this.masterTaskData.filter((item:any)=>item.Id==taskDetails?.Portfolio?.Id)
+ 
+      portfolio =this.masterTaskData.filter((item:any)=>item.Id==taskDetails?.Portfolio?.Id)
     }
     
     console.log(this.masterTaskData)
@@ -399,8 +401,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       TaskType: taskDetails["TaskType"] != null ? taskDetails["TaskType"]?.Title : '',
       EstimatedTimeDescriptionArray: tempEstimatedArrayData,
       TotalEstimatedTime: TotalEstimatedTime,
-      serviceComponentColor:serviceComponent!=undefined?serviceComponent[0]?.PortfolioType?.Color:"",
-      Portfolio: taskDetails["Portfolio"],
+   
+      Portfolio: portfolio!=undefined?portfolio[0]:undefined,
       PortfolioType: taskDetails["PortfolioType"],
       Creation: taskDetails["Created"],
       Modified: taskDetails["Modified"],
@@ -1655,12 +1657,16 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                         <dd className='bg-Ff text-break'>{this.state.Result["Categories"]}</dd>
                       </dl>
                       <dl>
+                        <dt className='bg-Fa'>Item Rank</dt>
+                        <dd className='bg-Ff'>{this.state.Result["ItemRank"]}</dd>
+                      </dl>
+                      {/* <dl>
                         <dt className='bg-Fa'>Estimated Time</dt>
                         <dd className='bg-Ff position-relative' >
                           <span className='tooltipbox' title="hours">{this.state.Result["EstimatedTime"] != undefined ? (this.state.Result["EstimatedTime"].toFixed(1) > 1 ? this.state.Result["EstimatedTime"].toFixed(1) + " hours" : this.state.Result["EstimatedTime"].toFixed(1) + " hour") : "0.0 hour"} </span>
-                          {/* <span className='tooltipbox' title="hours">{this.state.Result["EstimatedTime"] != undefined ? this.state.Result["EstimatedTime"].toFixed(1) + "hours" : "0.0 hour"} </span> */}
+                        
                         </dd>
-                      </dl>
+                      </dl> */}
                       {isShowTimeEntry && <dl>
                         <dt className='bg-Fa'>SmartTime Total</dt>
                         <dd className='bg-Ff'>
@@ -1745,10 +1751,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                         <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["IsTodaysTask"] ? "Yes" : "No"} </span>
                         </dd>
                       </dl>
-                      <dl>
-                        <dt className='bg-Fa'>Item Rank</dt>
-                        <dd className='bg-Ff'>{this.state.Result["ItemRank"]}</dd>
-                      </dl>
+                      
                       <dl>
                         <dt className='bg-Fa'>% Complete</dt>
                         <dd className='bg-Ff'>{this.state.Result["PercentComplete"] != undefined ? this.state.Result["PercentComplete"].toFixed(0) : 0}</dd>
