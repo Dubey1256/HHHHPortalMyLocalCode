@@ -7,7 +7,7 @@ import { GlobalConstants } from '../globalComponents/LocalCommon';
 import { PageContext } from "@microsoft/sp-page-context";
 import { spfi } from "@pnp/sp/presets/all";
 import { MSGraphClientV3 } from '@microsoft/sp-http';
-
+export const myContextValue:any= React.createContext<any>({})
 export const pageContext = async () => {
     let result;
     try {
@@ -589,20 +589,20 @@ export const getTaskId = (item: any) => {
         if (item != undefined && item.TaskType == undefined) {
             TaskID = 'T' + item.Id;
         }
-        else if (item.TaskType != undefined && (item?.TaskType?.Title == 'Task' || item?.TaskType?.Title == 'MileStone') && item?.TaskLevel == undefined && item.TaskLevel == undefined) {
+        else if (item.TaskType != undefined && (item.TaskType.Title == 'Task' || item.TaskType.Title == 'MileStone') && item.TaskLevel == undefined && item.TaskLevel == undefined) {
             TaskID = 'T' + item.Id;
             if (item.TaskType.Title == 'MileStone')
                 TaskID = 'M' + item.Id;
         }
-        else if (item?.TaskType != undefined && (item?.TaskType?.Title == 'Activities' || item?.TaskType.Title == 'Project') && item.TaskLevel != undefined) {
-            if (item.Component != undefined) {
-                if (item.Component != undefined && item?.Component?.length > 0) {
+        else if (item.TaskType != undefined && (item.TaskType.Title == 'Activities' || item.TaskType.Title == 'Project') && item.TaskLevel != undefined) {
+            if (item.Portfolio != undefined) {
+                if (item.Portfolio != undefined) {
                     TaskID = 'CA' + item.TaskLevel;
                 }
             }
             if (item?.Services != undefined) {
                 if (item?.Services != undefined && item?.Services?.length > 0) {
-                    TaskID = 'SA' + item?.TaskLevel;
+                    TaskID = 'SA' + item.TaskLevel;
                 }
             }
             if (item?.Events != undefined) {
@@ -610,7 +610,7 @@ export const getTaskId = (item: any) => {
                     TaskID = 'EA' + item.TaskLevel;
                 }
             }
-            if (item?.Component != undefined && item?.Events != undefined && item?.Services != undefined) {
+            if (item.Component != undefined && item.Events != undefined && item.Services != undefined) {
                 if (item?.Events?.length > 0 && item?.Services?.length > 0 && item?.Component?.length > 0)
                     TaskID = 'A' + item.TaskLevel;
             }
@@ -620,27 +620,27 @@ export const getTaskId = (item: any) => {
             if (item?.TaskType?.Title == 'Project')
                 TaskID = 'P' + item.TaskLevel;
 
-            if (item?.Component?.length === 0 && item?.Services?.length === 0) {
-                TaskID = 'A' + item.TaskLevel;
-            }
+            // if (item?.Component?.length === 0 && item?.Services?.length === 0) {
+            //     TaskID = 'A' + item.TaskLevel;
+            // }
         }
-        else if (item?.TaskType != undefined && (item?.TaskType?.Title == 'Workstream' || item?.TaskType?.Title == 'Step') && item?.TaskLevel != undefined && item?.TaskLevel != undefined) {
-            if (item?.Component != undefined && item?.Services != undefined && item?.Events != undefined) {
+        else if (item.TaskType != undefined && (item.TaskType.Title == 'Workstream' || item.TaskType.Title == 'Step') && item.TaskLevel != undefined && item.TaskLevel != undefined) {
+            if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
                 // if (!item.Events.results.length > 0 && !item.Services.results.length > 0 && !item.Component.results.length > 0) {
                 TaskID = 'A' + item.TaskLevel + '-W' + item.TaskLevel;
                 // }
             }
-            if (item?.Component != undefined) {
+            if (item.Component != undefined) {
                 if (item?.Component != undefined && item?.Component?.length > 0) {
                     TaskID = 'CA' + item.TaskLevel + '-W' + item.TaskLevel;
                 }
             }
             if (item.Services != undefined) {
-                if (item?.Services != undefined && item?.Services?.length > 0) {
+                if (item.Services != undefined && item?.Services?.length > 0) {
                     TaskID = 'SA' + item.TaskLevel + '-W' + item.TaskLevel;
                 }
             }
-            if (item?.Events != undefined) {
+            if (item.Events != undefined) {
                 if (item.Events != undefined && item.Events.length > 0) {
                     TaskID = 'EA' + item.TaskLevel + '-W' + item.TaskLevel;
                 }
@@ -652,59 +652,59 @@ export const getTaskId = (item: any) => {
                 TaskID = 'P' + item.TaskLevel + '-S' + item.TaskLevel;
 
         }
-        else if (item?.TaskType != undefined && (item?.TaskType?.Title == 'Task' || item?.TaskType?.Title == 'MileStone') && item?.TaskLevel != undefined && item?.TaskLevel != undefined) {
-            if (item?.Component != undefined && item?.Services != undefined && item?.Events != undefined) {
+        else if (item.TaskType != undefined && (item.TaskType.Title == 'Task' || item.TaskType.Title == 'MileStone') && item.TaskLevel != undefined && item.TaskLevel != undefined) {
+            if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
                 // if (!item.Events.results.length > 0 && !item.Services.results.length > 0 && !item.Component.results.length > 0) {
                 TaskID = 'A' + item.TaskLevel + '-W' + item.TaskLevel + '-T' + item.Id;
                 //  }
             }
-            if (item?.Component != undefined) {
-                if (item?.Component != undefined && item?.Component?.length > 0) {
+            if (item.Component != undefined) {
+                if (item.Component != undefined && item?.Component?.length > 0) {
                     TaskID = 'CA' + item.TaskLevel + '-W' + item.TaskLevel + '-T' + item.Id;
                 }
             }
-            if (item?.Services != undefined) {
+            if (item.Services != undefined) {
                 if (item.Services != undefined && item?.Services?.length > 0) {
                     TaskID = 'SA' + item.TaskLevel + '-W' + item.TaskLevel + '-T' + item.Id;
                 }
             }
-            if (item?.Events != undefined) {
+            if (item.Events != undefined) {
                 if (item.Events != undefined && item?.Events?.length > 0) {
                     TaskID = 'EA' + item.TaskLevel + '-W' + item.TaskLevel + '-T' + item.Id;
                 }
             }
-            if (item?.Component == undefined && item?.Services == undefined && item?.Events == undefined) {
+            if (item.Component == undefined && item.Services == undefined && item.Events == undefined) {
                 TaskID = 'A' + item.TaskLevel + '-W' + item.TaskLevel + '-T' + item.Id;
             }
-            if (item?.TaskType.Title == 'MileStone') {
+            if (item.TaskType.Title == 'MileStone') {
                 TaskID = 'P' + item.TaskLevel + '-S' + item.TaskLevel + '-M' + item.Id;
             }
         }
-        else if (item?.TaskType != undefined && (item?.TaskType.Title == 'Task' || item?.TaskType?.Title == 'MileStone') && item?.TaskLevel != undefined && item?.TaskLevel == undefined) {
-            if (item?.Component != undefined && item?.Services != undefined && item?.Events != undefined) {
+        else if (item.TaskType != undefined && (item.TaskType.Title == 'Task' || item.TaskType.Title == 'MileStone') && item.TaskLevel != undefined && item.TaskLevel == undefined) {
+            if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
                 //  if (!item.Events.results.length > 0 && !item.Services.results.length > 0 && !item.Component.results.length > 0) {
                 TaskID = 'A' + item.TaskLevel + '-T' + item.Id;
                 // }
             }
-            if (item?.Component != undefined) {
-                if (item?.Component != undefined && item?.Component?.length > 0) {
+            if (item.Component != undefined) {
+                if (item.Component != undefined && item?.Component?.length > 0) {
                     TaskID = 'CA' + item.TaskLevel + '-T' + item.Id;
                 }
             }
-            if (item?.Services != undefined) {
-                if (item?.Services != undefined && item?.Services?.length > 0) {
+            if (item.Services != undefined) {
+                if (item.Services != undefined && item?.Services?.length > 0) {
                     TaskID = 'SA' + item.TaskLevel + '-T' + item.Id;
                 }
             }
-            if (item?.Events != undefined) {
-                if (item?.Events != undefined && item?.Events?.length > 0) {
+            if (item.Events != undefined) {
+                if (item.Events != undefined && item.Events.length > 0) {
                     TaskID = 'EA' + item.TaskLevel + '-T' + item.Id;
                 }
             }
-            if (item?.Component == undefined && item?.Services == undefined && item?.Events == undefined) {
+            if (item.Component == undefined && item.Services == undefined && item.Events == undefined) {
                 TaskID = 'A' + item.TaskLevel + '-T' + item.Id;
             }
-            if (item?.TaskType?.Title == 'MileStone') {
+            if (item.TaskType.Title == 'MileStone') {
                 TaskID = 'P' + item.TaskLevel + '-M' + item.Id;
             }
 
@@ -1834,10 +1834,17 @@ export const getParameterByName = async (name: any) => {
 
 export const GetTaskId = (Item: any) => {
     let taskIds = '';
-    if (Item?.Portfolio?.PortfolioStructureID != undefined) {
+    if (Item?.Portfolio?.PortfolioStructureID != undefined &&Item.TaskID!=undefined ) {
         taskIds = Item?.Portfolio?.PortfolioStructureID + '-' + Item.TaskID;
-    } else {
+    }   
+     if (Item?.Portfolio?.PortfolioStructureID != undefined &&Item.TaskID==undefined ) {
+        taskIds = Item?.Portfolio?.PortfolioStructureID + '-T' + Item.Id;
+     }
+    else if(Item.TaskID!=undefined){
         taskIds = Item.TaskID;
+    }
+    else if(Item.TaskID==undefined){
+        taskIds = "T"+Item.Id;
     }
 
     return taskIds;
