@@ -354,7 +354,7 @@ function CreateTaskComponent(props: any) {
                     createTask();
                 } else if (paramSiteUrl != undefined) {
                     let saveValue = save;
-                    let setTaskTitle = 'Feedback - ' + setComponent[0]?.Title + ' ' + moment(new Date()).format('DD/MM/YYYY');
+                    let setTaskTitle = 'Feedback - ' + setComponent[0]?.Title + ' ' + moment(new Date()).format('DD-MM-YYYY');
                     saveValue.taskName = setTaskTitle;
                     saveValue.taskUrl = paramSiteUrl;
                     BurgerMenuData.TaskType = 'Feedback'
@@ -2373,7 +2373,7 @@ function CreateTaskComponent(props: any) {
                             <legend className="border-bottom fs-6">Due Date</legend>
                             <div className="row justify-content-md-center text-center mb-2">
                                 <div className={isActive.dueDate && save.dueDate === 'Today' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'Today')}>
-                                    <a className='text-decoration-none text-white'>Today&nbsp;{moment(new Date()).format('DD/MM/YYYY')}</a>
+                                    <a className='text-decoration-none text-white'>Today&nbsp;{moment(new Date()).format('DD-MM-YYYY')}</a>
                                 </div>
                                 <div className={isActive.dueDate && save.dueDate === 'Tomorrow' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'Tomorrow')} id="Tomorrow"><a className='text-decoration-none text-white'>Tomorrow</a> </div>
                                 <div className={isActive.dueDate && save.dueDate === 'ThisWeek' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'ThisWeek')} id="ThisWeek"><a className='text-decoration-none text-white'>This Week</a> </div>
