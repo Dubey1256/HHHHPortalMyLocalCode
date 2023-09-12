@@ -1542,7 +1542,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     return (
       <MyContext.Provider value={{ ...MyContext, FunctionCall: this.contextCall, keyDoc: this.state.keydoc, FileDirRef: this.state.FileDirRef }}>
         <div
-         style={{color:`${this.state.Result["serviceComponentColor"]}`}}
+        //  style={{color:`${this.state.Result["serviceComponentColor"]}`}}
         >
           <section className='ContentSection'> {this.state.breadCrumData != undefined &&
             <div className='row'>
