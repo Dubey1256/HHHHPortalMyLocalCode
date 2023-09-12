@@ -120,7 +120,7 @@ let AllAvailableTitle: any = [];
                 newArray.map((child: any) => {
                     
                     if (child.AuthorId == items.AuthorId) {
-                        child.additionaltime2.push(items.additionaltime2[0])
+                        child.additionaltime2.unshift(items.additionaltime2[0])
                         parentfound = true;
                     }
                    
