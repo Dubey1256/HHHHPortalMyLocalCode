@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Web } from "sp-pnp-js";
 import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
-import '../SmartFilterGolobalBomponents/Style.css'
 import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
 let filterGroupsDataBackup: any = [];
 let filterGroupData1: any = [];
