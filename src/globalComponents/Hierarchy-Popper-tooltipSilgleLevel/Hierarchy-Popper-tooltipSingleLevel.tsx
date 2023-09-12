@@ -46,15 +46,16 @@ export const getTooltiphierarchyWithoutGroupByTable = (row: any): any[] => {
             Object.subRows = [];
             Object.subRows.push(row);
             return getTooltiphierarchyWithoutGroupByTable(Object);
-        } else if (row?.Component != undefined && row?.Component?.length > 0 && Object.Id === row?.Component[0]?.Id) {
-            Object.subRows = [];
-            Object.subRows.push(row);
-            return getTooltiphierarchyWithoutGroupByTable(Object);
-        } else if (row?.Services != undefined && row?.Services?.length > 0 && Object.Id === row?.Services[0]?.Id) {
+        } else if (row?.Portfolio != undefined  && Object.Id === row?.Portfolio?.Id) {
             Object.subRows = [];
             Object.subRows.push(row);
             return getTooltiphierarchyWithoutGroupByTable(Object);
         }
+        //  else if (row?.Services != undefined && row?.Services?.length > 0 && Object.Id === row?.Services[0]?.Id) {
+        //     Object.subRows = [];
+        //     Object.subRows.push(row);
+        //     return getTooltiphierarchyWithoutGroupByTable(Object);
+        // }
     }
     return [row];
 };
