@@ -237,6 +237,14 @@
         }
       ]
     },
+    "test-project-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/testProject/TestProjectWebPart.js",
+          "manifest": "./src/webparts/testProject/TestProjectWebPart.manifest.json"
+        }
+      ]
+    },
     "task-dashboard-hhhh-web-part": {
       "components": [
         {
@@ -349,6 +357,7 @@
     "FeedbackWebPartStrings": "lib/webparts/TimeReport/loc/{locale}.js",
     "TaskStepsWebPartStrings": "lib/webparts/taskSteps/loc/{locale}.js",
     "HrToolWebPartStrings": "lib/webparts/hrTool/loc/{locale}.js",
+    "TestProjectWebPartStrings": "lib/webparts/testProject/loc/{locale}.js",
     "ProjectManagementWebPartStrings": "lib/webparts/projectManagement/loc/{locale}.js",
     "HRjointcontactserachWebPartStrings": "lib/webparts/hRjointcontactserach/loc/{locale}.js",
     "HRjointcontactprofileWebPartStrings": "lib/webparts/hRjointcontactprofile/loc/{locale}.js",
