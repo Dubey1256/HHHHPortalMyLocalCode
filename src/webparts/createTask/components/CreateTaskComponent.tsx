@@ -356,6 +356,11 @@ function CreateTaskComponent(props: any) {
                     let saveValue = save;
                     let setTaskTitle = 'Feedback - ' + setComponent[0]?.Title + ' ' + moment(new Date()).format('DD-MM-YYYY');
                     saveValue.taskName = setTaskTitle;
+                    subCategories?.map((item: any) => {
+                        if (item.Title == "Feedback") {
+                            selectSubTaskCategory(item.Title, item.Id, item)
+                        }
+                    })
                     saveValue.taskUrl = paramSiteUrl;
                     BurgerMenuData.TaskType = 'Feedback'
                     //  setTaskUrl(paramSiteUrl);
@@ -436,8 +441,8 @@ function CreateTaskComponent(props: any) {
                         //type.Priority = type.Priority.split('')[1];
                         //type.Component = type.Component.results[0].Title,
                         item.ComponentTitle = '';
-                        item.portfolio={};
-                        if (item?.Portfolio?.Id !=undefined) {
+                        item.portfolio = {};
+                        if (item?.Portfolio?.Id != undefined) {
                             item.portfolio = item.Portfolio;
                         }
 
@@ -1276,11 +1281,11 @@ function CreateTaskComponent(props: any) {
                 cell: ({ row }) => (
                     <span>
                         <a className="hreflink"
-                                data-interception="off"
-                                target="blank"
-                                href={`${row?.original?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`} >
-                                {row?.original?.portfolio?.Title}
-                            </a>
+                            data-interception="off"
+                            target="blank"
+                            href={`${row?.original?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`} >
+                            {row?.original?.portfolio?.Title}
+                        </a>
                     </span>
                 ),
                 id: "Portfolio",
@@ -1371,7 +1376,7 @@ function CreateTaskComponent(props: any) {
                 accessorFn: (row) => row?.CreatedSearch,
                 cell: ({ row }) => (
                     <span>
-                       <span className='ms-1'>{row?.original?.CreateDate} </span>
+                        <span className='ms-1'>{row?.original?.CreateDate} </span>
                         {row?.original?.AuthorCover != undefined ? (
                             <>
                                 <a
@@ -2010,21 +2015,21 @@ function CreateTaskComponent(props: any) {
         <>  <div className={save.portfolioType == "Service" ? "serviepannelgreena" : ''}>
             <div className='creatTaskPage'>
                 <div className='row'>
-                    {props?.projectId == undefined ? <div className='col-sm-12'>
-                        <div className='header-section full-width justify-content-between'>
-                            <h2 style={{ color: "#000066", fontWeight: "600" }}>Create Task
-                                <a data-interception="off" className=' text-end pull-right' target='_blank' href={oldTaskIrl} style={{ cursor: "pointer", fontSize: "14px" }}>Old Create Task</a>
-                            </h2>
-                        </div>
-                    </div> : ''}
+                    {props?.projectId == undefined ?
+                        <div className='heading d-flex justify-content-between align-items-center'>
+                            <h2>Create Task </h2>
+                            <span className='text-end fs-6'>
+                             <a data-interception="off" className=' text-end pull-right' target='_blank' href={oldTaskIrl} style={{ cursor: "pointer", fontSize: "14px" }}>Old Create Task</a>
+                             </span>
+                        </div>  : ''}
                     <div className='row'>
                         <h4 className="titleBorder">General Information</h4>
-                        <div className='row ps-0'>
-                            <div className='col-sm-6 ps-0 '>
+                        <div className='row '>
+                            <div className='col-sm-6'>
                                 <label className='full-width'>Task Name</label>
                                 <input type="text" placeholder='Enter task Name' className='full-width' value={save.taskName} onChange={(e) => { changeTitle(e) }}></input>
                             </div>
-                            <div className='col-sm-6 pe-0'>{
+                            <div className='col-sm-6 '>{
                                 save.portfolioType === 'Component' ?
                                     <div className="input-group">
                                         <label className="form-label full-width">Portfolio</label>
@@ -2057,7 +2062,7 @@ function CreateTaskComponent(props: any) {
                                     </div> : ''
                             }
                             </div>
-                            <div className='col-sm-12 p-0  mt-2'>
+                            <div className='col  mt-2'>
                                 <label className='full-width'>Task URL</label>
                                 <input type="text" className='full-width ' placeholder='Enter task Url' value={save.taskUrl} onChange={(e) => UrlPasteTitle(e)} disabled={burgerMenuTaskDetails?.Siteurl?.length > 0}></input>
 
@@ -2132,10 +2137,10 @@ function CreateTaskComponent(props: any) {
                 {/*---------------- Sites -------------
             -------------------------------*/}
                 {siteType?.length > 1 ?
-                    <div className='row mt-2 '>
+                    <div className='col mt-2'>
                         <h4 className="titleBorder ">Websites</h4>
                         <div className='p-0'>
-                            <ul className="site-actions ">
+                            <ul className="site-actions">
                                 {siteType?.map((item: any) => {
                                     return (
                                         <>
@@ -2162,11 +2167,12 @@ function CreateTaskComponent(props: any) {
                     </div> : ''}
 
                 {props?.projectId == undefined ? <>
+                    <div className="clearfix"></div>
                     {/*---- Task Categories ---------
             -------------------------------*/}
-                    <div className='row mt-2 '>
+                    <div className='col mt-2 '>
                         <div className='p-0' >
-                            <div className="row " style={{ width: "100%" }}>
+                            <div className="col" >
                                 {TaskTypes?.map((Task: any) => {
                                     return (
                                         <>
@@ -2189,8 +2195,9 @@ function CreateTaskComponent(props: any) {
                             </div>
                         </div>
                     </div>
+                    <div className="clearfix"></div>
                     {/*-----Priority Rank ---------------------------------------*/}
-                    <div className='row mt-2 '>
+                    <div className='col  mt-2'>
                         <h4 className="titleBorder ">Priority Rank</h4>
 
                         {/* <legend className="border-bottom fs-6">Priority Rank</legend> */}
@@ -2206,12 +2213,13 @@ function CreateTaskComponent(props: any) {
                         </div>
 
                     </div>
+                    <div className="clearfix"></div>
                     {/*-----Time --------
             -------------------------------*/}
 
-                    <div className='row mt-2 '>
+                    <div className='col mt-2'>
                         <h4 className="titleBorder ">Time</h4>
-                        <div className="row  taskcatgoryPannel">
+                        <div className="col  taskcatgoryPannel">
                             {Timing?.map((item: any) => {
                                 return (
                                     <a className={isActive.time && save.Time === item.Title ? ' active subcategoryTask' : 'subcategoryTask'} onClick={() => setActiveTile("Time", "time", item.Title)}>{item.Title}</a>
@@ -2219,11 +2227,12 @@ function CreateTaskComponent(props: any) {
                             })}
                         </div>
                     </div>
+                    <div className="clearfix"></div>
                     {/*-----Due date --------
             -------------------------------*/}
-                    <div className='row mt-2'>
+                    <div className='col mb-1 mt-2'>
                         <h4 className="titleBorder ">Due Date</h4>
-                        <div className="row taskcatgoryPannel">
+                        <div className="col taskcatgoryPannel">
                             <a className={isActive.dueDate && save.dueDate === 'Today' ? 'subcategoryTask active text-center' : 'subcategoryTask'} onClick={() => setActiveTile("dueDate", "dueDate", 'Today')}>Today&nbsp;{moment(new Date()).format('DD/MM/YYYY')}</a>
                             <a className={isActive.dueDate && save.dueDate === 'Tomorrow' ? 'subcategoryTask active text-center' : 'subcategoryTask'} onClick={() => setActiveTile("dueDate", "dueDate", 'Tomorrow')} id="Tomorrow">Tomorrow</a>
                             <a className={isActive.dueDate && save.dueDate === 'ThisWeek' ? 'subcategoryTask active text-center' : 'subcategoryTask'} onClick={() => setActiveTile("dueDate", "dueDate", 'ThisWeek')} id="ThisWeek">This Week</a>
