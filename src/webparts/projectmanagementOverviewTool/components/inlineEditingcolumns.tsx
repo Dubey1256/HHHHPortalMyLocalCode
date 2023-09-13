@@ -80,11 +80,11 @@ const inlineEditingcolumns = (props: any) => {
         }
 
         loadTaskUsers();
-        if (props?.item?.Services?.length > 0 && props?.pageName != 'ProjectOverView') {
-            setServicesTaskCheck(true)
-        } else {
-            setServicesTaskCheck(false)
-        }
+        // if (props?.item?.Services?.length > 0 && props?.pageName != 'ProjectOverView') {
+        //     setServicesTaskCheck(true)
+        // } else {
+        //     setServicesTaskCheck(false)
+        // }
         if (props?.item?.DueDate != undefined) {
             setEditDate(props?.item?.DueDate);
         }
