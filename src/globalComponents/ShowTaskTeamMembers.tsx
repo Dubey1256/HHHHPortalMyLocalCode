@@ -46,11 +46,11 @@ function ShowTaskTeamMembers(item: any) {
       });
     }
     if (
-      Item.Team_x0020_Members != undefined &&
-      Item.Team_x0020_Members != undefined &&
-      Item.Team_x0020_Members.length > 0
+      Item.TeamMembers != undefined &&
+      Item.TeamMembers != undefined &&
+      Item.TeamMembers.length > 0
     ) {
-      Item.Team_x0020_Members.forEach((Assig: any) => {
+      Item.TeamMembers.forEach((Assig: any) => {
         if (Assig.Id != undefined) {
           TaskUsers.forEach((users: any) => {
             if (
@@ -70,11 +70,11 @@ function ShowTaskTeamMembers(item: any) {
       });
     }
     if (
-      Item.Responsible_x0020_Team != undefined &&
-      Item.Responsible_x0020_Team != undefined &&
-      Item.Responsible_x0020_Team.length > 0
+      Item.ResponsibleTeam != undefined &&
+      Item.ResponsibleTeam != undefined &&
+      Item.ResponsibleTeam.length > 0
     ) {
-      Item.Responsible_x0020_Team.forEach((Assig: any) => {
+      Item.ResponsibleTeam.forEach((Assig: any) => {
         if (Assig.Id != undefined) {
           TaskUsers.forEach((users: any) => {
             if (
@@ -113,8 +113,8 @@ function ShowTaskTeamMembers(item: any) {
               ? ItemNew["TeamLeader"].map((rcData: any, i: any) => {
                 return (
                   <>
-                    <span className="user_Member_img">
-                      <a
+                    <span className="user_Member_img alignCenter">
+                      <a className="alignCenter"
                         href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${rcData?.AssingedToUserId}&Name=${rcData.Title}`}
                         target="_blank"
                         data-interception="off"
@@ -126,26 +126,25 @@ function ShowTaskTeamMembers(item: any) {
                   </>
                 );
               })
-              :<span>&nbsp;</span>}
+              : <span>&nbsp;</span>}
             {/* {Item["TeamLeader"] != null && Item["TeamLeader"].length > 0 &&
                                                                                                                      <div></div>
                                                                                                                  } */}
 
             {ItemNew["AllTeamMembers"] != null &&
               ItemNew["AllTeamMembers"].length > 0 ? (
-              <div className="  ">
-                <a
-                  href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${ItemNew["AllTeamMembers"][0].AssingedToUserId}&Name=${ItemNew["AllTeamMembers"][0].Title}`}
-                  target="_blank"
-                  data-interception="off"
-                  title={ItemNew["AllTeamMembers"][0].Title}
-                >
-                  <img
-                    className="workmember activeimg"
-                    src={ItemNew["AllTeamMembers"][0].ItemCover}
-                  ></img>
-                </a>
-              </div>
+              <a className="alignCenter"
+                href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${ItemNew["AllTeamMembers"][0].AssingedToUserId}&Name=${ItemNew["AllTeamMembers"][0].Title}`}
+                target="_blank"
+                data-interception="off"
+                title={ItemNew["AllTeamMembers"][0].Title}
+              >
+                <img
+                  className="workmember activeimg"
+                  src={ItemNew["AllTeamMembers"][0].ItemCover}
+                ></img>
+              </a>
+
             ) : (
               " "
             )}
@@ -156,7 +155,7 @@ function ShowTaskTeamMembers(item: any) {
                 onMouseOver={(e) => handleSuffixHover(ItemNew)}
                 onMouseLeave={(e) => handleuffixLeave(ItemNew)}
               >
-                 +{ItemNew?.AllTeamMembers?.slice(1)?.length}
+                +{ItemNew?.AllTeamMembers?.slice(1)?.length}
                 <span
                   className="tooltiptext"
                   style={{ display: Display, padding: "10px" }}

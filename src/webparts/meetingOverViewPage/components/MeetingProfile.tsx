@@ -18,14 +18,26 @@ import moment from 'moment';
 import SmartInformation from '../../taskprofile/components/SmartInformation';
 import RelevantDocuments from '../../taskprofile/components/RelevantDocuments';
 import MeetingPopupComponent from '../../../globalComponents/MeetingPopup/MeetingPopup';
+import TagTaskToProjectPopup from '../../projectManagement/components/TagTaskToProjectPopup';
+import MettingTable from './MeetingFooterTable';
+import { map } from 'jquery';
+
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
 var AllListId: any;
 var taskUsers: any;
 var currentUser: any;
 var buttonId:any;
-const mycontextValue:any = React.createContext({ AllListId: {}, context: {},  currentUser: {}, taskUsers: [] });
+var resultDatabackup:any;
+
+var meetinDatabackup:any
+const mycontextValue:any = React.createContext<any>({ AllListId: {}, context: {},  currentUser: {}, taskUsers: [] });
 const MeetingProfile = (props: any) => {
+  const [commenttoPost, setCommenttoPost] = React.useState("")
+  const [updateComment, setUpdateComment] = React.useState(false);
+  const [resultData, setResultData] = React.useState<any>({})
+  const relevantDocRef = React.useRef<any>();
+  const smartInfoRef = React.useRef<any>();
     const [meetingId, setmeetingId] = React.useState(null)
     const [display, setDisplay] = React.useState('none');
     const [openModelImg, setOpenModelImg] = React.useState<any>({ isModalOpen: false, imageInfo: {ImageName:"",ImageUrl:""}, showPopup: 'none' })
@@ -55,11 +67,7 @@ const MeetingProfile = (props: any) => {
     "data": null,
     "parentIndexOpeneditModal": null
    }})
-    const [commenttoPost, setCommenttoPost] = React.useState("")
-    const [updateComment, setUpdateComment] = React.useState(false);
-    const [resultData, setResultData] = React.useState<any>({})
-    const relevantDocRef = React.useRef<any>();
-    const smartInfoRef = React.useRef<any>();
+
     React.useEffect(() => {
         GetTaskUsers().then((data) => {
             console.log(data)
@@ -164,15 +172,15 @@ const MeetingProfile = (props: any) => {
 
                 .items.getById(AllListId?.meetingId)
 
-                .select("Id", "Title", "DueDate", "AssignedTo/Id","Attachments", "FeedBack", "PortfolioStructureID","AssignedTo/Title", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", 'AttachmentFiles', "ShortDescriptionVerified", "SharewebTaskType/Title", "BasicImageInfo", 'Author/Id', 'Author/Title', "Editor/Title", "Editor/Id", "OffshoreComments", "OffshoreImageUrl", "Team_x0020_Members/Id", "Team_x0020_Members/Title")
+                .select("Id", "Title", "DueDate", "AssignedTo/Id","Attachments","Sitestagging", "FeedBack", "PortfolioStructureID","AssignedTo/Title", "ResponsibleTeam/Title", "ResponsibleTeam/Id", 'AttachmentFiles', "ShortDescriptionVerified", "TaskType/Title", "BasicImageInfo", 'Author/Id', 'Author/Title', "Editor/Title", "Editor/Id", "OffshoreComments", "OffshoreImageUrl", "TeamMembers/Id", "TeamMembers/Title")
 
                 // .top(5000)
 
-                .expand("AssignedTo", 'Responsible_x0020_Team', "AttachmentFiles", "Author", 'SharewebTaskType', "Editor", "Team_x0020_Members").get()
+                .expand("AssignedTo", 'ResponsibleTeam', "AttachmentFiles", "Author", 'TaskType', "Editor", "TeamMembers").get()
             // await web.lists
             //     .getById(AllListId?.MasterTaskListID)
-            //     .items.select("Id", "Title", "DueDate", "AssignedTo/Id", "AssignedTo/Title", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id",'Attachments', 'AttachmentFiles', "ShortDescriptionVerified", "SharewebTaskType/Title", "BasicImageInfo", 'Author/Id', 'Author/Title', "Editor/Title", "Editor/Id", "OffshoreComments", "OffshoreImageUrl", "Team_x0020_Members/Id", "Team_x0020_Members/Title")
-            //     .expand("AssignedTo", 'Responsible_x0020_Team', "AttachmentFiles", "Author", 'SharewebTaskType', "Editor", "Team_x0020_Members")
+            //     .items.select("Id", "Title", "DueDate", "AssignedTo/Id", "AssignedTo/Title", "ResponsibleTeam/Title", "ResponsibleTeam/Id",'Attachments', 'AttachmentFiles', "ShortDescriptionVerified", "TaskType/Title", "BasicImageInfo", 'Author/Id', 'Author/Title', "Editor/Title", "Editor/Id", "OffshoreComments", "OffshoreImageUrl", "TeamMembers/Id", "TeamMembers/Title")
+            //     .expand("AssignedTo", 'ResponsibleTeam', "AttachmentFiles", "Author", 'TaskType', "Editor", "TeamMembers")
             //     .getById(AllListId?.meetingId)
             //     .get()
                 .then((taskDetails: any) => {
@@ -180,10 +188,10 @@ const MeetingProfile = (props: any) => {
                     
     if (taskDetails["AssignedTo"] != undefined) {
         taskDetails["AssignedTo"]?.map((item: any, index: any) => {
-          if (taskDetails?.Team_x0020_Members != undefined) {
-            for (let i = 0; i < taskDetails?.Team_x0020_Members?.length; i++) {
-              if (item.Id == taskDetails?.Team_x0020_Members[i]?.Id) {
-                taskDetails?.Team_x0020_Members?.splice(i, true);
+          if (taskDetails?.TeamMembers != undefined) {
+            for (let i = 0; i < taskDetails?.TeamMembers?.length; i++) {
+              if (item.Id == taskDetails?.TeamMembers[i]?.Id) {
+                taskDetails?.TeamMembers?.splice(i, true);
                 i--;
               }
             }
@@ -195,15 +203,17 @@ const MeetingProfile = (props: any) => {
       }
   
       var array2: any = taskDetails["AssignedTo"] != undefined ? taskDetails["AssignedTo"] : []
-      if (taskDetails["Team_x0020_Members"] != undefined) {
-        taskDetails.array = array2.concat(taskDetails["Team_x0020_Members"]?.filter((item: any) => array2?.Id != item?.Id))
+      if (taskDetails["TeamMembers"] != undefined) {
+        taskDetails.array = array2.concat(taskDetails["TeamMembers"]?.filter((item: any) => array2?.Id != item?.Id))
   
       }
+                 
                     let data = {
                         Id: taskDetails.Id,
                         Title: taskDetails?.Title,
                         MeetingId:taskDetails?.PortfolioStructureID,
                         listName:"Master Tasks",
+                        Sitestagging:taskDetails.Sitestagging!=undefined?JSON.parse(taskDetails.Sitestagging):null,
                         DueDate: taskDetails["DueDate"],
                         Created: taskDetails["Created"],
                         Creation: taskDetails["Created"],
@@ -214,12 +224,13 @@ const MeetingProfile = (props: any) => {
                         BasicImageInfo:GetAllImages(JSON.parse(taskDetails["BasicImageInfo"]), taskDetails["AttachmentFiles"], taskDetails["Attachments"]),
                         // GetAllImages(JSON.parse(taskDetails["BasicImageInfo"]), taskDetails["AttachmentFiles"], taskDetails["Attachments"])
                         FeedBack: JSON.parse(taskDetails["FeedBack"]),
-                        SharewebTaskType: taskDetails["SharewebTaskType"] != null ? taskDetails["SharewebTaskType"]?.Title : '',
-                        TeamLeader: taskDetails["Responsible_x0020_Team"] != null ? GetUserObjectFromCollection(taskDetails["Responsible_x0020_Team"]) : null,
+                        TaskType: taskDetails["TaskType"] != null ? taskDetails["TaskType"]?.Title : '',
+                        TeamLeader: taskDetails["ResponsibleTeam"] != null ? GetUserObjectFromCollection(taskDetails["ResponsibleTeam"]) : null,
                         TeamMembers: taskDetails.array != null ? GetUserObjectFromCollection(taskDetails.array) : null,
                         AssignedTo: taskDetails["AssignedTo"] != null ? GetUserObjectFromCollection(taskDetails["AssignedTo"]) : null,
                     }
-                    setResultData(data)
+                    resultDatabackup=data;
+                    setResultData(data);
                 })
         }
     }
@@ -420,7 +431,7 @@ const MeetingProfile = (props: any) => {
                 FeedBack: JSON.stringify(resultData?.FeedBack)
             });
 
-            setUpdateComment((prev)=>true);
+            // setUpdateComment((prev)=>true);
 
     }
 
@@ -715,10 +726,59 @@ const MeetingProfile = (props: any) => {
           }
         })
       }
+
+      //=============== tag task disscon with meeting----------
+      const tagAndCreateCallBack = React.useCallback(async (tagTask:any) => {
+        console.log(tagTask)
+        if(tagTask!=undefined){
+          let meetingTagTask:any=[]
+        
+          if(resultDatabackup?.Sitestagging?.length>0){
+            resultDatabackup?.Sitestagging?.map((data:any)=>{
+              meetingTagTask.push(data)
+            })
+            
+          }
+            meetingTagTask.push(tagTask[0]);
+          
+          // tagTask.map((task:any)=>{
+          //   var data={
+          //    Id:task?.Id,
+          //    Title:task?.Title,
+          //    siteType:task?.siteType,
+          //    PriorityRank:task?.PriorityRank,
+          //    Component:task?.Component
+          //   }
+          //   meetingTagTask.push(data);
+  
+          // })
+          let web = new Web(props?.props?.siteUrl);
+          const i = await web.lists
+              .getById(AllListId?.MasterTaskListID)
+       
+              .items
+              .getById(resultDatabackup.Id)
+              .update({
+                Sitestagging: JSON.stringify(meetingTagTask.length>0?meetingTagTask:null)
+              });
+  
+              GetResult();
+        }
+       
+   
+      }, []);
+      const closeMeetingPopupFunction = () => {
+
+        GetResult();
+    
+        setshowMeetingPopup(false);
+    
+      }
     return (
         <>
           <mycontextValue.Provider value={{ ...mycontextValue, AllListId: AllListId, Context: props?.props?.Context,  currentUser: currentUser, taskUsers: taskUsers }}>
             <div>
+              {console.log("resultData",resultData)}
                 <section className='row p-0'>
                     <h2 className="heading d-flex ps-0 justify-content-between align-items-center">
                         <span>
@@ -736,8 +796,16 @@ const MeetingProfile = (props: any) => {
                             > <span className='svg__iconbox svg__icon--edit'></span></a>
 
                         </span>
+                     {resultData.Id!=null&& <span>< TagTaskToProjectPopup   projectItem={resultData}
+                                  className="ms-2"
+                                  meetingPages={true}
+                                  projectId={resultData.ID}
+                                  AllListId={AllListId}
+                                  callBack={tagAndCreateCallBack}
+                                  projectTitle={resultData.Title}/> </span>}
                     </h2>
                 </section>
+            
             </div>
 
             <div className='row'>
@@ -869,8 +937,8 @@ const MeetingProfile = (props: any) => {
                             }
                             {/*feedback comment section code */}
                             <div className={resultData?.BasicImageInfo != null && resultData?.BasicImageInfo?.length > 0 ? "col-sm-8 pe-0 mt-2" : "col-sm-12 pe-0 mt-2"}>
-                                {resultData["SharewebTaskType"] != null && (resultData["SharewebTaskType"] == '' ||
-                                    resultData["SharewebTaskType"] == 'Task' || resultData["SharewebTaskType"] == "Workstream" || resultData["SharewebTaskType"] == "Activities") && resultData["FeedBack"] != undefined && resultData["FeedBack"].length > 0 && resultData["FeedBack"][0].FeedBackDescriptions != undefined &&
+                                {resultData["TaskType"] != null && (resultData["TaskType"] == '' ||
+                                    resultData["TaskType"] == 'Task' || resultData["TaskType"] == "Workstream" || resultData["TaskType"] == "Activities") && resultData["FeedBack"] != undefined && resultData["FeedBack"].length > 0 && resultData["FeedBack"][0].FeedBackDescriptions != undefined &&
                                     resultData["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
                                     resultData["FeedBack"][0]?.FeedBackDescriptions[0]?.Title != '' &&
                                     <div className={"Addcomment " + "manage_gap"}>
@@ -1193,23 +1261,7 @@ const MeetingProfile = (props: any) => {
                             </div>
                         </div>
                     </div>
-                    <section>
-          
-          <div className='row'>
-            {/* {this.state.Result?.Portfolio_x0020_Type!=undefined &&<TaskWebparts props={this.state.Result}/>} */}
-            {resultData != undefined &&
-              <div className="ItemInfo mb-20" style={{ paddingTop: '15px' }}>
-
-                <div>Created <span >{(moment(resultData['Creation']).format('DD MMM YYYY HH:mm '))}</span> by <span className="siteColor">{resultData['Author'] != null &&resultData['Author'].length > 0 && resultData['Author'][0].Title}</span>
-                </div>
-                <div>Last modified <span >{(moment(resultData['Modified']).format('DD MMM YYYY HH:mm '))}</span> by <span className="siteColor">{resultData['ModifiedBy'] != null && resultData['ModifiedBy'].Title}</span>
-                  {/* <div>Last modified <span >{this.ConvertLocalTOServerDate(this.state.Result['Modified'], 'DD MMM YYYY hh:mm')}</span> by <span className="siteColor">{this.state.Result['ModifiedBy'] != null && this.state.Result['ModifiedBy'].Title}</span> */}
-                  {/* <span>{this.state.itemID ? <VersionHistoryPopup taskId={this.state.itemID} listId={this.state.Result.listId} siteUrls={this.state.Result.siteUrl} isOpen={this.state.isopenversionHistory} /> : ''}</span> */}
-                </div>
-              </div>
-            }
-          </div>
-        </section>
+                   
                 </section>
                 <section className='col-3' >
                     <div>
@@ -1243,6 +1295,30 @@ const MeetingProfile = (props: any) => {
 
                     </div>
                 </section>
+            </div>
+            <div>
+             
+            <section>
+                    <section className='col-sm-12'>
+                    {resultData?.Sitestagging?.length>0&&<MettingTable data={resultData.Sitestagging}/>}
+                    </section>
+                     
+          
+          <div className='row'>
+            {/* {this.state.Result?.Portfolio_x0020_Type!=undefined &&<TaskWebparts props={this.state.Result}/>} */}
+            {resultData != undefined &&
+              <div className="ItemInfo mb-20" style={{ paddingTop: '15px' }}>
+
+                <div>Created <span >{(moment(resultData['Creation']).format('DD MMM YYYY HH:mm '))}</span> by <span className="siteColor">{resultData['Author'] != null &&resultData['Author'].length > 0 && resultData['Author'][0].Title}</span>
+                </div>
+                <div>Last modified <span >{(moment(resultData['Modified']).format('DD MMM YYYY HH:mm '))}</span> by <span className="siteColor">{resultData['ModifiedBy'] != null && resultData['ModifiedBy'].Title}</span>
+                  {/* <div>Last modified <span >{this.ConvertLocalTOServerDate(this.state.Result['Modified'], 'DD MMM YYYY hh:mm')}</span> by <span className="siteColor">{this.state.Result['ModifiedBy'] != null && this.state.Result['ModifiedBy'].Title}</span> */}
+                  {/* <span>{this.state.itemID ? <VersionHistoryPopup taskId={this.state.itemID} listId={this.state.Result.listId} siteUrls={this.state.Result.siteUrl} isOpen={this.state.isopenversionHistory} /> : ''}</span> */}
+                </div>
+              </div>
+            }
+          </div>
+             </section> 
             </div>
             {editpopupData.isCalloutVisible ? (
 
@@ -1290,7 +1366,7 @@ const MeetingProfile = (props: any) => {
 }
 {
 
-   showMeetingPopup ? <MeetingPopupComponent Items={resultData} isShow={showMeetingPopup} closePopup={() => setshowMeetingPopup(false)} /> : null
+   showMeetingPopup ? <MeetingPopupComponent Items={resultData} isShow={showMeetingPopup} closePopup={closeMeetingPopupFunction} /> : null
 
 
 

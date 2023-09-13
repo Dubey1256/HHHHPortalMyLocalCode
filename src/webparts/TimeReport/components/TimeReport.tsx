@@ -36,6 +36,7 @@ var checkDate: any = ''
 //var QATime: any = 0
 var FeedBackItemArray: any = [];
 var todayLeaveUsers:any=[]
+var  finalData:any=[]
 //var DesignTime: any = 0
 var TotalTime: any = 0
 var CurrentUserId=''
@@ -126,12 +127,8 @@ const TimeReport = (props:any) => {
         const requests = smartmetaDetails.map((listID: any) => web.lists
             .getById(listID?.listId)
             .items
-            .select("ParentTask/Title", "ParentTask/Id", "Services/Title", "ClientTime", "Services/Id", "Events/Id", "Events/Title", "ItemRank", "Portfolio_x0020_Type", "SiteCompositionSettings", "SharewebTaskLevel1No", "SharewebTaskLevel2No",
-                "TimeSpent", "BasicImageInfo", "OffshoreComments", "OffshoreImageUrl", "CompletedDate", "Shareweb_x0020_ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title",
-                "SharewebCategories/Id", "SharewebCategories/Title", "ParentTask/Shareweb_x0020_ID",
-                "SharewebTaskType/Id", "SharewebTaskType/Title", "SharewebTaskType/Level", "Priority_x0020_Rank", "Team_x0020_Members/Title", "Team_x0020_Members/Name", "Component/Id", "Component/Title", "Component/ItemType", "Team_x0020_Members/Id", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "ClientCategory/Id", "ClientCategory/Title", "FileLeafRef", "FeedBack", "Title", "Id", "ID", "PercentComplete", "StartDate", "DueDate", "Comments", "Categories", "Status", "Body", "Mileage", "PercentComplete", "ClientCategory", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title")
-            .expand("ParentTask", "Events", "Services", "SharewebTaskType", "AssignedTo", "Component", "ClientCategory", "Author", "Editor", "Team_x0020_Members", "Responsible_x0020_Team", "SharewebCategories")
-            .getAll()
+            .select("ID", "Title", "DueDate", "Portfolio_x0020_Type", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Comments")
+            .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "TaskType", "Component", "Services", "Editor").getAll()
         );
 
         try {
@@ -296,6 +293,7 @@ const TimeReport = (props:any) => {
     }
     const GetleaveUser=async(selectDate:any)=>{
         var myData:any=[]
+        var leaveData:any=[]
         var leaveUser:any=[]
         todayLeaveUsers=[]
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
@@ -328,17 +326,17 @@ const TimeReport = (props:any) => {
 
                      if (TodayDate >= start && TodayDate <= End){
                         console.log(val)
-                        leaveUser.push(val)
+                        leaveData.push(val)
     
                     }
                 
                
             })
-            console.log(leaveUser)
-            leaveUser?.forEach((val:any)=>{
+            console.log(leaveData)
+            leaveData?.forEach((val:any)=>{
                 var users:any={}
                 AllUsers?.forEach((item:any)=>{
-                    if(val?.Employee?.Id == item?.AssingedToUserId){
+                    if(item?.AssingedToUserId != null && val?.Employee?.Id == item?.AssingedToUserId){
                         users['userName'] = item.Title
                         users['Components'] = ''
                         users['SubComponents'] = ''
@@ -355,9 +353,12 @@ const TimeReport = (props:any) => {
                     }
                 })
             })
-            console.log(todayLeaveUsers)
-            if(todayLeaveUsers != undefined && todayLeaveUsers.length>0){
-                 leaveUsers = todayLeaveUsers.length * 8
+              finalData = todayLeaveUsers.filter((val: any, TaskId: any, array: any) => {
+                 return array.indexOf(val) == TaskId;
+          })
+            console.log(finalData)
+            if(finalData != undefined && finalData.length>0){
+                 leaveUsers = finalData.length * 8
             }
            
     }
@@ -543,7 +544,7 @@ const TimeReport = (props:any) => {
                         item.PercentComplete = task.PercentComplete
                         item.Status = task.Status
                         item.Title = task.Title
-                        item.Priority_x0020_Rank = task.Priority_x0020_Rank
+                        item.PriorityRank = task.PriorityRank
                         task?.ClientCategory?.forEach((cat:any)=>{
                             item.ClientCategory = cat.Title;
                         })
@@ -554,7 +555,7 @@ const TimeReport = (props:any) => {
                         item.PercentComplete = task.PercentComplete
                         item.Status = task.Status
                         item.Title = task.Title
-                        item.Priority_x0020_Rank = task.Priority_x0020_Rank
+                        item.PriorityRank = task.PriorityRank
                         task?.ClientCategory?.forEach((cat:any)=>{
                             item.ClientCategory = cat.Title;
                         })
@@ -566,7 +567,7 @@ const TimeReport = (props:any) => {
                         item.PercentComplete = task.PercentComplete
                         item.Status = task.Status
                         item.Title = task.Title
-                        item.Priority_x0020_Rank = task.Priority_x0020_Rank
+                        item.PriorityRank = task.PriorityRank
                         task?.ClientCategory?.forEach((cat:any)=>{
                             item.ClientCategory = cat.Title;
                         })
@@ -578,7 +579,7 @@ const TimeReport = (props:any) => {
                         item.PercentComplete = task.PercentComplete
                         item.Status = task.Status
                         item.Title = task.Title
-                        item.Priority_x0020_Rank = task.Priority_x0020_Rank
+                        item.PriorityRank = task.PriorityRank
                         task?.ClientCategory?.forEach((cat:any)=>{
                             item.ClientCategory = cat.Title;
                         })
@@ -608,9 +609,9 @@ const TimeReport = (props:any) => {
                 }
 
             })
-            TotleTaskTime = QATime + DevloperTime + DesignTime
+            TotleTaskTime = QATime + DevloperTime + DesignTime + leaveUsers
         }
-        todayLeaveUsers?.forEach((items:any)=>{
+        finalData?.forEach((items:any)=>{
             SelectedTime.push(items)
         })
         setData(SelectedTime)
@@ -922,7 +923,7 @@ const TimeReport = (props:any) => {
         var To:any=[]
         var MyDate:any=''
         var ApprovalId:any = []
-        var TotlaTime = QATime + DevloperTime + DesignTime
+        var TotlaTime = QATime + DevloperTime + DesignTime + leaveUsers
 
         AllUsers?.forEach((items:any)=>{
             if(CurrentUserId == items.AssingedToUserId){
@@ -955,8 +956,8 @@ const TimeReport = (props:any) => {
             if (item.Features == undefined || item.Features == '') {
                 item.Features = '';
             }
-            if (item.Priority_x0020_Rank == undefined || item.Priority_x0020_Rank == '') {
-                item.Priority_x0020_Rank = '';
+            if (item.PriorityRank == undefined || item.PriorityRank == '') {
+                item.PriorityRank = '';
             }
             if (item.ClientCategory == undefined || item.ClientCategory == '') {
                 item.ClientCategory = '';
@@ -976,7 +977,7 @@ const TimeReport = (props:any) => {
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Features + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<a href=' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId='+ item.TaskId +'&Site=' + item.siteType +'>' + '<span style="font-size:11px; font-weight:600">' + item.Task + '</span>' + '</a >' + '</td>'
             + '<td align="left" style="border: 1px solid #aeabab;padding: 4px">' + item?.Comments + '</td>'
-            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Priority_x0020_Rank + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.PriorityRank + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Effort + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.PercentComplete + '%' + '</td>'
             + '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item?.Status + '</td>'
@@ -1136,6 +1137,7 @@ var ReportDate = new Date(a1)
     
     return (
         <>
+        <section className='ContentSection'>
             <div className='row'>
                 <div className='col-sm-3 text-primary'>
                     <h3 className="heading">Time Report
@@ -1150,7 +1152,7 @@ var ReportDate = new Date(a1)
                 </div>
             </div>
             <div className='row'>
-                <div className='col-7 mt-4 showDate'>
+                <div className='col-7 showDate'>
 
                     <input type='date' value={Moment(selectdate!= undefined?selectdate:defaultDate).format("YYYY-MM-DD")} max="9999-12-31 mx-3" onChange={(e) => setSelectDate(e.target.value)} />
                     <label className='mx-2 SpfxCheckRadio'>
@@ -1202,7 +1204,8 @@ var ReportDate = new Date(a1)
                     </table>
                 </div>
             </div>
-
+         </section>
+             <section className='TableContentSection'>
             <div className='Alltable'>
             
              {
@@ -1235,6 +1238,7 @@ var ReportDate = new Date(a1)
                   loadedClassName="loadedContent"
                 />
             </div>
+            </section>
             <Panel
                 onRenderHeader={onRenderCustomHeaderMain}
                 type={PanelType.custom}

@@ -27,7 +27,7 @@ export default function InfoIconsToolTip({ Discription, row }: any) {
         setAction(newAction);
         setControlledVisible(true);
     };
-    
+
 
     const handleMouseLeave = () => {
         if (action === "click") return;
@@ -52,20 +52,13 @@ export default function InfoIconsToolTip({ Discription, row }: any) {
     }, []);
     return (
         <>
-            <span
-                ref={setTriggerRef}
-                onClick={() => handlAction("click")}
-                onMouseEnter={() => handlAction("hover")}
-                onMouseLeave={() => handleMouseLeave()}
-            >
-                <span title="Edit" className="svg__iconbox svg__icon--info dark"></span>
-            </span>
-
+            <span ref={setTriggerRef} onClick={() => handlAction("click")} onMouseEnter={() => handlAction("hover")} onMouseLeave={() => handleMouseLeave()} title="Edit" className="svg__iconbox svg__icon--info dark"></span>
+            
             {action === "click" && visible && (
                 <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container p-0 m-0" })}>
 
                     <div>
-                        <div className="tootltip-title">{row?.Shareweb_x0020_ID  !=undefined ? row?.Shareweb_x0020_ID : ""} :- {row?.Title}</div>
+                        <div className="tootltip-title">{row?.TaskID != undefined ? row?.TaskID : ""} :- {row?.Title}</div>
                         <button className="toolTipCross" onClick={handleCloseClick}><div className="popHoverCross">×</div></button>
                     </div>
                     <div className="toolsbox"><span dangerouslySetInnerHTML={{ __html: tooltiphierarchy, }}></span></div>

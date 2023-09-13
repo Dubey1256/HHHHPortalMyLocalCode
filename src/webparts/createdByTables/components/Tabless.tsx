@@ -27,6 +27,7 @@ import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup
 import { RiFileExcel2Fill } from 'react-icons/ri';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.min.js";
+import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 
 const Tabless = (props: any) => {
     let count: any = 0;
@@ -82,121 +83,161 @@ const Tabless = (props: any) => {
     const columns = React.useMemo(
         () => [
             {
-                internalHeader: 'Task ID',
-                accessor: 'idType',
-                showSortIcon: true,
-                style: { width: '100px' },
-                Cell: ({ row }: any) => (
-                    <div>
-                        <span><img style={{ width: "25px", height: '25px', borderRadius: '20px' }} src={row?.original?.siteIcon} /></span>
-                        <span className={row.original.Services.length >= 1 && 'text-success'}>{row?.original?.idType}</span>
-                    </div>
-                )
+              accessorFn: (row:any) => row?.idType,
+              cell: ({ row, getValue }:any) => (
+                <div>
+                <span><img style={{ width: "25px", height: '25px', borderRadius: '20px' }} src={row?.original?.siteIcon} /></span>
+                <span className={row.original.Services.length >= 1 && 'text-success'}>{row?.original?.idType}</span>
+            </div>
+              ),
+              id: "idType",
+              placeholder: "Task ID",
+              header: "",
+              resetColumnFilters: false,
+              size: 70,
+             },
+            {
+
+              accessorFn: (row:any) => row?.Title,
+              cell: ({ row, getValue }:any) => (
+                <div>
+                {/* <a className={row.original.Services.length >= 1 && 'text-success'} style={{textDecoration:'none',cursor:'pointer'}} target="_blank" href={`${props.Items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.site}`}>{row?.original?.Title}</a> */}
+                <a
+                className={row.original.Services.length >= 1 && 'text-success'} style={{textDecoration:'none',cursor:'pointer'}}
+href={`${props.Items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.site}`}
+rel='noopener noreferrer'
+onClick={(e:any) => {
+  e.preventDefault();
+  openInNewTab(e.target.href);
+}}
+>
+{row?.original?.Title}
+</a>
+            </div>
+              ),
+              id: "Title",
+              placeholder: "Task Title",
+              header: "",
+              resetColumnFilters: false,
+              size: 140,
+
             },
             {
-                internalHeader: 'Task Title',
-                accessor: 'Title',
-                showSortIcon: true,
-                Cell: ({ row }: any) => (
-                    <div>
-                        <a className={row.original.Services.length >= 1 && 'text-success'} style={{textDecoration:'none',cursor:'pointer'}} target="_blank" href={`${props.Items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.site}`}>{row?.original?.Title}</a>
-                    </div>
-                )
+
+              accessorFn: (row:any) => row?.Categories,
+              cell: ({ row, getValue }:any) => (
+                <div>
+                <span className={row.original.Services.length >= 1 && 'text-success'}>{row?.original?.Categories}</span>
+            </div>
+              ),
+              id: "Categories",
+              placeholder: "Categories",
+              header: "",
+              resetColumnFilters: false,
+              size: 80,
             },
             {
-                internalHeader: 'Categories',
-                accessor: 'Categories',
-                style: { width: '180px' },
-                showSortIcon: true,
-                Cell: ({ row }: any) => (
-                    <div>
-                        <span className={row.original.Services.length >= 1 && 'text-success'}>{row?.original?.Categories}</span>
-                    </div>
-                )
+
+         
+              accessorFn: (row:any) => row?.percentage,
+              cell: ({ row, getValue }:any) => (
+                <div>
+                <span className={row.original.Services.length >= 1 && 'text-success'}>{row?.original?.percentage}</span>
+            </div>
+              ),
+              id: "percentage",
+              placeholder: "%",
+              header: "",
+              resetColumnFilters: false,
+              size: 50,
             },
             {
-                internalHeader: '%',
-                showSortIcon: true,
-                accessor: 'percentage',
-                style: { width: '100px' },
-                Cell: ({ row }: any) => (
-                    <div>
-                        <span className={row.original.Services.length >= 1 && 'text-success'}>{row?.original?.percentage}</span>
-                    </div>
-                )
-            },
-            {
-                internalHeader: 'Priority',
-                showSortIcon: true,
-                accessor: 'priority',
-                style: { width: '100px' },
-                Cell: ({ row }: any) => (
-                    <div>
+              accessorFn: (row:any) => row?.Priority,
+              cell: ({ row, getValue }:any) => (
+                <div>
                         <span className={row.original.Services.length >= 1 && 'text-success'}>{row?.original?.priority}</span>
                     </div>
-                )
+              ),
+              id: "Priority",
+              placeholder: "Priority",
+              header: "",
+              resetColumnFilters: false,
+              size: 50,
             },
             {
-                internalHeader: 'Due Date', 
-                accessor: 'dueDate',
-                showSortIcon: true,
-                style: { width: '110px' },
-                Cell: ({ row }: any) => (
-                    <div>
-                        <div className={row.original.Services.length >= 1 && 'text-success'}>{row?.original?.newDueDate}</div>
-                    </div>
-                )
+
+              accessorFn: (row:any) => row?.dueDate,
+              cell: ({ row, getValue }:any) => (
+                <div>
+                <div className={row.original.Services.length >= 1 && 'text-success'}>{row?.original?.newDueDate}</div>
+            </div>
+              ),
+              id: "dueDate",
+              placeholder: "Due Date",
+              header: "",
+              resetColumnFilters: false,
+              size: 75,
+
             },
 
             {
-                internalHeader: 'Modified',
-                accessor: 'modified',
-                showSortIcon: true,
-                style: { width: '110px' },
-                Cell: ({ row }: any) => (
-                    <div>
-                        <a style={{textDecoration:'none',cursor:'pointer'}} className={row.original.Services.length >= 1 && 'text-success'} target='_blank' href={`${props.Items.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}>
-                        {row?.original?.newModified}
-                        <span><img style={{ width: "25px", height: '25px', borderRadius: '20px' }} src={row?.original?.editorImg} /></span>
-                        </a>
-                    </div>
-                )
+
+              accessorFn: (row:any) => row?.modified,
+              cell: ({ row, getValue }:any) => (
+                <div>
+                <a style={{textDecoration:'none',cursor:'pointer'}} className={row.original.Services.length >= 1 && 'text-success'} target='_blank' href={`${props.Items.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}>
+                {row?.original?.newModified}
+                <span><img style={{ width: "25px", height: '25px', borderRadius: '20px' }} src={row?.original?.editorImg} /></span>
+                </a>
+            </div>
+              ),
+              id: "modified",
+              placeholder: "Modified",
+              header: "",
+              resetColumnFilters: false,
+              size: 110,
             },
             {
-                internalHeader: 'Created',
-                accessor: 'created',
-                showSortIcon: true,
-                style: { width: '110px' },
-                Cell: ({ row }: any) => (
-                    <div>
-                        <a style={{textDecoration:'none',cursor:'pointer'}} className={row.original.Services.length >= 1 && 'text-success'} target='_blank' href={`${props.Items.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}>
-                        {row?.original?.newCreated}
-                        <span><img style={{ width: "25px", height: '25px', borderRadius: '20px' }} src={row?.original?.authorImg} /></span>
-                        </a>
-                    </div>
-                )
+
+              accessorFn: (row:any) => row?.created,
+              cell: ({ row, getValue }:any) => (
+                <div>
+                <a style={{textDecoration:'none',cursor:'pointer'}} className={row.original.Services.length >= 1 && 'text-success'} target='_blank' href={`${props.Items.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}>
+                {row?.original?.newCreated}
+                <span><img style={{ width: "25px", height: '25px', borderRadius: '20px' }} src={row?.original?.authorImg} /></span>
+                </a>
+            </div>
+              ),
+              id: "created",
+              placeholder: "Created",
+              header: "",
+              resetColumnFilters: false,
+              size: 110,
             },
             {
-                internalHeader: 'Team Members',
-                accessor: 'TeamMembersSearch',
-                showSortIcon: true,
-                style: { width: '110px' },
-                Cell: ({ row }: any) => (
-                    <span>
+              accessorFn: (row:any) => row?.TeamMembersSearch,
+              cell: ({ row, getValue }:any) => (
+                <span>
                         <ShowTaskTeamMembers props={row?.original} TaskUsers={taskUser} />
                       </span>
-                )
+              ),
+              id: "TeamMembersSearch",
+              placeholder: "Team Members",
+              header: "",
+              resetColumnFilters: false,
+              size: 75,
             },
             {
-                internalHeader: '',
-                id: 'ID',
-                style: { width: '60px' },
-                Cell: ({ row }: any) => (
-                    <span>
-                        <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink ms-1" onClick={()=>editPopFunc(row.original)} ></span>
-                        <span title="Delete Task" className="svg__iconbox svg__icon--trash hreflink"  onClick={()=>deleteItemFunction(row.original)} ></span>
-                    </span>
-                )
+              accessorFn: (row:any) => row?.TeamMembersSearch,
+              cell: ({ row, getValue }:any) => (
+                <span>
+                <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink ms-1" onClick={()=>editPopFunc(row.original)} ></span>
+                <span title="Delete Task" className="svg__iconbox svg__icon--trash hreflink"  onClick={()=>deleteItemFunction(row.original)} ></span>
+            </span>
+              ),
+              id: "ID",
+              resetColumnFilters: false,
+              size: 60,
             },
         ],
         [data]
@@ -1016,14 +1057,36 @@ const excelSelectFunc=(e:any)=>{
         getTaskUserData();
        }, []);
    
+       const openInNewTab = (url:any) => {
+        const newWindow = window.open();
+        newWindow.opener = null;
+        newWindow.location.href = url;
+      };
+    
+      const callBackData = React.useCallback((elem: any, ShowingData: any) => {
 
+
+      }, []);
     return (
       
         <div className='createdBy'>
            
              <div className='row'>
               <div className='col'><h3 className="siteColor">Created By - {queryId}</h3></div>
-              <div className='col d-flex justify-content-end align-items-end'><a target='_blank'  href={`${props.Items.siteUrl}/SitePages/Tasks%20View.aspx?CreatedBy=${queryId}`} className="siteColor list-unstyled fw-bold">Old Task View</a></div>
+              <div className='col d-flex justify-content-end align-items-end'>
+                {/* <a target='_blank'  href={`${props.Items.siteUrl}/SitePages/Tasks%20View.aspx?CreatedBy=${queryId}`} className="siteColor list-unstyled fw-bold">Old Task View</a> */}
+                <a
+        href={`${props.Items.siteUrl}/SitePages/Tasks%20View.aspx?CreatedBy=${queryId}`}
+        rel='noopener noreferrer'
+        onClick={(e:any) => {
+          e.preventDefault();
+          openInNewTab(e.target.href);
+        }}
+        className="siteColor list-unstyled fw-bold"
+      >
+        Old Task View
+      </a>
+                </div>
              </div>
            
             <div  className='Alltable mt-2 ' id={tablecontiner}>
@@ -1075,7 +1138,7 @@ const excelSelectFunc=(e:any)=>{
         </div>
             
           
-       
+{/*        
             <Table className="SortingTable filtertable" bordered hover {...getTableProps()}>
                 <thead className="fixed-Header">
                     {headerGroups?.map((headerGroup: any) => (
@@ -1226,7 +1289,8 @@ const excelSelectFunc=(e:any)=>{
 
                     })}
                 </tbody>
-            </Table>
+            </Table> */}
+             <GlobalCommanTable  columns={columns} data={data} callBackData={callBackData}/>
             <nav>
                     <Pagination>
                         <PaginationItem>

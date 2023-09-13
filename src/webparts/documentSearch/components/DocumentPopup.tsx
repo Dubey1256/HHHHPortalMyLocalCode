@@ -53,7 +53,7 @@ const DocumentPopup = (props: any) => {
     const loadComponentsData = (Type: any) => {
         var AllComponentItem: any[] = []
         let web = new Web(PageContext.context._pageContext._web.absoluteUrl + '/')
-        web.lists.getById(PageContext.MasterTaskListId).items.select('ComponentCategory/Id,Portfolio_x0020_Type,ComponentCategory/Title,Id,ValueAdded,Idea,Sitestagging,TechnicalExplanations,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,Background,Help_x0020_Information,Item_x0020_Type,Title,Parent/Id,Parent/Title').expand('Parent,ComponentCategory').filter(`Portfolio_x0020_Type eq '${Type}'`).getAll()
+        web.lists.getById(PageContext.MasterTaskListId).items.select('ComponentCategory/Id,Portfolio_x0020_Type,ComponentCategory/Title,Id,ValueAdded,Idea,Sitestagging,TechnicalExplanations,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,Background,Help_x0020_Information,Item_x0020_Type,Title,Parent/Id,Parent/Title').expand('Parent,ComponentCategory').filter(`Portfolio_x0020_Type eq '${Type}'`).getAll()
             .then((response: any) => {
                 isLoadComponent = true;
                 try {

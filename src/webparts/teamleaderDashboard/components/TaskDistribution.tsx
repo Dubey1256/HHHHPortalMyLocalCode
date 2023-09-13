@@ -89,7 +89,7 @@ const TaskDistribution = (props: any) => {
             size: 35
           },
           {
-            accessorKey: "Shareweb_x0020_ID",
+            accessorKey: "TaskID",
             placeholder: "Task Id",
             header: "",
             resetColumnFilters: false,
@@ -98,8 +98,8 @@ const TaskDistribution = (props: any) => {
             cell: ({ row, getValue }) => (
               <>
                 <span className="d-flex">
-                  {row?.original?.Shareweb_x0020_ID}
-                  {/* <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} /> */}
+                  {row?.original?.TaskID}
+                  {/* <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} /> */}
                 </span>
               </>
             ),

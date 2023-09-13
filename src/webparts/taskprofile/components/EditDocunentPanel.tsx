@@ -21,19 +21,24 @@ const EditDocumentpanel=(props:any)=>{
       })
 
       React.useEffect(() => {
-        if (props?.editData?.SharewebTask != undefined && props?.editData?.SharewebTask?.length > 0) {
+        // if (props?.editData?.SharewebTask != undefined && props?.editData?.SharewebTask?.length > 0) {
     
-            if (props?.editData?.SharewebTask[0]?.Portfolio_x0020_Type == "Component") {
-      
-              setallSetValue({ ...allValue, componentservicesetdataTag: props?.editData?.SharewebTask[0] })
+            // if (props?.editData?.SharewebTask[0]?.Portfolio_x0020_Type == "Component") {
+              if (props?.editData?.Portfolio!=undefined) {
+              setallSetValue({ ...allValue, componentservicesetdataTag: props?.editData?.Portfolio })
               setservicespopup(false);
               setcomponentpopup(true);
-            } else {
-              setallSetValue({ ...allValue, componentservicesetdataTag: props?.editData?.SharewebTask[0] })
+            } 
+            // else {
+            //   setallSetValue({ ...allValue, componentservicesetdataTag: props?.editData?.SharewebTask[0] })
       
-              setservicespopup(true);
-              setcomponentpopup(false);
-            }
+            //   setservicespopup(true);
+            //   setcomponentpopup(false);
+            // }
+          // }
+          if(props?.editData!+undefined)
+          {
+            props.editData. docTitle= props?.editData.Title.split(props?.editData.File_x0020_Type)[0]
           }
           setEditdocumentsData(props?.editData); 
     }, [])
@@ -41,6 +46,7 @@ const EditDocumentpanel=(props:any)=>{
     const handleClosedoc = () => {
         setEditdocpanel(false)
         props.callbackeditpopup();
+        
         // handleClose();
       }
       let ItemRank = [
@@ -81,7 +87,12 @@ const EditDocumentpanel=(props:any)=>{
             //   GetResult();
             //   handleClose();
               setEditdocpanel(false);
-              props.callbackeditpopup();
+              if(props.Keydoc){
+                props.callbackeditpopup("delete");
+              }else{
+                props.callbackeditpopup();
+              }
+            
             })
             .catch((err) => {
               console.log(err.message);
@@ -107,12 +118,12 @@ const EditDocumentpanel=(props:any)=>{
         const web = new Web(props?.AllListId?.siteUrl);
         await web.lists.getById(props?.AllListId?.DocumentsListID)
           .items.getById(EditdocumentsData.Id).update({
-            Title: EditdocumentsData.Title,
+            Title: EditdocumentsData.docTitle,
             ItemRank: EditdocumentsData.ItemRank,
             Year: EditdocumentsData.Year,
             ItemType: EditdocumentsData.ItemType,
     
-            SharewebTaskId: { "results": allValue.componentservicesetdataTag != undefined ? [allValue.componentservicesetdataTag.Id] : [] },
+            PortfoliosId: { "results": allValue.componentservicesetdataTag != undefined ? [allValue.componentservicesetdataTag.Id] : [] },
             Item_x0020_Cover: {
               "__metadata": { type: 'SP.FieldUrlValue' },
               'Description': EditdocumentsData?.Item_x0020_Cover?.Url != "" ? EditdocumentsData?.UrItem_x0020_Coverl?.Url : "",
@@ -133,8 +144,14 @@ const EditDocumentpanel=(props:any)=>{
             }
             // handleClose();
             setallSetValue({ ...allValue, EditTaskpopupstatus: false })
+
             setEditdocpanel(false);
-            props.callbackeditpopup();
+            if(props.Keydoc){
+              props.callbackeditpopup(EditdocumentsData);
+            }else{
+              props.callbackeditpopup();
+            }
+           
             // GetResult();
           }).catch((err: any) => {
             console.log(err)
@@ -151,13 +168,14 @@ const EditDocumentpanel=(props:any)=>{
     
     
     const onRenderCustomHeaderDocuments = () => {
+      
         return (
           <>
     
-            <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+            <div className='ps-4 siteColor subheading'>
               {Editdocpanel ? `Edit Document Metadata - ${EditdocumentsData?.FileLeafRef}` : null}
             </div>
-            <Tooltip ComponentId='3300' />
+            <Tooltip ComponentId={'359'} />
           </>
         );
       };
@@ -183,6 +201,14 @@ const EditDocumentpanel=(props:any)=>{
           setisopencomonentservicepopup(false);
         }
       }, [])
+      const opencomonentservicepopup=()=>{
+        if(componentpopup||servicespopup){
+          setisopencomonentservicepopup(true)
+        }else{
+          alert("Please Choose Component/Service")
+        }
+     
+      }
 return(
   <>
     <Panel onRenderHeader={onRenderCustomHeaderDocuments}
@@ -190,7 +216,7 @@ return(
         type={PanelType.custom}
         customWidth="1091px"
         onDismiss={handleClosedoc}
-        isBlocking={!isopencomonentservicepopup}
+        isBlocking={false}
         className={servicespopup == true ? "serviepannelgreena" : "siteColor"}
       >
         
@@ -203,7 +229,7 @@ return(
           onSelect={imageta}
         >
 
-          <Tab eventKey="BASICINFORMATION" title="BASICINFORMATION">
+          <Tab eventKey="BASICINFORMATION" title="BASIC INFORMATION">
 
             <div className='border border-top-0 p-2'>
               {EditdocumentsData?.Url?.Url && <div className='d-flex'>
@@ -214,14 +240,14 @@ return(
 
               <div className='d-flex'>
                 <div className="input-group"><label className=" full-width ">Name </label>
-                  <input type="text" className="form-control" value={EditdocumentsData?.Title} onChange={(e => setEditdocumentsData({ ...EditdocumentsData, Title: e.target.value }))} />.{EditdocumentsData?.File_x0020_Type}
+                  <input type="text" className="form-control" value={EditdocumentsData?.docTitle} onChange={(e => setEditdocumentsData({ ...EditdocumentsData, docTitle: e.target.value }))} />.{EditdocumentsData?.File_x0020_Type}
                 </div>
 
                 <div className="input-group mx-4"><label className="full-width ">Year </label>
                   <input type="text" className="form-control" value={EditdocumentsData?.Year} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, Year: e.target.value })} />
-                  <span className="input-group-text" title="Linked Component Task Popup">
+                  {/* <span className="input-group-text" title="Linked Component Task Popup">
                     <span className="svg__iconbox svg__icon--editBox"></span>
-                  </span>
+                  </span> */}
                 </div>
 
                 <div className="input-group">
@@ -245,8 +271,9 @@ return(
                 </div>
                 <div className="input-group mx-4">
                   <label className="form-label full-width">
-                    <span><input type="radio" name="radio" className="form-check-input" value="Component" checked={componentpopup} onClick={(e) => checkradiobutton(e, "Component")} /> Component</span>
-                    <span className='ps-3'><input type="radio" name="radio" className="form-check-input" value="Service" checked={servicespopup} onClick={(e) => checkradiobutton(e, "Service")} /> Service</span>
+                    portfolio
+                    {/* <span><input type="radio" name="radio" className="form-check-input" value="Component" checked={componentpopup} onClick={(e) => checkradiobutton(e, "Component")} /> Component</span>
+                    <span className='ps-3'><input type="radio" name="radio" className="form-check-input" value="Service" checked={servicespopup} onClick={(e) => checkradiobutton(e, "Service")} /> Service</span> */}
                   </label>
 
                   {allValue?.componentservicesetdataTag != undefined &&
@@ -258,20 +285,20 @@ return(
 
                   {allValue?.componentservicesetdataTag == undefined && <input type="text" className="form-control" readOnly />}
                   <span className="input-group-text" title="Linked Component Task Popup">
-                    <span className="svg__iconbox svg__icon--editBox" onClick={(e) => setisopencomonentservicepopup(true)}></span>
+                    <span className="svg__iconbox svg__icon--editBox" onClick={(e) => opencomonentservicepopup()}></span>
                   </span>
                 </div>
-                <div className="input-group"><label className="full-width ">Document Type </label>
+                {/* <div className="input-group"><label className="full-width ">Document Type </label>
                   <input type="text" className="form-control" value={EditdocumentsData?.ItemType} onChange={(e) => { setEditdocumentsData({ ...EditdocumentsData, ItemType: e.target.value }) }} />
                   <span className="input-group-text" title="Linked Component Task Popup">
                     <span className="svg__iconbox svg__icon--editBox"></span>
                   </span>
-                </div>
+                </div> */}
               </div>
 
             </div>
           </Tab>
-          <Tab eventKey="IMAGEINFORMATION" title="IMAGEINFORMATION" >
+          <Tab eventKey="IMAGEINFORMATION" title="IMAGE INFORMATION" >
             <div className='border border-top-0 p-2'>
 
               {isOpenImageTab &&<ImageTabComponenet EditdocumentsData={EditdocumentsData} AllListId={props.AllListId} Context={props.Context} callBack={imageTabCallBack} />}
@@ -281,14 +308,14 @@ return(
         <footer className='text-end mt-2'>
           <div className='col-sm-12 row m-0'>
             <div className="col-sm-6 text-lg-start">
-              {Editdocpanel && <div><div><span className='pe-2'>Created</span><span className='pe-2'>{EditdocumentsData?.Created !== null ? moment(editvalue?.Created).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Author?.Title}</a></span></div>
-                <div><span className='pe-2'>Last modified</span><span className='pe-2'>{EditdocumentsData?.Modified !== null ? moment(editvalue?.Modified).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Editor?.Title}</a></span></div>
-                <div><span onClick={() => deleteDocumentsData(EditdocumentsData?.Id)} className="svg__iconbox svg__icon--trash"></span>Delete this item</div>
+              {Editdocpanel && <div><div><span className='pe-2'>Created</span><span className='pe-2'>{EditdocumentsData?.Created !== null ? moment(editvalue?.Created).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Author}</a></span></div>
+                <div><span className='pe-2'>Last modified</span><span className='pe-2'>{EditdocumentsData?.Modified !== null ? moment(editvalue?.Modified).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Editor}</a></span></div>
+                <div><span onClick={() => deleteDocumentsData(EditdocumentsData?.Id)} className="svg__iconbox svg__icon--trash hreflink"></span>Delete this item</div>
               </div>}
             </div>
 
             <div className='col-sm-6 mt-2 p-0'>
-              <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/Documents/Forms/EditForm.aspx?ID=${EditdocumentsData?.Id != null ? EditdocumentsData?.Id : null}`}>Open out-of-the-box form |</a></span>
+              <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/Documents/Forms/EditForm.aspx?ID=${EditdocumentsData?.Id != null ? EditdocumentsData?.Id : null}`}>Open out-of-the-box form</a></span>
 
               <Button className='btn btn-primary ms-1  mx-2' 
               onClick={updateDocumentsData}

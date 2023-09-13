@@ -40,6 +40,7 @@ import HighlightableCell from '../../../globalComponents/GroupByReactTableCompon
 
 import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
 import ReactPopperTooltip from '../../../globalComponents/Hierarchy-Popper-tooltip';
+import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
 var AllTasks: any = [];
 let AllTasksRendar: any = [];
 let siteConfig: any = [];
@@ -134,8 +135,8 @@ function TasksTable(props: any) {
   const [smartmetaDetails, setsmartmetaDetails] = React.useState([]);
   const [checkData, setcheckData] = React.useState(null)
 
-  IsUpdated = props.props.Portfolio_x0020_Type;
-
+  // IsUpdated = props.props.Portfolio_x0020_Type;
+  IsUpdated = props.props.PortfolioType;
 
   const GetSmartmetadata = async () => {
     //  var metadatItem: any = []
@@ -159,11 +160,11 @@ function TasksTable(props: any) {
     });
 
     // var filter: any = '';
-    if (props.props.SharewebTaskType != undefined && props.props.SharewebTaskType != undefined && props.props.SharewebTaskType === 'Activities') {
+    if (props.props.TaskType != undefined && props.props.TaskType != undefined && props.props.TaskType === 'Activities') {
       filter += '(ParentTask/Id eq ' + props.props.Id + ' ) or '
       loadWSTasks(props.props);
     }
-    else if (props.props.SharewebTaskType != undefined && props.props.SharewebTaskType != undefined && props.props.SharewebTaskType === 'Workstream') {
+    else if (props.props.TaskType != undefined && props.props.TaskType != undefined && props.props.TaskType === 'Workstream') {
       filter += '(ParentTask/Id eq ' + props.props.Id + ' )'
       loadActivityTasks(props.props);
 
@@ -173,15 +174,15 @@ function TasksTable(props: any) {
 
   const loadActivityTasks = async (task: any) => {
     let activity: any = [];
-    var select = "SharewebTaskLevel2No,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,SharewebTaskLevel1No,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,Shareweb_x0020_ID, Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level, Priority_x0020_Rank, Team_x0020_Members/Title, Team_x0020_Members/Name, Component/Id,Component/Title,Component/ItemType, Team_x0020_Members/Id, Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$filter=Id eq " + task.ParentTask.Id + ""
+    var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,TaskLevel,ItemRank,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,PortfolioType,ResponsibleTeam,TaskCategories&$filter=Id eq " + task.ParentTask.Id + ""
     activity = await globalCommon.getData(props?.AllListId?.siteUrl, task.listId, select)
     if (activity.length > 0)
       GetComponents(activity[0])
     LoadAllSiteTasks(filter);
   }
   const loadWSTasks = async (task: any) => {
-
-    var select = "SharewebTaskLevel2No,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,SharewebTaskLevel1No,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,Shareweb_x0020_ID, Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level, Priority_x0020_Rank, Team_x0020_Members/Title, Team_x0020_Members/Name, Component/Id,Component/Title,Component/ItemType, Team_x0020_Members/Id, Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$filter=ParentTask/Id eq " + task.Id + ""
+    var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,TaskLevel,ItemRank,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,PortfolioType,ResponsibleTeam,TaskCategories&$filter=ParentTask/Id eq " + task.Id + ""
+    // var select = "TaskLevel,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,TaskLevel,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Component/Id,Component/Title,Component/ItemType, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,TaskType,AssignedTo,Component,ClientCategory,Author,Editor,TeamMembers,ResponsibleTeam,TaskCategories&$filter=ParentTask/Id eq " + task.Id + ""
     AllWSTasks = await globalCommon.getData(props?.AllListId?.siteUrl, task.listId, select)
     if (AllWSTasks.length === 0)
       filter += '(ParentTask/Id eq ' + props.props.Id + ' )'
@@ -230,7 +231,8 @@ function TasksTable(props: any) {
     //     if (config.Title != 'Master Tasks' && config.Title != 'SDC Sites') {
     try {
       let AllTasksMatches = [];
-      var select = "SharewebTaskLevel2No,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,SharewebTaskLevel1No,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,Shareweb_x0020_ID, Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level, Priority_x0020_Rank, Team_x0020_Members/Title, Team_x0020_Members/Name, Component/Id,Component/Title,Component/ItemType, Team_x0020_Members/Id, Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$filter=" + filter + ""
+      var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,TaskLevel,ItemRank,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,PortfolioType,ResponsibleTeam,TaskCategories&$filter=" + filter + ""
+      // var select = "TaskLevel,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,TaskLevel,Services/Id, Project/Id,Project/PortfolioStructureID, Project/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Component/Id,Component/Title,Component/ItemType, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask, Project,Services,TaskType,AssignedTo,Component,ClientCategory,Author,Editor,TeamMembers,ResponsibleTeam,TaskCategories&$filter=" + filter + ""
       AllTasksMatches = await globalCommon.getData(props?.AllListId?.siteUrl, props.props.listId, select)
       console.log(AllTasksMatches);
       Counter++;
@@ -246,9 +248,9 @@ function TasksTable(props: any) {
           item.subRows = []
           item.listId = props.props.listId;
           item.siteUrl = props?.AllListId?.siteUrl;
-          if (item.SharewebCategories != undefined) {
-            if (item.SharewebCategories.length > 0) {
-              $.each(item.SharewebCategories, function (ind: any, value: any) {
+          if (item.TaskCategories != undefined) {
+            if (item.TaskCategories.length > 0) {
+              $.each(item.TaskCategories, function (ind: any, value: any) {
                 if (value.Title.toLowerCase() == 'draft') {
                   item.isDrafted = true;
                 }
@@ -275,9 +277,41 @@ function TasksTable(props: any) {
           }
           result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
 
-          if (result.Short_x0020_Description_x0020_On != undefined) {
-            result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
+          if (result.FeedBack != undefined) {
+
+           
+
+            let feedbackdata:any= JSON.parse(result?.FeedBack)
+
+             
+
+           
+
+            let FeedbackdatatinfoIcon:any=feedbackdata[0]?.FeedBackDescriptions?.map((child:any) =>
+
+            child?.Title + ' ' +
+
+            child?.Subtext?.map((subChild:any) => subChild?.Title).join(' ')
+
+            ).join(' ')
+
+ 
+
+            result.Short_x0020_Description_x0020_On =FeedbackdatatinfoIcon.replace("undefined", "").replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '')
+
+         
+
           }
+          if (result.Project) {
+            result.ProjectTitle = result?.Project?.Title;
+            result.ProjectId = result?.Project?.Id;
+            result.projectStructerId = result?.Project?.PortfolioStructureID
+            const title = result?.Project?.Title || '';
+            const dueDate = result?.DueDate;
+            result.joinedData = [];
+            if (title) result.joinedData.push(`Title: ${title}`);
+            if (dueDate) result.joinedData.push(`Due Date: ${dueDate}`);
+        }
 
           result['SiteIcon'] = GetIconImageUrl(result.siteType, props?.AllListId?.siteUrl, undefined);
           // if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
@@ -287,18 +321,18 @@ function TasksTable(props: any) {
           // }
           if (result.Id === 498 || result.Id === 104)
             console.log(result);
-          result['Shareweb_x0020_ID'] = globalCommon.getTaskId(result);
-          if (result['Shareweb_x0020_ID'] == undefined) {
-            result['Shareweb_x0020_ID'] = "";
+          result['TaskID'] = globalCommon.getTaskId(result);
+          if (result['TaskID'] == undefined) {
+            result['TaskID'] = "";
           }
-          result['Item_x0020_Type'] = 'Task';
+          result['ItemType'] = 'Task';
 
-          result.Portfolio_x0020_Type = 'Component';
+          result.PortfolioType = 'Component';
 
         })
-        let allParentTasks = $.grep(AllTasks, function (type: any) { return (type.ParentTask != undefined && type.ParentTask.Id === props.props.Id) && (type.SharewebTaskType != undefined && type.SharewebTaskType.Title != 'Workstream') });
-        if (props.props.SharewebTaskType != undefined && props.props.SharewebTaskType != undefined && props.props.SharewebTaskType === 'Activities')
-          allworkstreamTasks = $.grep(AllTasks, function (task: any) { return (task.SharewebTaskType != undefined && task.SharewebTaskType.Title === 'Workstream') });
+        let allParentTasks = $.grep(AllTasks, function (type: any) { return (type.ParentTask != undefined && type.ParentTask.Id === props.props.Id) && (type.TaskType != undefined && type.TaskType.Title != 'Workstream') });
+        if (props.props.TaskType != undefined && props.props.TaskType != undefined && props.props.TaskType === 'Activities')
+          allworkstreamTasks = $.grep(AllTasks, function (task: any) { return (task.TaskType != undefined && task.TaskType.Title === 'Workstream') });
         if (allworkstreamTasks != undefined && allworkstreamTasks.length > 0) {
           allworkstreamTasks.forEach((obj: any) => {
             if (obj.Id != undefined) {
@@ -322,11 +356,7 @@ function TasksTable(props: any) {
         }
 
         var temp: any = {};
-        // temp.Title = 'Tasks';
-        // temp.childs = allParentTasks;
-        // temp.subRows = allParentTasks
-        // temp.childsLength = allParentTasks.length;
-        // temp.subRowsLength = allParentTasks.length
+     
         temp.flag = true;
         temp.show = true;
         temp.PercentComplete = '';
@@ -354,25 +384,25 @@ function TasksTable(props: any) {
     // })
   }
   const GetComponents = async (Item: any) => {
-    var filt = "Id eq " + (Item.Component.length > 0 ? Item.Component[0].Id : Item.Services[0].Id) + "";
+    var filt = "Id eq " +Item?. Portfolio?.Id + "";
     let web = new Web(props?.AllListId?.siteUrl);
     let compo = [];
     compo = await web.lists
       .getById(props?.AllListId?.MasterTaskListID)
       .items
-      .select("ID", "Id", "Title", "Mileage", "Portfolio_x0020_Type", "ItemType",
-      )
+      .select("ID", "Id", "Title", "Mileage", "PortfolioType/Id","PortfolioType/Title","PortfolioType/Color", "ItemType",
+      ).expand('PortfolioType')
 
       .top(4999)
       .filter(filt)
       .get()
     componentDetails = compo[0]
-    IsUpdated = componentDetails.Portfolio_x0020_Type;
+    IsUpdated = componentDetails.PortfoliType.Title;
     if (props.props.ParentTask != undefined && props.props.ParentTask.Title != undefined)
       props.props.ParentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Activity.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png';
-    else if (props.props.SharewebTaskType != undefined && props.props.SharewebTaskType === 'Activities')
+    else if (props.props.TaskType != undefined && props.props.TaskType === 'Activities')
       props.props.CurrentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Activity.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png';
-    if (props.props.SharewebTaskType != undefined && props.props.SharewebTaskType === 'Workstream')
+    if (props.props.TaskType != undefined && props.props.TaskType === 'Workstream')
       props.props.CurrentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Workstream.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Workstream.png';
     if (componentDetails.ItemType === 'Component')
       componentDetails.SiteIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/component_icon.png';
@@ -392,9 +422,9 @@ function TasksTable(props: any) {
       GetComponents(props.props)
     if (props.props.ParentTask != undefined && props.props.ParentTask.Title != undefined)
       props.props.ParentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Activity.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png';
-    else if (props.props.SharewebTaskType != undefined && props.props.SharewebTaskType === 'Activities')
+    else if (props.props.TaskType != undefined && props.props.TaskType === 'Activities')
       props.props.CurrentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Activity.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png';
-    if (props.props.SharewebTaskType != undefined && props.props.SharewebTaskType === 'Workstream')
+    if (props.props.TaskType != undefined && props.props.TaskType === 'Workstream')
       props.props.CurrentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Workstream.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Workstream.png';
 
     GetSmartmetadata();
@@ -424,14 +454,14 @@ function TasksTable(props: any) {
     let ParentTaskId: any;
     if (childItem != undefined && childItem.data?.ItmesDelete == undefined) {
 
-      childItem.data.Item_x0020_Type = "Task";
+      childItem.data.ItemType = "Task";
 
 
 
       childItem.data['flag'] = true;
       // childItem.data['SiteIcon']= GetIconImageUrl(childItem.data.siteType,childItem.data.siteUrl,undefined)
       // childItem.data['TitleNew'] = childItem.data.Title;
-      childItem.data['SharewebTaskType'] = { Title: 'Workstream' }
+      childItem.data['TaskType'] = { Title: 'Workstream' }
       if (childItem.data.ServicesId != undefined && childItem.data.ServicesId.length > 0) {
         MainId = childItem.data.ServicesId[0]
       }
@@ -519,37 +549,17 @@ function TasksTable(props: any) {
         obj.data.childs = [];
         obj.data.flag = true;
         obj.data.TitleNew = obj.data.Title;
-        // obj.data.Team_x0020_Members=item.TeamMembersIds;
+        // obj.data.TeamMembers=item.TeamMembersIds;
         // obj.AssignedTo =item.AssignedIds;
         obj.data.siteType = "Master Tasks";
-        obj.data['Shareweb_x0020_ID'] = obj.data.PortfolioStructureID;
+        obj.data['TaskID'] = obj.data.PortfolioStructureID;
         if (item.props != undefined && item.props.SelectedItem != undefined && item.props.SelectedItem.childs != undefined) {
           item.props.SelectedItem.childs = item.props.SelectedItem.childs == undefined ? [] : item.props.SelectedItem.childs;
           item.props.SelectedItem.childs.unshift(obj.data);
         }
 
       })
-      // if (ComponentsData != undefined && ComponentsData.length > 0) {
-      //     ComponentsData.forEach((comp: any, index: any) => {
-      //         if (comp.Id != undefined && item.props.SelectedItem != undefined && comp.Id === item.props.SelectedItem.Id){
-      //             comp.childsLength =item.props.SelectedItem.childs.length;
-      //             comp.show = comp.show ==undefined ?false : comp.show
-      //             comp.childs = item.props.SelectedItem.childs;
-      //         }
-      //         if (comp.childs != undefined && comp.childs.length > 0) { 
-      //             comp.childs.forEach((subcomp: any, index: any) => {
-      //                 if (subcomp.Id != undefined && item.props.SelectedItem != undefined && subcomp.Id === item.props.SelectedItem.Id){
-      //                     subcomp.childsLength =item.props.SelectedItem.childs.length;
-      //                     subcomp.show = subcomp.show ==undefined ?false : subcomp.show
-      //                     subcomp.childs = item.props.SelectedItem.childs;
-      //                 }
-      //             })
-      //         }
-
-      //     })
-      //     // }
-      // }
-      // setData((data) => [...ComponentsData]);
+     
     }
     if (!isOpenPopup && item.data != undefined) {
       item.data.childs = [];
@@ -557,7 +567,7 @@ function TasksTable(props: any) {
       item.data.TitleNew = item.data.Title;
       item.data.siteType = "Master Tasks"
       item.data.childsLength = 0;
-      // item.data['Shareweb_x0020_ID'] = item.data.PortfolioStructureID;
+      // item.data['TaskID'] = item.data.PortfolioStructureID;
       // ComponentsData.unshift(item.data);
       // setData((data) => [...ComponentsData]);
     }
@@ -600,7 +610,7 @@ function TasksTable(props: any) {
     item.data.siteType = "Master Tasks"
     item.data.TitleNew = item.data.Title;
     item.data.childsLength = 0;
-    item.data['Shareweb_x0020_ID'] = item.data.PortfolioStructureID;
+    item.data['TaskID'] = item.data.PortfolioStructureID;
     if (checkedList != undefined && checkedList.length > 0)
       checkedList[0].childs.unshift(item.data);
     // else ComponentsData.unshift(item.data);
@@ -639,14 +649,14 @@ function TasksTable(props: any) {
         ),
       },
       {
-        accessorKey: "Shareweb_x0020_ID",
+        accessorKey: "TaskID",
         placeholder: "ID",
-        id: 'Shareweb_x0020_ID',
+        id: 'TaskID',
         size: 145,
         cell: ({ row, getValue }) => (
           <div>
             {row?.original?.TitleNew != "Tasks" ?
-              <ReactPopperTooltip ShareWebId={getValue()} row={row} />
+              <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={props?.AllListId} />
               : ''}
           </div>
         ),
@@ -676,14 +686,17 @@ function TasksTable(props: any) {
             {row?.original?.subRows?.length > 0 ?
               <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
 
-            {row?.original?.Short_x0020_Description_x0020_On != null &&
-              <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+          
+              {row?.original?.Short_x0020_Description_x0020_On != null && row?.original?.Short_x0020_Description_x0020_On != '' && (
+                <InfoIconsToolTip Discription={row?.original?.Short_x0020_Description_x0020_On} row={row?.original} />
+            )}
+              {/* <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                 <span title="Edit" className="svg__iconbox svg__icon--info"></span>
-                {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /> */}
+             
                 <span className="popover__content">
                   {row?.original?.Short_x0020_Description_x0020_On}
                 </span>
-              </span>}
+              </span> */}
 
           </>
         ),
@@ -691,6 +704,22 @@ function TasksTable(props: any) {
         placeholder: "Title",
         header: "",
       },
+      {
+        accessorFn: (row) => row?.projectStructerId + "." + row?.ProjectTitle,
+        cell: ({ row }) => (
+            <>
+                {row?.original?.ProjectTitle != (null || undefined) ?
+                    <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${props?.AllListId.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
+                        <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={props?.AllListId} /></a></span>
+                    : ""}
+            </>
+        ),
+        id: 'ProjectTitle',
+        placeholder: "Project",
+        resetColumnFilters: false,
+        header: "",
+        size: 70,
+    },
       {
         accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title).join("-"),
         cell: ({ row }) => (
@@ -780,7 +809,7 @@ function TasksTable(props: any) {
       {
         cell: ({ row, getValue }) => (
           <>
-            {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && (
+            {row?.original?.ItemType == "Task" && row?.original?.siteType != "Master Tasks" && (
               <a className='time-icons' onClick={(e) => EditData(e, row?.original)} >
                 <span title='Time' className="svg__iconbox svg__icon--clock"></span>
               </a>
@@ -817,7 +846,7 @@ function TasksTable(props: any) {
             <a className='d-flex'>
               {row?.original?.isRestructureActive && (
                 <span onClick={(e) => OpenModal(row?.original)}><img className="icon-sites-img me-2" src={row?.original?.Restructuring} /> </span>)}
-              {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && (
+              {row?.original?.ItemType == "Task" && row?.original?.siteType != "Master Tasks" && (
                 <span title='Edit' onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit"></span>
               )}
             </a>
@@ -869,31 +898,31 @@ function TasksTable(props: any) {
         array.map((obj) => {
           setTopTaskresIcon(true);
           let newobj: any;
-          if (obj.SharewebTaskType?.Title != "Task") {
+          if (obj.TaskType?.Title != "Task") {
             obj.isRestructureActive = true;
           }
 
 
-          if (obj.Id === items.Id && obj.SharewebTaskType?.Title != undefined) {
+          if (obj.Id === items.Id && obj.TaskType?.Title != undefined) {
             obj.isRestructureActive = false;
-            newobj = { Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIcon, SharewebTaskType: obj.SharewebTaskType, }
+            newobj = { Title: obj.Title, ItemType: obj.ItemType, Id: obj.Id, siteIcon: obj.SiteIcon, TaskType: obj.TaskType, }
             ArrayTest.push(newobj);
 
           }
           if (obj.childs.length > 0 && obj.childs != undefined) {
             obj.childs.map((sub: any) => {
               setTopTaskresIcon(true);
-              if (obj.SharewebTaskType?.Title != "Task") {
+              if (obj.TaskType?.Title != "Task") {
                 sub.isRestructureActive = true;
               }
 
-              if (sub.Id === items.Id && sub.SharewebTaskType?.Title != undefined) {
+              if (sub.Id === items.Id && sub.TaskType?.Title != undefined) {
                 obj.isRestructureActive = false;
                 sub.isRestructureActive = false;
                 newobj = {
-                  Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle, SharewebTaskType: obj.SharewebTaskType,
+                  Title: obj.Title, ItemType: obj.ItemType, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle, TaskType: obj.TaskType,
                   newChild: {
-                    Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIcon, SharewebTaskType: sub.SharewebTaskType,
+                    Title: sub.Title, ItemType: sub.ItemType, Id: sub.Id, siteIcon: sub.SiteIcon, TaskType: sub.TaskType,
                   }
                 }
                 ArrayTest.push(newobj);
@@ -935,10 +964,10 @@ function TasksTable(props: any) {
     let value = e.target.value;
     // let data:any = data;
     let array: any = []
-    let SharewebTaskLevel2No: any = 0;
+    let TaskLevel: any = 0;
     let ParentTask: any;
-    let SharewebTaskType: any;
-    let Shareweb_x0020_ID: any;
+    let TaskType: any;
+    let TaskID: any;
     let dataArray = checkedList;
 
 
@@ -946,19 +975,19 @@ function TasksTable(props: any) {
       data?.map((obj: any) => {
 
         if (value == "Task") {
-          SharewebTaskType = { Id: 2, Title: value, Level: 2 };
+          TaskType = { Id: 2, Title: value, Level: 2 };
           ParentTask = obj.ParentTask;
-          Shareweb_x0020_ID = obj?.ParentTask.Shareweb_x0020_ID + "-" + "T" + obj.Id;
-          SharewebTaskLevel2No = null;
+          TaskID = obj?.ParentTask.TaskID + "-" + "T" + obj.Id;
+          TaskLevel = null;
         } else {
-          SharewebTaskType = { Id: 3, Title: value, Level: 3 };
+          TaskType = { Id: 3, Title: value, Level: 3 };
           ParentTask = obj.ParentTask;
-          Shareweb_x0020_ID = obj?.ParentTask.Shareweb_x0020_ID + "-" + "W" + SharewebTaskLevel2No;
-          if (obj?.SharewebTaskType?.Title == value && (SharewebTaskLevel2No < obj.SharewebTaskLevel2No || SharewebTaskLevel2No == obj.SharewebTaskLevel2No)) {
-            SharewebTaskLevel2No = obj.SharewebTaskLevel2No + 1;
+          TaskID = obj?.ParentTask.TaskID + "-" + "W" + TaskLevel;
+          if (obj?.TaskType?.Title == value && (TaskLevel < obj.TaskLevel || TaskLevel == obj.TaskLevel)) {
+            TaskLevel = obj.TaskLevel + 1;
           } else {
-            if (SharewebTaskLevel2No == 0) {
-              SharewebTaskLevel2No = 1;
+            if (TaskLevel == 0) {
+              TaskLevel = 1;
             }
           }
         }
@@ -967,10 +996,10 @@ function TasksTable(props: any) {
 
     if (checkedList != undefined) {
       dataArray.map((items: any) => {
-        items.SharewebTaskLevel2No = SharewebTaskLevel2No;
+        items.TaskLevel = TaskLevel;
         items.ParentTask = ParentTask;
-        items.SharewebTaskType = SharewebTaskType
-        items.Shareweb_x0020_ID = Shareweb_x0020_ID;
+        items.TaskType = TaskType
+        items.TaskID = TaskID;
         array.push(items);
       })
     }
@@ -988,9 +1017,9 @@ function TasksTable(props: any) {
     await web.lists.getById(checkedList[0].listId).items
       .getById(checkedList[0].Id)
       .update({
-        Shareweb_x0020_ID: checkedList[0].Shareweb_x0020_ID,
-        SharewebTaskLevel2No: checkedList[0].SharewebTaskLevel2No,
-        SharewebTaskTypeId: checkedList[0].SharewebTaskType.Id,
+        TaskID: checkedList[0].TaskID,
+        TaskLevel: checkedList[0].TaskLevel,
+        TaskTypeId: checkedList[0].TaskType.Id,
         ParentTaskId: checkedList[0].ParentTask.Id
       })
       .then((res: any) => {
@@ -1010,14 +1039,14 @@ function TasksTable(props: any) {
             array.push(...{ ...latestCheckedList });
             checkUpdate = checkUpdate + 1;
           }
-          if (obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate1 == 1) {
+          if (obj.Id === backupCheckedList[0]?.Id && obj.ItemType === backupCheckedList[0]?.ItemType && obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate1 == 1) {
             array.splice(index, 1);
             checkUpdate = checkUpdate1 + 1;
           }
           if (obj.childs != undefined && obj.childs.length > 0) {
             obj.childs.forEach((sub: any, indexsub: any) => {
               sub.isRestructureActive = false;
-              if (sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate1 == 1) {
+              if (sub.Id === backupCheckedList[0]?.Id && sub.ItemType === backupCheckedList[0]?.ItemType && sub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate1 == 1) {
                 array[index]?.subRows.splice(indexsub, 1);
                 array[index]?.childs.splice(indexsub, 1);
                 checkUpdate = checkUpdate1 + 1;
@@ -1050,15 +1079,15 @@ function TasksTable(props: any) {
 
     let numbers: any;
     let numbers1: any;
-    let SharewebTaskTypeId: any;
+    let TaskTypeId: any;
     let ParentTaskId: any;
-    let Shareweb_x0020_ID: any;
+    let TaskID: any;
 
     if (NewArrayBackup.length > 0 && NewArrayBackup != undefined) {
-      if (NewArrayBackup[0]?.SharewebTaskType?.Title == "Workstream") {
+      if (NewArrayBackup[0]?.TaskType?.Title == "Workstream") {
         ParentTaskId = NewArrayBackup[0].Id;
-        Shareweb_x0020_ID = NewArrayBackup[0].Shareweb_x0020_ID + "-" + "T" + checkedList[0].Id;
-        SharewebTaskTypeId = 2;
+        TaskID = NewArrayBackup[0].TaskID + "-" + "T" + checkedList[0].Id;
+        TaskTypeId = 2;
       }
     }
 
@@ -1067,8 +1096,8 @@ function TasksTable(props: any) {
     await web.lists.getById(checkedList[0].listId).items
       .getById(checkedList[0].Id)
       .update({
-        Shareweb_x0020_ID: Shareweb_x0020_ID,
-        SharewebTaskTypeId: SharewebTaskTypeId,
+        TaskID: TaskID,
+        TaskTypeId: TaskTypeId,
         ParentTaskId: ParentTaskId
       })
       .then((res: any) => {
@@ -1081,33 +1110,33 @@ function TasksTable(props: any) {
         })
 
         latestCheckedList?.map((items: any) => {
-          items.Parent = { Id: ParentTaskId, Shareweb_x0020_ID: Shareweb_x0020_ID, Title: NewArrayBackup[0]?.Title },
-            items.Shareweb_x0020_ID = Shareweb_x0020_ID,
-            items.SharewebTaskType = { Id: 2, Title: "Task", Level: 2 }
+          items.Parent = { Id: ParentTaskId, TaskID: TaskID, Title: NewArrayBackup[0]?.Title },
+            items.TaskID = TaskID,
+            items.TaskType = { Id: 2, Title: "Task", Level: 2 }
         })
 
 
         let array = data;
         array.forEach((obj: any, index: any) => {
           obj.isRestructureActive = false;
-          if (obj.Id === NewArrayBackup[0]?.Id && obj.Item_x0020_Type === NewArrayBackup[0]?.Item_x0020_Type && obj.SharewebTaskType?.Title === NewArrayBackup[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+          if (obj.Id === NewArrayBackup[0]?.Id && obj.ItemType === NewArrayBackup[0]?.ItemType && obj.TaskType?.Title === NewArrayBackup[0]?.TaskType?.Title && checkUpdate != 3) {
             obj.subRows.push(...latestCheckedList);
             obj.childs.push(...latestCheckedList);
             checkUpdate = checkUpdate + 1;
           }
-          if (obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+          if (obj.Id === backupCheckedList[0]?.Id && obj.ItemType === backupCheckedList[0]?.ItemType && obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
             array.splice(index, 1);
             checkUpdate = checkUpdate + 1;
           }
           if (obj.childs != undefined && obj.childs.length > 0) {
             obj.childs.forEach((sub: any, indexsub: any) => {
               sub.isRestructureActive = false;
-              if (sub.Id === NewArrayBackup[0]?.Id && sub.Item_x0020_Type === NewArrayBackup[0]?.Item_x0020_Type && sub.SharewebTaskType?.Title === NewArrayBackup[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+              if (sub.Id === NewArrayBackup[0]?.Id && sub.ItemType === NewArrayBackup[0]?.ItemType && sub.TaskType?.Title === NewArrayBackup[0]?.TaskType?.Title && checkUpdate != 3) {
                 sub.subRows.push(...latestCheckedList);
                 sub.childs.push(...latestCheckedList);
                 checkUpdate = checkUpdate + 1;
               }
-              if (sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+              if (sub.Id === backupCheckedList[0]?.Id && sub.ItemType === backupCheckedList[0]?.ItemType && sub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                 array[index]?.subRows.splice(indexsub, 1);
                 array[index]?.childs.splice(indexsub, 1);
                 checkUpdate = checkUpdate + 1;
@@ -1115,12 +1144,12 @@ function TasksTable(props: any) {
               if (sub.childs != undefined && sub.childs.length > 0) {
                 sub.childs.forEach((newsub: any, lastIndex: any) => {
                   newsub.isRestructureActive = false;
-                  if (newsub.Id === NewArrayBackup[0]?.Id && newsub.Item_x0020_Type === NewArrayBackup[0]?.Item_x0020_Type && newsub.SharewebTaskType?.Title === NewArrayBackup[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                  if (newsub.Id === NewArrayBackup[0]?.Id && newsub.ItemType === NewArrayBackup[0]?.ItemType && newsub.TaskType?.Title === NewArrayBackup[0]?.TaskType?.Title && checkUpdate != 3) {
                     newsub.subRows.push(...latestCheckedList);
                     newsub.childs.push(...latestCheckedList);
                     checkUpdate = checkUpdate + 1;
                   }
-                  if (newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && newsub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3) {
+                  if (newsub.Id === backupCheckedList[0]?.Id && newsub.ItemType === backupCheckedList[0]?.ItemType && newsub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                     array[index]?.subRows[indexsub]?.subRows.splice(lastIndex, 1);
                     array[index]?.childs[indexsub]?.childs.splice(lastIndex, 1);
                     checkUpdate = checkUpdate + 1;
@@ -1154,8 +1183,8 @@ function TasksTable(props: any) {
   }
   const openActivity = () => {
     let data2: any = structuredClone(props?.props)
-    if (checkData != undefined && checkData != null) {
-      if (checkData?.SharewebTaskType?.Title == 'Workstream') {
+    if (checkData != undefined && checkData != null&&checkData?.TaskType!=null ) {
+      if (checkData?.TaskType?.Title == 'Workstream') {
         checkData['NoteCall'] = 'Task'
         console.log(MeetingItems[MeetingItems.length - 1])
         if (MeetingItems[MeetingItems.length - 1]?.ClientTime?.length > 0 && MeetingItems[MeetingItems?.length - 1].ClientTime != undefined) {
@@ -1166,12 +1195,12 @@ function TasksTable(props: any) {
       }
     }
     else {
-      if (props.props.SharewebTaskType == 'Workstream') {
+      if (props.props.TaskType == 'Workstream') {
         props.props['NoteCall'] = 'Task'
         MeetingItems.push(props.props)
         setMeetingPopup(true)
       }
-      if (props.props.SharewebTaskType == 'Activities') {
+      if (props.props.TaskType == 'Activities') {
         let parentcat: any = [];
 
         if (data2?.ClientTime != null && data2?.ClientTime != undefined) {
@@ -1191,80 +1220,6 @@ function TasksTable(props: any) {
 
   }
 
-
-  // ===========REACT TABLE ==========
-  // const onChangeHandler = (itrm: any, child: any, e: any) => {
-  //   let checked = e
-  //   if (checked == true) {
-  //     setcheckData(itrm)
-
-  //     itrm.chekBox = true
-
-  //     if (itrm.SharewebTaskType == undefined) {
-  //       setActivityDisable(false)
-  //       itrm['siteUrl'] = props?.AllListId?.siteUrl;
-  //       itrm['listName'] = 'Master Tasks';
-  //       MeetingItems.push(itrm)
-  //       //setMeetingItems(itrm);
-
-  //     }
-  //     if (itrm.SharewebTaskType != undefined) {
-  //       if (itrm.SharewebTaskType.Title == 'Activities' || itrm.SharewebTaskType.Title == "Workstream") {
-  //         setActivityDisable(false)
-  //         // Arrays.push(itrm)
-  //         itrm['PortfolioId'] = child.Id;
-  //         MeetingItems.push(itrm)
-  //         setCount(count + 2)
-  //       }
-  //       if (itrm.SharewebTaskType.Title == 'Task') {
-  //         setActivityDisable(true)
-  //         MeetingItems.push(itrm)
-
-  //       }
-  //     }
-  //   }
-  //   // if (checked == false) {
-  //   //     itrm.chekBox = false;
-  //   //     setcheckData(null)
-  //   //     MeetingItems?.forEach((val: any, index: any) => {
-  //   //         if (val.Id == itrm.Id) {
-  //   //             MeetingItems.splice(index, 1)
-  //   //         }
-  //   //     })
-  //   //     if (itrm.SharewebTaskType != undefined) {
-  //   //         if (itrm.SharewebTaskType.Title == 'Task') {
-  //   //             setActivityDisable(false)
-
-  //   //         }
-  //   //     }
-  //   //     setCount(count + 2)
-  //   // }
-  //   var list: any = []
-  //   if (checkedList.length > 0) {
-  //     list = checkedList;
-  //   }
-
-  //   var flag = true;
-  //   list?.forEach((obj: any, index: any) => {
-  //     if (obj.Id != undefined && itrm?.Id != undefined && obj.Id === itrm.Id) {
-  //       flag = false;
-  //       list.splice(index, 1);
-  //     }
-  //   })
-  //   if (itrm.SharewebTaskType?.Title == 'Task') {
-  //     setActivityDisable(false)
-  //   }
-  //   if (flag)
-  //     list.push(itrm);
-  //   console.log(list);
-  //   // list?.forEach((items:any)=>{
-  //   //     checkedList.push(items)
-  //   // })
-
-  //   setCheckedList(checkedList => (list));
-  //   // if (list.length === 0)
-  //   //   clearreacture();
-  // };
   const findUserByName = (Id: any) => {
     const user = AllUsers.filter((user: any) => user.AssingedToUserId == Id);
     let Image: any;
@@ -1297,7 +1252,7 @@ function TasksTable(props: any) {
           }
         });
       }
-      if (itrm?.Item_x0020_Type == "Component") {
+      if (itrm?.ItemType == "Component") {
         // onChangeHandler(itrm, 'parent', eTarget);
       } else {
         // onChangeHandler(itrm, props, eTarget);
@@ -1320,7 +1275,7 @@ function TasksTable(props: any) {
     let array: any = [];
     if (checkData != undefined) {
 
-      if (checkData.SharewebTaskType == undefined) {
+      if (checkData.TaskType == undefined) {
         setActivityDisable(false)
         checkData['siteUrl'] = props?.AllListId?.siteUrl;
         checkData['listName'] = 'Master Tasks';
@@ -1328,15 +1283,15 @@ function TasksTable(props: any) {
         //setMeetingItems(itrm);
 
       }
-      if (checkData.SharewebTaskType != undefined) {
-        if (checkData.SharewebTaskType.Title == 'Activities' || checkData.SharewebTaskType.Title == "Workstream") {
+      if (checkData.TaskType != undefined) {
+        if (checkData.TaskType.Title == 'Activities' || checkData.TaskType.Title == "Workstream") {
           setActivityDisable(false)
           // Arrays.push(itrm)
           checkData['PortfolioId'] = props?.Id;
           MeetingItems.push(checkData)
           setCount(count + 2)
         }
-        if (checkData.SharewebTaskType.Title == 'Task') {
+        if (checkData.TaskType.Title == 'Task') {
           setActivityDisable(true)
           MeetingItems.push(checkData)
 
@@ -1361,69 +1316,7 @@ function TasksTable(props: any) {
         <div className="col-sm-12 pad0 smart" >
           <div className="">
             <div className={`${data.length > 10 ? "wrapper" : "MinHeight"}`}>
-              {/* <table className=" Improvementstable SortingTable table table-hover" style={{ width: "100%" }}>
-                <thead className='fixed-Header top-0'>
-                  {table.getHeaderGroups().map((headerGroup: any) => (
-                    <tr key={headerGroup.id}>
-                      {headerGroup.headers.map((header: any) => {
-                        return (
-                          <th key={header.id} colSpan={header.colSpan} style={{ width: header.column.columnDef.size + "%" }}>
-                            {header.isPlaceholder ? null : (
-                              <div className='position-relative' style={{ display: "flex" }}>
-                                {flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext()
-                                )}
-                                {header.column.getCanFilter() ? (
-
-                                  <Filter column={header.column} table={table} placeholder={header.column.columnDef} />
-
-                                ) : null}
-                                {header.column.getCanSort() ? <div
-                                  {...{
-                                    className: header.column.getCanSort()
-                                      ? "cursor-pointer  select-none shorticon"
-                                      : "",
-                                    onClick: header.column.getToggleSortingHandler(),
-                                  }}
-                                >
-                                  {header.column.getIsSorted()
-                                    ? { asc: <FaSortDown />, desc: <FaSortUp /> }[
-                                    header.column.getIsSorted() as string
-                                    ] ?? null
-                                    : <FaSort />}
-                                </div> : ""}
-                              </div>
-                            )}
-                          </th>
-                        );
-                      })}
-                    </tr>
-                  ))}
-                </thead>
-                <tbody>
-                  <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1} color={IsUpdated == 'Events Portfolio' ? '#f98b36' : (IsUpdated == 'Service Portfolio' ? '#228b22' : '#000069')} speed={2} trail={60} shadow={false}
-                    hwaccel={false} className="spinner" zIndex={2e9} top="28%" left="50%" scale={1.0} loadedClassName="loadedContent" />
-
-                  {table.getRowModel().rows.map((row: any) => {
-                    return (
-                      <tr
-                        key={row.id}>
-                        {row.getVisibleCells().map((cell: any) => {
-                          return (
-                            <td key={cell.id}>
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext()
-                              )}
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table> */}
+          
               <GlobalCommanTable
                 //  ref={childRef}
                 callChildFunction={Call}
@@ -1469,7 +1362,7 @@ function TasksTable(props: any) {
       <span>
         <Panel headerText={`Restructuring Tool `} type={PanelType.medium} isOpen={tasksRestruct} isBlocking={false} onDismiss={RestruringCloseCall}>
           <div className='mt-4 mb-3'>
-            <span>{`All below selected items will be added as ${checkedList[0]?.SharewebTaskType?.Title}`}</span>
+            <span>{`All below selected items will be added as ${checkedList[0]?.TaskType?.Title}`}</span>
             <div className='mt-2' >Select Task Type :
               <span>
                 <input
@@ -1477,7 +1370,7 @@ function TasksTable(props: any) {
                   name="fav_language"
                   value="Workstream"
                   checked={
-                    checkedList[0]?.SharewebTaskType?.Title == "Workstream"
+                    checkedList[0]?.TaskType?.Title == "Workstream"
                       ? true
                       : false
                   }
@@ -1491,7 +1384,7 @@ function TasksTable(props: any) {
                   name="fav_language"
                   value="Task"
                   checked={
-                    checkedList[0]?.SharewebTaskType?.Title == "Task"
+                    checkedList[0]?.TaskType?.Title == "Task"
                       ? true
                       : false
                   }

@@ -19,11 +19,13 @@ import { ColumnDef } from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 import Loader from "react-loader";
+import { Bars } from 'react-loader-spinner'
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 import SmartFilterSearchGlobal from "../../../globalComponents/SmartFilterGolobalBomponents/SmartFilterGlobalComponents";
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
+import PageLoader from "../../../globalComponents/pageLoader";
 //import RestructuringCom from "../../../globalComponents/Restructuring/RestructuringCom";
 var filt: any = "";
 var ContextValue: any = {};
@@ -38,6 +40,7 @@ let portfolioColor: any = '';
 let ProjectData: any = [];
 let copyDtaArray: any = [];
 let renderData: any = [];
+let countAllTasksData: any = []
 function TeamPortlioTable(SelectedProp: any) {
     const childRef = React.useRef<any>();
     if (childRef != null) {
@@ -181,7 +184,7 @@ function TeamPortlioTable(SelectedProp: any) {
             .top(4999).expand("Parent").get();
         setAllClientCategory(smartmetaDetails?.filter((metadata: any) => metadata?.TaxType == 'Client Category'));
         smartmetaDetails?.map((newtest: any) => {
-            if (newtest.Title == "SDC Sites" || newtest.Title == "Tasks" || newtest.Title == "DRR" || newtest.Title == "Small Projects" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
+            if (newtest.Title == "SDC Sites" || newtest.Title == "DRR" || newtest.Title == "Small Projects" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
                 newtest.DataLoadNew = false;
             else if (newtest.TaxType == 'Sites')
                 siteConfigSites.push(newtest)
@@ -244,11 +247,11 @@ function TeamPortlioTable(SelectedProp: any) {
                     .getById(config.listId)
                     .items.select("ParentTask/Title", "ParentTask/Id", "ItemRank", "TaskLevel", "OffshoreComments", "TeamMembers/Id", "ClientCategory/Id", "ClientCategory/Title",
                         "TaskID", "ResponsibleTeam/Id", "ResponsibleTeam/Title", "ParentTask/TaskID", "TaskType/Level", "PriorityRank", "TeamMembers/Title", "FeedBack", "Title", "Id", "ID", "DueDate", "Comments", "Categories", "Status", "Body",
-                        "PercentComplete", "ClientCategory", "Priority", "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title",
+                        "PercentComplete", "ClientCategory", "Priority", "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/PortfolioStructureID", "Portfolio/Title",
                         "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title",
                     )
                     .expand(
-                        "ParentTask", "PortfolioType", "Portfolio", "TaskType", "ClientCategory", "TeamMembers", "ResponsibleTeam",
+                        "ParentTask", "Portfolio", "TaskType", "ClientCategory", "TeamMembers", "ResponsibleTeam",
                         "TaskCategories", "Project"
                     )
                     .filter("Status ne 'Completed'")
@@ -361,17 +364,30 @@ function TeamPortlioTable(SelectedProp: any) {
                                 result.ClientCategorySearch = ''
                             }
                             // if (result.Id === 1441) console.log(result);
-                            // result["TaskID"] = globalCommon.getTaskId(result);
+                            result["TaskID"] = globalCommon.GetTaskId(result);
                             // if (result["TaskID"] == undefined) {
                             //     result["TaskID"] = "";
                             // }
+                            // && result.PortfolioType != undefined
 
-                            taskTypeDataItem?.map((type: any) => {
-                                if (result?.TaskType?.Title === type.Title && result.PortfolioType != undefined) {
-                                    type[type.Title + 'number'] += 1;
-                                }
-                            })
-
+                            // if (isUpdated === "") {
+                            //     taskTypeDataItem?.map((type: any) => {
+                            //         if (result?.TaskType?.Title === type.Title) {
+                            //             type[type.Title + 'number'] += 1;
+                            //         }
+                            //     })
+                            // } else if (isUpdated != "") {
+                            //     let findPortfolio = AllComponetsData?.filter((elem: any) => elem.Id === result?.Portfolio?.Id);
+                            //     if (findPortfolio.length > 0) {
+                            //         if (findPortfolio[0]?.Id === result?.Portfolio?.Id && isUpdated?.toLowerCase() === findPortfolio[0]?.PortfolioType?.Title?.toLowerCase()) {
+                            //             taskTypeDataItem?.map((type: any) => {
+                            //                 if (result?.TaskType?.Title === type.Title) {
+                            //                     type[type.Title + 'number'] += 1;
+                            //                 }
+                            //             })
+                            //         }
+                            //     }
+                            // }
                             if (result.Project) {
                                 result.ProjectTitle = result?.Project?.Title;
                                 result.ProjectId = result?.Project?.Id;
@@ -408,7 +424,7 @@ function TeamPortlioTable(SelectedProp: any) {
         componentDetails = await web.lists
             .getById(ContextValue.MasterTaskListID)
             .items
-            .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID","StructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title",
+            .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title",
                 "DueDate", "Body", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
                 "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete",
                 "ResponsibleTeam/Id", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id",
@@ -441,7 +457,7 @@ function TeamPortlioTable(SelectedProp: any) {
             if (result?.Item_x0020_Type != undefined) {
                 result.SiteIconTitle = result?.Item_x0020_Type?.charAt(0);
             }
-            result["TaskID"] = result?.StructureID;
+            result["TaskID"] = result?.PortfolioStructureID;
 
             result.DueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
             if (result.DueDate == "Invalid date" || "") {
@@ -575,26 +591,29 @@ function TeamPortlioTable(SelectedProp: any) {
         if (smartAllFilterData?.length > 0 && updatedSmartFilter === false) {
             setLoaded(false);
             componentData = [];
+            countAllTasksData = [];
             setAllSmartFilterDataBackup(structuredClone(smartAllFilterData));
             if (IsUpdated === "") {
-                portfolioTypeData?.map((port: any) => {
-                    componentGrouping(port?.Id);
+                portfolioTypeData?.map((port: any, index: any) => {
+                    componentGrouping(port?.Id, index);
                 })
             } else if (IsUpdated.length) {
                 portfolioTypeData?.map((port: any) => {
                     if (IsUpdated.toLowerCase() === port?.Title?.toLowerCase()) {
-                        componentGrouping(port?.Id);
+                        componentGrouping(port?.Id, '');
                     }
                 })
             }
+            countTaskAWTLevel(countAllTasksData);
         }
         if (smartAllFilterData?.length > 0 && updatedSmartFilter === true) {
             setLoaded(false);
             filterCount = 0;
             componentDataCopyBackup = [];
             setDataBackup([]);
-            let AllSmartFilterDataBackupCopy = AllSmartFilterDataBackup?.filter((elem: any) => elem.PortfolioType != undefined);
-            setDataBackup(structuredClone(AllSmartFilterDataBackupCopy));
+            // let AllSmartFilterDataBackupCopy = AllSmartFilterDataBackup?.filter((elem: any) => elem.PortfolioType != undefined);
+            setDataBackup(structuredClone(AllSmartFilterDataBackup));
+            // setDataBackup(structuredClone(AllSmartFilterDataBackupCopy));
             componentDataCopyBackup = structuredClone(componentData);
             filterDataAfterUpdate();
         }
@@ -604,14 +623,17 @@ function TeamPortlioTable(SelectedProp: any) {
         return JSON.parse(JSON.stringify(obj));
     }
 
-    const DynamicSort = function (items: any, column: any) {
+    const DynamicSort = function (items: any, column: any, orderby: any) {
         items?.sort(function (a: any, b: any) {
             var aID = a[column];
             var bID = b[column];
-            return aID == bID ? 0 : aID > bID ? 1 : -1;
+            if (orderby === 'asc')
+                return (aID == bID) ? 0 : (aID < bID) ? 1 : -1;
+            else
+                return aID == bID ? 0 : aID > bID ? 1 : -1;
         });
     };
-    const componentGrouping = (portId: any) => {
+    const componentGrouping = (portId: any, index: any) => {
         let FinalComponent: any = []
         let AllProtFolioData = smartAllFilterData?.filter((comp: any) => comp?.PortfolioType?.Id === portId && comp.TaskType === undefined);
         let AllComponents = AllProtFolioData?.filter((comp: any) => comp?.Parent?.Id === 0 || comp?.Parent?.Id === undefined);
@@ -642,52 +664,91 @@ function TeamPortlioTable(SelectedProp: any) {
             FinalComponent.push(masterTask)
         })
         componentData = componentData?.concat(FinalComponent);
-        DynamicSort(componentData, 'PortfolioLevel')
+        DynamicSort(componentData, 'PortfolioLevel', '')
         componentData.forEach((element: any) => {
             if (element?.subRows?.length > 0) {
-                let level = element?.subRows?.filter((obj: any) => obj.PortfolioLevel != undefined);
-                let leveltask = element?.subRows?.filter((obj: any) => obj.PortfolioLevel === undefined);
-                DynamicSort(level, 'PortfolioLevel')
+                let level = element?.subRows?.filter((obj: any) => obj.Item_x0020_Type != undefined && obj.Item_x0020_Type != "Task");
+                let leveltask = element?.subRows?.filter((obj: any) => obj.Item_x0020_Type === "Task");
+                DynamicSort(level, 'Item_x0020_Type', 'asc')
                 element.subRows = [];
                 element.subRows = level.concat(leveltask)
             }
             if (element?.subRows != undefined) {
                 element?.subRows?.forEach((obj: any) => {
-                    let level1 = obj?.subRows?.filter((obj: any) => obj.PortfolioLevel != undefined);
-                    let leveltask1 = obj?.subRows?.filter((obj: any) => obj.PortfolioLevel === undefined);
-                    DynamicSort(level1, 'PortfolioLevel')
+                    let level1 = obj?.subRows?.filter((obj: any) => obj.Item_x0020_Type != undefined && obj.Item_x0020_Type != "Task");
+                    let leveltask1 = obj?.subRows?.filter((obj: any) => obj.Item_x0020_Type === "Task");
+                    DynamicSort(level1, 'Item_x0020_Type', 'asc')
                     obj.subRows = [];
                     obj.subRows = level1?.concat(leveltask1)
                 })
             }
         });
+        if (portfolioTypeData?.length - 1 === index || index === '') {
+            var temp: any = {};
+            temp.Title = "Others";
+            temp.TaskID = "";
+            temp.subRows = [];
+            temp.PercentComplete = "";
+            temp.ItemRank = "";
+            temp.DueDate = "";
+            temp.Project = "";
+            temp.subRows = smartAllFilterData?.filter((elem1: any) => elem1?.TaskType?.Id != undefined && elem1?.ParentTask?.Id === undefined && elem1?.Portfolio?.Title === undefined);
+            countAllTasksData = countAllTasksData.concat(temp.subRows);
+            temp.subRows.forEach((task: any) => {
+                if (task.TaskID === undefined || task.TaskID === '')
+                    task.TaskID = 'T' + task.Id;
+            })
+            componentData.push(temp)
+        }
         setLoaded(true);
         setData(componentData);
+        console.log(countAllTasksData);
     }
-
     const componentActivity = (levelType: any, items: any) => {
         if (items.ID === 5610) {
             console.log("items", items);
         }
         let findActivity = smartAllFilterData?.filter((elem: any) => elem?.TaskType?.Id === levelType.Id && elem?.Portfolio?.Id === items?.Id);
-        let findTasks = smartAllFilterData?.filter((elem1: any) => elem1?.TaskType?.Id != levelType.Id && elem1?.ParentTask?.Id === items?.Id);
+        let findTasks = smartAllFilterData?.filter((elem1: any) => elem1?.TaskType?.Id != levelType.Id && elem1?.Portfolio?.Id === items?.Id);
+        countAllTasksData = countAllTasksData.concat(findTasks)
+        countAllTasksData = countAllTasksData.concat(findActivity)
+
         findActivity?.forEach((act: any) => {
             act.subRows = [];
             let worstreamAndTask = smartAllFilterData?.filter((taskData: any) => taskData?.ParentTask?.Id === act?.Id && taskData?.siteType === act?.siteType)
+            // findTasks = findTasks?.filter((taskData: any) => taskData?.ParentTask?.Id != act?.Id && taskData?.siteType != act?.siteType);
             if (worstreamAndTask.length > 0) {
                 act.subRows = act?.subRows?.concat(worstreamAndTask);
+                countAllTasksData = countAllTasksData.concat(worstreamAndTask)
             }
             worstreamAndTask?.forEach((wrkst: any) => {
                 wrkst.subRows = wrkst.subRows === undefined ? [] : wrkst.subRows;
                 let allTasksData = smartAllFilterData?.filter((elem: any) => elem?.ParentTask?.Id === wrkst?.Id && elem?.siteType === wrkst?.siteType);
+                // findTasks = findTasks?.filter((elem: any) => elem?.ParentTask?.Id != wrkst?.Id && elem?.siteType != wrkst?.siteType);
                 if (allTasksData.length > 0) {
                     wrkst.subRows = wrkst?.subRows?.concat(allTasksData)
+                    countAllTasksData = countAllTasksData.concat(allTasksData)
                 }
             })
         })
         items.subRows = items?.subRows?.concat(findActivity)
         items.subRows = items?.subRows?.concat(findTasks)
     }
+
+
+    const countTaskAWTLevel = (countTaskAWTLevel: any) => {
+        if (countTaskAWTLevel.length > 0) {
+            taskTypeDataItem?.map((type: any) => {
+                countTaskAWTLevel.map((result: any) => {
+                    if (result?.TaskType?.Title === type.Title) {
+                        type[type.Title + 'number'] += 1;
+                    }
+                })
+            })
+        }
+    }
+
+
     const filterDataAfterUpdate = () => {
         smartAllFilterData?.map((filterItem: any) => {
             updatedSmartFilterGrouping(filterItem)
@@ -698,7 +759,10 @@ function TeamPortlioTable(SelectedProp: any) {
         let finalData: any = []
         let finalDataCopy: any = []
         componentDataCopyBackup?.map((comp: any) => {
-            if (comp.Id === filterItem?.Portfolio?.Id) {
+            // if (comp.Id === filterItem?.Portfolio?.Id) {
+            //     comp.filterFlag = true
+            // }
+            if (comp.Id === filterItem?.Id) {
                 comp.filterFlag = true
             }
             comp?.subRows?.map((subComp: any) => {
@@ -776,6 +840,23 @@ function TeamPortlioTable(SelectedProp: any) {
         }
     }
 
+    const setTableHeight = () => {
+        const table = document.getElementById('runtimeTable');
+        const screenHeight = window.innerHeight;
+        const tableHeight = screenHeight * 0.8 - 5;
+        table.style.maxHeight = `${tableHeight}px`;
+      };
+      React.useEffect(() => {
+        setTableHeight();
+        window.addEventListener('resize', setTableHeight);
+        return () => {
+          window.removeEventListener('resize', setTableHeight);
+        };
+      }, []);
+    
+    
+
+
     ///react table start function//////
     const columns: any = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
@@ -832,6 +913,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "ID",
                 header: "",
                 resetColumnFilters: false,
+                // isColumnDefultSortingAsc:true,
                 size: 195,
             },
             {
@@ -842,13 +924,13 @@ function TeamPortlioTable(SelectedProp: any) {
                             {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== "Others" && (
                                 <a className="text-content hreflink" title={row?.original?.Title} data-interception="off" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
                                     href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.ID} >
-                                    <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : globalFilterHighlited} />
+                                    <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
                                 </a>
                             )}
                             {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== "Others" && (
                                 <a className="text-content hreflink" title={row?.original?.Title} data-interception="off" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
                                     href={ContextValue.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + row?.original?.ID + "&Site=" + row?.original?.siteType} >
-                                    <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : globalFilterHighlited} />
+                                    <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
                                 </a>
                             )}
                             {row?.original.Title === "Others" ? (
@@ -904,7 +986,7 @@ function TeamPortlioTable(SelectedProp: any) {
             {
                 accessorFn: (row) => row?.AllTeamName,
                 cell: ({ row }) => (
-                    <div>
+                    <div className="alignCenter">
                         <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={AllUsers} Context={SelectedProp?.SelectedProp} />
                     </div>
                 ),
@@ -914,22 +996,44 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 size: 131,
             },
+            // {
+            //     accessorKey: "PercentComplete",
+            //     placeholder: "Status",
+            //     header: "",
+            //     resetColumnFilters: false,
+            //     size: 42,
+            //     id: "PercentComplete",
+            // },
             {
-                accessorKey: "PercentComplete",
-                placeholder: "Status",
-                header: "",
-                resetColumnFilters: false,
-                size: 42,
+                accessorFn: (row) => row?.PercentComplete,
+                cell: ({ row }) => (
+                    <div className="text-center">{row?.original?.PercentComplete}</div>
+                ),
                 id: "PercentComplete",
+                placeholder: "Status",
+                resetColumnFilters: false,
+                header: "",
+                size: 42,
             },
             {
-                accessorKey: "ItemRank",
-                placeholder: "Item Rank",
-                header: "",
-                resetColumnFilters: false,
-                size: 42,
+                accessorFn: (row) => row?.ItemRank,
+                cell: ({ row }) => (
+                    <div className="text-center">{row?.original?.ItemRank}</div>
+                ),
                 id: "ItemRank",
+                placeholder: "Item Rank",
+                resetColumnFilters: false,
+                header: "",
+                size: 42,
             },
+            // {
+            //     accessorKey: "ItemRank",
+            //     placeholder: "Item Rank",
+            //     header: "",
+            //     resetColumnFilters: false,
+            //     size: 42,
+            //     id: "ItemRank",
+            // },
             {
                 accessorKey: "DueDate",
                 placeholder: "Due Date",
@@ -1015,7 +1119,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     <>
                         {row?.original?.siteType === "Master Tasks" &&
                             row?.original?.Title !== "Others" && (
-                                <a
+                                <a className="alignCenter"
                                     href="#"
                                     data-bs-toggle="tooltip"
                                     data-bs-placement="auto"
@@ -1030,7 +1134,7 @@ function TeamPortlioTable(SelectedProp: any) {
                             )}
                         {row?.original?.siteType != "Master Tasks" &&
                             row?.original?.Title !== "Others" && (
-                                <a
+                                <a className="alignCenter"
                                     href="#"
                                     data-bs-toggle="tooltip"
                                     data-bs-placement="auto"
@@ -1159,7 +1263,7 @@ function TeamPortlioTable(SelectedProp: any) {
 
     let isOpenPopup = false;
     const AddStructureCallBackCall = React.useCallback((item) => {
-        //  setRowSelection({});
+        childRef?.current?.setRowSelection({});
         if (!isOpenPopup && item.CreatedItem != undefined) {
             item.CreatedItem.forEach((obj: any) => {
                 obj.data.childs = [];
@@ -1168,7 +1272,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 obj.data.TitleNew = obj.data.Title;
                 obj.data.siteType = "Master Tasks";
                 obj.data.SiteIconTitle = obj?.data?.Item_x0020_Type?.charAt(0);
-                obj.data["TaskID"] = obj.data.StructureID;
+                obj.data["TaskID"] = obj.data.PortfolioStructureID;
                 if (
                     item.props != undefined &&
                     item.props.SelectedItem != undefined &&
@@ -1239,7 +1343,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 })
             }
             item.data.SiteIconTitle = item?.data?.Item_x0020_Type?.charAt(0);
-            item.data["TaskID"] = item.data.StructureID;
+            item.data["TaskID"] = item.data.PortfolioStructureID;
             copyDtaArray.unshift(item.data);
             renderData = [];
             renderData = renderData.concat(copyDtaArray)
@@ -1253,6 +1357,7 @@ function TeamPortlioTable(SelectedProp: any) {
 
     //----------------------------Code By Santosh---------------------------------------------------------------------------
     const Call = (res: any) => {
+        childRef?.current?.setRowSelection({});
         setIsComponent(false);
         setIsTask(false);
         setIsOpenActivity(false)
@@ -1306,10 +1411,11 @@ function TeamPortlioTable(SelectedProp: any) {
             }
 
         })
-        renderData = [];
-        renderData = renderData.concat(copyDtaArray)
-        refreshData();
-
+        if (res?.data !=undefined) {
+            renderData = [];
+            renderData = renderData.concat(copyDtaArray)
+            refreshData();
+        }
     }
     // new change////
     const CreateActivityPopup = (type: any) => {
@@ -1334,6 +1440,7 @@ function TeamPortlioTable(SelectedProp: any) {
     }
     const closeActivity = () => {
         setActivityPopup(false)
+        childRef?.current?.setRowSelection({});
     }
     const addActivity = (type: any) => {
         if (checkedList?.TaskType?.Id == undefined || checkedList?.TaskTypeId == undefined) {
@@ -1374,7 +1481,6 @@ function TeamPortlioTable(SelectedProp: any) {
     //-------------------------------------------------------------End---------------------------------------------------------------------------------
     return (
         <div id="ExandTableIds" style={{}}>
-
             <section className="ContentSection">
                 <div className="col-sm-12 clearfix">
                     <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
@@ -1414,14 +1520,27 @@ function TeamPortlioTable(SelectedProp: any) {
             </section>
 
 
-            <section className="TableContentSection taskprofilepagegreen">
+            <section className="TableContentSection row taskprofilepagegreen">
                 <div className="container-fluid">
                     <section className="TableSection">
                         <div className="container p-0">
                             <div className="Alltable mt-2 ">
                                 <div className="col-sm-12 p-0 smart">
                                     <div className="">
-                                        <div className="wrapper">
+                                        <div className="wrapper" id="runtimeTable">
+                                            <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1}
+                                                color={portfolioColor ? portfolioColor : "#000069"}
+                                                speed={2}
+                                                trail={60}
+                                                shadow={false}
+                                                hwaccel={false}
+                                                className="spinner"
+                                                zIndex={2e9}
+                                                top="28%"
+                                                left="50%"
+                                                scale={1.0}
+                                                loadedClassName="loadedContent"
+                                            />
                                             <GlobalCommanTable ref={childRef} callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1} data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity} />
                                         </div>
                                     </div>
@@ -1608,7 +1727,6 @@ function TeamPortlioTable(SelectedProp: any) {
                 ></TimeEntryPopup>
             )}
         </div>
-
     );
 }
 export default TeamPortlioTable;

@@ -257,33 +257,33 @@ function ComponentTable(SelectedProp: any) {
         }
         else {
             if (MeetingItems[0] != undefined) {
-                if (MeetingItems[0].SharewebTaskType != undefined) {
-                    if (MeetingItems[0].SharewebTaskType.Title == 'Activities') {
+                if (MeetingItems[0].TaskType != undefined) {
+                    if (MeetingItems[0].TaskType.Title == 'Activities') {
                         setWSPopup(true)
                     }
                 }
-                if (MeetingItems != undefined && MeetingItems[0].SharewebTaskType?.Title == 'Workstream') {
+                if (MeetingItems != undefined && MeetingItems[0].TaskType?.Title == 'Workstream') {
                     setActivityPopup(true)
                 }
-                if (MeetingItems[0].Portfolio_x0020_Type == 'Service' && MeetingItems[0].SharewebTaskType == undefined && childsData[0] == undefined) {
+                if (MeetingItems[0].Portfolio_x0020_Type == 'Service' && MeetingItems[0].TaskType == undefined && childsData[0] == undefined) {
                     MeetingItems[0]['NoteCall'] = 'Activities';
                     setMeetingPopup(true)
                 }
-                if (MeetingItems[0].Portfolio_x0020_Type == 'Component' && MeetingItems[0].SharewebTaskType == undefined && childsData[0] == undefined) {
+                if (MeetingItems[0].Portfolio_x0020_Type == 'Component' && MeetingItems[0].TaskType == undefined && childsData[0] == undefined) {
                     setActivityPopup(true)
                 }
             }
         }
 
-        if (childsData[0] != undefined && childsData[0].SharewebTaskType != undefined) {
-            if (childsData[0].SharewebTaskType.Title == 'Activities') {
+        if (childsData[0] != undefined && childsData[0].TaskType != undefined) {
+            if (childsData[0].TaskType.Title == 'Activities') {
                 setWSPopup(true)
                 MeetingItems.push(childsData[0])
                 //setMeetingItems(childsData)
             }
         }
 
-        if (childsData[0] != undefined && childsData[0].SharewebTaskType.Title == 'Workstream') {
+        if (childsData[0] != undefined && childsData[0].TaskType.Title == 'Workstream') {
             setActivityPopup(true)
             MeetingItems.push(childsData[0])
         }
@@ -715,7 +715,7 @@ function ComponentTable(SelectedProp: any) {
         }
         //  setData((data) =>[...data])
         //  getFilterLength();
-        //  getOtherSorting('Shareweb_x0020_ID', false);
+        //  getOtherSorting('TaskID', false);
         //   $scope.ValueTitle = undefined;
         // $scope.ShowhideAccordingTitle = undefined;
         //document.getElementById("myDropdown1").style.display = "none";
@@ -926,7 +926,7 @@ function ComponentTable(SelectedProp: any) {
                         // }
                         // if (select.TaxType == 'Priority') {
 
-                        //     if (item.Priority_x0020_Rank
+                        //     if (item.PriorityRank
                         //         == select.Title) {
                         //         RootData.push(item);
                         //     }
@@ -935,7 +935,7 @@ function ComponentTable(SelectedProp: any) {
                         //     if (item.childs !== undefined) {
                         //         item.childs.forEach(function (type: any) {
 
-                        //             if (type.Priority_x0020_Rank == select.Title) {
+                        //             if (type.PriorityRank == select.Title) {
                         //                 item.show = true;
                         //                 item.Child.push(type);
                         //                 RootData.push(item);
@@ -946,7 +946,7 @@ function ComponentTable(SelectedProp: any) {
                         //                 type.childs.forEach(function (vall: any) {
 
 
-                        //                     if (vall.Priority_x0020_Rank == select.Title) {
+                        //                     if (vall.PriorityRank == select.Title) {
                         //                         type.show = true;
                         //                         type.Child.push(vall);
                         //                         RootData.push(item);
@@ -957,7 +957,7 @@ function ComponentTable(SelectedProp: any) {
                         //                         vall.childs.forEach(function (user: any, index: any) {
 
 
-                        //                             if (user.Priority_x0020_Rank == select.Title) {
+                        //                             if (user.PriorityRank == select.Title) {
                         //                                 vall.show = true;
                         //                                 vall.Child.push(user);
                         //                                 RootData.push(item);
@@ -979,7 +979,7 @@ function ComponentTable(SelectedProp: any) {
                         // }
                         // if (select.TaxType == 'Type') {
 
-                        //     if (item.SharewebTaskType != undefined && item.SharewebTaskType.Title == select.Title) {
+                        //     if (item.TaskType != undefined && item.TaskType.Title == select.Title) {
                         //         RootData.push(item);
                         //     }
 
@@ -987,7 +987,7 @@ function ComponentTable(SelectedProp: any) {
                         //     if (item.childs !== undefined) {
                         //         item.childs.forEach(function (type: any) {
 
-                        //             if (type.SharewebTaskType != undefined && type.SharewebTaskType.Title == select.Title) {
+                        //             if (type.TaskType != undefined && type.TaskType.Title == select.Title) {
                         //                 item.show = true;
                         //                 item.Child.push(type);
                         //                 RootData.push(item);
@@ -998,7 +998,7 @@ function ComponentTable(SelectedProp: any) {
                         //                 type.childs.forEach(function (vall: any) {
 
 
-                        //                     if (vall.SharewebTaskType != undefined && vall.SharewebTaskType.Title == select.Title) {
+                        //                     if (vall.TaskType != undefined && vall.TaskType.Title == select.Title) {
                         //                         type.show = true;
                         //                         type.Child.push(vall);
                         //                         RootData.push(item);
@@ -1009,7 +1009,7 @@ function ComponentTable(SelectedProp: any) {
                         //                         vall.childs.forEach(function (user: any, index: any) {
 
 
-                        //                             if (user.SharewebTaskType != undefined && user.SharewebTaskType.Title == select.Title) {
+                        //                             if (user.TaskType != undefined && user.TaskType.Title == select.Title) {
                         //                                 vall.show = true;
                         //                                 vall.Child.push(user);
                         //                                 RootData.push(item);
@@ -1146,15 +1146,15 @@ function ComponentTable(SelectedProp: any) {
                 AllTasksMatches = await web.lists
                     .getById(config.listId)
                     .items
-                    .select('ParentTask/Title', 'ParentTask/Id', 'Services/Title', 'ClientTime', 'Services/Id', 'Events/Id', 'Events/Title', 'ItemRank', 'Portfolio_x0020_Type', 'SiteCompositionSettings', 'SharewebTaskLevel1No',
-                        'SharewebTaskLevel2No', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'Shareweb_x0020_ID',
-                        'Responsible_x0020_Team/Id', 'Responsible_x0020_Team/Title', 'SharewebCategories/Id', 'SharewebCategories/Title', 'ParentTask/Shareweb_x0020_ID', 'SharewebTaskType/Id', 'SharewebTaskType/Title',
-                        'SharewebTaskType/Level', 'Priority_x0020_Rank', 'Team_x0020_Members/Title', 'Team_x0020_Members/Name', 'Component/Id', 'Component/Title', 'Component/ItemType',
-                        'Team_x0020_Members/Id', 'component_x0020_link', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id',
+                    .select('ParentTask/Title', 'ParentTask/Id', 'Services/Title', 'ClientTime', 'Services/Id', 'Events/Id', 'Events/Title', 'ItemRank', 'Portfolio_x0020_Type', 'SiteCompositionSettings', 'TaskLevel',
+                        'TaskLevel', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'TaskID',
+                        'ResponsibleTeam/Id', 'ResponsibleTeam/Title', 'TaskCategories/Id', 'TaskCategories/Title', 'ParentTask/TaskID', 'TaskType/Id', 'TaskType/Title',
+                        'TaskType/Level', 'PriorityRank', 'TeamMembers/Title', 'TeamMembers/Name', 'Component/Id', 'Component/Title', 'Component/ItemType',
+                        'TeamMembers/Id', 'ComponentLink', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id',
                         'ClientCategory/Id', 'ClientCategory/Title', 'FileLeafRef', 'FeedBack', 'Title', 'Id', 'ID', 'PercentComplete', 'StartDate', 'DueDate', 'Comments', 'Categories', 'Status', 'Body',
                         'Mileage', 'PercentComplete', 'ClientCategory', 'Priority', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title'
                     )
-                    .expand('ParentTask', 'Events', 'Services', 'SharewebTaskType', 'AssignedTo', 'Component', 'ClientCategory', 'Author', 'Editor', 'Team_x0020_Members', 'Responsible_x0020_Team', 'SharewebCategories')
+                    .expand('ParentTask', 'Events', 'Services', 'TaskType', 'AssignedTo', 'Component', 'ClientCategory', 'Author', 'Editor', 'TeamMembers', 'ResponsibleTeam', 'TaskCategories')
                     .filter("Status ne 'Completed'")
                     .orderBy('orderby', false)
                     .getAll(4000);
@@ -1171,9 +1171,9 @@ function ComponentTable(SelectedProp: any) {
                         item.childs = [];
                         item.listId = config.listId;
                         item.siteUrl = ContextValue.siteUrl;
-                        if (item.SharewebCategories.results != undefined) {
-                            if (item.SharewebCategories.results.length > 0) {
-                                $.each(item.SharewebCategories.results, function (ind: any, value: any) {
+                        if (item.TaskCategories.results != undefined) {
+                            if (item.TaskCategories.results.length > 0) {
+                                $.each(item.TaskCategories.results, function (ind: any, value: any) {
                                     if (value.Title.toLowerCase() == 'draft') {
                                         item.isDrafted = true;
                                     }
@@ -1215,8 +1215,8 @@ function ComponentTable(SelectedProp: any) {
                                     }
                                 })
                             }
-                            if (result.Responsible_x0020_Team != undefined && result.Responsible_x0020_Team.length > 0) {
-                                map(result.Responsible_x0020_Team, (Assig: any) => {
+                            if (result.ResponsibleTeam != undefined && result.ResponsibleTeam.length > 0) {
+                                map(result.ResponsibleTeam, (Assig: any) => {
                                     if (Assig.Id != undefined) {
                                         map(TaskUsers, (users: any) => {
 
@@ -1230,8 +1230,8 @@ function ComponentTable(SelectedProp: any) {
                                     }
                                 })
                             }
-                            if (result.Team_x0020_Members != undefined && result.Team_x0020_Members.length > 0) {
-                                map(result.Team_x0020_Members, (Assig: any) => {
+                            if (result.TeamMembers != undefined && result.TeamMembers.length > 0) {
+                                map(result.TeamMembers, (Assig: any) => {
                                     if (Assig.Id != undefined) {
                                         map(TaskUsers, (users: any) => {
                                             if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
@@ -1246,22 +1246,22 @@ function ComponentTable(SelectedProp: any) {
                             }
                             result['SiteIcon'] = GetIconImageUrl(result.siteType, ContextValue.siteUrl, undefined);
                             if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
-                                map(result.Team_x0020_Members, (catego: any) => {
+                                map(result.TeamMembers, (catego: any) => {
                                     result.ClientCategory.push(catego);
                                 })
                             }
                             if (result.Id === 1441)
                                 console.log(result);
-                            result['Shareweb_x0020_ID'] = globalCommon.getTaskId(result);
-                            if (result['Shareweb_x0020_ID'] == undefined) {
-                                result['Shareweb_x0020_ID'] = "";
+                            result['TaskID'] = globalCommon.getTaskId(result);
+                            if (result['TaskID'] == undefined) {
+                                result['TaskID'] = "";
                             }
                             result['Item_x0020_Type'] = 'Task';
                             TasksItem.push(result);
                         })
 
-                        AllActivitysData = AllTasks?.filter((elem: any) => elem?.SharewebTaskType?.Title == "Activities");
-                        AllWorkStreamData = AllTasks?.filter((elem: any) => elem?.SharewebTaskType?.Title == "Workstream");
+                        AllActivitysData = AllTasks?.filter((elem: any) => elem?.TaskType?.Title == "Activities");
+                        AllWorkStreamData = AllTasks?.filter((elem: any) => elem?.TaskType?.Title == "Workstream");
                         // AllActivitysData?.forEach((elem: any) => {
                         //     elem.childs = [];
                         //     elem.subRows = [];
@@ -1829,13 +1829,13 @@ function ComponentTable(SelectedProp: any) {
             .items
             //.getById(this.state.itemID)
             .select("ID", "Id", "Title", "Mileage", "TaskListId", "TaskListName", "WorkspaceType", "PortfolioLevel", "PortfolioStructureID", "PortfolioStructureID",
-                "component_x0020_link", "Package", "Comments", "DueDate", "Sitestagging", "Body", "Deliverables", "SiteCompositionSettings", "StartDate",
+                "ComponentLink", "Package", "Comments", "DueDate", "Sitestagging", "Body", "Deliverables", "SiteCompositionSettings", "StartDate",
                 "Created", "Item_x0020_Type", "Help_x0020_Information", "Background", "Categories", "Short_x0020_Description_x0020_On", "TechnicalExplanations", "Idea", "ValueAdded",
-                "CategoryItem", "Priority_x0020_Rank", "Priority", "TaskDueDate", "PercentComplete", "Modified", "CompletedDate", "ItemRank", "Portfolio_x0020_Type", 'Services/Title', 'ClientTime', 'Services/Id', 'Events/Id', 'Events/Title',
+                "CategoryItem", "PriorityRank", "Priority", "TaskDueDate", "PercentComplete", "Modified", "CompletedDate", "ItemRank", "Portfolio_x0020_Type", 'Services/Title', 'ClientTime', 'Services/Id', 'Events/Id', 'Events/Title',
                 "Parent/Id", "Parent/Title", "Component/Id", "Component/Title", "Component/ItemType", "Services/Id", "Services/Title", "Services/ItemType", "Events/Id", "Author/Title", 'Editor/Title',
-                "Events/Title", "Events/ItemType", "SharewebCategories/Id", "SharewebTaskType/Title", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title", 'Responsible_x0020_Team/Id', 'Responsible_x0020_Team/Title',
+                "Events/Title", "Events/ItemType", "TaskCategories/Id", "TaskType/Title", "TaskCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", 'ResponsibleTeam/Id', 'ResponsibleTeam/Title',
             )
-            .expand('Parent', 'Events', 'Services', 'SharewebTaskType', 'AssignedTo', 'Component', 'ClientCategory', 'Author', 'Editor', 'Team_x0020_Members', 'Responsible_x0020_Team', 'SharewebCategories')
+            .expand('Parent', 'Events', 'Services', 'TaskType', 'AssignedTo', 'Component', 'ClientCategory', 'Author', 'Editor', 'TeamMembers', 'ResponsibleTeam', 'TaskCategories')
             .top(4999)
             .filter(filt)
             .get()
@@ -1858,8 +1858,8 @@ function ComponentTable(SelectedProp: any) {
                     }
                 })
             }
-            if (result.Responsible_x0020_Team != undefined && result.Responsible_x0020_Team.length > 0) {
-                map(result.Responsible_x0020_Team, (Assig: any) => {
+            if (result.ResponsibleTeam != undefined && result.ResponsibleTeam.length > 0) {
+                map(result.ResponsibleTeam, (Assig: any) => {
                     if (Assig.Id != undefined) {
                         map(TaskUsers, (users: any) => {
 
@@ -1872,8 +1872,8 @@ function ComponentTable(SelectedProp: any) {
                     }
                 })
             }
-            if (result.Team_x0020_Members != undefined && result.Team_x0020_Members.length > 0) {
-                $.each(result.Team_x0020_Members, function (index: any, Assig: any) {
+            if (result.TeamMembers != undefined && result.TeamMembers.length > 0) {
+                $.each(result.TeamMembers, function (index: any, Assig: any) {
                     if (Assig.Id != undefined) {
                         $.each(TaskUsers, function (index: any, users: any) {
                             if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
@@ -2009,7 +2009,7 @@ function ComponentTable(SelectedProp: any) {
                     if (componentItem?.Id == crntItem?.Id) {
                         if (crntItem.PortfolioStructureID != undefined && crntItem.PortfolioStructureID != '') {
                             task.PortfolioStructureID = crntItem.PortfolioStructureID;
-                            task.ShowTooltipSharewebId = crntItem.PortfolioStructureID + '-' + task.Shareweb_x0020_ID;
+                            task.ShowTooltipSharewebId = crntItem.PortfolioStructureID + '-' + task.TaskID;
                         }
                         if (crntItem.Portfolio_x0020_Type == 'Service') {
                             task.isService = true;
@@ -2039,7 +2039,7 @@ function ComponentTable(SelectedProp: any) {
                     if (componentItem?.Id == crntItem?.Id) {
                         if (crntItem.PortfolioStructureID != undefined && crntItem.PortfolioStructureID != '') {
                             task.PortfolioStructureID = crntItem.PortfolioStructureID;
-                            task.ShowTooltipSharewebId = crntItem.PortfolioStructureID + '-' + task.Shareweb_x0020_ID;
+                            task.ShowTooltipSharewebId = crntItem.PortfolioStructureID + '-' + task.TaskID;
                         }
                         if (crntItem.Portfolio_x0020_Type == 'Events') {
                             task.isService = true;
@@ -2067,7 +2067,7 @@ function ComponentTable(SelectedProp: any) {
                     if (componentItem?.Id == crntItem?.Id) {
                         if (crntItem.PortfolioStructureID != undefined && crntItem.PortfolioStructureID != '') {
                             task.PortfolioStructureID = crntItem.PortfolioStructureID;
-                            task.ShowTooltipSharewebId = crntItem.PortfolioStructureID + '-' + task.Shareweb_x0020_ID;
+                            task.ShowTooltipSharewebId = crntItem.PortfolioStructureID + '-' + task.TaskID;
                         }
                         if (crntItem.Portfolio_x0020_Type == 'Component') {
                             task.isService = true;
@@ -2172,8 +2172,8 @@ function ComponentTable(SelectedProp: any) {
                     }
                 })
             }
-            if (result.Team_x0020_Members != undefined && result.Team_x0020_Members.length > 0) {
-                $.each(result.Team_x0020_Members, function (index: any, Assig: any) {
+            if (result.TeamMembers != undefined && result.TeamMembers.length > 0) {
+                $.each(result.TeamMembers, function (index: any, Assig: any) {
                     if (Assig.Id != undefined) {
                         $.each(TaskUsers, function (index: any, users: any) {
                             if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
@@ -2186,8 +2186,8 @@ function ComponentTable(SelectedProp: any) {
                     }
                 })
             }
-            if (result.Responsible_x0020_Team != undefined && result.Responsible_x0020_Team.length > 0) {
-                $.each(result.Responsible_x0020_Team, function (index: any, Assig: any) {
+            if (result.ResponsibleTeam != undefined && result.ResponsibleTeam.length > 0) {
+                $.each(result.ResponsibleTeam, function (index: any, Assig: any) {
                     if (Assig.Id != undefined) {
                         $.each(TaskUsers, function (index: any, users: any) {
                             if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
@@ -2201,13 +2201,13 @@ function ComponentTable(SelectedProp: any) {
                 })
             }
             if (result.PortfolioStructureID != null && result.PortfolioStructureID != undefined) {
-                result['Shareweb_x0020_ID'] = result.PortfolioStructureID;
+                result['TaskID'] = result.PortfolioStructureID;
             }
             else {
-                result['Shareweb_x0020_ID'] = '';
+                result['TaskID'] = '';
             }
             if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
-                $.each(result.Team_x0020_Members, function (index: any, catego: any) {
+                $.each(result.TeamMembers, function (index: any, catego: any) {
                     result.ClientCategory.push(catego);
                 })
             }
@@ -2371,7 +2371,7 @@ function ComponentTable(SelectedProp: any) {
             var AllTaggedTask: any = [];
             SelectedLevel.forEach((item: any) => {
                 TasksItem.forEach((task: any) => {
-                    if (task.SharewebTaskType != undefined && task.SharewebTaskType.Title != undefined && item.Title == task.SharewebTaskType.Title) {
+                    if (task.TaskType != undefined && task.TaskType.Title != undefined && item.Title == task.TaskType.Title) {
                         AllTaggedTask.push(task);
                     }
                 })
@@ -2388,7 +2388,7 @@ function ComponentTable(SelectedProp: any) {
                         findTaggedComponents(task);
                     }
                     else if (task['Component'] != undefined && task['Component'].length === 0 && task['Events'] != undefined && task['Events'].length === 0) {
-                        // if (task.SharewebTaskType != undefined && task.SharewebTaskType.Title && (task.SharewebTaskType.Title == "Activities" || task.SharewebTaskType.Title == "Workstream" || task.SharewebTaskType.Title == "Task"))
+                        // if (task.TaskType != undefined && task.TaskType.Title && (task.TaskType.Title == "Activities" || task.TaskType.Title == "Workstream" || task.TaskType.Title == "Task"))
                         ComponetsData['allUntaggedTasks'].push(task);
                     }
 
@@ -2399,7 +2399,7 @@ function ComponentTable(SelectedProp: any) {
                         findTaggedComponents(task);
                     }
                     else if (task['Component'] != undefined && task['Component'].length == 0 && task['Services'] != undefined && task['Services'].length == 0) {
-                        // if (task.SharewebTaskType != undefined && task.SharewebTaskType.Title && (task.SharewebTaskType.Title == "Activities" || task.SharewebTaskType.Title == "Workstream" || task.SharewebTaskType.Title == "Task"))
+                        // if (task.TaskType != undefined && task.TaskType.Title && (task.TaskType.Title == "Activities" || task.TaskType.Title == "Workstream" || task.TaskType.Title == "Task"))
                         ComponetsData['allUntaggedTasks'].push(task);
                     }
 
@@ -2410,7 +2410,7 @@ function ComponentTable(SelectedProp: any) {
                         findTaggedComponents(task);
                     }
                     else if (task['Services'] != undefined && task['Services'].length == 0 && task['Events'] != undefined && task['Events'].length == 0) {
-                        // if (task.SharewebTaskType != undefined && task.SharewebTaskType.Title && (task.SharewebTaskType.Title == "Activities" || task.SharewebTaskType.Title == "Workstream" || task.SharewebTaskType.Title == "Task"))
+                        // if (task.TaskType != undefined && task.TaskType.Title && (task.TaskType.Title == "Activities" || task.TaskType.Title == "Workstream" || task.TaskType.Title == "Task"))
                         ComponetsData['allUntaggedTasks'].push(task);
                     }
 
@@ -2765,7 +2765,7 @@ function ComponentTable(SelectedProp: any) {
     //     const { checked } = e.target;
     //     if (checked == true) {
     //         itrm.chekBox = true;
-    //         if (itrm.SharewebTaskType == undefined) {
+    //         if (itrm.TaskType == undefined) {
     //             setActivityDisable(false)
     //             itrm['siteUrl'] = ContextValue.siteUrl;
     //             itrm['listName'] = 'Master Tasks';
@@ -2773,8 +2773,8 @@ function ComponentTable(SelectedProp: any) {
     //             //setMeetingItems(itrm);
 
     //         }
-    //         if (itrm.SharewebTaskType != undefined) {
-    //             if (itrm.SharewebTaskType.Title == 'Activities' || itrm.SharewebTaskType.Title == "Workstream") {
+    //         if (itrm.TaskType != undefined) {
+    //             if (itrm.TaskType.Title == 'Activities' || itrm.TaskType.Title == "Workstream") {
     //                 setActivityDisable(false)
     //                 itrm['siteUrl'] = ContextValue.siteUrl;
     //                 itrm['listName'] = 'Master Tasks';
@@ -2783,8 +2783,8 @@ function ComponentTable(SelectedProp: any) {
     //                 childsData.push(itrm)
     //             }
     //         }
-    //         if (itrm.SharewebTaskType != undefined) {
-    //             if (itrm.SharewebTaskType.Title == 'Task') {
+    //         if (itrm.TaskType != undefined) {
+    //             if (itrm.TaskType.Title == 'Task') {
     //                 setActivityDisable(true)
 
     //             }
@@ -2842,7 +2842,7 @@ function ComponentTable(SelectedProp: any) {
         const checked = eTarget;
         if (checked == true) {
             // itrm.chekBox = true;
-            if (itrm.SharewebTaskType == undefined) {
+            if (itrm.TaskType == undefined) {
                 setActivityDisable(false)
                 itrm['siteUrl'] = ContextValue?.siteUrl;
                 itrm['listName'] = 'Master Tasks';
@@ -2850,8 +2850,8 @@ function ComponentTable(SelectedProp: any) {
                 //setMeetingItems(itrm);
 
             }
-            if (itrm.SharewebTaskType != undefined) {
-                if (itrm?.SharewebTaskType?.Title == 'Activities' || itrm.SharewebTaskType.Title == "Workstream") {
+            if (itrm.TaskType != undefined) {
+                if (itrm?.TaskType?.Title == 'Activities' || itrm.TaskType.Title == "Workstream") {
                     setActivityDisable(false)
                     itrm['siteUrl'] = ContextValue?.siteUrl;
                     // itrm['listName'] = 'Master Tasks';
@@ -2860,8 +2860,8 @@ function ComponentTable(SelectedProp: any) {
                     childsData.push(itrm)
                 }
             }
-            if (itrm?.SharewebTaskType != undefined) {
-                if (itrm?.SharewebTaskType?.Title == 'Task') {
+            if (itrm?.TaskType != undefined) {
+                if (itrm?.TaskType?.Title == 'Task') {
                     setActivityDisable(true)
 
                 }
@@ -2951,7 +2951,7 @@ function ComponentTable(SelectedProp: any) {
                 obj.data.subRows = [];
                 obj.data.flag = true;
                 obj.data.TitleNew = obj.data.Title;
-                // obj.data.Team_x0020_Members=item.TeamMembersIds; 
+                // obj.data.TeamMembers=item.TeamMembersIds; 
                 // obj.AssignedTo =item.AssignedIds;
                 obj.data.siteType = "Master Tasks"
                 if (obj.data.Item_x0020_Type != undefined && obj.data.Item_x0020_Type === 'Component')
@@ -2961,7 +2961,7 @@ function ComponentTable(SelectedProp: any) {
                     obj.data.SiteIconTitle = 'S';// obj.data.Portfolio_x0020_Type != undefined && obj.data.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png'
                 if (obj.data.Item_x0020_Type != undefined && obj.data.Item_x0020_Type === 'Feature')
                     obj.data.SiteIconTitle = 'F';// obj.data.Portfolio_x0020_Type != undefined && obj.data.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/feature_icon.png';
-                obj.data['Shareweb_x0020_ID'] = obj.data.PortfolioStructureID;
+                obj.data['TaskID'] = obj.data.PortfolioStructureID;
                 if (item.props != undefined && item.props.SelectedItem != undefined && item.props.SelectedItem.childs != undefined) {
                     item.props.SelectedItem.childs = item.props.SelectedItem.childs == undefined ? [] : item.props.SelectedItem.childs;
                     item.props.SelectedItem.childs.unshift(obj.data);
@@ -3027,7 +3027,7 @@ function ComponentTable(SelectedProp: any) {
                 item.data.SiteIconTitle = 'F';// item.data.Portfolio_x0020_Type != undefined && item.data.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/feature_icon.png';
 
             // item.data['SiteIcon'] = GetIconImageUrl(item.data.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/', undefined);
-            item.data['Shareweb_x0020_ID'] = item.data.PortfolioStructureID;
+            item.data['TaskID'] = item.data.PortfolioStructureID;
 
             // if (checkedList != undefined && checkedList.length > 0)
             //     checkedList[0].childs.unshift(item.data);
@@ -3056,7 +3056,7 @@ function ComponentTable(SelectedProp: any) {
             item.data.SiteIconTitle = 'S';//item.data.Portfolio_x0020_Type != undefined && item.data.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png'
         if (item.data.Item_x0020_Type != undefined && item.data.Item_x0020_Type === 'Feature')
             item.data.SiteIconTitle = 'F';// item.data.Portfolio_x0020_Type != undefined && item.data.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/feature_icon.png';
-        item.data['Shareweb_x0020_ID'] = item.data.PortfolioStructureID;
+        item.data['TaskID'] = item.data.PortfolioStructureID;
         if (checkedList != undefined && checkedList.length > 0)
             checkedList[0].childs.unshift(item.data);
         else array.unshift(item.data);
@@ -3474,7 +3474,7 @@ function ComponentTable(SelectedProp: any) {
                 )
                 .then((res: any) => {
                     if (ChengedItemTitl === undefined) {
-                        checkedList[0].Shareweb_x0020_ID = PortfolioStructureIDs;
+                        checkedList[0].TaskID = PortfolioStructureIDs;
                         checkedList[0].PortfolioStructureID = PortfolioStructureIDs;
                         checkedList[0].PortfolioLevel = PortfolioLevelNum;
                         if (Item.childs != undefined) {
@@ -3538,7 +3538,7 @@ function ComponentTable(SelectedProp: any) {
 
                     })
                     checkedList[0].PortfolioStructureID = PortfolioStructureIDs;
-                    checkedList[0].Shareweb_x0020_ID = PortfolioStructureIDs;
+                    checkedList[0].TaskID = PortfolioStructureIDs;
                     checkedList[0].PortfolioLevel = PortfolioLevelNum;
                     checkedList[0].IsNew = true;
                     checkedList[0].Item_x0020_Type = ChengedItemTitl;
@@ -3610,7 +3610,7 @@ function ComponentTable(SelectedProp: any) {
     const columns = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
-                accessorKey: "Shareweb_x0020_ID",
+                accessorKey: "TaskID",
                 placeholder: "ID",
                 size: 15,
                 header: ({ table }: any) => (
@@ -3985,53 +3985,53 @@ function ComponentTable(SelectedProp: any) {
     let task = 0;
     data.map((Com) => {
         Com?.subRows?.map((Sub: any) => {
-            if (Sub?.SharewebTaskType?.Title == "Activities") {
+            if (Sub?.TaskType?.Title == "Activities") {
                 activity = activity + 1;
             }
-            if (Sub?.SharewebTaskType?.Title == "Workstream") {
+            if (Sub?.TaskType?.Title == "Workstream") {
                 workstrim = workstrim + 1;
             }
-            if (Sub?.SharewebTaskType?.Title == "Task") {
+            if (Sub?.TaskType?.Title == "Task") {
                 task = task + 1;
             }
             Sub?.subRows?.map((feat: any) => {
-                if (feat?.SharewebTaskType?.Title == "Activities") {
+                if (feat?.TaskType?.Title == "Activities") {
                     activity = activity + 1;
                 }
-                if (feat?.SharewebTaskType?.Title == "Workstream") {
+                if (feat?.TaskType?.Title == "Workstream") {
                     workstrim = workstrim + 1;
                 }
-                if (feat?.SharewebTaskType?.Title == "Task") {
+                if (feat?.TaskType?.Title == "Task") {
                     task = task + 1;
                 }
                 feat?.subRows?.map((acti: any) => {
-                    if (acti?.SharewebTaskType?.Title == "Activities") {
+                    if (acti?.TaskType?.Title == "Activities") {
                         activity = activity + 1;
                     }
-                    if (acti?.SharewebTaskType?.Title == "Workstream") {
+                    if (acti?.TaskType?.Title == "Workstream") {
                         workstrim = workstrim + 1;
                     }
-                    if (acti?.SharewebTaskType?.Title == "Task") {
+                    if (acti?.TaskType?.Title == "Task") {
                         task = task + 1;
                     }
                     acti?.subRows?.map((works: any) => {
-                        if (works?.SharewebTaskType?.Title == "Activities") {
+                        if (works?.TaskType?.Title == "Activities") {
                             activity = activity + 1;
                         }
-                        if (works?.SharewebTaskType?.Title == "Workstream") {
+                        if (works?.TaskType?.Title == "Workstream") {
                             workstrim = workstrim + 1;
                         }
-                        if (works?.SharewebTaskType?.Title == "Task") {
+                        if (works?.TaskType?.Title == "Task") {
                             task = task + 1;
                         }
                         works?.subRows?.map((taskss: any) => {
-                            if (taskss?.SharewebTaskType?.Title == "Activities") {
+                            if (taskss?.TaskType?.Title == "Activities") {
                                 activity = activity + 1;
                             }
-                            if (taskss?.SharewebTaskType?.Title == "Workstream") {
+                            if (taskss?.TaskType?.Title == "Workstream") {
                                 workstrim = workstrim + 1;
                             }
-                            if (taskss?.SharewebTaskType?.Title == "Task") {
+                            if (taskss?.TaskType?.Title == "Task") {
                                 task = task + 1;
                             }
                         })
@@ -4057,7 +4057,7 @@ function ComponentTable(SelectedProp: any) {
 
     if (AfterSearch != undefined && AfterSearch.length > 0) {
         AfterSearch?.map((Comp: any) => {
-            if (Comp.columnFilters.Title == true || Comp.columnFilters.Shareweb_x0020_ID == true || Comp.columnFilters.ClientCategory == true || Comp.columnFilters.TeamLeaderUser == true || Comp.columnFilters.PercentComplete == true || Comp.columnFilters.ItemRank == true || Comp.columnFilters.DueDate == true) {
+            if (Comp.columnFilters.Title == true || Comp.columnFilters.TaskID == true || Comp.columnFilters.ClientCategory == true || Comp.columnFilters.TeamLeaderUser == true || Comp.columnFilters.PercentComplete == true || Comp.columnFilters.ItemRank == true || Comp.columnFilters.DueDate == true) {
                 FilterShowhideShwingData = true;
             }
             if (Comp.original != undefined) {
@@ -4070,13 +4070,13 @@ function ComponentTable(SelectedProp: any) {
                 if (Comp?.original?.Item_x0020_Type == "Feature") {
                     FeatureCopy = FeatureCopy + 1;
                 }
-                if (Comp?.original?.SharewebTaskType?.Title == "Activities") {
+                if (Comp?.original?.TaskType?.Title == "Activities") {
                     activityCopy = activityCopy + 1;
                 }
-                if (Comp?.original?.SharewebTaskType?.Title == "Workstream") {
+                if (Comp?.original?.TaskType?.Title == "Workstream") {
                     workstrimCopy = workstrimCopy + 1;
                 }
-                if (Comp?.original?.SharewebTaskType?.Title == "Task") {
+                if (Comp?.original?.TaskType?.Title == "Task") {
                     taskCopy = taskCopy + 1;
                 }
             }
@@ -4203,7 +4203,7 @@ function ComponentTable(SelectedProp: any) {
                                                 <label>Deliverable-Synonyms </label>
                                                 <input type="text" className="form-control ui-autocomplete-input"
                                                     id="txtDeliverable_x002d_Synonyms"
-                                                    ng-model="Item.Deliverable_x002d_Synonyms" /><span
+                                                    ng-model="Item.DeliverableSynonyms" /><span
                                                         role="status" aria-live="polite"
                                                         className="ui-helper-hidden-accessible"></span>
                                             </div>
@@ -4662,7 +4662,7 @@ function ComponentTable(SelectedProp: any) {
 
                                                     {table?.getRowModel()?.rows?.map((row: any) => {
                                                         return (
-                                                            <tr className={row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Component" ? "c-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "SubComponent" ? "s-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Feature" ? "f-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Activities" ? "a-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Workstream" ? "w-bg" : ""))))}
+                                                            <tr className={row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Component" ? "c-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "SubComponent" ? "s-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Feature" ? "f-bg" : (row?.getIsExpanded() == true && row.original.TaskType?.Title == "Activities" ? "a-bg" : (row?.getIsExpanded() == true && row.original.TaskType?.Title == "Workstream" ? "w-bg" : ""))))}
                                                                 key={row.id}>
                                                                 {row.getVisibleCells().map((cell: any) => {
                                                                     return (
@@ -4710,7 +4710,7 @@ function ComponentTable(SelectedProp: any) {
 
                             {/* {
                                     
-                                    MeetingItems.SharewebTaskType == undefined  &&
+                                    MeetingItems.TaskType == undefined  &&
                                         <ul className="quick-actions">
 
                                             <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
@@ -4744,7 +4744,7 @@ function ComponentTable(SelectedProp: any) {
                                          
                                     } */}
                             {
-                                (childsData != undefined && childsData[0]?.SharewebTaskType?.Title == 'Workstream') ?
+                                (childsData != undefined && childsData[0]?.TaskType?.Title == 'Workstream') ?
                                     <ul className="quick-actions">
 
                                         <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">

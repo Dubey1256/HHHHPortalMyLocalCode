@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Web } from "sp-pnp-js";
 import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
-import '../SmartFilterGolobalBomponents/Style.css'
 import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
 let filterGroupsDataBackup: any = [];
 let filterGroupData1: any = [];
@@ -23,9 +22,12 @@ const SmartFilterSearchGlobal = (item: any) => {
     const [siteConfig, setSiteConfig] = React.useState([]);
     const [finalArray, setFinalArray] = React.useState([])
     const [updatedSmartFilter, setUpdatedSmartFilter] = React.useState(false)
+    const [firstTimecallFilterGroup, setFirstTimecallFilterGroup] = React.useState(false)
     let finalArrayData: any = [];
     let SetAllData: any = [];
     let filt: any = "";
+
+
 
     const getTaskUsers = async () => {
         let web = new Web(ContextValue?.siteUrl);
@@ -76,7 +78,7 @@ const SmartFilterSearchGlobal = (item: any) => {
             .get();
 
         smartmetaDetails?.map((newtest: any) => {
-            if (newtest.Title == "SDC Sites" || newtest.Title == "Tasks" || newtest.Title == "DRR" || newtest.Title == "Small Projects" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
+            if (newtest.Title == "SDC Sites" || newtest.Title == "DRR" || newtest.Title == "Small Projects" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
                 newtest.DataLoadNew = false;
             else if (newtest.TaxType == 'Sites')
                 siteConfigSites.push(newtest)
@@ -94,11 +96,13 @@ const SmartFilterSearchGlobal = (item: any) => {
     React.useEffect(() => {
         GetfilterGroups();
     }, [smartmetaDataDetails])
+
     React.useEffect(() => {
-        if (filterGroupsData[0]?.checked?.length > 0) {
+        if (filterGroupsData[0]?.checked?.length > 0 && firstTimecallFilterGroup === true) {
             FilterDataOnCheck();
         }
-    }, [filterGroupsData])
+    }, [filterGroupsData && firstTimecallFilterGroup]);
+
     React.useEffect(() => {
         if (finalArray.length > 0 && updatedSmartFilter === true) {
             smartFiltercallBackData(finalArray, updatedSmartFilter)
@@ -106,22 +110,25 @@ const SmartFilterSearchGlobal = (item: any) => {
             smartFiltercallBackData(finalArray, updatedSmartFilter)
         }
     }, [finalArray])
-    // React.useEffect(() => {
-    //     if (filterGroupData1.length > 0) {
-
-    //     }
-    // }, [])
 
     let filterGroups: any = [{ Title: 'Portfolio', values: [], checked: [], checkedObj: [], expanded: [] },
     {
-        Title: 'Sites', values: [], checked: [], checkedObj: [], expanded: []
-    }, {
         Title: 'Type', values: [], checked: [], checkedObj: [], expanded: []
-    }, {
+    },
+    {
+        Title: 'Sites', values: [], checked: [], checkedObj: [], expanded: []
+    },
+    {
         Title: 'TeamMember', values: [], checked: [], checkedObj: [], expanded: []
     }, {
         Title: 'Priority', values: [], checked: [], checkedObj: [], expanded: []
     }];
+
+    const SortOrderFunction = (filterGroups: any) => {
+        filterGroups.forEach((elem: any) => {
+            return elem?.values?.sort((a: any, b: any) => a.SortOrder - b.SortOrder);
+        });
+    };
 
     const GetfilterGroups = () => {
         let SitesData: any = [];
@@ -135,12 +142,12 @@ const SmartFilterSearchGlobal = (item: any) => {
                 filterGroups[0].values.push(element);
                 filterGroups[0].checked.push(element.Id)
             }
+            if (element.TaxType == 'Type') {
+                filterGroups[1].values.push(element);
+                filterGroups[1].checked.push(element.Id)
+            }
             if (element.TaxType == 'Sites' || element.TaxType == 'Sites Old') {
                 SitesData.push(element);
-            }
-            if (element.TaxType == 'Type') {
-                filterGroups[2].values.push(element);
-                filterGroups[2].checked.push(element.Id)
             }
             if (element.TaxType == "Priority") {
                 PriorityData.push(element);
@@ -151,9 +158,9 @@ const SmartFilterSearchGlobal = (item: any) => {
                 element.value = element.Id;
                 element.label = element.Title;
                 getChildsBasedOn(element, SitesData);
-                filterGroups[1].values.push(element);
+                filterGroups[2].values.push(element);
                 if (element.Title != 'Shareweb Old')
-                    filterGroups[1].expanded.push(element.Id);
+                    filterGroups[2].expanded.push(element.Id);
             }
         })
         PriorityData.forEach((element: any) => {
@@ -170,11 +177,15 @@ const SmartFilterSearchGlobal = (item: any) => {
         filterGroups.forEach((element: any, index: any) => {
             element.checkedObj = GetCheckedObject(element.values, element.checked)
         });
+        SortOrderFunction(filterGroups);
         setFilterGroups(filterGroups);
         filterGroupsDataBackup = JSON.parse(JSON.stringify(filterGroups));
         filterGroupData1 = JSON.parse(JSON.stringify(filterGroups));
-        rerender()
+        rerender();
         getFilterInfo();
+        if (filterGroups[0]?.checked?.length > 0) {
+            setFirstTimecallFilterGroup(true);
+        }
     }
     const getChildsBasedOn = (item: any, items: any) => {
         item.children = [];
@@ -192,11 +203,11 @@ const SmartFilterSearchGlobal = (item: any) => {
         }
 
         if (item.TaxType == 'Sites' || item.TaxType == 'Sites Old') {
-            if (item.Title == "Shareweb Old" || item.Title == "DRR" || item.Title == "Small Projects" || item.Title == "Offshore Tasks" || item.Title == "Health") {
+            if (item.Title == "Shareweb Old" || item.Title == "DRR" || item.Title == "Small Projects" || item.Title == "Offshore Tasks" || item.Title == "Health" || item.Title == "Gender" || item.Title == "QA" || item.Title == "DE") {
 
             }
             else {
-                filterGroups[1].checked.push(item.Id);
+                filterGroups[2].checked.push(item.Id);
             }
         }
 
@@ -218,10 +229,17 @@ const SmartFilterSearchGlobal = (item: any) => {
         let filterGroups = filterGroupsData;
         filterGroups[index].checked = checked;
         filterGroups[index].checkedObj = GetCheckedObject(filterGroups[index].values, checked)
-        setFilterGroups(filterGroups)
-        rerender()
-    }
+        // //// demo////
+        if (filterGroups[index]?.values.length > 0) {
+            const childrenLength = filterGroups[index]?.values?.reduce((total: any, obj: any) => total + (obj?.children?.length || 0), 0) + (filterGroups[index]?.values?.length ? filterGroups[index]?.values?.length : 0);
+            filterGroups[index].selectAllChecked = childrenLength === checked?.length;
+        }
+        // ///end///
+        setFilterGroups(filterGroups);
+        rerender();
+        checkBoxColor();
 
+    }
     const GetCheckedObject = (arr: any, checked: any) => {
         let checkObj: any = [];
         checked?.forEach((value: any) => {
@@ -246,6 +264,27 @@ const SmartFilterSearchGlobal = (item: any) => {
         });
         return checkObj;
     }
+    const handleSelectAll = (index: any, selectAllChecked: any) => {
+        let filterGroups = [...filterGroupsData];
+        filterGroups[index].selectAllChecked = selectAllChecked;
+        let selectedId: any = [];
+        filterGroups[index].values.forEach((item: any) => {
+            item.checked = selectAllChecked;
+            if (selectAllChecked) {
+                selectedId.push(item?.Id)
+            }
+            item?.children?.forEach((chElement: any) => {
+                if (selectAllChecked) {
+                    selectedId.push(chElement?.Id)
+                }
+            });
+        });
+        filterGroups[index].checked = selectedId;
+        filterGroups[index].checkedObj = GetCheckedObject(filterGroups[index].values, selectedId);
+        setFilterGroups((prev: any) => filterGroups);
+        rerender()
+    }
+
     const FilterDataOnCheck = function () {
         let portFolio: any[] = [];
         let site: any[] = [];
@@ -318,6 +357,7 @@ const SmartFilterSearchGlobal = (item: any) => {
             finalArrayData = updateArray;
         }
         console.log('finalArrayDatafinalArrayData', finalArrayData)
+        setFirstTimecallFilterGroup(false);
     };
     const checkPortfolioMatch = (data: any, portfolioFilter: any): boolean => {
         if (portfolioFilter.length === 0) {
@@ -362,15 +402,9 @@ const SmartFilterSearchGlobal = (item: any) => {
         return false;
     };
     const ClearFilter = function () {
-        // setFilterGroups((prevFile: any) => {
-        //     return filterGroupsDataBackup;
-        // });
-        // // setFilterGroups(filterGroupsDataBackup);
-        // console.log("filterGroupData1", filterGroupData1);
         GetfilterGroups();
         setUpdatedSmartFilter(false);
         setFinalArray([]);
-        // FilterDataOnCheck();
     };
     const UpdateFilterData = () => {
         setUpdatedSmartFilter(true);
@@ -379,15 +413,74 @@ const SmartFilterSearchGlobal = (item: any) => {
 
     const showSmartFilter = () => {
         if (IsSmartfilter == true) {
-            setIsSmartfilter(false)
+            setIsSmartfilter(false);
+            checkBoxColor();
         } else {
-            setIsSmartfilter(true)
+            setIsSmartfilter(true);
+            checkBoxColor();
         }
     }
+    // React.useEffect(() => {
+    //     setTimeout(() => {
+    //         const inputElement = document.getElementsByClassName('custom-checkbox-tree');
+    //         if (inputElement) {
+    //             for (let j = 0; j < inputElement.length; j++) {
+    //                 const checkboxContainer = inputElement[j]
+    //                 const childElements = checkboxContainer.getElementsByTagName('input');
+    //                 for (let i = 0; i < childElements.length; i++) {
+    //                     const checkbox = childElements[i];
+    //                     checkbox.style.borderColor = portfolioColor;
+    //                     checkbox.style.backgroundColor = portfolioColor;
 
+    //                     if (checkbox.checked) {
+    //                         checkbox.style.borderColor = portfolioColor;
+    //                         checkbox.style.backgroundColor = portfolioColor;
+    //                     }else{
+    //                         checkbox.style.borderColor = '';
+    //                         checkbox.style.backgroundColor = '';
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }, 100);
+    // }, [IsSmartfilter]);
+    const checkBoxColor = () => {
+        setTimeout(() => {
+            const inputElement = document.getElementsByClassName('custom-checkbox-tree');
+            if (inputElement) {
+                for (let j = 0; j < inputElement.length; j++) {
+                    const checkboxContainer = inputElement[j]
+                    const childElements = checkboxContainer.getElementsByTagName('input');
+                    const childElements2 = checkboxContainer.getElementsByClassName('rct-title');
+                    for (let i = 0; i < childElements.length; i++) {
+                        const checkbox = childElements[i];
+                        const lable: any = childElements2[i];
+                        if (lable?.style) {
+                            lable.style.color = portfolioColor;
+                        }
+                        checkbox.classList.add('form-check-input', 'cursor-pointer');
+                        if (checkbox.checked) {
+                            checkbox.style.borderColor = portfolioColor;
+                            checkbox.style.backgroundColor = portfolioColor;
+                        } else {
+                            checkbox.style.borderColor = '';
+                            checkbox.style.backgroundColor = '';
+                        }
+                        if (lable?.innerHTML === "QA" || lable?.innerHTML === "Design") {
+                            // checkbox.style.marginLeft = "14px !important;"
+                            checkbox.classList.add('smartFilterAlignMarginQD');
+                        }
+                    }
+                }
+            }
+        }, 200);
+    }
+    React.useEffect(() => {
+        checkBoxColor();
+    }, [expanded]);
     return (
         <>
-            <section className="ContentSection">
+            <section className="ContentSection smartFilterSection">
                 <div className="bg-wihite border p-2">
                     <div className="togglebox">
                         <div className="togglebox">
@@ -395,12 +488,12 @@ const SmartFilterSearchGlobal = (item: any) => {
                                 <label className="toggler full_width mb-10 active">
                                     <span style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter()}>
                                         {IsSmartfilter === true ?
-                                            <SlArrowDown style={{ color: `${portfolioColor}` }} /> : <SlArrowRight style={{ color: `${portfolioColor}` }} />}
+                                            <SlArrowDown style={{ color: `${portfolioColor}`, width: '12px' }} /> : <SlArrowRight style={{ color: `${portfolioColor}`, width: '12px' }} />}
                                         <span className='mx-1'>SmartSearch – Filters</span>
                                     </span>
                                     <span className="ml20" style={{ color: `${portfolioColor}` }} >{filterInfo}</span>
                                     <span className="pull-right bg-color">
-                                        <span className='svg__iconbox svg__icon--share ' style={{ backgroundColor: `${portfolioColor}` }}> </span>
+                                        {IsSmartfilter === true ? <span className='svg__iconbox svg__icon--share ' style={{ backgroundColor: `${portfolioColor}` }}> </span> : ''}
                                     </span>
                                 </label>
                                 {IsSmartfilter === true ? <div className="togglecontent" style={{ display: "block" }}>
@@ -411,37 +504,51 @@ const SmartFilterSearchGlobal = (item: any) => {
                                                     {filterGroupsData != null && filterGroupsData.length > 0 &&
                                                         filterGroupsData?.map((Group: any, index: any) => {
                                                             return (
-                                                                <td valign="top">
-                                                                    <fieldset>
-                                                                        <legend>
-                                                                            <span className="mparent">{Group.Title}</span>
+                                                                <td valign="top" style={{ width: '20%' }}>
+                                                                    <fieldset className='smartFilterStyle ps-2'>
+                                                                        <legend className='SmartFilterHead'>
+                                                                            <span className="mparent d-flex" style={{ borderBottom: "1.5px solid" + portfolioColor, color: portfolioColor }}>
+                                                                                <input className={"form-check-input cursor-pointer"}
+                                                                                    style={Group.selectAllChecked == undefined && Group?.values?.length === Group?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
+                                                                                    type="checkbox"
+                                                                                    checked={Group.selectAllChecked == undefined && Group?.values?.length === Group?.checked?.length ? true : Group.selectAllChecked}
+                                                                                    onChange={(e) => handleSelectAll(index, e.target.checked)}
+                                                                                />
+                                                                                <div className="mx-1">{Group.Title}</div>
+                                                                            </span>
                                                                         </legend>
+                                                                        <div className="custom-checkbox-tree">
+                                                                            <CheckboxTree
+                                                                                nodes={Group.values}
+                                                                                checked={Group.checked}
+                                                                                expanded={expanded}
+                                                                                onCheck={checked => onCheck(checked, index)}
+                                                                                onExpand={expanded => setExpanded(expanded)}
+                                                                                nativeCheckboxes={true}
+                                                                                showNodeIcon={false}
+                                                                                checkModel={'all'}
+                                                                                icons={{
+                                                                                    expandOpen: <SlArrowDown style={{ color: `${portfolioColor}` }} />,
+                                                                                    expandClose: <SlArrowRight style={{ color: `${portfolioColor}` }} />,
+                                                                                    parentClose: null,
+                                                                                    parentOpen: null,
+                                                                                    leaf: null,
+                                                                                }}
+                                                                            />
+                                                                        </div>
                                                                     </fieldset>
-                                                                    <div className="custom-checkbox-container">
-                                                                        <CheckboxTree
-                                                                            nodes={Group.values}
-                                                                            checked={Group.checked}
-                                                                            expanded={expanded}
-                                                                            onCheck={checked => onCheck(checked, index)}
-                                                                            onExpand={expanded => setExpanded(expanded)}
-                                                                            nativeCheckboxes={true}
-                                                                            showNodeIcon={false}
-                                                                            checkModel={'all'}
-                                                                        />
-                                                                    </div>
                                                                 </td>
                                                             )
                                                         })
-
                                                     }
                                                 </tr>
                                             </table>
                                             <div className="col-md-12 pad0 text-end w-100 my-3 mb-5">
-                                                <button type="button" style={{ backgroundColor: `${portfolioColor}`, borderColor: ` ${portfolioColor}` }} className="btn pull-right  btn-primary mx-2" title="Smart Filter" onClick={UpdateFilterData}>
-                                                    Update Filter
-                                                </button>
-                                                <button type="button" style={{ color: `${portfolioColor}`, borderColor: ` ${portfolioColor}` }} className="btn btn-default ml5 pull-right " title="Clear All" onClick={ClearFilter}>
+                                                <button type="button" style={{ color: `${portfolioColor}`, borderColor: ` ${portfolioColor}` }} className="btn btn-default ml5 pull-right mx-2" title="Clear All" onClick={ClearFilter}>
                                                     Clear Filter
+                                                </button>
+                                                <button type="button" style={{ backgroundColor: `${portfolioColor}`, borderColor: ` ${portfolioColor}` }} className="btn pull-right  btn-primary" title="Smart Filter" onClick={UpdateFilterData}>
+                                                    Update Filter
                                                 </button>
                                             </div>
                                         </div>
@@ -453,7 +560,7 @@ const SmartFilterSearchGlobal = (item: any) => {
 
                     </div>
                 </div >
-            </section >
+            </section>
         </>
     )
 

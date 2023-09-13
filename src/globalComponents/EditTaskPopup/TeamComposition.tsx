@@ -231,8 +231,8 @@ const TeamComposition = (props: any) => {
                 })
                 // setTeamMemberUser(TeamMemberUser)
                 // $.each(institute, function (index:any,item:any) {
-                //     if (props.props.Items.Team_x0020_Members.results.length>0) {
-                //         TeamMemberUsers = getUsersWithImage(props.props.Items.Team_x0020_Members.results);
+                //     if (props.props.Items.TeamMembers.results.length>0) {
+                //         TeamMemberUsers = getUsersWithImage(props.props.Items.TeamMembers.results);
                 //     }
                 //     if (props.props.Items != undefined) {
                 //         showComposition();
@@ -464,10 +464,10 @@ const TeamComposition = (props: any) => {
     var TeamMemberUsers: any = []
     var AssignedToUsers: any = []
     const showComposition = () => {
-        if (props.props.Items.Responsible_x0020_Team != undefined) {
+        if (props.props.Items.ResponsibleTeam != undefined) {
 
             if (ResponsibleTeam != undefined && ResponsibleTeam.length > 0) {
-                TeamLeaderData = getUsersWithImage(props.props.Items.Responsible_x0020_Team.results);
+                TeamLeaderData = getUsersWithImage(props.props.Items.ResponsibleTeam.results);
                 $.each(TeamLeaderData, function (index: any, item: any) {
                     if (!isItemExists(ResponsibleTeam, item.Id)) {
                         ResponsibleTeam.push(item);
@@ -475,7 +475,7 @@ const TeamComposition = (props: any) => {
                 });
             }
             else {
-                ResponsibleTeam = getUsersWithImage(props.props.Items.Responsible_x0020_Team.results);
+                ResponsibleTeam = getUsersWithImage(props.props.Items.ResponsibleTeam.results);
             }
 
 
@@ -484,9 +484,9 @@ const TeamComposition = (props: any) => {
         setResponsibleTeams(ResponsibleTeam)
 
 
-        if (props.props.Items.Team_x0020_Members != undefined) {
+        if (props.props.Items.TeamMembers != undefined) {
             if (TeamMemberUsers != undefined && TeamMemberUsers.length > 0) {
-                var TeamMemberUsersData = getUsersWithImage(props.props.Items.Team_x0020_Members.results);
+                var TeamMemberUsersData = getUsersWithImage(props.props.Items.TeamMembers.results);
                 $.each(TeamMemberUsersData, function (index: any, item: any) {
                     if (!isItemExists(TeamMemberUsers, item.Id)) {
                         TeamMemberUsers.push(item);
@@ -494,10 +494,10 @@ const TeamComposition = (props: any) => {
                 });
             }
             else {
-                TeamMemberUsers = getUsersWithImage(props.props.Items.Team_x0020_Members.results);
+                TeamMemberUsers = getUsersWithImage(props.props.Items.TeamMembers.results);
             }
 
-            TeamMemberUsers = getUsersWithImage(props.props.Items.Team_x0020_Members.results);
+            TeamMemberUsers = getUsersWithImage(props.props.Items.TeamMembers.results);
             // $scope.NewTeamConfigurations.push({ Title: 'Team Members', childs: $scope.TeamMemberUsers });
         }
         setTeamMemberUser(TeamMemberUsers)
