@@ -466,8 +466,9 @@ const SmartFilterSearchGlobal = (item: any) => {
                             checkbox.style.borderColor = '';
                             checkbox.style.backgroundColor = '';
                         }
-                        if(lable?.innerHTML === "QA" || lable?.innerHTML === "Design"){
-                            checkbox.style.marginLeft = "14px"
+                        if (lable?.innerHTML === "QA" || lable?.innerHTML === "Design") {
+                            // checkbox.style.marginLeft = "14px !important;"
+                            checkbox.classList.add('smartFilterAlignMarginQD');
                         }
                     }
                 }
@@ -479,7 +480,7 @@ const SmartFilterSearchGlobal = (item: any) => {
     }, [expanded]);
     return (
         <>
-            <section className="ContentSection">
+            <section className="ContentSection smartFilterSection">
                 <div className="bg-wihite border p-2">
                     <div className="togglebox">
                         <div className="togglebox">
@@ -487,12 +488,12 @@ const SmartFilterSearchGlobal = (item: any) => {
                                 <label className="toggler full_width mb-10 active">
                                     <span style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter()}>
                                         {IsSmartfilter === true ?
-                                            <SlArrowDown style={{ color: `${portfolioColor}` }} /> : <SlArrowRight style={{ color: `${portfolioColor}` }} />}
+                                            <SlArrowDown style={{ color: `${portfolioColor}`, width: '12px' }} /> : <SlArrowRight style={{ color: `${portfolioColor}`, width: '12px' }} />}
                                         <span className='mx-1'>SmartSearch – Filters</span>
                                     </span>
                                     <span className="ml20" style={{ color: `${portfolioColor}` }} >{filterInfo}</span>
                                     <span className="pull-right bg-color">
-                                        <span className='svg__iconbox svg__icon--share ' style={{ backgroundColor: `${portfolioColor}` }}> </span>
+                                        {IsSmartfilter === true ? <span className='svg__iconbox svg__icon--share ' style={{ backgroundColor: `${portfolioColor}` }}> </span> : ''}
                                     </span>
                                 </label>
                                 {IsSmartfilter === true ? <div className="togglecontent" style={{ display: "block" }}>
@@ -503,9 +504,9 @@ const SmartFilterSearchGlobal = (item: any) => {
                                                     {filterGroupsData != null && filterGroupsData.length > 0 &&
                                                         filterGroupsData?.map((Group: any, index: any) => {
                                                             return (
-                                                                <td valign="top" style={{width:"20%"}}>
-                                                                    <fieldset className='smartFilterStyle ps-1'>
-                                                                        <legend className='smartFilterHead'>
+                                                                <td valign="top" style={{ width: '20%' }}>
+                                                                    <fieldset className='smartFilterStyle ps-2'>
+                                                                        <legend className='SmartFilterHead'>
                                                                             <span className="mparent d-flex" style={{ borderBottom: "1.5px solid" + portfolioColor, color: portfolioColor }}>
                                                                                 <input className={"form-check-input cursor-pointer"}
                                                                                     style={Group.selectAllChecked == undefined && Group?.values?.length === Group?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
@@ -516,27 +517,26 @@ const SmartFilterSearchGlobal = (item: any) => {
                                                                                 <div className="mx-1">{Group.Title}</div>
                                                                             </span>
                                                                         </legend>
-                                                                   
-                                                                    <div className="custom-checkbox-tree">
-                                                                        <CheckboxTree
-                                                                            nodes={Group.values}
-                                                                            checked={Group.checked}
-                                                                            expanded={expanded}
-                                                                            onCheck={checked => onCheck(checked, index)}
-                                                                            onExpand={expanded => setExpanded(expanded)}
-                                                                            nativeCheckboxes={true}
-                                                                            showNodeIcon={false}
-                                                                            checkModel={'all'}
-                                                                            icons={{
-                                                                                expandOpen: <SlArrowDown style={{ color: `${portfolioColor}` }} />,
-                                                                                expandClose: <SlArrowRight style={{ color: `${portfolioColor}` }} />,
-                                                                                parentClose: null,
-                                                                                parentOpen: null,
-                                                                                leaf: null,
-                                                                            }}
-                                                                        />
-                                                                    </div>
-                                                                     </fieldset>
+                                                                        <div className="custom-checkbox-tree">
+                                                                            <CheckboxTree
+                                                                                nodes={Group.values}
+                                                                                checked={Group.checked}
+                                                                                expanded={expanded}
+                                                                                onCheck={checked => onCheck(checked, index)}
+                                                                                onExpand={expanded => setExpanded(expanded)}
+                                                                                nativeCheckboxes={true}
+                                                                                showNodeIcon={false}
+                                                                                checkModel={'all'}
+                                                                                icons={{
+                                                                                    expandOpen: <SlArrowDown style={{ color: `${portfolioColor}` }} />,
+                                                                                    expandClose: <SlArrowRight style={{ color: `${portfolioColor}` }} />,
+                                                                                    parentClose: null,
+                                                                                    parentOpen: null,
+                                                                                    leaf: null,
+                                                                                }}
+                                                                            />
+                                                                        </div>
+                                                                    </fieldset>
                                                                 </td>
                                                             )
                                                         })
