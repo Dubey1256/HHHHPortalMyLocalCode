@@ -9,18 +9,18 @@ import PageLoader from '../../../globalComponents/pageLoader';
 import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
 import { Web, config } from "sp-pnp-js";
 import { useTable, useSortBy, useFilters, useExpanded, usePagination, HeaderGroup, } from "react-table";
-import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewTool/components/filters";
+//import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewTool/components/filters";
 import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 import * as Moment from 'moment';
 import EditInstituton from "../../EditPopupFiles/EditComponent";
-import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
+//import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import ShowTeamMembers from '../../../globalComponents/ShowTeamMember';
 import { FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaInfoCircle, FaChevronRight, FaChevronDown } from 'react-icons/fa';
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import DisplayTimeEntry from '../../../globalComponents/TimeEntry/TimeEntryComponent';
-import inlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
+//import inlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
 
 var AllListId: any = {};
 let headerOptions: any = {
@@ -169,8 +169,8 @@ const RootLevelDashboard = (props: any) => {
           smartmeta = await web.lists
             .getById(config?.listId)
             .items
-            .select("Id,Title,PriorityRank,Project/PriorityRank,Project/Id,Project/Title,Events/Id,EventsId,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,SiteCompositionSettings,IsTodaysTask,Body,Component/Id,Component/Title,Services/Id,Services/Title,PercentComplete,ComponentId,Categories,ServicesId,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
-            .expand('AssignedTo,Events,Project,Author,Editor,Component,Services,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory')
+            .select("Id,Title,PriorityRank,Project/PriorityRank,Project/Id,Project/Title,Portfolio/Id,Portfolio/Title,PortfolioId,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,SiteCompositionSettings,IsTodaysTask,Body,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+            .expand('AssignedTo,Portfolio,Project,Author,Editor,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory')
             .top(4999)
             .get();
           arraycount++;
@@ -194,15 +194,9 @@ const RootLevelDashboard = (props: any) => {
                 ? Moment(items.Created).format("DD/MM/YYYY")
                 : "";
             items.portfolio = {};
-            if (items?.Component?.length > 0) {
-              items.portfolio = items?.Component[0];
-              items.PortfolioTitle = items?.Component[0]?.Title;
-              items["Portfoliotype"] = "Component";
-            }
-            if (items?.Services?.length > 0) {
-              items.portfolio = items?.Services[0];
-              items.PortfolioTitle = items?.Services[0]?.Title;
-              items["Portfoliotype"] = "Service";
+            if(items?.Portfolio?.Title !=undefined){
+                items.portfolio = items?.Portfolio;
+                items.PortfolioTitle = items?.Portfolio?.Title;
             }
             items["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
             if (items?.Project?.Title != undefined) {
@@ -212,54 +206,15 @@ const RootLevelDashboard = (props: any) => {
               items["ProjectTitle"] = '';
               items["ProjectPriority"] = 0;
             }
-
-
             items.TeamMembersSearch = "";
             items.AssignedToIds = [];
-            // if (items.AssignedTo != undefined) {
-            //     items?.AssignedTo?.map((taskUser: any) => {
-            //         items.AssignedToIds.push(taskUser?.Id)
-            //         AllTaskUsers.map((user: any) => {
-            //             if (user.AssingedToUserId == taskUser.Id) {
-            //                 if (user?.Title != undefined) {
-            //                     items.TeamMembersSearch =
-            //                         items.TeamMembersSearch + " " + user?.Title;
-            //                 }
-            //             }
-            //         });
-            //     });
-            // }
             if (items?.ClientCategory?.length > 0) {
               items.ClientCategorySearch = items?.ClientCategory?.map((elem: any) => elem.Title).join(" ")
             } else {
               items.ClientCategorySearch = ''
             }
-            // items.componentString =
-            //     items.Component != undefined &&
-            //         items.Component != undefined &&
-            //         items.Component.length > 0
-            //         ? getComponentasString(items.Component)
-            //         : "";
+            
             items.TaskID = globalCommon.getTaskId(items);
-            // AllTaskUsers?.map((user: any) => {
-            //     if (user.AssingedToUserId == items.Author.Id) {
-            //         items.createdImg = user?.Item_x0020_Cover?.Url;
-            //     }
-            //     if (items.TeamMembers != undefined) {
-            //         items.TeamMembers.map((taskUser: any) => {
-            //             var newuserdata: any = {};
-            //             if (user.AssingedToUserId == taskUser.Id) {
-            //                 newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
-            //                 newuserdata["Suffix"] = user?.Suffix;
-            //                 newuserdata["Title"] = user?.Title;
-            //                 newuserdata["UserId"] = user?.AssingedToUserId;
-            //                 items["Usertitlename"] = user?.Title;
-            //                 items.AllTeamMember.push(newuserdata);
-            //             }
-
-            //         });
-            //     }
-            // });
             allSitesTasks.push(items);
           });
           let setCount = siteConfig?.length
@@ -280,13 +235,7 @@ const RootLevelDashboard = (props: any) => {
       }
     }
   };
-  const getComponentasString = function (results: any) {
-    var component = "";
-    $.each(results, function (cmp: any) {
-      component += cmp.Title + "; ";
-    });
-    return component;
-  };
+
   function IndeterminateCheckbox({
     indeterminate,
     className = "",
@@ -366,7 +315,7 @@ const RootLevelDashboard = (props: any) => {
           <>
             <span className="d-flex">
               <div className='tooltipSec popover__wrapper me-1' data-bs-toggle='tooltip' data-bs-placement='auto'>
-                {row.original.Services.length >= 1 ? (
+                {row.original.Portfolio?.Title !=undefined ? (
                   <span className='text-success'>{row?.original?.TaskID}</span>
                 ) : (
                   <span>{row?.original?.TaskID}</span>
@@ -381,26 +330,13 @@ const RootLevelDashboard = (props: any) => {
         cell: ({ row, column, getValue }) => (
           <>
             <span className='d-flex'>
-              {row.original.Services.length >= 1 ? (
-                <a
-                  className="hreflink text-success"
+            <a className="hreflink"
                   href={`${row?.original?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                   data-interception="off"
                   target="_blank"
                 >
                   {row?.original?.Title}
                 </a>
-              ) : (
-                <a
-                  className="hreflink"
-                  href={`${row?.original?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
-                  data-interception="off"
-                  target="_blank"
-                >
-                  {row?.original?.Title}
-                </a>
-              )}
-
               {row?.original?.Body !== null && (
                 <span className='me-1'>
                   <div className='popover__wrapper me-1' data-bs-toggle='tooltip' data-bs-placement='auto'>
@@ -426,7 +362,7 @@ const RootLevelDashboard = (props: any) => {
         accessorFn: (row) => row?.Portfolio,
         cell: ({ row }) => (
           <span>
-            {row.original.Services.length >= 1 ? (
+            {row.original?.Portfolio?.Title  &&
               <a
                 className="hreflink text-success"
                 data-interception="off"
@@ -435,16 +371,7 @@ const RootLevelDashboard = (props: any) => {
               >
                 {row?.original?.portfolio?.Title}
               </a>
-            ) : (
-              <a
-                className="hreflink"
-                data-interception="off"
-                target="blank"
-                href={`${row?.original?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
-              >
-                {row?.original?.portfolio?.Title}
-              </a>
-            )}
+            }
           </span>
         ),
         id: "Portfolio",
@@ -458,13 +385,13 @@ const RootLevelDashboard = (props: any) => {
         accessorFn: (row) => row?.PriorityRank,
         cell: ({ row }) => (
           <span>
-            <InlineEditingcolumns
+            {/* <InlineEditingcolumns
               type='Task'
               callBack={inlineCallBack}
               columnName='Priority'
               item={row?.original}
               pageName={'ProjectManagment'}
-            />
+            /> */}
             {/* {row?.original?.PriorityRank} */}
           </span>
         ),
@@ -479,12 +406,12 @@ const RootLevelDashboard = (props: any) => {
         accessorFn: (row) => row?.DueDate,
         cell: ({ row }) => (
           <>
-            <InlineEditingcolumns
+            {/* <InlineEditingcolumns
               callBack={inlineCallBack}
               columnName='DueDate'
               item={row?.original}
               pageName={'ProjectManagment'}
-            />
+            /> */}
             {/* <span>{row?.original?.DisplayDueDate}</span> */}
 
           </>
@@ -501,12 +428,12 @@ const RootLevelDashboard = (props: any) => {
         cell: ({ row }) => (
           <span>
             {/* {row?.original?.PercentComplete} */}
-            <InlineEditingcolumns
+            {/* <InlineEditingcolumns
               callBack={inlineCallBack}
               columnName='PercentComplete'
               item={row?.original}
               pageName={'ProjectManagment'}
-            />
+            /> */}
           </span>
         ),
         id: 'PercentComplete',
@@ -521,7 +448,7 @@ const RootLevelDashboard = (props: any) => {
         accessorFn: (row) => row?.Created,
         cell: ({ row }) => (
           <span>
-            {row.original.Services.length >= 1 ? (
+            {row.original.Portfolio?.Title ? (
               <span className='ms-1 text-success'>{row?.original?.DisplayCreateDate} </span>
             ) : (
               <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
