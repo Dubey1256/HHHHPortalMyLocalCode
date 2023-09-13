@@ -19,7 +19,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 import Loader from "react-loader";
-// import { Bars } from 'react-loader-spinner'
+import { Bars } from 'react-loader-spinner'
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 import SmartFilterSearchGlobal from "../../../globalComponents/SmartFilterGolobalBomponents/SmartFilterGlobalComponents";
@@ -840,6 +840,23 @@ function TeamPortlioTable(SelectedProp: any) {
         }
     }
 
+    const setTableHeight = () => {
+        const table = document.getElementById('runtimeTable');
+        const screenHeight = window.innerHeight;
+        const tableHeight = screenHeight * 0.8 - 5;
+        table.style.maxHeight = `${tableHeight}px`;
+      };
+      React.useEffect(() => {
+        setTableHeight();
+        window.addEventListener('resize', setTableHeight);
+        return () => {
+          window.removeEventListener('resize', setTableHeight);
+        };
+      }, []);
+    
+    
+
+
     ///react table start function//////
     const columns: any = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
@@ -907,13 +924,13 @@ function TeamPortlioTable(SelectedProp: any) {
                             {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== "Others" && (
                                 <a className="text-content hreflink" title={row?.original?.Title} data-interception="off" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
                                     href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.ID} >
-                                    <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : globalFilterHighlited} />
+                                    <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
                                 </a>
                             )}
                             {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== "Others" && (
                                 <a className="text-content hreflink" title={row?.original?.Title} data-interception="off" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
                                     href={ContextValue.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + row?.original?.ID + "&Site=" + row?.original?.siteType} >
-                                    <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : globalFilterHighlited} />
+                                    <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
                                 </a>
                             )}
                             {row?.original.Title === "Others" ? (
@@ -979,22 +996,44 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 size: 131,
             },
+            // {
+            //     accessorKey: "PercentComplete",
+            //     placeholder: "Status",
+            //     header: "",
+            //     resetColumnFilters: false,
+            //     size: 42,
+            //     id: "PercentComplete",
+            // },
             {
-                accessorKey: "PercentComplete",
-                placeholder: "Status",
-                header: "",
-                resetColumnFilters: false,
-                size: 42,
+                accessorFn: (row) => row?.PercentComplete,
+                cell: ({ row }) => (
+                    <div className="text-center">{row?.original?.PercentComplete}</div>
+                ),
                 id: "PercentComplete",
+                placeholder: "Status",
+                resetColumnFilters: false,
+                header: "",
+                size: 42,
             },
             {
-                accessorKey: "ItemRank",
-                placeholder: "Item Rank",
-                header: "",
-                resetColumnFilters: false,
-                size: 42,
+                accessorFn: (row) => row?.ItemRank,
+                cell: ({ row }) => (
+                    <div className="text-center">{row?.original?.ItemRank}</div>
+                ),
                 id: "ItemRank",
+                placeholder: "Item Rank",
+                resetColumnFilters: false,
+                header: "",
+                size: 42,
             },
+            // {
+            //     accessorKey: "ItemRank",
+            //     placeholder: "Item Rank",
+            //     header: "",
+            //     resetColumnFilters: false,
+            //     size: 42,
+            //     id: "ItemRank",
+            // },
             {
                 accessorKey: "DueDate",
                 placeholder: "Due Date",
@@ -1481,14 +1520,14 @@ function TeamPortlioTable(SelectedProp: any) {
             </section>
 
 
-            <section className="TableContentSection taskprofilepagegreen">
+            <section className="TableContentSection row taskprofilepagegreen">
                 <div className="container-fluid">
                     <section className="TableSection">
                         <div className="container p-0">
                             <div className="Alltable mt-2 ">
                                 <div className="col-sm-12 p-0 smart">
                                     <div className="">
-                                        <div className="wrapper">
+                                        <div className="wrapper" id="runtimeTable">
                                             <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1}
                                                 color={portfolioColor ? portfolioColor : "#000069"}
                                                 speed={2}
