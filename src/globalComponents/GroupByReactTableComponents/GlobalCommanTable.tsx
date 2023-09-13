@@ -148,9 +148,9 @@ const getFirstColHeader = ({ hasCheckbox, hasExpanded, isHeaderNotAvlable, portf
     return ({ table }: any) => (
         <>
             {hasExpanded && isHeaderNotAvlable != true && (<>
-                <span className="border-0 bg-Ff" {...{ onClick: table.getToggleAllRowsExpandedHandler(), }}>
+                <span className="border-0 bg-Ff ms-1" {...{ onClick: table.getToggleAllRowsExpandedHandler(), }}>
                     {table.getIsAllRowsExpanded() ? (
-                        <SlArrowDown style={{ color: portfolioColor }} title='Tap to collapse the childs' />) : (<SlArrowRight style={{ color: portfolioColor }} title='Tap to expand the childs' />)}
+                        <SlArrowDown style={{ color: portfolioColor, width: '12px' }} title='Tap to collapse the childs' />) : (<SlArrowRight style={{ color: portfolioColor, width: '12px' }} title='Tap to expand the childs' />)}
                 </span>{" "}
             </>)}
             {hasCheckbox && (
@@ -165,11 +165,11 @@ const getFirstColCell = ({ setExpanded, hasCheckbox, hasCustomExpanded, hasExpan
         <div className="alignCenter">
             {hasExpanded && row.getCanExpand() && (
                 <div className="border-0 alignCenter" {...{ onClick: row.getToggleExpandedHandler(), style: { cursor: "pointer" }, }}>
-                    {row.getIsExpanded() ? <SlArrowDown title={'collapse ' + `${row.original.Title}` + ' childs'} style={{ color: `${row?.original?.PortfolioType?.Color}` }} /> : <SlArrowRight title={'Expand' + `${row.original.Title}` + 'childs'} style={{ color: `${row?.original?.PortfolioType?.Color}` }} />}
+                    {row.getIsExpanded() ? <SlArrowDown title={'collapse ' + `${row.original.Title}` + ' childs'} style={{ color: `${row?.original?.PortfolioType?.Color}`, width: '12px' }} /> : <SlArrowRight title={'Expand' + `${row.original.Title}` + 'childs'} style={{ color: `${row?.original?.PortfolioType?.Color}`, width: '12px' }} />}
                 </div>
             )}{" "}
             {hasCheckbox && (
-                <span style={{ marginLeft: hasExpanded && row.getCanExpand() ? '11px' : hasExpanded !== true ? '0px' : '25px' }}> <IndeterminateCheckbox {...{ checked: row.getIsSelected(), indeterminate: row.getIsSomeSelected(), onChange: row.getToggleSelectedHandler(), }} />{" "}</span>
+                <span style={{ marginLeft: hasExpanded && row.getCanExpand() ? '11px' : hasExpanded !== true ? '0px' : '23px' }}> <IndeterminateCheckbox {...{ checked: row.getIsSelected(), indeterminate: row.getIsSomeSelected(), onChange: row.getToggleSelectedHandler(), }} />{" "}</span>
             )}
             {hasCustomExpanded && <div>
                 {((row.getCanExpand() &&
@@ -328,7 +328,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         hasCheckbox: elem.hasCheckbox,
                         hasExpanded: elem.hasExpanded,
                         isHeaderNotAvlable: elem.isHeaderNotAvlable,
-                        portfolioColor: portfolioColor
+                        portfolioColor: portfolioColor,
                     }),
                     cell: getFirstColCell({
                         setExpanded,
@@ -401,8 +401,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
         }
     }, [])
     React.useEffect(() => {
-        if(table?.getRowModel()?.rows.length>0){
-            table?.getRowModel()?.rows.map((elem:any)=>{
+        if (table?.getRowModel()?.rows.length > 0) {
+            table?.getRowModel()?.rows.map((elem: any) => {
                 if (elem?.original?.Title === "Others") {
                     const newExpandedState = { [elem.id]: true };
                     setExpanded(newExpandedState);
@@ -510,34 +510,34 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 restructureFunct(true)
                 table?.getSelectedRowModel()?.flatRows?.map((elem: any) => {
                     if (elem?.getParentRows() != undefined) {
-                    // parentData = elem?.parentRow;
-                    // parentDataCopy = elem?.parentRow?.original
-                    parentDataCopy = elem?.getParentRows()[0]?.original;
-                    // if (parentData != undefined && parentData?.parentRow != undefined) {
+                        // parentData = elem?.parentRow;
+                        // parentDataCopy = elem?.parentRow?.original
+                        parentDataCopy = elem?.getParentRows()[0]?.original;
+                        // if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                    //     parentData = elem?.parentRow?.parentRow
-                    //     parentDataCopy = elem?.parentRow?.parentRow?.original
+                        //     parentData = elem?.parentRow?.parentRow
+                        //     parentDataCopy = elem?.parentRow?.parentRow?.original
 
-                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                    //         parentData = elem?.parentRow?.parentRow?.parentRow
-                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
-                    //     }
-                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                        //         parentData = elem?.parentRow?.parentRow?.parentRow
+                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
+                        //     }
+                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                    //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
-                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                    //     }
-                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                        //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
+                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                        //     }
+                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                    //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                    //     }
-                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
-                    //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                    //     }
-                    // }
+                        //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                        //     }
+                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                        //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                        //     }
+                        // }
                     }
                     if (parentDataCopy) {
                         elem.original.parentDataId = parentDataCopy
@@ -726,7 +726,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     };
 
     React.useImperativeHandle(ref, () => ({
-        callChildFunction, trueTopIcon, setRowSelection
+        callChildFunction, trueTopIcon, setRowSelection, globalFilter
     }));
 
     const restructureFunct = (items: any) => {
@@ -841,7 +841,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     {table?.getSelectedRowModel()?.flatRows?.length > 0 ?
                         <a onClick={() => openTaskAndPortfolioMulti()} title='Open in new tab' className="openWebIcon p-0"><span style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--openWeb"></span></a>
                         : <a className="openWebIcon p-0" title='Open in new tab'><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a>}
-                    <a className='excal' title='Export to excal' onClick={() => exportToExcel()}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a>
+                    <a className='excal' title='Export to excel' onClick={() => exportToExcel()}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a>
 
                     <a className='brush'><i className="fa fa-paint-brush hreflink" style={{ color: `${portfolioColor}` }} aria-hidden="true" title="Clear All" onClick={() => { setGlobalFilter(''); setColumnFilters([]); }}></i></a>
 

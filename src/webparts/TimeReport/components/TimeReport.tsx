@@ -127,12 +127,8 @@ const TimeReport = (props:any) => {
         const requests = smartmetaDetails.map((listID: any) => web.lists
             .getById(listID?.listId)
             .items
-            .select("ParentTask/Title", "ParentTask/Id", "ClientTime", "ItemRank", "SiteCompositionSettings", "TaskLevel", "TaskLevel",
-                "TimeSpent", "BasicImageInfo", "OffshoreComments", "OffshoreImageUrl", "CompletedDate", "TaskID", "ResponsibleTeam/Id", "ResponsibleTeam/Title",
-                "TaskCategories/Id", "TaskCategories/Title", "ParentTask/TaskID",
-                "TaskType/Id", "TaskType/Title", "TaskType/Level", "PriorityRank", "TeamMembers/Title", "TeamMembers/Name",  "Component/ItemType", "TeamMembers/Id", "ComponentLink", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "ClientCategory/Id", "ClientCategory/Title", "FileLeafRef", "FeedBack", "Title", "Id", "ID", "PercentComplete", "StartDate", "DueDate", "Comments", "Categories", "Status", "Body", "Mileage", "PercentComplete", "ClientCategory", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title")
-            .expand("ParentTask", "TaskType", "AssignedTo", "ClientCategory", "Author", "Editor", "TeamMembers", "ResponsibleTeam", "TaskCategories")
-            .getAll()
+            .select("ID", "Title", "DueDate", "Portfolio_x0020_Type", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Comments")
+            .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "TaskType", "Component", "Services", "Editor").getAll()
         );
 
         try {

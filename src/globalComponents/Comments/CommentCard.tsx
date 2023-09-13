@@ -108,13 +108,24 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     let web = new Web(this.props.siteUrl);
     let taskDetails = [];
     if (this.state.listName != undefined && this.state.listName != null && this.state.listName != "") {
-      taskDetails = await web.lists
+      if(this.state.listName == "Master Tasks" ){
+        taskDetails = await web.lists
         .getByTitle(this.state.listName)
         .items
         .getById(this.state.itemID)
-        .select("ID", "Title", "DueDate", "PortfolioType/Id","PortfolioType/Title" ,"ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "SharewebTaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID","Editor/Title", "Modified", "Comments")
-        .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam","PortfolioType", "SharewebTaskType", "Portfolio", "Editor")
+        .select("ID", "Title", "DueDate", "PortfolioType/Id","PortfolioType/Title" ,"ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "SharewebTaskType/Title", "ClientTime","Editor/Title", "Modified", "Comments" )
+        .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam","PortfolioType", "SharewebTaskType", "Editor")
         .get()
+        }else{
+          taskDetails = await web.lists
+          .getByTitle(this.state.listName)
+          .items
+          .getById(this.state.itemID)
+          .select("ID", "Title", "DueDate", "PortfolioType/Id","PortfolioType/Title" ,"ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "SharewebTaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID","Editor/Title", "Modified", "Comments")
+          .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam","PortfolioType", "SharewebTaskType", "Portfolio", "Editor")
+          .get()
+      
+        }
     } else {
       taskDetails = await web.lists.getById(this.state.listId).items.getById(this.state.itemID).select("ID", "Title", "DueDate", "PortfolioType/Id","PortfolioType/Title" , "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "SharewebTaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title","Portfolio/PortfolioStructureID","Editor/Title", "Modified", "Comments")
         .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "SharewebTaskType","Portfolio","PortfolioType", "Editor")
@@ -144,7 +155,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       Comments: JSON.parse(taskDetails["Comments"]),
       FeedBack: JSON.parse(taskDetails["FeedBack"]),
       SharewebTaskType: taskDetails["SharewebTaskType"] != null ? taskDetails["SharewebTaskType"].Title : '',
-     
+      
       PortfolioType: taskDetails["PortfolioType"],
       TaskUrl: `${this.props.siteUrl}/SitePages/Task-Profile.aspx?taskId=${this.state.itemID}&Site=${this.state.listName}`
     };
@@ -1093,13 +1104,13 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                             <p style={{ margin: '4pt 0pt' }}><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result["ID"]}</span></p>
                           </td>
                           <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4pt' }}>
-                            <p style={{ margin: '4pt 0pt' }}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Component:</span></b></p>
+                            <p style={{ margin: '4pt 0pt' }}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Portfolio:</span></b></p>
                           </td>
                           <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
-                            <p style={{ margin: '4pt 0pt' }}>{this.state.Result["Component"] != null &&
-                              this.state.Result["Component"].length > 0 &&
+                            <p style={{ margin: '4pt 0pt' }}>{this.state.Result["PortfolioType"] != null||this.state.Result["PortfolioType"] !=undefined &&
+                              
                               <span style={{ fontSize: '10.0pt', color: 'black' }}>
-                                {this.joinObjectValues(this.state.Result["Component"])}
+                                {this.joinObjectValues(this.state.Result["PortfolioType"])}
                               </span>
                             }
                             </p>
