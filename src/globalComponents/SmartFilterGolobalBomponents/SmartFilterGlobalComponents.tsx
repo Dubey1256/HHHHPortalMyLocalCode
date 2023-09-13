@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Web } from "sp-pnp-js";
 import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
-import '../SmartFilterGolobalBomponents/Style.css'
 import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
 let filterGroupsDataBackup: any = [];
 let filterGroupData1: any = [];
@@ -230,15 +229,17 @@ const SmartFilterSearchGlobal = (item: any) => {
         let filterGroups = filterGroupsData;
         filterGroups[index].checked = checked;
         filterGroups[index].checkedObj = GetCheckedObject(filterGroups[index].values, checked)
-        //// demo////
-        const allChecked = filterGroups[index].values.every((item: any) => item.checked);
-        filterGroups[index].selectAllChecked = allChecked;
-        ///end///
+        // //// demo////
+        if (filterGroups[index]?.values.length > 0) {
+            const childrenLength = filterGroups[index]?.values?.reduce((total: any, obj: any) => total + (obj?.children?.length || 0), 0) + (filterGroups[index]?.values?.length ? filterGroups[index]?.values?.length : 0);
+            filterGroups[index].selectAllChecked = childrenLength === checked?.length;
+        }
+        // ///end///
         setFilterGroups(filterGroups);
-        rerender()
+        rerender();
+        checkBoxColor();
+
     }
-
-
     const GetCheckedObject = (arr: any, checked: any) => {
         let checkObj: any = [];
         checked?.forEach((value: any) => {
@@ -412,14 +413,70 @@ const SmartFilterSearchGlobal = (item: any) => {
 
     const showSmartFilter = () => {
         if (IsSmartfilter == true) {
-            setIsSmartfilter(false)
+            setIsSmartfilter(false);
+            checkBoxColor();
         } else {
-            setIsSmartfilter(true)
+            setIsSmartfilter(true);
+            checkBoxColor();
         }
     }
+    // React.useEffect(() => {
+    //     setTimeout(() => {
+    //         const inputElement = document.getElementsByClassName('custom-checkbox-tree');
+    //         if (inputElement) {
+    //             for (let j = 0; j < inputElement.length; j++) {
+    //                 const checkboxContainer = inputElement[j]
+    //                 const childElements = checkboxContainer.getElementsByTagName('input');
+    //                 for (let i = 0; i < childElements.length; i++) {
+    //                     const checkbox = childElements[i];
+    //                     checkbox.style.borderColor = portfolioColor;
+    //                     checkbox.style.backgroundColor = portfolioColor;
 
-
-
+    //                     if (checkbox.checked) {
+    //                         checkbox.style.borderColor = portfolioColor;
+    //                         checkbox.style.backgroundColor = portfolioColor;
+    //                     }else{
+    //                         checkbox.style.borderColor = '';
+    //                         checkbox.style.backgroundColor = '';
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }, 100);
+    // }, [IsSmartfilter]);
+    const checkBoxColor = () => {
+        setTimeout(() => {
+            const inputElement = document.getElementsByClassName('custom-checkbox-tree');
+            if (inputElement) {
+                for (let j = 0; j < inputElement.length; j++) {
+                    const checkboxContainer = inputElement[j]
+                    const childElements = checkboxContainer.getElementsByTagName('input');
+                    const childElements2 = checkboxContainer.getElementsByClassName('rct-title');
+                    for (let i = 0; i < childElements.length; i++) {
+                        const checkbox = childElements[i];
+                        const lable: any = childElements2[i];
+                        if (lable?.style) {
+                            lable.style.color = portfolioColor;
+                        }
+                        checkbox.classList.add('form-check-input', 'cursor-pointer');
+                        if (checkbox.checked) {
+                            checkbox.style.borderColor = portfolioColor;
+                            checkbox.style.backgroundColor = portfolioColor;
+                        } else {
+                            checkbox.style.borderColor = '';
+                            checkbox.style.backgroundColor = '';
+                        }
+                        if(lable?.innerHTML === "QA" || lable?.innerHTML === "Design"){
+                            checkbox.style.marginLeft = "14px"
+                        }
+                    }
+                }
+            }
+        }, 200);
+    }
+    React.useEffect(() => {
+        checkBoxColor();
+    }, [expanded]);
     return (
         <>
             <section className="ContentSection">
@@ -446,19 +503,20 @@ const SmartFilterSearchGlobal = (item: any) => {
                                                     {filterGroupsData != null && filterGroupsData.length > 0 &&
                                                         filterGroupsData?.map((Group: any, index: any) => {
                                                             return (
-                                                                <td valign="top">
-                                                                    <fieldset>
-                                                                        <legend>
-                                                                            <span className="mparent d-flex">
+                                                                <td valign="top" style={{width:"20%"}}>
+                                                                    <fieldset className='smartFilterStyle ps-1'>
+                                                                        <legend className='smartFilterHead'>
+                                                                            <span className="mparent d-flex" style={{ borderBottom: "1.5px solid" + portfolioColor, color: portfolioColor }}>
                                                                                 <input className={"form-check-input cursor-pointer"}
+                                                                                    style={Group.selectAllChecked == undefined && Group?.values?.length === Group?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
                                                                                     type="checkbox"
-                                                                                    checked={Group.selectAllChecked}
+                                                                                    checked={Group.selectAllChecked == undefined && Group?.values?.length === Group?.checked?.length ? true : Group.selectAllChecked}
                                                                                     onChange={(e) => handleSelectAll(index, e.target.checked)}
                                                                                 />
                                                                                 <div className="mx-1">{Group.Title}</div>
                                                                             </span>
                                                                         </legend>
-                                                                    </fieldset>
+                                                                   
                                                                     <div className="custom-checkbox-tree">
                                                                         <CheckboxTree
                                                                             nodes={Group.values}
@@ -470,27 +528,27 @@ const SmartFilterSearchGlobal = (item: any) => {
                                                                             showNodeIcon={false}
                                                                             checkModel={'all'}
                                                                             icons={{
-                                                                                expandOpen: <SlArrowDown />,
-                                                                                expandClose: <SlArrowRight />,
+                                                                                expandOpen: <SlArrowDown style={{ color: `${portfolioColor}` }} />,
+                                                                                expandClose: <SlArrowRight style={{ color: `${portfolioColor}` }} />,
                                                                                 parentClose: null,
                                                                                 parentOpen: null,
                                                                                 leaf: null,
                                                                             }}
                                                                         />
                                                                     </div>
+                                                                     </fieldset>
                                                                 </td>
                                                             )
                                                         })
-
                                                     }
                                                 </tr>
                                             </table>
                                             <div className="col-md-12 pad0 text-end w-100 my-3 mb-5">
-                                                <button type="button" style={{ backgroundColor: `${portfolioColor}`, borderColor: ` ${portfolioColor}` }} className="btn pull-right  btn-primary mx-2" title="Smart Filter" onClick={UpdateFilterData}>
-                                                    Update Filter
-                                                </button>
-                                                <button type="button" style={{ color: `${portfolioColor}`, borderColor: ` ${portfolioColor}` }} className="btn btn-default ml5 pull-right " title="Clear All" onClick={ClearFilter}>
+                                                <button type="button" style={{ color: `${portfolioColor}`, borderColor: ` ${portfolioColor}` }} className="btn btn-default ml5 pull-right mx-2" title="Clear All" onClick={ClearFilter}>
                                                     Clear Filter
+                                                </button>
+                                                <button type="button" style={{ backgroundColor: `${portfolioColor}`, borderColor: ` ${portfolioColor}` }} className="btn pull-right  btn-primary" title="Smart Filter" onClick={UpdateFilterData}>
+                                                    Update Filter
                                                 </button>
                                             </div>
                                         </div>
