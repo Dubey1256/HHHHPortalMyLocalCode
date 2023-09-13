@@ -27,8 +27,6 @@ import PageLoader from "../../../globalComponents/pageLoader";
 import CreateActivity from "../../servicePortfolio/components/CreateActivity";
 
 import CreateWS from "../../servicePortfolio/components/CreateWS";
-
-
 //import RestructuringCom from "../../../globalComponents/Restructuring/RestructuringCom";
 var filt: any = "";
 var ContextValue: any = {};
@@ -1223,6 +1221,10 @@ function TeamPortlioTable(SelectedProp: any) {
 
     //----------------------------Code By Santosh---------------------------------------------------------------------------
     const Call = (res: any) => {
+        if(res == "Close"){
+            setIsTask(false);
+            }else{
+            
         childRef?.current?.setRowSelection({});
         setIsComponent(false);
         setIsTask(false);
@@ -1282,6 +1284,8 @@ function TeamPortlioTable(SelectedProp: any) {
         refreshData();
 
     }
+        
+}
     // new change////
     const CreateActivityPopup = (type: any) => {
         if (checkedList?.TaskType === undefined) {
@@ -1576,7 +1580,8 @@ function TeamPortlioTable(SelectedProp: any) {
                 <EditInstituton
                     item={SharewebComponent}
                     Calls={Call}
-                    SelectD={SelectedProp}
+                    SelectD={SelectedProp.NextProp}
+                    portfolioTypeData={portfolioTypeData}
                 >
                     {" "}
                 </EditInstituton>
