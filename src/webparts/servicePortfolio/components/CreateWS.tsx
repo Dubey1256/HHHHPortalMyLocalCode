@@ -1107,7 +1107,7 @@ const CreateWS = (props: any) => {
             Categories: categoriesItem ? categoriesItem : null,
             SharewebCategoriesId: { "results": CategoryID },
             Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
-            PortfolioId: AllItems.Id,
+            PortfolioId: AllItems?.PortfolioType?.Id,
             PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
             ParentTaskId: AllItems.Id,
             TaskTypeId: SharewebTasknewTypeId,
@@ -1370,7 +1370,7 @@ const CreateWS = (props: any) => {
 
             Categories: categoriesItem ? categoriesItem : null,
             Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
-            PortfolioId: AllItems.Id,
+             PortfolioId: AllItems?.PortfolioType?.Id,
             PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
             TaskTypeId: SharewebTasknewTypeId,
             SharewebCategoriesId: { "results": CategoryID },

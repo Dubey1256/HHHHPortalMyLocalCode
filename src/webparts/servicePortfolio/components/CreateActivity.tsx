@@ -1250,7 +1250,7 @@ const CreateActivity = (props: any) => {
                             DueDate: date != undefined ? Moment(date).format("MM-DD-YYYY") : null,
                             ServicesId: { "results": RelevantPortfolioIds },
                             SharewebCategoriesId: { "results": CategoryID },
-                            PortfolioId: AllItems.Id,
+                            PortfolioId: AllItems?.Id,
                             PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
                             TaskTypeId: SharewebTasknewTypeId,
                             ParentTaskId: AllItems.Id,
