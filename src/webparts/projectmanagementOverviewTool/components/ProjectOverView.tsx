@@ -1622,29 +1622,26 @@ export default function ProjectOverview(props: any) {
                 <div className="col-sm-12 pad0 smart">
                     <div className="section-event project-overview-Table">
                         <div >
-                            <div className='header-section justify-content-between row'>
-                                <div className="col-sm-8">
-                                    <h2 style={{ color: "#000066", fontWeight: "600" }}>Project Management Overview</h2>
-                                </div>
-                                <div className="col-sm-4 text-end">
+                            <div className='align-items-center d-flex justify-content-between'>
+                                    <h2 className='heading'>Project Management Overview</h2>
                                     <AddProject CallBack={CallBack} AllListId={AllListId} />
                                     {/* {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a></span> : ''} */}
-                                </div>
+                               
                             </div>
                             <>
-                                <div className='ProjectOverViewRadioFlat  d-flex justify-content-between'>
+                                <div className='ProjectOverViewRadioFlat  d-flex justify-content-between SpfxCheckRadio'>
                                     <dl className='alignCenter gap-2 mb-0'>
-                                        <dt className='form-check l-radio'>
-                                            <input className='form-check-input' type="radio" value="Projects" name="date" checked={selectedView == 'Projects'} onClick={() => setSelectedView('Projects')} /> Projects
+                                        <dt>
+                                            <input className='Radio' type="radio" value="Projects" name="date" checked={selectedView == 'Projects'} onClick={() => setSelectedView('Projects')} /> Projects
                                         </dt>
-                                        <dt className='form-check l-radio'>
-                                            <input className='form-check-input' type="radio" value="flat" name="date" checked={selectedView == 'flat'} onClick={() => setSelectedView('flat')} /> Today's Tasks
+                                        <dt>
+                                            <input className='radio' type="radio" value="flat" name="date" checked={selectedView == 'flat'} onClick={() => setSelectedView('flat')} /> Today's Tasks
                                         </dt>
-                                        <dt className='form-check l-radio'>
-                                            <input className='form-check-input' type="radio" value="grouped" name="date" checked={selectedView == 'grouped'} onClick={() => setSelectedView('grouped')} /> Grouped View
+                                        <dt>
+                                            <input className='radio' type="radio" value="grouped" name="date" checked={selectedView == 'grouped'} onClick={() => setSelectedView('grouped')} /> Grouped View
                                         </dt>
-                                        <dt className='form-check l-radio'>
-                                            <input className='form-check-input' type="radio" value="teamWise" name="date" checked={selectedView == 'teamWise'} onClick={() => setSelectedView('teamWise')} /> Team View
+                                        <dt>
+                                            <input className='radio' type="radio" value="teamWise" name="date" checked={selectedView == 'teamWise'} onClick={() => setSelectedView('teamWise')} /> Team View
                                         </dt>
 
                                     </dl>
