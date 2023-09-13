@@ -1,5 +1,4 @@
 import * as React from 'react';
-import styles from './AllTaskUser.module.scss';
 import { ContextualMenu, IContextualMenuItem } from "office-ui-fabric-react/lib/ContextualMenu";
 
 export const TermLabel: React.FC = () => {
@@ -12,20 +11,6 @@ export const TermLabel: React.FC = () => {
   const hideContextualMenu = React.useCallback(() => {
     setShowContextualMenu(false);
   },[setShowContextualMenu]);
-
- 
-
-
-
-  
-
-
-
-
-
- 
-
-  
   const menuItems: IContextualMenuItem[] = [
     {
       key: 'copyItem',
@@ -50,8 +35,8 @@ export const TermLabel: React.FC = () => {
     }];
  
   return (
-    <li className={styles.termLabel}>            
-      <div ref={linkRef} className={`${styles.label}`} onClick={()=>setShowContextualMenu(true)}>
+    <li>            
+      <div ref={linkRef} onClick={()=>setShowContextualMenu(true)}>
         TEST
       </div>
       <ContextualMenu
