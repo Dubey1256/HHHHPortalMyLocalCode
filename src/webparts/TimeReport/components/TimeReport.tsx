@@ -36,6 +36,7 @@ var checkDate: any = ''
 //var QATime: any = 0
 var FeedBackItemArray: any = [];
 var todayLeaveUsers:any=[]
+var  finalData:any=[]
 //var DesignTime: any = 0
 var TotalTime: any = 0
 var CurrentUserId=''
@@ -126,12 +127,8 @@ const TimeReport = (props:any) => {
         const requests = smartmetaDetails.map((listID: any) => web.lists
             .getById(listID?.listId)
             .items
-            .select("ParentTask/Title", "ParentTask/Id", "Services/Title", "ClientTime", "Services/Id", "Events/Id", "Events/Title", "ItemRank", "Portfolio_x0020_Type", "SiteCompositionSettings", "TaskLevel", "TaskLevel",
-                "TimeSpent", "BasicImageInfo", "OffshoreComments", "OffshoreImageUrl", "CompletedDate", "TaskID", "ResponsibleTeam/Id", "ResponsibleTeam/Title",
-                "TaskCategories/Id", "TaskCategories/Title", "ParentTask/TaskID",
-                "TaskType/Id", "TaskType/Title", "TaskType/Level", "PriorityRank", "TeamMembers/Title", "TeamMembers/Name", "Component/Id", "Component/Title", "Component/ItemType", "TeamMembers/Id", "ComponentLink", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "ClientCategory/Id", "ClientCategory/Title", "FileLeafRef", "FeedBack", "Title", "Id", "ID", "PercentComplete", "StartDate", "DueDate", "Comments", "Categories", "Status", "Body", "Mileage", "PercentComplete", "ClientCategory", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title")
-            .expand("ParentTask", "Events", "Services", "TaskType", "AssignedTo", "Component", "ClientCategory", "Author", "Editor", "TeamMembers", "ResponsibleTeam", "TaskCategories")
-            .getAll()
+            .select("ID", "Title", "DueDate", "Portfolio_x0020_Type", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Comments")
+            .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "TaskType", "Component", "Services", "Editor").getAll()
         );
 
         try {
@@ -296,6 +293,7 @@ const TimeReport = (props:any) => {
     }
     const GetleaveUser=async(selectDate:any)=>{
         var myData:any=[]
+        var leaveData:any=[]
         var leaveUser:any=[]
         todayLeaveUsers=[]
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
@@ -328,17 +326,17 @@ const TimeReport = (props:any) => {
 
                      if (TodayDate >= start && TodayDate <= End){
                         console.log(val)
-                        leaveUser.push(val)
+                        leaveData.push(val)
     
                     }
                 
                
             })
-            console.log(leaveUser)
-            leaveUser?.forEach((val:any)=>{
+            console.log(leaveData)
+            leaveData?.forEach((val:any)=>{
                 var users:any={}
                 AllUsers?.forEach((item:any)=>{
-                    if(val?.Employee?.Id == item?.AssingedToUserId){
+                    if(item?.AssingedToUserId != null && val?.Employee?.Id == item?.AssingedToUserId){
                         users['userName'] = item.Title
                         users['Components'] = ''
                         users['SubComponents'] = ''
@@ -355,9 +353,12 @@ const TimeReport = (props:any) => {
                     }
                 })
             })
-            console.log(todayLeaveUsers)
-            if(todayLeaveUsers != undefined && todayLeaveUsers.length>0){
-                 leaveUsers = todayLeaveUsers.length * 8
+              finalData = todayLeaveUsers.filter((val: any, TaskId: any, array: any) => {
+                 return array.indexOf(val) == TaskId;
+          })
+            console.log(finalData)
+            if(finalData != undefined && finalData.length>0){
+                 leaveUsers = finalData.length * 8
             }
            
     }
@@ -610,7 +611,7 @@ const TimeReport = (props:any) => {
             })
             TotleTaskTime = QATime + DevloperTime + DesignTime + leaveUsers
         }
-        todayLeaveUsers?.forEach((items:any)=>{
+        finalData?.forEach((items:any)=>{
             SelectedTime.push(items)
         })
         setData(SelectedTime)
@@ -1151,7 +1152,7 @@ var ReportDate = new Date(a1)
                 </div>
             </div>
             <div className='row'>
-                <div className='col-7 mt-4 showDate'>
+                <div className='col-7 showDate'>
 
                     <input type='date' value={Moment(selectdate!= undefined?selectdate:defaultDate).format("YYYY-MM-DD")} max="9999-12-31 mx-3" onChange={(e) => setSelectDate(e.target.value)} />
                     <label className='mx-2 SpfxCheckRadio'>

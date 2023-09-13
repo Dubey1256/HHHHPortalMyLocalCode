@@ -135,8 +135,8 @@ function TasksTable(props: any) {
   const [smartmetaDetails, setsmartmetaDetails] = React.useState([]);
   const [checkData, setcheckData] = React.useState(null)
 
-  IsUpdated = props.props.Portfolio_x0020_Type;
-
+  // IsUpdated = props.props.Portfolio_x0020_Type;
+  IsUpdated = props.props.PortfolioType;
 
   const GetSmartmetadata = async () => {
     //  var metadatItem: any = []
@@ -174,15 +174,15 @@ function TasksTable(props: any) {
 
   const loadActivityTasks = async (task: any) => {
     let activity: any = [];
-    var select = "TaskLevel,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,TaskLevel,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Component/Id,Component/Title,Component/ItemType, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,TaskType,AssignedTo,Component,ClientCategory,Author,Editor,TeamMembers,ResponsibleTeam,TaskCategories&$filter=Id eq " + task.ParentTask.Id + ""
+    var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,TaskLevel,ItemRank,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,PortfolioType,ResponsibleTeam,TaskCategories&$filter=Id eq " + task.ParentTask.Id + ""
     activity = await globalCommon.getData(props?.AllListId?.siteUrl, task.listId, select)
     if (activity.length > 0)
       GetComponents(activity[0])
     LoadAllSiteTasks(filter);
   }
   const loadWSTasks = async (task: any) => {
-
-    var select = "TaskLevel,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,TaskLevel,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Component/Id,Component/Title,Component/ItemType, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,TaskType,AssignedTo,Component,ClientCategory,Author,Editor,TeamMembers,ResponsibleTeam,TaskCategories&$filter=ParentTask/Id eq " + task.Id + ""
+    var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,TaskLevel,ItemRank,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,PortfolioType,ResponsibleTeam,TaskCategories&$filter=ParentTask/Id eq " + task.Id + ""
+    // var select = "TaskLevel,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,TaskLevel,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Component/Id,Component/Title,Component/ItemType, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,TaskType,AssignedTo,Component,ClientCategory,Author,Editor,TeamMembers,ResponsibleTeam,TaskCategories&$filter=ParentTask/Id eq " + task.Id + ""
     AllWSTasks = await globalCommon.getData(props?.AllListId?.siteUrl, task.listId, select)
     if (AllWSTasks.length === 0)
       filter += '(ParentTask/Id eq ' + props.props.Id + ' )'
@@ -231,7 +231,8 @@ function TasksTable(props: any) {
     //     if (config.Title != 'Master Tasks' && config.Title != 'SDC Sites') {
     try {
       let AllTasksMatches = [];
-      var select = "TaskLevel,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,TaskLevel,Services/Id, Project/Id,Project/PortfolioStructureID, Project/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Component/Id,Component/Title,Component/ItemType, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask, Project,Services,TaskType,AssignedTo,Component,ClientCategory,Author,Editor,TeamMembers,ResponsibleTeam,TaskCategories&$filter=" + filter + ""
+      var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,TaskLevel,ItemRank,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,PortfolioType,ResponsibleTeam,TaskCategories&$filter=" + filter + ""
+      // var select = "TaskLevel,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,TaskLevel,Services/Id, Project/Id,Project/PortfolioStructureID, Project/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Component/Id,Component/Title,Component/ItemType, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask, Project,Services,TaskType,AssignedTo,Component,ClientCategory,Author,Editor,TeamMembers,ResponsibleTeam,TaskCategories&$filter=" + filter + ""
       AllTasksMatches = await globalCommon.getData(props?.AllListId?.siteUrl, props.props.listId, select)
       console.log(AllTasksMatches);
       Counter++;
@@ -324,9 +325,9 @@ function TasksTable(props: any) {
           if (result['TaskID'] == undefined) {
             result['TaskID'] = "";
           }
-          result['Item_x0020_Type'] = 'Task';
+          result['ItemType'] = 'Task';
 
-          result.Portfolio_x0020_Type = 'Component';
+          result.PortfolioType = 'Component';
 
         })
         let allParentTasks = $.grep(AllTasks, function (type: any) { return (type.ParentTask != undefined && type.ParentTask.Id === props.props.Id) && (type.TaskType != undefined && type.TaskType.Title != 'Workstream') });
@@ -355,11 +356,7 @@ function TasksTable(props: any) {
         }
 
         var temp: any = {};
-        // temp.Title = 'Tasks';
-        // temp.childs = allParentTasks;
-        // temp.subRows = allParentTasks
-        // temp.childsLength = allParentTasks.length;
-        // temp.subRowsLength = allParentTasks.length
+     
         temp.flag = true;
         temp.show = true;
         temp.PercentComplete = '';
@@ -387,20 +384,20 @@ function TasksTable(props: any) {
     // })
   }
   const GetComponents = async (Item: any) => {
-    var filt = "Id eq " + (Item.Component.length > 0 ? Item.Component[0].Id : Item.Services[0].Id) + "";
+    var filt = "Id eq " +Item?. Portfolio?.Id + "";
     let web = new Web(props?.AllListId?.siteUrl);
     let compo = [];
     compo = await web.lists
       .getById(props?.AllListId?.MasterTaskListID)
       .items
-      .select("ID", "Id", "Title", "Mileage", "Portfolio_x0020_Type", "ItemType",
-      )
+      .select("ID", "Id", "Title", "Mileage", "PortfolioType/Id","PortfolioType/Title","PortfolioType/Color", "ItemType",
+      ).expand('PortfolioType')
 
       .top(4999)
       .filter(filt)
       .get()
     componentDetails = compo[0]
-    IsUpdated = componentDetails.Portfolio_x0020_Type;
+    IsUpdated = componentDetails.PortfoliType.Title;
     if (props.props.ParentTask != undefined && props.props.ParentTask.Title != undefined)
       props.props.ParentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Activity.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png';
     else if (props.props.TaskType != undefined && props.props.TaskType === 'Activities')
@@ -457,7 +454,7 @@ function TasksTable(props: any) {
     let ParentTaskId: any;
     if (childItem != undefined && childItem.data?.ItmesDelete == undefined) {
 
-      childItem.data.Item_x0020_Type = "Task";
+      childItem.data.ItemType = "Task";
 
 
 
@@ -562,27 +559,7 @@ function TasksTable(props: any) {
         }
 
       })
-      // if (ComponentsData != undefined && ComponentsData.length > 0) {
-      //     ComponentsData.forEach((comp: any, index: any) => {
-      //         if (comp.Id != undefined && item.props.SelectedItem != undefined && comp.Id === item.props.SelectedItem.Id){
-      //             comp.childsLength =item.props.SelectedItem.childs.length;
-      //             comp.show = comp.show ==undefined ?false : comp.show
-      //             comp.childs = item.props.SelectedItem.childs;
-      //         }
-      //         if (comp.childs != undefined && comp.childs.length > 0) { 
-      //             comp.childs.forEach((subcomp: any, index: any) => {
-      //                 if (subcomp.Id != undefined && item.props.SelectedItem != undefined && subcomp.Id === item.props.SelectedItem.Id){
-      //                     subcomp.childsLength =item.props.SelectedItem.childs.length;
-      //                     subcomp.show = subcomp.show ==undefined ?false : subcomp.show
-      //                     subcomp.childs = item.props.SelectedItem.childs;
-      //                 }
-      //             })
-      //         }
-
-      //     })
-      //     // }
-      // }
-      // setData((data) => [...ComponentsData]);
+     
     }
     if (!isOpenPopup && item.data != undefined) {
       item.data.childs = [];
@@ -832,7 +809,7 @@ function TasksTable(props: any) {
       {
         cell: ({ row, getValue }) => (
           <>
-            {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && (
+            {row?.original?.ItemType == "Task" && row?.original?.siteType != "Master Tasks" && (
               <a className='time-icons' onClick={(e) => EditData(e, row?.original)} >
                 <span title='Time' className="svg__iconbox svg__icon--clock"></span>
               </a>
@@ -869,7 +846,7 @@ function TasksTable(props: any) {
             <a className='d-flex'>
               {row?.original?.isRestructureActive && (
                 <span onClick={(e) => OpenModal(row?.original)}><img className="icon-sites-img me-2" src={row?.original?.Restructuring} /> </span>)}
-              {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && (
+              {row?.original?.ItemType == "Task" && row?.original?.siteType != "Master Tasks" && (
                 <span title='Edit' onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit"></span>
               )}
             </a>
@@ -928,7 +905,7 @@ function TasksTable(props: any) {
 
           if (obj.Id === items.Id && obj.TaskType?.Title != undefined) {
             obj.isRestructureActive = false;
-            newobj = { Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIcon, TaskType: obj.TaskType, }
+            newobj = { Title: obj.Title, ItemType: obj.ItemType, Id: obj.Id, siteIcon: obj.SiteIcon, TaskType: obj.TaskType, }
             ArrayTest.push(newobj);
 
           }
@@ -943,9 +920,9 @@ function TasksTable(props: any) {
                 obj.isRestructureActive = false;
                 sub.isRestructureActive = false;
                 newobj = {
-                  Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle, TaskType: obj.TaskType,
+                  Title: obj.Title, ItemType: obj.ItemType, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle, TaskType: obj.TaskType,
                   newChild: {
-                    Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIcon, TaskType: sub.TaskType,
+                    Title: sub.Title, ItemType: sub.ItemType, Id: sub.Id, siteIcon: sub.SiteIcon, TaskType: sub.TaskType,
                   }
                 }
                 ArrayTest.push(newobj);
@@ -1062,14 +1039,14 @@ function TasksTable(props: any) {
             array.push(...{ ...latestCheckedList });
             checkUpdate = checkUpdate + 1;
           }
-          if (obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate1 == 1) {
+          if (obj.Id === backupCheckedList[0]?.Id && obj.ItemType === backupCheckedList[0]?.ItemType && obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate1 == 1) {
             array.splice(index, 1);
             checkUpdate = checkUpdate1 + 1;
           }
           if (obj.childs != undefined && obj.childs.length > 0) {
             obj.childs.forEach((sub: any, indexsub: any) => {
               sub.isRestructureActive = false;
-              if (sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate1 == 1) {
+              if (sub.Id === backupCheckedList[0]?.Id && sub.ItemType === backupCheckedList[0]?.ItemType && sub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate1 == 1) {
                 array[index]?.subRows.splice(indexsub, 1);
                 array[index]?.childs.splice(indexsub, 1);
                 checkUpdate = checkUpdate1 + 1;
@@ -1142,24 +1119,24 @@ function TasksTable(props: any) {
         let array = data;
         array.forEach((obj: any, index: any) => {
           obj.isRestructureActive = false;
-          if (obj.Id === NewArrayBackup[0]?.Id && obj.Item_x0020_Type === NewArrayBackup[0]?.Item_x0020_Type && obj.TaskType?.Title === NewArrayBackup[0]?.TaskType?.Title && checkUpdate != 3) {
+          if (obj.Id === NewArrayBackup[0]?.Id && obj.ItemType === NewArrayBackup[0]?.ItemType && obj.TaskType?.Title === NewArrayBackup[0]?.TaskType?.Title && checkUpdate != 3) {
             obj.subRows.push(...latestCheckedList);
             obj.childs.push(...latestCheckedList);
             checkUpdate = checkUpdate + 1;
           }
-          if (obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
+          if (obj.Id === backupCheckedList[0]?.Id && obj.ItemType === backupCheckedList[0]?.ItemType && obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
             array.splice(index, 1);
             checkUpdate = checkUpdate + 1;
           }
           if (obj.childs != undefined && obj.childs.length > 0) {
             obj.childs.forEach((sub: any, indexsub: any) => {
               sub.isRestructureActive = false;
-              if (sub.Id === NewArrayBackup[0]?.Id && sub.Item_x0020_Type === NewArrayBackup[0]?.Item_x0020_Type && sub.TaskType?.Title === NewArrayBackup[0]?.TaskType?.Title && checkUpdate != 3) {
+              if (sub.Id === NewArrayBackup[0]?.Id && sub.ItemType === NewArrayBackup[0]?.ItemType && sub.TaskType?.Title === NewArrayBackup[0]?.TaskType?.Title && checkUpdate != 3) {
                 sub.subRows.push(...latestCheckedList);
                 sub.childs.push(...latestCheckedList);
                 checkUpdate = checkUpdate + 1;
               }
-              if (sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
+              if (sub.Id === backupCheckedList[0]?.Id && sub.ItemType === backupCheckedList[0]?.ItemType && sub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                 array[index]?.subRows.splice(indexsub, 1);
                 array[index]?.childs.splice(indexsub, 1);
                 checkUpdate = checkUpdate + 1;
@@ -1167,12 +1144,12 @@ function TasksTable(props: any) {
               if (sub.childs != undefined && sub.childs.length > 0) {
                 sub.childs.forEach((newsub: any, lastIndex: any) => {
                   newsub.isRestructureActive = false;
-                  if (newsub.Id === NewArrayBackup[0]?.Id && newsub.Item_x0020_Type === NewArrayBackup[0]?.Item_x0020_Type && newsub.TaskType?.Title === NewArrayBackup[0]?.TaskType?.Title && checkUpdate != 3) {
+                  if (newsub.Id === NewArrayBackup[0]?.Id && newsub.ItemType === NewArrayBackup[0]?.ItemType && newsub.TaskType?.Title === NewArrayBackup[0]?.TaskType?.Title && checkUpdate != 3) {
                     newsub.subRows.push(...latestCheckedList);
                     newsub.childs.push(...latestCheckedList);
                     checkUpdate = checkUpdate + 1;
                   }
-                  if (newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && newsub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
+                  if (newsub.Id === backupCheckedList[0]?.Id && newsub.ItemType === backupCheckedList[0]?.ItemType && newsub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                     array[index]?.subRows[indexsub]?.subRows.splice(lastIndex, 1);
                     array[index]?.childs[indexsub]?.childs.splice(lastIndex, 1);
                     checkUpdate = checkUpdate + 1;
@@ -1243,80 +1220,6 @@ function TasksTable(props: any) {
 
   }
 
-
-  // ===========REACT TABLE ==========
-  // const onChangeHandler = (itrm: any, child: any, e: any) => {
-  //   let checked = e
-  //   if (checked == true) {
-  //     setcheckData(itrm)
-
-  //     itrm.chekBox = true
-
-  //     if (itrm.TaskType == undefined) {
-  //       setActivityDisable(false)
-  //       itrm['siteUrl'] = props?.AllListId?.siteUrl;
-  //       itrm['listName'] = 'Master Tasks';
-  //       MeetingItems.push(itrm)
-  //       //setMeetingItems(itrm);
-
-  //     }
-  //     if (itrm.TaskType != undefined) {
-  //       if (itrm.TaskType.Title == 'Activities' || itrm.TaskType.Title == "Workstream") {
-  //         setActivityDisable(false)
-  //         // Arrays.push(itrm)
-  //         itrm['PortfolioId'] = child.Id;
-  //         MeetingItems.push(itrm)
-  //         setCount(count + 2)
-  //       }
-  //       if (itrm.TaskType.Title == 'Task') {
-  //         setActivityDisable(true)
-  //         MeetingItems.push(itrm)
-
-  //       }
-  //     }
-  //   }
-  //   // if (checked == false) {
-  //   //     itrm.chekBox = false;
-  //   //     setcheckData(null)
-  //   //     MeetingItems?.forEach((val: any, index: any) => {
-  //   //         if (val.Id == itrm.Id) {
-  //   //             MeetingItems.splice(index, 1)
-  //   //         }
-  //   //     })
-  //   //     if (itrm.TaskType != undefined) {
-  //   //         if (itrm.TaskType.Title == 'Task') {
-  //   //             setActivityDisable(false)
-
-  //   //         }
-  //   //     }
-  //   //     setCount(count + 2)
-  //   // }
-  //   var list: any = []
-  //   if (checkedList.length > 0) {
-  //     list = checkedList;
-  //   }
-
-  //   var flag = true;
-  //   list?.forEach((obj: any, index: any) => {
-  //     if (obj.Id != undefined && itrm?.Id != undefined && obj.Id === itrm.Id) {
-  //       flag = false;
-  //       list.splice(index, 1);
-  //     }
-  //   })
-  //   if (itrm.TaskType?.Title == 'Task') {
-  //     setActivityDisable(false)
-  //   }
-  //   if (flag)
-  //     list.push(itrm);
-  //   console.log(list);
-  //   // list?.forEach((items:any)=>{
-  //   //     checkedList.push(items)
-  //   // })
-
-  //   setCheckedList(checkedList => (list));
-  //   // if (list.length === 0)
-  //   //   clearreacture();
-  // };
   const findUserByName = (Id: any) => {
     const user = AllUsers.filter((user: any) => user.AssingedToUserId == Id);
     let Image: any;
@@ -1349,7 +1252,7 @@ function TasksTable(props: any) {
           }
         });
       }
-      if (itrm?.Item_x0020_Type == "Component") {
+      if (itrm?.ItemType == "Component") {
         // onChangeHandler(itrm, 'parent', eTarget);
       } else {
         // onChangeHandler(itrm, props, eTarget);
@@ -1413,69 +1316,7 @@ function TasksTable(props: any) {
         <div className="col-sm-12 pad0 smart" >
           <div className="">
             <div className={`${data.length > 10 ? "wrapper" : "MinHeight"}`}>
-              {/* <table className=" Improvementstable SortingTable table table-hover" style={{ width: "100%" }}>
-                <thead className='fixed-Header top-0'>
-                  {table.getHeaderGroups().map((headerGroup: any) => (
-                    <tr key={headerGroup.id}>
-                      {headerGroup.headers.map((header: any) => {
-                        return (
-                          <th key={header.id} colSpan={header.colSpan} style={{ width: header.column.columnDef.size + "%" }}>
-                            {header.isPlaceholder ? null : (
-                              <div className='position-relative' style={{ display: "flex" }}>
-                                {flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext()
-                                )}
-                                {header.column.getCanFilter() ? (
-
-                                  <Filter column={header.column} table={table} placeholder={header.column.columnDef} />
-
-                                ) : null}
-                                {header.column.getCanSort() ? <div
-                                  {...{
-                                    className: header.column.getCanSort()
-                                      ? "cursor-pointer  select-none shorticon"
-                                      : "",
-                                    onClick: header.column.getToggleSortingHandler(),
-                                  }}
-                                >
-                                  {header.column.getIsSorted()
-                                    ? { asc: <FaSortDown />, desc: <FaSortUp /> }[
-                                    header.column.getIsSorted() as string
-                                    ] ?? null
-                                    : <FaSort />}
-                                </div> : ""}
-                              </div>
-                            )}
-                          </th>
-                        );
-                      })}
-                    </tr>
-                  ))}
-                </thead>
-                <tbody>
-                  <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1} color={IsUpdated == 'Events Portfolio' ? '#f98b36' : (IsUpdated == 'Service Portfolio' ? '#228b22' : '#000069')} speed={2} trail={60} shadow={false}
-                    hwaccel={false} className="spinner" zIndex={2e9} top="28%" left="50%" scale={1.0} loadedClassName="loadedContent" />
-
-                  {table.getRowModel().rows.map((row: any) => {
-                    return (
-                      <tr
-                        key={row.id}>
-                        {row.getVisibleCells().map((cell: any) => {
-                          return (
-                            <td key={cell.id}>
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext()
-                              )}
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table> */}
+          
               <GlobalCommanTable
                 //  ref={childRef}
                 callChildFunction={Call}

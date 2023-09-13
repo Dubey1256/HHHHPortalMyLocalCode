@@ -1197,7 +1197,7 @@ const CreateActivity = (props: any) => {
                             TaskID = props?.props?.TaskID + '-T' + LatestId;
                         }
                         else{
-                            TaskID =  '-T' + LatestId;
+                            TaskID =  'T' + LatestId;
                         }
                        
 
@@ -1206,21 +1206,7 @@ const CreateActivity = (props: any) => {
                         if (TaskprofileId == '' || SelectedTasks.length > 0) {
                             TaskprofileId = SelectedTasks[0].Id;
                         }
-                        // var PortfolioStructureId = ''
-                        // AllItems?.subRows?.forEach((vall: any) => {
-                        //     if (vall?.TaskType?.Title == 'Task' || vall?.TaskType?.Title == 'Task') {
-                        //         LetestLevelData.push(vall)
-                        //     }
-
-                        // })
-                        // if (LetestLevelData.length == 0) {
-                        //     Tasklevel = 1
-                        //     TaskID = props?.props?.TaskID + '-T' + LatestId;;
-                        // }
-                        // else {
-                        //     Tasklevel = LetestLevelData.length + 1
-                        //     TaskID = props?.props?.TaskID + '-T'  + LatestId; 
-                        // }
+                        
                         if (SharewebTasknewTypeId == 2 || SharewebTasknewTypeId == 6) {
                             var SharewebID = '';
                             if (Task?.Portfolio_x0020_Type != undefined && Task?.Portfolio_x0020_Type == 'Component' || Task?.Component != undefined && Task?.Component?.length > 0) {
@@ -1264,7 +1250,7 @@ const CreateActivity = (props: any) => {
                             DueDate: date != undefined ? Moment(date).format("MM-DD-YYYY") : null,
                             ServicesId: { "results": RelevantPortfolioIds },
                             SharewebCategoriesId: { "results": CategoryID },
-                            PortfolioId: AllItems.Id,
+                            PortfolioId: AllItems?.Id,
                             PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
                             TaskTypeId: SharewebTasknewTypeId,
                             ParentTaskId: AllItems.Id,

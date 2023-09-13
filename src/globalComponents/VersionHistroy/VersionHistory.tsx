@@ -51,9 +51,7 @@ export default function VersionHistoryPopup(props: any) {
   return (
     <>
       <span className='siteColor mx-1' onClick={handleShow}>
-        <img className="mx-1" title="Version History"
-          src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Version_HG.png"
-        />
+        Version History
       </span>
       <Panel
         onRenderHeader={onRenderCustomHeader}

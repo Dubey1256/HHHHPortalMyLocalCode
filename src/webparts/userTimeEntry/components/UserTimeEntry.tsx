@@ -19,7 +19,7 @@ import {
   ColumnDef,
 } from "@tanstack/react-table";
 import { SlArrowRight, SlArrowDown } from "react-icons/sl";
-import { Row } from 'react-bootstrap';
+import { Col, Row } from 'react-bootstrap';
 
 export interface IUserTimeEntryState {
   Result: any;
@@ -932,9 +932,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           let results = await web.lists
             .getByTitle(itemtype.ListName)
             .items
-            .select('ParentTask/Title', 'ParentTask/Id', 'Services/Title', 'ClientTime', 'Services/Id', 'Events/Id', 'Events/Title', 'ItemRank', 'Portfolio_x0020_Type', 'SiteCompositionSettings', 'TaskLevel', 'TaskLevel', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'TaskID', 'ResponsibleTeam/Id', 'ResponsibleTeam/Title', 'ClientCategory/Id', 'ClientCategory/Title', 'TaskCategories/Id', 'TaskCategories/Title', 'ParentTask/TaskID', 'TaskType/Id', 'TaskType/Title', 'TaskType/Level', 'TaskType/Prefix', 'PriorityRank', 'Reference_x0020_Item_x0020_Json', 'TeamMembers/Title', 'TeamMembers/Name', 'Component/Id', 'Component/Title', 'Component/ItemType', 'TeamMembers/Id', 'Item_x002d_Image', 'ComponentLink', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id', 'AttachmentFiles/FileName', 'FileLeafRef', 'FeedBack', 'Title', 'Id', 'PercentComplete', 'Company', 'StartDate', 'DueDate', 'Comments', 'Categories', 'Status', 'WebpartId', 'Body', 'Mileage', 'PercentComplete', 'Attachments', 'Priority', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
+            .select('ParentTask/Title', 'ParentTask/Id',  'ClientTime', 'ItemRank', 'Portfolio/Id','Portfolio/Title', 'SiteCompositionSettings', 'TaskLevel', 'TaskLevel', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'TaskID', 'ResponsibleTeam/Id', 'ResponsibleTeam/Title', 'ClientCategory/Id', 'ClientCategory/Title', 'TaskCategories/Id', 'TaskCategories/Title', 'ParentTask/TaskID', 'TaskType/Id', 'TaskType/Title', 'TaskType/Level', 'TaskType/Prefix', 'PriorityRank', 'Reference_x0020_Item_x0020_Json', 'TeamMembers/Title', 'TeamMembers/Name', 'Component/Id', 'Component/Title', 'Component/ItemType', 'TeamMembers/Id', 'Item_x002d_Image', 'ComponentLink', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id', 'AttachmentFiles/FileName', 'FileLeafRef', 'FeedBack', 'Title', 'Id', 'PercentComplete', 'Company', 'StartDate', 'DueDate', 'Comments', 'Categories', 'Status', 'WebpartId', 'Body', 'Mileage', 'PercentComplete', 'Attachments', 'Priority', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
             .filter(queryType.replace('filter=', '').trim())
-            .expand('ParentTask', 'Events', 'Services', 'TaskType', 'AssignedTo', 'Component', 'AttachmentFiles', 'Author', 'Editor', 'TeamMembers', 'ResponsibleTeam', 'ClientCategory', 'TaskCategories')
+            .expand('ParentTask', 'TaskType', 'AssignedTo', 'Component', 'AttachmentFiles', 'Author', 'Editor', 'TeamMembers', 'ResponsibleTeam', 'ClientCategory', 'TaskCategories', 'Portfolio')
             .orderBy('Id', false)
             .getAll(4999);
           console.log(results);
@@ -996,35 +996,35 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
 
             filterItem.PercentComplete = getItem.PercentComplete;
             filterItem.ItemRank = getItem.ItemRank;
-            filterItem.PriorityRank = getItem.PriorityRank;
+            filterItem.PriorityRank = getItem?.PriorityRank;
             filterItem.TaskID = ''//SharewebCommonFactoryService.getSharewebId(getItem);
-            filterItem.Portfolio_x0020_Type = getItem.Portfolio_x0020_Type;
+            filterItem.Portfolio = getItem?.Portfolio?.Title;
             filterItem.Created = getItem.Created;
             filterItem.ListId = getItem.ListId
-            if (getItem.Component != undefined && getItem.Component.length > 0) {
-              getItem.Component.forEach(function (cItem: any) {
-                filterItem.ComponentTitle = cItem.Title;
-                filterItem.ComponentIDs = cItem.Id;
-              })
-              filterItem.Portfoliotype = 'Component';
+            if (getItem.Portfolio != undefined) {
+            
+                filterItem.ComponentTitle = getItem.Portfolio?.Title;
+                filterItem.ComponentIDs = getItem.Portfolio?.Id;
+            
+              filterItem.Portfolio = getItem?.Portfolio?.Title
             }
-            if (getItem.Services != undefined && getItem.Services.length > 0) {
-              getItem.Services.forEach(function (sItem: any) {
-                filterItem.ComponentTitle = sItem.Title;
-                filterItem.ComponentIDs = sItem.Id;
-              })
-              filterItem.Portfoliotype = 'Service';
-            }
-            if (getItem.Events != undefined && getItem.Events.results != undefined && getItem.Events.results.length > 0) {
-              getItem.Events.forEach(function (eItem: any) {
-                filterItem.ComponentTitle = eItem.Title;
-                filterItem.ComponentIDs = eItem.Id;
-              })
-              filterItem.Portfoliotype = 'Event';
-            }
-            filterItem.Component = getItem.Component;
-            filterItem.Services = getItem.Services;
-            filterItem.Events = getItem.Events;
+            // if (getItem.Services != undefined && getItem.Services.length > 0) {
+            //   getItem.Services.forEach(function (sItem: any) {
+            //     filterItem.ComponentTitle = sItem.Title;
+            //     filterItem.ComponentIDs = sItem.Id;
+            //   })
+            //   filterItem.Portfoliotype = 'Service';
+            // }
+            // if (getItem.Events != undefined && getItem.Events.results != undefined && getItem.Events.results.length > 0) {
+            //   getItem.Events.forEach(function (eItem: any) {
+            //     filterItem.ComponentTitle = eItem.Title;
+            //     filterItem.ComponentIDs = eItem.Id;
+            //   })
+            //   filterItem.Portfoliotype = 'Event';
+            // }
+            // filterItem.Component = getItem.Component;
+            // filterItem.Services = getItem.Services;
+            // filterItem.Events = getItem.Events;
 
           }
         })
@@ -1931,9 +1931,21 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     console.log('Checked Sites === ', this.state.checkedSites);
     return (
       <div>
-        <div className="p-0" style={{ verticalAlign: "top" }}><h2 className="heading d-flex justify-content-between align-items-center"><span> <a>Timesheet</a> </span><span className="text-end fs-6"><a target="_blank" data-interception="off" href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/UserTimeEntry-Old.aspx`}>Old UserTimeEntry</a></span></h2></div>
-        <Row>
-          <details open className='border p-0'>
+        <div className="p-0  " style={{ verticalAlign: "top" }}><h2 className="heading d-flex justify-content-between align-items-center"><span> <a>Timesheet</a> </span><span className="text-end fs-6"><a target="_blank" data-interception="off" href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/UserTimeEntry-Old.aspx`}>Old UserTimeEntry</a></span></h2></div>
+        <Row className='smartFilter'>
+        <details className='p-0' open>
+        <summary><a className="hreflink pull-left mr-5">Task User : </a>
+              {this.state.ImageSelectedUsers != null && this.state.ImageSelectedUsers.length > 0 && this.state.ImageSelectedUsers.map((user: any, i: number) => {
+                return <span className="ng-scope">
+                  <img className="AssignUserPhoto mr-5" title={user.AssingedToUser.Title} src={user?.Item_x0020_Cover?.Url} />
+                </span>
+              })
+              }
+              <hr></hr>
+            </summary>
+       
+        <Col>
+          <details open className='p-0'>
             <span className="pull-right" style={{ display: 'none' }}>
               <input type="checkbox" className="" onClick={(e) => this.SelectAllGroupMember(e)} />
               <label>Select All </label>
@@ -1941,7 +1953,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             {/* <span className="plus-icon hreflink pl-10 pull-left ng-scope" >
                 <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/24/list-icon.png" />
             </span> */}
-            <summary><a className="hreflink pull-left mr-5">Task User : </a>
+            {/* <summary><a className="hreflink pull-left mr-5">Task User : </a>
               {this.state.ImageSelectedUsers != null && this.state.ImageSelectedUsers.length > 0 && this.state.ImageSelectedUsers.map((user: any, i: number) => {
                 return <span className="ng-scope">
                   <img className="AssignUserPhoto mr-5" title={user.AssingedToUser.Title} src={user?.Item_x0020_Cover?.Url} />
@@ -1949,16 +1961,19 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               })
               }
               <span className="ng-binding ng-hide"> </span>
-            </summary>
+            </summary> */}
+          <summary>
+          Team members
+          <hr></hr>
+          </summary>
 
-
-            <div style={{ display: "inline" }}>
-              <div className="taskTeamBox p-2">
+            <div style={{ display: "block" }}>
+              <div className="taskTeamBox ps-40 ">
                 {this.state.taskUsers != null && this.state.taskUsers.length > 0 && this.state.taskUsers.map((users: any, i: number) => {
-                  return <div className="top-assign " ng-repeat="user in taskUsers">
+                  return <div className="top-assign">
                     <div className="team ">
                       <label className="BdrBtm">
-                        <input style={{ display: 'none' }} className="" type="checkbox" ng-model="user.SelectedGroup" onClick={(e) => this.SelectedGroup(e, users)} />
+                        <input style={{ display: 'none' }} className="" type="checkbox"  onClick={(e) => this.SelectedGroup(e, users)} />
                         {users.childs.length > 0 &&
                           <>
                             {users.Title}
@@ -1995,19 +2010,13 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
 
             </div>
           </details>
-          <Row className="my-2 p-0">
-            <div className="col-sm-1">
-              <label ng-required="true" className="full_width ng-binding" ng-bind-html="GetColumnDetails('StartDate') | trustedHTML">Start Date</label>
-              <DatePicker selected={this.state.startdate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setStartDate(date)} className="form-control ng-pristine ng-valid ng-touched ng-not-empty" />
-            </div>
-            <div className="col-sm-1 ps-0 ">
-              <label ng-required="true" className="full_width ng-binding" ng-bind-html="GetColumnDetails('EndDate') | trustedHTML" >End Date</label>
-              <DatePicker selected={this.state.enddate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setEndDate(date)} className="form-control ng-pristine ng-valid ng-touched ng-not-empty" />
-            </div>
-            <div className="col-sm-10">
-              <div className='text-end'> <label className="me-1"> <input type="checkbox" className="form-check-input" ng-click="SelectedPortfolio('Component',PortfolioComponent)" /> Component</label><label > <input type="checkbox" className="form-check-input" ng-click="SelectedPortfolio('Component',PortfolioComponent)" /> Component</label></div>
-              <div className="col" style={{ borderBottom: '1px solid #ccc', paddingBottom: '5px' }}>
-              </div>
+          <details open>
+            <summary>
+              Date
+              <hr></hr>
+              </summary>
+              <Row className="ps-30">
+            <div>
               <div className="col TimeReportDays">
                 <span className='SpfxCheckRadio me-2'>
                   <input type="radio" className="radio" name="dateSelection" id="rdCustom" value="Custom" ng-checked="unSelectToday=='Custom'" onClick={() => this.selectDate('Custom')} ng-model="radio" />
@@ -2061,17 +2070,34 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
 
               </div>
             </div>
-            <div className="clearfix"></div>
+           
           </Row>
+          <Row className='ps-30 mt-2'>
+          <div className="col">
+              <label ng-required="true" className="full_width ng-binding" ng-bind-html="GetColumnDetails('StartDate') | trustedHTML">Start Date</label>
+              <DatePicker selected={this.state.startdate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setStartDate(date)} className="form-control ng-pristine ng-valid ng-touched ng-not-empty" />
+            </div>
+            <div className="col">
+              <label ng-required="true" className="full_width ng-binding" ng-bind-html="GetColumnDetails('EndDate') | trustedHTML" >End Date</label>
+              <DatePicker selected={this.state.enddate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setEndDate(date)} className="form-control ng-pristine ng-valid ng-touched ng-not-empty" />
+            </div>
+            <div className='col'>
+              <label></label>
+            <div className='mt-1'> <label> <input type="checkbox" className="form-check-input" ng-click="SelectedPortfolio('Component',PortfolioComponent)" /> Component</label>  <label><input type="checkbox" className="form-check-input" ng-click="SelectedPortfolio('Component',PortfolioComponent)" /> Component</label></div>
+            </div>
+          </Row>
+          </details>
+        
 
-          <div id="showFilterBox" className="col mb-2 p-0 border">
+          <div id="showFilterBox" className="col mb-2 p-0 ">
             <div className="togglebox">
               <details open>
                 <summary ng-click="filtershowHide()">
-                  <label>
+                 
                     {/* <img className="hreflink wid22" title="Filter" style={{width:'22px'}} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Filter-12-WF.png"/> */}
                     SmartSearch – Filters
-                  </label>
+                    <hr></hr>
+                 
 
                   <span>
                     {this.state.checkedAll && this.state.filterItems != null && this.state.filterItems.length > 0 &&
@@ -2110,23 +2136,19 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                   </span> */}
                 </summary>
 
-                <div className="togglecontent" style={{ display: "block" }}>
+                <div className="togglecontent ps-30" style={{ display: "block" }}>
                   <div className="smartSearch-Filter-Section">
                     <table width="100%" className="indicator_search">
                       <tbody>
                         <tr>
                           <td valign="top" ng-repeat="item in filterGroups">
                             <div>
-                              <label>
                                 <span className="ng-binding">
                                   <input id='chkAllCategory' defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} type="checkbox" ng-model="item.Selected" className="form-check-input me-1" />
                                   Client Category
                                 </span>
                                 <hr></hr>
-                              </label>
-
-
-
+                      
                               <CheckboxTree
                                 nodes={this.state.filterItems}
                                 checked={this.state.checked}
@@ -2141,13 +2163,13 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                           </td>
                           <td valign="top" ng-repeat="item in filterGroups" className="ng-scope">
                             <div>
-                              <label>
+                           
                                 <span>
                                   <input type="checkbox" id='chkAllSites' defaultChecked={this.state.checkedAllSites} onClick={(e) => this.SelectAllSits(e)} ng-model="item.Selected" className="form-check-input me-1" />
                                   Sites
                                 </span>
                                 <hr></hr>
-                              </label>
+                          
                               <CheckboxTree
                                 nodes={this.state.filterSites}
                                 checked={this.state.checkedSites}
@@ -2160,7 +2182,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                               />
                             </div>
                           </td>
-
                         </tr>
                       </tbody>
                     </table>
@@ -2170,7 +2191,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                     <button type="button" className="btn btn-default me-1" onClick={() => this.ClearFilters()}>
                       Clear Filters
                     </button>
-                    <button type="button" className="btn btn-primary me-1" onClick={(e) => this.updatefilter()}>
+                    <button type="button" className="btnCol btn btn-primary me-1" onClick={(e) => this.updatefilter()}>
                       Update Filters
                     </button>
                   </div>
@@ -2180,8 +2201,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               </details>
             </div>
           </div>
+        </Col>
+        </details>
         </Row>
-
         {this.state.AllTimeEntry != undefined && this.state.AllTimeEntry.length > 0 &&
           <div className='row'>
             <div className="Alltable p-0">
