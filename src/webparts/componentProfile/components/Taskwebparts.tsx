@@ -20,12 +20,14 @@ import Loader from "react-loader";
 import { Bars } from 'react-loader-spinner'
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
+import SmartFilterSearchGlobal from "../../../globalComponents/SmartFilterGolobalBomponents/SmartFilterGlobalComponents";
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import PageLoader from "../../../globalComponents/pageLoader";
 import CreateActivity from "../../servicePortfolio/components/CreateActivity";
 
 import CreateWS from "../../servicePortfolio/components/CreateWS";
+
 
 //import RestructuringCom from "../../../globalComponents/Restructuring/RestructuringCom";
 var filt: any = "";
@@ -39,26 +41,8 @@ let ProjectData: any = [];
 let copyDtaArray: any = [];
 let renderData: any = [];
 let countAllTasksData: any = []
-let MYID:any;
 
 
-
-function getQueryVariable(variable:any)
-{
-        let query = window.location.search.substring(1);
-        console.log(query)//"app=article&act=news_content&aid=160990"
-        let vars = query.split("&");
-       
-        console.log(vars) 
-        for (let i=0;i<vars.length;i++) {
-                    let pair = vars[i].split("=");
-                    console.log(pair)//[ 'app', 'article' ][ 'act', 'news_content' ][ 'aid', '160990' ] 
-        if(pair[0] == variable){ return pair[1];}
-         }
-         return(false);
-         
-         
-}
 
 
 function TeamPortlioTable(SelectedProp: any) {
@@ -434,7 +418,7 @@ function TeamPortlioTable(SelectedProp: any) {
             portfolioTypeData?.map((elem: any) => {
                 if (isUpdated === "") {
                     filt = "";
-                } else if (isUpdated === elem.Title || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) { filt = "(Portfolio_x0020_Type eq '" + elem.Title + "')" }
+                } else if (isUpdated === elem.Title || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) { filt = "(Portfolio_x0020_Type eq '" + elem.Title + "' and ParentId eq '"+SelectedProp?.props?.Id+"')" }
             })
         }
         let web = new Web(ContextValue.siteUrl);
@@ -533,11 +517,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     }
                 });
             }
-            portfolioTypeDataItem?.map((type: any) => {
-                if (result?.Item_x0020_Type === type.Title && result.PortfolioType != undefined) {
-                    type[type.Title + 'number'] += 1;
-                }
-            })
+            
             if (result?.ClientCategory?.length > 0) {
                 result.ClientCategorySearch = result?.ClientCategory?.map((elem: any) => elem.Title).join(" ")
             } else {
@@ -565,7 +545,6 @@ function TeamPortlioTable(SelectedProp: any) {
             setIsUpdated(query);
             isUpdated = query;
         }
-        MYID=params.get("taskId");
     }, [])
    
     React.useEffect(() => {
@@ -625,6 +604,7 @@ function TeamPortlioTable(SelectedProp: any) {
     };
     const componentGrouping = (portId: any, index:any) => {
         let FinalComponent: any = []
+       
         let AllProtFolioData = AllComponetsData?.filter((comp: any) => comp?.PortfolioType?.Id === portId && comp.TaskType === undefined );
         // let AllComponents = AllProtFolioData?.filter((comp: any) => comp?.Parent?.Id === 0 || comp?.Parent?.Id === undefined && comp?.Id === 321 );
         let subComFeat = AllProtFolioData?.filter((comp: any) => comp?.Parent?.Id === SelectedProp?.props?.Id )
@@ -634,7 +614,13 @@ function TeamPortlioTable(SelectedProp: any) {
                 if (levelType.Level === 1)
                     componentActivity(levelType, masterTask);
             })
+            portfolioTypeDataItem?.map((type: any) => {
+                if (masterTask?.Item_x0020_Type === type.Title && masterTask.PortfolioType != undefined) {
+                    type[type.Title + 'number'] += 1;
+                }
+            })
             let allFeattData = AllProtFolioData?.filter((elem: any) => elem?.Parent?.Id === masterTask?.Id);
+           
             masterTask.subRows = masterTask?.subRows?.concat(allFeattData);
             allFeattData?.forEach((subFeat: any) => {
                 subFeat.subRows = [];
@@ -642,11 +628,17 @@ function TeamPortlioTable(SelectedProp: any) {
                     if (levelType.Level === 1)
                         componentActivity(levelType, subFeat);
                 })
+                portfolioTypeDataItem?.map((type: any) => {
+                    if (subFeat?.Item_x0020_Type === type.Title && subFeat.PortfolioType != undefined) {
+                        type[type.Title + 'number'] += 1;
+                    }
+                })
+                
+                
             })
             
         FinalComponent.push(masterTask)
         })
-      
         
         componentData = componentData?.concat(FinalComponent);
         DynamicSort(componentData, 'PortfolioLevel','')
@@ -721,6 +713,9 @@ function TeamPortlioTable(SelectedProp: any) {
         items.subRows = items?.subRows?.concat(findActivity)
         items.subRows = items?.subRows?.concat(findTasks)
     }
+
+   
+   
 
     // For the user
     const findUserByName = (name: any) => {
@@ -932,7 +927,7 @@ function TeamPortlioTable(SelectedProp: any) {
               id: "Created",
               placeholder: "Created Date",
               header: "",
-              size: 100,
+              size: 109,
             },
             {
                 accessorKey: "descriptionsSearch",
@@ -1426,7 +1421,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     SelectedItem={
                         checkedList != null && checkedList?.Id != undefined
                             ? checkedList
-                            : props
+                            : SelectedProp.props
                     }
                 />
             </Panel>
