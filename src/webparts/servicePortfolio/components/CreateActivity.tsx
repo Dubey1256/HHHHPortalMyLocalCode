@@ -1982,14 +1982,6 @@ const CreateActivity = (props: any) => {
                                 {smartComponentData ? smartComponentData?.map((com: any) => {
                                     return (
 
-<<<<<<< HEAD
-                                                <a className="hreflink" title="Edit Categories">
-                                                <span  onClick={() => EditClientCategory(AllItems)}  className="input-group-text"><span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span></span>
-                                                    {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png"
-                                                        onClick={() => EditClientCategory(AllItems)} /> */}
-                                                </a>
-                                            </span>
-=======
                                         <div className="block d-flex justify-content-between mb-1" >
 
                                             <a className='Portfolio-Title' target="_blank" href={`${dynamicList.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
@@ -1998,17 +1990,11 @@ const CreateActivity = (props: any) => {
                                                 <span className='bg-light svg__iconbox svg__icon--cross' onClick={() => setSmartComponentData([])}></span>
                                                 {/* <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} /> */}
                                             </a>
->>>>>>> bf8938941ce1768c759be1b4e20cab80a22d7d0a
                                         </div>
 
                                     )
                                 }) : null}
-
-
-
                             </div>
-
-
                             <div className="col-sm-12 padL-0 Prioritytp PadR0 mt-2">
 
                                 <div>

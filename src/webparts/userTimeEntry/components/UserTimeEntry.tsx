@@ -19,12 +19,7 @@ import {
   ColumnDef,
 } from "@tanstack/react-table";
 import { SlArrowRight, SlArrowDown } from "react-icons/sl";
-<<<<<<< HEAD
-import { Row } from 'react-bootstrap';
-import Col from 'reactstrap/es/Col';
-=======
 import { Col, Row } from 'react-bootstrap';
->>>>>>> bf8938941ce1768c759be1b4e20cab80a22d7d0a
 
 export interface IUserTimeEntryState {
   Result: any;
@@ -2222,4 +2217,3 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     );
   }
 }
-
