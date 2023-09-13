@@ -90,9 +90,9 @@ const CreateWS = (props: any) => {
         const parentdata: any = []
         // parentdata.push()
         // return new Promise((resolve, reject) => {
-        if (Item.Parent != null || Item?.Component != undefined || Item?.Services != undefined) {
+        if (Item.Parent != null || Item?.Portfolio != undefined ) {
 
-            var filt: any = "Id eq " + (Item.Parent != null || undefined ? Item?.Parent?.Id : Item?.Component?.length > 0 ? Item?.Component[0]?.Id : Item?.Services[0]?.Id) + "";
+            var filt: any = "Id eq " + (Item.Parent != null || undefined ? Item?.Parent?.Id : Item?.Portfolio?.Id) + "";
 
         }
         let web = new Web(dynamicList?.siteUrl);
@@ -641,7 +641,7 @@ const CreateWS = (props: any) => {
             Categories: categoriesItem ? categoriesItem : null,
             TaskCategoriesId: { "results": CategoryID },
             Priority_x0020_Rank: item.selectPriority,
-            PortfolioId: portFolio,
+            PortfolioId: AllItems?.Portfolio?.Id,
             PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
             TaskTypeId: SharewebTasknewTypeId,
             ParentTaskId: AllItems.Id,
@@ -796,22 +796,7 @@ const CreateWS = (props: any) => {
         if (date != undefined) {
             NewDate = new Date(date).toDateString();
         }
-        // if (AllItems?.Component != undefined && AllItems?.Component.length > 0) {
-        //     Component.push(AllItems.Component[0].Id)
-        // }
-        // if (AllItems?.Services != undefined && AllItems?.Services?.length > 0) {
-        //     RelevantPortfolioIds.push(AllItems.Services[0].Id)
-        // }
-        // if (AllItems?.Portfolio_x0020_Type == undefined) {
-        //     if (AllItems?.Component != undefined && AllItems?.Component?.length > 0) {
-        //         smartComponentData.push(AllItems.Component);
-        //     }
-
-        //     if (AllItems?.Services != undefined && AllItems?.Services?.length > 0) {
-        //         linkedComponentData.push(AllItems);
-        //     }
-
-        // }
+        
 
         var categoriesItem = '';
         CategoriesData.map((category: { Title: string; }) => {
@@ -884,7 +869,7 @@ const CreateWS = (props: any) => {
             Categories: categoriesItem ? categoriesItem : null,
             TaskCategoriesId: { "results": CategoryID },
             Priority_x0020_Rank: item.selectPriority,
-            PortfolioId: portFolio,
+            PortfolioId: AllItems?.Portfolio?.Id,
             PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
             TaskTypeId: SharewebTasknewTypeId,
             ParentTaskId: AllItems.Id,
@@ -1107,7 +1092,7 @@ const CreateWS = (props: any) => {
             Categories: categoriesItem ? categoriesItem : null,
             SharewebCategoriesId: { "results": CategoryID },
             Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
-            PortfolioId: AllItems?.PortfolioType?.Id,
+            PortfolioId: AllItems?.Portfolio?.Id,
             PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
             ParentTaskId: AllItems.Id,
             TaskTypeId: SharewebTasknewTypeId,
@@ -1370,7 +1355,7 @@ const CreateWS = (props: any) => {
 
             Categories: categoriesItem ? categoriesItem : null,
             Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
-             PortfolioId: AllItems?.PortfolioType?.Id,
+             PortfolioId: AllItems?.Portfolio?.Id,
             PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
             TaskTypeId: SharewebTasknewTypeId,
             SharewebCategoriesId: { "results": CategoryID },
@@ -1452,7 +1437,7 @@ const CreateWS = (props: any) => {
 
     const onRenderCustomHeaderMain = () => {
         return (
-            <div className={AllItems?.Portfolio_x0020_Type == 'Service' || AllItems?.Services?.length > 0 ? "serviepannelgreena d-flex full-width pb-1" : "d-flex full-width pb-1"} >
+            <div className={props?.props?.PortFolioType?.Id == 2?"d-flex full-width pb-1 serviepannelgreena":"d-flex full-width pb-1"} >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <h2 className='heading'>
                         {`Create Item`}
@@ -1539,7 +1524,7 @@ const CreateWS = (props: any) => {
                 isOpen={TaskStatuspopup}
                 onDismiss={closeTaskStatusUpdatePoup}
                 isBlocking={false}
-                className={AllItems?.Portfolio_x0020_Type == 'Service' || AllItems?.Services?.length > 0 || props?.props?.PortfolioType?.Id == 2 ? "serviepannelgreena" : ""}
+                className={AllItems?.PortfolioType?.Color}
             >
                 <div className="modal-body border p-2 active Create-Item">
                     <div className='row'>
