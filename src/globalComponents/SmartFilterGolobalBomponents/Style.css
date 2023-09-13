@@ -1,6 +1,0 @@
-
-.react-checkbox-tree.rct-native-display input:checked[type=checkbox]{
-    background-color: var(--green) !important;
-    border-color: var(--green)!important;
-    border-radius: inherit !important;
-}
