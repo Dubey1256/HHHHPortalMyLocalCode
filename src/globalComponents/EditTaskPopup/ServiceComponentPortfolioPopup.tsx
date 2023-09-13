@@ -43,9 +43,9 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
         }
         setModalIsOpen(false);
         if (selectionType == "Multi") {
-            Example(MultiSelectedData, ComponentType, "Save");
+            Example(MultiSelectedData, selectionType, "Save");
         } else {
-            Example(CheckBoxData, ComponentType, "Save");
+            Example(CheckBoxData, selectionType, "Save");
         }
         MultiSelectedData = [];
     }
