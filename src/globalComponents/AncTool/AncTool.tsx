@@ -76,9 +76,6 @@ const AncTool = (props: any) => {
         siteUrl = props?.Context?.pageContext?.web?.absoluteUrl;
         if (props?.item != undefined) {
             setItem(props?.item)
-            // if (props?.item?.Services?.length > 0) {
-            //     setServicesTaskCheck(true)
-            // }
         }
         pathGenerator();
         rootSiteName = props.Context.pageContext.site.absoluteUrl.split(props.Context.pageContext.site.serverRelativeUrl)[0];
