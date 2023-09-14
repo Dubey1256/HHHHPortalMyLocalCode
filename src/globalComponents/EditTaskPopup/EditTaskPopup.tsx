@@ -185,7 +185,7 @@ const EditTaskPopup = (Items: any) => {
     const [EstimatedTime, setEstimatedTime] = React.useState<any>('');
     const [TotalEstimatedTime, setTotalEstimatedTime] = React.useState(0);
     const [SiteCompositionShow, setSiteCompositionShow] = React.useState(false);
-
+    const [IsSendAttentionMsgStatus, setIsSendAttentionMsgStatus] = React.useState(false);
     const hostStyles: Partial<ITooltipHostStyles> = { root: { display: 'inline-block' } };
     const buttonId = useId(`callout-button`);
     const calloutProps = { gapSpace: 0 };
@@ -4658,14 +4658,14 @@ const EditTaskPopup = (Items: any) => {
                                                                                 <img className="imgAuthor" title={ImageDtl.UserName} src={ImageDtl.UserImage ? ImageDtl.UserImage : ''} />
                                                                             </span>
                                                                         </div>
-                                                                        <div>
+                                                                        <div className="align-autoplay d-flex">
                                                                             <span onClick={() => openReplaceImagePopup(index)} title="Replace image"><TbReplace /> </span>
                                                                             <span className="mx-1" title="Delete" onClick={() => RemoveImageFunction(index, ImageDtl.ImageName, "Remove")}> | <RiDeleteBin6Line /> | </span>
                                                                             <span title="Customize the width of page" onClick={() => ImageCustomizeFunction(index)}>
                                                                                 <FaExpandAlt /> |
                                                                             </span>
-                                                                            <span title={ImageDtl.Description != undefined && ImageDtl.Description?.length > 1 ? ImageDtl.Description : "Add Image Description"} className="mx-1 img-info" onClick={() => openAddImageDescriptionFunction(index, ImageDtl, "Opne-Model")}>
-                                                                                <span className="svg__iconbox svg__icon--info "></span>
+                                                                            <span title={ImageDtl.Description != undefined && ImageDtl.Description?.length > 1 ? ImageDtl.Description : "Add Image Description"} className="img-info" onClick={() => openAddImageDescriptionFunction(index, ImageDtl, "Opne-Model")}>
+                                                                                <span className="svg__iconbox svg__icon--info mt--5"></span>
                                                                             </span>
                                                                         </div>
                                                                     </div>
@@ -4969,7 +4969,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 </span>
                                                             </div>
                                                             <input type="text" className="form-control" placeholder="Task Name"
-                                                                defaultValue={EditData.Title} onChange={(e) => setUpdateTaskInfo({ ...UpdateTaskInfo, Title: e.target.value })} />
+                                                                defaultValue={EditData.Title} onChange={(e) => setEditData({ ...EditData, Title: e.target.value })} />
                                                         </div>
                                                     </div>
                                                     <div className="mx-0 row taskdate ">
@@ -5671,16 +5671,17 @@ const EditTaskPopup = (Items: any) => {
                                         </div>
                                     </div> : null
                                 }
+                                {
+                                    ShowTaskDetailsStatus ? null : <div className="mb-3">
+                                        <h6 className="siteColor" style={{ cursor: "pointer" }} onClick={() => setShowTaskDetailsStatus(ShowTaskDetailsStatus ? false : true)}>
+                                            Show task details +
+                                        </h6>
+                                    </div>
+                                }
+
                                 <div className="slider-image-section col-sm-6 p-2" style={{
                                     border: "2px solid #ccc"
                                 }}>
-                                    {
-                                        ShowTaskDetailsStatus ? null : <div className="mb-3">
-                                            <h6 className="siteColor" style={{ cursor: "pointer" }} onClick={() => setShowTaskDetailsStatus(ShowTaskDetailsStatus ? false : true)}>
-                                                Show task details +
-                                            </h6>
-                                        </div>
-                                    }
 
                                     <div id="carouselExampleControls" className="carousel slide" data-bs-interval="false">
                                         <div className="carousel-inner">
