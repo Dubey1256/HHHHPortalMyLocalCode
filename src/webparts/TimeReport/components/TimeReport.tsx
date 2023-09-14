@@ -122,13 +122,15 @@ const TimeReport = (props:any) => {
 
     const LoadAllSiteTasks = async () => {
         var Counter = 0;
+
         let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+       
      
         const requests = smartmetaDetails.map((listID: any) => web.lists
             .getById(listID?.listId)
             .items
-            .select("ID", "Title", "DueDate", "Portfolio_x0020_Type", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Comments")
-            .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "TaskType", "Component", "Services", "Editor").getAll()
+            .select("ID", "Title", "DueDate", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title","Portfolio/ItemType", "Editor/Title", "Modified", "Comments")
+            .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "TaskType", "Portfolio", "Editor").getAll()
         );
 
         try {
@@ -145,7 +147,7 @@ const TimeReport = (props:any) => {
                 result.TitleNew = result.Title;
                 result.siteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
                 result.TaskTime = []
-                result.TimeSpent = 0
+                result.TimeSpent = 0 
                 result.Components = ''
                 result.SubComponents = ''
                 result.Features = ''
@@ -170,6 +172,7 @@ const TimeReport = (props:any) => {
         }
 
     }
+
     var showProgressBar = () => {
         setLoaded(false);
         $(" #SpfxProgressbar").show();
@@ -537,8 +540,8 @@ const TimeReport = (props:any) => {
                 if (item.TaskId === task.Id && item.Task === task.Title && item.Company == 'Smalsus') {
 
 
-                    if (task?.Component[0]?.ItemType == 'Component') {
-                        item.Components = task.Component[0].Title
+                    if (task?.Portfolio?.ItemType == 'Component') {
+                        item.Components = task.Portfolio?.Title
                         item.siteUrl = task.siteUrl
                         item.siteType = item.siteType
                         item.PercentComplete = task.PercentComplete
@@ -549,7 +552,7 @@ const TimeReport = (props:any) => {
                             item.ClientCategory = cat.Title;
                         })
                     }
-                    if (task?.Component.length == 0) {
+                    if (task?.Portfolio == undefined) {
                         item.siteUrl = task.siteUrl
                         item.siteType = item.siteType
                         item.PercentComplete = task.PercentComplete
@@ -560,8 +563,8 @@ const TimeReport = (props:any) => {
                             item.ClientCategory = cat.Title;
                         })
                     }
-                    if (task?.Component[0]?.ItemType == 'SubComponent') {
-                        item.SubComponents = task.Component[0].Title
+                    if (task?.Portfolio?.ItemType == 'SubComponent') {
+                        item.SubComponents = task.Portfolio.Title
                         item.siteUrl = task.siteUrl
                         item.siteType = item.siteType
                         item.PercentComplete = task.PercentComplete
@@ -572,8 +575,8 @@ const TimeReport = (props:any) => {
                             item.ClientCategory = cat.Title;
                         })
                     }
-                    if (task?.Component[0]?.ItemType == 'Feature') {
-                        item.Features = task.Component[0].Title
+                    if (task?.Portfolio?.ItemType == 'Feature') {
+                        item.Features = task.Portfolio.Title
                         item.siteUrl = task.siteUrl
                         item.siteType = item.siteType
                         item.PercentComplete = task.PercentComplete
@@ -1322,12 +1325,6 @@ var ReportDate = new Date(a1)
                             </div>
                         </div>
                         <div className="col-sm-6 text-end">
-                            {/* <a target="_blank"
-                                                                        ng-if="AdditionalTaskTime.siteListName != 'SP.Data.TasksTimesheet2ListItem'"
-                                                                        ng-href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TaskTimeSheetListNew/EditForm.aspx?ID={{AdditionalTaskTime.ParentID}}">
-                                                                        Open out-of-the-box
-                                                                        form
-                                                                    </a> */}
                             <a target="_blank"
                                 ng-if="AdditionalTaskTime.siteListName === 'SP.Data.TasksTimesheet2ListItem'"
                                 href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TaskTimeSheetListNew/EditForm.aspx?ID=${`18`}`}>
