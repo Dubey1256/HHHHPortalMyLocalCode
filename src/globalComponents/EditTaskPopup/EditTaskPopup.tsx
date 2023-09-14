@@ -1953,7 +1953,7 @@ const EditTaskPopup = (Items: any) => {
 
     const UpdateTaskInfoFunction = async (usedFor: any) => {
         if (IsSendAttentionMsgStatus) {
-            let txtComment = `You have been tagged as Attention in below task by ${Items.context.pageContext._user.displayName}`;
+            let txtComment = `You have been tagged as Attention in the below task by ${Items.context.pageContext._user.displayName}`;
             let TeamMsg = txtComment + `</br> <a href=${window.location.href}>${EditData.TaskId}-${EditData.Title}</a>`
             await globalCommon.SendTeamMessage(userSendAttentionEmails, TeamMsg, Items.context);
         }
@@ -5708,11 +5708,11 @@ const EditTaskPopup = (Items: any) => {
                                                                     <img className="imgAuthor" title={imgData.UserName ? imgData.UserName : ''} src={imgData.UserImage ? imgData.UserImage : ''} />
                                                                 </span>
                                                             </div>
-                                                            <div>
+                                                            <div className="align-autoplay d-flex">
                                                                 <span onClick={() => openReplaceImagePopup(index)} title="Replace image"><TbReplace /> </span>
-                                                                <span className="mx-1" title="Delete" onClick={() => RemoveImageFunction(index, imgData.ImageName, "Remove")}> | <RiDeleteBin6Line /> | </span>
-                                                                <span title={imgData.Description != undefined && imgData.Description?.length > 1 ? imgData.Description : "Add Image Description"} className="mx-1 img-info" onClick={() => openAddImageDescriptionFunction(index, imgData, "Opne-Model")}>
-                                                                    <span className="svg__iconbox svg__icon--info "></span>
+                                                                <span className="ms-1" title="Delete" onClick={() => RemoveImageFunction(index, imgData.ImageName, "Remove")}> | <RiDeleteBin6Line /> | </span>
+                                                                <span title={imgData.Description != undefined && imgData.Description?.length > 1 ? imgData.Description : "Add Image Description"} className="img-info" onClick={() => openAddImageDescriptionFunction(index, imgData, "Opne-Model")}>
+                                                                    <span className="svg__iconbox svg__icon--info mt--5"></span>
                                                                 </span>
                                                             </div>
                                                         </div>
