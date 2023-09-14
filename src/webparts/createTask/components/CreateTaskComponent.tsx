@@ -356,6 +356,11 @@ function CreateTaskComponent(props: any) {
                     let saveValue = save;
                     let setTaskTitle = 'Feedback - ' + setComponent[0]?.Title + ' ' + moment(new Date()).format('DD-MM-YYYY');
                     saveValue.taskName = setTaskTitle;
+                    subCategories?.map((item: any) => {
+                        if (item.Title == "Feedback") {
+                            selectSubTaskCategory(item.Title, item.Id, item)
+                        }
+                    })
                     saveValue.taskUrl = paramSiteUrl;
                     BurgerMenuData.TaskType = 'Feedback'
                     //  setTaskUrl(paramSiteUrl);
@@ -365,17 +370,12 @@ function CreateTaskComponent(props: any) {
                             value: paramSiteUrl
                         }
                     }
-                    subCategories?.map((item: any) => {
-                        if (item.Title == "Feedback") {
-                            selectSubTaskCategory(item.Title, item.Id, item)
-                        }
-                    })
                     UrlPasteTitle(e);
                     await loadRelevantTask(paramSiteUrl, "UrlTask")
                     await loadRelevantTask(PageName, "PageTask")
                 }
-                let Condition = "&$filter=Component/Id eq  '" + paramComponentId + "'"
-                await loadRelevantTask(Condition, "ComponentId").then((response: any) => {
+                let Condition = "&$filter=Portfolio/Id eq  '" + paramComponentId + "'"
+                await loadRelevantTask(Condition, "PortfolioId").then((response: any) => {
                     setRefreshPage(!refreshPage);
                 })
             }
@@ -407,10 +407,10 @@ function CreateTaskComponent(props: any) {
     }
     const loadRelevantTask = async (Condition: any, type: any) => {
         let query = '';
-        if (type == 'ComponentId') {
-            query = "Categories,AssignedTo/Title,AssignedTo/Name,Component/Id,PriorityRank,TaskType/Id,TaskType/Title,Component/Title,Services/Id,Services/Title,AssignedTo/Id,AttachmentFiles/FileName,ComponentLink/Url,FileLeafRef,TaskLevel,TaskLevel,Title,Id,PriorityRank,PercentComplete,Company,WebpartId,StartDate,DueDate,Status,Body,WebpartId,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=AssignedTo,AttachmentFiles,TaskType,Component,Services,Author,Editor&$orderby=Modified desc" + Condition
+        if (type == 'Portfolio') {
+            query = "Categories,AssignedTo/Title,AssignedTo/Name,PriorityRank,TaskType/Id,TaskType/Title,AssignedTo/Id,Portfolio/Id,Portfolio/Title,AttachmentFiles/FileName,ComponentLink/Url,FileLeafRef,TaskLevel,TaskLevel,Title,Id,PriorityRank,PercentComplete,Company,WebpartId,StartDate,DueDate,Status,Body,WebpartId,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=AssignedTo,AttachmentFiles,TaskType,Portfolio,Author,Editor&$orderby=Modified desc" + Condition
         } else {
-            query = "Categories,AssignedTo/Title,AssignedTo/Name,Component/Id,PriorityRank,TaskType/Id,TaskType/Title,Component/Title,Services/Id,Services/Title,AssignedTo/Id,AttachmentFiles/FileName,ComponentLink/Url,FileLeafRef,TaskLevel,TaskLevel,Title,Id,PriorityRank,PercentComplete,Company,WebpartId,StartDate,DueDate,Status,Body,WebpartId,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=AssignedTo,AttachmentFiles,TaskType,Component,Services,Author,Editor&$orderby=Modified desc"
+            query = "Categories,AssignedTo/Title,AssignedTo/Name,PriorityRank,TaskType/Id,TaskType/Title,AssignedTo/Id,Portfolio/Id,Portfolio/Title,AttachmentFiles/FileName,ComponentLink/Url,FileLeafRef,TaskLevel,TaskLevel,Title,Id,PriorityRank,PercentComplete,Company,WebpartId,StartDate,DueDate,Status,Body,WebpartId,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=AssignedTo,AttachmentFiles,TaskType,Portfolio,Author,Editor&$orderby=Modified desc"
         }
         let setRelTask = relevantTasks;
         try {
@@ -441,20 +441,9 @@ function CreateTaskComponent(props: any) {
                         //type.Priority = type.Priority.split('')[1];
                         //type.Component = type.Component.results[0].Title,
                         item.ComponentTitle = '';
-                        if (item?.Component?.length > 0) {
-                            item.portfolio = item.Component[0];
-                        }
-                        if (item?.Services?.length > 0) {
-                            item.portfolio = item.Services[0];
-                        }
-                        if (item?.Component?.results?.length > 0) {
-                            item['Portfoliotype'] = 'Component';
-                        }
-                        if (item?.Services?.results?.length > 0) {
-                            item['Portfoliotype'] = 'Service';
-                        }
-                        if (item?.Component?.results?.length > 0 && item?.Services?.results?.length > 0) {
-                            item['Portfoliotype'] = 'Component';
+                        item.portfolio = {};
+                        if (item?.Portfolio?.Id != undefined) {
+                            item.portfolio = item.Portfolio;
                         }
 
                         item.TaskID = globalCommon.getTaskId(item);
@@ -528,7 +517,7 @@ function CreateTaskComponent(props: any) {
         AllMetadata = MetaData;
         siteConfig = getSmartMetadataItemsByTaxType(AllMetadata, 'Sites')
         siteConfig?.map((site: any) => {
-            if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== 'Health' && site.Title !== 'Gender') {
+            if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== 'Health' && site.Title !== 'Gender' && site.Title !== 'SP Online') {
                 SitesTypes.push(site);
             }
         })
@@ -658,6 +647,7 @@ function CreateTaskComponent(props: any) {
         catch (error) {
             return Promise.reject(error);
         }
+
         return PageContent;
 
     }
@@ -739,7 +729,7 @@ function CreateTaskComponent(props: any) {
             try {
                 let selectedComponent: any[] = [];
                 let selectedService: any[] = [];
-                let portfolioId :any =null;
+                let portfolioId: any = null;
 
                 let CopyUrl;
                 if (save.taskUrl != undefined && save.taskUrl.length > 255) {
@@ -755,14 +745,14 @@ function CreateTaskComponent(props: any) {
                             selectedSite = site;
                         }
                     })
-                  
-                    try{
+
+                    try {
                         if (smartComponentData?.length > 0) {
                             smartComponentData?.map((com: any) => {
                                 if (smartComponentData !== undefined && smartComponentData.length >= 0) {
                                     $.each(smartComponentData, function (index: any, smart: any) {
                                         selectedComponent.push(smart.Id);
-                                        portfolioId=smart?.Id
+                                        portfolioId = smart?.Id
                                         if (selectedSite?.Parent?.Title == "SDC Sites") {
                                             postClientTime = JSON.parse(smart?.Sitestagging);
                                             siteCompositionDetails = smart?.SiteCompositionSettings;
@@ -776,13 +766,13 @@ function CreateTaskComponent(props: any) {
                                 }
                             })
                         }
-                       selectedService= [];
+                        selectedService = [];
                         if (linkedComponentData?.length > 0) {
                             linkedComponentData?.map((com: any) => {
                                 if (linkedComponentData !== undefined && linkedComponentData.length >= 0) {
                                     $.each(linkedComponentData, function (index: any, smart: any) {
                                         selectedService.push(smart.Id);
-                                        portfolioId=smart?.Id
+                                        portfolioId = smart?.Id
                                         if (selectedSite?.Parent?.Title == "SDC Sites") {
                                             postClientTime = JSON.parse(smart?.Sitestagging);
                                             siteCompositionDetails = smart?.SiteCompositionSettings;
@@ -796,15 +786,15 @@ function CreateTaskComponent(props: any) {
                                 }
                             })
                         }
-                        if(DirectTask==true){
-                            selectedComponent=[QueryPortfolioId];
-                            portfolioId =QueryPortfolioId;
+                        if (DirectTask == true) {
+                            selectedComponent = [QueryPortfolioId];
+                            portfolioId = QueryPortfolioId;
                         }
                         postClientTime?.map((items: any) => {
                             items.SiteName = items.Title
                         })
-                    }catch(error:any){
-                        console.log(error , 'Site Comp ')
+                    } catch (error: any) {
+                        console.log(error, 'Site Comp ')
                     }
                     let priorityRank = 4;
                     if (save.rank === undefined || parseInt(save.rank) <= 0) {
@@ -850,8 +840,6 @@ function CreateTaskComponent(props: any) {
                         "DueDate": save.DueDate,
                         "Mileage": save.Mileage,
                         PercentComplete: 0,
-                        ComponentId: { "results": (selectedComponent !== undefined && selectedComponent?.length > 0) ? selectedComponent : [] },
-                        ServicesId: { "results": (selectedService !== undefined && selectedService?.length > 0) ? selectedService : [] },
                         ResponsibleTeamId: { "results": AssignedIds },
                         PortfolioId: portfolioId,
                         TeamMembersId: { "results": TeamMembersIds },
@@ -862,8 +850,7 @@ function CreateTaskComponent(props: any) {
                         "PriorityRank": priorityRank,
                         SiteCompositionSettings: siteCompositionDetails != undefined ? siteCompositionDetails : '',
                         AssignedToId: { "results": AssignedToIds },
-                        TaskTypeId:2,
-                        SharewebTaskTypeId: 2,
+                        TaskTypeId: 2,
                         ClientTime: postClientTime != undefined ? JSON.stringify(postClientTime) : '',
                         ComponentLink: {
                             __metadata: { 'type': 'SP.FieldUrlValue' },
@@ -1271,25 +1258,14 @@ function CreateTaskComponent(props: any) {
                 cell: ({ row, column, getValue }) => (
                     <>
                         <span className='d-flex'>
-                            {row.original.Services.length >= 1 ? (
-                                <a
-                                    className="hreflink text-success"
-                                    href={`${row?.original?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
-                                    data-interception="off"
-                                    target="_blank"
-                                >
-                                    {row?.original?.Title}
-                                </a>
-                            ) : (
-                                <a
-                                    className="hreflink"
-                                    href={`${row?.original?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
-                                    data-interception="off"
-                                    target="_blank"
-                                >
-                                    {row?.original?.Title}
-                                </a>
-                            )}
+                            <a
+                                className="hreflink"
+                                href={`${row?.original?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                                data-interception="off"
+                                target="_blank"
+                            >
+                                {row?.original?.Title}
+                            </a>
                             {row?.original?.Body !== null && row?.original?.Body != undefined ? <InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} /> : ''}
                         </span>
                     </>
@@ -1304,25 +1280,12 @@ function CreateTaskComponent(props: any) {
                 accessorFn: (row) => row?.Portfolio,
                 cell: ({ row }) => (
                     <span>
-                        {row.original.Services.length >= 1 ? (
-                            <a
-                                className="hreflink text-success"
-                                data-interception="off"
-                                target="blank"
-                                href={`${row?.original?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
-                            >
-                                {row?.original?.portfolio?.Title}
-                            </a>
-                        ) : (
-                            <a
-                                className="hreflink"
-                                data-interception="off"
-                                target="blank"
-                                href={`${row?.original?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
-                            >
-                                {row?.original?.portfolio?.Title}
-                            </a>
-                        )}
+                        <a className="hreflink"
+                            data-interception="off"
+                            target="blank"
+                            href={`${row?.original?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`} >
+                            {row?.original?.portfolio?.Title}
+                        </a>
                     </span>
                 ),
                 id: "Portfolio",
@@ -1413,12 +1376,7 @@ function CreateTaskComponent(props: any) {
                 accessorFn: (row) => row?.CreatedSearch,
                 cell: ({ row }) => (
                     <span>
-                        {row.original.Services.length >= 1 ? (
-                            <span className='ms-1 text-success'>{row?.original?.CreateDate} </span>
-                        ) : (
-                            <span className='ms-1'>{row?.original?.CreateDate} </span>
-                        )}
-
+                        <span className='ms-1'>{row?.original?.CreateDate} </span>
                         {row?.original?.AuthorCover != undefined ? (
                             <>
                                 <a
@@ -1446,11 +1404,7 @@ function CreateTaskComponent(props: any) {
                 accessorFn: (row) => row?.ModifiedSearch,
                 cell: ({ row }) => (
                     <span>
-                        {row.original.Services.length >= 1 ? (
-                            <span className='ms-1 text-success'>{row?.original?.ModifiedDate} </span>
-                        ) : (
-                            <span className='ms-1'>{row?.original?.ModifiedDate} </span>
-                        )}
+                        <span className='ms-1'>{row?.original?.ModifiedDate} </span>
 
                         {row?.original?.EditorCover != undefined ? (
                             <>
@@ -1627,7 +1581,7 @@ function CreateTaskComponent(props: any) {
                     }
                     if (ToEmails.length > 0) {
                         var query = '';
-                        query += "AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,Component/Id,Component/Title,Component/ItemType,ComponentLink,Categories,FeedBack,ComponentLink,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,Services/Id,Services/Title,Events/Id,Events/Title,TaskType/Id,TaskType/Title,TaskID,CompletedDate,TaskLevel,TaskLevel&$expand=AssignedTo,Component,AttachmentFiles,Author,Editor,TaskCategories,TaskType,Services,Events&$filter=Id eq " + itemId;
+                        query += "AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,ComponentLink,Categories,FeedBack,ComponentLink,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,Portfolio/Id,Portfolio/Title,TaskCategories/Id,TaskCategories/Title,TaskType/Id,TaskType/Title,TaskID,CompletedDate,TaskLevel,TaskLevel&$expand=AssignedTo,AttachmentFiles,Author,Editor,TaskCategories,TaskType,Portfolio&$filter=Id eq " + itemId;
                         await getData(siteUrl, listId, query)
                             .then(async (data: any) => {
                                 data?.map((item: any) => {
@@ -1723,10 +1677,8 @@ function CreateTaskComponent(props: any) {
                                     })
                                 }
                                 UpdateItem.ComponentName = '';
-                                if (UpdateItem?.Component != undefined) {
-                                    UpdateItem.Component.map((item: any) => {
-                                        UpdateItem.ComponentName += item.Title + ';';
-                                    })
+                                if (UpdateItem?.Portfolio?.Id != undefined) {
+                                    UpdateItem.ComponentName += UpdateItem?.Portfolio.Title
                                 }
                                 UpdateItem.Category = '';
                                 UpdateItem.Categories = '';
@@ -2061,110 +2013,68 @@ function CreateTaskComponent(props: any) {
 
     return (
         <>  <div className={save.portfolioType == "Service" ? "serviepannelgreena" : ''}>
-            <div className='Create-taskpage'>
+            <div className='creatTaskPage'>
                 <div className='row'>
-                    {props?.projectId == undefined ? <div className='col-sm-12'>
-                        <div className='header-section full-width justify-content-between'>
-                            <h2 style={{ color: "#000066", fontWeight: "600" }}>Create Task
-                                <a data-interception="off" className=' text-end pull-right' target='_blank' href={oldTaskIrl} style={{ cursor: "pointer", fontSize: "14px" }}>Old Create Task</a>
-                            </h2>
-                        </div>
-                    </div> : ''}
-                    <div className='col-sm-6 ps-0'>
-                        <label className='full-width'>Task Name</label>
-                        <input type="text" placeholder='Enter task Name' className='full-width' value={save.taskName} onChange={(e) => { changeTitle(e) }}></input>
-                    </div>
-                    <div className='col-sm-2 p-0 mt-4'>
-                        <label className='SpfxCheckRadio'>
-                            <input
-                                type="radio" className="radio" checked={save.portfolioType === 'Component'}
-                                name="taskcategory" onChange={() => selectPortfolioType('Component')} />
-                            Component</label>
-                        {
-                            burgerMenuTaskDetails?.ComponentID == undefined ? <>
-                                <label className='SpfxCheckRadio ms-3'>
-                                    <input
-                                        type="radio" className="radio" checked={save.portfolioType === 'Service'}
-                                        name="taskcategory" onChange={() => selectPortfolioType('Service')} />
-                                    Service </label></> : ''
-                        }
-                    </div>
-                    <div className='col-sm-4 pe-0'>{
-                        save.portfolioType === 'Component' ?
-                            <div className="input-group">
-                                <label className="form-label full-width">Component Portfolio</label>
-                                {smartComponentData?.length > 0 ? null :
-                                    <>
-                                        <input type="text" readOnly
-                                            className="form-control"
-                                            id="{{PortfoliosID}}" autoComplete="off"
-                                        />
-                                    </>
-                                }
-                                {smartComponentData?.length > 0 ? smartComponentData?.map((com: any) => {
-                                    return (
-                                        <>
-                                            <div className="block d-flex justify-content-between pt-1 px-2" style={{ width: "89%" }}>
-                                                <a style={{ color: "#fff !important" }} target="_blank" href={`${base_Url}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
-                                                <a>
-                                                    <span title="Remove Component" onClick={() => setSmartComponentData([])}
-                                                        style={{ backgroundColor: 'white' }} className="svg__iconbox svg__icon--cross hreflink mx-2"></span>
-                                                </a>
-                                            </div>
-                                        </>
-                                    )
-                                }) : null}
-
-
-                                <span className="ms-2">
-                                    <span onClick={(e) => EditPortfolio(save, 'Component')} style={{ backgroundColor: 'white' }} className="svg__iconbox svg__icon--edit"></span>
-                                    {/* <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
-                                        onClick={(e) => EditComponent(save, 'Component')} /> */}
-                                </span>
-                            </div> : ''
-                    }
-                        {
-                            save.portfolioType === 'Service' ?
-                                <div className="input-group">
-                                    <label className="form-label full-width">
-                                        Service Portfolio
-                                    </label>
-                                    {linkedComponentData?.length > 0 ? null :
-                                        <>
-                                            <input type="text" readOnly className="form-control"
-                                                id="{{PortfoliosID}}" autoComplete="off" />
-                                        </>
-                                    }
-                                    {linkedComponentData?.length > 0 ? linkedComponentData?.map((com: any) => {
-                                        return (
+                    {props?.projectId == undefined ?
+                        <div className='heading d-flex justify-content-between align-items-center'>
+                            <h2>Create Task </h2>
+                            <span className='text-end fs-6'>
+                             <a data-interception="off" className=' text-end pull-right' target='_blank' href={oldTaskIrl} style={{ cursor: "pointer", fontSize: "14px" }}>Old Create Task</a>
+                             </span>
+                        </div>  : ''}
+                    <div className='row'>
+                        <h4 className="titleBorder">General Information</h4>
+                        <div className='row '>
+                            <div className='col-sm-6'>
+                                <label className='full-width'>Task Name</label>
+                                <input type="text" placeholder='Enter task Name' className='full-width' value={save.taskName} onChange={(e) => { changeTitle(e) }}></input>
+                            </div>
+                            <div className='col-sm-6 '>{
+                                save.portfolioType === 'Component' ?
+                                    <div className="input-group">
+                                        <label className="form-label full-width">Portfolio</label>
+                                        {smartComponentData?.length > 0 ? null :
                                             <>
-                                                <div className="block d-flex justify-content-between pt-1 px-2" style={{ width: "89%" }}>
-                                                    <a style={{ color: "#fff !important" }} target="_blank" href={`${base_Url}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
-                                                    <a>
-                                                        <span title="Remove Service" style={{ backgroundColor: 'white', color: "#fff !important" }} onClick={() => setLinkedComponentData([])}
-                                                            className="svg__iconbox svg__icon--cross hreflink mx-2"></span>
-                                                    </a>
-                                                </div>
+                                                <input type="text" readOnly
+                                                    className="form-control"
+                                                    id="{{PortfoliosID}}" autoComplete="off"
+                                                />
                                             </>
-                                        )
-                                    }) : null}
-                                    <span className="ms-2">
-                                        <span onClick={(e) => EditPortfolio(save, 'Service')} className="svg__iconbox svg__icon--edit"></span>
-                                        {/* <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
-                                        onClick={(e) => EditLinkedServices(save, 'Component')} /> */}
-                                    </span>
-                                </div> : ''
-                        }
-                    </div>
-                </div>
-                <div className='row mt-2 mb-3'>
-                    <div className='col-sm-12 p-0'>
-                        <input type="text" className='full-width ' placeholder='Enter task Url' value={save.taskUrl} onChange={(e) => UrlPasteTitle(e)} disabled={burgerMenuTaskDetails?.Siteurl?.length > 0}></input>
+                                        }
+                                        {smartComponentData?.length > 0 ? smartComponentData?.map((com: any) => {
+                                            return (
+                                                <>
+                                                    <div className="block d-flex justify-content-between pt-1 px-2" style={{ width: "95%" }}>
+                                                        <a style={{ color: "#fff !important" }} target="_blank" href={`${base_Url}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                                        <a>
+                                                            <span title="Remove Component" onClick={() => setSmartComponentData([])}
+                                                                style={{ backgroundColor: 'white' }} className="svg__iconbox svg__icon--cross hreflink mx-2"></span>
+                                                        </a>
+                                                    </div>
+                                                </>
+                                            )
+                                        }) : null}
+                                        <span className="input-group-text">
+                                            <span onClick={(e) => EditPortfolio(save, 'Component')} style={{ backgroundColor: 'white' }} className="svg__iconbox svg__icon--edit"></span>
+                                            {/* <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                        onClick={(e) => EditComponent(save, 'Component')} /> */}
+                                        </span>
+                                    </div> : ''
+                            }
+                            </div>
+                            <div className='col  mt-2'>
+                                <label className='full-width'>Task URL</label>
+                                <input type="text" className='full-width ' placeholder='Enter task Url' value={save.taskUrl} onChange={(e) => UrlPasteTitle(e)} disabled={burgerMenuTaskDetails?.Siteurl?.length > 0}></input>
 
+                            </div>
+
+                        </div>
                     </div>
+
                 </div>
+
                 {burgerMenuTaskDetails?.Siteurl != undefined && burgerMenuTaskDetails?.ComponentID != undefined ?
-                    <div className={refreshPage != true ? 'row' : 'row'}>
+                    <div className={refreshPage != true ? 'mt-2' : 'mt-2'}>
                         <ul className="nav nav-tabs" id="myTab" role="tablist">
                             {burgerMenuTaskDetails?.Siteurl != undefined ?
                                 <button className="nav-link active" id="URL-Tasks" data-bs-toggle="tab" data-bs-target="#URLTasks" type="button" role="tab" aria-controls="URLTasks" aria-selected="true">
@@ -2227,19 +2137,19 @@ function CreateTaskComponent(props: any) {
                 {/*---------------- Sites -------------
             -------------------------------*/}
                 {siteType?.length > 1 ?
-                    <div className='row mt-2 border'>
-                        <fieldset>
-                            <legend className="border-bottom fs-6 ">Sites</legend>
-                            <ul className="quick-actions ">
+                    <div className='col mt-2'>
+                        <h4 className="titleBorder ">Websites</h4>
+                        <div className='p-0'>
+                            <ul className="site-actions">
                                 {siteType?.map((item: any) => {
                                     return (
                                         <>
                                             {(item.Title !== undefined && item.Title !== 'Offshore Tasks' && item.Title !== 'Master Tasks' && item.Title !== 'DRR' && item.Title !== 'SDC Sites' && item.Title !== 'QA') &&
                                                 <>
                                                     <li
-                                                        className={isActive.siteType && save.siteType === item.Title ? '  mx-1 p-2 bg-siteColor selectedTaskList text-center mb-2 position-relative' : "mx-1 p-2 position-relative bg-siteColor text-center  mb-2"} onClick={() => setActiveTile("siteType", "siteType", item.Title)} >
+                                                        className={isActive.siteType && save.siteType === item.Title ? ' bgtile active text-center mb-2 position-relative' : " position-relative bgtile text-center  mb-2"} onClick={() => setActiveTile("siteType", "siteType", item.Title)} >
                                                         {/*  */}
-                                                        <a className='text-white text-decoration-none' >
+                                                        <a className=' text-decoration-none' >
                                                             <span className="icon-sites">
                                                                 {item.Item_x005F_x0020_Cover != undefined &&
                                                                     <img className="icon-sites"
@@ -2253,163 +2163,102 @@ function CreateTaskComponent(props: any) {
                                         </>)
                                 })}
                             </ul>
-                        </fieldset>
+                        </div>
                     </div> : ''}
 
                 {props?.projectId == undefined ? <>
+                    <div className="clearfix"></div>
                     {/*---- Task Categories ---------
             -------------------------------*/}
-                    <div className='row mt-2 border'>
-                        <fieldset >
-                            <legend className="border-bottom fs-6">Task Categories</legend>
-                            <div className="row " style={{ width: "100%" }}>
+                    <div className='col mt-2 '>
+                        <div className='p-0' >
+                            <div className="col" >
                                 {TaskTypes?.map((Task: any) => {
                                     return (
                                         <>
-                                            <>
-                                                <div
-                                                    className=" col-sm-2 mt-1 text-center"  >
-                                                    <div id={"subcategorytasks" + Task.Id} className={isActiveCategory ? 'task manage_tiles' : 'task manage_tiles'}>
-                                                        <div className='bg-siteColor py-3'>
-                                                            {(Task.Item_x005F_x0020_Cover !== undefined && Task.Item_x005F_x0020_Cover?.Url !== undefined) &&
-                                                                <img className="icon-task"
-                                                                    src={Task.Item_x005F_x0020_Cover.Url} />}
-                                                            <p className='m-0'>{Task.Title}</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className='subcategoryTasks kind_task col-sm-10'  >
-                                                    {subCategory?.map((item: any) => {
-                                                        return (
-                                                            <>
-                                                                {Task.Id === item.ParentID && <>
-                                                                    {/* onClick={() => selectSubTaskCategory(item.Title, item.Id)} */}
-                                                                    <a onClick={() => selectSubTaskCategory(item.Title, item.Id, item)} id={"subcategorytasks" + item.Id} className={item.ActiveTile ? 'bg-siteColor subcategoryTask selectedTaskList text-center' : 'bg-siteColor subcategoryTask text-center'} >
-
-                                                                        <span className="icon-box">
-                                                                            {(item.Item_x005F_x0020_Cover !== undefined && item.Item_x005F_x0020_Cover?.Url !== undefined) &&
-                                                                                <img className="icon-task"
-                                                                                    src={item.Item_x005F_x0020_Cover.Url} />}
-                                                                        </span> <span className="tasks-label">{item.Title}</span>
-                                                                    </a>
-                                                                </>
-                                                                }
-                                                            </>
-                                                        )
-                                                    })}
-                                                </div>
-                                            </>
+                                            <h4 className="titleBorder "> {Task?.Title}</h4>
+                                            <div className='col p-0 taskcatgoryPannel'  >
+                                                {subCategory?.map((item: any) => {
+                                                    return (
+                                                        <>
+                                                            {Task.Id === item.ParentID &&
+                                                                <a onClick={() => selectSubTaskCategory(item.Title, item.Id, item)} id={"subcategorytasks" + item.Id} className={item.ActiveTile ? 'bg-siteColor subcategoryTask active text-center' : 'bg-siteColor subcategoryTask text-center'} >
+                                                                    <span className="tasks-label">{item.Title}</span>
+                                                                </a>
+                                                            }
+                                                        </>
+                                                    )
+                                                })}
+                                            </div>
                                         </>)
                                 })}
                             </div>
-                        </fieldset>
+                        </div>
                     </div>
+                    <div className="clearfix"></div>
                     {/*-----Priority Rank ---------------------------------------*/}
-                    <div className='row mt-2 border'>
-                        <fieldset>
-                            <legend className="border-bottom fs-6">Priority Rank</legend>
-                            <dl className="row px-2 text-center">
-                                {priorityRank?.map((item: any) => {
-                                    return (
-                                        <>
+                    <div className='col  mt-2'>
+                        <h4 className="titleBorder ">Priority Rank</h4>
 
-                                            <>
-                                                <dt
-                                                    className={isActive.rank && save.rank === item.Title ? 'bg-siteColor col selectedTaskList  mx-1 p-2  mb-2 ' : 'bg-siteColor col mx-1 p-2  mb-2 '} onClick={() => setActiveTile("rank", "rank", item.Title)}>
+                        {/* <legend className="border-bottom fs-6">Priority Rank</legend> */}
+                        <div className="row px-2 text-center taskcatgoryPannel Priority">
+                            <span className='subcategoryTask'>High priority</span>
+                            {priorityRank?.map((item: any) => {
+                                return (
+                                    <a className={isActive.rank && save.rank === item.Title ? 'subcategoryTask active' : 'subcategoryTask'} onClick={() => setActiveTile("rank", "rank", item.Title)}> {item?.Title} </a>
+                                )
+                            })}
+                            <span className='subcategoryTask'>Low priority</span>
 
-                                                    <a className='text-white'>
-                                                        <span>
-                                                            {(item.Item_x005F_x0020_Cover !== undefined && item.Item_x005F_x0020_Cover?.Url !== undefined) &&
-                                                                <img src={item.Item_x005F_x0020_Cover.Url} />}
-                                                        </span>
-                                                    </a>
+                        </div>
 
-                                                </dt>
-
-                                            </>
-
-                                        </>)
-                                })}
-
-                            </dl>
-                        </fieldset>
                     </div>
+                    <div className="clearfix"></div>
                     {/*-----Time --------
             -------------------------------*/}
-                    <div className='row mt-2 border'>
-                        <fieldset>
-                            <legend className="border-bottom fs-6">Time</legend>
-                            <div className="row justify-content-md-center subcategoryTasks">
-                                {Timing?.map((item: any) => {
-                                    return (
-                                        <>
 
-                                            <>
-                                                <div className={isActive.time && save.Time === item.Title ? 'bg-siteColor selectedTaskList Timetask mx-1 p-2 px-2   text-center' : 'bg-siteColor Timetask mx-1 p-2 px-2  text-center'} onClick={() => setActiveTile("Time", "time", item.Title)} >
-
-                                                    <a className='text-decoration-none text-white'>
-                                                        <span className="icon-sites">
-                                                            {(item.Item_x005F_x0020_Cover !== undefined && item.Item_x005F_x0020_Cover?.Url !== undefined) &&
-                                                                <img className="icon-sites"
-                                                                    src={item.Item_x005F_x0020_Cover.Url} />
-                                                            }
-                                                        </span>{item.Title}
-                                                    </a>
-                                                </div>
-
-                                            </>
-
-                                        </>)
-                                })}
-
-                            </div>
-                        </fieldset>
+                    <div className='col mt-2'>
+                        <h4 className="titleBorder ">Time</h4>
+                        <div className="col  taskcatgoryPannel">
+                            {Timing?.map((item: any) => {
+                                return (
+                                    <a className={isActive.time && save.Time === item.Title ? ' active subcategoryTask' : 'subcategoryTask'} onClick={() => setActiveTile("Time", "time", item.Title)}>{item.Title}</a>
+                                )
+                            })}
+                        </div>
                     </div>
+                    <div className="clearfix"></div>
                     {/*-----Due date --------
             -------------------------------*/}
-                    <div className='row mt-2 border'>
-                        <fieldset>
-
-                            <legend className="border-bottom fs-6">Due Date</legend>
-                            <div className="row justify-content-md-center text-center mb-2">
-                                <div className={isActive.dueDate && save.dueDate === 'Today' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'Today')}>
-                                    <a className='text-decoration-none text-white'>Today&nbsp;{moment(new Date()).format('DD-MM-YYYY')}</a>
-                                </div>
-                                <div className={isActive.dueDate && save.dueDate === 'Tomorrow' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'Tomorrow')} id="Tomorrow"><a className='text-decoration-none text-white'>Tomorrow</a> </div>
-                                <div className={isActive.dueDate && save.dueDate === 'ThisWeek' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'ThisWeek')} id="ThisWeek"><a className='text-decoration-none text-white'>This Week</a> </div>
-                                <div className={isActive.dueDate && save.dueDate === 'NextWeek' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'NextWeek')} id="NextWeek"><a className='text-decoration-none text-white'>Next Week</a> </div>
-                                <div className={isActive.dueDate && save.dueDate === 'ThisMonth' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'ThisMonth')} id="ThisMonth"><a className='text-decoration-none text-white'>This Month</a> </div>
-                            </div>
-                        </fieldset>
+                    <div className='col mb-1 mt-2'>
+                        <h4 className="titleBorder ">Due Date</h4>
+                        <div className="col taskcatgoryPannel">
+                            <a className={isActive.dueDate && save.dueDate === 'Today' ? 'subcategoryTask active text-center' : 'subcategoryTask'} onClick={() => setActiveTile("dueDate", "dueDate", 'Today')}>Today&nbsp;{moment(new Date()).format('DD/MM/YYYY')}</a>
+                            <a className={isActive.dueDate && save.dueDate === 'Tomorrow' ? 'subcategoryTask active text-center' : 'subcategoryTask'} onClick={() => setActiveTile("dueDate", "dueDate", 'Tomorrow')} id="Tomorrow">Tomorrow</a>
+                            <a className={isActive.dueDate && save.dueDate === 'ThisWeek' ? 'subcategoryTask active text-center' : 'subcategoryTask'} onClick={() => setActiveTile("dueDate", "dueDate", 'ThisWeek')} id="ThisWeek">This Week</a>
+                            <a className={isActive.dueDate && save.dueDate === 'NextWeek' ? 'subcategoryTask active text-center' : 'subcategoryTask'} onClick={() => setActiveTile("dueDate", "dueDate", 'NextWeek')} id="NextWeek">Next Week</a>
+                            <a className={isActive.dueDate && save.dueDate === 'ThisMonth' ? 'subcategoryTask active text-center' : 'subcategoryTask'} onClick={() => setActiveTile("dueDate", "dueDate", 'ThisMonth')} id="ThisMonth">This Month</a>
+                        </div>
                     </div>
                 </> : ''}
 
-                <div className='col text-end mt-3'>
+                <footer className='col text-end mt-3'>
                     {
                         siteType?.map((site: any) => {
                             if (site.Title === save.siteType) {
                                 return (
                                     <span className='ms-2'>
                                         {(site.Item_x005F_x0020_Cover !== undefined && site.Item_x005F_x0020_Cover?.Url !== undefined) &&
-                                            <img className="client-icons" src={site.Item_x005F_x0020_Cover.Url} />
+                                            <img className="createTask-SiteIcon mx-2" style={{width:'31.5px'}} src={site.Item_x005F_x0020_Cover.Url} />
                                         }
                                     </span>
                                 )
                             }
                         })
                     }
-                    <button type="button" className='btnCol btn btn-primary' onClick={() => createTask()}>Submit</button>
-                </div>
-                {/* {IsComponent && <ServiceComponentPortfolioPopup props={ShareWebComponent} Call={Call} Dynamic={AllListId} AllListId={AllListId} smartComponentData={smartComponentData} ></ServiceComponentPortfolioPopup>}
-                {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call} AllListId={AllListId} Dynamic={AllListId} linkedComponentData={linkedComponentData}  ></LinkedComponent>} */}
-                {/* {IsComponent &&
-                    <ServiceComponentPortfolioPopup
-                        props={ShareWebComponent}
-                        Dynamic={AllListId}
-                        ComponentType={"Component"}
-                        Call={ComponentServicePopupCallBack}
-                    />
-                } */}
+                    <button type="button" className='btn btn-primary bg-siteColor ' onClick={() => createTask()}>Submit</button>
+                </footer>
+
                 {IsOpenPortfolio &&
                     <ServiceComponentPortfolioPopup
                         props={ShareWebComponent}
