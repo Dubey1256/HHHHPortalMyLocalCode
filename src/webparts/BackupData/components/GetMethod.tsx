@@ -2,8 +2,8 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Web } from 'sp-pnp-js';
 import { ColumnDef } from '@tanstack/react-table';
 import LeavePortal from './LeavePortal';
-import GlobalCommanTable from '../../../GlobalCommanTable';
 import { PrimaryButton } from 'office-ui-fabric-react/lib/Button';
+import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 export default function SiteDataBackupTool(selectedProps: any) {
     const [ListData, setListData]: any[] = useState([]);
     const [Popupopen, setPopupopen] = useState(Boolean);

@@ -1921,31 +1921,13 @@ const [Item,setItem]=React.useState("")
                   {data.map((item: any) => {
                     return (
                       <>
-                        {item?.PortfolioType?.Title == "Component" && (
+                        {item?.PortfolioType?.Title && (
                           <dl>
-                            <dt className="bg-fxdark">Service Portfolio</dt>
-                            <dd className="bg-light serviepannelgreena">
-                              <div className="block">
+                            <dt className="bg-fxdark">{`${item?.PortfolioType?.Title}`} Portfolio</dt>
+                            <dd className={`bg-light `}>
+                            <div className="ps-1" style={{backgroundColor: `${item?.PortfolioType?.Color}`,boxSizing: "border-box"}}>
                                 <a
-                                  className="service"
-                                  style={{ border: "0px" }}
-                                  target="_blank"
-                                  data-interception="off"
-                                  href={SelectedProp.siteUrl+"/SitePages/Portfolio-Profile.aspx?taskId="+item?.Portfolios?.results[0]?.Id}
-                                >
-                                  {item?.Portfolios?.results[0]?.Title}
-                                </a>
-                              </div>
-                            </dd>
-                          </dl>
-                        )}
-                        {item?.PortfolioType?.Title == "Service" && (
-                          <dl>
-                            <dt className="bg-fxdark">Component Portfolio</dt>
-                            <dd className="bg-light">
-                            <div style={{backgroundColor: "#292984",boxSizing: "border-box"}}>
-                                <a
-                                  className="service"
+                                  className="text-light"
                                   style={{ border: "0px" }}
                                   target="_blank"
                                   data-interception="off"
@@ -1957,6 +1939,7 @@ const [Item,setItem]=React.useState("")
                             </dd>
                           </dl>
                         )}
+                       
                       </>
                     );
                   })}
