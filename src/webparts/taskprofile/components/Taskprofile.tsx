@@ -438,9 +438,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     }, () => {
 
       this.getSmartTime();
-      if (tempTask.Portfolio != undefined) {
-        this.getAllTaskData();
-      }
+      // if (tempTask.Portfolio != undefined) {
+      //   this.getAllTaskData();
+      // }
       this.getAllTaskData();
 
 
