@@ -643,11 +643,11 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           if (this.state?.ChildLevel == true) {
             if (this.state?.ReplyParent?.MsTeamCreated == undefined)
               this.state.ReplyParent.MsTeamCreated = ''
-            TeamMsg = `<blockquote>${this.state?.ReplyParent?.AuthorName} ${this.state?.ReplyParent?.MsTeamCreated} </br> ${this.state?.ReplyParent?.Description.replace(/<\/?[^>]+(>|$)/g, '')} </br> ${window.location.href}</blockquote>${txtComment}`;
-          }
-          else {
-            TeamMsg = txtComment + `</br> <a href=${window.location.href}>${window.location.href}</a>`
-          }
+              TeamMsg = `<blockquote>${this.state?.ReplyParent?.AuthorName} ${this.state?.ReplyParent?.MsTeamCreated} </br> ${this.state?.ReplyParent?.Description.replace(/<\/?[^>]+(>|$)/g, '')} </br> ${this.state?.Result?.TaskId}-${this.state?.Result?.Title}</blockquote>${txtComment}`;
+            }
+            else {
+              TeamMsg = txtComment + `</br> <a href=${window.location.href}>${this.state?.Result?.TaskId}-${this.state?.Result?.Title}</a>`
+            }
           await globalCommon.SendTeamMessage(mention_To, TeamMsg, this.props.Context)
           this.SendEmail(emailprops);
           this.setState({
@@ -900,7 +900,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                         <div className="commentMedia">
                           {cmtData?.ReplyMessages != null && cmtData?.ReplyMessages != undefined && cmtData?.ReplyMessages?.length > 0 &&
                             <div>
-                              <ul className="list-unstyled">
+                              <ul className="subcomment">
                                 {cmtData?.ReplyMessages != null && cmtData?.ReplyMessages?.length > 0 && cmtData?.ReplyMessages?.map((ReplyMsg: any, j: any) => {
                                   return <li className="media border p-1 my-1">
 
