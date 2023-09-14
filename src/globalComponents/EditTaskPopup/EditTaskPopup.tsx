@@ -2878,12 +2878,13 @@ const EditTaskPopup = (Items: any) => {
 
     }
     const ImageCustomizeFunction = (currentImagIndex: any) => {
-        setImageCustomizePopup(true)
+        setImageCustomizePopup(true);
+        setModalIsOpen(false);
     }
     const ImageCustomizeFunctionClosePopup = () => {
         setImageCustomizePopup(false);
-        // setModalIsOpen(true);
-        // GetExtraLookupColumnData();
+        setModalIsOpen(true);
+        GetExtraLookupColumnData();
         // UpdateTaskInfoFunction("Image-Tab")
         if (CommentBoxData?.length > 0 || SubCommentBoxData?.length > 0) {
             if (CommentBoxData?.length == 0 && SubCommentBoxData?.length > 0) {
@@ -3071,8 +3072,8 @@ const EditTaskPopup = (Items: any) => {
 
     const copyAndMoveTaskFunctionOnBackendSide = async (FunctionsType: any) => {
         loadTime();
-        //         var SiteId = "Task" + Items.Items.siteType;
-        //         let web = new Web(siteUrls);
+        //   var SiteId = "Task" + Items.Items.siteType;
+        //   let web = new Web(siteUrls);
         //   const TimeEntry = await web.lists.getByTitle('TimesheetListNewId').items.select(`${SiteId}/Id`).expand(`${SiteId}`)
         //   .filter(`${SiteId}/Id eq '${Items?.Items?.Id}'`)
         //  .get(); 
@@ -3090,7 +3091,6 @@ const EditTaskPopup = (Items: any) => {
                 let web = new Web(siteUrls);
                 await web.lists.getByTitle(SelectedSite).items.add(TaskDataJSON).then(async (res: any) => {
                     newGeneratedId = res.data.Id;
-
                     //    const attachmentss = await web.lists.getById(Items?.Items?.listId)
                     //     .items.getById(Items.Items.Id)
                     //     .attachmentFiles.get();
