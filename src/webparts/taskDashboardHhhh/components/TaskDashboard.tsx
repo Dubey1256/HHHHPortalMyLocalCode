@@ -403,115 +403,124 @@ const TaskDashboard = (props: any) => {
                         let smartmeta = [];
                         await web.lists
                             .getById(config.listId)
-                            .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Modified")
+                            .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title","EstimatedTimeDescription", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Modified")
                             .expand("TeamMembers", "Approver", "ParentTask", "ClientCategory", "AssignedTo", "TaskCategories", "Author", "ResponsibleTeam", "TaskType", "Portfolio")
                             .getAll().then((data: any) => {
                                 smartmeta = data;
-                                smartmeta.map((task: any) => {
-                                    task.AllTeamMember = [];
-                                    let EstimatedDesc = JSON.parse(task?.EstimatedTimeDescription)
-                                    task.HierarchyData = [];
-                                    task.EstimatedTime = 0
-                                    let estimatedDescription = ''
-                                    if (EstimatedDesc?.length > 0) {
-                                        EstimatedDesc?.map((time: any) => {
-                                            task.EstimatedTime += Number(time?.EstimatedTime)
-                                            estimatedDescription += ', ' + time?.EstimatedTimeDescription
-                                        })
-                                    }
-                                    task.siteType = config.Title;
-                                    task.bodys = task.Body != null && task.Body.split('<p><br></p>').join('');
-                                    task.listId = config.listId;
-                                    task.siteUrl = config.siteUrl.Url;
-                                    task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
-                                    task.DisplayDueDate =
-                                        task.DueDate != null
-                                            ? Moment(task.DueDate).format("DD/MM/YYYY")
-                                            : "";
-                                    task.portfolio = {};
-                                    if (task?.Portfolio?.Id != undefined) {
-                                        task.portfolio = task?.Portfolio;
-                                        task.PortfolioTitle = task?.Portfolio?.Title;
-                                        // task["Portfoliotype"] = "Component";
-                                    }
+                                smartmeta?.map((task: any) => {
+                                    try {
 
-                                    task["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
-                                    task.TeamMembersSearch = "";
-                                    task.TaskID = globalCommon.getTaskId(task);
-                                    if (task?.ClientCategory?.length > 0) {
-                                        task.ClientCategorySearch = task?.ClientCategory?.map((elem: any) => elem.Title).join(" ")
-                                    } else {
-                                        task.ClientCategorySearch = ''
-                                    }
-                                    task.ApproverIds = [];
-                                    task?.Approver?.map((approverUser: any) => {
-                                        task.ApproverIds.push(approverUser?.Id);
-                                    })
-                                    task.AssignedToIds = [];
-                                    task?.AssignedTo?.map((assignedUser: any) => {
-                                        task.AssignedToIds.push(assignedUser.Id)
-                                        taskUsers?.map((user: any) => {
-                                            if (user.AssingedToUserId == assignedUser.Id) {
-                                                if (user?.Title != undefined) {
-                                                    task.TeamMembersSearch =
-                                                        task.TeamMembersSearch + " " + user?.Title;
-                                                }
-                                            }
-                                        });
-                                    });
-                                    task.DisplayCreateDate =
-                                        task.Created != null
-                                            ? Moment(task.Created).format("DD/MM/YYYY")
-                                            : "";
-                                    task.TeamMembersId = [];
-                                    taskUsers?.map((user: any) => {
-                                        if (user.AssingedToUserId == task.Author.Id) {
-                                            task.createdImg = user?.Item_x0020_Cover?.Url;
+                                        task.AllTeamMember = [];
+                                        let EstimatedDesc: any = [];
+                                        if (task?.EstimatedTimeDescription != undefined && task?.EstimatedTimeDescription != '' && task?.EstimatedTimeDescription != null) {
+                                            EstimatedDesc = JSON.parse(task?.EstimatedTimeDescription)
                                         }
-                                    })
+                                        task.HierarchyData = [];
+                                        task.EstimatedTime = 0
+                                        let estimatedDescription = ''
+                                        if (EstimatedDesc?.length > 0) {
+                                            EstimatedDesc?.map((time: any) => {
+                                                task.EstimatedTime += Number(time?.EstimatedTime)
+                                                estimatedDescription += ', ' + time?.EstimatedTimeDescription
+                                            })
+                                        }
+                                        task.siteType = config.Title;
+                                        task.bodys = task.Body != null && task.Body.split('<p><br></p>').join('');
+                                        task.listId = config.listId;
+                                        task.siteUrl = config.siteUrl.Url;
+                                        task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
+                                        task.DisplayDueDate =
+                                            task.DueDate != null
+                                                ? Moment(task.DueDate).format("DD/MM/YYYY")
+                                                : "";
+                                        task.portfolio = {};
+                                        if (task?.Portfolio?.Id != undefined) {
+                                            task.portfolio = task?.Portfolio;
+                                            task.PortfolioTitle = task?.Portfolio?.Title;
+                                            // task["Portfoliotype"] = "Component";
+                                        }
 
-                                    task?.TeamMembers?.map((taskUser: any) => {
-                                        task.TeamMembersId.push(taskUser.Id);
-                                        var newuserdata: any = {};
-                                        taskUsers?.map((user: any) => {
-                                            if (user.AssingedToUserId == taskUser.Id) {
-                                                if (user?.Title != undefined) {
-                                                    task.TeamMembersSearch =
-                                                        task.TeamMembersSearch + " " + user?.Title;
+                                        task["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
+                                        task.TeamMembersSearch = "";
+                                        task.TaskID = globalCommon.getTaskId(task);
+                                        if (task?.ClientCategory?.length > 0) {
+                                            task.ClientCategorySearch = task?.ClientCategory?.map((elem: any) => elem.Title).join(" ")
+                                        } else {
+                                            task.ClientCategorySearch = ''
+                                        }
+                                        task.ApproverIds = [];
+                                        task?.Approver?.map((approverUser: any) => {
+                                            task.ApproverIds.push(approverUser?.Id);
+                                        })
+                                        task.AssignedToIds = [];
+                                        task?.AssignedTo?.map((assignedUser: any) => {
+                                            task.AssignedToIds.push(assignedUser.Id)
+                                            taskUsers?.map((user: any) => {
+                                                if (user.AssingedToUserId == assignedUser.Id) {
+                                                    if (user?.Title != undefined) {
+                                                        task.TeamMembersSearch =
+                                                            task.TeamMembersSearch + " " + user?.Title;
+                                                    }
                                                 }
-                                                newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
-                                                newuserdata["Suffix"] = user?.Suffix;
-                                                newuserdata["Title"] = user?.Title;
-                                                newuserdata["UserId"] = user?.AssingedToUserId;
-                                                task["Usertitlename"] = user?.Title;
-                                            }
-                                            task.AllTeamMember.push(newuserdata);
+                                            });
                                         });
-                                    });
+                                        task.DisplayCreateDate =
+                                            task.Created != null
+                                                ? Moment(task.Created).format("DD/MM/YYYY")
+                                                : "";
+                                        task.TeamMembersId = [];
+                                        taskUsers?.map((user: any) => {
+                                            if (user.AssingedToUserId == task.Author.Id) {
+                                                task.createdImg = user?.Item_x0020_Cover?.Url;
+                                            }
+                                        })
 
-                                    const isBottleneckTask = checkUserExistence('Bottleneck', task?.TaskCategories);
-                                    const isImmediate = checkUserExistence('Immediate', task?.TaskCategories);
-                                    const isEmailNotification = checkUserExistence('Email Notification', task?.TaskCategories);
-                                    const isCurrentUserApprover = task?.ApproverIds?.includes(currentUserId);
-                                    if (isCurrentUserApprover && task?.PercentComplete == '1') {
-                                        approverTask.push(task)
+                                        task?.TeamMembers?.map((taskUser: any) => {
+                                            task.TeamMembersId.push(taskUser.Id);
+                                            var newuserdata: any = {};
+                                            taskUsers?.map((user: any) => {
+                                                if (user.AssingedToUserId == taskUser.Id) {
+                                                    if (user?.Title != undefined) {
+                                                        task.TeamMembersSearch =
+                                                            task.TeamMembersSearch + " " + user?.Title;
+                                                    }
+                                                    newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
+                                                    newuserdata["Suffix"] = user?.Suffix;
+                                                    newuserdata["Title"] = user?.Title;
+                                                    newuserdata["UserId"] = user?.AssingedToUserId;
+                                                    task["Usertitlename"] = user?.Title;
+                                                }
+                                                task.AllTeamMember.push(newuserdata);
+                                            });
+                                        });
+
+                                        const isBottleneckTask = checkUserExistence('Bottleneck', task?.TaskCategories);
+                                        const isImmediate = checkUserExistence('Immediate', task?.TaskCategories);
+                                        const isEmailNotification = checkUserExistence('Email Notification', task?.TaskCategories);
+                                        const isCurrentUserApprover = task?.ApproverIds?.includes(currentUserId);
+                                        if (isCurrentUserApprover && task?.PercentComplete == '1') {
+                                            approverTask.push(task)
+                                        }
+                                        if (isBottleneckTask) {
+                                            AllBottleNeckTasks.push(task)
+                                        }
+                                        if (isImmediate) {
+                                            AllImmediates.push(task)
+                                        }
+                                        if (isEmailNotification) {
+                                            AllEmails.push(task)
+                                        }
+                                        if (task.ClientActivityJson != undefined) {
+                                            SharewebTask.push(task)
+                                        }
+                                        if (parseInt(task.PriorityRank) >= 8 && parseInt(task.PriorityRank) <= 10) {
+                                            AllPriority.push(task);
+                                        }
+                                        AllSiteTasks.push(task)
+
+                                    } catch (error) {
+                                        console.log(error)
                                     }
-                                    if (isBottleneckTask) {
-                                        AllBottleNeckTasks.push(task)
-                                    }
-                                    if (isImmediate) {
-                                        AllImmediates.push(task)
-                                    }
-                                    if (isEmailNotification) {
-                                        AllEmails.push(task)
-                                    }
-                                    if (task.ClientActivityJson != undefined) {
-                                        SharewebTask.push(task)
-                                    }
-                                    if (parseInt(task.PriorityRank) >= 8 && parseInt(task.PriorityRank) <= 10) {
-                                        AllPriority.push(task);
-                                    }
-                                    AllSiteTasks.push(task)
                                 });
                                 arraycount++;
                             });
@@ -561,7 +570,7 @@ const TaskDashboard = (props: any) => {
         MasterListData = await web.lists
             .getById(AllListId?.MasterTaskListID)
             .items.select("ComponentCategory/Id", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "DeliverableSynonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "AdminNotes", "AdminStatus", "Background", "Help_x0020_Information", "TaskCategories/Id", "TaskCategories/Title", "PriorityRank", "Reference_x0020_Item_x0020_Json", "TeamMembers/Title", "TeamMembers/Name", "TeamMembers/Id", "Item_x002d_Image", "ComponentLink", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
-            .expand("ClientCategory", "ComponentCategory", "AssignedTo", "AttachmentFiles", "Author", "Editor", "TeamMembers", "TaskCategories", "Parent")
+            .expand("ClientCategory", "ComponentCategory", "AssignedTo", "AttachmentFiles", "Author", "Editor", "TeamMembers",  "TaskCategories", "Parent")
             .top(4999)
             .get().then((data) => {
                 data?.forEach((val: any) => {
@@ -782,10 +791,12 @@ const TaskDashboard = (props: any) => {
                 showSortIcon: true,
                 accessor: "EstimatedTime",
                 style: { width: '80px' },
-                Cell: ({ row }: any) =>
-                  {row?.original?.EstimatedTime},
+                Cell: ({ row }: any) => (
+                    <span>
+                        {row?.original?.EstimatedTime != undefined ? row?.original?.EstimatedTime : ''}
+                    </span>
+                ),
             },
-
             {
                 internalHeader: "% Complete",
                 accessor: "PercentComplete",
@@ -1433,6 +1444,7 @@ const TaskDashboard = (props: any) => {
         }
 
     };
+
 
     // Toggle Side Bar Function
     const toggleSideBar = () => {
