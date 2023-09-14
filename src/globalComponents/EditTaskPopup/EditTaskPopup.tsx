@@ -945,8 +945,8 @@ const EditTaskPopup = (Items: any) => {
                 }
                 if (Type == "Multi") {
                     if (LinkedPortfolioDataBackup?.length > 0) {
-                        let tempArray = LinkedPortfolioDataBackup.concat(DataItem);
-                        setLinkedPortfolioData(tempArray);
+                        LinkedPortfolioDataBackup = LinkedPortfolioDataBackup.concat(DataItem);
+                        setLinkedPortfolioData(LinkedPortfolioDataBackup);
                     } else {
                         setLinkedPortfolioData(DataItem)
                         LinkedPortfolioDataBackup = DataItem;
