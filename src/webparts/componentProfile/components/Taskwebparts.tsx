@@ -1279,10 +1279,13 @@ function TeamPortlioTable(SelectedProp: any) {
             }
 
         })
-        renderData = [];
-        renderData = renderData.concat(copyDtaArray)
-        refreshData();
-
+        if(res != undefined){
+            renderData = [];
+            renderData = renderData.concat(copyDtaArray)
+            refreshData();
+    
+        }
+      
     }
         
 }
