@@ -153,8 +153,8 @@ export default function ProjectOverview(props: any) {
         let web = new Web(AllListId?.siteUrl);
         MyAllData = await web.lists
             .getById(AllListId?.MasterTaskListID)
-            .items.select("ComponentCategory/Id", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "DeliverableSynonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "AdminNotes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "TaskCategories/Id", "TaskCategories/Title", "PriorityRank", "Reference_x0020_Item_x0020_Json", "TeamMembers/Title", "TeamMembers/Name", "Component/Id", "Services/Id", "Services/Title", "Services/ItemType", "Component/Title", "Component/ItemType", "TeamMembers/Id", "Item_x002d_Image", "ComponentLink", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
-            .expand("ClientCategory", "ComponentCategory", "AssignedTo", "Component", "Services", "AttachmentFiles", "Author", "Editor", "TeamMembers", "SharewebComponent", "TaskCategories", "Parent")
+            .items.select("ComponentCategory/Id", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "DeliverableSynonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "AdminNotes", "AdminStatus", "Background", "Help_x0020_Information",  "TaskCategories/Id", "TaskCategories/Title", "PriorityRank", "Reference_x0020_Item_x0020_Json", "TeamMembers/Title", "TeamMembers/Name", "TeamMembers/Id", "Item_x002d_Image", "ComponentLink", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
+            .expand("ClientCategory", "ComponentCategory", "AssignedTo", "AttachmentFiles", "Author", "Editor", "TeamMembers", "TaskCategories", "Parent")
             .top(4999)
             .get()
 
@@ -175,8 +175,8 @@ export default function ProjectOverview(props: any) {
                         let smartmeta = [];
                         await web.lists
                             .getById(config.listId)
-                            .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Modified")
-                            .expand("TeamMembers", "Approver", "ParentTask", "ClientCategory", "AssignedTo", "TaskCategories", "Author", "ResponsibleTeam", "TaskType", "Component", "Services")
+                            .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Modified")
+                            .expand("TeamMembers", "Approver", "ParentTask", "ClientCategory", "AssignedTo", "TaskCategories", "Author", "ResponsibleTeam", "TaskType","Portfolio")
                             .getAll().then((data: any) => {
                                 smartmeta = data;
                                 smartmeta.map((task: any) => {
@@ -192,24 +192,14 @@ export default function ProjectOverview(props: any) {
                                             ? Moment(task.DueDate).format("DD/MM/YYYY")
                                             : "";
                                     task.portfolio = {};
-                                    if (task?.Component?.length > 0) {
-                                        task.portfolio = task?.Component[0];
-                                        task.PortfolioTitle = task?.Component[0]?.Title;
-                                        task["Portfoliotype"] = "Component";
+                                    if (task?.Portfolio?.Id !=undefined) {
+                                        task.portfolio = task?.Portfolio;
+                                        task.PortfolioTitle = task?.Portfolio?.Title;
+                                        //task["Portfoliotype"] = "Component";
                                     }
-                                    if (task?.Services?.length > 0) {
-                                        task.portfolio = task?.Services[0];
-                                        task.PortfolioTitle = task?.Services[0]?.Title;
-                                        task["Portfoliotype"] = "Service";
-                                    }
+                                  
                                     task["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
                                     task.TeamMembersSearch = "";
-                                    task.componentString =
-                                        task.Component != undefined &&
-                                            task.Component != undefined &&
-                                            task.Component.length > 0
-                                            ? getComponentasString(task.Component)
-                                            : "";
                                     task.TaskID = globalCommon.getTaskId(task);
 
 
@@ -1303,8 +1293,8 @@ export default function ProjectOverview(props: any) {
             let Alltask: any = [];
             // var AllUsers: any = []
             Alltask = await web.lists.getById(AllListId?.MasterTaskListID).items
-                .select("Deliverables,TechnicalExplanations,PortfolioLevel,PortfolioStructureID,ValueAdded,Categories,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,Component/Id,Component/Title,Component/ItemType,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title")
-                .expand("ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,TeamMembers,TaskCategories,Parent")
+                .select("Deliverables,TechnicalExplanations,PortfolioLevel,PortfolioStructureID,ValueAdded,Categories,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title")
+                .expand("ComponentCategory,AssignedTo,AttachmentFiles,Author,Editor,TeamMembers,TaskCategories,Parent")
                 .top(4999).filter("Item_x0020_Type eq 'Project'")
                 .getAll();
 
@@ -1429,8 +1419,8 @@ export default function ProjectOverview(props: any) {
                     smartmeta = await web.lists
                         .getById(config.listId)
                         .items
-                        .select("Id,Title,PriorityRank,EstimatedTime,EstimatedTimeDescription,Project/PriorityRank,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Component/Id,Component/Title,Services/Id,Services/Title,PercentComplete,ComponentId,Categories,ServicesId,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
-                        .expand('AssignedTo,Project,Author,Editor,Component,Services,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory')
+                        .select("Id,Title,PriorityRank,Portfolio/Id,Portfolio/Title,EstimatedTime,EstimatedTimeDescription,Project/PriorityRank,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+                        .expand('AssignedTo,Project,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory')
                         .filter("IsTodaysTask eq 1")
                         .top(4999)
                         .get();
@@ -1468,16 +1458,12 @@ export default function ProjectOverview(props: any) {
                                 ? Moment(items.Created).format("DD/MM/YYYY")
                                 : "";
                         items.portfolio = {};
-                        if (items?.Component?.length > 0) {
-                            items.portfolio = items?.Component[0];
-                            items.PortfolioTitle = items?.Component[0]?.Title;
-                            items["Portfoliotype"] = "Component";
+                        if (items?.Portfolio?.Id!=undefined) {
+                            items.portfolio = items?.Portfolio;
+                            items.PortfolioTitle = items?.Portfolio?.Title;
+                          //  items["Portfoliotype"] = "Component";
                         }
-                        if (items?.Services?.length > 0) {
-                            items.portfolio = items?.Services[0];
-                            items.PortfolioTitle = items?.Services[0]?.Title;
-                            items["Portfoliotype"] = "Service";
-                        }
+                     
                         items["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
                         if (items?.Project?.Title != undefined) {
                             items["ProjectTitle"] = items?.Project?.Title;
@@ -1504,12 +1490,7 @@ export default function ProjectOverview(props: any) {
                                 });
                             });
                         }
-                        items.componentString =
-                            items.Component != undefined &&
-                                items.Component != undefined &&
-                                items.Component.length > 0
-                                ? getComponentasString(items.Component)
-                                : "";
+                        
                         items.TaskID = globalCommon.getTaskId(items);
                         AllTaskUsers?.map((user: any) => {
                             if (user.AssingedToUserId == items.Author.Id) {

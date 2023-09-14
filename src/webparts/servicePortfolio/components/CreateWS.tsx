@@ -90,9 +90,9 @@ const CreateWS = (props: any) => {
         const parentdata: any = []
         // parentdata.push()
         // return new Promise((resolve, reject) => {
-        if (Item.Parent != null || Item?.Component != undefined || Item?.Services != undefined) {
+        if (Item.Parent != null || Item?.Portfolio != undefined ) {
 
-            var filt: any = "Id eq " + (Item.Parent != null || undefined ? Item?.Parent?.Id : Item?.Component?.length > 0 ? Item?.Component[0]?.Id : Item?.Services[0]?.Id) + "";
+            var filt: any = "Id eq " + (Item.Parent != null || undefined ? Item?.Parent?.Id : Item?.Portfolio?.Id) + "";
 
         }
         let web = new Web(dynamicList?.siteUrl);
@@ -285,224 +285,7 @@ const CreateWS = (props: any) => {
 
 
     }
-    // const createMultiChildAsWorkStream = async (item: any, Type: any, index: any, WorstreamLatestId: any) => {
-    //     var NewDate = ''
-    //    var  clientcaterogiesdata2:any=[];
-    //    var AssignedToUser:any=[];
-    //    var AllTeamMembers:any=[];
-    //    var TeamLeaderws:any=[];
-    //     WorstreamLatestId += index;
-    //     var SharewebID = '';
-    //     if (Task == undefined || Task == '')
-    //         Task = SelectedTasks[0];
-    //     if (TaskprofileId == '' || SelectedTasks.length > 0) {
-    //         TaskprofileId = SelectedTasks[0].Id;
-    //     }
-    //     if (Task.Component != undefined && Task.Component.length > 0) {
-    //         SharewebID = 'CA' + Task.SharewebTaskLevel1No + '-W' + WorstreamLatestId;
-    //     }
-    //     if (Task.Services != undefined && Task.Services.length > 0) {
-    //         SharewebID = 'SA' + Task.SharewebTaskLevel1No + '-W' + WorstreamLatestId;
-    //     }
-    //     // if (Task.SharewebTaskType != undefined && Task.SharewebTaskType.Title != undefined) {
-    //     //     SharewebID = 'A' + Task.SharewebTaskLevel1No + '-W' + WorstreamLatestId;
-    //     // }
-    //     var Component: any = []
-    //     var RelevantPortfolioIds: any = []
-
-    //     // smartComponentData.forEach((com: any) => {
-    //     //     if (com != undefined) {
-    //     //         Component.push(com.Id)
-    //     //     }
-
-    //     // })
-    //     // if (myDate?.editDate != undefined && myDate?.editDate != null) {
-    //     //     var dateValue = myDate?.editDate?.split("/");
-    //     //     var dp = dateValue[1] + "/" + dateValue[0] + "/" + dateValue[2];
-    //     //     var Dateet = new Date(dp)
-    //     //     NewDate = Moment(Dateet).format("ddd, DD MMM yyyy")
-    //     // }
-    //     if (date != undefined) {
-    //         NewDate = new Date(date).toDateString();
-    //     }
-    //     if (AllItems.Component[0] != undefined && AllItems.Component.length > 0) {
-    //         Component.push(AllItems.Component[0].Id)
-    //     }
-    //     if (AllItems.Services[0] != undefined && AllItems.Services.length > 0) {
-    //         RelevantPortfolioIds.push(AllItems.Services[0].Id)
-    //     }
-    //     if (AllItems?.Portfolio_x0020_Type == undefined) {
-    //         if (AllItems.Component != undefined && AllItems.Component.length > 0) {
-    //             smartComponentData.push(AllItems.Component);
-    //         }
-
-    //         if (AllItems.Services != undefined && AllItems.Services.length > 0) {
-    //             linkedComponentData.push(AllItems);
-    //         }
-
-    //     }
-
-    //     var categoriesItem = '';
-    //     CategoriesData.map((category) => {
-    //         if (category.Title != undefined) {
-    //             categoriesItem = categoriesItem == "" ? category.Title : categoriesItem + ';' + category.Title;
-    //         }
-    //     })
-    //     smartComponentData.forEach((com: any) => {
-    //         if (com != undefined) {
-    //             Component.push(com[0].Id)
-    //         }
-
-    //     })
-    //     if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
-    //         linkedComponentData?.map((com: any) => {
-    //             if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
-    //                 $.each(linkedComponentData, function (index: any, smart: any) {
-    //                     RelevantPortfolioIds.push(smart.Id)
-    //                 })
-    //             }
-    //         })
-    //     }
-    //     var CategoryID: any = []
-    //     CategoriesData.map((category) => {
-    //         if (category.Id != undefined) {
-    //             CategoryID.push(category.Id)
-    //         }
-    //     })
-    //     if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length>0) {
-    //         AllItems.AssignedTo.forEach((obj: any) => {
-    //             AssignedToIds.push(obj.Id);
-    //             AssignedToUser.push(obj);
-
-    //         })
-    //     }
-    //     if (isDropItemRes == true) {
-    //         if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
-    //             TaskAssignedTo.map((taskInfo) => {
-    //                 AssignedToIds.push(taskInfo.Id);
-    //                 AssignedToUser.push(taskInfo);
-    //             })
-    //         }
-    //     }
-    //     if (AllItems?.TeamMembers != undefined  && AllItems?.TeamMembers?.length>0) {
-    //         AllItems?.TeamMembers.forEach((obj: any) => {
-    //             TeamMemberIds.push(obj.Id);
-    //             AllTeamMembers.push(obj);
-
-    //         })
-    //     }
-    //     if (isDropItem == true) {
-    //         if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
-    //             TaskTeamMembers?.map((taskInfo) => {
-    //                 TeamMemberIds.push(taskInfo.Id);
-    //                 AllTeamMembers.push(taskInfo);
-
-    //             })
-    //         }
-    //     }
-    //     if (AllItems?.TeamLeader != undefined &&  AllItems?.TeamLeader?.length>0) {
-    //         AllItems?.TeamLeader?.forEach((obj: any) => {
-    //             ResponsibleTeamIds.push(obj.Id);
-    //              TeamLeaderws.push(obj)
-    //         })
-    //     }
-    //     if (isDropItem == true) {
-    //         if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
-    //             TaskResponsibleTeam?.map((taskInfo) => {
-    //                 ResponsibleTeamIds.push(taskInfo.Id);
-    //                 TeamLeaderws.push(taskInfo)
-    //             })
-    //         }
-    //     }
-    //     if(props?.props!=undefined && props?.props?.ClientCategory?.length>0){
-    //       if(props?.props?.ClientCategory2!=undefined && props?.props?.ClientCategory2?.results?.length>0){
-    //         props?.props?.ClientCategory2?.results?.map((items:any)=>{
-    //             InheritClientCategory.push(items.Id)
-    //             clientcaterogiesdata2.push(items)  
-    //         })
-    //       }else{
-    //         props.props.ClientCategory?.map((items:any)=>{
-    //             InheritClientCategory.push(items.Id) 
-    //             clientcaterogiesdata2.push(items)  
-    //         }) 
-    //       }
-
-
-    //     }
-    //     let web = new Web(dynamicList.siteUrl);
-    //     // if(props?.props?.ClientTime?.length>0){
-    //     //     props.props.ClientTime=JSON.stringify(props?.props?.ClientTime) 
-    //     // }
-    //     await web.lists.getById(AllItems.listId).items.add({
-    //         Title: AllItems.Title,
-    //         ComponentId: { "results": Component },
-    //         Categories: categoriesItem ? categoriesItem : null,
-    //         SharewebCategoriesId: { "results": CategoryID },
-    //         Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
-    //         ParentTaskId: AllItems.Id,
-    //         ServicesId: { "results": RelevantPortfolioIds },
-    //         Priority: AllItems.Priority,
-    //         Body: AllItems.Description,
-    //         // DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
-    //         DueDate: myDate.editDate = myDate.editDate ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy"): '',
-    //         SharewebTaskTypeId: SharewebTasknewTypeId,
-    //         Shareweb_x0020_ID: SharewebID,
-    //         SharewebTaskLevel2No: WorstreamLatestId,
-    //         SharewebTaskLevel1No: AllItems.SharewebTaskLevel1No,
-    //         ClientCategoryId: { "results": InheritClientCategory },
-    //         SiteCompositionSettings:props?.props?.SiteCompositionSettings!=undefined?props?.props?.SiteCompositionSettings:"",
-    //         ClientTime:props?.props?.ClientTime!=null ?props?.props?.ClientTime:"",
-    //         AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
-    //         Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
-    //         Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
-
-    //     }).then((res: any) => {
-    //         console.log(res);
-    //         if (PopupType == 'CreatePopup') {
-    //             res.data['SiteIcon'] = AllItems.SiteIcon
-    //             res.data['listId'] = AllItems.listId
-    //             res.data['SharewebTaskType'] = { Title: 'Workstream' }
-    //             res.data.DueDate = res?.data?.DueDate ?  Moment(res?.data?.DueDate).format("DD-MM-YYYY"):'',
-    //                 res.data['siteType'] = AllItems.siteType
-    //             res.data['Shareweb_x0020_ID'] = SharewebID,
-    //             res.data.ClientCategory=clientcaterogiesdata2,
-    //             res.data.Created=new Date();
-    //             res.data.Author={
-    //                 Id: res?.data?.AuthorId
-    //             }
-    //             res.data.Team_x0020_Members=AllTeamMembers?.length>0?AllTeamMembers:[]
-    //             res.data.Responsible_x0020_Team=TeamLeaderws?.length>0?TeamLeaderws:[]
-    //             res.data.AssignedTo=AssignedToUser?.length>0?AssignedToUser:[]
-    //             res.Item_x0020_Type=""
-    //             setIsPopupComponent(true)
-    //             setSharewebTask(res.data)
-    //             closeTaskStatusUpdatePoup(res);
-    //         }
-    //         else {
-    //             res.data['SiteIcon'] = AllItems.SiteIcon
-    //             res.data['listId'] = AllItems.listId
-    //             res.data['SharewebTaskType'] = { Title: 'Workstream' }
-    //             res.data.DueDate = res?.data?.DueDate ?  Moment(res?.data?.DueDate).format("MM-DD-YYYY"):'',
-    //                 res.data['siteType'] = AllItems.siteType
-    //             res.data['Shareweb_x0020_ID'] = SharewebID
-    //             res.data.ClientCategory= clientcaterogiesdata2,
-    //             res.data.Created=new Date();
-    //             res.data.Author={
-    //                 Id: res?.data?.AuthorId
-    //             }
-    //             res.data.Team_x0020_Members=AllTeamMembers?.length>0?AllTeamMembers:[]
-    //             res.data.Responsible_x0020_Team=TeamLeaderws?.length>0?TeamLeaderws:[]
-    //             res.data.AssignedTo=AssignedToUser?.length>0?AssignedToUser:[]
-    //             res.Item_x0020_Type=""
-    //             setSharewebTask(res.data)
-    //             closeTaskStatusUpdatePoup(res);
-    //         }
-
-
-
-    //     })
-
-    // }
+  
     const createMultiChildAsWorkStream = async (item: any, Type: any, index: any, newWorstreamLatestId: any) => {
         var clientcaterogiesdata2: any = [];
         var AssignedToUser: any = [];
@@ -641,7 +424,7 @@ const CreateWS = (props: any) => {
             Categories: categoriesItem ? categoriesItem : null,
             TaskCategoriesId: { "results": CategoryID },
             Priority_x0020_Rank: item.selectPriority,
-            PortfolioId: portFolio,
+            PortfolioId: AllItems?.Portfolio?.Id,
             PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
             TaskTypeId: SharewebTasknewTypeId,
             ParentTaskId: AllItems.Id,
@@ -796,22 +579,7 @@ const CreateWS = (props: any) => {
         if (date != undefined) {
             NewDate = new Date(date).toDateString();
         }
-        // if (AllItems?.Component != undefined && AllItems?.Component.length > 0) {
-        //     Component.push(AllItems.Component[0].Id)
-        // }
-        // if (AllItems?.Services != undefined && AllItems?.Services?.length > 0) {
-        //     RelevantPortfolioIds.push(AllItems.Services[0].Id)
-        // }
-        // if (AllItems?.Portfolio_x0020_Type == undefined) {
-        //     if (AllItems?.Component != undefined && AllItems?.Component?.length > 0) {
-        //         smartComponentData.push(AllItems.Component);
-        //     }
-
-        //     if (AllItems?.Services != undefined && AllItems?.Services?.length > 0) {
-        //         linkedComponentData.push(AllItems);
-        //     }
-
-        // }
+        
 
         var categoriesItem = '';
         CategoriesData.map((category: { Title: string; }) => {
@@ -884,7 +652,7 @@ const CreateWS = (props: any) => {
             Categories: categoriesItem ? categoriesItem : null,
             TaskCategoriesId: { "results": CategoryID },
             Priority_x0020_Rank: item.selectPriority,
-            PortfolioId: portFolio,
+            PortfolioId: AllItems?.Portfolio?.Id,
             PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
             TaskTypeId: SharewebTasknewTypeId,
             ParentTaskId: AllItems.Id,
@@ -1107,7 +875,7 @@ const CreateWS = (props: any) => {
             Categories: categoriesItem ? categoriesItem : null,
             SharewebCategoriesId: { "results": CategoryID },
             Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
-            PortfolioId: AllItems?.PortfolioType?.Id,
+            PortfolioId: AllItems?.Portfolio?.Id,
             PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
             ParentTaskId: AllItems.Id,
             TaskTypeId: SharewebTasknewTypeId,
@@ -1370,7 +1138,7 @@ const CreateWS = (props: any) => {
 
             Categories: categoriesItem ? categoriesItem : null,
             Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
-             PortfolioId: AllItems?.PortfolioType?.Id,
+             PortfolioId: AllItems?.Portfolio?.Id,
             PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
             TaskTypeId: SharewebTasknewTypeId,
             SharewebCategoriesId: { "results": CategoryID },
@@ -1452,7 +1220,7 @@ const CreateWS = (props: any) => {
 
     const onRenderCustomHeaderMain = () => {
         return (
-            <div className={AllItems?.Portfolio_x0020_Type == 'Service' || AllItems?.Services?.length > 0 ? "serviepannelgreena d-flex full-width pb-1" : "d-flex full-width pb-1"} >
+            <div className={props?.props?.PortFolioType?.Id == 2?"d-flex full-width pb-1 serviepannelgreena":"d-flex full-width pb-1"} >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <h2 className='heading'>
                         {`Create Item`}
@@ -1539,7 +1307,7 @@ const CreateWS = (props: any) => {
                 isOpen={TaskStatuspopup}
                 onDismiss={closeTaskStatusUpdatePoup}
                 isBlocking={false}
-                className={AllItems?.Portfolio_x0020_Type == 'Service' || AllItems?.Services?.length > 0 || props?.props?.PortfolioType?.Id == 2 ? "serviepannelgreena" : ""}
+                className={AllItems?.PortfolioType?.Color}
             >
                 <div className="modal-body border p-2 active Create-Item">
                     <div className='row'>

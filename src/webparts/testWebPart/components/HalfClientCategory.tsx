@@ -194,8 +194,8 @@ const HalfClientCategory = (props: any) => {
                     smartmeta = await web.lists
                         .getById(config.listId)
                         .items
-                        .select("Id,Title,PriorityRank,Project/PriorityRank,Project/Id,Project/Title,Events/Id,EventsId,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,SiteCompositionSettings,IsTodaysTask,Body,Component/Id,Component/Title,Services/Id,Services/Title,PercentComplete,ComponentId,Categories,ServicesId,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
-                        .expand('AssignedTo,Events,Project,Author,Editor,Component,Services,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory')
+                        .select("Id,Title,PriorityRank,Project/PriorityRank,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,SiteCompositionSettings,IsTodaysTask,Body,Portfolio/Id,Portfolio/TitlePercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+                        .expand('AssignedTo,Project,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory')
                         .top(4999)
                         .get();
                     arraycount++;
@@ -218,16 +218,12 @@ const HalfClientCategory = (props: any) => {
                                     ? Moment(items.Created).format("DD/MM/YYYY")
                                     : "";
                             items.portfolio = {};
-                            if (items?.Component?.length > 0) {
-                                items.portfolio = items?.Component[0];
-                                items.PortfolioTitle = items?.Component[0]?.Title;
-                                items["Portfoliotype"] = "Component";
+                            if (items?.Portfolio?.Id !=undefined) {
+                                items.portfolio = items?.Portfolio;
+                                items.PortfolioTitle = items?.Portfolio?.Title;
+                              //  items["Portfoliotype"] = "Component";
                             }
-                            if (items?.Services?.length > 0) {
-                                items.portfolio = items?.Services[0];
-                                items.PortfolioTitle = items?.Services[0]?.Title;
-                                items["Portfoliotype"] = "Service";
-                            }
+                         
                             items["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
                             if (items?.Project?.Title != undefined) {
                                 items["ProjectTitle"] = items?.Project?.Title;
@@ -326,9 +322,9 @@ const HalfClientCategory = (props: any) => {
             let Alltask: any = [];
             // var AllUsers: any = []
             Alltask = await web.lists.getById(AllListId?.MasterTaskListID).items
-                .select("Deliverables,PortfolioStructureID,ClientCategory/Id,ClientCategory/Title,TechnicalExplanations,ValueAdded,Categories,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,Events/Id,Events/Title,SiteCompositionSettings,ClientTime,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title")
+                .select("Deliverables,PortfolioStructureID,ClientCategory/Id,ClientCategory/Title,TechnicalExplanations,ValueAdded,Categories,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,SiteCompositionSettings,ClientTime,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title")
                 .filter("Item_x0020_Type ne 'Project'")
-                .expand("ComponentCategory,ClientCategory,AssignedTo,Events,AttachmentFiles,Author,Editor,TeamMembers,TaskCategories,Parent").top(4999).getAll();
+                .expand("ComponentCategory,ClientCategory,AssignedTo,AttachmentFiles,Author,Editor,TeamMembers,TaskCategories,Parent").top(4999).getAll();
 
             Alltask.map((items: any) => {
                 if (items?.ClientCategory?.length > 0 || items?.SiteCompositionSettings != undefined || items?.Sitestagging != undefined) {
