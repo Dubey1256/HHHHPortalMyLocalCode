@@ -7,7 +7,7 @@ import { GlobalConstants } from '../globalComponents/LocalCommon';
 import { PageContext } from "@microsoft/sp-page-context";
 import { spfi } from "@pnp/sp/presets/all";
 import { MSGraphClientV3 } from '@microsoft/sp-http';
-export const myContextValue:any= React.createContext<any>({})
+export const myContextValue: any = React.createContext<any>({})
 export const pageContext = async () => {
     let result;
     try {
@@ -34,6 +34,12 @@ export const SendTeamMessage = async (mention_To: any, txtComment: any, Context:
         let pageContent = await pageContext()
         let web = new Web(pageContent?.WebFullUrl);
         let currentUser = await web.currentUser?.get()
+        if (currentUser) {
+            if (currentUser.Email?.length > 0) {
+            } else {
+                currentUser.Email = currentUser.UserPrincipalName;
+            }
+        }
         // const client: MSGraphClientV3 = await Context.msGraphClientFactory.getClient();
         await Context.msGraphClientFactory.getClient().then((client: MSGraphClientV3) => {
             client.api(`/users`).version("v1.0").get(async (err: any, res: any) => {
@@ -1647,7 +1653,7 @@ export const getPortfolio = async (type: any) => {
 // ********************* This is for the Getting All Component And Service Portfolio Data ********************
 export const GetServiceAndComponentAllData = async (Props: any) => {
     var ComponentsData: any = [];
-    var AllPathGeneratedData:any=[];
+    var AllPathGeneratedData: any = [];
     let TaskUsers: any = [];
     let AllMasterTaskData: any = [];
     try {
@@ -1713,7 +1719,7 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
 
             if (result.Item_x0020_Type == 'Component') {
                 const groupedResult = componentGrouping(result, AllMasterTaskData)
-                AllPathGeneratedData=[...AllPathGeneratedData,...groupedResult?.PathArray];
+                AllPathGeneratedData = [...AllPathGeneratedData, ...groupedResult?.PathArray];
                 ComponentsData.push(groupedResult?.comp);
             }
 
@@ -1802,17 +1808,17 @@ export const getParameterByName = async (name: any) => {
 
 export const GetTaskId = (Item: any) => {
     let taskIds = '';
-    if (Item?.Portfolio?.PortfolioStructureID != undefined &&Item.TaskID!=undefined ) {
+    if (Item?.Portfolio?.PortfolioStructureID != undefined && Item.TaskID != undefined) {
         taskIds = Item?.Portfolio?.PortfolioStructureID + '-' + Item.TaskID;
-    }   
-     if (Item?.Portfolio?.PortfolioStructureID != undefined &&Item.TaskID==undefined ) {
+    }
+    if (Item?.Portfolio?.PortfolioStructureID != undefined && Item.TaskID == undefined) {
         taskIds = Item?.Portfolio?.PortfolioStructureID + '-T' + Item.Id;
-     }
-    else if(Item.TaskID!=undefined){
+    }
+    else if (Item.TaskID != undefined) {
         taskIds = Item.TaskID;
     }
-    else if(Item.TaskID==undefined){
-        taskIds = "T"+Item.Id;
+    else if (Item.TaskID == undefined) {
+        taskIds = "T" + Item.Id;
     }
 
     return taskIds;
