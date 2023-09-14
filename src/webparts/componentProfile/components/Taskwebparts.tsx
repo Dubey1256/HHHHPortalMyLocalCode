@@ -1279,13 +1279,10 @@ function TeamPortlioTable(SelectedProp: any) {
             }
 
         })
-        if(res != undefined){
-            renderData = [];
-            renderData = renderData.concat(copyDtaArray)
-            refreshData();
-    
-        }
-      
+        renderData = [];
+        renderData = renderData.concat(copyDtaArray)
+        refreshData();
+
     }
         
 }
@@ -1556,7 +1553,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     TaskUsers={AllUsers}
                     AllClientCategory={AllClientCategory}
                     LoadAllSiteTasks={LoadAllSiteTasks}
-                    SelectedProp={SelectedProp}
+                    SelectedProp={SelectedProp.NextProp}
                     portfolioTypeData={portfolioTypeData}
                 ></CreateActivity>
             )}
@@ -1567,7 +1564,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     TaskUsers={AllUsers}
                     AllClientCategory={AllClientCategory}
                     data={data}
-                    SelectedProp={SelectedProp}
+                    SelectedProp={SelectedProp.NextProp}
                     portfolioTypeData={portfolioTypeData}
                 ></CreateWS>
             )}
