@@ -33,8 +33,8 @@ const SmartInformation = (props: any,ref:any) => {
   const [filterSmartinfo, setFiltersmartinfo] = useState([]);
  
   const [isopencomonentservicepopup, setisopencomonentservicepopup] = useState(false);
-  const [componentpopup, setcomponentpopup] = useState(false);
-  const [servicespopup, setservicespopup] = useState(false);
+  // const [componentpopup, setcomponentpopup] = useState(false);
+  // const [servicespopup, setservicespopup] = useState(false);
   const [uplodDoc, setUploaddoc] = useState(null);
   const [EditTaskdata, setEditTaskdata] = useState();
   const [PostSmartInfo, setPostSmartInfo] = useState(null);
@@ -910,8 +910,8 @@ const SmartInformation = (props: any,ref:any) => {
       // if (editData?.Portfolio?.Portfolio_x0020_Type == "Component") {
         if (editData?.Portfolio!=undefined) {
         setallSetValue({ ...allValue, componentservicesetdataTag: editData?.Portfolio })
-        setservicespopup(false);
-        setcomponentpopup(true);
+        // setservicespopup(false);
+        // setcomponentpopup(true);
       } 
       // else {
       //   setallSetValue({ ...allValue, componentservicesetdataTag: editData?.SharewebTask[0] })
@@ -925,20 +925,20 @@ const SmartInformation = (props: any,ref:any) => {
 
   // =====================component services click radio butoon on update documents===============
 
-  const checkradiobutton = (e: any, items: any) => {
-    if (items == "Component") {
-      setservicespopup(false);
-      setcomponentpopup(true);
-      setallSetValue({ ...allValue, componentservicesetdataTag: undefined })
+  // const checkradiobutton = (e: any, items: any) => {
+  //   if (items == "Component") {
+  //     setservicespopup(false);
+  //     setcomponentpopup(true);
+  //     setallSetValue({ ...allValue, componentservicesetdataTag: undefined })
 
-    }
-    if (items == "Service") {
-      setservicespopup(true);
-      setcomponentpopup(false);
-      setallSetValue({ ...allValue, componentservicesetdataTag: undefined })
+  //   }
+  //   if (items == "Service") {
+  //     setservicespopup(true);
+  //     setcomponentpopup(false);
+  //     setallSetValue({ ...allValue, componentservicesetdataTag: undefined })
 
-    }
-  }
+  //   }
+  // }
 
 
 
@@ -1009,17 +1009,17 @@ const SmartInformation = (props: any,ref:any) => {
     console.log(Type)
     console.log(functionType)
     if (functionType == "Save") {
-      if (Type == "Component") {
-        setallSetValue({ ...allValue, componentservicesetdataTag: DataItem[0] })
-      }
-      if (Type == "Service") {
+      // if (Type == "Component") {
+      //   setallSetValue({ ...allValue, componentservicesetdataTag: DataItem[0] })
+      // }
+      // if (Type == "Service") {
         setallSetValue({ ...allValue, componentservicesetdataTag: DataItem[0] })
       }
       setisopencomonentservicepopup(false);
-    }
-    else {
-      setisopencomonentservicepopup(false);
-    }
+    
+    // else {
+    //   setisopencomonentservicepopup(false);
+    // }
   }, [])
 
   //============ update documents link update both  function =============
@@ -1402,7 +1402,8 @@ const SmartInformation = (props: any,ref:any) => {
         customWidth="1091px"
         onDismiss={handleClosedoc}
         isBlocking={!isopencomonentservicepopup}
-        className={servicespopup == true ? "serviepannelgreena" : "siteColor"}
+        
+        // className={servicespopup == true ? "serviepannelgreena" : "siteColor"}
       >
         <Tabs
           defaultActiveKey="BASICINFORMATION"
@@ -1504,7 +1505,7 @@ const SmartInformation = (props: any,ref:any) => {
       {allValue.EditTaskpopupstatus && <EditTaskPopup Items={EditTaskdata} context={props?.Context} AllListId={props?.AllListId} Call={() => { CallBack() }} />}
       {/* {isopencomonentservicepopup && componentpopup && <ComponentPortPolioPopup props={allValue?.componentservicesetdata} Call={ServiceComponentCallBack} Dynamic={props.AllListId}></ComponentPortPolioPopup>}
       {isopencomonentservicepopup && servicespopup && <LinkedComponent props={allValue?.componentservicesetdata} Call={ServiceComponentCallBack} Dynamic={props.AllListId}></LinkedComponent>} */}
-      {isopencomonentservicepopup && componentpopup &&
+      {isopencomonentservicepopup  &&
         <ServiceComponentPortfolioPopup
 
           props={allValue?.componentservicesetdata}
@@ -1514,7 +1515,7 @@ const SmartInformation = (props: any,ref:any) => {
 
         />
       }
-      {isopencomonentservicepopup && servicespopup &&
+      {/* {isopencomonentservicepopup && servicespopup &&
         <ServiceComponentPortfolioPopup
           props={allValue?.componentservicesetdata}
           Dynamic={props.AllListId}
@@ -1522,7 +1523,7 @@ const SmartInformation = (props: any,ref:any) => {
           ComponentType={"Service"}
 
         />
-      }
+      } */}
     </div>
 
 

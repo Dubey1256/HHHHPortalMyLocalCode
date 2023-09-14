@@ -88,6 +88,7 @@ var selectedClientCategoryData: any = [];
 var GlobalServiceAndComponentData: any = [];
 var AddImageDescriptionsIndex: any;
 var LinkedPortfolioDataBackup: any = [];
+var userSendAttentionEmails: any = [];
 
 const EditTaskPopup = (Items: any) => {
     const Context = Items.context;
@@ -186,6 +187,7 @@ const EditTaskPopup = (Items: any) => {
     const [TotalEstimatedTime, setTotalEstimatedTime] = React.useState(0);
     const [SiteCompositionShow, setSiteCompositionShow] = React.useState(false);
     const [IsSendAttentionMsgStatus, setIsSendAttentionMsgStatus] = React.useState(false);
+    const [SendCategoryName, setSendCategoryName] = React.useState('');
     const hostStyles: Partial<ITooltipHostStyles> = { root: { display: 'inline-block' } };
     const buttonId = useId(`callout-button`);
     const calloutProps = { gapSpace: 0 };
@@ -942,8 +944,13 @@ const EditTaskPopup = (Items: any) => {
                     }
                 }
                 if (Type == "Multi") {
-                    setLinkedPortfolioData(DataItem)
-                    LinkedPortfolioDataBackup = DataItem;
+                    if (LinkedPortfolioDataBackup?.length > 0) {
+                        LinkedPortfolioDataBackup = LinkedPortfolioDataBackup.concat(DataItem);
+                        setLinkedPortfolioData(LinkedPortfolioDataBackup);
+                    } else {
+                        setLinkedPortfolioData(DataItem)
+                        LinkedPortfolioDataBackup = DataItem;
+                    }
                 }
                 if (Type == "Single") {
                     setTaggedPortfolioData(DataItem);
@@ -1242,6 +1249,7 @@ const EditTaskPopup = (Items: any) => {
     const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
         setIsComponentPicker(false);
         let TempArray: any = [];
+
         selectCategoryData.map((existingData: any) => {
             let elementFoundCount: any = 0;
             if (tempShareWebTypeData != undefined && tempShareWebTypeData.length > 0) {
@@ -1250,6 +1258,20 @@ const EditTaskPopup = (Items: any) => {
                         elementFoundCount++;
                     }
                 })
+            }
+            if (existingData?.IsSendAttentionEmail?.Id != undefined) {
+                setIsSendAttentionMsgStatus(true);
+                userSendAttentionEmails.push(existingData?.IsSendAttentionEmail?.EMail);
+                setSendCategoryName(existingData?.Title);
+            }
+            if (existingData?.Title == "Bottleneck") {
+                setIsSendAttentionMsgStatus(true);
+                if (EditData?.TaskAssignedUsers?.length > 0) {
+                    EditData?.TaskAssignedUsers?.map((AssignedUser: any, Index: any) => {
+                        userSendAttentionEmails.push(AssignedUser.Email);
+                    })
+                }
+                setSendCategoryName(existingData?.Title);
             }
             if (elementFoundCount == 0) {
                 let category: any;
@@ -1946,7 +1968,11 @@ const EditTaskPopup = (Items: any) => {
     // ******************** This is Task All Details Update Function  ***************************
 
     const UpdateTaskInfoFunction = async (usedFor: any) => {
-
+        if (IsSendAttentionMsgStatus) {
+            let txtComment = `You have been tagged as ${SendCategoryName} in the below task by ${Items.context.pageContext._user.displayName}`;
+            let TeamMsg = txtComment + `</br> <a href=${window.location.href}>${EditData.TaskId}-${EditData.Title}</a>`
+            await globalCommon.SendTeamMessage(userSendAttentionEmails, TeamMsg, Items.context);
+        }
         let TaskShuoldBeUpdate = true;
         let DataJSONUpdate: any = await MakeUpdateDataJSON();
         if (EnableSiteCompositionValidation) {
@@ -2017,6 +2043,7 @@ const EditTaskPopup = (Items: any) => {
                         TaskCreatorApproverBackupArray = []
                         TaskApproverBackupArray = []
                         ApproverIds = []
+                        userSendAttentionEmails = []
                         SiteCompositionPrecentageValue = 0
                         let CalculateStatusPercentage: any = smartMetaCall[0].PercentComplete ? smartMetaCall[0].PercentComplete * 100 : 0;
                         if (Items.sendApproverMail != undefined) {
@@ -2884,8 +2911,8 @@ const EditTaskPopup = (Items: any) => {
     const ImageCustomizeFunctionClosePopup = () => {
         setImageCustomizePopup(false);
         setModalIsOpen(true);
-        GetExtraLookupColumnData();
-        // UpdateTaskInfoFunction("Image-Tab")
+        UpdateTaskInfoFunction("Image-Tab");
+        // GetExtraLookupColumnData();
         if (CommentBoxData?.length > 0 || SubCommentBoxData?.length > 0) {
             if (CommentBoxData?.length == 0 && SubCommentBoxData?.length > 0) {
                 let message = JSON.parse(EditData.FeedBack);
@@ -4658,14 +4685,14 @@ const EditTaskPopup = (Items: any) => {
                                                                                 <img className="imgAuthor" title={ImageDtl.UserName} src={ImageDtl.UserImage ? ImageDtl.UserImage : ''} />
                                                                             </span>
                                                                         </div>
-                                                                        <div className="align-autoplay d-flex">
+                                                                        <div>
                                                                             <span onClick={() => openReplaceImagePopup(index)} title="Replace image"><TbReplace /> </span>
                                                                             <span className="mx-1" title="Delete" onClick={() => RemoveImageFunction(index, ImageDtl.ImageName, "Remove")}> | <RiDeleteBin6Line /> | </span>
                                                                             <span title="Customize the width of page" onClick={() => ImageCustomizeFunction(index)}>
                                                                                 <FaExpandAlt /> |
                                                                             </span>
-                                                                            <span title={ImageDtl.Description != undefined && ImageDtl.Description?.length > 1 ? ImageDtl.Description : "Add Image Description"} className="img-info" onClick={() => openAddImageDescriptionFunction(index, ImageDtl, "Opne-Model")}>
-                                                                                <span className="svg__iconbox svg__icon--info mt--5"></span>
+                                                                            <span title={ImageDtl.Description != undefined && ImageDtl.Description?.length > 1 ? ImageDtl.Description : "Add Image Description"} className="mx-1 img-info" onClick={() => openAddImageDescriptionFunction(index, ImageDtl, "Opne-Model")}>
+                                                                                <span className="svg__iconbox svg__icon--info "></span>
                                                                             </span>
                                                                         </div>
                                                                     </div>
@@ -5697,11 +5724,11 @@ const EditTaskPopup = (Items: any) => {
                                                                     <img className="imgAuthor" title={imgData.UserName ? imgData.UserName : ''} src={imgData.UserImage ? imgData.UserImage : ''} />
                                                                 </span>
                                                             </div>
-                                                            <div>
+                                                            <div className="align-autoplay d-flex">
                                                                 <span onClick={() => openReplaceImagePopup(index)} title="Replace image"><TbReplace /> </span>
-                                                                <span className="mx-1" title="Delete" onClick={() => RemoveImageFunction(index, imgData.ImageName, "Remove")}> | <RiDeleteBin6Line /> | </span>
-                                                                <span title={imgData.Description != undefined && imgData.Description?.length > 1 ? imgData.Description : "Add Image Description"} className="mx-1 img-info" onClick={() => openAddImageDescriptionFunction(index, imgData, "Opne-Model")}>
-                                                                    <span className="svg__iconbox svg__icon--info "></span>
+                                                                <span className="ms-1" title="Delete" onClick={() => RemoveImageFunction(index, imgData.ImageName, "Remove")}> | <RiDeleteBin6Line /> | </span>
+                                                                <span title={imgData.Description != undefined && imgData.Description?.length > 1 ? imgData.Description : "Add Image Description"} className="img-info" onClick={() => openAddImageDescriptionFunction(index, imgData, "Opne-Model")}>
+                                                                    <span className="svg__iconbox svg__icon--info mt--5"></span>
                                                                 </span>
                                                             </div>
                                                         </div>
