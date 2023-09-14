@@ -187,6 +187,7 @@ const EditTaskPopup = (Items: any) => {
     const [TotalEstimatedTime, setTotalEstimatedTime] = React.useState(0);
     const [SiteCompositionShow, setSiteCompositionShow] = React.useState(false);
     const [IsSendAttentionMsgStatus, setIsSendAttentionMsgStatus] = React.useState(false);
+    const [SendCategoryName, setSendCategoryName] = React.useState('');
     const hostStyles: Partial<ITooltipHostStyles> = { root: { display: 'inline-block' } };
     const buttonId = useId(`callout-button`);
     const calloutProps = { gapSpace: 0 };
@@ -943,8 +944,13 @@ const EditTaskPopup = (Items: any) => {
                     }
                 }
                 if (Type == "Multi") {
-                    setLinkedPortfolioData(DataItem)
-                    LinkedPortfolioDataBackup = DataItem;
+                    if (LinkedPortfolioDataBackup?.length > 0) {
+                        LinkedPortfolioDataBackup = LinkedPortfolioDataBackup.concat(DataItem);
+                        setLinkedPortfolioData(LinkedPortfolioDataBackup);
+                    } else {
+                        setLinkedPortfolioData(DataItem)
+                        LinkedPortfolioDataBackup = DataItem;
+                    }
                 }
                 if (Type == "Single") {
                     setTaggedPortfolioData(DataItem);
@@ -1256,6 +1262,16 @@ const EditTaskPopup = (Items: any) => {
             if (existingData?.IsSendAttentionEmail?.Id != undefined) {
                 setIsSendAttentionMsgStatus(true);
                 userSendAttentionEmails.push(existingData?.IsSendAttentionEmail?.EMail);
+                setSendCategoryName(existingData?.Title);
+            }
+            if (existingData?.Title == "Bottleneck") {
+                setIsSendAttentionMsgStatus(true);
+                if (EditData?.TaskAssignedUsers?.length > 0) {
+                    EditData?.TaskAssignedUsers?.map((AssignedUser: any, Index: any) => {
+                        userSendAttentionEmails.push(AssignedUser.Email);
+                    })
+                }
+                setSendCategoryName(existingData?.Title);
             }
             if (elementFoundCount == 0) {
                 let category: any;
@@ -1953,7 +1969,7 @@ const EditTaskPopup = (Items: any) => {
 
     const UpdateTaskInfoFunction = async (usedFor: any) => {
         if (IsSendAttentionMsgStatus) {
-            let txtComment = `You have been tagged as Attention in below task by ${Items.context.pageContext._user.displayName}`;
+            let txtComment = `You have been tagged as ${SendCategoryName} in the below task by ${Items.context.pageContext._user.displayName}`;
             let TeamMsg = txtComment + `</br> <a href=${window.location.href}>${EditData.TaskId}-${EditData.Title}</a>`
             await globalCommon.SendTeamMessage(userSendAttentionEmails, TeamMsg, Items.context);
         }
@@ -2027,7 +2043,7 @@ const EditTaskPopup = (Items: any) => {
                         TaskCreatorApproverBackupArray = []
                         TaskApproverBackupArray = []
                         ApproverIds = []
-                        userSendAttentionEmails= []
+                        userSendAttentionEmails = []
                         SiteCompositionPrecentageValue = 0
                         let CalculateStatusPercentage: any = smartMetaCall[0].PercentComplete ? smartMetaCall[0].PercentComplete * 100 : 0;
                         if (Items.sendApproverMail != undefined) {
@@ -5708,11 +5724,11 @@ const EditTaskPopup = (Items: any) => {
                                                                     <img className="imgAuthor" title={imgData.UserName ? imgData.UserName : ''} src={imgData.UserImage ? imgData.UserImage : ''} />
                                                                 </span>
                                                             </div>
-                                                            <div>
+                                                            <div className="align-autoplay d-flex">
                                                                 <span onClick={() => openReplaceImagePopup(index)} title="Replace image"><TbReplace /> </span>
-                                                                <span className="mx-1" title="Delete" onClick={() => RemoveImageFunction(index, imgData.ImageName, "Remove")}> | <RiDeleteBin6Line /> | </span>
-                                                                <span title={imgData.Description != undefined && imgData.Description?.length > 1 ? imgData.Description : "Add Image Description"} className="mx-1 img-info" onClick={() => openAddImageDescriptionFunction(index, imgData, "Opne-Model")}>
-                                                                    <span className="svg__iconbox svg__icon--info "></span>
+                                                                <span className="ms-1" title="Delete" onClick={() => RemoveImageFunction(index, imgData.ImageName, "Remove")}> | <RiDeleteBin6Line /> | </span>
+                                                                <span title={imgData.Description != undefined && imgData.Description?.length > 1 ? imgData.Description : "Add Image Description"} className="img-info" onClick={() => openAddImageDescriptionFunction(index, imgData, "Opne-Model")}>
+                                                                    <span className="svg__iconbox svg__icon--info mt--5"></span>
                                                                 </span>
                                                             </div>
                                                         </div>
