@@ -18,7 +18,7 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { Reference } from 'react-popper';
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import { ColumnDef } from '@tanstack/react-table';
-import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
+//import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
 let AllMetadata: any = []
 let siteConfig: any = []
 let AssignedToUsers: any = []
@@ -1298,7 +1298,7 @@ function CreateTaskComponent(props: any) {
                 accessorFn: (row) => row?.PriorityRank,
                 cell: ({ row }) => (
                     <span>
-                        <InlineEditingcolumns
+                        {/* <InlineEditingcolumns
                             AllListId={AllListId}
                             type='Task'
                             callBack={inlineCallBack}
@@ -1306,7 +1306,7 @@ function CreateTaskComponent(props: any) {
                             item={row?.original}
                             TaskUsers={taskUsers}
                             pageName={'ProjectManagment'}
-                        />
+                        /> */}
                     </span>
                 ),
                 placeholder: "Priority",
@@ -1319,14 +1319,16 @@ function CreateTaskComponent(props: any) {
             {
                 accessorFn: (row) => row?.DueDate,
                 cell: ({ row }) => (
-                    <InlineEditingcolumns
+                 <span>
+                      {/* <InlineEditingcolumns
                         AllListId={AllListId}
                         callBack={inlineCallBack}
                         columnName='DueDate'
                         item={row?.original}
                         TaskUsers={taskUsers}
                         pageName={'ProjectManagment'}
-                    />
+                    /> */}
+                 </span>
                 ),
                 id: 'DueDate',
                 resetColumnFilters: false,
@@ -1355,14 +1357,14 @@ function CreateTaskComponent(props: any) {
                 accessorFn: (row) => row?.PercentComplete,
                 cell: ({ row }) => (
                     <span>
-                        <InlineEditingcolumns
+                        {/* <InlineEditingcolumns
                             AllListId={AllListId}
                             callBack={inlineCallBack}
                             columnName='PercentComplete'
                             item={row?.original}
                             TaskUsers={taskUsers}
                             pageName={'ProjectManagment'}
-                        />
+                        /> */}
                     </span>
                 ),
                 id: 'PercentComplete',
@@ -2014,22 +2016,22 @@ function CreateTaskComponent(props: any) {
     return (
         <>  <div className={save.portfolioType == "Service" ? "serviepannelgreena" : ''}>
             <div className='creatTaskPage'>
-                <div className='row'>
-                    {props?.projectId == undefined ?
+                <div className='generalInfo'>
+                    {/* {props?.projectId == undefined ?
                         <div className='heading d-flex justify-content-between align-items-center'>
                             <h2>Create Task </h2>
                             <span className='text-end fs-6'>
                              <a data-interception="off" className=' text-end pull-right' target='_blank' href={oldTaskIrl} style={{ cursor: "pointer", fontSize: "14px" }}>Old Create Task</a>
                              </span>
-                        </div>  : ''}
-                    <div className='row'>
+                        </div>  : ''} */}
+                    <div>
                         <h4 className="titleBorder">General Information</h4>
-                        <div className='row '>
-                            <div className='col-sm-6'>
+                        <div className='row p-0'>
+                            <div className='col-sm-6 ps-2'>
                                 <label className='full-width'>Task Name</label>
                                 <input type="text" placeholder='Enter task Name' className='full-width' value={save.taskName} onChange={(e) => { changeTitle(e) }}></input>
                             </div>
-                            <div className='col-sm-6 '>{
+                            <div className='col-sm-6 pe-2'>{
                                 save.portfolioType === 'Component' ?
                                     <div className="input-group">
                                         <label className="form-label full-width">Portfolio</label>
@@ -2062,7 +2064,7 @@ function CreateTaskComponent(props: any) {
                                     </div> : ''
                             }
                             </div>
-                            <div className='col  mt-2'>
+                            <div className='col mt-2 ps-2 pe-2'>
                                 <label className='full-width'>Task URL</label>
                                 <input type="text" className='full-width ' placeholder='Enter task Url' value={save.taskUrl} onChange={(e) => UrlPasteTitle(e)} disabled={burgerMenuTaskDetails?.Siteurl?.length > 0}></input>
 
@@ -2137,9 +2139,9 @@ function CreateTaskComponent(props: any) {
                 {/*---------------- Sites -------------
             -------------------------------*/}
                 {siteType?.length > 1 ?
-                    <div className='col mt-2'>
+                    <div className='col mt-4'>
                         <h4 className="titleBorder ">Websites</h4>
-                        <div className='p-0'>
+                        <div className='clearfix p-0'>
                             <ul className="site-actions">
                                 {siteType?.map((item: any) => {
                                     return (
@@ -2147,7 +2149,7 @@ function CreateTaskComponent(props: any) {
                                             {(item.Title !== undefined && item.Title !== 'Offshore Tasks' && item.Title !== 'Master Tasks' && item.Title !== 'DRR' && item.Title !== 'SDC Sites' && item.Title !== 'QA') &&
                                                 <>
                                                     <li
-                                                        className={isActive.siteType && save.siteType === item.Title ? ' bgtile active text-center mb-2 position-relative' : " position-relative bgtile text-center  mb-2"} onClick={() => setActiveTile("siteType", "siteType", item.Title)} >
+                                                        className={isActive.siteType && save.siteType === item.Title ? 'bgtile active text-center position-relative' : "position-relative bgtile text-center"} onClick={() => setActiveTile("siteType", "siteType", item.Title)} >
                                                         {/*  */}
                                                         <a className=' text-decoration-none' >
                                                             <span className="icon-sites">
@@ -2170,12 +2172,11 @@ function CreateTaskComponent(props: any) {
                     <div className="clearfix"></div>
                     {/*---- Task Categories ---------
             -------------------------------*/}
-                    <div className='col mt-2 '>
-                        <div className='p-0' >
                             <div className="col" >
                                 {TaskTypes?.map((Task: any) => {
                                     return (
                                         <>
+                                        <div className='mt-4 clearfix'>
                                             <h4 className="titleBorder "> {Task?.Title}</h4>
                                             <div className='col p-0 taskcatgoryPannel'  >
                                                 {subCategory?.map((item: any) => {
@@ -2190,18 +2191,17 @@ function CreateTaskComponent(props: any) {
                                                     )
                                                 })}
                                             </div>
+                                            </div>
                                         </>)
                                 })}
                             </div>
-                        </div>
-                    </div>
                     <div className="clearfix"></div>
                     {/*-----Priority Rank ---------------------------------------*/}
-                    <div className='col  mt-2'>
+                    <div className='col clearfix mt-4'>
                         <h4 className="titleBorder ">Priority Rank</h4>
 
                         {/* <legend className="border-bottom fs-6">Priority Rank</legend> */}
-                        <div className="row px-2 text-center taskcatgoryPannel Priority">
+                        <div className="taskcatgoryPannel Priority">
                             <span className='subcategoryTask'>High priority</span>
                             {priorityRank?.map((item: any) => {
                                 return (
@@ -2217,9 +2217,9 @@ function CreateTaskComponent(props: any) {
                     {/*-----Time --------
             -------------------------------*/}
 
-                    <div className='col mt-2'>
-                        <h4 className="titleBorder ">Time</h4>
-                        <div className="col  taskcatgoryPannel">
+                    <div className='col mt-4 clearfix'>
+                        <h4 className="titleBorder">Time</h4>
+                        <div className="taskcatgoryPannel">
                             {Timing?.map((item: any) => {
                                 return (
                                     <a className={isActive.time && save.Time === item.Title ? ' active subcategoryTask' : 'subcategoryTask'} onClick={() => setActiveTile("Time", "time", item.Title)}>{item.Title}</a>
@@ -2230,9 +2230,9 @@ function CreateTaskComponent(props: any) {
                     <div className="clearfix"></div>
                     {/*-----Due date --------
             -------------------------------*/}
-                    <div className='col mb-1 mt-2'>
+                    <div className='col mt-4'>
                         <h4 className="titleBorder ">Due Date</h4>
-                        <div className="col taskcatgoryPannel">
+                        <div className="taskcatgoryPannel">
                             <a className={isActive.dueDate && save.dueDate === 'Today' ? 'subcategoryTask active text-center' : 'subcategoryTask'} onClick={() => setActiveTile("dueDate", "dueDate", 'Today')}>Today&nbsp;{moment(new Date()).format('DD/MM/YYYY')}</a>
                             <a className={isActive.dueDate && save.dueDate === 'Tomorrow' ? 'subcategoryTask active text-center' : 'subcategoryTask'} onClick={() => setActiveTile("dueDate", "dueDate", 'Tomorrow')} id="Tomorrow">Tomorrow</a>
                             <a className={isActive.dueDate && save.dueDate === 'ThisWeek' ? 'subcategoryTask active text-center' : 'subcategoryTask'} onClick={() => setActiveTile("dueDate", "dueDate", 'ThisWeek')} id="ThisWeek">This Week</a>
