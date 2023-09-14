@@ -946,7 +946,10 @@ const EditTaskPopup = (Items: any) => {
                 if (Type == "Multi") {
                     if (LinkedPortfolioDataBackup?.length > 0) {
                         LinkedPortfolioDataBackup = LinkedPortfolioDataBackup.concat(DataItem);
-                        setLinkedPortfolioData(LinkedPortfolioDataBackup);
+                        const finalData = LinkedPortfolioDataBackup?.filter((val: any, id: any, array: any) => {
+                            return array.indexOf(val) == id;
+                        });
+                        setLinkedPortfolioData(finalData);
                     } else {
                         setLinkedPortfolioData(DataItem)
                         LinkedPortfolioDataBackup = DataItem;
