@@ -185,7 +185,7 @@ const EditTaskPopup = (Items: any) => {
     const [EstimatedTime, setEstimatedTime] = React.useState<any>('');
     const [TotalEstimatedTime, setTotalEstimatedTime] = React.useState(0);
     const [SiteCompositionShow, setSiteCompositionShow] = React.useState(false);
-
+    const [IsSendAttentionMsgStatus, setIsSendAttentionMsgStatus] = React.useState(false);
     const hostStyles: Partial<ITooltipHostStyles> = { root: { display: 'inline-block' } };
     const buttonId = useId(`callout-button`);
     const calloutProps = { gapSpace: 0 };
@@ -4969,7 +4969,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 </span>
                                                             </div>
                                                             <input type="text" className="form-control" placeholder="Task Name"
-                                                                defaultValue={EditData.Title} onChange={(e) => setUpdateTaskInfo({ ...UpdateTaskInfo, Title: e.target.value })} />
+                                                                defaultValue={EditData.Title} onChange={(e) => setEditData({ ...EditData, Title: e.target.value })} />
                                                         </div>
                                                     </div>
                                                     <div className="mx-0 row taskdate ">
@@ -5671,16 +5671,17 @@ const EditTaskPopup = (Items: any) => {
                                         </div>
                                     </div> : null
                                 }
+                                {
+                                    ShowTaskDetailsStatus ? null : <div className="mb-3">
+                                        <h6 className="siteColor" style={{ cursor: "pointer" }} onClick={() => setShowTaskDetailsStatus(ShowTaskDetailsStatus ? false : true)}>
+                                            Show task details +
+                                        </h6>
+                                    </div>
+                                }
+
                                 <div className="slider-image-section col-sm-6 p-2" style={{
                                     border: "2px solid #ccc"
                                 }}>
-                                    {
-                                        ShowTaskDetailsStatus ? null : <div className="mb-3">
-                                            <h6 className="siteColor" style={{ cursor: "pointer" }} onClick={() => setShowTaskDetailsStatus(ShowTaskDetailsStatus ? false : true)}>
-                                                Show task details +
-                                            </h6>
-                                        </div>
-                                    }
 
                                     <div id="carouselExampleControls" className="carousel slide" data-bs-interval="false">
                                         <div className="carousel-inner">
