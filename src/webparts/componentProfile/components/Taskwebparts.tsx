@@ -163,6 +163,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     Item.Title = obj.Title;
                     Item.SortOrder = obj.SortOrder;
                     Item[obj.Title + 'number'] = 0;
+                    Item[obj.Title + 'filterNumber'] = 0;
                     Item[obj.Title + 'numberCopy'] = 0;
                     typeData.push(Item);
                 }
@@ -211,6 +212,7 @@ function TeamPortlioTable(SelectedProp: any) {
                         let Item: any = {};
                         Item.Title = obj;
                         Item[obj + 'number'] = 0;
+                        Item[obj.Title + 'filterNumber'] = 0;
                         Item[obj + 'numberCopy'] = 0;
                         newarray.push(Item);
                     }
@@ -615,6 +617,7 @@ function TeamPortlioTable(SelectedProp: any) {
             portfolioTypeDataItem?.map((type: any) => {
                 if (masterTask?.Item_x0020_Type === type.Title && masterTask.PortfolioType != undefined) {
                     type[type.Title + 'number'] += 1;
+                    type[type.Title + 'filterNumber'] += 1;
                 }
             })
             let allFeattData = AllProtFolioData?.filter((elem: any) => elem?.Parent?.Id === masterTask?.Id);
@@ -629,6 +632,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 portfolioTypeDataItem?.map((type: any) => {
                     if (subFeat?.Item_x0020_Type === type.Title && subFeat.PortfolioType != undefined) {
                         type[type.Title + 'number'] += 1;
+                        type[type.Title + 'filterNumber'] += 1;
                     }
                 })
                 
@@ -677,6 +681,7 @@ function TeamPortlioTable(SelectedProp: any) {
             componentData.push(temp)
           }
           }
+          countTaskAWTLevel(countAllTasksData);
         setLoaded(true);
         setData(componentData);
         console.log(countAllTasksData);
@@ -711,7 +716,18 @@ function TeamPortlioTable(SelectedProp: any) {
         items.subRows = items?.subRows?.concat(findActivity)
         items.subRows = items?.subRows?.concat(findTasks)
     }
-
+    const countTaskAWTLevel = (countTaskAWTLevel: any) => {
+        if (countTaskAWTLevel.length > 0) {
+            taskTypeDataItem?.map((type: any) => {
+                countTaskAWTLevel.map((result: any) => {
+                    if (result?.TaskType?.Title === type.Title) {
+                        type[type.Title + 'number'] += 1;
+                        type[type.Title + 'filterNumber'] += 1;
+                    }
+                })
+            })
+        }
+    }
    
    
 
@@ -1407,7 +1423,7 @@ function TeamPortlioTable(SelectedProp: any) {
                                                 scale={1.0}
                                                 loadedClassName="loadedContent"
                                             />
-                                            <GlobalCommanTable ref={childRef} callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1} data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity} />
+                                            <GlobalCommanTable ref={childRef} callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1} data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} protfolioProfileButton={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity} />
                                         </div>
                                     </div>
                                 </div>
