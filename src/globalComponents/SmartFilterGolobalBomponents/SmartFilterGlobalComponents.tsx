@@ -117,11 +117,12 @@ const SmartFilterSearchGlobal = (item: any) => {
     },
     {
         Title: 'Sites', values: [], checked: [], checkedObj: [], expanded: []
-    },
-    {
-        Title: 'TeamMember', values: [], checked: [], checkedObj: [], expanded: []
+    }, {
+        Title: 'Status', values: [], checked: [], checkedObj: [], expanded: []
     }, {
         Title: 'Priority', values: [], checked: [], checkedObj: [], expanded: []
+    },{
+        Title: 'TeamMember', values: [], checked: [], checkedObj: [], expanded: []
     }];
 
     const SortOrderFunction = (filterGroups: any) => {
@@ -152,6 +153,12 @@ const SmartFilterSearchGlobal = (item: any) => {
             if (element.TaxType == "Priority") {
                 PriorityData.push(element);
             }
+            if (element.TaxType == 'Percent Complete') {
+                filterGroups[3].values.push(element);
+                if (element.Title != "Completed (90-100)") {
+                filterGroups[3].checked.push(element.Id)
+                }
+            }
         });
         SitesData.forEach((element: any) => {
             if (element.Title != 'Master Tasks' && (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined))) {
@@ -172,7 +179,7 @@ const SmartFilterSearchGlobal = (item: any) => {
             }
         })
         TaskUsersData.forEach((element: any) => {
-            filterGroups[3].values.push(element);
+            filterGroups[5].values.push(element);
         });
         filterGroups.forEach((element: any, index: any) => {
             element.checkedObj = GetCheckedObject(element.values, element.checked)
@@ -201,7 +208,6 @@ const SmartFilterSearchGlobal = (item: any) => {
         if (item.children.length == 0) {
             delete item.children;
         }
-
         if (item.TaxType == 'Sites' || item.TaxType == 'Sites Old') {
             if (item.Title == "Shareweb Old" || item.Title == "DRR" || item.Title == "Small Projects" || item.Title == "Offshore Tasks" || item.Title == "Health" || item.Title == "Gender" || item.Title == "QA" || item.Title == "DE") {
 
@@ -219,12 +225,9 @@ const SmartFilterSearchGlobal = (item: any) => {
             if (element.checked.length > 0)
                 tempFilterInfo.push(element.Title + ' : (' + element.checked.length + ')')
         });
-        filterInfo = tempFilterInfo.join('| ');
+        filterInfo = tempFilterInfo.join(' | ');
         setFilterInfo(filterInfo)
     }
-
-
-
     const onCheck = (checked: any, index: any) => {
         let filterGroups = filterGroupsData;
         filterGroups[index].checked = checked;
@@ -291,7 +294,9 @@ const SmartFilterSearchGlobal = (item: any) => {
         let type: any[] = [];
         let teamMember: any[] = [];
         let priorityType: any[] = [];
+        let percentComplete: any[] = [];
         let updateArray: any[] = [];
+        let finalUpdateArray: any[] = [];
         filterGroupsData.forEach(function (filter) {
             if (filter.Title === 'Portfolio' && filter.checked.length > 0 && filter.checkedObj.length > 0) {
                 filter.checkedObj.map(function (port: any) { return portFolio.push(port); });
@@ -313,21 +318,35 @@ const SmartFilterSearchGlobal = (item: any) => {
                     priorityType.push(elem3);
                 });
             }
+            else if (filter.Title === 'Status' && filter.checked.length > 0 && filter.checkedObj.length > 0) {
+                filter.checkedObj.map(function (elem4: any) {
+                    if (elem4.Title) {
+                        const match = elem4.Title.match(/\((\d+)\s*-\s*(\d+)\)/)
+                        if (match) {
+                            elem4.lowerBound = parseInt(match[1]);
+                            elem4.upperBound = parseInt(match[2]);
+                        }
+                    }
+                    return percentComplete.push(elem4);
+                });
+            }
         });
         allMasterTasksData?.map((data: any) => {
             if (checkPortfolioMatch(data, portFolio)) {
                 updateArray.push(data);
             }
         });
-
+        /// old code///
         allTastsData?.map((data: any) => {
             if (checkSiteMatch(data, site) && checkTypeMatch(data, type)) {
-                updateArray.push(data);
+                if (percentCompleteMatch(data, percentComplete)) {
+                    updateArray.push(data);
+                }
             }
         });
+
         let updateArrayCopyData: any[] = [];
         let updateFinalData: any[] = [];
-
         if (updateArray.length > 0) {
             updateArray.map((filData) => {
                 filData.TeamLeaderUser?.map((TeamData: any) => {
@@ -379,7 +398,7 @@ const SmartFilterSearchGlobal = (item: any) => {
         if (typeSite.length === 0) {
             return false;
         } else {
-            return typeSite.some((value: any) => value.Title === data?.TaskType?.Title);
+            return typeSite.some((value: any) => data?.TaskType?.Title === value.Title);
         }
     };
 
@@ -401,12 +420,25 @@ const SmartFilterSearchGlobal = (item: any) => {
         }
         return false;
     };
+    const percentCompleteMatch = (percentData: any, percentComplete: any): boolean => {
+        if (percentComplete.length === 0) {
+            return false;
+        } else {
+            if (percentData.PercentComplete !== undefined && percentData.PercentComplete !== '' && percentData.PercentComplete !== null) {
+                const percentCompleteValue = parseInt(percentData?.PercentComplete);
+                return percentComplete.some((value: any) => percentCompleteValue >= value.lowerBound && percentCompleteValue <= value.upperBound);
+            }
+        }
+        return false;
+    };
     const ClearFilter = function () {
+        item?.setLoaded(false);
         GetfilterGroups();
         setUpdatedSmartFilter(false);
         setFinalArray([]);
     };
     const UpdateFilterData = () => {
+       item?.setLoaded(false);
         setUpdatedSmartFilter(true);
         FilterDataOnCheck();
     };
@@ -420,30 +452,6 @@ const SmartFilterSearchGlobal = (item: any) => {
             checkBoxColor();
         }
     }
-    // React.useEffect(() => {
-    //     setTimeout(() => {
-    //         const inputElement = document.getElementsByClassName('custom-checkbox-tree');
-    //         if (inputElement) {
-    //             for (let j = 0; j < inputElement.length; j++) {
-    //                 const checkboxContainer = inputElement[j]
-    //                 const childElements = checkboxContainer.getElementsByTagName('input');
-    //                 for (let i = 0; i < childElements.length; i++) {
-    //                     const checkbox = childElements[i];
-    //                     checkbox.style.borderColor = portfolioColor;
-    //                     checkbox.style.backgroundColor = portfolioColor;
-
-    //                     if (checkbox.checked) {
-    //                         checkbox.style.borderColor = portfolioColor;
-    //                         checkbox.style.backgroundColor = portfolioColor;
-    //                     }else{
-    //                         checkbox.style.borderColor = '';
-    //                         checkbox.style.backgroundColor = '';
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }, 100);
-    // }, [IsSmartfilter]);
     const checkBoxColor = () => {
         setTimeout(() => {
             const inputElement = document.getElementsByClassName('custom-checkbox-tree');
@@ -480,7 +488,7 @@ const SmartFilterSearchGlobal = (item: any) => {
     }, [expanded]);
     return (
         <>
-            <section className="ContentSection smartFilterSection">
+            <section className="ContentSection smartFilterSection row">
                 <div className="bg-wihite border p-2">
                     <div className="togglebox">
                         <div className="togglebox">
@@ -504,7 +512,7 @@ const SmartFilterSearchGlobal = (item: any) => {
                                                     {filterGroupsData != null && filterGroupsData.length > 0 &&
                                                         filterGroupsData?.map((Group: any, index: any) => {
                                                             return (
-                                                                <td valign="top" style={{ width: '20%' }}>
+                                                                <td valign="top" style={{ width: '16.67%' }}>
                                                                     <fieldset className='smartFilterStyle ps-2'>
                                                                         <legend className='SmartFilterHead'>
                                                                             <span className="mparent d-flex" style={{ borderBottom: "1.5px solid" + portfolioColor, color: portfolioColor }}>
