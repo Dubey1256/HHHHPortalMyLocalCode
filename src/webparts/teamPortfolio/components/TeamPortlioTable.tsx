@@ -25,7 +25,6 @@ import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-toolt
 import SmartFilterSearchGlobal from "../../../globalComponents/SmartFilterGolobalBomponents/SmartFilterGlobalComponents";
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
-import PageLoader from "../../../globalComponents/pageLoader";
 //import RestructuringCom from "../../../globalComponents/Restructuring/RestructuringCom";
 var filt: any = "";
 var ContextValue: any = {};
@@ -33,6 +32,7 @@ let globalFilterHighlited: any;
 let forceExpanded: any = [];
 let isUpdated: any = "";
 let componentData: any = [];
+let AllDataTaskcomponentData: any = [];
 let componentDataCopyBackup: any = []
 let filterCount: any = 0;
 let childRefdata: any;
@@ -40,7 +40,9 @@ let portfolioColor: any = '';
 let ProjectData: any = [];
 let copyDtaArray: any = [];
 let renderData: any = [];
-let countAllTasksData: any = []
+let countAllTasksData: any = [];
+let AfterFilterTaskCount: any = [];
+let allLoadeDataMasterTaskAndTask: any = [];
 function TeamPortlioTable(SelectedProp: any) {
     const childRef = React.useRef<any>();
     if (childRef != null) {
@@ -64,6 +66,7 @@ function TeamPortlioTable(SelectedProp: any) {
     const refreshData = () => setData(() => renderData);
     const [loaded, setLoaded] = React.useState(false);
     const [siteConfig, setSiteConfig] = React.useState([]);
+    const [dataAllGruping, seDataAllGruping] = React.useState([]);
     const [data, setData] = React.useState([]);
     copyDtaArray = data;
     const [AllUsers, setTaskUser] = React.useState([]);
@@ -95,6 +98,7 @@ function TeamPortlioTable(SelectedProp: any) {
     const [checkedList1, setCheckedList1] = React.useState([]);
     const [topCompoIcon, setTopCompoIcon]: any = React.useState(false);
     const [IsTimeEntry, setIsTimeEntry] = React.useState(false);
+    // const [tableHeight, setTableHeight] = React.useState(window.innerHeight);
     const [portfolioTypeConfrigration, setPortfolioTypeConfrigration] = React.useState<any>([{ Title: 'Component', Suffix: 'C', Level: 1 }, { Title: 'SubComponent', Suffix: 'S', Level: 2 }, { Title: 'Feature', Suffix: 'F', Level: 3 }]);
     let ComponetsData: any = {};
     let Response: any = [];
@@ -164,6 +168,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     Item.Title = obj.Title;
                     Item.SortOrder = obj.SortOrder;
                     Item[obj.Title + 'number'] = 0;
+                    Item[obj.Title + 'filterNumber'] = 0;
                     Item[obj.Title + 'numberCopy'] = 0;
                     typeData.push(Item);
                 }
@@ -212,6 +217,7 @@ function TeamPortlioTable(SelectedProp: any) {
                         let Item: any = {};
                         Item.Title = obj;
                         Item[obj + 'number'] = 0;
+                        Item[obj + 'filterNumber'] = 0;
                         Item[obj + 'numberCopy'] = 0;
                         newarray.push(Item);
                     }
@@ -234,8 +240,6 @@ function TeamPortlioTable(SelectedProp: any) {
             console.error("Error fetching portfolio icons:", error);
         }
     };
-
-
     const LoadAllSiteTasks = function () {
         let AllTasksData: any = [];
         let Counter = 0;
@@ -272,24 +276,11 @@ function TeamPortlioTable(SelectedProp: any) {
                         item.siteUrl = ContextValue.siteUrl;
                         item["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
                         item.fontColorTask = "#000"
-                        // if (item.TaskCategories.results != undefined) {
-                        //     if (item.TaskCategories.results.length > 0) {
-                        //         $.each(
-                        //             item.TaskCategories.results,
-                        //             function (ind: any, value: any) {
-                        //                 if (value.Title.toLowerCase() == "draft") {
-                        //                     item.isDrafted = true;
-                        //                 }
-                        //             }
-                        //         );
-                        //     }
-                        // }
+                        if (item?.TaskCategories?.some((category: any) => category.Title.toLowerCase() === "draft")) { item.isDrafted = true; }
                     });
                     AllTasks = AllTasks.concat(AllTasksMatches);
-                    AllTasks = $.grep(AllTasks, function (type: any) {
-                        return type.isDrafted == false;
-                    });
                     if (Counter == siteConfig.length) {
+                        AllTasks = AllTasks?.filter((type: any) => type.isDrafted === false);
                         map(AllTasks, (result: any) => {
                             result.Id = result.Id != undefined ? result.Id : result.ID;
                             result.TeamLeaderUser = [];
@@ -307,9 +298,6 @@ function TeamPortlioTable(SelectedProp: any) {
                             if (result?.Body != undefined) {
                                 result.descriptionsSearch = result?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
                             }
-                            // if(result?.FeedBack !=undefined){
-                            //     result.FeedBack = JSON.parse(result.FeedBack)
-                            // }
                             if (result?.Comments != null) {
                                 result.commentsSearch = result?.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
                             }
@@ -363,31 +351,7 @@ function TeamPortlioTable(SelectedProp: any) {
                             } else {
                                 result.ClientCategorySearch = ''
                             }
-                            // if (result.Id === 1441) console.log(result);
                             result["TaskID"] = globalCommon.GetTaskId(result);
-                            // if (result["TaskID"] == undefined) {
-                            //     result["TaskID"] = "";
-                            // }
-                            // && result.PortfolioType != undefined
-
-                            // if (isUpdated === "") {
-                            //     taskTypeDataItem?.map((type: any) => {
-                            //         if (result?.TaskType?.Title === type.Title) {
-                            //             type[type.Title + 'number'] += 1;
-                            //         }
-                            //     })
-                            // } else if (isUpdated != "") {
-                            //     let findPortfolio = AllComponetsData?.filter((elem: any) => elem.Id === result?.Portfolio?.Id);
-                            //     if (findPortfolio.length > 0) {
-                            //         if (findPortfolio[0]?.Id === result?.Portfolio?.Id && isUpdated?.toLowerCase() === findPortfolio[0]?.PortfolioType?.Title?.toLowerCase()) {
-                            //             taskTypeDataItem?.map((type: any) => {
-                            //                 if (result?.TaskType?.Title === type.Title) {
-                            //                     type[type.Title + 'number'] += 1;
-                            //                 }
-                            //             })
-                            //         }
-                            //     }
-                            // }
                             if (result.Project) {
                                 result.ProjectTitle = result?.Project?.Title;
                                 result.ProjectId = result?.Project?.Id;
@@ -403,7 +367,8 @@ function TeamPortlioTable(SelectedProp: any) {
                             AllTasksData.push(result)
                         });
                         setAllSiteTasksData(AllTasksData);
-                        // GetComponents();
+                        let taskBackup = JSON.parse(JSON.stringify(AllTasksData));
+                        allLoadeDataMasterTaskAndTask = allLoadeDataMasterTaskAndTask.concat(taskBackup);
                     }
                 }
             });
@@ -516,6 +481,7 @@ function TeamPortlioTable(SelectedProp: any) {
             portfolioTypeDataItem?.map((type: any) => {
                 if (result?.Item_x0020_Type === type.Title && result.PortfolioType != undefined) {
                     type[type.Title + 'number'] += 1;
+                    type[type.Title + 'filterNumber'] += 1;
                 }
             })
             if (result?.ClientCategory?.length > 0) {
@@ -526,9 +492,9 @@ function TeamPortlioTable(SelectedProp: any) {
 
         });
         setAllMasterTasks(componentDetails)
+        allLoadeDataMasterTaskAndTask = JSON.parse(JSON.stringify(componentDetails));
         AllComponetsData = componentDetails;
         ComponetsData["allComponets"] = componentDetails;
-        // LoadAllSiteTasks();
     };
     React.useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -576,10 +542,131 @@ function TeamPortlioTable(SelectedProp: any) {
     }, [AllMetadata.length > 0 && portfolioTypeData.length > 0])
 
     React.useEffect(() => {
-        if (AllSiteTasksData.length > 0 && AllMasterTasksData.length > 0) {
-            setFilterCounters(true)
+        if (AllSiteTasksData.length > 0 && AllMasterTasksData.length > 0 && allLoadeDataMasterTaskAndTask?.length > 0) {
+            countAllTasksData = [];
+            let count = 0;
+            if (IsUpdated === "") {
+                portfolioTypeData?.map((port: any, index: any) => {
+                    count = count + 1
+                    AllcomponentGrouping(port?.Id, index);
+                })
+            } else if (IsUpdated.length) {
+                portfolioTypeData?.map((port: any) => {
+                    if (IsUpdated.toLowerCase() === port?.Title?.toLowerCase()) {
+                        count = count + 1
+                        AllcomponentGrouping(port?.Id, '');
+                    }
+                })
+            }
+            if (count === portfolioTypeData?.length) {
+                countAllTasksData = countAllTasksData?.filter((ele: any, ind: any, arr: any) => {
+                    const isDuplicate = arr.findIndex((elem: any) => {
+                        return (elem.ID === ele.ID || elem.Id === ele.Id) && elem.siteType === ele.siteType;
+                    }) !== ind
+                    return !isDuplicate;
+                })
+                countTaskAWTLevel(countAllTasksData, '');
+                setFilterCounters(true);
+            }
         }
-    }, [AllSiteTasksData.length > 0 && AllMasterTasksData.length > 0])
+    }, [AllSiteTasksData.length > 0 && AllMasterTasksData.length > 0 && allLoadeDataMasterTaskAndTask?.length > 0])
+
+    const AllcomponentGrouping = (portId: any, index: any) => {
+        let FinalComponentAll: any = []
+        let AllProtFolioData = allLoadeDataMasterTaskAndTask?.filter((comp: any) => comp?.PortfolioType?.Id === portId && comp.TaskType === undefined);
+        let AllComponents = AllProtFolioData?.filter((comp: any) => comp?.Parent?.Id === 0 || comp?.Parent?.Id === undefined);
+        AllComponents?.map((masterTask: any) => {
+            masterTask.subRows = [];
+            taskTypeData?.map((levelType: any) => {
+                if (levelType.Level === 1)
+                    componentAllTaskActivity(levelType, masterTask);
+            })
+            let subComFeat = AllProtFolioData?.filter((comp: any) => comp?.Parent?.Id === masterTask?.Id)
+            masterTask.subRows = masterTask?.subRows?.concat(subComFeat);
+            subComFeat?.forEach((subComp: any) => {
+                subComp.subRows = [];
+                taskTypeData?.map((levelType: any) => {
+                    if (levelType.Level === 1)
+                        componentAllTaskActivity(levelType, subComp);
+                })
+                let allFeattData = AllProtFolioData?.filter((elem: any) => elem?.Parent?.Id === subComp?.Id);
+                subComp.subRows = subComp?.subRows?.concat(allFeattData);
+                allFeattData?.forEach((subFeat: any) => {
+                    subFeat.subRows = [];
+                    taskTypeData?.map((levelType: any) => {
+                        if (levelType.Level === 1)
+                            componentAllTaskActivity(levelType, subFeat);
+                    })
+                })
+            })
+            FinalComponentAll.push(masterTask)
+        })
+        AllDataTaskcomponentData = AllDataTaskcomponentData?.concat(FinalComponentAll);
+        DynamicSort(AllDataTaskcomponentData, 'PortfolioLevel', '')
+        AllDataTaskcomponentData.forEach((element: any) => {
+            if (element?.subRows?.length > 0) {
+                let level = element?.subRows?.filter((obj: any) => obj.Item_x0020_Type != undefined && obj.Item_x0020_Type != "Task");
+                let leveltask = element?.subRows?.filter((obj: any) => obj.Item_x0020_Type === "Task");
+                DynamicSort(level, 'Item_x0020_Type', 'asc')
+                element.subRows = [];
+                element.subRows = level.concat(leveltask)
+            }
+            if (element?.subRows != undefined) {
+                element?.subRows?.forEach((obj: any) => {
+                    let level1 = obj?.subRows?.filter((obj: any) => obj.Item_x0020_Type != undefined && obj.Item_x0020_Type != "Task");
+                    let leveltask1 = obj?.subRows?.filter((obj: any) => obj.Item_x0020_Type === "Task");
+                    DynamicSort(level1, 'Item_x0020_Type', 'asc')
+                    obj.subRows = [];
+                    obj.subRows = level1?.concat(leveltask1)
+                })
+            }
+        });
+        if (portfolioTypeData?.length - 1 === index || index === '') {
+            var temp: any = {};
+            temp.Title = "Others";
+            temp.TaskID = "";
+            temp.subRows = [];
+            temp.PercentComplete = "";
+            temp.ItemRank = "";
+            temp.DueDate = "";
+            temp.Project = "";
+            temp.subRows = allLoadeDataMasterTaskAndTask?.filter((elem1: any) => elem1?.TaskType?.Id != undefined && elem1?.ParentTask?.Id === undefined && elem1?.Portfolio?.Title === undefined);
+            countAllTasksData = countAllTasksData.concat(temp.subRows);
+            temp.subRows.forEach((task: any) => {
+                if (task.TaskID === undefined || task.TaskID === '')
+                    task.TaskID = 'T' + task.Id;
+            })
+            AllDataTaskcomponentData.push(temp);
+        }
+        seDataAllGruping(AllDataTaskcomponentData);
+        console.log(countAllTasksData);
+        console.log("First Grouping Data is ", AllDataTaskcomponentData)
+    }
+    const componentAllTaskActivity = (levelType: any, items: any) => {
+        let findActivity = allLoadeDataMasterTaskAndTask?.filter((elem: any) => elem?.TaskType?.Id === levelType.Id && elem?.Portfolio?.Id === items?.Id);
+        let findTasks = allLoadeDataMasterTaskAndTask?.filter((elem1: any) => elem1?.TaskType?.Id != levelType.Id && elem1?.Portfolio?.Id === items?.Id);
+        countAllTasksData = countAllTasksData.concat(findTasks)
+        countAllTasksData = countAllTasksData.concat(findActivity)
+        findActivity?.forEach((act: any) => {
+            act.subRows = [];
+            let worstreamAndTask = allLoadeDataMasterTaskAndTask?.filter((taskData: any) => taskData?.ParentTask?.Id === act?.Id && taskData?.siteType === act?.siteType)
+            if (worstreamAndTask.length > 0) {
+                act.subRows = act?.subRows?.concat(worstreamAndTask);
+                countAllTasksData = countAllTasksData.concat(worstreamAndTask)
+            }
+            worstreamAndTask?.forEach((wrkst: any) => {
+                wrkst.subRows = wrkst.subRows === undefined ? [] : wrkst.subRows;
+                let allTasksData = allLoadeDataMasterTaskAndTask?.filter((elem: any) => elem?.ParentTask?.Id === wrkst?.Id && elem?.siteType === wrkst?.siteType);
+                if (allTasksData.length > 0) {
+                    wrkst.subRows = wrkst?.subRows?.concat(allTasksData)
+                    countAllTasksData = countAllTasksData.concat(allTasksData)
+                }
+            })
+        })
+        items.subRows = items?.subRows?.concat(findActivity)
+        items.subRows = items?.subRows?.concat(findTasks)
+    }
+
 
     const smartFiltercallBackData = React.useCallback((filterData, updatedSmartFilter) => {
         setUpdatedSmartFilter(updatedSmartFilter);
@@ -591,29 +678,40 @@ function TeamPortlioTable(SelectedProp: any) {
         if (smartAllFilterData?.length > 0 && updatedSmartFilter === false) {
             setLoaded(false);
             componentData = [];
-            countAllTasksData = [];
+            AfterFilterTaskCount = [];
+            let count = 0;
+            let afterFilter = true;
             setAllSmartFilterDataBackup(structuredClone(smartAllFilterData));
             if (IsUpdated === "") {
                 portfolioTypeData?.map((port: any, index: any) => {
+                    count = count + 1;
                     componentGrouping(port?.Id, index);
                 })
             } else if (IsUpdated.length) {
                 portfolioTypeData?.map((port: any) => {
                     if (IsUpdated.toLowerCase() === port?.Title?.toLowerCase()) {
+                        count = count + 1;
                         componentGrouping(port?.Id, '');
                     }
                 })
             }
-            countTaskAWTLevel(countAllTasksData);
+            if (count === portfolioTypeData?.length) {
+                taskTypeDataItem?.filter((taskLevelcount: any) => { taskLevelcount[taskLevelcount.Title + 'filterNumber'] = 0 });
+                AfterFilterTaskCount = AfterFilterTaskCount?.filter((ele: any, ind: any, arr: any) => {
+                    const isDuplicate = arr.findIndex((elem: any) => {
+                        return (elem.ID === ele.ID || elem.Id === ele.Id) && elem.siteType === ele.siteType;
+                    }) !== ind
+                    return !isDuplicate;
+                })
+                countTaskAWTLevel(AfterFilterTaskCount, afterFilter);
+            }
         }
         if (smartAllFilterData?.length > 0 && updatedSmartFilter === true) {
             setLoaded(false);
             filterCount = 0;
             componentDataCopyBackup = [];
             setDataBackup([]);
-            // let AllSmartFilterDataBackupCopy = AllSmartFilterDataBackup?.filter((elem: any) => elem.PortfolioType != undefined);
             setDataBackup(structuredClone(AllSmartFilterDataBackup));
-            // setDataBackup(structuredClone(AllSmartFilterDataBackupCopy));
             componentDataCopyBackup = structuredClone(componentData);
             filterDataAfterUpdate();
         }
@@ -693,7 +791,7 @@ function TeamPortlioTable(SelectedProp: any) {
             temp.DueDate = "";
             temp.Project = "";
             temp.subRows = smartAllFilterData?.filter((elem1: any) => elem1?.TaskType?.Id != undefined && elem1?.ParentTask?.Id === undefined && elem1?.Portfolio?.Title === undefined);
-            countAllTasksData = countAllTasksData.concat(temp.subRows);
+            AfterFilterTaskCount = AfterFilterTaskCount.concat(temp.subRows);
             temp.subRows.forEach((task: any) => {
                 if (task.TaskID === undefined || task.TaskID === '')
                     task.TaskID = 'T' + task.Id;
@@ -702,7 +800,7 @@ function TeamPortlioTable(SelectedProp: any) {
         }
         setLoaded(true);
         setData(componentData);
-        console.log(countAllTasksData);
+        console.log(AfterFilterTaskCount);
     }
     const componentActivity = (levelType: any, items: any) => {
         if (items.ID === 5610) {
@@ -710,58 +808,87 @@ function TeamPortlioTable(SelectedProp: any) {
         }
         let findActivity = smartAllFilterData?.filter((elem: any) => elem?.TaskType?.Id === levelType.Id && elem?.Portfolio?.Id === items?.Id);
         let findTasks = smartAllFilterData?.filter((elem1: any) => elem1?.TaskType?.Id != levelType.Id && elem1?.Portfolio?.Id === items?.Id);
-        countAllTasksData = countAllTasksData.concat(findTasks)
-        countAllTasksData = countAllTasksData.concat(findActivity)
+        AfterFilterTaskCount = AfterFilterTaskCount.concat(findTasks);
+        AfterFilterTaskCount = AfterFilterTaskCount.concat(findActivity);
 
         findActivity?.forEach((act: any) => {
             act.subRows = [];
             let worstreamAndTask = smartAllFilterData?.filter((taskData: any) => taskData?.ParentTask?.Id === act?.Id && taskData?.siteType === act?.siteType)
-            // findTasks = findTasks?.filter((taskData: any) => taskData?.ParentTask?.Id != act?.Id && taskData?.siteType != act?.siteType);
             if (worstreamAndTask.length > 0) {
                 act.subRows = act?.subRows?.concat(worstreamAndTask);
-                countAllTasksData = countAllTasksData.concat(worstreamAndTask)
+                AfterFilterTaskCount = AfterFilterTaskCount.concat(worstreamAndTask);
             }
             worstreamAndTask?.forEach((wrkst: any) => {
                 wrkst.subRows = wrkst.subRows === undefined ? [] : wrkst.subRows;
                 let allTasksData = smartAllFilterData?.filter((elem: any) => elem?.ParentTask?.Id === wrkst?.Id && elem?.siteType === wrkst?.siteType);
-                // findTasks = findTasks?.filter((elem: any) => elem?.ParentTask?.Id != wrkst?.Id && elem?.siteType != wrkst?.siteType);
                 if (allTasksData.length > 0) {
-                    wrkst.subRows = wrkst?.subRows?.concat(allTasksData)
-                    countAllTasksData = countAllTasksData.concat(allTasksData)
+                    wrkst.subRows = wrkst?.subRows?.concat(allTasksData);
+                    AfterFilterTaskCount = AfterFilterTaskCount.concat(allTasksData);
                 }
             })
         })
         items.subRows = items?.subRows?.concat(findActivity)
         items.subRows = items?.subRows?.concat(findTasks)
     }
-
-
-    const countTaskAWTLevel = (countTaskAWTLevel: any) => {
-        if (countTaskAWTLevel.length > 0) {
-            taskTypeDataItem?.map((type: any) => {
-                countTaskAWTLevel.map((result: any) => {
+    const countTaskAWTLevel = (countTaskAWTLevel: any, afterFilter: any) => {
+        if (countTaskAWTLevel.length > 0 && afterFilter !== true) {
+            countTaskAWTLevel?.map((result: any) => {
+                taskTypeDataItem?.map((type: any) => {
                     if (result?.TaskType?.Title === type.Title) {
                         type[type.Title + 'number'] += 1;
+                    }
+                });
+            });
+        } else if (countTaskAWTLevel?.length > 0 && afterFilter === true) {
+            countTaskAWTLevel?.map((result: any) => {
+                taskTypeDataItem?.map((type: any) => {
+                    if (result?.TaskType?.Title === type.Title) {
+                        type[type.Title + 'filterNumber'] += 1;
+                    }
+                });
+            });
+        }
+    };
+
+
+    const countComponentLevel = (countTaskAWTLevel: any, afterFilter: any) => {
+        if (countTaskAWTLevel?.length > 0 && afterFilter === true) {
+            countTaskAWTLevel?.map((result: any) => {
+                portfolioTypeDataItem?.map((type: any) => {
+                    if (result?.Item_x0020_Type === type.Title && result.PortfolioType != undefined) {
+                        type[type.Title + 'filterNumber'] += 1;
                     }
                 })
             })
         }
     }
 
-
     const filterDataAfterUpdate = () => {
+        setLoaded(false);
+        let count = 0;
+        let afterFilter = true;
+        let dataAllGrupingBackup: any = [];
+        if (dataAllGruping?.length > 0) {
+            dataAllGrupingBackup = JSON.parse(JSON.stringify(dataAllGruping));
+        }
         smartAllFilterData?.map((filterItem: any) => {
-            updatedSmartFilterGrouping(filterItem)
-        })
+            count = count + 1;
+            updatedSmartFilterGrouping(filterItem, dataAllGrupingBackup);
+        });
+        if (smartAllFilterData?.length > 0 && count === smartAllFilterData?.length && taskTypeDataItem?.length > 0) {
+            taskTypeDataItem?.filter((taskLevelcount: any) => { taskLevelcount[taskLevelcount.Title + 'filterNumber'] = 0 });
+            countTaskAWTLevel(smartAllFilterData, afterFilter)
+        }
+        if (smartAllFilterData?.length > 0 && count === smartAllFilterData?.length && portfolioTypeDataItem?.length > 0) {
+            portfolioTypeDataItem?.filter((taskLevelcount: any) => { taskLevelcount[taskLevelcount.Title + 'filterNumber'] = 0 });
+            countComponentLevel(smartAllFilterData, afterFilter)
+        }
     }
-    const updatedSmartFilterGrouping = (filterItem: any) => {
+    const updatedSmartFilterGrouping = (filterItem: any, dataAllGrupingBackup: any) => {
         filterCount = filterCount + 1;
         let finalData: any = []
         let finalDataCopy: any = []
-        componentDataCopyBackup?.map((comp: any) => {
-            // if (comp.Id === filterItem?.Portfolio?.Id) {
-            //     comp.filterFlag = true
-            // }
+        dataAllGrupingBackup?.map((comp: any) => {
             if (comp.Id === filterItem?.Id) {
                 comp.filterFlag = true
             }
@@ -807,29 +934,28 @@ function TeamPortlioTable(SelectedProp: any) {
             })
         })
         if (filterCount === smartAllFilterData.length) {
-            finalData = componentDataCopyBackup.filter((elem: any) => elem.filterFlag === true)
+            finalData = dataAllGrupingBackup.filter((elem: any) => elem.filterFlag === true)
             finalDataCopy = [...finalData];
-            let finalDataCopyArray = finalDataCopy?.filter((ele: any, ind: any) => ind === finalDataCopy.findIndex((elem: any) => elem.ID === ele.ID));
+            let finalDataCopyArray = finalDataCopy?.filter((ele: any, ind: any) => ind === finalDataCopy.findIndex((elem: any) => elem.ID === ele.ID || elem.Id === ele.Id && elem.siteType === ele.siteType));
             finalDataCopyArray?.map((comp: any) => {
-                comp.subRows = comp?.subRows?.filter((ele: any, ind: any) => ind === comp?.subRows?.findIndex((elem: any) => elem.ID === ele.ID));
+                // comp.subRows = comp?.subRows?.filter((ele: any, ind: any) => ind === comp?.subRows?.findIndex((elem: any) => elem.ID === ele.ID || elem.Id === ele.Id && elem.siteType === ele.siteType));
                 comp.subRows = comp?.subRows?.filter((sub: any) => sub.filterFlag === true)
 
                 comp?.subRows?.map((subComp: any) => {
-                    subComp.subRows = subComp?.subRows?.filter((ele: any, ind: any) => ind === subComp?.subRows?.findIndex((elem: any) => elem.ID === ele.ID));
+                    // subComp.subRows = subComp?.subRows?.filter((ele: any, ind: any) => ind === subComp?.subRows?.findIndex((elem: any) => elem.ID === ele.ID || elem.Id === ele.Id && elem.siteType === ele.siteType));
                     subComp.subRows = subComp?.subRows?.filter((subComp1: any) => subComp1.filterFlag === true)
 
                     subComp?.subRows?.map((feat: any) => {
-                        feat.subRows = feat?.subRows?.filter((ele: any, ind: any) => ind === feat?.subRows?.findIndex((elem: any) => elem.ID === ele.ID));
+                        // feat.subRows = feat?.subRows?.filter((ele: any, ind: any) => ind === feat?.subRows?.findIndex((elem: any) => elem.ID === ele.ID || elem.Id === ele.Id && elem.siteType === ele.siteType));
                         feat.subRows = feat?.subRows?.filter((feat1: any) => feat1.filterFlag === true)
 
                         feat?.subRows?.map((activ: any) => {
-                            activ.subRows = activ?.subRows?.filter((ele: any, ind: any) => ind === activ?.subRows?.findIndex((elem: any) => elem.ID === ele.ID));
+                            // activ.subRows = activ?.subRows?.filter((ele: any, ind: any) => ind === activ?.subRows?.findIndex((elem: any) => elem.ID === ele.ID || elem.Id === ele.Id && elem.siteType === ele.siteType));
                             activ.subRows = activ?.subRows?.filter((activ1: any) => activ1.filterFlag === true)
 
                             activ?.subRows?.map((works: any) => {
-                                works.subRows = works?.subRows?.filter((ele: any, ind: any) => ind === works?.subRows?.findIndex((elem: any) => elem.ID === ele.ID));
-                                works.subRows = works?.subRows?.filter((works1: any) => works1.filterFlag === true)
-
+                                // works.subRows = works?.subRows?.filter((ele: any, ind: any) => ind === works?.subRows?.findIndex((elem: any) => elem.ID === ele.ID || elem.Id === ele.Id && elem.siteType === ele.siteType));
+                                works.subRows = works?.subRows?.filter((works1: any) => works1.filterFlag === true);
                             })
                         })
                     })
@@ -845,19 +971,14 @@ function TeamPortlioTable(SelectedProp: any) {
         const screenHeight = window.innerHeight;
         const tableHeight = screenHeight * 0.8 - 5;
         table.style.maxHeight = `${tableHeight}px`;
-      };
-      React.useEffect(() => {
+    };
+    React.useEffect(() => {
         setTableHeight();
         window.addEventListener('resize', setTableHeight);
         return () => {
-          window.removeEventListener('resize', setTableHeight);
+            window.removeEventListener('resize', setTableHeight);
         };
-      }, []);
-    
-    
-
-
-    ///react table start function//////
+    }, []);
     const columns: any = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
@@ -996,14 +1117,6 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 size: 131,
             },
-            // {
-            //     accessorKey: "PercentComplete",
-            //     placeholder: "Status",
-            //     header: "",
-            //     resetColumnFilters: false,
-            //     size: 42,
-            //     id: "PercentComplete",
-            // },
             {
                 accessorFn: (row) => row?.PercentComplete,
                 cell: ({ row }) => (
@@ -1026,14 +1139,6 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 size: 42,
             },
-            // {
-            //     accessorKey: "ItemRank",
-            //     placeholder: "Item Rank",
-            //     header: "",
-            //     resetColumnFilters: false,
-            //     size: 42,
-            //     id: "ItemRank",
-            // },
             {
                 accessorKey: "DueDate",
                 placeholder: "Due Date",
@@ -1159,26 +1264,6 @@ function TeamPortlioTable(SelectedProp: any) {
         ],
         [data]
     );
-
-    // React.useEffect(() => {
-    //     if (table.getState().columnFilters.length || table.getState()?.globalFilter?.length > 0) {
-    //         const allKeys = Object.keys(table.getFilteredRowModel().rowsById).reduce(
-    //             (acc: any, cur: any) => {
-    //                 if (table.getFilteredRowModel().rowsById[cur].subRows?.length) {
-    //                     acc[cur] = true;
-    //                 }
-    //                 return acc;
-    //             },
-    //             {}
-    //         );
-    //         setExpanded(allKeys);
-    //     } else {
-    //         setExpanded({});
-    //     }
-    //     forceExpanded = [];
-    // }, [table.getState().columnFilters, table.getState().globalFilter]);
-
-
 
     //-------------------------------------------------- restructuring function start---------------------------------------------------------------
 
@@ -1410,7 +1495,7 @@ function TeamPortlioTable(SelectedProp: any) {
             }
 
         })
-        if (res?.data !=undefined) {
+        if (res?.data != undefined) {
             renderData = [];
             renderData = renderData.concat(copyDtaArray)
             refreshData();
@@ -1480,7 +1565,7 @@ function TeamPortlioTable(SelectedProp: any) {
     //-------------------------------------------------------------End---------------------------------------------------------------------------------
     return (
         <div id="ExandTableIds" style={{}}>
-            <section className="ContentSection">
+            <section className="ContentSection smartFilterSection">
                 <div className="col-sm-12 clearfix">
                     <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
                         {IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf("service") > -1 && (
@@ -1514,13 +1599,13 @@ function TeamPortlioTable(SelectedProp: any) {
                     </h2>
                 </div>
                 <div className="togglecontent mt-1">
-                    {filterCounters == true ? <SmartFilterSearchGlobal AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} SelectedProp={SelectedProp.SelectedProp} ContextValue={ContextValue} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
+                    {filterCounters == true ? <SmartFilterSearchGlobal setLoaded={setLoaded}  AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} SelectedProp={SelectedProp.SelectedProp} ContextValue={ContextValue} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
                 </div>
             </section>
 
 
             <section className="TableContentSection row taskprofilepagegreen">
-                <div className="container-fluid">
+                <div className="container-fluid p-0">
                     <section className="TableSection">
                         <div className="container p-0">
                             <div className="Alltable mt-2 ">
