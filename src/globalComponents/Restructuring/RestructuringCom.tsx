@@ -5,12 +5,13 @@ import { Modal, Panel, PanelType } from "office-ui-fabric-react";
 
 const RestructuringCom = (props: any, ref: any) => {
 
-  let allData: any = [];
+  // let allData: any = [];
 
-  allData = props.allData;
+  // allData = props.allData;
   let restructureCallBack = props.restructureCallBack;
 
   const [OldArrayBackup, setOldArrayBackup]: any = React.useState([]);
+  const [allData, setAllData]: any = React.useState([]);
   const [restructureItem, setRestructureItem]: any = React.useState([]);
   const [NewArrayBackup, setNewArrayBackup]: any = React.useState([]);
   const [ResturuningOpen, setResturuningOpen]: any = React.useState(false);
@@ -24,10 +25,23 @@ const RestructuringCom = (props: any, ref: any) => {
 
 
   useEffect(() => {
-    if (props?.restructureItem != undefined && props?.restructureItem?.length > 0) {
+
+     if (props?.restructureItem != undefined && props?.restructureItem?.length > 0) {
+      props.allData?.map((obj:any)=>{
+        const matchingTask = props?.AllMasterTasksData?.find((task:any) => obj?.Portfolio?.Id === task?.Id);
+      if (matchingTask) {
+        obj.PortfolioType = matchingTask.PortfolioType;
+  }
+  })
+  setAllData(props.allData); 
+
       let array: any = []
-      props?.restructureItem?.map((items: any) => {
-        array.push(items.original);
+      props?.restructureItem?.map((obj: any) => {
+        const matchingTask = props?.AllMasterTasksData?.find((task:any) => obj?.original?.Portfolio?.Id === task?.Id);
+        if (matchingTask) {
+          obj.original.PortfolioType = matchingTask.PortfolioType;
+    }
+        array.push(obj.original);
       })
       setRestructureItem(array);
     }

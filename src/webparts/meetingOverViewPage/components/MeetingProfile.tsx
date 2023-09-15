@@ -172,11 +172,11 @@ const MeetingProfile = (props: any) => {
 
                 .items.getById(AllListId?.meetingId)
 
-                .select("Id", "Title", "DueDate", "AssignedTo/Id","Attachments","Sitestagging", "FeedBack", "PortfolioStructureID","AssignedTo/Title", "ResponsibleTeam/Title", "ResponsibleTeam/Id", 'AttachmentFiles', "ShortDescriptionVerified", "TaskType/Title", "BasicImageInfo", 'Author/Id', 'Author/Title', "Editor/Title", "Editor/Id", "OffshoreComments", "OffshoreImageUrl", "TeamMembers/Id", "TeamMembers/Title")
+                .select("Id", "Title", "DueDate", "AssignedTo/Id","Attachments","Sitestagging", "FeedBack", "PortfolioStructureID","AssignedTo/Title", "ResponsibleTeam/Title", "ResponsibleTeam/Id", 'AttachmentFiles', "ShortDescriptionVerified", "BasicImageInfo", 'Author/Id', 'Author/Title', "Editor/Title", "Editor/Id", "OffshoreComments", "OffshoreImageUrl", "TeamMembers/Id", "TeamMembers/Title")
 
                 // .top(5000)
 
-                .expand("AssignedTo", 'ResponsibleTeam', "AttachmentFiles", "Author", 'TaskType', "Editor", "TeamMembers").get()
+                .expand("AssignedTo", 'ResponsibleTeam', "AttachmentFiles", "Author", "Editor", "TeamMembers").get()
             // await web.lists
             //     .getById(AllListId?.MasterTaskListID)
             //     .items.select("Id", "Title", "DueDate", "AssignedTo/Id", "AssignedTo/Title", "ResponsibleTeam/Title", "ResponsibleTeam/Id",'Attachments', 'AttachmentFiles', "ShortDescriptionVerified", "TaskType/Title", "BasicImageInfo", 'Author/Id', 'Author/Title', "Editor/Title", "Editor/Id", "OffshoreComments", "OffshoreImageUrl", "TeamMembers/Id", "TeamMembers/Title")
@@ -224,7 +224,7 @@ const MeetingProfile = (props: any) => {
                         BasicImageInfo:GetAllImages(JSON.parse(taskDetails["BasicImageInfo"]), taskDetails["AttachmentFiles"], taskDetails["Attachments"]),
                         // GetAllImages(JSON.parse(taskDetails["BasicImageInfo"]), taskDetails["AttachmentFiles"], taskDetails["Attachments"])
                         FeedBack: JSON.parse(taskDetails["FeedBack"]),
-                        TaskType: taskDetails["TaskType"] != null ? taskDetails["TaskType"]?.Title : '',
+                        // TaskType: taskDetails["TaskType"] != null ? taskDetails["TaskType"]?.Title : '',
                         TeamLeader: taskDetails["ResponsibleTeam"] != null ? GetUserObjectFromCollection(taskDetails["ResponsibleTeam"]) : null,
                         TeamMembers: taskDetails.array != null ? GetUserObjectFromCollection(taskDetails.array) : null,
                         AssignedTo: taskDetails["AssignedTo"] != null ? GetUserObjectFromCollection(taskDetails["AssignedTo"]) : null,
@@ -937,10 +937,10 @@ const MeetingProfile = (props: any) => {
                             }
                             {/*feedback comment section code */}
                             <div className={resultData?.BasicImageInfo != null && resultData?.BasicImageInfo?.length > 0 ? "col-sm-8 pe-0 mt-2" : "col-sm-12 pe-0 mt-2"}>
-                                {resultData["TaskType"] != null && (resultData["TaskType"] == '' ||
-                                    resultData["TaskType"] == 'Task' || resultData["TaskType"] == "Workstream" || resultData["TaskType"] == "Activities") && resultData["FeedBack"] != undefined && resultData["FeedBack"].length > 0 && resultData["FeedBack"][0].FeedBackDescriptions != undefined &&
-                                    resultData["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
-                                    resultData["FeedBack"][0]?.FeedBackDescriptions[0]?.Title != '' &&
+                                {/* {resultData["TaskType"] != null && (resultData["TaskType"] == '' ||
+                                    resultData["TaskType"] == 'Task' || resultData["TaskType"] == "Workstream" || resultData["TaskType"] == "Activities") && resultData["FeedBack"] != undefined && resultData["FeedBack"].length > 0 && resultData["FeedBack"][0].FeedBackDescriptions != undefined && */}
+                                    {resultData!=undefined &&resultData?.FeedBack?.length>0 && resultData?.FeedBack[0]?.FeedBackDescriptions?.length > 0 &&
+                                    resultData?.FeedBack[0]?.FeedBackDescriptions[0]?.Title != '' &&
                                     <div className={"Addcomment " + "manage_gap"}>
                                         {resultData["FeedBack"][0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
                                             let userdisplay: any = [];
@@ -1266,7 +1266,7 @@ const MeetingProfile = (props: any) => {
                 <section className='col-3' >
                     <div>
                         <div>
-                            {AllListId != null && <CommentCard siteUrl={props?.props?.siteUrl} AllListId={AllListId} Context={props?.props.Context} itemID={AllListId.meetingId}></CommentCard>}
+                            {AllListId != null && <CommentCard siteUrl={props?.props?.siteUrl}listName={resultData?.listName} AllListId={AllListId} Context={props?.props.Context} itemID={AllListId.meetingId}></CommentCard>}
 
                             {AllListId != null &&<AncTool 
                     item={resultData}

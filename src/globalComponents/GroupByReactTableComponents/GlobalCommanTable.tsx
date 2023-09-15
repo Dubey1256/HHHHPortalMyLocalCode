@@ -827,12 +827,12 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         {table?.getSelectedRowModel()?.flatRows.length < 2 ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Workstream-Task")}>Add Workstream-Task</button> :
                             <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} > Add Workstream-Task</button>}
 
-                        {/* {
+                        {
                             trueRestructuring == true ?
                                 <RestructuringCom restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows.length > 0 ? [table?.getSelectedRowModel()?.flatRows[0].original] : []} />
                                 : <button type="button" title="Restructure" disabled={true} className="btn btn-primary"
                                 >Restructure</button>
-                        } */}
+                        }
                     </>
                     }
 
