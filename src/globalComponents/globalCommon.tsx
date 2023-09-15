@@ -1813,23 +1813,13 @@ export const GetTaskId = (Item: any) => {
     }
     if (Item?.Portfolio?.PortfolioStructureID != undefined && Item.TaskID == undefined) {
         taskIds = Item?.Portfolio?.PortfolioStructureID + '-T' + Item.Id;
-<<<<<<< HEAD
      }
-    // else if(Item.TaskID!=undefined){
-    //     taskIds = Item.TaskID;
-    // }
+     else if(Item?.Portfolio==undefined){
+        taskIds = 'T' + Item.Id;
+    }
     // else if(Item.TaskID==undefined){
     //     taskIds = "T"+Item.Id;
     // }
-=======
-    }
-    else if (Item.TaskID != undefined) {
-        taskIds = Item.TaskID;
-    }
-    else if (Item.TaskID == undefined) {
-        taskIds = "T" + Item.Id;
-    }
->>>>>>> 14e0abf9a3a67edc5fdc05b29c825004c46e2130
 
     return taskIds;
 }
