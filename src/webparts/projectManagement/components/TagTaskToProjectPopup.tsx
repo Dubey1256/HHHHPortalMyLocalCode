@@ -49,7 +49,7 @@ const TagTaskToProjectPopup = (props: any) => {
             .items
             .select('Id', 'IsVisible', 'ParentID', 'Title', 'SmartSuggestions', 'TaxType', 'Description1', 'Item_x005F_x0020_Cover', 'listId', 'siteName', 'siteUrl', 'SortOrder', 'SmartFilters', 'Selectable', 'Parent/Id', 'Parent/Title')
             .top(5000)
-            .filter("TaxType eq 'Sites'")
+            .filter("TaxType eq 'Sites'or TaxType eq 'timesheetListConfigrations'")
             .expand('Parent')
             .get();
         siteConfig = smartmeta;
