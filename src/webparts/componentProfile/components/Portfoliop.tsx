@@ -924,9 +924,9 @@ const [Item,setItem]=React.useState("")
                           <a
                             target="_blank"
                             data-interception="off"
-                            href={SelectedProp.siteUrl+"/SitePages/"+item?.PortfolioType?.Title+"-Portfolio.aspx"}
+                            href={SelectedProp.siteUrl+"/SitePages//Team-Portfolio.aspx"}
                           >
-                            {item?.PortfolioType?.Title}-Portfolio
+                            Team-Portfolio
                           </a>
                         )}
                       </li>

@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Button, Modal } from "react-bootstrap";
+import Tooltip from "./Tooltip";
 let backupTaskUsers: any = [];
 function ShowTeamMembers(item: any) {
   let newTaskUsers: any = [...item?.TaskUsers];
@@ -55,16 +56,16 @@ function ShowTeamMembers(item: any) {
     let array: any = [];
     item?.props?.map((items: any) => {
       newTaskUsers?.map((taskuser: any) => {
-        if (items?.original?.TeamMembers?.length > 0) {
-          items?.original?.TeamMembers?.map((item: any) => {
+        if (items?.original?.Team_x0020_Members?.length > 0) {
+          items?.original?.Team_x0020_Members?.map((item: any) => {
             if (item?.Id == taskuser?.AssingedToUser?.Id) {
               array.push(taskuser);
             }
           });
         }
 
-        if (items?.original.ResponsibleTeam?.length > 0) {
-          items?.original.ResponsibleTeam?.map((item: any) => {
+        if (items?.original.Responsible_x0020_Team?.length > 0) {
+          items?.original.Responsible_x0020_Team?.map((item: any) => {
             if (item?.Id == taskuser?.AssingedToUser?.Id) {
               array.push(taskuser);
             }
@@ -104,8 +105,9 @@ function ShowTeamMembers(item: any) {
     });
 
     const copyListItems = [...uniqueAuthors];
-    let ab = copyListItems?.map((val: any) => val.Email).join(",");
-    setEmail(ab);
+    let ab :any  = copyListItems?.map((val: any) => val.Email).join(",");
+    const emailStringWithoutSpaces : any = ab.replace(/\s/g, '');
+    setEmail(emailStringWithoutSpaces);
     setAllEmployeeData(Groups);
     setTeamMembers(uniqueAuthors);
     // rerender()
@@ -144,7 +146,8 @@ function ShowTeamMembers(item: any) {
     setTeamMembers(copyListItems);
     setAllEmployeeData(copyListItems1);
     let ab = copyListItems?.map((val: any) => val.Email).join(",");
-    setEmail(ab);
+    const emailStringWithoutSpaces : any = ab.replace(/\s/g, '');
+    setEmail(emailStringWithoutSpaces);
   };
 
   const drop1 = (e: any) => {
@@ -161,7 +164,8 @@ function ShowTeamMembers(item: any) {
     setTeamMembers(copyListItems);
     setAllEmployeeData(copyListItems1);
     let ab = copyListItems?.map((val: any) => val.Email).join(",");
-    setEmail(ab);
+    const emailStringWithoutSpaces : any = ab.replace(/\s/g, '');
+    setEmail(emailStringWithoutSpaces);
   };
 
 
@@ -197,6 +201,7 @@ function ShowTeamMembers(item: any) {
       >
         <Modal.Header >
           <Modal.Title>Team Members</Modal.Title>
+          <span><Tooltip ComponentId='1740'/></span>
           <span onClick={() => { setShow(false); item?.callBack() }}><i className="svg__iconbox svg__icon--cross crossBtn"></i></span>
         </Modal.Header>
         <Modal.Body>
@@ -224,7 +229,9 @@ function ShowTeamMembers(item: any) {
                                   <span
 
                                   >
-                                    <img
+                                    {
+                                      childItem?.Item_x0020_Cover?.Url != undefined ? 
+                                      <img
                                       onDragStart={(e) =>
                                         dragStart(e, index, indexes)
                                       }
@@ -235,7 +242,14 @@ function ShowTeamMembers(item: any) {
                                       className="ProirityAssignedUserPhoto"
                                       title={childItem?.Title}
                                       src={childItem?.Item_x0020_Cover?.Url}
-                                    />
+                                    /> : <span onDragStart={(e) =>
+                                      dragStart(e, index, indexes)
+                                    }
+                                    onDragOver={(e) => e.preventDefault()}
+
+                                    key={index} className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{childItem?.Suffix}</span>
+                                    }
+                                   
                                   </span>
                                 ) : (
                                   ""
@@ -244,7 +258,9 @@ function ShowTeamMembers(item: any) {
                                   <span
 
                                   >
-                                    <img
+                                     {
+                                      childItem?.Item_x0020_Cover?.Url != undefined ? 
+                                      <img
                                       onDragStart={(e) =>
                                         dragStart(e, index, indexes)
                                       }
@@ -255,7 +271,14 @@ function ShowTeamMembers(item: any) {
                                       className="ProirityAssignedUserPhoto"
                                       title={childItem?.Title}
                                       src={childItem?.Item_x0020_Cover?.Url}
-                                    />
+                                    /> : <span onDragStart={(e) =>
+                                      dragStart(e, index, indexes)
+                                    }
+                                    onDragOver={(e) => e.preventDefault()}
+
+                                    key={index} className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{childItem?.Suffix}</span>
+                                    }
+                                   
                                   </span>
                                 ) : (
                                   ""
@@ -264,7 +287,9 @@ function ShowTeamMembers(item: any) {
                                   <span
 
                                   >
-                                    <img
+                                    {
+                                      childItem?.Item_x0020_Cover?.Url != undefined ? 
+                                      <img
                                       onDragStart={(e) =>
                                         dragStart(e, index, indexes)
                                       }
@@ -275,7 +300,13 @@ function ShowTeamMembers(item: any) {
                                       className="ProirityAssignedUserPhoto"
                                       title={childItem?.Title}
                                       src={childItem?.Item_x0020_Cover?.Url}
-                                    />
+                                    /> : <span onDragStart={(e) =>
+                                      dragStart(e, index, indexes)
+                                    }
+                                    onDragOver={(e) => e.preventDefault()}
+
+                                    key={index} className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{childItem?.Suffix}</span>
+                                    }
                                   </span>
                                 ) : (
                                   ""
@@ -284,7 +315,9 @@ function ShowTeamMembers(item: any) {
                                   <span
 
                                   >
-                                    <img
+                                     {
+                                      childItem?.Item_x0020_Cover?.Url != undefined ? 
+                                      <img
                                       onDragStart={(e) =>
                                         dragStart(e, index, indexes)
                                       }
@@ -295,7 +328,13 @@ function ShowTeamMembers(item: any) {
                                       className="ProirityAssignedUserPhoto"
                                       title={childItem?.Title}
                                       src={childItem?.Item_x0020_Cover?.Url}
-                                    />
+                                    /> : <span onDragStart={(e) =>
+                                      dragStart(e, index, indexes)
+                                    }
+                                    onDragOver={(e) => e.preventDefault()}
+
+                                    key={index} className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{childItem?.Suffix}</span>
+                                    }
                                   </span>
                                 ) : (
                                   ""
@@ -304,7 +343,9 @@ function ShowTeamMembers(item: any) {
                                   <span
 
                                   >
-                                    <img
+                                     {
+                                      childItem?.Item_x0020_Cover?.Url != undefined ? 
+                                      <img
                                       onDragStart={(e) =>
                                         dragStart(e, index, indexes)
                                       }
@@ -315,7 +356,13 @@ function ShowTeamMembers(item: any) {
                                       className="ProirityAssignedUserPhoto"
                                       title={childItem?.Title}
                                       src={childItem?.Item_x0020_Cover?.Url}
-                                    />
+                                    /> : <span onDragStart={(e) =>
+                                      dragStart(e, index, indexes)
+                                    }
+                                    onDragOver={(e) => e.preventDefault()}
+
+                                    key={index} className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{childItem?.Suffix}</span>
+                                    }
                                   </span>
                                 ) : (
                                   ""
@@ -324,7 +371,9 @@ function ShowTeamMembers(item: any) {
                                   <span
 
                                   >
-                                    <img
+                                     {
+                                      childItem?.Item_x0020_Cover?.Url != undefined ? 
+                                      <img
                                       onDragStart={(e) =>
                                         dragStart(e, index, indexes)
                                       }
@@ -335,7 +384,13 @@ function ShowTeamMembers(item: any) {
                                       className="ProirityAssignedUserPhoto"
                                       title={childItem?.Title}
                                       src={childItem?.Item_x0020_Cover?.Url}
-                                    />
+                                    /> : <span onDragStart={(e) =>
+                                      dragStart(e, index, indexes)
+                                    }
+                                    onDragOver={(e) => e.preventDefault()}
+
+                                    key={index} className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{childItem?.Suffix}</span>
+                                    }
                                   </span>
                                 ) : (
                                   ""
@@ -344,7 +399,9 @@ function ShowTeamMembers(item: any) {
                                   <span
 
                                   >
-                                    <img
+                                    {
+                                      childItem?.Item_x0020_Cover?.Url != undefined ? 
+                                      <img
                                       onDragStart={(e) =>
                                         dragStart(e, index, indexes)
                                       }
@@ -355,7 +412,13 @@ function ShowTeamMembers(item: any) {
                                       className="ProirityAssignedUserPhoto"
                                       title={childItem?.Title}
                                       src={childItem?.Item_x0020_Cover?.Url}
-                                    />
+                                    /> : <span onDragStart={(e) =>
+                                      dragStart(e, index, indexes)
+                                    }
+                                    onDragOver={(e) => e.preventDefault()}
+
+                                    key={index} className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{childItem?.Suffix}</span>
+                                    }
                                   </span>
                                 ) : (
                                   ""
@@ -364,7 +427,9 @@ function ShowTeamMembers(item: any) {
                                   <span
 
                                   >
-                                    <img
+                                     {
+                                      childItem?.Item_x0020_Cover?.Url != undefined ? 
+                                      <img
                                       onDragStart={(e) =>
                                         dragStart(e, index, indexes)
                                       }
@@ -375,7 +440,13 @@ function ShowTeamMembers(item: any) {
                                       className="ProirityAssignedUserPhoto"
                                       title={childItem?.Title}
                                       src={childItem?.Item_x0020_Cover?.Url}
-                                    />
+                                    /> : <span onDragStart={(e) =>
+                                      dragStart(e, index, indexes)
+                                    }
+                                    onDragOver={(e) => e.preventDefault()}
+
+                                    key={index} className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{childItem?.Suffix}</span>
+                                    }
                                   </span>
                                 ) : (
                                   ""
@@ -403,14 +474,17 @@ function ShowTeamMembers(item: any) {
                             key={index}
                             draggable
                           >
-                            <img
+                            {
+                              items?.Item_x0020_Cover?.Url != undefined ? <img
                               className="me-1"
                               title={items?.Title}
                               style={{ borderRadius: "20px" }}
                               height={"35px"}
                               width={"35px"}
                               src={items?.Item_x0020_Cover?.Url}
-                            />
+                            /> : <span className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{items?.Suffix}</span>
+                            }
+                            
                           </span>
                         </>
                       )
@@ -437,7 +511,7 @@ function ShowTeamMembers(item: any) {
           <a className="btn btn-primary"
             href={`https://teams.microsoft.com/l/chat/0/0?users=${email}`}
             target="_blank"
-            onClick={() => { setShow(false); item?.callBack() }}
+            onClick={() => {setShow(false); item?.callBack() }}
           >
             Create
           </a>
