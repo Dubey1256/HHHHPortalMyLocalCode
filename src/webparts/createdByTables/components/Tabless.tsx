@@ -46,6 +46,7 @@ const Tabless = (props: any) => {
     };
     let allData: any = [];
     let userlists: any = [];
+    let masterTasks: any = [];
     let QueryId: any;
     let dataLength: any = [];
     let priorAndPercen: any = [];
@@ -56,6 +57,7 @@ const Tabless = (props: any) => {
     let excelSelct:any = [{item:'Task ID',value:'siteType'}, {item:'Category Item',value:'Categories'},{item:'Priority',value:'priority'}, {item:"Modified",value:'newModified'},{item:"Usertitle",value:'Editorss'},{item:"Title",value:'Title'},{item:"Percent Complete",value:'percentage'},{item:"Due Date",value:"newDueDate"},{item:"Created",value:'newCreated'}, {item:"URL",value:'Urlss'}]
     // let [clearFiltering, setClearFiltering]: any = {due: "",modify: "",created: "",priority: "",percentage: "",catogries: ""};
     const [result, setResult]: any = React.useState(false);
+    // const [masterTasks, setMasterTasks]: any = React.useState([]);
     const [editPopup, setEditPopup]: any = React.useState(false);
     const [queryId, setQueryId]: any = React.useState([]);
     const [data, setData]: any = React.useState([]);
@@ -64,7 +66,6 @@ const Tabless = (props: any) => {
     const [catogries, setCatogries]: any = React.useState([]);
     const [filterCatogries, setFilterCatogries]: any = React.useState([]);
     const [allLists, setAllLists]: any = React.useState([]);
-    const [checkComSer, setCheckComSer]: any = React.useState({component: "",services: "",});
     const [tablecontiner, settablecontiner]: any = React.useState("hundred");
     const [checkPercentages, setCheckPercentage]: any = React.useState([]);
     const [checkTeamMembers, setCheckTeamMembers]: any = React.useState([]);
@@ -82,28 +83,39 @@ const Tabless = (props: any) => {
 
     const columns = React.useMemo(
         () => [
+          {
+            cell: ({ row, getValue }:any) => (
+            
+              <span><img style={{ width: "25px", height: '25px', borderRadius: '20px' }} src={row?.original?.siteIcon} /></span>
+          
+            ),
+            id: "Id",
+            accessorKey: "",
+            placeholder: "",
+            header: "",
+            resetColumnFilters: false,
+            size: 40,
+           },
             {
-              accessorFn: (row:any) => row?.idType,
               cell: ({ row, getValue }:any) => (
-                <div>
-                <span><img style={{ width: "25px", height: '25px', borderRadius: '20px' }} src={row?.original?.siteIcon} /></span>
-                <span className={row.original.Services.length >= 1 && 'text-success'}>{row?.original?.idType}</span>
-            </div>
+         
+                <span style={{color:`${row?.original?.PortfolioType?.Color}`}}>{row?.original?.idType}</span>
+        
               ),
               id: "idType",
+              accessorKey: "",
               placeholder: "Task ID",
               header: "",
               resetColumnFilters: false,
-              size: 70,
+              size: 40,
              },
             {
 
               accessorFn: (row:any) => row?.Title,
               cell: ({ row, getValue }:any) => (
                 <div>
-                {/* <a className={row.original.Services.length >= 1 && 'text-success'} style={{textDecoration:'none',cursor:'pointer'}} target="_blank" href={`${props.Items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.site}`}>{row?.original?.Title}</a> */}
                 <a
-                className={row.original.Services.length >= 1 && 'text-success'} style={{textDecoration:'none',cursor:'pointer'}}
+                 style={{textDecoration:'none',cursor:'pointer',color:`${row?.original?.PortfolioType?.Color}`}}
 href={`${props.Items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.site}`}
 rel='noopener noreferrer'
 onClick={(e:any) => {
@@ -127,7 +139,7 @@ onClick={(e:any) => {
               accessorFn: (row:any) => row?.Categories,
               cell: ({ row, getValue }:any) => (
                 <div>
-                <span className={row.original.Services.length >= 1 && 'text-success'}>{row?.original?.Categories}</span>
+                <span style={{color:`${row?.original?.PortfolioType?.Color}`}}>{row?.original?.Categories}</span>
             </div>
               ),
               id: "Categories",
@@ -142,7 +154,7 @@ onClick={(e:any) => {
               accessorFn: (row:any) => row?.percentage,
               cell: ({ row, getValue }:any) => (
                 <div>
-                <span className={row.original.Services.length >= 1 && 'text-success'}>{row?.original?.percentage}</span>
+                <span style={{color:`${row?.original?.PortfolioType?.Color}`}}>{row?.original?.percentage}</span>
             </div>
               ),
               id: "percentage",
@@ -155,7 +167,7 @@ onClick={(e:any) => {
               accessorFn: (row:any) => row?.Priority,
               cell: ({ row, getValue }:any) => (
                 <div>
-                        <span className={row.original.Services.length >= 1 && 'text-success'}>{row?.original?.priority}</span>
+                        <span style={{color:`${row?.original?.PortfolioType?.Color}`}}>{row?.original?.priority}</span>
                     </div>
               ),
               id: "Priority",
@@ -169,7 +181,7 @@ onClick={(e:any) => {
               accessorFn: (row:any) => row?.dueDate,
               cell: ({ row, getValue }:any) => (
                 <div>
-                <div className={row.original.Services.length >= 1 && 'text-success'}>{row?.original?.newDueDate}</div>
+                <div style={{color:`${row?.original?.PortfolioType?.Color}`}}>{row?.original?.newDueDate}</div>
             </div>
               ),
               id: "dueDate",
@@ -185,7 +197,7 @@ onClick={(e:any) => {
               accessorFn: (row:any) => row?.modified,
               cell: ({ row, getValue }:any) => (
                 <div>
-                <a style={{textDecoration:'none',cursor:'pointer'}} className={row.original.Services.length >= 1 && 'text-success'} target='_blank' href={`${props.Items.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}>
+                <a style={{textDecoration:'none',cursor:'pointer',color:`${row?.original?.PortfolioType?.Color}`}} target='_blank' href={`${props.Items.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}>
                 {row?.original?.newModified}
                 <span><img style={{ width: "25px", height: '25px', borderRadius: '20px' }} src={row?.original?.editorImg} /></span>
                 </a>
@@ -202,7 +214,7 @@ onClick={(e:any) => {
               accessorFn: (row:any) => row?.created,
               cell: ({ row, getValue }:any) => (
                 <div>
-                <a style={{textDecoration:'none',cursor:'pointer'}} className={row.original.Services.length >= 1 && 'text-success'} target='_blank' href={`${props.Items.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}>
+                <a style={{textDecoration:'none',cursor:'pointer' , color:`${row?.original?.PortfolioType?.Color}`}} target='_blank' href={`${props.Items.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}>
                 {row?.original?.newCreated}
                 <span><img style={{ width: "25px", height: '25px', borderRadius: '20px' }} src={row?.original?.authorImg} /></span>
                 </a>
@@ -236,6 +248,8 @@ onClick={(e:any) => {
             </span>
               ),
               id: "ID",
+              placeholder: "",
+              header: "",
               resetColumnFilters: false,
               size: 60,
             },
@@ -243,6 +257,7 @@ onClick={(e:any) => {
         [data]
     );
 
+    
 
     const deleteItemFunction = async (item: any) => {
       let confirmation = confirm("Are you sure you want to delete this task ?");
@@ -824,9 +839,9 @@ onClick={(e:any) => {
     const smartMetaData = async () => {
       let categories: any = [];
       let sites: any = [];
-      const web = new Web(props.Items.siteUrl);
+      const web = new Web(props?.Items?.siteUrl);
       await web.lists
-        .getById(props.Items.SmartMetadataListID)
+        .getById(props?.Items?.SmartMetadataListID)
         .items.select("Configurations", "ID", "Title", "TaxType", "listId")
         .filter("TaxType eq 'Sites' or TaxType eq 'Categories'")
         .getAll()
@@ -871,12 +886,43 @@ onClick={(e:any) => {
       console.log(query); //"app=article&act=news_content&aid=160990"
     };
 
+
+    const getMasterTask=async ()=>{
+      let web = new Web(props.Items.siteUrl);
+          await web.lists
+          .getById(props.Items.MasterTaskListID)
+          .items
+          .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID","StructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title",
+              "DueDate", "Body", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
+              "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete",
+              "ResponsibleTeam/Id", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id",
+          )
+          .expand(
+              "Parent", "PortfolioType", "AssignedTo", "ClientCategory", "TeamMembers", "ResponsibleTeam"
+          )
+          .top(4999)
+          .get().then((data:any)=>{
+            masterTasks = data;
+            // let array :any = [];
+            // data.map((items:any)=>{
+            //   if(items?.PortfolioType?.Title == 'Service'){
+            //      array.push(items);
+            //   }
+            // })
+            // masterTasks = array ;
+            getTaskUserData();
+         }).catch((err:any)=>{
+                console.log(err);
+          })
+    }
+
+
     const getAllData = async (items: any) => {
         const web = new Web(items.siteUrl);
         await web.lists
             .getById(items.listId)
-            .items.select("Title","PercentComplete","SharewebTaskType/Title","SharewebTaskType/Id","Categories","Priority_x0020_Rank","DueDate","Created","Modified","Component/Title","Component/Id","Services/Title","Services/Id","Team_x0020_Members/Id","Team_x0020_Members/Title","ID","Responsible_x0020_Team/Id","Responsible_x0020_Team/Title","Editor/Title","Editor/Id","Author/Title","Author/Id","AssignedTo/Id","AssignedTo/Title")
-            .expand("Team_x0020_Members","Author","SharewebTaskType","Editor","Responsible_x0020_Team","AssignedTo","Component","Services")
+            .items.select("Title","PercentComplete","SharewebTaskType/Title","TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title","Categories","Priority_x0020_Rank","DueDate","Created","Modified","Team_x0020_Members/Id","Team_x0020_Members/Title","ID","Responsible_x0020_Team/Id","Responsible_x0020_Team/Title","Editor/Title","Editor/Id","Author/Title","Author/Id","AssignedTo/Id","AssignedTo/Title")
+            .expand("Team_x0020_Members","Author","PortfolioType", "Portfolio", "TaskType","SharewebTaskType","Editor","Responsible_x0020_Team","AssignedTo")
             .filter(`(substringof('${QueryId}', Author/Title)) and PercentComplete le 0.96`).top(5000)
             .getAll()
             .then((data: any) => {
@@ -884,17 +930,17 @@ onClick={(e:any) => {
                     userlists?.map((userItem: any) => {
                         dataItem.percentage = dataItem.PercentComplete * 100 + "%";
             
-                        if ((dataItem.SharewebTaskType == undefined  ? null  : dataItem.SharewebTaskType.Title) === "Activities") {
+                        if ((dataItem.TaskType == undefined  ? null  : dataItem.TaskType.Title) === "Activities") {
                           dataItem.idType = "A" + dataItem.Id;
-                        } else if ((dataItem.SharewebTaskType == undefined  ? null  : dataItem.SharewebTaskType.Title) === "MileStone") {
+                        } else if ((dataItem.TaskType == undefined  ? null  : dataItem.TaskType.Title) === "MileStone") {
                           dataItem.idType = "M" + dataItem.Id;
-                        } else if ((dataItem.SharewebTaskType == undefined  ? null  : dataItem.SharewebTaskType.Title) === "Project") {
+                        } else if ((dataItem.TaskType == undefined  ? null  : dataItem.TaskType.Title) === "Project") {
                           dataItem.idType = "P" + dataItem.Id;
-                        } else if ((dataItem.SharewebTaskType == undefined  ? null  : dataItem.SharewebTaskType.Title) === "Step") {
+                        } else if ((dataItem.TaskType == undefined  ? null  : dataItem.TaskType.Title) === "Step") {
                           dataItem.idType = "S" + dataItem.Id;
-                        } else if ((dataItem.SharewebTaskType == undefined  ? null  : dataItem.SharewebTaskType.Title) === "Task") {
+                        } else if ((dataItem.TaskType == undefined  ? null  : dataItem.TaskType.Title) === "Task") {
                           dataItem.idType = "T" + dataItem.Id;
-                        } else if ((dataItem.SharewebTaskType == undefined  ? null  : dataItem.SharewebTaskType.Title) === "Workstream") {
+                        } else if ((dataItem.TaskType == undefined  ? null  : dataItem.TaskType.Title) === "Workstream") {
                           dataItem.idType = "W" + dataItem.Id;
                         } else {
                           dataItem.idType = "T" + dataItem.Id;
@@ -912,6 +958,17 @@ onClick={(e:any) => {
                             dataItem.EditorImg = userItem?.Item_x0020_Cover?.Url;
                         }
                     });
+                    
+                    const matchingTask = masterTasks?.find((task:any) => dataItem?.Portfolio?.Id === task?.Id);
+                      if (matchingTask) {
+                                 dataItem.PortfolioType = matchingTask.PortfolioType;
+                                 }
+
+                    // masterTasks?.map((tasks:any)=>{
+                    //   if(dataItem.Portfolio.Id === tasks.Id){
+                    //          dataItem.PortfolioType = tasks.PortfolioType;
+                    //   }
+                    // })
 
                     allData.push({
                         idType: dataItem.idType,
@@ -937,8 +994,7 @@ onClick={(e:any) => {
                         created: dataItem.Created,
                         modified: dataItem.Modified,
                         dueDate: dataItem.DueDate,
-                        Component:dataItem.Component,
-                        Services:dataItem.Services,
+                        PortfolioType:dataItem.PortfolioType,
                         listId:items.listId,
                         site:items.siteName,
                         siteType:items.siteName,
@@ -980,10 +1036,10 @@ onClick={(e:any) => {
       }
 
 
-      if(priorAndPercen.includes('Component') && priorAndPercen.includes('Services')){
+      if(priorAndPercen.includes('Component') && priorAndPercen.includes('Service')){
         let array: any = [];
         data1?.map((item: any) => {
-          if (item.Component.length >= 1 || item.Services.length >= 1) {
+          if (item?.PortfolioType?.Title == "Component" || item?.PortfolioType?.Title == "Service") {
             array.push(item);
           }
         });
@@ -991,16 +1047,16 @@ onClick={(e:any) => {
       }else if(priorAndPercen.includes('Component')){
         let array: any = [];
           data1?.map((item: any) => {
-            if (item.Component.length >= 1) {
+            if (item?.PortfolioType?.Title == "Component") {
               array.push(item);
             }
           });
           setData(array);
-      }else if(priorAndPercen.includes('Services')){
+      }else if(priorAndPercen.includes('Service')){
         let array: any = [];
           data1?.map((item: any) => {  
             
-            if (item.Services.length >= 1) {
+            if (item?.PortfolioType?.Title == "Service") {
               array.push(item);
             }
           });
@@ -1054,7 +1110,7 @@ const excelSelectFunc=(e:any)=>{
 }
 
     React.useEffect(() => {
-        getTaskUserData();
+     getMasterTask();
        }, []);
    
        const openInNewTab = (url:any) => {
@@ -1094,7 +1150,7 @@ const excelSelectFunc=(e:any)=>{
             <span className='leftsec'> <span className='me-1'>Showing {data.length} of {copyData1.length >= 1 ? copyData1.length : copyData.length} Tasks </span><span> <input value={globalFilter || ''} onChange={(e:any)=>setGlobalFilter(e.target.value)} placeholder='Search in all tasks' /></span> </span> 
             <span className='toolbox'>
             <input className='me-1' type="checkbox" value={'Component'} onChange={(e:any)=>filterCom(e)} /> <label className='me-2'>Component</label>
-                        <input className='me-1' type="checkbox" value={'Services'} onChange={(e:any)=>filterCom(e)} /> <label className='me-2'>Services</label>
+                        <input className='me-1' type="checkbox" value={'Service'} onChange={(e:any)=>filterCom(e)} /> <label className='me-2'>Service</label>
                         <a onClick={clearAllFilters} className='brush'>
                             <FaPaintBrush/>
                         </a>
