@@ -55,8 +55,6 @@ let defaultfile = [];
 let AllMatsterAndTaskData: any = []
 
 const CreateActivity = (props: any) => {
-    // AllMatsterAndTaskData = [...props?.AllMasterTasks];
-    // AllMatsterAndTaskData = AllMatsterAndTaskData?.concat(props?.LoadAllSiteTasks);
     if (props.SelectedProp != undefined && props.SelectedProp.SelectedProp != undefined) {
         dynamicList = props.SelectedProp.SelectedProp;
     } else {
@@ -66,9 +64,6 @@ const CreateActivity = (props: any) => {
         //props.props.DueDate =  Moment(props.props.DueDate).format('DD/MM/YYYY
         AllItems = { ...props?.props };
         SelectedTasks.push(AllItems)
-        if (AllItems?.Services != undefined && AllItems?.Services?.length > 0) {
-            portfolioId = AllItems.Services[0].Id
-        }
 
         console.log(props)
     }
@@ -160,49 +155,7 @@ const CreateActivity = (props: any) => {
             }
 
         }
-        // if (AllItems?.ClientCategory2 != undefined && AllItems?.ClientCategory2.results?.length > 0) {
-        //     AllItems.ClientCategory2.results.forEach((value: any) => {
-        //         ClientCategoriesData.push(value)
-        //     })
-        // }
-        // if (AllItems?.Portfolio_x0020_Type != undefined) {
-        //     if (AllItems?.Portfolio_x0020_Type == 'Component' || (AllItems.Component != undefined && AllItems.Component.length > 0)) {
-        //         smartComponentData.push(AllItems);
-        //     }
-        //     smartComponentData = smartComponentData?.filter((val: any, id: any, array: any) => {
-        //         return array.indexOf(val) == id;
-        //     })
-
-        //     if (AllItems?.Portfolio_x0020_Type?.toLowerCase() == 'service' || (AllItems.Service != undefined && AllItems.Service.length > 0)) {
-        //         linkedComponentData.push(AllItems);
-        //     }
-        //     linkedComponentData = linkedComponentData?.filter((val: any, id: any, array: any) => {
-        //         return array.indexOf(val) == id;
-        //     })
-
-        //     linkedComponentData = linkedComponentData?.filter((val: any, id: any, array: any) => {
-        //         return array.indexOf(val) == id;
-        //     })
-        //     smartComponentData = smartComponentData?.filter((val: any, id: any, array: any) => {
-        //         return array.indexOf(val) == id;
-        //     })
-        // }
-        // if (AllItems?.Portfolio_x0020_Type == undefined) {
-        //     if (AllItems?.Component != undefined && AllItems?.Component?.length > 0) {
-        //         smartComponentData.push(AllItems);
-        //     }
-
-        //     if (AllItems?.Services != undefined && AllItems?.Services?.length > 0) {
-        //         linkedComponentData.push(AllItems);
-        //     }
-        //     linkedComponentData = linkedComponentData?.filter((val: any, id: any, array: any) => {
-        //         return array.indexOf(val) == id;
-        //     })
-        //     smartComponentData = smartComponentData?.filter((val: any, id: any, array: any) => {
-        //         return array.indexOf(val) == id;
-        //     })
-
-        // }
+        
         GetSmartMetadata();
     }, [])
 
@@ -211,7 +164,7 @@ const CreateActivity = (props: any) => {
         var Data: any = []
         AllMatsterAndTaskData?.forEach((val: any) => {
 
-            if (row?.Services != undefined && row?.Services?.length > 0 && val.Id === row?.Services[0]?.Id) {
+            if (row?.Portfolio != undefined  && val.Id === row?.Portfolio?.Id) {
                 val.subRows = []
                 Data = val.subRows.push(val);
                 return getTooltiphierarchyWithoutGroupByTable(val);
@@ -353,15 +306,7 @@ const CreateActivity = (props: any) => {
 
         }
        
-        // else if (AllItems != undefined && AllItems.Sitestaggingbackup != undefined && AllItems.Sitestaggingbackup.length === 0) {
-        //     SiteTypeBackupArray.forEach((site: any) => {
-
-        //         if (site.Title != undefined && site.Title === 'HHHH')
-
-        //             setActiveTile("siteType", "siteType", site)
-
-        //     })
-        // }
+     
 
 
     }
@@ -434,10 +379,12 @@ const CreateActivity = (props: any) => {
         setIsComponentPicker(false);
         setIsComponent(false);
         setIsClientPopup(false);
-        if (type == "SmartComponent") {
+        if (type == "SmartComponent"  || type == "LinkedComponent" || type == "Service") {
             var ComponentData: any = []
             if (AllItems != undefined && item1 != undefined) {
                 AllItems.smartComponent = item1.smartComponent;
+                portFolioTypeId = props?.props?.portfolioTypeData?.filter((elem: any) => elem?.Id === item1[0]?.PortfolioType?.Id)
+                portFolio = item1[0]?.Id
                 item1.smartComponent.forEach((val: any) => {
                     ComponentData.push(val)
                 })
@@ -497,24 +444,24 @@ const CreateActivity = (props: any) => {
 
             }
         }
-        if (type == "LinkedComponent") {
-            let ServiceData: any = []
-            if (item1?.linkedComponent?.length > 0) {
-                // Item.props.linkedComponent = item1.linkedComponent;
-                // setEditData({ ...EditData, RelevantPortfolio: propsItems.linkedComponent })
-                item1.linkedComponent.forEach((val: any) => {
-                    ServiceData.push(val)
-                })
-                setLinkedComponentData(ServiceData);
-                console.log("Popup component linkedComponent", item1.linkedComponent)
-            }
-        }
-        if (type == "Service") {
+        // if (type == "LinkedComponent") {
+        //     let ServiceData: any = []
+        //     if (item1?.linkedComponent?.length > 0) {
+        //         // Item.props.linkedComponent = item1.linkedComponent;
+        //         // setEditData({ ...EditData, RelevantPortfolio: propsItems.linkedComponent })
+        //         item1.linkedComponent.forEach((val: any) => {
+        //             ServiceData.push(val)
+        //         })
+        //         setLinkedComponentData(ServiceData);
+        //         console.log("Popup component linkedComponent", item1.linkedComponent)
+        //     }
+        // }
+        // if (type == "Service") {
 
 
-            setSmartComponentData(item1);
-            console.log("Popup component taskfootertable", item1)
-        }
+        //     setSmartComponentData(item1);
+        //     console.log("Popup component taskfootertable", item1)
+        // }
 
 
         if (CategoriesData != undefined) {
@@ -832,51 +779,7 @@ const CreateActivity = (props: any) => {
             if (smartComponentData != undefined && smartComponentData.length > 0) {
 
             }
-            smartComponentData?.forEach((com: any) => {
-                if (smartComponentData[0] != undefined && smartComponentData[0].TaskType != undefined && smartComponentData[0].TaskType.Title == 'Workstream') {
-                    $.each(com.Component, function (index: any, smart: any) {
-                        Component.push(smart.Id)
-                    })
-                }
-            })
-            var RelevantPortfolioIds: any = []
-            var Component: any = []
-            smartComponentData?.forEach((com: any) => {
-                if (smartComponentData[0] != undefined && smartComponentData[0].TaskType != undefined && smartComponentData[0].TaskType.Title == 'Workstream') {
-                    $.each(com.Component, function (index: any, smart: any) {
-                        Component.push(smart.Id)
-                    })
-                }
-                else {
-
-                    if (com != undefined) {
-                        Component.push(com.Id)
-                    }
-                }
-
-            })
-            if (linkedComponentData.length == 0) {
-                if (portfolioId != '') {
-                    RelevantPortfolioIds.push(portfolioId)
-                }
-
-            }
-            if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
-                linkedComponentData?.map((com: any) => {
-                    if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
-                        if (linkedComponentData[0] != undefined && linkedComponentData[0].TaskType != undefined && linkedComponentData[0].TaskType.Title == 'Workstream' || linkedComponentData[0].TaskType == 'Workstream') {
-                            $.each(com.Services, function (index: any, smart: any) {
-                                RelevantPortfolioIds.push(smart.Id)
-                            })
-                        }
-                        else {
-                            $.each(linkedComponentData, function (index: any, smart: any) {
-                                RelevantPortfolioIds.push(smart.Id)
-                            })
-                        }
-                    }
-                })
-            }
+             
             var categoriesItem = '';
             CategoriesData.map((category:any) => {
                 if (category.Title != undefined) {
@@ -968,27 +871,7 @@ const CreateActivity = (props: any) => {
                           TaskID =  'A' + LatestId 
                      
 
-                        // AllItems?.subRows?.forEach((vall: any) => {
-                        //     if (vall?.TaskType?.Title == 'Activities' || vall?.TaskType?.Title == 'Activities') {
-                        //         LetestLevelData.push(vall)
-                        //     }
-
-                        // })
-                        // if (LetestLevelData.length == 0) {
-                        //     Tasklevel = 1
-                        //     TaskID = props?.props?.PortfolioStructureID + '-A' + Tasklevel 
-                        // }
-                        // else {
-                        //     Tasklevel = LetestLevelData.length + 1
-                        //     TaskID = props?.props?.PortfolioStructureID + '-A' + Tasklevel 
-                        // }
-
-                        // if (AllItems.Title == undefined) {
-                        //     alert("Enter The Task Name");
-                        // }
-                        // else if (AllItems?.SiteListItem == undefined) {
-                        //     alert("Select Task List.");
-                        // }
+                       
                         if (value.selectSiteName == true) {
                             var Title = save.Title != undefined && save.Title != '' ? save.Title + value.Title : post.Title + value.Title
                             save.Title = ''
@@ -1003,45 +886,16 @@ const CreateActivity = (props: any) => {
                         if (TaskprofileId == '' || SelectedTasks.length > 0) {
                             TaskprofileId = SelectedTasks[0].Id;
                         }
-                        if (SharewebTasknewTypeId == 2 || SharewebTasknewTypeId == 6) {
-
-
-                            if (Task?.Portfolio_x0020_Type != undefined && Task?.Portfolio_x0020_Type == 'Component' || Task?.Component != undefined && Task?.Component?.length > 0 && AllItems.TaskLevel != undefined) {
-                                SharewebID = 'A' + AllItems.TaskLevel + '-T' + LatestId;
-                            }
-                            if (Task?.Services != undefined && Task?.Portfolio_x0020_Type == 'Service' || Task?.Services != undefined && Task?.Services?.length > 0 && AllItems.TaskLevel != undefined) {
-                                SharewebID = 'SA' + AllItems.TaskLevel + '-T' + LatestId;
-                            }
-                            if ((Task?.Services != undefined && Task?.Portfolio_x0020_Type == 'Service') || (Task?.Services != undefined && Task?.Services?.length > 0) && (Task.TaskType.Title == "Workstream" || Task.TaskType == 'Workstream')) {
-                                SharewebID = 'SA' + AllItems.TaskLevel + '-W' + WorstreamLatestId + '-T' + LatestId;
-                            }
-
-                            if (Task?.Events != undefined && Task?.Portfolio_x0020_Type == 'Events') {
-                                SharewebID = 'EA' + AllItems?.TaskLevel + '-T' + LatestId;
-                            }
-                            if (AllItems.TaskLevel == undefined && Task?.Portfolio_x0020_Type.toLowerCase() == 'service') {
-                                SharewebID = 'SA' + LatestId;
-                            }
-                            if (AllItems.TaskLevel == undefined && Task?.Portfolio_x0020_Type == 'Component') {
-                                SharewebID = 'CA' + LatestId;
-                            }
-                        }
-                        else {
-                            SharewebID = 'A' + LatestId;
-                            SharewebTasknewTypeId = 2;
-                            WorstreamLatestId = undefined;
-                        }
+                       
                         var MyTaskID = TaskID + LatestId;
 
                         await web.lists.getById(value.listId).items.add({
                             Title: Title != undefined && Title != '' ? Title : post.Title,
-                            ComponentId: { "results": Component },
                             Categories: categoriesItem ? categoriesItem : null,
                             //DueDate: date != undefined ? new Date(date).toDateString() : date,
                             DueDate: date != undefined ? Moment(date).format("MM-DD-YYYY") : null,
                             SharewebCategoriesId: { "results": CategoryID },
                             ClientCategoryId: { "results": ClientCategory },
-                            ServicesId: { "results": RelevantPortfolioIds },
                             PortfolioId: portFolio,
                             PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
                             TaskTypeId: 1,
@@ -1207,50 +1061,17 @@ const CreateActivity = (props: any) => {
                             TaskprofileId = SelectedTasks[0].Id;
                         }
                         
-                        if (SharewebTasknewTypeId == 2 || SharewebTasknewTypeId == 6) {
-                            var SharewebID = '';
-                            if (Task?.Portfolio_x0020_Type != undefined && Task?.Portfolio_x0020_Type == 'Component' || Task?.Component != undefined && Task?.Component?.length > 0) {
-                                SharewebID = 'A' + AllItems.TaskLevel + '-W' + WorstreamLatestId + '-T' + LatestId;
-                            }
-                            if (Task?.Services != undefined && Task?.Portfolio_x0020_Type?.toLowerCase() == 'service' || Task?.Services != undefined && Task?.Services?.length > 0) {
-                                SharewebID = 'SA' + AllItems.TaskLevel + '-T' + LatestId;
-                            }
-                            if ((Task?.Services != undefined && Task?.Services?.length > 0) && (Task?.TaskType?.Title == "Workstream" || Task?.TaskType == 'Workstream')) {
-                                SharewebID = 'SA' + AllItems.TaskLevel + '-W' + WorstreamLatestId + '-T' + LatestId;
-                            }
-                            if ((Task?.Services == undefined) && (Task?.TaskType?.Title == "Workstream" || Task?.TaskType == 'Workstream')) {
-                                SharewebID = 'SA' + AllItems.TaskLevel + '-W' + WorstreamLatestId + '-T' + LatestId;
-                            }
-
-                            if (Task?.Events != undefined && Task?.Portfolio_x0020_Type == 'Events') {
-                                SharewebID = 'EA' + AllItems?.TaskLevel + '-T' + LatestId;
-                            }
-                            if (AllItems.TaskLevel == undefined) {
-                                WorstreamLatestId = AllItems?.TaskLevel;
-                            }
-                        } else { SharewebID = 'A' + AllItems.Id; SharewebTasknewTypeId = 2; WorstreamLatestId = undefined; }
-                        // var Portfolio: any = []
-                        // var PortfolioType: any = []
-                        // if (Component != undefined && Component.length > 0) {
-                        //     Portfolio.push(Component[0])
-                        //     PortfolioType.push(1)
-                        // }
-                        // if (RelevantPortfolioIds != undefined && RelevantPortfolioIds.length > 0) {
-                        //     Portfolio.push(RelevantPortfolioIds[0])
-                        //     PortfolioType.push(2)
-                        // }
+                       
                         var arrayy = []
                         web = new Web(dynamicList.siteUrl);
                         await web.lists.getById(value.listId).items.add({
                             Title: save.Title != undefined && save.Title != '' ? save.Title : post.Title,
-                            ComponentId: { "results": Component },
                             Categories: categoriesItem ? categoriesItem : null,
                             PriorityRank: AllItems.PriorityRank,
                             // DueDate: date != undefined ? new Date(date).toDateString() : date,
                             DueDate: date != undefined ? Moment(date).format("MM-DD-YYYY") : null,
-                            ServicesId: { "results": RelevantPortfolioIds },
                             SharewebCategoriesId: { "results": CategoryID },
-                            PortfolioId: AllItems?.Id,
+                            PortfolioId: AllItems?.Portfolio != undefined ? AllItems?.Portfolio?.Id:AllItems?.Id,
                             PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
                             TaskTypeId: SharewebTasknewTypeId,
                             ParentTaskId: AllItems.Id,
@@ -1502,7 +1323,7 @@ const CreateActivity = (props: any) => {
     // }
     const onRenderCustomHeaderMain = () => {
         return (
-            <div className={AllItems?.Portfolio_x0020_Type == 'Service' || AllItems?.Services?.length > 0 ? "serviepannelgreena d-flex full-width pb-1" : "d-flex full-width pb-1"} >
+            <div className={AllItems?.PortfolioType?.Id == 2 ? "serviepannelgreena d-flex full-width pb-1" : "d-flex full-width pb-1"} >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <h2 className='heading'>
                         {`Create Quick Option - ${AllItems?.NoteCall}`}
@@ -1786,13 +1607,13 @@ const CreateActivity = (props: any) => {
             isOpen={TaskStatuspopup}
             onDismiss={closeTaskStatusUpdatePoup}
             isBlocking={false}
-            className={AllItems?.Portfolio_x0020_Type == 'Service' || AllItems?.Services?.length > 0 || props?.props?.PortfolioType?.Id == 2 ? "serviepannelgreena" : ""}
+            className={props?.props?.PortfolioType?.Color}
 
         >
             <div className="modal-body active">
 
 
-                <div className={AllItems?.Portfolio_x0020_Type == 'Events' ? 'app component clearfix eventpannelorange' : (AllItems?.Portfolio_x0020_Type == 'Service' || AllItems?.Services?.length > 0 ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
+                <div className={props?.props?.PortfolioType?.Color}>
                     <div className='row mt-2 border Create-taskpage'>
                         {(AllItems?.Item_x0020_Type == 'Component' || AllItems?.Item_x0020_Type == 'SubComponent' || AllItems?.Item_x0020_Type == 'Feature' || AllItems.PageType == 'ProjectManagement') &&
                             <fieldset>
@@ -1914,7 +1735,7 @@ const CreateActivity = (props: any) => {
                             </div>} */}
 
 
-                            {AllItems?.Portfolio_x0020_Type == 'Component' &&
+                            {props?.props?.PortfolioType == 1 &&
                                 <div className="input-group">
                                     <label className="form-label full-width">
                                         Component Portfolio
@@ -1929,7 +1750,7 @@ const CreateActivity = (props: any) => {
                                     </span>
                                 </div>
                             }
-                            {AllItems?.Portfolio_x0020_Type == 'Service' &&
+                            {props?.props?.PortfolioType == 2 &&
                                 <div className="input-group">
                                     <label className="form-label full-width">
                                         Service Portfolio
@@ -1944,7 +1765,7 @@ const CreateActivity = (props: any) => {
                                     </span>
                                 </div>
                             }
-                            {AllItems?.Portfolio_x0020_Type == 'Service' &&
+                            {props?.props?.PortfolioType == 2 &&
                                 <div className="col-sm-12  inner-tabb">
 
                                     {
@@ -2210,7 +2031,7 @@ const CreateActivity = (props: any) => {
             </div>
 
         </Panel>
-        {IsComponent && ((AllItems?.Services?.length > 0 || AllItems?.Services?.results?.length > 0) || ((AllItems?.Services?.length == 0 || AllItems?.Services?.results?.length == 0) && (AllItems?.Component.length == 0 || AllItems?.Component?.results?.length == 0) && AllItems?.Portfolio_x0020_Type == 'Service')) &&
+        {IsComponent && (props?.props?.PortfolioType == 2) &&
             <ServiceComponentPortfolioPopup
                 props={SharewebComponent}
                 Dynamic={dynamicList}
@@ -2218,7 +2039,7 @@ const CreateActivity = (props: any) => {
                 ComponentType={"Service"}
             />
         }
-        {IsComponent && ((AllItems?.Component.length > 0 || AllItems?.Component?.results?.length > 0) || ((AllItems?.Component.length == 0 || AllItems?.Component?.results?.length == 0) && (AllItems?.Services.length == 0 || AllItems?.Component?.results?.length == 0) && AllItems?.Portfolio_x0020_Type == 'Component')) &&
+        {IsComponent && (props?.props?.PortfolioType == 2) &&
             <ServiceComponentPortfolioPopup
                 props={SharewebComponent}
                 Dynamic={dynamicList}
@@ -2227,8 +2048,6 @@ const CreateActivity = (props: any) => {
 
             />
         }
-        {/* {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Service') && <LinkedComponent props={SharewebComponent} Dynamic={dynamicList} Call={Call}></LinkedComponent>}
-        {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Component') && <ComponentPortPolioPopup props={SharewebComponent} Dynamic={dynamicList} Call={Call}></ComponentPortPolioPopup>} */}
         {IsComponentPicker && <Picker props={SharewebCategory} selectedCategoryData={CategoriesData} usedFor="Task-Footertable" AllListId={dynamicList} Call={Call}></Picker>}
         {IsClientPopup && <ClientCategoryPupup props={SharewebCategory} selectedClientCategoryData={ClientCategoriesData} Call={Call}></ClientCategoryPupup>}
     </>

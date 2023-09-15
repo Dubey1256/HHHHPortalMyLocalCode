@@ -7,7 +7,7 @@ import { GlobalConstants } from '../globalComponents/LocalCommon';
 import { PageContext } from "@microsoft/sp-page-context";
 import { spfi } from "@pnp/sp/presets/all";
 import { MSGraphClientV3 } from '@microsoft/sp-http';
-export const myContextValue:any= React.createContext<any>({})
+export const myContextValue: any = React.createContext<any>({})
 export const pageContext = async () => {
     let result;
     try {
@@ -34,6 +34,12 @@ export const SendTeamMessage = async (mention_To: any, txtComment: any, Context:
         let pageContent = await pageContext()
         let web = new Web(pageContent?.WebFullUrl);
         let currentUser = await web.currentUser?.get()
+        if (currentUser) {
+            if (currentUser.Email?.length > 0) {
+            } else {
+                currentUser.Email = currentUser.UserPrincipalName;
+            }
+        }
         // const client: MSGraphClientV3 = await Context.msGraphClientFactory.getClient();
         await Context.msGraphClientFactory.getClient().then((client: MSGraphClientV3) => {
             client.api(`/users`).version("v1.0").get(async (err: any, res: any) => {
@@ -1647,6 +1653,7 @@ export const getPortfolio = async (type: any) => {
 // ********************* This is for the Getting All Component And Service Portfolio Data ********************
 export const GetServiceAndComponentAllData = async (Props: any) => {
     var ComponentsData: any = [];
+    var AllPathGeneratedData: any = [];
     let TaskUsers: any = [];
     let AllMasterTaskData: any = [];
     try {
@@ -1655,8 +1662,8 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
             .getById(Props.MasterTaskListID)
             .items
             .select("ID", "Title", "DueDate", "Status", "Sitestagging",
-                "ItemRank", "Item_x0020_Type", 'PortfolioStructureID', 'ClientTime', 'SiteCompositionSettings', "PortfolioType/Title","PortfolioType/Id","PortfolioType/Color", "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "TaskCategories/Id", "TaskCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title")
-            .expand("TeamMembers", "Author", "ClientCategory", "Parent", "TaskCategories", "AssignedTo", "ClientCategory","PortfolioType")
+                "ItemRank", "Item_x0020_Type", 'PortfolioStructureID', 'ClientTime', 'SiteCompositionSettings', "PortfolioType/Title", "PortfolioType/Id", "PortfolioType/Color", "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "TaskCategories/Id", "TaskCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title")
+            .expand("TeamMembers", "Author", "ClientCategory", "Parent", "TaskCategories", "AssignedTo", "ClientCategory", "PortfolioType")
             .getAll();
         // console.log("all Service and Coponent data form global Call=======", AllMasterTaskData);
         TaskUsers = await AllTaskUsers(Props.siteUrl, Props.TaskUserListId);
@@ -1711,15 +1718,16 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
             }
 
             if (result.Item_x0020_Type == 'Component') {
-                result = componentGrouping(result, AllMasterTaskData)
-                ComponentsData.push(result);
+                const groupedResult = componentGrouping(result, AllMasterTaskData)
+                AllPathGeneratedData = [...AllPathGeneratedData, ...groupedResult?.PathArray];
+                ComponentsData.push(groupedResult?.comp);
             }
 
         });
 
         let dataObject = {
             GroupByData: ComponentsData,
-            AllData: ComponentsData
+            AllData: AllPathGeneratedData,
         }
         return dataObject;
 
@@ -1729,20 +1737,35 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
     console.log("all Service and Coponent data in global common =======", AllMasterTaskData)
 }
 
-const componentGrouping = (Portfolio: any, AllProtFolioData: any) => {
+const componentGrouping = (Portfolio: any, AllProtFolioData: any, path: string = "") => {
+    let pathArray: any = [];
     Portfolio.subRows = [];
-    let subComFeat = AllProtFolioData?.filter((comp: any) => comp?.Parent?.Id === Portfolio?.Id)
+    let subComFeat = AllProtFolioData?.filter((comp: any) => comp?.Parent?.Id === Portfolio?.Id);
     Portfolio.subRows = Portfolio?.subRows?.concat(subComFeat);
+
+    // Create the path for the Portfolio by appending its name to the existing path
+    Portfolio.Path = `${Portfolio.Title}`;
+    pathArray.push(Portfolio);
     subComFeat?.forEach((subComp: any) => {
         subComp.subRows = [];
         let allFeattData = AllProtFolioData?.filter((elem: any) => elem?.Parent?.Id === subComp?.Id);
         subComp.subRows = subComp?.subRows?.concat(allFeattData);
+
+        // Create the path for the sub-component by appending its name to the Portfolio's path
+        subComp.Path = `${Portfolio.Path}>${subComp.Title}`;
+        pathArray.push(subComp);
         allFeattData?.forEach((subFeat: any) => {
             subFeat.subRows = [];
+            // Create the hierarchy path by appending the current sub-component and feature names to the sub-component's path
+            subFeat.Path = `${subComp.Path}>${subFeat.Title}`;
+            pathArray.push(subFeat);
+        });
+    });
 
-        })
-    })
-    return Portfolio;
+    return {
+        comp: Portfolio,
+        PathArray: pathArray
+    };
 }
 
 const AllTaskUsers = async (siteUrl: any, ListId: any) => {
@@ -1785,17 +1808,17 @@ export const getParameterByName = async (name: any) => {
 
 export const GetTaskId = (Item: any) => {
     let taskIds = '';
-    if (Item?.Portfolio?.PortfolioStructureID != undefined &&Item.TaskID!=undefined ) {
+    if (Item?.Portfolio?.PortfolioStructureID != undefined && Item.TaskID != undefined) {
         taskIds = Item?.Portfolio?.PortfolioStructureID + '-' + Item.TaskID;
-    }   
-     if (Item?.Portfolio?.PortfolioStructureID != undefined &&Item.TaskID==undefined ) {
+    }
+    if (Item?.Portfolio?.PortfolioStructureID != undefined && Item.TaskID == undefined) {
         taskIds = Item?.Portfolio?.PortfolioStructureID + '-T' + Item.Id;
-     }
-    else if(Item.TaskID!=undefined){
+    }
+    else if (Item.TaskID != undefined) {
         taskIds = Item.TaskID;
     }
-    else if(Item.TaskID==undefined){
-        taskIds = "T"+Item.Id;
+    else if (Item.TaskID == undefined) {
+        taskIds = "T" + Item.Id;
     }
 
     return taskIds;
