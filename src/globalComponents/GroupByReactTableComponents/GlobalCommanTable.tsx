@@ -401,8 +401,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
         }
     }, [])
     React.useEffect(() => {
-        if(table?.getRowModel()?.rows.length>0){
-            table?.getRowModel()?.rows.map((elem:any)=>{
+        if (table?.getRowModel()?.rows.length > 0) {
+            table?.getRowModel()?.rows.map((elem: any) => {
                 if (elem?.original?.Title === "Others") {
                     const newExpandedState = { [elem.id]: true };
                     setExpanded(newExpandedState);
@@ -509,36 +509,36 @@ const GlobalCommanTable = (items: any, ref: any) => {
             if (table?.getSelectedRowModel()?.flatRows.length > 0) {
                 restructureFunct(true)
                 table?.getSelectedRowModel()?.flatRows?.map((elem: any) => {
-                    if (elem?.getParentRows() != undefined) {
-                    // parentData = elem?.parentRow;
-                    // parentDataCopy = elem?.parentRow?.original
-                    parentDataCopy = elem?.getParentRows()[0]?.original;
-                    // if (parentData != undefined && parentData?.parentRow != undefined) {
+                    // if (elem?.getParentRows() != undefined) {
+                    parentData = elem?.parentRow;
+                    parentDataCopy = elem?.parentRow?.original
+                    // parentDataCopy = elem?.getParentRows()[0]?.original;
+                    if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                    //     parentData = elem?.parentRow?.parentRow
-                    //     parentDataCopy = elem?.parentRow?.parentRow?.original
+                        parentData = elem?.parentRow?.parentRow
+                        parentDataCopy = elem?.parentRow?.parentRow?.original
 
-                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                        if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                    //         parentData = elem?.parentRow?.parentRow?.parentRow
-                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
-                    //     }
-                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                            parentData = elem?.parentRow?.parentRow?.parentRow
+                            parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
+                        }
+                        if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                    //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
-                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                    //     }
-                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                            parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
+                            parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                        }
+                        if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                    //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                    //     }
-                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
-                    //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                    //     }
-                    // }
+                            parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+                            parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                        }
+                        if (parentData != undefined && parentData?.parentRow != undefined) {
+                            parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+                            parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                        }
                     }
+                    // }
                     if (parentDataCopy) {
                         elem.original.parentDataId = parentDataCopy
                     }
@@ -726,7 +726,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     };
 
     React.useImperativeHandle(ref, () => ({
-        callChildFunction, trueTopIcon, setRowSelection,globalFilter
+        callChildFunction, trueTopIcon, setRowSelection, globalFilter
     }));
 
     const restructureFunct = (items: any) => {
@@ -776,7 +776,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                             </span>
                         </span>
                     </div> :
-                        <span style={{ color: `${portfolioColor}` }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} of ${data?.length}`}</span>}
+                        <span style={{ color: `${portfolioColor}` }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} out of ${data?.length}`}</span>}
                     <DebouncedInput
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}
@@ -809,8 +809,11 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         ) : (
                             <button type="button" disabled className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} title=" Add Structure"> Add Structure </button>
                         )}
-                        {table?.getSelectedRowModel()?.flatRows.length === 1 ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
-                            <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} > Add Activity-Task</button>}
+                        {items?.protfolioProfileButton != true && <>{table?.getSelectedRowModel()?.flatRows.length === 1 ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
+                            <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} > Add Activity-Task</button>}</>}
+
+                        {items?.protfolioProfileButton === true && <>{items?.protfolioProfileButton === true && table?.getSelectedRowModel()?.flatRows[0]?.original?.SharewebTaskType?.Title != "Task" ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
+                            <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} > Add Activity-Task</button>}</>}
 
                         {
                             trueRestructuring == true ?
@@ -824,12 +827,12 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         {table?.getSelectedRowModel()?.flatRows.length < 2 ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Workstream-Task")}>Add Workstream-Task</button> :
                             <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} > Add Workstream-Task</button>}
 
-                        {
+                        {/* {
                             trueRestructuring == true ?
                                 <RestructuringCom restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows.length > 0 ? [table?.getSelectedRowModel()?.flatRows[0].original] : []} />
                                 : <button type="button" title="Restructure" disabled={true} className="btn btn-primary"
                                 >Restructure</button>
-                        }
+                        } */}
                     </>
                     }
 
@@ -838,7 +841,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     {table?.getSelectedRowModel()?.flatRows?.length > 0 ?
                         <a onClick={() => openTaskAndPortfolioMulti()} title='Open in new tab' className="openWebIcon p-0"><span style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--openWeb"></span></a>
                         : <a className="openWebIcon p-0" title='Open in new tab'><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a>}
-                    <a className='excal' title='Export to excel' onClick={() => exportToExcel()}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a>
+                    <a className='excal' title='Export to excal' onClick={() => exportToExcel()}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a>
 
                     <a className='brush'><i className="fa fa-paint-brush hreflink" style={{ color: `${portfolioColor}` }} aria-hidden="true" title="Clear All" onClick={() => { setGlobalFilter(''); setColumnFilters([]); }}></i></a>
 
