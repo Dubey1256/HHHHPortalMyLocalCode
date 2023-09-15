@@ -436,7 +436,7 @@ const EditTaskPopup = (Items: any) => {
                     let ApprovalCheck = item.Categories.search("Approval");
                     let OnlyCompletedCheck = item.Categories.search("Only Completed");
                     let DesignCheck: any;
-                    if(item.Categories == "Design"){
+                    if (item.Categories == "Design") {
                         DesignCheck = item.Categories.search("Design")
                     }
                     if (phoneCheck >= 0) {
@@ -2700,7 +2700,7 @@ const EditTaskPopup = (Items: any) => {
                 let date = new Date()
                 let timeStamp = date.getTime();
                 let imageIndex = index + 1
-                fileName = EditData.TaskId + '-Image' + imageIndex + "-" + EditData.Title?.replace(/["/':]/g, '')?.slice(0, 40) + " " + timeStamp + "jpg";
+                fileName = EditData.TaskId + '-Image' + imageIndex + "-" + EditData.Title?.replace(/["/':]/g, '')?.slice(0, 40) + " " + timeStamp + ".jpg";
                 let currentUserDataObject: any;
                 if (currentUserBackupArray != null && currentUserBackupArray.length > 0) {
                     currentUserDataObject = currentUserBackupArray[0];
@@ -4370,17 +4370,12 @@ const EditTaskPopup = (Items: any) => {
                                                             value={ProjectSearchKey}
                                                             onChange={(e) => autoSuggestionsForProject(e)}
                                                         />
-                                                        {ComponentTaskCheck == false && ServicesTaskCheck == false ?
-                                                            <span className="input-group-text" title="Project Popup" onClick={(e) => alert("Please select anyone from Portfolio/Services")}>
-                                                                <span className="svg__iconbox svg__icon--editBox"></span>
+
+                                                        <span className="input-group-text" onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" >
+                                                            <span className="svg__iconbox svg__icon--editBox">
 
                                                             </span>
-
-                                                            : <span className="input-group-text" onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" >
-                                                                <span className="svg__iconbox svg__icon--editBox">
-
-                                                                </span>
-                                                            </span>}
+                                                        </span>
                                                     </div>
                                                     {SearchedProjectData?.length > 0 ? (
                                                         <div className="SmartTableOnTaskPopup">
@@ -5424,17 +5419,11 @@ const EditTaskPopup = (Items: any) => {
                                                                         value={ProjectSearchKey}
                                                                         onChange={(e) => autoSuggestionsForProject(e)}
                                                                     />
-                                                                    {ComponentTaskCheck == false && ServicesTaskCheck == false ?
-                                                                        <span className="input-group-text" title="Project Popup" onClick={(e) => alert("Please select anyone from Portfolio/Services")}>
-                                                                            <span className="svg__iconbox svg__icon--editBox"></span>
+                                                                    <span className="input-group-text" onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" >
+                                                                        <span className="svg__iconbox svg__icon--editBox">
 
                                                                         </span>
-
-                                                                        : <span className="input-group-text" onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" >
-                                                                            <span className="svg__iconbox svg__icon--editBox">
-
-                                                                            </span>
-                                                                        </span>}
+                                                                    </span>
                                                                 </div>
                                                                 {SearchedProjectData?.length > 0 ? (
                                                                     <div className="SmartTableOnTaskPopup">
