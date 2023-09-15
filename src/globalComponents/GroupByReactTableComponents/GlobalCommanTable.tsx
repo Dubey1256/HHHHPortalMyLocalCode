@@ -401,8 +401,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
         }
     }, [])
     React.useEffect(() => {
-        if (table?.getRowModel()?.rows.length > 0) {
-            table?.getRowModel()?.rows.map((elem: any) => {
+        if(table?.getRowModel()?.rows.length>0){
+            table?.getRowModel()?.rows.map((elem:any)=>{
                 if (elem?.original?.Title === "Others") {
                     const newExpandedState = { [elem.id]: true };
                     setExpanded(newExpandedState);
@@ -510,34 +510,34 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 restructureFunct(true)
                 table?.getSelectedRowModel()?.flatRows?.map((elem: any) => {
                     if (elem?.getParentRows() != undefined) {
-                        // parentData = elem?.parentRow;
-                        // parentDataCopy = elem?.parentRow?.original
-                        parentDataCopy = elem?.getParentRows()[0]?.original;
-                        // if (parentData != undefined && parentData?.parentRow != undefined) {
+                    // parentData = elem?.parentRow;
+                    // parentDataCopy = elem?.parentRow?.original
+                    parentDataCopy = elem?.getParentRows()[0]?.original;
+                    // if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                        //     parentData = elem?.parentRow?.parentRow
-                        //     parentDataCopy = elem?.parentRow?.parentRow?.original
+                    //     parentData = elem?.parentRow?.parentRow
+                    //     parentDataCopy = elem?.parentRow?.parentRow?.original
 
-                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                        //         parentData = elem?.parentRow?.parentRow?.parentRow
-                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
-                        //     }
-                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                    //         parentData = elem?.parentRow?.parentRow?.parentRow
+                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
+                    //     }
+                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                        //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
-                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                        //     }
-                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                    //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
+                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                    //     }
+                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                        //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                        //     }
-                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
-                        //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                        //     }
-                        // }
+                    //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                    //     }
+                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                    //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                    //     }
+                    // }
                     }
                     if (parentDataCopy) {
                         elem.original.parentDataId = parentDataCopy
@@ -726,7 +726,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     };
 
     React.useImperativeHandle(ref, () => ({
-        callChildFunction, trueTopIcon, setRowSelection, globalFilter
+        callChildFunction, trueTopIcon, setRowSelection,globalFilter
     }));
 
     const restructureFunct = (items: any) => {
@@ -747,13 +747,10 @@ const GlobalCommanTable = (items: any, ref: any) => {
                             return (
                                 <>
                                     {isShowingDataAll === true ? <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</> :
-                                        <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'number']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</>}
+                                        <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</>}
                                 </>
                             )
                         })}
-
-
-
                         <span className="popover__wrapper ms-1" style={{ position: "unset" }} data-bs-toggle="tooltip" data-bs-placement="auto">
                             <span className='svg__iconbox svg__icon--info alignIcon dark'></span>
                             <span className="popover__content mt-3 m-3 mx-3" style={{ zIndex: 100 }}>
@@ -764,7 +761,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                     return (
                                         <>
                                             {isShowingDataAll === true ? <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label><label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label></> :
-                                                <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'number']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label><label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label></>}
+                                                <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label><label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label></>}
                                         </>
                                     )
                                 })}
@@ -772,14 +769,14 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                     return (
                                         <>
                                             {isShowingDataAll === true ? <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</> :
-                                                <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'number']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</>}
+                                                <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</>}
                                         </>
                                     )
                                 })}
                             </span>
                         </span>
                     </div> :
-                        <span style={{ color: `${portfolioColor}` }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} out of ${data?.length}`}</span>}
+                        <span style={{ color: `${portfolioColor}` }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} of ${data?.length}`}</span>}
                     <DebouncedInput
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}
@@ -827,12 +824,12 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         {table?.getSelectedRowModel()?.flatRows.length < 2 ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Workstream-Task")}>Add Workstream-Task</button> :
                             <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} > Add Workstream-Task</button>}
 
-                        {/* {
+                        {
                             trueRestructuring == true ?
                                 <RestructuringCom restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows.length > 0 ? [table?.getSelectedRowModel()?.flatRows[0].original] : []} />
                                 : <button type="button" title="Restructure" disabled={true} className="btn btn-primary"
                                 >Restructure</button>
-                        } */}
+                        }
                     </>
                     }
 

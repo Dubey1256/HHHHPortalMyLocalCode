@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { sp, Web } from 'sp-pnp-js';
 import { ColumnDef } from '@tanstack/react-table';
-import GlobalCommanTable from '../../../GlobalCommanTable';
 import { PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import "@pnp/sp/lists";
 import "@pnp/sp/items";
 import * as XLSX from 'xlsx';
 import FileSaver from 'file-saver';
+import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 export default function SiteDataBackupTool(selectedProps: any) {
     const [ListData, setListData] = useState<Item[]>([]);
     const [successMessage, setSuccessMessage] = useState(false);
@@ -53,8 +53,15 @@ export default function SiteDataBackupTool(selectedProps: any) {
         }
     };
     const isItemExists = (array: Item[], key: string, value: string) => {
-        return array.findIndex(item => item[key] === value);
-    };
+        for (let i = 0; i < array.length; i++) {
+          if (array[i][key] === value) {
+            return i;
+          }
+        }
+        return -1; // Return -1 if the item is not found (similar to findIndex)
+      };
+      
+      
     var lookupColums: any[]
     const DataBackup = async (Values: any) => {
         const now = new Date();
