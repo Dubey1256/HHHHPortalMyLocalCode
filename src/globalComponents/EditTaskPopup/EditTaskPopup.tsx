@@ -435,7 +435,10 @@ const EditTaskPopup = (Items: any) => {
                     let ImmediateCheck = item.Categories.search("Immediate");
                     let ApprovalCheck = item.Categories.search("Approval");
                     let OnlyCompletedCheck = item.Categories.search("Only Completed");
-                    let DesignCheck = item.Categories.search("Design")
+                    let DesignCheck: any;
+                    if(item.Categories == "Design"){
+                        DesignCheck = item.Categories.search("Design")
+                    }
                     if (phoneCheck >= 0) {
                         setPhoneStatus(true)
                     } else {
@@ -1269,6 +1272,7 @@ const EditTaskPopup = (Items: any) => {
             }
             if (existingData?.Title == "Bottleneck") {
                 setIsSendAttentionMsgStatus(true);
+                console.log("dxfcgvhbj dxfcgvhbj", TaskAssignedTo);
                 if (EditData?.TaskAssignedUsers?.length > 0) {
                     EditData?.TaskAssignedUsers?.map((AssignedUser: any, Index: any) => {
                         userSendAttentionEmails.push(AssignedUser.Email);
@@ -1753,7 +1757,7 @@ const EditTaskPopup = (Items: any) => {
                     if (EditData.siteType == 'Offshore Tasks') {
                         setWorkingMember(36);
                     } else if (DesignStatus) {
-                        setWorkingMember(40);
+                        setWorkingMember(298);
                     } else {
                         setWorkingMember(42);
                     }
@@ -1868,7 +1872,7 @@ const EditTaskPopup = (Items: any) => {
             if (EditData.siteType == 'Offshore Tasks') {
                 setWorkingMember(36);
             } else if (DesignStatus) {
-                setWorkingMember(40);
+                setWorkingMember(298);
             } else {
                 setWorkingMember(42);
             }
@@ -5067,7 +5071,9 @@ const EditTaskPopup = (Items: any) => {
                                                                         {TaggedPortfolioData?.map((com: any) => {
                                                                             return (
                                                                                 <>
-                                                                                    <div className="d-flex justify-content-between block px-2 py-1 full-width selected-component">
+                                                                                    <div
+                                                                                        className="d-flex justify-content-between block px-2 py-1 full-width selected-component"
+                                                                                    >
                                                                                         <a title={com.Title} style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
                                                                                         <a>
                                                                                             <span onClick={() => setTaggedPortfolioData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
