@@ -435,7 +435,10 @@ const EditTaskPopup = (Items: any) => {
                     let ImmediateCheck = item.Categories.search("Immediate");
                     let ApprovalCheck = item.Categories.search("Approval");
                     let OnlyCompletedCheck = item.Categories.search("Only Completed");
-                    let DesignCheck = item.Categories.search("Design")
+                    let DesignCheck: any;
+                    if (item.Categories == "Design") {
+                        DesignCheck = item.Categories.search("Design")
+                    }
                     if (phoneCheck >= 0) {
                         setPhoneStatus(true)
                     } else {
@@ -946,7 +949,10 @@ const EditTaskPopup = (Items: any) => {
                 if (Type == "Multi") {
                     if (LinkedPortfolioDataBackup?.length > 0) {
                         LinkedPortfolioDataBackup = LinkedPortfolioDataBackup.concat(DataItem);
-                        setLinkedPortfolioData(LinkedPortfolioDataBackup);
+                        const finalData = LinkedPortfolioDataBackup?.filter((val: any, id: any, array: any) => {
+                            return array.indexOf(val) == id;
+                        });
+                        setLinkedPortfolioData(finalData);
                     } else {
                         setLinkedPortfolioData(DataItem)
                         LinkedPortfolioDataBackup = DataItem;
@@ -1266,6 +1272,7 @@ const EditTaskPopup = (Items: any) => {
             }
             if (existingData?.Title == "Bottleneck") {
                 setIsSendAttentionMsgStatus(true);
+                console.log("dxfcgvhbj dxfcgvhbj", TaskAssignedTo);
                 if (EditData?.TaskAssignedUsers?.length > 0) {
                     EditData?.TaskAssignedUsers?.map((AssignedUser: any, Index: any) => {
                         userSendAttentionEmails.push(AssignedUser.Email);
@@ -1750,7 +1757,7 @@ const EditTaskPopup = (Items: any) => {
                     if (EditData.siteType == 'Offshore Tasks') {
                         setWorkingMember(36);
                     } else if (DesignStatus) {
-                        setWorkingMember(40);
+                        setWorkingMember(298);
                     } else {
                         setWorkingMember(42);
                     }
@@ -1865,7 +1872,7 @@ const EditTaskPopup = (Items: any) => {
             if (EditData.siteType == 'Offshore Tasks') {
                 setWorkingMember(36);
             } else if (DesignStatus) {
-                setWorkingMember(40);
+                setWorkingMember(298);
             } else {
                 setWorkingMember(42);
             }
@@ -2693,7 +2700,7 @@ const EditTaskPopup = (Items: any) => {
                 let date = new Date()
                 let timeStamp = date.getTime();
                 let imageIndex = index + 1
-                fileName = EditData.TaskId + '-Image' + imageIndex + "-" + EditData.Title?.replace(/["/':]/g, '')?.slice(0, 40) + " " + timeStamp + "jpg";
+                fileName = EditData.TaskId + '-Image' + imageIndex + "-" + EditData.Title?.replace(/["/':]/g, '')?.slice(0, 40) + " " + timeStamp + ".jpg";
                 let currentUserDataObject: any;
                 if (currentUserBackupArray != null && currentUserBackupArray.length > 0) {
                     currentUserDataObject = currentUserBackupArray[0];
@@ -4363,17 +4370,12 @@ const EditTaskPopup = (Items: any) => {
                                                             value={ProjectSearchKey}
                                                             onChange={(e) => autoSuggestionsForProject(e)}
                                                         />
-                                                        {ComponentTaskCheck == false && ServicesTaskCheck == false ?
-                                                            <span className="input-group-text" title="Project Popup" onClick={(e) => alert("Please select anyone from Portfolio/Services")}>
-                                                                <span className="svg__iconbox svg__icon--editBox"></span>
+
+                                                        <span className="input-group-text" onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" >
+                                                            <span className="svg__iconbox svg__icon--editBox">
 
                                                             </span>
-
-                                                            : <span className="input-group-text" onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" >
-                                                                <span className="svg__iconbox svg__icon--editBox">
-
-                                                                </span>
-                                                            </span>}
+                                                        </span>
                                                     </div>
                                                     {SearchedProjectData?.length > 0 ? (
                                                         <div className="SmartTableOnTaskPopup">
@@ -5064,7 +5066,9 @@ const EditTaskPopup = (Items: any) => {
                                                                         {TaggedPortfolioData?.map((com: any) => {
                                                                             return (
                                                                                 <>
-                                                                                    <div className="d-flex justify-content-between block px-2 py-1 full-width selected-component">
+                                                                                    <div
+                                                                                        className="d-flex justify-content-between block px-2 py-1 full-width selected-component"
+                                                                                    >
                                                                                         <a title={com.Title} style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
                                                                                         <a>
                                                                                             <span onClick={() => setTaggedPortfolioData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
@@ -5415,17 +5419,11 @@ const EditTaskPopup = (Items: any) => {
                                                                         value={ProjectSearchKey}
                                                                         onChange={(e) => autoSuggestionsForProject(e)}
                                                                     />
-                                                                    {ComponentTaskCheck == false && ServicesTaskCheck == false ?
-                                                                        <span className="input-group-text" title="Project Popup" onClick={(e) => alert("Please select anyone from Portfolio/Services")}>
-                                                                            <span className="svg__iconbox svg__icon--editBox"></span>
+                                                                    <span className="input-group-text" onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" >
+                                                                        <span className="svg__iconbox svg__icon--editBox">
 
                                                                         </span>
-
-                                                                        : <span className="input-group-text" onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" >
-                                                                            <span className="svg__iconbox svg__icon--editBox">
-
-                                                                            </span>
-                                                                        </span>}
+                                                                    </span>
                                                                 </div>
                                                                 {SearchedProjectData?.length > 0 ? (
                                                                     <div className="SmartTableOnTaskPopup">
