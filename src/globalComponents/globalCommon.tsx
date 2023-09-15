@@ -1808,12 +1808,12 @@ export const GetTaskId = (Item: any) => {
      if (Item?.Portfolio?.PortfolioStructureID != undefined &&Item.TaskID==undefined ) {
         taskIds = Item?.Portfolio?.PortfolioStructureID + '-T' + Item.Id;
      }
-    else if(Item.TaskID!=undefined){
-        taskIds = Item.TaskID;
-    }
-    else if(Item.TaskID==undefined){
-        taskIds = "T"+Item.Id;
-    }
+    // else if(Item.TaskID!=undefined){
+    //     taskIds = Item.TaskID;
+    // }
+    // else if(Item.TaskID==undefined){
+    //     taskIds = "T"+Item.Id;
+    // }
 
     return taskIds;
 }
@@ -1821,9 +1821,9 @@ export const findTaskHierarchy = (row: any, AllMatsterAndTaskData: any): any[] =
     let createGrouping = (row: any): any[] => {
         for (let i = 0; i < AllMatsterAndTaskData.length; i++) {
             let Object = AllMatsterAndTaskData[i];
-            if (Object?.Item_x0020_Type?.toLowerCase() != 'task') {
-                Object.SiteIconTitle = Object?.Item_x0020_Type?.charAt(0);
-            }
+            // if (Object?.Item_x0020_Type?.toLowerCase() != 'task') {
+            //     Object.SiteIconTitle = Object?.Item_x0020_Type?.charAt(0);
+            // }
             if (Object.Id === row?.ParentTask?.Id && row?.siteType === Object?.siteType) {
                 Object.subRows = [];
                 Object.subRows.push(row);
@@ -1841,7 +1841,7 @@ export const findTaskHierarchy = (row: any, AllMatsterAndTaskData: any): any[] =
                 Object.subRows.push(row);
                 return createGrouping(Object);
             }
-            else if (row?.Portfolio != undefined && Object.Id === row?.Portfolio?.Id) {
+            else if (row?.Portfolio != undefined && Object.Id === row?.Portfolio?.Id && row?.ParentTask?.Id==undefined) {
                 Object.subRows = [];
                 Object.subRows.push(row);
                 return createGrouping(Object);

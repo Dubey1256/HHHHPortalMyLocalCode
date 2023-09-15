@@ -55,7 +55,7 @@ let IsShowRestru: any = false;
 let componentDetails: any = '';
 let siteIconAllTask: any = [];
 let finalData: any = [];
-
+let childRefdata: any;
 function IndeterminateCheckbox(
   {
     indeterminate,
@@ -101,7 +101,11 @@ function Filter({
   );
 }
 function TasksTable(props: any) {
+  const childRef = React.useRef<any>();
+  if (childRef != null) {
+    childRefdata = { ...childRef };
 
+  }
   const [loaded, setLoaded] = React.useState(true);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [expanded, setExpanded] = React.useState<ExpandedState>({});
@@ -134,7 +138,7 @@ function TasksTable(props: any) {
   const [tasksRestruct, setTasksRestruct] = React.useState(false);
   const [smartmetaDetails, setsmartmetaDetails] = React.useState([]);
   const [checkData, setcheckData] = React.useState(null)
-
+  const [topCompoIcon, setTopCompoIcon]: any = React.useState(false);
   // IsUpdated = props.props.Portfolio_x0020_Type;
   IsUpdated = props.props.PortfolioType;
 
@@ -279,27 +283,27 @@ function TasksTable(props: any) {
 
           if (result.FeedBack != undefined) {
 
-           
 
-            let feedbackdata:any= JSON.parse(result?.FeedBack)
 
-             
+            let feedbackdata: any = JSON.parse(result?.FeedBack)
 
-           
 
-            let FeedbackdatatinfoIcon:any=feedbackdata[0]?.FeedBackDescriptions?.map((child:any) =>
 
-            child?.Title + ' ' +
 
-            child?.Subtext?.map((subChild:any) => subChild?.Title).join(' ')
+
+            let FeedbackdatatinfoIcon: any = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) =>
+
+              child?.Title + ' ' +
+
+              child?.Subtext?.map((subChild: any) => subChild?.Title).join(' ')
 
             ).join(' ')
 
- 
 
-            result.Short_x0020_Description_x0020_On =FeedbackdatatinfoIcon.replace("undefined", "").replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '')
 
-         
+            result.Short_x0020_Description_x0020_On = FeedbackdatatinfoIcon.replace("undefined", "").replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '')
+
+
 
           }
           if (result.Project) {
@@ -311,7 +315,7 @@ function TasksTable(props: any) {
             result.joinedData = [];
             if (title) result.joinedData.push(`Title: ${title}`);
             if (dueDate) result.joinedData.push(`Due Date: ${dueDate}`);
-        }
+          }
 
           result['SiteIcon'] = GetIconImageUrl(result.siteType, props?.AllListId?.siteUrl, undefined);
           // if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
@@ -321,13 +325,13 @@ function TasksTable(props: any) {
           // }
           if (result.Id === 498 || result.Id === 104)
             console.log(result);
-          result['TaskID'] = globalCommon.getTaskId(result);
+          result['TaskID'] = globalCommon.GetTaskId(result);
           if (result['TaskID'] == undefined) {
             result['TaskID'] = "";
           }
           result['ItemType'] = 'Task';
 
-          result.PortfolioType = 'Component';
+          // result.PortfolioType = 'Component';
 
         })
         let allParentTasks = $.grep(AllTasks, function (type: any) { return (type.ParentTask != undefined && type.ParentTask.Id === props.props.Id) && (type.TaskType != undefined && type.TaskType.Title != 'Workstream') });
@@ -356,7 +360,7 @@ function TasksTable(props: any) {
         }
 
         var temp: any = {};
-     
+
         temp.flag = true;
         temp.show = true;
         temp.PercentComplete = '';
@@ -384,32 +388,32 @@ function TasksTable(props: any) {
     // })
   }
   const GetComponents = async (Item: any) => {
-    var filt = "Id eq " +Item?. Portfolio?.Id + "";
+    var filt = "Id eq " + Item?.Portfolio?.Id + "";
     let web = new Web(props?.AllListId?.siteUrl);
     let compo = [];
     compo = await web.lists
       .getById(props?.AllListId?.MasterTaskListID)
       .items
-      .select("ID", "Id", "Title", "Mileage", "PortfolioType/Id","PortfolioType/Title","PortfolioType/Color", "ItemType",
+      .select("ID", "Id", "Title", "Mileage", "PortfolioType/Id", "PortfolioType/Title", "PortfolioType/Color", "ItemType",
       ).expand('PortfolioType')
 
       .top(4999)
       .filter(filt)
       .get()
     componentDetails = compo[0]
-    IsUpdated = componentDetails.PortfoliType.Title;
-    if (props.props.ParentTask != undefined && props.props.ParentTask.Title != undefined)
-      props.props.ParentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Activity.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png';
-    else if (props.props.TaskType != undefined && props.props.TaskType === 'Activities')
-      props.props.CurrentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Activity.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png';
-    if (props.props.TaskType != undefined && props.props.TaskType === 'Workstream')
-      props.props.CurrentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Workstream.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Workstream.png';
-    if (componentDetails.ItemType === 'Component')
-      componentDetails.SiteIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/component_icon.png';
-    if (componentDetails.ItemType === 'SubComponent')
-      componentDetails.SiteIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png'
-    if (componentDetails.ItemType === 'Feature')
-      componentDetails.SiteIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/feature_icon.png';
+    IsUpdated = componentDetails?.PortfoliType?.Title;
+    // if (props.props.ParentTask != undefined && props.props.ParentTask.Title != undefined)
+    //   props.props.ParentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Activity.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png';
+    // else if (props.props.TaskType != undefined && props.props.TaskType === 'Activities')
+    //   props.props.CurrentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Activity.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png';
+    // if (props.props.TaskType != undefined && props.props.TaskType === 'Workstream')
+    //   props.props.CurrentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Workstream.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Workstream.png';
+    // if (componentDetails.ItemType === 'Component')
+    //   componentDetails.SiteIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/component_icon.png';
+    // if (componentDetails.ItemType === 'SubComponent')
+    //   componentDetails.SiteIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png'
+    // if (componentDetails.ItemType === 'Feature')
+    //   componentDetails.SiteIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/feature_icon.png';
     //  setData(data =>[...allworkstreamTasks])
 
     console.log(componentDetails);
@@ -418,14 +422,14 @@ function TasksTable(props: any) {
     //MeetingItems.push(props)
     getTaskUsers();
 
-    if ((props.props.Component != undefined && props.props.Component.length > 0) || (props.props.Services != undefined && props.props.Services.length > 0 && props.props.Services[0].Id))
+    if (props.props.Portfolio != undefined)
       GetComponents(props.props)
-    if (props.props.ParentTask != undefined && props.props.ParentTask.Title != undefined)
-      props.props.ParentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Activity.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png';
-    else if (props.props.TaskType != undefined && props.props.TaskType === 'Activities')
-      props.props.CurrentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Activity.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png';
-    if (props.props.TaskType != undefined && props.props.TaskType === 'Workstream')
-      props.props.CurrentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Workstream.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Workstream.png';
+    // if (props.props.ParentTask != undefined && props.props.ParentTask.Title != undefined)
+    //   props.props.ParentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Activity.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png';
+    // else if (props.props.TaskType != undefined && props.props.TaskType === 'Activities')
+    //   props.props.CurrentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Activity.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png';
+    // if (props.props.TaskType != undefined && props.props.TaskType === 'Workstream')
+    //   props.props.CurrentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Workstream.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Workstream.png';
 
     GetSmartmetadata();
 
@@ -462,12 +466,12 @@ function TasksTable(props: any) {
       // childItem.data['SiteIcon']= GetIconImageUrl(childItem.data.siteType,childItem.data.siteUrl,undefined)
       // childItem.data['TitleNew'] = childItem.data.Title;
       childItem.data['TaskType'] = { Title: 'Workstream' }
-      if (childItem.data.ServicesId != undefined && childItem.data.ServicesId.length > 0) {
-        MainId = childItem.data.ServicesId[0]
+      if (childItem.data.PortfolioId != undefined) {
+        MainId = childItem.data.PortfolioId
       }
-      if (childItem.data.ComponentId != undefined && childItem.data.ComponentId.length > 0) {
-        MainId = childItem.data.ComponentId[0]
-      }
+      // if (childItem.data.ComponentId != undefined && childItem.data.ComponentId.length > 0) {
+      //   MainId = childItem.data.ComponentId[0]
+      // }
       if (childItem.data.ParentTaskId != undefined && childItem.data.ParentTaskId != "") {
         ParentTaskId = childItem.data.ParentTaskId;
       }
@@ -559,7 +563,7 @@ function TasksTable(props: any) {
         }
 
       })
-     
+
     }
     if (!isOpenPopup && item.data != undefined) {
       item.data.childs = [];
@@ -686,11 +690,11 @@ function TasksTable(props: any) {
             {row?.original?.subRows?.length > 0 ?
               <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
 
-          
-              {row?.original?.Short_x0020_Description_x0020_On != null && row?.original?.Short_x0020_Description_x0020_On != '' && (
-                <InfoIconsToolTip Discription={row?.original?.Short_x0020_Description_x0020_On} row={row?.original} />
+
+            {row?.original?.Short_x0020_Description_x0020_On != null && row?.original?.Short_x0020_Description_x0020_On != '' && (
+              <InfoIconsToolTip Discription={row?.original?.Short_x0020_Description_x0020_On} row={row?.original} />
             )}
-              {/* <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+            {/* <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                 <span title="Edit" className="svg__iconbox svg__icon--info"></span>
              
                 <span className="popover__content">
@@ -707,19 +711,19 @@ function TasksTable(props: any) {
       {
         accessorFn: (row) => row?.projectStructerId + "." + row?.ProjectTitle,
         cell: ({ row }) => (
-            <>
-                {row?.original?.ProjectTitle != (null || undefined) ?
-                    <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${props?.AllListId.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
-                        <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={props?.AllListId} /></a></span>
-                    : ""}
-            </>
+          <>
+            {row?.original?.ProjectTitle != (null || undefined) ?
+              <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${props?.AllListId.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
+                <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={props?.AllListId} /></a></span>
+              : ""}
+          </>
         ),
         id: 'ProjectTitle',
         placeholder: "Project",
         resetColumnFilters: false,
         header: "",
         size: 70,
-    },
+      },
       {
         accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title).join("-"),
         cell: ({ row }) => (
@@ -824,28 +828,29 @@ function TasksTable(props: any) {
         size: 2,
       },
 
+
+
       {
         header: ({ table }: any) => (
-          <>
-            {
-              topTaskresIcon ? <span onClick={() => setTasksRestruct(true)}>
-                {
-                  (checkedList[0].Services != undefined && checkedList[0].Services.length > 0 ?
-                    <img title='Restructure' className="icon-sites-img" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png" /> :
-                    <img title='Restructure' className="icon-sites-img" src='https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png' />
-                  )
-                }
-              </span> : <span></span>
-
-            }
-
+          <>{
+            topCompoIcon ?
+              <span
+                // style={{ backgroundColor: `${portfolioColor}` }}
+                title="Restructure" className="Dyicons mb-1 mx-1 p-1" onClick={() => trueTopIcon(true)}>
+                <span className="svg__iconbox svg__icon--re-structure"></span>
+              </span>
+              : ''
+          }
           </>
         ),
         cell: ({ row, getValue }) => (
           <>
             <a className='d-flex'>
               {row?.original?.isRestructureActive && (
-                <span onClick={(e) => OpenModal(row?.original)}><img className="icon-sites-img me-2" src={row?.original?.Restructuring} /> </span>)}
+                <span className="Dyicons p-1" title="Restructure" style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} onClick={() => callChildFunction(row?.original)}>
+                  <img className="icon-sites-img me-2" src={row?.original?.Restructuring} />
+                </span>)}
+
               {row?.original?.ItemType == "Task" && row?.original?.siteType != "Master Tasks" && (
                 <span title='Edit' onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit"></span>
               )}
@@ -1181,9 +1186,11 @@ function TasksTable(props: any) {
     return JSON.parse(JSON.stringify(obj));
 
   }
+
   const openActivity = () => {
-    let data2: any = structuredClone(props?.props)
-    if (checkData != undefined && checkData != null&&checkData?.TaskType!=null ) {
+    let data2 = props?.props
+    // let data2: any = structuredClone(props?.props)
+    if (checkData != undefined && checkData != null && checkData?.TaskType != null) {
       if (checkData?.TaskType?.Title == 'Workstream') {
         checkData['NoteCall'] = 'Task'
         console.log(MeetingItems[MeetingItems.length - 1])
@@ -1220,6 +1227,8 @@ function TasksTable(props: any) {
 
   }
 
+
+
   const findUserByName = (Id: any) => {
     const user = AllUsers.filter((user: any) => user.AssingedToUserId == Id);
     let Image: any;
@@ -1252,11 +1261,11 @@ function TasksTable(props: any) {
           }
         });
       }
-      if (itrm?.ItemType == "Component") {
-        // onChangeHandler(itrm, 'parent', eTarget);
-      } else {
-        // onChangeHandler(itrm, props, eTarget);
-      }
+      // if (itrm?.ItemType == "Component") {
+
+      // } else {
+
+      // }
     } else {
 
       setcheckData(null)
@@ -1307,22 +1316,48 @@ function TasksTable(props: any) {
     }
     // setCheckedList1(array);
   }, []);
+  const callBackData1 = React.useCallback((getData: any, topCompoIcon: any) => {
+    if (getData != undefined && getData.length > 0) {
+      finalData = [];
+      finalData = finalData?.concat(getData)
+      console.log(finalData)
+      refreshData();
+      setTopCompoIcon(topCompoIcon);
+    }
+    
+  }, []);
+
+
+  //  Function to call the child component's function
+  const callChildFunction = (items: any) => {
+    if (childRef.current) {
+      childRef.current.callChildFunction(items);
+    }
+  };
+
+  const trueTopIcon = (items: any) => {
+    if (childRef.current) {
+      childRef.current.trueTopIcon(items);
+    }
+  };
 
   return (
 
-    <div className={IsUpdated === 'Events' ? 'app component eventpannelorange' : (IsUpdated == 'Service' ? 'app component serviepannelgreena' : 'app component')}>
+    <div
+    // className={IsUpdated === 'Events' ? 'app component eventpannelorange' : (IsUpdated == 'Service' ? 'app component serviepannelgreena' : 'app component')}
+    >
       <div className="Alltable mt-10">
 
         <div className="col-sm-12 pad0 smart" >
           <div className="">
             <div className={`${data.length > 10 ? "wrapper" : "MinHeight"}`}>
-          
+
               <GlobalCommanTable
-                //  ref={childRef}
-                callChildFunction={Call}
+                ref={childRef}
+                callChildFunction={callChildFunction}
                 AllListId={props?.AllListId}
                 columns={columns}
-                //  restructureCallBack={callBackData1} 
+                restructureCallBack={callBackData1}
                 data={data}
                 callBackData={callBackData}
                 TaskUsers={AllUsers}
