@@ -638,7 +638,7 @@ const handlePeoplePickerChange = (items: any[]): void => {
   };
   const [details, setDetails]: any = React.useState([]);
   const saveEvent = async () => {
-    if (inputValueName.length > 0) {
+    if (inputValueName?.length > 0 && dType?.length>0      ) {
       const chkstartDate = new Date(startDate);
       const chkendDate = new Date(endDate);
       if (chkstartDate > chkendDate) {
@@ -725,7 +725,7 @@ const handlePeoplePickerChange = (items: any[]): void => {
         }
       }
     } else {
-      alert("Please Input Event Title");
+      alert("Please Fill the short description and Team and Leave Type");
     }
     // setEvents([...events, newEvent]);
     // setEvents([...events, saveE]);
@@ -1166,7 +1166,7 @@ const handlePeoplePickerChange = (items: any[]): void => {
     const newEvent = {
       title: inputValueName,
       name: peopleName,
-      nameId:title_Id,
+      // nameId:title_Id,
       start: startDate,
       end: endDate,
       reason: inputValueReason,
@@ -1189,7 +1189,7 @@ const handlePeoplePickerChange = (items: any[]): void => {
       .update({
         Title: newEvent.title,
         // Name: newEvent.name,
-        EmployeeId:newEvent.nameId,
+        // EmployeeId:newEvent.nameId,
         Location: newEvent.loc,
 
         Event_x002d_Type: newEvent.type,
