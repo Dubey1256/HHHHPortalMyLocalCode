@@ -1813,13 +1813,13 @@ export const GetTaskId = (Item: any) => {
     }
     if (Item?.Portfolio?.PortfolioStructureID != undefined && Item.TaskID == undefined) {
         taskIds = Item?.Portfolio?.PortfolioStructureID + '-T' + Item.Id;
+     }
+     else if(Item?.Portfolio==undefined){
+        taskIds = 'T' + Item.Id;
     }
-    else if (Item.TaskID != undefined) {
-        taskIds = Item.TaskID;
-    }
-    else if (Item.TaskID == undefined) {
-        taskIds = "T" + Item.Id;
-    }
+    // else if(Item.TaskID==undefined){
+    //     taskIds = "T"+Item.Id;
+    // }
 
     return taskIds;
 }
@@ -1827,9 +1827,9 @@ export const findTaskHierarchy = (row: any, AllMatsterAndTaskData: any): any[] =
     let createGrouping = (row: any): any[] => {
         for (let i = 0; i < AllMatsterAndTaskData.length; i++) {
             let Object = AllMatsterAndTaskData[i];
-            if (Object?.Item_x0020_Type?.toLowerCase() != 'task') {
-                Object.SiteIconTitle = Object?.Item_x0020_Type?.charAt(0);
-            }
+            // if (Object?.Item_x0020_Type?.toLowerCase() != 'task') {
+            //     Object.SiteIconTitle = Object?.Item_x0020_Type?.charAt(0);
+            // }
             if (Object.Id === row?.ParentTask?.Id && row?.siteType === Object?.siteType) {
                 Object.subRows = [];
                 Object.subRows.push(row);
@@ -1847,7 +1847,7 @@ export const findTaskHierarchy = (row: any, AllMatsterAndTaskData: any): any[] =
                 Object.subRows.push(row);
                 return createGrouping(Object);
             }
-            else if (row?.Portfolio != undefined && Object.Id === row?.Portfolio?.Id) {
+            else if (row?.Portfolio != undefined && Object.Id === row?.Portfolio?.Id && row?.ParentTask?.Id==undefined) {
                 Object.subRows = [];
                 Object.subRows.push(row);
                 return createGrouping(Object);
@@ -1857,3 +1857,30 @@ export const findTaskHierarchy = (row: any, AllMatsterAndTaskData: any): any[] =
     }
     return createGrouping(row);
 };
+export const loadAllTimeEntry = async (timesheetListConfig:any) => {
+    var AllTimeEntry:any=[]
+    if (timesheetListConfig?.Id !=undefined) {
+        let timesheetLists: any = [];
+        let taskLists: any = [];
+        timesheetLists = JSON.parse(timesheetListConfig?.Configurations)
+        taskLists = JSON.parse(timesheetListConfig?.Description)
+        if (timesheetLists?.length > 0) {
+            const fetchPromises = timesheetLists.map(async (list: any) => {
+                let web = new Web(list?.siteUrl);
+                try {
+                    const data = await web.lists
+                        .getById(list?.listId)
+                        .items.select(list?.query)
+                        .getAll();
+                        AllTimeEntry=[...AllTimeEntry,...data];
+                } catch (error) {
+                    console.log(error, 'HHHH Time');
+                }
+            });
+
+            await Promise.all(fetchPromises)
+            return AllTimeEntry
+        }
+
+    }
+}

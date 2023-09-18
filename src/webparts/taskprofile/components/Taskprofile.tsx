@@ -355,7 +355,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       truncatedTitle = taskDetails["Title"].substring(0, maxTitleLength - 3) + "...";
     }
  
-    let portfolio:any
+    let portfolio:any=[];
     if(taskDetails?.Portfolio!=undefined){
  
       portfolio =this.masterTaskData.filter((item:any)=>item.Id==taskDetails?.Portfolio?.Id)
@@ -438,11 +438,10 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     }, () => {
 
       this.getSmartTime();
-      // if (tempTask.Portfolio != undefined) {
-      //   this.getAllTaskData();
-      // }
-      this.getAllTaskData();
-
+      if (tempTask.Portfolio != undefined) {
+        this.getAllTaskData();
+      }
+     
 
     });
   }
@@ -1581,10 +1580,14 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                       }
                       {this.state.breadCrumData?.map((breadcrumbitem: any, index: any) => {
                         return <>
-                          <li>
+                          {breadcrumbitem?.siteType==undefined &&<li>
 
                             <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Id}`}>{breadcrumbitem?.Title}</a>
-                          </li>
+                          </li>}
+                          {breadcrumbitem?.siteType!=undefined &&<li>
+
+                        <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${breadcrumbitem?.Id}&Site=${breadcrumbitem?.siteType} `}>{breadcrumbitem?.Title}</a>
+                           </li>}
                           {this.state.breadCrumData.length == index &&
                             <li>
                               <a  >
@@ -2481,7 +2484,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
           }
           {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} context={this.props.Context} AllListId={AllListId} Call={(Type: any) => { this.CallBack(Type) }} /> : ''}
           {/* {this.state.isTimeEntry ? <TimeEntry props={this.state.Result} isopen={this.state.isTimeEntry} CallBackTimesheet={() => { this.CallBackTimesheet() }} /> : ''} */}
-          {this.state.EditSiteCompositionStatus ? <EditSiteComposition EditData={this.state.Result} context={this.props.Context} ServicesTaskCheck={this.state.Result["Services"] != undefined && this.state.Result["Services"].length > 0 ? true : false} AllListId={AllListId} Call={(Type: any) => { this.CallBack(Type) }} /> : ''}
+          {this.state.EditSiteCompositionStatus ? <EditSiteComposition EditData={this.state.Result} context={this.props.Context} ServicesTaskCheck={this.state.Result["Portfolio"] != undefined ? true : false} AllListId={AllListId} Call={(Type: any) => { this.CallBack(Type) }} /> : ''}
           {this.state?.emailcomponentopen && countemailbutton == 0 && <EmailComponenet approvalcallback={() => { this.approvalcallback() }} Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus} currentUser={this?.currentUser} items={this.state?.Result} />}
         </div>
       </MyContext.Provider>
