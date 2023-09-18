@@ -4,52 +4,30 @@ import styles from './DocumentSearch.module.scss';
 // import GlobalCommanTable from '../../../GlobalCommon/GlobalCommanTable';
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import { ColumnDef } from '@tanstack/react-table';
-import DocumentPopup from '../../taskprofile/components/EditDocunentPanel';
+import DocumentPopup from './DocumentPopup';
 import moment from 'moment';
 var TaskUser: any = []
-let mastertaskdetails: any = [];
 export default function DocumentSearchPage(Props: any) {
     //#region Required Varibale on Page load BY PB
     const PageContext = Props.Selectedprops;
-    PageContext.DocumentsListID = PageContext?.DocumentListId;
     const [AllDocs, setAllDocs] = useState([]);
-    const [selectedItemId, setSelectedItem] = useState([]);
+    const [selectedItemId, setSelectedItem] = useState(undefined);
     const [isEditModalOpen, setisEditModalOpen] = useState(false);
     //#endregion
     //#region code to load All Documents By PB
-    useEffect(() => {
-        LoadMasterTaskList().then((data: any) => {
-            LoadTaskUser()
-        }).catch((error: any) => {
-            console.log(error)
-        })
-
-    }, []);
     const LoadDocs = () => {
         let web = new Web(PageContext.context._pageContext._web.absoluteUrl + '/')
-        web.lists.getById(PageContext.DocumentListId).items.select('Id,Title,Year,File_x0020_Type,Portfolios/Id,Portfolios/Title,FileLeafRef,FSObjType,FileDirRef,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl').filter('FSObjType eq 0').expand('Author,Editor,Portfolios').getAll()
+        web.lists.getById(PageContext.DocumentListId).items.select('Id,Title,Year,File_x0020_Type,FileLeafRef,FSObjType,FileDirRef,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl').filter('FSObjType eq 0').expand('Author,Editor').getAll()
             .then((response: any) => {
                 try {
                     response.forEach((Doc: any) => {
-                        // Doc.Created = moment(Doc.Created).format('DD/MM/YYYY');
-                        // Doc.Modified = moment(Doc.Modified).format('DD/MM/YYYY HH:mm')
-                          Doc.Created = Doc.Created;
-                        Doc.Modified = Doc.Modified;
-                       
+                        Doc.Created = moment(Doc.Created).format('DD/MM/YYYY');
+                        Doc.Modified = moment(Doc.Modified).format('DD/MM/YYYY HH:mm')
                         Doc.SiteIcon = PageContext.context._pageContext._web.title;
                         Doc.AllModifiedImages = [];
                         Doc.AllCreatedImages = [];
                         let CreatedUserObj: any = {};
                         let ModifiedUserObj: any = {};
-
-                        if (Doc.Portfolios != undefined && Doc.Portfolios.length > 0) {
-                            mastertaskdetails?.map((mastertask: any) => {
-                                if (mastertask.Id == Doc.Portfolios[0].Id) {
-                                    Doc.Portfolio = mastertask
-                                }
-                            })
-                        }
-
                         TaskUser.forEach((User: any) => {
                             if (User.AssingedToUser != undefined && User.AssingedToUser.Id != undefined && Doc.Author.Id == User.AssingedToUser.Id && User.Item_x0020_Cover != undefined) {
                                 CreatedUserObj['UserImage'] = User.Item_x0020_Cover.Url;
@@ -88,36 +66,6 @@ export default function DocumentSearchPage(Props: any) {
                 console.error(error);
             });
     }
-    const LoadMasterTaskList = () => {
-        return new Promise(function (resolve, reject) {
-
-            let web = new Web(PageContext.context._pageContext._web.absoluteUrl + '/');
-            web.lists
-                .getById(PageContext.MasterTaskListId).items
-                .select(
-                    "Id",
-                    "Title",
-                    "Mileage",
-                    "TaskListId",
-                    "TaskListName",
-                    "PortfolioType/Id",
-                    "PortfolioType/Title",
-                    "PortfolioType/Color",
-                ).expand("PortfolioType").top(4999).get()
-                .then((dataserviccomponent: any) => {
-                    console.log(dataserviccomponent)
-                    mastertaskdetails = mastertaskdetails.concat(dataserviccomponent);
-
-
-                    // return dataserviccomponent
-                    resolve(dataserviccomponent)
-
-                }).catch((error: any) => {
-                    console.log(error)
-                    reject(error)
-                })
-        })
-    }
     //#endregion
     //#region code to load TaskUser By PB
     const LoadTaskUser = () => {
@@ -129,7 +77,9 @@ export default function DocumentSearchPage(Props: any) {
             console.error(error);
         });
     }
-
+    useEffect(() => {
+        LoadTaskUser()
+    }, []);
     //#endregion
     //#region code to edit delete and callback function BY PB
     const closeEditPopup = () => {
@@ -137,13 +87,8 @@ export default function DocumentSearchPage(Props: any) {
         LoadDocs();
     }
     const EditItem = (itemId: any) => {
-      let created =new Date(itemId?.Created)
-      let modify=new Date(itemId?.Modified)
-      let editData=itemId;
-      editData.Created=created;
-      editData.modify=modify;
         setisEditModalOpen(true)
-        setSelectedItem(editData)
+        setSelectedItem(itemId)
     }
     const deleteData = (dlData: any) => {
         var flag: any = confirm('Do you want to delete this item')
@@ -156,10 +101,6 @@ export default function DocumentSearchPage(Props: any) {
                 console.error(error);
             });
         }
-    }
-    const callbackeditpopup = () => {
-        setisEditModalOpen(false)
-        LoadDocs();
     }
     //#endregion 
     //#region code to apply react/10stack global table BY PB
@@ -178,64 +119,110 @@ export default function DocumentSearchPage(Props: any) {
             ),
         },
         {
-            accessorKey: "Title", placeholder: "Title", header: "", size: 30,
+            accessorKey: "Title", placeholder: "Title", header: "",
             cell: ({ row }) => (
                 <>
                     <a target="_blank" href={row?.original?.FileDirRef}>
-                        <img src="/_layouts/15/images/folder.gif"></img>
+                        <span className="alignIcon svg__iconbox svg__icon--folder"></span>
                     </a>
                     {row?.original?.Title != undefined && row?.original?.Title != null && row?.original?.Title != '' ? <a target="_blank" href={row?.original?.FileDirRef}> {row?.original?.Title} </a> : <a target="_blank" href={row?.original?.FileDirRef}> {row?.original?.FileLeafRef} </a>}
                 </>
             ),
         },
         {
-            accessorKey: "FileLeafRef", placeholder: "Document Url", header: "", size: 25,
+            accessorKey: "FileLeafRef", placeholder: "Document Url", header: "",
             cell: ({ row }) => (
                 <>
                     <a>
+                        {/* {row?.original?.File_x0020_Type == 'pdf' &&
+                            <span className="alignIcon  svg__iconbox svg__icon--folder"></span>
+                        }
+                        {row?.original?.File_x0020_Type == 'docx' &&
+                            <span className="alignIcon  svg__iconbox svg__icon--docx"></span>
+                        }
+                        {row?.original?.File_x0020_Type == 'icmsg' &&
+                            <span className="alignIcon  svg__iconbox svg__icon--mail"></span>
+                        }
                         {row?.original?.File_x0020_Type == 'pdf' &&
-                            <img src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/24/icon_pdf_16.jpg`}></img>}
+                            <span className="alignIcon  svg__iconbox svg__icon--pdf"></span>
+                        }
+                        {row?.original?.File_x0020_Type == 'jpg' &&
+                            <span className="alignIcon  svg__iconbox svg__icon--jpeg"></span>
+                        }
+                         {row?.original?.File_x0020_Type == 'png' &&
+                            <span className="alignIcon  svg__iconbox svg__icon--png"></span>
+                        }
+                           {row?.original?.File_x0020_Type == 'Zip' &&
+                            <span className="alignIcon  svg__iconbox svg__icon--zip"></span>
+                        }
+                           {row?.original?.File_x0020_Type == 'png' &&
+                            <span className="alignIcon  svg__iconbox svg__icon--png"></span>
+                        }
+                            {row?.original?.File_x0020_Type == 'svg' &&
+                            <span className="alignIcon  svg__iconbox svg__icon--svg"></span>
+                        }
+                              {row?.original?.File_x0020_Type == 'pptx' &&
+                            <span className="alignIcon  svg__iconbox svg__icon--pptx"></span>
+                        }
+                                {row?.original?.File_x0020_Type == 'xlsx' &&
+                            <span className="alignIcon  svg__iconbox svg__icon--xlsx"></span>
+                        }
+                               {row?.original?.File_x0020_Type == 'msg' &&
+                            <span className="alignIcon  svg__iconbox svg__icon--smg "></span>
+                        }
+                              {row?.original?.File_x0020_Type == 'zip' &&
+                            <span className="alignIcon  svg__iconbox svg__icon--zip "></span>
+                        }
+                             {row?.original?.File_x0020_Type == 'zip' &&
+                            <span className={`alignIcon  svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`}></span>
+                        }
+                         */}
+                        {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'aspx' && <span className={`alignIcon svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`}></span>}
+                        {row?.original?.File_x0020_Type == 'rar' && <span className="alignIcon  svg__iconbox svg__icon--zip "></span>}
+                        {row?.original?.File_x0020_Type == 'aspx' || row?.original?.File_x0020_Type == 'msg' && <span className="alignIcon  svg__iconbox svg__icon--unknownFile "></span>}
+                        {row?.original?.File_x0020_Type == 'jpeg' || row?.original?.File_x0020_Type == 'jpg' && <span className="alignIcon  svg__iconbox svg__icon--jpeg "></span>}
+                        {row?.original?.File_x0020_Type == 'docx' || row?.original?.File_x0020_Type == 'doc' && <span className="alignIcon  svg__iconbox svg__icon--docx "></span>}
+                        {/* <img src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/24/icon_pdf_16.jpg`}></img> */}
 
-                        {row?.original?.File_x0020_Type != 'flv' && row?.original?.File_x0020_Type != 'js' && row?.original?.File_x0020_Type != 'css' && row?.original?.File_x0020_Type != 'zip' && row?.original?.File_x0020_Type != 'aspx' && row?.original?.File_x0020_Type != 'mp4' && row?.original?.File_x0020_Type != 'pdf' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'png' && row?.original?.File_x0020_Type != 'gif' &&
-                            <img src={`/_layouts/15/images/ic${row?.original?.File_x0020_Type}.png`}></img>}
+                        {/* {row?.original?.File_x0020_Type != 'flv' && row?.original?.File_x0020_Type != 'js' && row?.original?.File_x0020_Type != 'css' && row?.original?.File_x0020_Type != 'zip' && row?.original?.File_x0020_Type != 'aspx' && row?.original?.File_x0020_Type != 'mp4' && row?.original?.File_x0020_Type != 'pdf' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'png' && row?.original?.File_x0020_Type != 'gif' &&
+                            <img src={`/_layouts/15/images/ic${row?.original?.File_x0020_Type}.png`}></img>} */}
 
-                        {row?.original?.File_x0020_Type == 'flv' || row?.original?.File_x0020_Type == 'js' || row?.original?.File_x0020_Type == 'css' || row?.original?.File_x0020_Type == 'zip' || row?.original?.File_x0020_Type == 'aspx' || row?.original?.File_x0020_Type == 'mp4' || row?.original?.File_x0020_Type == 'jpg' || row?.original?.File_x0020_Type == 'png' || row?.original?.File_x0020_Type == 'gif' &&
-                            <img src="/_layouts/15/images/icgen.gif?rev=23"></img>}
+                        {/* {row?.original?.File_x0020_Type == 'flv' || row?.original?.File_x0020_Type == 'js' || row?.original?.File_x0020_Type == 'css' || row?.original?.File_x0020_Type == 'zip' || row?.original?.File_x0020_Type == 'aspx' || row?.original?.File_x0020_Type == 'mp4' || row?.original?.File_x0020_Type == 'jpg' || row?.original?.File_x0020_Type == 'png' || row?.original?.File_x0020_Type == 'gif' &&
+                            <img src="/_layouts/15/images/icgen.gif?rev=23"></img>} */}
                     </a>
                     <a target="_blank" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.FileLeafRef} </a>
                 </>
             ),
         },
         {
-            accessorKey: "Created", placeholder: "Created Date", header: "", size: 20,
+            accessorKey: "Created", placeholder: "Created Date", header: "", size: 120,
             cell: ({ row }) => (
                 <>
-                    {row?.original?.AllCreatedImages?.map((item: any) => (
+                    {row?.original?.AllCreatedImages.map((item: any) => (
                         <a target="_blank" href={`${PageContext.context._pageContext._web.serverRelativeUrl}/SitePages/TaskDashboard.aspx?UserId=${item.UserId}&Name=${item.Title}`}>
-                          
-                            {moment(row?.original?.Created).format('DD/MM/YYYY')} {item?.UserImage != undefined && item?.UserImage != '' ? <img title={item?.Title} className="workmember" src={item?.UserImage}></img> : <img title={item?.Title} className="workmember" src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg`}></img>}
+                            {row?.original?.Created} {item?.UserImage != undefined && item?.UserImage != '' ? <img title={item?.Title} className="workmember" src={item?.UserImage}></img> : <img title={item?.Title} className="workmember" src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg`}></img>}
                         </a>
                     ))}
                 </>
             ),
         },
         {
-            accessorKey: "Modified", placeholder: "Modified Date", header: "", size: 20,
+            accessorKey: "Modified", placeholder: "Modified Date", header: "", size: 152,
             cell: ({ row }) => (
                 <>
-                    {row?.original?.AllModifiedImages?.map((item: any) => (
+                    {row?.original?.AllModifiedImages.map((item: any) => (
                         <a target="_blank" href={`${PageContext.context._pageContext._web.serverRelativeUrl}/SitePages/TaskDashboard.aspx?UserId=${item.UserId}&Name=${item.Title}`}>
-                            {moment(row?.original?.Modified).format('DD/MM/YYYY')} {item?.UserImage != undefined && item?.UserImage != '' ? <img title={item?.Title} className="workmember" src={item?.UserImage}></img> : <img title={item?.Title} className="workmember" src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg`}></img>}
+                            {row?.original?.Modified} {item?.UserImage != undefined && item?.UserImage != '' ? <img title={item?.Title} className="workmember" src={item?.UserImage}></img> : <img title={item?.Title} className="workmember" src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg`}></img>}
                         </a>
                     ))}
                 </>
             ),
         },
         {
-            cell: ({ row }) => (
-                <>
 
-                    <a onClick={() => EditItem(row.original)} title="Edit"><span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink"></span></a>
+            cell: ({ row }) => (
+                <>
+                    <a onClick={() => EditItem(row.original.Id)} title="Edit"><span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink"></span></a>
                     <a onClick={() => deleteData(row.original)}><span title="Remove Task" className="svg__iconbox svg__icon--cross dark hreflink"></span></a>
                 </>
             ),
@@ -244,23 +231,18 @@ export default function DocumentSearchPage(Props: any) {
             placeholder: '',
             header: '',
             id: 'row.original',
-            size: 20,
+            size: 50,
         },
         ],
         [AllDocs]);
-    const callBackData = React.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => {
-        console.log(elem)
-    }, []);
+    const callBackData = React.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => { }, []);
     //#endregion
     return (
         //#Jsx Part By PB
         <> {AllDocs && <div>
             <GlobalCommanTable columns={columns} data={AllDocs} showHeader={true} callBackData={callBackData} />
         </div>}
-            {isEditModalOpen &&
-                <DocumentPopup editData={selectedItemId} AllListId={PageContext}Context={PageContext?.context}
-                    editdocpanel={isEditModalOpen} callbackeditpopup={callbackeditpopup} />}
-            {/* {isEditModalOpen ? <DocumentPopup editdocpanel={isEditModalOpen} AllListId={PageContext} editData={selectedItemId}callbackeditpopup={callbackeditpopup} /> : ''} */}
+            {isEditModalOpen ? <DocumentPopup closeEditPopup={closeEditPopup} pagecontext={PageContext} Id={selectedItemId} /> : ''}
         </>
         //#endregion
     )
