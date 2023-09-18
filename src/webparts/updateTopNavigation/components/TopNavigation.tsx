@@ -9,6 +9,9 @@ import {
     ColumnDef,
 } from "@tanstack/react-table";
 import * as Moment from "moment";
+import { data } from 'jquery';
+ var ParentData:any = []
+ var childData:any =[]
 const TopNavigation = (dynamicData: any) => {
     var ListId = dynamicData.dynamicData.TopNavigationListID
     const [root, setRoot] = React.useState([])
@@ -20,12 +23,15 @@ const TopNavigation = (dynamicData: any) => {
     const [changeroot, setChangeroot] = React.useState(false);
     const [postData, setPostData] = React.useState<any>({ Title: '', Url: '', Description: '', TaskTime: '', Id: '', ParentId: '' })
     const [popupData, setPopupData] = React.useState<any>([]);
+    // var [ParentData, setParentData] = React.useState<any>([]);
+    //var [childData, setchildData] = React.useState<any>([]);
     const [sortOrder, setSortOrder] = React.useState<any>()
     const [sortId,setSortId] = React.useState()
     const [value, setValue] = React.useState("")
     const [child, setChild] = React.useState("")
     const [subchild, setSubChild] = React.useState("")
     const [isVisible, setisVisible] = React.useState(false);
+    const [isNoShow, setisNoShow] = React.useState(false);
     const [owner, setOwner] = React.useState(false)
 
 
@@ -34,13 +40,29 @@ const TopNavigation = (dynamicData: any) => {
     }, [])
     const handleChange = (type: any, event: any) => {
         if (type == 'Parent') {
+            ParentData=[]
             setValue(event.target.value);
+            root?.forEach((ba:any)=>{
+                if(ba.Title == event.target.value){
+                    ParentData.push(ba)
+                }
+            })
         }
         if (type == 'child') {
+            childData=[]
             setChild(event.target.value);
+            ParentData?.forEach((ba:any)=>{
+                ba?.childs.forEach((baa:any)=>{
+                    if(baa.Title == event.target.value){
+                        childData.push(baa)
+                    }
+                })
+               
+            })
         }
         if (type == 'subchild') {
             setSubChild(event.target.value);
+           
         }
 
 
@@ -79,7 +101,7 @@ const TopNavigation = (dynamicData: any) => {
     }
     const editPopup = (item: any) => {
         var Data: any = []
-        item.CreatedDate = Moment(item.Craeted).format('DD/MM/YYYY')
+        item.CreatedDate = Moment(item.Created).format('DD/MM/YYYY')
         item.ModifiedDate = Moment(item.Modified).format('DD/MM/YYYY')
         setisVisible(item.IsVisible)
         Data.push(item)
@@ -91,12 +113,15 @@ const TopNavigation = (dynamicData: any) => {
         setPostData(undefined)
     }
     const AddNewItem = (item: any) => {
+
         var Data: any = []
         Data.push(item)
         setPopupData(Data)
         setAddPopup(true)
     }
     const CloseAddPopup = () => {
+        ParentData=[]
+        childData=[]
         setAddPopup(false)
         setPostData(undefined)
     }
@@ -244,6 +269,7 @@ const TopNavigation = (dynamicData: any) => {
 
     
     const ClosesortItem = () => {
+        setPostData(undefined)
         setSorting(false)
     }
     const sortBy = (type:any) => {
@@ -289,6 +315,19 @@ const updateSortOrder=async ()=>{
 
 
     })
+}
+const UpdateParentLevelData =()=>{
+
+if(childData != undefined && childData.length > 0){
+    setPostData({ ...postData, ParentId: childData[0]?.Id })
+}
+else {
+   if (ParentData != undefined && ParentData.length > 0){
+    setPostData({ ...postData, ParentId: childData[0]?.Id })} 
+       
+    }
+ 
+ClosechangePopup();
 }
 const column = React.useMemo<ColumnDef<any, unknown>[]>(
     () => [
@@ -403,7 +442,7 @@ const callBackData = React.useCallback((elem: any, ShowingData: any) => {
                         </div>
                         <div className='col-sm-5'>
                             <div className='form-group'>
-                                <label>{postData?.Title != undefined && postData?.Title != "" ? postData?.Title : "Root"}</label>
+                                <label>{popupData[0]?.Title != undefined && popupData[0]?.Title != "" ? popupData[0]?.Title : "Root"}</label>
                             </div>
                         </div>
                         <div className='col-sm-5'>
@@ -430,7 +469,7 @@ const callBackData = React.useCallback((elem: any, ShowingData: any) => {
                             <span className="col-sm-2">
                                 <label className='rediobutton'>
                                 <span className='SpfxCheckRadio'>
-                                    <input type="radio" className="radio" name='radio' onChange={(e) => setisVisible(false)} />No Show </span>
+                                    <input type="radio" className="radio" name='radio' checked={isVisible==false?true:false} onChange={(e) => setisVisible(true)} />No Show </span>
                                 </label>
                             </span>
                         </div>
@@ -481,6 +520,10 @@ const callBackData = React.useCallback((elem: any, ShowingData: any) => {
                                 by <span
                                     className="siteColor"> {popupData[0]?.Editor?.Title} </span>
                             </div>
+                            <div className="text-left">
+                               Delete this item
+                               <span className='svg__iconbox svg__icon--trash' onClick={() => deleteDataFunction(popupData[0])}></span>
+                            </div>
                         </div>
                         <div className="col-sm-6 text-end p-0">
                             <a data-interception="off" target="_blank"
@@ -491,6 +534,10 @@ const callBackData = React.useCallback((elem: any, ShowingData: any) => {
                             <button type="button" className="btn btn-primary ms-2"
                                 onClick={() => UpdateData(popupData[0])} >
                                 Save
+                            </button>
+                            <button type="button" className="btn btn-default ms-2"
+                                onClick={() => ClosePopup()} >
+                                Cancel
                             </button>
                         </div>
                     </div>
@@ -627,7 +674,7 @@ const callBackData = React.useCallback((elem: any, ShowingData: any) => {
                             <label><b>Top Level</b></label>
                         </div>
                         <div className='col-sm-10'>
-                            <select value={value} onChange={(e) => handleChange('Parent', e)}>
+                            <select value={value == ''?'Select Item':value} onChange={(e) => handleChange('Parent', e)}>
                                 {
                                     root?.map((item: any) => {
                                         return (
@@ -649,9 +696,9 @@ const callBackData = React.useCallback((elem: any, ShowingData: any) => {
                             <label><b>Second Level</b></label>
                         </div>
                         <div className='col-sm-10'>
-                            <select value={child} onChange={(e) => handleChange('child', e)}>
+                            <select value={child == ''?'Select Item':child} onChange={(e) => handleChange('child', e)}>
                                 {
-                                    root?.map((item: any) => {
+                                    ParentData?.map((item: any) => {
                                         return (
                                             <>
                                                 {item.childs?.map((child: any) => {
@@ -675,11 +722,9 @@ const callBackData = React.useCallback((elem: any, ShowingData: any) => {
                         </div>
                         <div className='col-sm-10'>
                             <select value={subchild} onChange={(e) => handleChange('subchild', e)}>
-                                {
-                                    root?.map((item: any) => {
-                                        return (
-                                            <>
-                                                {item.childs?.map((child: any) => {
+                                
+                                   
+                                                {childData?.map((child: any) => {
                                                     return (
                                                         <>
                                                             {child.childs?.map((subchild: any) => {
@@ -692,10 +737,8 @@ const callBackData = React.useCallback((elem: any, ShowingData: any) => {
                                                         </>
                                                     )
                                                 })}
-                                            </>
-                                        )
-                                    })
-                                }
+                                           
+                                
 
                             </select>
                         </div>
@@ -707,7 +750,7 @@ const callBackData = React.useCallback((elem: any, ShowingData: any) => {
                        
                         <div className="text-end">
                             <button type="button" className="btn btn-primary ms-2"
-                                onClick={() => UpdateData(popupData[0])} >
+                                onClick={() => UpdateParentLevelData()} >
                                 Save
                             </button>
                         </div>

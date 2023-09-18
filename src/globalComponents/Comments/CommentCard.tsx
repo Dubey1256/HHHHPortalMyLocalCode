@@ -660,7 +660,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       }
     }
   }
-  private BindHtmlBody() {
+  private BindHtmlBody() { 
     let body = document.getElementById('htmlMailBody')
     console.log(body?.innerHTML);
     return "<style>p>br {display: none;}</style>" + body?.innerHTML;
