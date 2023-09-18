@@ -3,7 +3,7 @@ import Tooltip from '../../../globalComponents/Tooltip';
 import { useState, useEffect,forwardRef,useImperativeHandle } from 'react';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { Button, Tabs, Tab, Col, Nav, Row } from 'react-bootstrap';
-
+import EditDocument from './EditDocunentPanel'
 import HtmlEditorCard from '../../../globalComponents/./HtmlEditor/HtmlEditor'
 import pnp, { sp, Web } from "sp-pnp-js";
 import * as moment from "moment-timezone";
@@ -33,8 +33,8 @@ const SmartInformation = (props: any,ref:any) => {
   const [filterSmartinfo, setFiltersmartinfo] = useState([]);
  
   const [isopencomonentservicepopup, setisopencomonentservicepopup] = useState(false);
-  const [componentpopup, setcomponentpopup] = useState(false);
-  const [servicespopup, setservicespopup] = useState(false);
+  // const [componentpopup, setcomponentpopup] = useState(false);
+  // const [servicespopup, setservicespopup] = useState(false);
   const [uplodDoc, setUploaddoc] = useState(null);
   const [EditTaskdata, setEditTaskdata] = useState();
   const [PostSmartInfo, setPostSmartInfo] = useState(null);
@@ -258,12 +258,13 @@ const SmartInformation = (props: any,ref:any) => {
 
         const web = new Web(props?.AllListId?.siteUrl);
         await web.lists.getById(props?.AllListId?.DocumentsListID)
-          .items.select("Id,Title,PriorityRank,Year,Item_x0020_Cover,Portfolios/Id,Portfolios/Title,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl")
+          .items.select("Id,Title,PriorityRank,Year,Item_x0020_Cover,Body,Portfolios/Id,Portfolios/Title,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl")
           .expand("Author,Editor,Portfolios").filter(`SmartInformation/ID  eq ${items?.Id}`).top(4999)
           .get()
           .then(async (result: any[]) => {
             console.log(result);
             result?.map((servicecomponent: any) => {
+              servicecomponent.Description=servicecomponent?.Body
               if (servicecomponent.Portfolios != undefined && servicecomponent.Portfolios.length > 0) {
                 mastertaskdetails.map((mastertask: any) => {
                   if (mastertask.Id == servicecomponent.Portfolios[0].Id) {
@@ -847,7 +848,7 @@ const SmartInformation = (props: any,ref:any) => {
             SmartInformationId: { "results": smartDocumentpostData != undefined ? [smartDocumentpostData?.Id] : [smartinfoData?.Id] },
             Title: fileName.split(".")[0],
             PortfoliosId: { "results": tagcomponetServicesId != undefined ? [tagcomponetServicesId] : [] },
-
+            Body:allValue?.Description,
             Url: {
               "__metadata": { type: 'SP.FieldUrlValue' },
               'Description': allValue?.LinkUrl != "" ? allValue?.LinkUrl : "",
@@ -910,8 +911,8 @@ const SmartInformation = (props: any,ref:any) => {
       // if (editData?.Portfolio?.Portfolio_x0020_Type == "Component") {
         if (editData?.Portfolio!=undefined) {
         setallSetValue({ ...allValue, componentservicesetdataTag: editData?.Portfolio })
-        setservicespopup(false);
-        setcomponentpopup(true);
+        // setservicespopup(false);
+        // setcomponentpopup(true);
       } 
       // else {
       //   setallSetValue({ ...allValue, componentservicesetdataTag: editData?.SharewebTask[0] })
@@ -922,23 +923,27 @@ const SmartInformation = (props: any,ref:any) => {
     }
     setEditdocumentsData(editData);
   }
+  const callbackeditpopup=()=>{
+    GetResult();
+    setEditdocpanel(false);
+  }
 
   // =====================component services click radio butoon on update documents===============
 
-  const checkradiobutton = (e: any, items: any) => {
-    if (items == "Component") {
-      setservicespopup(false);
-      setcomponentpopup(true);
-      setallSetValue({ ...allValue, componentservicesetdataTag: undefined })
+  // const checkradiobutton = (e: any, items: any) => {
+  //   if (items == "Component") {
+  //     setservicespopup(false);
+  //     setcomponentpopup(true);
+  //     setallSetValue({ ...allValue, componentservicesetdataTag: undefined })
 
-    }
-    if (items == "Service") {
-      setservicespopup(true);
-      setcomponentpopup(false);
-      setallSetValue({ ...allValue, componentservicesetdataTag: undefined })
+  //   }
+  //   if (items == "Service") {
+  //     setservicespopup(true);
+  //     setcomponentpopup(false);
+  //     setallSetValue({ ...allValue, componentservicesetdataTag: undefined })
 
-    }
-  }
+  //   }
+  // }
 
 
 
@@ -1009,73 +1014,74 @@ const SmartInformation = (props: any,ref:any) => {
     console.log(Type)
     console.log(functionType)
     if (functionType == "Save") {
-      if (Type == "Component") {
-        setallSetValue({ ...allValue, componentservicesetdataTag: DataItem[0] })
-      }
-      if (Type == "Service") {
+      // if (Type == "Component") {
+      //   setallSetValue({ ...allValue, componentservicesetdataTag: DataItem[0] })
+      // }
+      // if (Type == "Service") {
         setallSetValue({ ...allValue, componentservicesetdataTag: DataItem[0] })
       }
       setisopencomonentservicepopup(false);
-    }
-    else {
-      setisopencomonentservicepopup(false);
-    }
+    
+    // else {
+    //   setisopencomonentservicepopup(false);
+    // }
   }, [])
 
   //============ update documents link update both  function =============
 
-  const updateDocumentsData = async () => {
-    console.log(EditdocumentsData);
-    console.log(allValue.Title);
-    console.log(allValue.DocumentType);
-    console.log(allValue.componentservicesetdata);
-    console.log(allValue.ItemRank);
-    var componetServicetagData: any;
-    if (allValue.componentservicesetdata.smartComponent != undefined) {
-      componetServicetagData = allValue.componentservicesetdata.smartComponent.Id;
-    }
-    if (allValue.componentservicesetdata.linkedComponent != undefined) {
-      componetServicetagData = allValue.componentservicesetdata.linkedComponent.Id;
-    }
+  // const updateDocumentsData = async () => {
+  //   console.log(EditdocumentsData);
+  //   console.log(allValue.Title);
+  //   console.log(allValue.DocumentType);
+  //   console.log(allValue.componentservicesetdata);
+  //   console.log(allValue.ItemRank);
+  //   var componetServicetagData: any;
+  //   if (allValue.componentservicesetdata.smartComponent != undefined) {
+  //     componetServicetagData = allValue.componentservicesetdata.smartComponent.Id;
+  //   }
+  //   if (allValue.componentservicesetdata.linkedComponent != undefined) {
+  //     componetServicetagData = allValue.componentservicesetdata.linkedComponent.Id;
+  //   }
 
-    const web = new Web(props?.AllListId?.siteUrl);
-    await web.lists.getById(props?.AllListId?.DocumentsListID)
-      .items.getById(EditdocumentsData.Id).update({
-        Title: EditdocumentsData.Title,
-        ItemRank: EditdocumentsData.ItemRank,
-        Year: EditdocumentsData.Year,
-        ItemType: EditdocumentsData.ItemType,
+  //   const web = new Web(props?.AllListId?.siteUrl);
+  //   await web.lists.getById(props?.AllListId?.DocumentsListID)
+  //     .items.getById(EditdocumentsData.Id).update({
+  //       Title: EditdocumentsData.Title,
+  //       ItemRank: EditdocumentsData.ItemRank,
+  //       Year: EditdocumentsData.Year,
+  //       ItemType: EditdocumentsData.ItemType,
 
-        PortfoliosId: { "results": allValue.componentservicesetdataTag != undefined ? [allValue.componentservicesetdataTag.Id] : [] },
-        Item_x0020_Cover: {
-          "__metadata": { type: 'SP.FieldUrlValue' },
-          'Description': EditdocumentsData?.Item_x0020_Cover?.Url != "" ? EditdocumentsData?.UrItem_x0020_Coverl?.Url : "",
-          'Url': EditdocumentsData?.Item_x0020_Cover?.Url ? EditdocumentsData?.Item_x0020_Cover?.Url : "",
-        },
-        Url: {
-          "__metadata": { type: 'SP.FieldUrlValue' },
-          'Description': EditdocumentsData?.Url?.Url != "" ? EditdocumentsData?.Url?.Url : "",
-          'Url': EditdocumentsData?.Url?.Url ? EditdocumentsData?.Url?.Url : "",
-        }
+  //       PortfoliosId: { "results": allValue.componentservicesetdataTag != undefined ? [allValue.componentservicesetdataTag.Id] : [] },
+  //       Body:allValue?.Description,
+  //       Item_x0020_Cover: {
+  //         "__metadata": { type: 'SP.FieldUrlValue' },
+  //         'Description': EditdocumentsData?.Item_x0020_Cover?.Url != "" ? EditdocumentsData?.UrItem_x0020_Coverl?.Url : "",
+  //         'Url': EditdocumentsData?.Item_x0020_Cover?.Url ? EditdocumentsData?.Item_x0020_Cover?.Url : "",
+  //       },
+  //       Url: {
+  //         "__metadata": { type: 'SP.FieldUrlValue' },
+  //         'Description': EditdocumentsData?.Url?.Url != "" ? EditdocumentsData?.Url?.Url : "",
+  //         'Url': EditdocumentsData?.Url?.Url ? EditdocumentsData?.Url?.Url : "",
+  //       }
 
-      }).then((updatedItem: any) => {
-        console.log(updatedItem)
-        if (EditdocumentsData?.Url != undefined) {
-          alert(" Link update successfully");
-        } else {
-          alert("Document(s) update successfully");
-        }
-        handleClose();
-        setallSetValue({ ...allValue, EditTaskpopupstatus: false })
-        setEditdocpanel(false);
-        GetResult();
-      }).catch((err: any) => {
-        console.log(err)
-      })
+  //     }).then((updatedItem: any) => {
+  //       console.log(updatedItem)
+  //       if (EditdocumentsData?.Url != undefined) {
+  //         alert(" Link update successfully");
+  //       } else {
+  //         alert("Document(s) update successfully");
+  //       }
+  //       handleClose();
+  //       setallSetValue({ ...allValue, EditTaskpopupstatus: false })
+  //       setEditdocpanel(false);
+  //       GetResult();
+  //     }).catch((err: any) => {
+  //       console.log(err)
+  //     })
 
-    // })
+  //   // })
 
-  }
+  // }
   const checkboxFunction = (e: any) => {
     console.log(e);
     if (e.currentTarget.checked) {
@@ -1271,12 +1277,13 @@ const SmartInformation = (props: any,ref:any) => {
             <div className='col-sm-6 mt-2 p-0'>
               {popupEdit && <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/Lists/SmartInformation/EditForm.aspx?ID=${editvalue?.Id != null ? editvalue?.Id : null}`}>Open out-of-the-box form |</a></span>}
               <span><a title='Add Link/ Document' style={{ cursor: "pointer" }} onClick={() => addDocument("popupaddDocument", editvalue)}>Add Link/ Document</a></span>
-              <Button className='btn btn-default mx-1' onClick={() => handleClose()}>
-                Cancel
-              </Button>
               <Button className='btn btn-primary ms-1 me-1' onClick={saveSharewebItem}>
                 Save
               </Button>
+              <Button className='btn btn-default mx-1' onClick={() => handleClose()}>
+                Cancel
+              </Button>
+              
               
             </div>
           </div>
@@ -1396,13 +1403,15 @@ const SmartInformation = (props: any,ref:any) => {
       </Panel>
 
       {/* ===============edit  uploaded documents and link both  data panel============== */}
-      <Panel onRenderHeader={onRenderCustomHeaderDocuments}
+      {Editdocpanel&&<EditDocument  editData={EditdocumentsData} AllListId={props.AllListId}Context={props.Context}editdocpanel={Editdocpanel}callbackeditpopup={callbackeditpopup}/>}
+      {/* <Panel onRenderHeader={onRenderCustomHeaderDocuments}
         isOpen={Editdocpanel}
         type={PanelType.custom}
         customWidth="1091px"
         onDismiss={handleClosedoc}
         isBlocking={!isopencomonentservicepopup}
-        className={servicespopup == true ? "serviepannelgreena" : "siteColor"}
+        
+        // className={servicespopup == true ? "serviepannelgreena" : "siteColor"}
       >
         <Tabs
           defaultActiveKey="BASICINFORMATION"
@@ -1481,6 +1490,7 @@ const SmartInformation = (props: any,ref:any) => {
         </Tabs>
         <footer className='text-end mt-2'>
           <div className='col-sm-12 row m-0'>
+          <div className='mt-3'> <HtmlEditorCard editorValue={EditdocumentsData?.Description != null ? EditdocumentsData?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>
             <div className="col-sm-6 text-lg-start">
               {Editdocpanel && <div><div><span className='pe-2'>Created</span><span className='pe-2'>{EditdocumentsData?.Created !== null ? moment(editvalue?.Created).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Author?.Title}</a></span></div>
                 <div><span className='pe-2'>Last modified</span><span className='pe-2'>{EditdocumentsData?.Modified !== null ? moment(editvalue?.Modified).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Editor?.Title}</a></span></div>
@@ -1500,11 +1510,11 @@ const SmartInformation = (props: any,ref:any) => {
             </div>
           </div>
         </footer>
-      </Panel>
+      </Panel> */}
       {allValue.EditTaskpopupstatus && <EditTaskPopup Items={EditTaskdata} context={props?.Context} AllListId={props?.AllListId} Call={() => { CallBack() }} />}
       {/* {isopencomonentservicepopup && componentpopup && <ComponentPortPolioPopup props={allValue?.componentservicesetdata} Call={ServiceComponentCallBack} Dynamic={props.AllListId}></ComponentPortPolioPopup>}
       {isopencomonentservicepopup && servicespopup && <LinkedComponent props={allValue?.componentservicesetdata} Call={ServiceComponentCallBack} Dynamic={props.AllListId}></LinkedComponent>} */}
-      {isopencomonentservicepopup && componentpopup &&
+      {isopencomonentservicepopup  &&
         <ServiceComponentPortfolioPopup
 
           props={allValue?.componentservicesetdata}
@@ -1514,7 +1524,7 @@ const SmartInformation = (props: any,ref:any) => {
 
         />
       }
-      {isopencomonentservicepopup && servicespopup &&
+      {/* {isopencomonentservicepopup && servicespopup &&
         <ServiceComponentPortfolioPopup
           props={allValue?.componentservicesetdata}
           Dynamic={props.AllListId}
@@ -1522,7 +1532,7 @@ const SmartInformation = (props: any,ref:any) => {
           ComponentType={"Service"}
 
         />
-      }
+      } */}
     </div>
 
 

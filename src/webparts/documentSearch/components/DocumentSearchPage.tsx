@@ -4,30 +4,52 @@ import styles from './DocumentSearch.module.scss';
 // import GlobalCommanTable from '../../../GlobalCommon/GlobalCommanTable';
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import { ColumnDef } from '@tanstack/react-table';
-import DocumentPopup from './DocumentPopup';
+import DocumentPopup from '../../taskprofile/components/EditDocunentPanel';
 import moment from 'moment';
 var TaskUser: any = []
+let mastertaskdetails: any = [];
 export default function DocumentSearchPage(Props: any) {
     //#region Required Varibale on Page load BY PB
     const PageContext = Props.Selectedprops;
+    PageContext.DocumentsListID = PageContext?.DocumentListId;
     const [AllDocs, setAllDocs] = useState([]);
-    const [selectedItemId, setSelectedItem] = useState(undefined);
+    const [selectedItemId, setSelectedItem] = useState([]);
     const [isEditModalOpen, setisEditModalOpen] = useState(false);
     //#endregion
     //#region code to load All Documents By PB
+    useEffect(() => {
+        LoadMasterTaskList().then((data: any) => {
+            LoadTaskUser()
+        }).catch((error: any) => {
+            console.log(error)
+        })
+
+    }, []);
     const LoadDocs = () => {
         let web = new Web(PageContext.context._pageContext._web.absoluteUrl + '/')
-        web.lists.getById(PageContext.DocumentListId).items.select('Id,Title,Year,File_x0020_Type,FileLeafRef,FSObjType,FileDirRef,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl').filter('FSObjType eq 0').expand('Author,Editor').getAll()
+        web.lists.getById(PageContext.DocumentListId).items.select('Id,Title,Year,File_x0020_Type,Portfolios/Id,Portfolios/Title,FileLeafRef,FSObjType,FileDirRef,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl').filter('FSObjType eq 0').expand('Author,Editor,Portfolios').getAll()
             .then((response: any) => {
                 try {
                     response.forEach((Doc: any) => {
-                        Doc.Created = moment(Doc.Created).format('DD/MM/YYYY');
-                        Doc.Modified = moment(Doc.Modified).format('DD/MM/YYYY HH:mm')
+                        // Doc.Created = moment(Doc.Created).format('DD/MM/YYYY');
+                        // Doc.Modified = moment(Doc.Modified).format('DD/MM/YYYY HH:mm')
+                          Doc.Created = Doc.Created;
+                        Doc.Modified = Doc.Modified;
+                       
                         Doc.SiteIcon = PageContext.context._pageContext._web.title;
                         Doc.AllModifiedImages = [];
                         Doc.AllCreatedImages = [];
                         let CreatedUserObj: any = {};
                         let ModifiedUserObj: any = {};
+
+                        if (Doc.Portfolios != undefined && Doc.Portfolios.length > 0) {
+                            mastertaskdetails?.map((mastertask: any) => {
+                                if (mastertask.Id == Doc.Portfolios[0].Id) {
+                                    Doc.Portfolio = mastertask
+                                }
+                            })
+                        }
+
                         TaskUser.forEach((User: any) => {
                             if (User.AssingedToUser != undefined && User.AssingedToUser.Id != undefined && Doc.Author.Id == User.AssingedToUser.Id && User.Item_x0020_Cover != undefined) {
                                 CreatedUserObj['UserImage'] = User.Item_x0020_Cover.Url;
@@ -66,6 +88,36 @@ export default function DocumentSearchPage(Props: any) {
                 console.error(error);
             });
     }
+    const LoadMasterTaskList = () => {
+        return new Promise(function (resolve, reject) {
+
+            let web = new Web(PageContext.context._pageContext._web.absoluteUrl + '/');
+            web.lists
+                .getById(PageContext.MasterTaskListId).items
+                .select(
+                    "Id",
+                    "Title",
+                    "Mileage",
+                    "TaskListId",
+                    "TaskListName",
+                    "PortfolioType/Id",
+                    "PortfolioType/Title",
+                    "PortfolioType/Color",
+                ).expand("PortfolioType").top(4999).get()
+                .then((dataserviccomponent: any) => {
+                    console.log(dataserviccomponent)
+                    mastertaskdetails = mastertaskdetails.concat(dataserviccomponent);
+
+
+                    // return dataserviccomponent
+                    resolve(dataserviccomponent)
+
+                }).catch((error: any) => {
+                    console.log(error)
+                    reject(error)
+                })
+        })
+    }
     //#endregion
     //#region code to load TaskUser By PB
     const LoadTaskUser = () => {
@@ -77,9 +129,7 @@ export default function DocumentSearchPage(Props: any) {
             console.error(error);
         });
     }
-    useEffect(() => {
-        LoadTaskUser()
-    }, []);
+
     //#endregion
     //#region code to edit delete and callback function BY PB
     const closeEditPopup = () => {
@@ -87,8 +137,13 @@ export default function DocumentSearchPage(Props: any) {
         LoadDocs();
     }
     const EditItem = (itemId: any) => {
+      let created =new Date(itemId?.Created)
+      let modify=new Date(itemId?.Modified)
+      let editData=itemId;
+      editData.Created=created;
+      editData.modify=modify;
         setisEditModalOpen(true)
-        setSelectedItem(itemId)
+        setSelectedItem(editData)
     }
     const deleteData = (dlData: any) => {
         var flag: any = confirm('Do you want to delete this item')
@@ -101,6 +156,10 @@ export default function DocumentSearchPage(Props: any) {
                 console.error(error);
             });
         }
+    }
+    const callbackeditpopup = () => {
+        setisEditModalOpen(false)
+        LoadDocs();
     }
     //#endregion 
     //#region code to apply react/10stack global table BY PB
@@ -184,11 +243,19 @@ export default function DocumentSearchPage(Props: any) {
                         {row?.original?.File_x0020_Type == 'docx' || row?.original?.File_x0020_Type == 'doc' && <span className="alignIcon  svg__iconbox svg__icon--docx "></span>}
                         {/* <img src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/24/icon_pdf_16.jpg`}></img> */}
 
+<<<<<<< HEAD
                         {/* {row?.original?.File_x0020_Type != 'flv' && row?.original?.File_x0020_Type != 'js' && row?.original?.File_x0020_Type != 'css' && row?.original?.File_x0020_Type != 'zip' && row?.original?.File_x0020_Type != 'aspx' && row?.original?.File_x0020_Type != 'mp4' && row?.original?.File_x0020_Type != 'pdf' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'png' && row?.original?.File_x0020_Type != 'gif' &&
                             <img src={`/_layouts/15/images/ic${row?.original?.File_x0020_Type}.png`}></img>} */}
 
                         {/* {row?.original?.File_x0020_Type == 'flv' || row?.original?.File_x0020_Type == 'js' || row?.original?.File_x0020_Type == 'css' || row?.original?.File_x0020_Type == 'zip' || row?.original?.File_x0020_Type == 'aspx' || row?.original?.File_x0020_Type == 'mp4' || row?.original?.File_x0020_Type == 'jpg' || row?.original?.File_x0020_Type == 'png' || row?.original?.File_x0020_Type == 'gif' &&
                             <img src="/_layouts/15/images/icgen.gif?rev=23"></img>} */}
+=======
+                        {row?.original?.File_x0020_Type != 'flv' && row?.original?.File_x0020_Type != 'js' && row?.original?.File_x0020_Type != 'css' && row?.original?.File_x0020_Type != 'zip' && row?.original?.File_x0020_Type != 'aspx' && row?.original?.File_x0020_Type != 'mp4' && row?.original?.File_x0020_Type != 'pdf' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'png' && row?.original?.File_x0020_Type != 'gif' &&
+                            <img src={`/_layouts/15/images/ic${row?.original?.File_x0020_Type}.png`}></img>}
+
+                        {row?.original?.File_x0020_Type == 'flv' || row?.original?.File_x0020_Type == 'js' || row?.original?.File_x0020_Type == 'css' || row?.original?.File_x0020_Type == 'zip' || row?.original?.File_x0020_Type == 'aspx' || row?.original?.File_x0020_Type == 'mp4' || row?.original?.File_x0020_Type == 'jpg' || row?.original?.File_x0020_Type == 'png' || row?.original?.File_x0020_Type == 'gif' &&
+                            <img src="/_layouts/15/images/icgen.gif?rev=23"></img>}
+>>>>>>> 9a85e82844baef30690c02d512c71d26488dd140
                     </a>
                     <a target="_blank" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.FileLeafRef} </a>
                 </>
@@ -198,9 +265,10 @@ export default function DocumentSearchPage(Props: any) {
             accessorKey: "Created", placeholder: "Created Date", header: "", size: 120,
             cell: ({ row }) => (
                 <>
-                    {row?.original?.AllCreatedImages.map((item: any) => (
+                    {row?.original?.AllCreatedImages?.map((item: any) => (
                         <a target="_blank" href={`${PageContext.context._pageContext._web.serverRelativeUrl}/SitePages/TaskDashboard.aspx?UserId=${item.UserId}&Name=${item.Title}`}>
-                            {row?.original?.Created} {item?.UserImage != undefined && item?.UserImage != '' ? <img title={item?.Title} className="workmember" src={item?.UserImage}></img> : <img title={item?.Title} className="workmember" src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg`}></img>}
+                          
+                            {moment(row?.original?.Created).format('DD/MM/YYYY')} {item?.UserImage != undefined && item?.UserImage != '' ? <img title={item?.Title} className="workmember" src={item?.UserImage}></img> : <img title={item?.Title} className="workmember" src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg`}></img>}
                         </a>
                     ))}
                 </>
@@ -210,9 +278,13 @@ export default function DocumentSearchPage(Props: any) {
             accessorKey: "Modified", placeholder: "Modified Date", header: "", size: 152,
             cell: ({ row }) => (
                 <>
-                    {row?.original?.AllModifiedImages.map((item: any) => (
+                    {row?.original?.AllModifiedImages?.map((item: any) => (
                         <a target="_blank" href={`${PageContext.context._pageContext._web.serverRelativeUrl}/SitePages/TaskDashboard.aspx?UserId=${item.UserId}&Name=${item.Title}`}>
+<<<<<<< HEAD
                             {row?.original?.Modified} {item?.UserImage != undefined && item?.UserImage != '' ? <img title={item?.Title} className="workmember" src={item?.UserImage}></img> : <img title={item?.Title} className="workmember" src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg`}></img>}
+=======
+                            {moment(row?.original?.Modified).format('DD/MM/YYYY')} {item?.UserImage != undefined && item?.UserImage != '' ? <img title={item?.Title} className="workmember" src={item?.UserImage}></img> : <img title={item?.Title} className="workmember" src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg`}></img>}
+>>>>>>> 9a85e82844baef30690c02d512c71d26488dd140
                         </a>
                     ))}
                 </>
@@ -222,7 +294,12 @@ export default function DocumentSearchPage(Props: any) {
 
             cell: ({ row }) => (
                 <>
+<<<<<<< HEAD
                     <a onClick={() => EditItem(row.original.Id)} title="Edit"><span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink"></span></a>
+=======
+
+                    <a onClick={() => EditItem(row.original)} title="Edit"><span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink"></span></a>
+>>>>>>> 9a85e82844baef30690c02d512c71d26488dd140
                     <a onClick={() => deleteData(row.original)}><span title="Remove Task" className="svg__iconbox svg__icon--cross dark hreflink"></span></a>
                 </>
             ),
@@ -231,18 +308,27 @@ export default function DocumentSearchPage(Props: any) {
             placeholder: '',
             header: '',
             id: 'row.original',
+<<<<<<< HEAD
             size: 50,
+=======
+            size: 20,
+>>>>>>> 9a85e82844baef30690c02d512c71d26488dd140
         },
         ],
         [AllDocs]);
-    const callBackData = React.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => { }, []);
+    const callBackData = React.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => {
+        console.log(elem)
+    }, []);
     //#endregion
     return (
         //#Jsx Part By PB
         <> {AllDocs && <div>
             <GlobalCommanTable columns={columns} data={AllDocs} showHeader={true} callBackData={callBackData} />
         </div>}
-            {isEditModalOpen ? <DocumentPopup closeEditPopup={closeEditPopup} pagecontext={PageContext} Id={selectedItemId} /> : ''}
+            {isEditModalOpen &&
+                <DocumentPopup editData={selectedItemId} AllListId={PageContext}Context={PageContext?.context}
+                    editdocpanel={isEditModalOpen} callbackeditpopup={callbackeditpopup} />}
+            {/* {isEditModalOpen ? <DocumentPopup editdocpanel={isEditModalOpen} AllListId={PageContext} editData={selectedItemId}callbackeditpopup={callbackeditpopup} /> : ''} */}
         </>
         //#endregion
     )

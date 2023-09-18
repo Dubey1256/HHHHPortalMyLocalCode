@@ -87,6 +87,8 @@ var AllClientCategoryDataBackup: any = [];
 var selectedClientCategoryData: any = [];
 var GlobalServiceAndComponentData: any = [];
 var AddImageDescriptionsIndex: any;
+var LinkedPortfolioDataBackup: any = [];
+var userSendAttentionEmails: any = [];
 
 const EditTaskPopup = (Items: any) => {
     const Context = Items.context;
@@ -95,16 +97,15 @@ const EditTaskPopup = (Items: any) => {
     Items.Items.Id = Items.Items.ID;
     let ShareWebConfigData: any = [];
     const [TaskImages, setTaskImages] = React.useState([]);
-    const [IsComponent, setIsComponent] = React.useState(false);
-    const [IsServices, setIsServices] = React.useState(false);
     const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
-    const [smartComponentData, setSmartComponentData] = React.useState([]);
-    const [smartServicesData, setSmartServicesData] = React.useState([]);
+    const [openTeamPortfolioPopup, setOpenTeamPortfolioPopup] = React.useState(false);
+    const [openLinkedPortfolioPopup, setopenLinkedPortfolioPopup] = React.useState(false);
+    const [TaggedPortfolioData, setTaggedPortfolioData] = React.useState([]);
+    const [linkedPortfolioData, setLinkedPortfolioData] = React.useState([]);
     const [CategoriesData, setCategoriesData] = React.useState('');
     const [ShareWebTypeData, setShareWebTypeData] = React.useState([]);
     const [AllCategoryData, setAllCategoryData] = React.useState([]);
     const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
-    const [linkedComponentData, setLinkedComponentData] = React.useState([]);
     let [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
     let [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
     let [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
@@ -132,7 +133,7 @@ const EditTaskPopup = (Items: any) => {
     const [PercentCompleteStatus, setPercentCompleteStatus] = React.useState('');
     const [taskStatus, setTaskStatus] = React.useState('');
     const [PercentCompleteCheck, setPercentCompleteCheck] = React.useState(true)
-    const [itemRank, setItemRank] = React.useState('');
+
     const [PriorityStatus, setPriorityStatus] = React.useState();
     const [PhoneStatus, setPhoneStatus] = React.useState(false);
     const [EmailStatus, setEmailStatus] = React.useState(false);
@@ -152,7 +153,7 @@ const EditTaskPopup = (Items: any) => {
     const [categorySearchKey, setCategorySearchKey] = React.useState('');
     const [ServicesTaskCheck, setServicesTaskCheck] = React.useState(false);
     const [ComponentTaskCheck, setComponentTaskCheck] = React.useState(false);
-    const [ServicePopupType, setServicePopupType] = React.useState('');
+
     const [AllProjectData, SetAllProjectData] = React.useState([]);
     const [selectedProject, setSelectedProject] = React.useState([]);
     const [SearchedProjectData, setSearchedProjectData] = React.useState([]);
@@ -175,16 +176,18 @@ const EditTaskPopup = (Items: any) => {
     const [LastUpdateTaskData, setLastUpdateTaskData] = React.useState<any>({});
     const [SitesTaggingData, setSitesTaggingData] = React.useState<any>([]);
     const [SearchedServiceCompnentData, setSearchedServiceCompnentData] = React.useState<any>([]);
+    const [SearchedLinkedPortfolioData, setSearchedLinkedPortfolioData] = React.useState<any>([]);
     const [SearchedServiceCompnentKey, setSearchedServiceCompnentKey] = React.useState<any>('');
+    const [SearchedLinkedPortfolioKey, setSearchedLinkedPortfolioKey] = React.useState<any>('');
     const [IsUserFromHHHHTeam, setIsUserFromHHHHTeam] = React.useState(false);
     const [IsCopyOrMovePanel, setIsCopyOrMovePanel] = React.useState<any>('');
     const [EnableSiteCompositionValidation, setEnableSiteCompositionValidation] = React.useState(false);
-    // const [ShareWebConfigData, setShareWebConfigData] = React.useState<any>([]);
     const [EstimatedDescription, setEstimatedDescription] = React.useState('');
     const [EstimatedTime, setEstimatedTime] = React.useState<any>('');
     const [TotalEstimatedTime, setTotalEstimatedTime] = React.useState(0);
     const [SiteCompositionShow, setSiteCompositionShow] = React.useState(false);
-
+    const [IsSendAttentionMsgStatus, setIsSendAttentionMsgStatus] = React.useState(false);
+    const [SendCategoryName, setSendCategoryName] = React.useState('');
     const hostStyles: Partial<ITooltipHostStyles> = { root: { display: 'inline-block' } };
     const buttonId = useId(`callout-button`);
     const calloutProps = { gapSpace: 0 };
@@ -339,9 +342,7 @@ const EditTaskPopup = (Items: any) => {
                             if (AllClientCategoryDataBackup != undefined && AllClientCategoryDataBackup.length > 0) {
                                 AllClientCategoryDataBackup.map((clientCategoryData: any) => {
                                     if (ClientData.Id == clientCategoryData.ID) {
-
                                         ClientData.siteName = clientCategoryData.siteName;
-                                        // }
                                         ClientData.ParentID = clientCategoryData.ParentID;
                                         selectedCC.push(ClientData)
                                     }
@@ -358,7 +359,7 @@ const EditTaskPopup = (Items: any) => {
                 extraLookupColumnData = await web.lists
                     .getByTitle(Items.Items.listName)
                     .items
-                    .select("Project/Id, Project/Title,AttachmentFiles/Title, Approver/Id, Approver/Title, ClientCategory/Title, ApproverHistory")
+                    .select("Project/Id, Project/Title, AttachmentFiles/Title, Approver/Id, Approver/Title, ClientCategory/Id,ClientCategory/Title, ApproverHistory")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
                     .expand('Project, Approver, ClientCategory')
@@ -373,18 +374,6 @@ const EditTaskPopup = (Items: any) => {
                     ApproverData = extraLookupColumnData[0]?.Approver;
                     ClientCategory = extraLookupColumnData[0].ClientCategory
                     if (Data != undefined && Data != null) {
-                        // let TempArray: any = [];
-                        // AllProjectBackupArray.map((ProjectData: any) => {
-                        //     if (ProjectData.Id == Data.Id) {
-                        //         ProjectData.Checked = true;
-                        //         setSelectedProject([ProjectData]);
-                        //         TempArray.push(ProjectData);
-                        //     } else {
-                        //         ProjectData.Checked = false;
-                        //         TempArray.push(ProjectData);
-                        //     }
-                        // })
-                        // SetAllProjectData(Data);
                         setSelectedProject([Data])
                     }
                     if (ApproverHistoryData != undefined || ApproverHistoryData != null) {
@@ -392,7 +381,6 @@ const EditTaskPopup = (Items: any) => {
                         if (tempArray != undefined && tempArray.length > 0) {
                             setApproverHistoryData(tempArray);
                         }
-
                     }
                     if (ApproverData != undefined && ApproverData.length > 0) {
                         setApproverData(ApproverData);
@@ -447,7 +435,10 @@ const EditTaskPopup = (Items: any) => {
                     let ImmediateCheck = item.Categories.search("Immediate");
                     let ApprovalCheck = item.Categories.search("Approval");
                     let OnlyCompletedCheck = item.Categories.search("Only Completed");
-                    let DesignCheck = item.Categories.search("Design")
+                    let DesignCheck: any;
+                    if (item.Categories == "Design") {
+                        DesignCheck = item.Categories.search("Design")
+                    }
                     if (phoneCheck >= 0) {
                         setPhoneStatus(true)
                     } else {
@@ -593,13 +584,11 @@ const EditTaskPopup = (Items: any) => {
                             }
                         })
                     }
-
                     if (statusValue == 0) {
                         setTaskStatus('Not Started');
                         setPercentCompleteStatus('Not Started');
                         setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '0' })
                     }
-
                     if (statusValue <= 2 && ApprovalStatusGlobal) {
                         ChangeTaskUserStatus = false;
                     } else {
@@ -746,7 +735,8 @@ const EditTaskPopup = (Items: any) => {
                     })
                 }
                 if (item.RelevantPortfolio?.length > 0) {
-                    setLinkedComponentData(item.RelevantPortfolio)
+                    setLinkedPortfolioData(item.RelevantPortfolio);
+                    LinkedPortfolioDataBackup = item.RelevantPortfolio;
                 }
                 if (item.FeedBack != null) {
                     let message = JSON.parse(item.FeedBack);
@@ -794,20 +784,6 @@ const EditTaskPopup = (Items: any) => {
                     item.FeedBackArray = tempArray[0]?.FeedBackDescriptions;
                     FeedBackBackupArray = JSON.stringify(tempArray);
                 }
-                // if (item.Component?.length > 0) {
-                //     setComponentTaskCheck(true)
-                //     setSmartComponentData(item.Component);
-                //     item.Portfolio_x0020_Type = "Component"
-                // } else {
-                //     setComponentTaskCheck(false)
-                // }
-                // if (item.Services?.length > 0) {
-                //     setServicesTaskCheck(true)
-                //     setSmartServicesData(item.Services);
-                //     item.Portfolio_x0020_Type = "Service"
-                // } else {
-                //     setServicesTaskCheck(false)
-                // }
 
                 if (item.OffshoreComments != null || item.OffshoreComments != undefined) {
                     let BackgroundComments: any = JSON.parse(item.OffshoreComments);
@@ -836,11 +812,11 @@ const EditTaskPopup = (Items: any) => {
                     setTotalEstimatedTime(tempTimeData);
                 }
                 item.ClientCategory = selectedClientCategoryData;
-                setEditData(item)
-                if (item.Portfolio != undefined && item.Portfolio?.Title !=undefined) {
+                if (item.Portfolio != undefined && item.Portfolio?.Title != undefined) {
                     let PortfolioId: any = item.Portfolio.Id;
-                    GetPortfolioSiteComposition(PortfolioId,item)
+                    GetPortfolioSiteComposition(PortfolioId, item)
                 }
+                setEditData(item)
                 EditDataBackup = item;
                 setPriorityStatus(item.Priority)
                 console.log("Task All Details form backend  ==================", item)
@@ -851,19 +827,29 @@ const EditTaskPopup = (Items: any) => {
     }
 
     //  ******************************* this is Service And Component Portfolio Popup Related All function and CallBack *******************
-    const EditComponent = (item: any, title: any) => {
-        setIsComponent(true);
-        setShareWebComponent(item);
+    const OpenTeamPortfolioPopupFunction = (item: any, usedFor: any) => {
+        if (usedFor == "Portfolio") {
+            setOpenTeamPortfolioPopup(true)
+        }
+        if (usedFor == "Linked-Portfolios") {
+            setopenLinkedPortfolioPopup(true)
+        }
     }
-    const EditComponentPicker = (item: any, title: any) => {
+    const EditComponentPicker = (item: any, usedFor: any) => {
         setIsComponentPicker(true);
-        setShareWebComponent(item);
     }
-    const EditLinkedServices = (item: any, title: any) => {
-        setIsServices(true);
-        setShareWebComponent(item);
-        setServicePopupType(title);
+
+    const RemoveLinkedPortfolio = (Index: any) => {
+        let tempArray: any = [];
+        LinkedPortfolioDataBackup?.map((item: any, index: any) => {
+            if (Index != index) {
+                tempArray.push(item);
+            }
+        })
+        setLinkedPortfolioData(tempArray);
+        LinkedPortfolioDataBackup = tempArray;
     }
+
 
 
     // ################# this is for Change Task Component And Service Component #######################
@@ -894,49 +880,43 @@ const EditTaskPopup = (Items: any) => {
         }
     }
 
-    const autoSuggestionsForServiceAndComponent = (e: any) => {
-        if (ServicesTaskCheck || ComponentTaskCheck) {
-            if (GlobalServiceAndComponentData == undefined || GlobalServiceAndComponentData.length == 0) {
-                if (ServicesTaskCheck) {
-                    GetAllComponentAndServiceData("Service");
-                }
-                if (ComponentTaskCheck) {
-                    GetAllComponentAndServiceData("Component");
-                }
+    const autoSuggestionsForServiceAndComponent = (e: any, usedFor: any) => {
+        GetAllComponentAndServiceData("Component");
+        let SearchedKeyWord: any = e.target.value;
+        let TempArray: any = [];
+        if (SearchedKeyWord.length > 0) {
+            if (GlobalServiceAndComponentData != undefined && GlobalServiceAndComponentData.length > 0) {
+                GlobalServiceAndComponentData.map((AllDataItem: any) => {
+                    if ((AllDataItem.Path?.toLowerCase())?.includes(SearchedKeyWord.toLowerCase())) {
+                        TempArray.push(AllDataItem);
+                    }
+                })
             }
-            let SearchedKeyWord: any = e.target.value;
-            setSearchedServiceCompnentKey(SearchedKeyWord);
-            let TempArray: any = [];
-            if (SearchedKeyWord.length > 0) {
-                if (GlobalServiceAndComponentData != undefined && GlobalServiceAndComponentData.length > 0) {
-                    GlobalServiceAndComponentData.map((AllDataItem: any) => {
-                        if ((AllDataItem.NewLeble?.toLowerCase()).includes(SearchedKeyWord.toLowerCase())) {
-                            TempArray.push(AllDataItem);
-                        }
-                    })
-                }
-                if (TempArray != undefined && TempArray.length > 0) {
+            if (TempArray != undefined && TempArray.length > 0) {
+                if (usedFor == "Portfolio") {
                     setSearchedServiceCompnentData(TempArray);
+                    setSearchedServiceCompnentKey(SearchedKeyWord);
                 }
-            } else {
-                setSearchedServiceCompnentData([]);
-                setSearchedServiceCompnentKey("");
+                if (usedFor == "Linked-Portfolios") {
+                    setSearchedLinkedPortfolioData(TempArray);
+                    setSearchedLinkedPortfolioKey(SearchedKeyWord)
+                }
+
             }
         } else {
-            alert("Please Choose Component / Service For Searching!")
+            setSearchedServiceCompnentData([]);
+            setSearchedLinkedPortfolioData([]);
+            setSearchedServiceCompnentKey("");
+            setSearchedLinkedPortfolioKey("");
         }
     }
 
-    const setSelectedServiceAndCompnentData = (SelectedData: any) => {
-        console.log("selected Data form auto suggestion from Auto Suggesution Service and comonente==========", SelectedData);
+    const setSelectedServiceAndCompnentData = (SelectedData: any, Type: any) => {
         setSearchedServiceCompnentData([]);
+        setSearchedLinkedPortfolioData([])
         setSearchedServiceCompnentKey("");
-        if (ServicesTaskCheck) {
-            ComponentServicePopupCallBack([SelectedData], "Service", "Save");
-        }
-        if (ComponentTaskCheck) {
-            ComponentServicePopupCallBack([SelectedData], "Component", "Save");
-        }
+        setSearchedLinkedPortfolioKey("")
+        ComponentServicePopupCallBack([SelectedData], Type, "Save");
 
     }
 
@@ -944,45 +924,46 @@ const EditTaskPopup = (Items: any) => {
 
     const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
         if (functionType == "Close") {
-            if (Type == "Service") {
-                setIsServices(false);
-            } else {
-                setIsComponent(false)
-            }
+            setOpenTeamPortfolioPopup(false);
+            setopenLinkedPortfolioPopup(false);
+
         } else {
-            if (Type == "Service") {
-                if (DataItem != undefined && DataItem.length > 0) {
-                    setLinkedComponentData(DataItem);
-                    setSmartServicesData(DataItem);
-                    setSmartComponentData([]);
-                    console.log("Popup component linkedComponent", DataItem);
-                }
-                setIsServices(false);
-            }
-            if (Type == "Component") {
-                if (DataItem != undefined && DataItem.length > 0) {
-                    if (DataItem[0].Sitestagging != null || DataItem[0].Sitestagging != undefined) {
-                        let ClientData = JSON.parse(DataItem[0].Sitestagging ? DataItem[0].Sitestagging : [{}]);
-                        let TempSiteCompositionArray: any = [];
-                        if (ClientData != undefined && ClientData.length > 0) {
-                            ClientData.map((SiteData: any) => {
-                                let TempObject: any = {
-                                    SiteName: SiteData.Title,
-                                    ClienTimeDescription: SiteData.ClienTimeDescription,
-                                    localSiteComposition: true
-                                }
-                                TempSiteCompositionArray.push(TempObject);
-                            })
-                            if (TempSiteCompositionArray != undefined && TempSiteCompositionArray.length > 0) {
-                                setSitesTaggingData(TempSiteCompositionArray);
+            if (DataItem != undefined && DataItem.length > 0) {
+                if (DataItem[0].Sitestagging != null || DataItem[0].Sitestagging != undefined) {
+                    let ClientData = JSON.parse(DataItem[0].Sitestagging ? DataItem[0].Sitestagging : [{}]);
+                    let TempSiteCompositionArray: any = [];
+                    if (ClientData != undefined && ClientData.length > 0) {
+                        ClientData.map((SiteData: any) => {
+                            let TempObject: any = {
+                                SiteName: SiteData.Title,
+                                ClienTimeDescription: SiteData.ClienTimeDescription,
+                                localSiteComposition: true
                             }
+                            TempSiteCompositionArray.push(TempObject);
+                        })
+                        if (TempSiteCompositionArray != undefined && TempSiteCompositionArray.length > 0) {
+                            setSitesTaggingData(TempSiteCompositionArray);
                         }
                     }
-                    setSmartComponentData(DataItem);
-                    setSmartServicesData([])
-                    console.log("Popup component smartComponent ", DataItem)
                 }
-                setIsComponent(false)
+                if (Type == "Multi") {
+                    if (LinkedPortfolioDataBackup?.length > 0) {
+                        LinkedPortfolioDataBackup = LinkedPortfolioDataBackup.concat(DataItem);
+                        const finalData = LinkedPortfolioDataBackup?.filter((val: any, id: any, array: any) => {
+                            return array.indexOf(val) == id;
+                        });
+                        setLinkedPortfolioData(finalData);
+                    } else {
+                        setLinkedPortfolioData(DataItem)
+                        LinkedPortfolioDataBackup = DataItem;
+                    }
+                }
+                if (Type == "Single") {
+                    setTaggedPortfolioData(DataItem);
+                }
+                setOpenTeamPortfolioPopup(false);
+                setopenLinkedPortfolioPopup(false);
+                console.log("Popup component smartComponent ", DataItem)
             }
         }
     }, [])
@@ -1274,6 +1255,7 @@ const EditTaskPopup = (Items: any) => {
     const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
         setIsComponentPicker(false);
         let TempArray: any = [];
+
         selectCategoryData.map((existingData: any) => {
             let elementFoundCount: any = 0;
             if (tempShareWebTypeData != undefined && tempShareWebTypeData.length > 0) {
@@ -1282,6 +1264,21 @@ const EditTaskPopup = (Items: any) => {
                         elementFoundCount++;
                     }
                 })
+            }
+            if (existingData?.IsSendAttentionEmail?.Id != undefined) {
+                setIsSendAttentionMsgStatus(true);
+                userSendAttentionEmails.push(existingData?.IsSendAttentionEmail?.EMail);
+                setSendCategoryName(existingData?.Title);
+            }
+            if (existingData?.Title == "Bottleneck") {
+                setIsSendAttentionMsgStatus(true);
+                console.log("dxfcgvhbj dxfcgvhbj", TaskAssignedTo);
+                if (EditData?.TaskAssignedUsers?.length > 0) {
+                    EditData?.TaskAssignedUsers?.map((AssignedUser: any, Index: any) => {
+                        userSendAttentionEmails.push(AssignedUser.Email);
+                    })
+                }
+                setSendCategoryName(existingData?.Title);
             }
             if (elementFoundCount == 0) {
                 let category: any;
@@ -1594,33 +1591,21 @@ const EditTaskPopup = (Items: any) => {
 
 
     // ************************** this is used for getting Site Composition For Selected Portfolio which in Taaged into Task ***********************
-    const GetPortfolioSiteComposition = async (ProtfolioId: any,item:any) => {
+    const GetPortfolioSiteComposition = async (ProtfolioId: any, item: any) => {
         let DataFromCall: any;
         let web = new Web(siteUrls);
         try {
             DataFromCall = await web.lists
-                .getById(AllListIdData?.MasterTaskListID).items.select("Sitestagging,SiteCompositionSettings, Title,Id,PortfolioType/Title").expand('PortfolioType').top(5000).filter(`Id eq ${ProtfolioId}`).get();
+                .getById(AllListIdData?.MasterTaskListID).items.select("Sitestagging,SiteCompositionSettings,Title,Id,PortfolioType/Title").expand('PortfolioType').top(5000).filter(`Id eq ${ProtfolioId}`).get();
             if (DataFromCall != undefined) {
                 let TempSiteCompositionArray: any = [];
-                item.Portfolio_x0020_Type = DataFromCall[0].PortfolioType.Title;
-                if (item.Portfolio_x0020_Type === 'Component') {
-                    var Item: any = {};
-                    Item.Id = item.Portfolio.Id;
-                    Item.Title = item.Portfolio.Title;
-                    let array: any = [];
-                    array.push(Item)
-                    setSmartComponentData(array);
-                    setComponentTaskCheck(true)
+                if (DataFromCall[0].PortfolioType.Title === 'Component') {
+                    setComponentTaskCheck(true);
                 }
-                if (item.Portfolio_x0020_Type === 'Service') {
-                    var Item: any = {};
-                    Item.Id = item.Portfolio.Id;
-                    Item.Title = item.Portfolio.Title;
-                    let array: any = [];
-                    array.push(Item)
-                    setSmartServicesData(array);
-                    setServicesTaskCheck(true)
+                if (DataFromCall[0].PortfolioType.Title === 'Service') {
+                    setServicesTaskCheck(true);
                 }
+                setTaggedPortfolioData(DataFromCall);
                 if (DataFromCall[0].Sitestagging != undefined) {
                     let tempSiteComposition: any = JSON.parse(DataFromCall[0].Sitestagging != undefined ? DataFromCall[0].Sitestagging : [{}])
                     if (tempSiteComposition != undefined && tempSiteComposition.length > 0) {
@@ -1651,8 +1636,8 @@ const EditTaskPopup = (Items: any) => {
             let AllProjects: any = [];
             AllProjects = await web.lists.getById(AllListIdData?.MasterTaskListID)
                 .items
-                .select("Deliverables,TechnicalExplanations,ValueAdded,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,Component/Id,Component/Title,Component/ItemType,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title")
-                .expand("ComponentPortfolio,ServicePortfolio,ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,TeamMembers,TaskCategories,Parent")
+                .select("Id,Title,DueDate,TeamMembers/Id,TeamMembers/Title,Parent/Id,Parent/Title,PercentComplete,Status,PriorityRank")
+                .expand("TeamMembers,Parent")
                 .top(4999)
                 .filter("Item_x0020_Type eq 'Project'")
                 .getAll();
@@ -1772,7 +1757,7 @@ const EditTaskPopup = (Items: any) => {
                     if (EditData.siteType == 'Offshore Tasks') {
                         setWorkingMember(36);
                     } else if (DesignStatus) {
-                        setWorkingMember(40);
+                        setWorkingMember(298);
                     } else {
                         setWorkingMember(42);
                     }
@@ -1887,7 +1872,7 @@ const EditTaskPopup = (Items: any) => {
             if (EditData.siteType == 'Offshore Tasks') {
                 setWorkingMember(36);
             } else if (DesignStatus) {
-                setWorkingMember(40);
+                setWorkingMember(298);
             } else {
                 setWorkingMember(42);
             }
@@ -1989,8 +1974,12 @@ const EditTaskPopup = (Items: any) => {
 
     // ******************** This is Task All Details Update Function  ***************************
 
-    const UpdateTaskInfoFunction = async (typeFunction: any) => {
-
+    const UpdateTaskInfoFunction = async (usedFor: any) => {
+        if (IsSendAttentionMsgStatus) {
+            let txtComment = `You have been tagged as ${SendCategoryName} in the below task by ${Items.context.pageContext._user.displayName}`;
+            let TeamMsg = txtComment + `</br> <a href=${window.location.href}>${EditData.TaskId}-${EditData.Title}</a>`
+            await globalCommon.SendTeamMessage(userSendAttentionEmails, TeamMsg, Items.context);
+        }
         let TaskShuoldBeUpdate = true;
         let DataJSONUpdate: any = await MakeUpdateDataJSON();
         if (EnableSiteCompositionValidation) {
@@ -2043,72 +2032,70 @@ const EditTaskPopup = (Items: any) => {
                         smartMetaCall[0].siteUrl = siteUrls;
                     }
                     setLastUpdateTaskData(smartMetaCall[0]);
-                    tempShareWebTypeData = [];
-                    AllMetaData = []
-                    taskUsers = []
-                    CommentBoxData = []
-                    SubCommentBoxData = []
-                    updateFeedbackArray = []
-                    tempShareWebTypeData = []
-                    tempCategoryData = '';
-                    SiteTypeBackupArray = []
-                    currentUserBackupArray = []
-                    AutoCompleteItemsArray = []
-                    FeedBackBackupArray = []
-                    TaskCreatorApproverBackupArray = []
-                    TaskApproverBackupArray = []
-                    ApproverIds = []
-                    SiteCompositionPrecentageValue = 0
-                    let CalculateStatusPercentage: any = smartMetaCall[0].PercentComplete ? smartMetaCall[0].PercentComplete * 100 : 0;
-                    if (Items.sendApproverMail != undefined) {
-                        if (Items.sendApproverMail) {
-                            setSendEmailComponentStatus(true)
-                        } else {
-                            setSendEmailComponentStatus(false)
-                        }
-                    }
-                    if (CalculateStatusPercentage == 5 && ImmediateStatus) {
-                        setSendEmailComponentStatus(true);
-                        Items.StatusUpdateMail = true;
+                    if (usedFor == "Image-Tab") {
+                        GetExtraLookupColumnData();
                     } else {
-                        setSendEmailComponentStatus(false);
-                        Items.StatusUpdateMail = false;
-                    }
-                    if (sendEmailGlobalCount > 0) {
-                        if (sendEmailStatus) {
-                            setSendEmailComponentStatus(false)
+                        tempShareWebTypeData = [];
+                        AllMetaData = []
+                        taskUsers = []
+                        CommentBoxData = []
+                        SubCommentBoxData = []
+                        updateFeedbackArray = []
+                        tempShareWebTypeData = []
+                        tempCategoryData = '';
+                        SiteTypeBackupArray = []
+                        currentUserBackupArray = []
+                        AutoCompleteItemsArray = []
+                        FeedBackBackupArray = []
+                        TaskCreatorApproverBackupArray = []
+                        TaskApproverBackupArray = []
+                        ApproverIds = []
+                        userSendAttentionEmails = []
+                        SiteCompositionPrecentageValue = 0
+                        let CalculateStatusPercentage: any = smartMetaCall[0].PercentComplete ? smartMetaCall[0].PercentComplete * 100 : 0;
+                        if (Items.sendApproverMail != undefined) {
+                            if (Items.sendApproverMail) {
+                                setSendEmailComponentStatus(true)
+                            } else {
+                                setSendEmailComponentStatus(false)
+                            }
+                        }
+                        if (CalculateStatusPercentage == 5 && ImmediateStatus) {
+                            setSendEmailComponentStatus(true);
+                            Items.StatusUpdateMail = true;
                         } else {
-                            setSendEmailComponentStatus(true)
+                            setSendEmailComponentStatus(false);
+                            Items.StatusUpdateMail = false;
                         }
-                    }
-
-
-                    if (
-                        Items?.pageName == "TaskDashBoard" ||
-                        Items?.pageName == "ProjectProfile" ||
-                        Items?.pageName == "TaskFooterTable"
-                    ) {
-                        if (Items?.pageName == "TaskFooterTable") {
-                            let dataEditor: any = {}
-                            dataEditor.data = smartMetaCall[0]
-                            dataEditor.data.editpopup = true;
-                            dataEditor.data.TaskID = EditData.TaskId
-                            dataEditor.data.listId = Items.Items.listId
-                            dataEditor.data.FeedBack = JSON.stringify(dataEditor.data.FeedBack)
-                            Items.Call(dataEditor)
+                        if (sendEmailGlobalCount > 0) {
+                            if (sendEmailStatus) {
+                                setSendEmailComponentStatus(false)
+                            } else {
+                                setSendEmailComponentStatus(true)
+                            }
                         }
-                        Items.Call(DataJSONUpdate);
-                    }
-                    // if (EditData?.Categories?.toLowerCase().indexOf('approval') == -1) {
-                    //     Items.Call(true);
-                    // }
-                    // if (EditData?.Categories == undefined) {
-                    //     Items.Call(true);
-                    // }
 
-                    else {
 
-                        Items.Call("Save");
+                        if (
+                            Items?.pageName == "TaskDashBoard" ||
+                            Items?.pageName == "ProjectProfile" ||
+                            Items?.pageName == "TaskFooterTable"
+                        ) {
+                            if (Items?.pageName == "TaskFooterTable") {
+                                let dataEditor: any = {}
+                                dataEditor.data = smartMetaCall[0]
+                                dataEditor.data.editpopup = true;
+                                dataEditor.data.TaskID = EditData.TaskId
+                                dataEditor.data.listId = Items.Items.listId
+                                dataEditor.data.FeedBack = JSON.stringify(dataEditor.data.FeedBack)
+                                Items.Call(dataEditor)
+                            }
+                            Items.Call(DataJSONUpdate);
+                        }
+                        else {
+
+                            Items.Call("Save");
+                        }
                     }
                 })
             } catch (error) {
@@ -2238,31 +2225,15 @@ const EditTaskPopup = (Items: any) => {
                 CategoryTypeID.push(typeData.Id)
             })
         }
-        if (smartComponentData != undefined && smartComponentData?.length > 0) {
-            smartComponentData?.map((com: any) => {
-                if (smartComponentData != undefined && smartComponentData?.length >= 0) {
-                    $.each(smartComponentData, function (index: any, smart: any) {
-                        smartComponentsIds = smart.Id;
-                    })
-                }
+
+        if (TaggedPortfolioData != undefined && TaggedPortfolioData?.length > 0) {
+            TaggedPortfolioData?.map((com: any) => {
+                smartComponentsIds = com.Id;
             })
         }
-        if (smartServicesData != undefined && smartServicesData?.length > 0) {
-            smartServicesData?.map((com: any) => {
-                if (smartServicesData != undefined && smartServicesData?.length >= 0) {
-                    $.each(smartServicesData, function (index: any, smart: any) {
-                        smartComponentsIds = smart.Id;
-                    })
-                }
-            })
-        }
-        if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
-            linkedComponentData?.map((com: any) => {
-                if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
-                    $.each(linkedComponentData, function (index: any, smart: any) {
-                        RelevantPortfolioIds.push(smart.Id);
-                    })
-                }
+        if (linkedPortfolioData != undefined && linkedPortfolioData?.length > 0) {
+            linkedPortfolioData?.map((com: any) => {
+                RelevantPortfolioIds.push(com.Id)
             })
         }
 
@@ -2354,16 +2325,14 @@ const EditTaskPopup = (Items: any) => {
             Priority: Priority,
             StartDate: EditData.StartDate ? Moment(EditData.StartDate).format("MM-DD-YYYY") : null,
             PercentComplete: UpdateTaskInfo.PercentCompleteStatus ? (Number(UpdateTaskInfo.PercentCompleteStatus) / 100) : (EditData.PercentComplete ? (EditData.PercentComplete / 100) : null),
-          //  ComponentId: { "results": (smartComponentsIds != undefined && smartComponentsIds.length > 0) ? smartComponentsIds : [] },
             Categories: CategoriesData ? CategoriesData : null,
-            PortfolioId: smartComponentsIds ===''?null :smartComponentsIds,
-            // RelevantPortfolioId: { "results": (RelevantPortfolioIds != undefined && RelevantPortfolioIds?.length > 0) ? RelevantPortfolioIds : [] },
+            PortfolioId: smartComponentsIds === '' ? null : smartComponentsIds,
+            RelevantPortfolioId: { "results": (RelevantPortfolioIds != undefined && RelevantPortfolioIds?.length > 0) ? RelevantPortfolioIds : [] },
             TaskCategoriesId: { "results": (CategoryTypeID != undefined && CategoryTypeID.length > 0) ? CategoryTypeID : [] },
             DueDate: EditData.DueDate ? Moment(EditData.DueDate).format("MM-DD-YYYY") : null,
             CompletedDate: EditData.CompletedDate ? Moment(EditData.CompletedDate).format("MM-DD-YYYY") : null,
             Status: taskStatus ? taskStatus : (EditData.Status ? EditData.Status : null),
             Mileage: (EditData.Mileage ? EditData.Mileage : ''),
-           // ServicesId: { "results": (SmartServicesId != undefined && SmartServicesId.length > 0) ? SmartServicesId : [] },
             AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds.length > 0) ? AssignedToIds : [] },
             ResponsibleTeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0) ? ResponsibleTeamIds : [] },
             TeamMembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds.length > 0) ? TeamMemberIds : [] },
@@ -2387,7 +2356,6 @@ const EditTaskPopup = (Items: any) => {
     }
 
     // this is for change priority status function 
-
     const ChangePriorityStatusFunction = (e: any) => {
         let value = e.target.value;
         if (Number(value) <= 10) {
@@ -2732,7 +2700,7 @@ const EditTaskPopup = (Items: any) => {
                 let date = new Date()
                 let timeStamp = date.getTime();
                 let imageIndex = index + 1
-                fileName = 'Image' + imageIndex + "-" + EditData.Title?.replace(/["/':]/g, '')?.slice(0,50) + " "+ timeStamp + ".jpg";
+                fileName = EditData.TaskId + '-Image' + imageIndex + "-" + EditData.Title?.replace(/["/':]/g, '')?.slice(0, 40) + " " + timeStamp + ".jpg";
                 let currentUserDataObject: any;
                 if (currentUserBackupArray != null && currentUserBackupArray.length > 0) {
                     currentUserDataObject = currentUserBackupArray[0];
@@ -2944,10 +2912,14 @@ const EditTaskPopup = (Items: any) => {
 
     }
     const ImageCustomizeFunction = (currentImagIndex: any) => {
-        setImageCustomizePopup(true)
+        setImageCustomizePopup(true);
+        setModalIsOpen(false);
     }
     const ImageCustomizeFunctionClosePopup = () => {
         setImageCustomizePopup(false);
+        setModalIsOpen(true);
+        UpdateTaskInfoFunction("Image-Tab");
+        // GetExtraLookupColumnData();
         if (CommentBoxData?.length > 0 || SubCommentBoxData?.length > 0) {
             if (CommentBoxData?.length == 0 && SubCommentBoxData?.length > 0) {
                 let message = JSON.parse(EditData.FeedBack);
@@ -3134,8 +3106,8 @@ const EditTaskPopup = (Items: any) => {
 
     const copyAndMoveTaskFunctionOnBackendSide = async (FunctionsType: any) => {
         loadTime();
-        //         var SiteId = "Task" + Items.Items.siteType;
-        //         let web = new Web(siteUrls);
+        //   var SiteId = "Task" + Items.Items.siteType;
+        //   let web = new Web(siteUrls);
         //   const TimeEntry = await web.lists.getByTitle('TimesheetListNewId').items.select(`${SiteId}/Id`).expand(`${SiteId}`)
         //   .filter(`${SiteId}/Id eq '${Items?.Items?.Id}'`)
         //  .get(); 
@@ -3153,7 +3125,6 @@ const EditTaskPopup = (Items: any) => {
                 let web = new Web(siteUrls);
                 await web.lists.getByTitle(SelectedSite).items.add(TaskDataJSON).then(async (res: any) => {
                     newGeneratedId = res.data.Id;
-
                     //    const attachmentss = await web.lists.getById(Items?.Items?.listId)
                     //     .items.getById(Items.Items.Id)
                     //     .attachmentFiles.get();
@@ -3709,10 +3680,7 @@ const EditTaskPopup = (Items: any) => {
                         </div>
                         <div>
                             <a className="hreflink siteColor">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" style={{ marginLeft: "-5px" }} fill="none">
-                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z" fill="#333333" />
-                                </svg>
-                                {/* <RiDeleteBin6Line /> */}
+                                <span className="me-1 mt--5"><RiDeleteBin6Line /></span>
                                 <span onClick={() => deleteTaskFunction(EditData.ID, "Delete-Task")}>Delete This Item</span>
                             </a>
                             <span> | </span>
@@ -3788,10 +3756,7 @@ const EditTaskPopup = (Items: any) => {
                         </div>
                         <div>
                             <a className="hreflink">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" style={{ marginLeft: "-5px" }} fill="none">
-                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z" fill="#333333" />
-                                </svg>
-                                {/* <RiDeleteBin6Line /> */}
+                                <span className="me-1 mt--5"><RiDeleteBin6Line /></span>
                                 <span onClick={() => deleteTaskFunction(EditData.ID, "Delete-Task")}>Delete This Item</span>
                             </a>
                             <span> | </span>
@@ -4051,98 +4016,45 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="mx-0 row mt-2 taskservices">
                                             <div className="col ps-0">
                                                 <div className="input-group mb-2">
-                                                    <label className="full-width rediobutton">
-                                                        <span className="SpfxCheckRadio m-0">
-                                                            <input type="radio" id="Components"
-                                                                name="Portfolios" checked={ComponentTaskCheck}
-                                                                onClick={(e) => ChangeComponentStatus(e, "Component")}
-                                                                title="Component"
-
-                                                                className="radio" />
-                                                            Component
-                                                        </span>
-                                                        <span className=" SpfxCheckRadio m-0">
-                                                            <input type="radio" id="Services"
-                                                                name="Portfolios" value="Services"
-                                                                title="Services"
-                                                                checked={ServicesTaskCheck}
-                                                                onClick={(e) => ChangeComponentStatus(e, "Service")}
-                                                                className="radio" />
-                                                            Services
-                                                        </span>
+                                                    <label className="full-width">
+                                                        Portfolio
                                                     </label>
-                                                    {smartComponentData?.length > 0 && ComponentTaskCheck || smartServicesData?.length > 0 && ServicesTaskCheck ? null :
+                                                    {TaggedPortfolioData?.length > 0 ?
+                                                        <div className="full-width">
+                                                            {TaggedPortfolioData?.map((com: any) => {
+                                                                return (
+                                                                    <>
+                                                                        <div className="d-flex justify-content-between block px-2 py-1 full-width selected-component">
+                                                                            <a title={com.Title} style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
+                                                                            <a>
+                                                                                <span onClick={() => setTaggedPortfolioData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
+                                                                            </a>
+                                                                        </div>
+                                                                    </>
+                                                                )
+                                                            })}
+                                                        </div>
+                                                        :
                                                         <>
                                                             <input type="text"
                                                                 className="form-control"
                                                                 value={SearchedServiceCompnentKey}
-                                                                onChange={(e) => autoSuggestionsForServiceAndComponent(e)}
-                                                                placeholder="Component / Services"
+                                                                onChange={(e) => autoSuggestionsForServiceAndComponent(e, "Portfolio")}
+                                                                placeholder="Search Portfolio Components"
                                                             />
                                                             <span className="input-group-text">
-                                                                {ComponentTaskCheck ?
-                                                                    <span title="Component Popup" onClick={() => EditComponent(EditData, 'Component')} className="svg__iconbox svg__icon--editBox"></span>
-                                                                    : null}
-
-                                                                {ServicesTaskCheck ?
-                                                                    <span title="Service Popup" onClick={(e) => EditLinkedServices(EditData, 'Services')} className="svg__iconbox svg__icon--editBox"></span>
-                                                                    : null}
-                                                                {ComponentTaskCheck == false && ServicesTaskCheck == false ?
-                                                                    <span title="Component/Service Popup" onClick={(e) => alert("Please select anyone from Portfolio/Services")}
-                                                                        className="svg__iconbox svg__icon--editBox"></span>
-                                                                    : null}
+                                                                <span title="Component Popup" onClick={() => OpenTeamPortfolioPopupFunction(EditData, 'Portfolio')} className="svg__iconbox svg__icon--editBox"></span>
                                                             </span>
                                                         </>
                                                     }
-                                                    {smartComponentData.length > 0 && ComponentTaskCheck ? smartComponentData?.map((com: any) => {
-                                                        return (
-                                                            <>
-                                                                <div className="d-flex justify-content-between block px-2 py-1 full-width selected-component">
-                                                                    <a title={com.Title} style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
-                                                                    <a>
-                                                                        <span onClick={() => setSmartComponentData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
-                                                                    </a>
-                                                                </div>
-                                                            </>
-                                                        )
-                                                    }) : null}
-                                                    {
-                                                        smartServicesData?.length > 0 && ServicesTaskCheck ? smartServicesData?.map((com: any) => {
-                                                            return (
-                                                                <>
-                                                                    <div className="d-flex justify-content-between block px-2 py-1 full-width selected-component">
-                                                                        <a title={com.Title} style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
-                                                                        <a>
-                                                                            <span onClick={() => setSmartServicesData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
-                                                                        </a>
-                                                                    </div>
-                                                                </>
-                                                            )
-                                                        }) : null
-                                                    }
-
-                                                    {/* <span className="input-group-text">
-                                                        {ComponentTaskCheck ?
-                                                            <span title="Component Popup" onClick={() => EditComponent(EditData, 'Component')} className="svg__iconbox svg__icon--editBox"></span>
-                                                            : null}
-
-                                                        {ServicesTaskCheck ?
-                                                            <span title="Service Popup" onClick={(e) => EditLinkedServices(EditData, 'Services')} className="svg__iconbox svg__icon--editBox"></span>
-                                                            : null}
-                                                        {ComponentTaskCheck == false && ServicesTaskCheck == false ?
-                                                            <span title="Component/Service Popup" onClick={(e) => alert("Please select anyone from Portfolio/Services")}
-                                                                className="svg__iconbox svg__icon--editBox"></span>
-                                                            : null}
-
-                                                    </span> */}
                                                 </div>
                                                 {SearchedServiceCompnentData?.length > 0 ? (
                                                     <div className="SmartTableOnTaskPopup">
                                                         <ul className="list-group">
                                                             {SearchedServiceCompnentData.map((Item: any) => {
                                                                 return (
-                                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={Item.id} onClick={() => setSelectedServiceAndCompnentData(Item)} >
-                                                                        <a>{Item.NewLeble}</a>
+                                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={Item.id} onClick={() => setSelectedServiceAndCompnentData(Item, "Single")} >
+                                                                        <a>{Item.Path}</a>
                                                                     </li>
                                                                 )
                                                             }
@@ -4260,7 +4172,6 @@ const EditTaskPopup = (Items: any) => {
                                                                     className="radio"
                                                                     name="ApprovalLevel" />
                                                                 <label> Complex Approval</label>
-
                                                             </li>
                                                             <li className="SpfxCheckRadio">
                                                                 <input
@@ -4268,7 +4179,6 @@ const EditTaskPopup = (Items: any) => {
                                                                     className="radio"
                                                                     name="ApprovalLevel" />
                                                                 <label>Quick Approval</label>
-
                                                             </li>
                                                         </ul>
                                                     </div>
@@ -4284,9 +4194,6 @@ const EditTaskPopup = (Items: any) => {
                                                                     />
                                                                     <span className="input-group-text" onClick={OpenApproverPopupFunction} title="Approver Data Popup">
                                                                         <span className="svg__iconbox svg__icon--editBox"></span>
-
-
-
                                                                     </span>
                                                                 </div>
                                                                 {ApproverSearchedData?.length > 0 ? (
@@ -4406,79 +4313,51 @@ const EditTaskPopup = (Items: any) => {
                                                     </div>
                                                 </div>
                                                 <div className="col-12 mb-2 mt-2">
-                                                    {ComponentTaskCheck ?
-                                                        <div>
-                                                            <div className="input-group">
-                                                                <label className="form-label full-width">
-                                                                    Linked Service
-                                                                </label>
-                                                                <input type="text"
-                                                                    className="form-control"
-                                                                />
-                                                                <span className="input-group-text" title="Linked Service Popup" onClick={(e) => alert("We Are Working On This Feature. It Will Be Live Soon...")}>
-                                                                    <span className="svg__iconbox svg__icon--editBox"></span>
-
-                                                                </span>
-                                                            </div>
-                                                            {
-                                                                smartServicesData?.length > 0 ?
-                                                                    <div>
-                                                                        {smartServicesData?.map((com: any) => {
-                                                                            return (
-                                                                                <div>
-                                                                                    <div className="d-flex justify-content-between block px-2 py-2 mt-1">
-                                                                                        <a className="hreflink " target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
-                                                                                            {com.Title}
-                                                                                        </a>
-                                                                                        <a>
-                                                                                            <span onClick={() => setSmartServicesData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
-
-                                                                                        </a>
-                                                                                    </div>
-                                                                                </div>
-                                                                            )
-                                                                        })}
-                                                                    </div> :
-                                                                    null
-                                                            }
-
-                                                        </div> : null}
-                                                    {ServicesTaskCheck ? <div >
-                                                        <div className="input-group">
-                                                            <label className="form-label full-width">
-                                                                Linked Component
-                                                            </label>
-                                                            <input type="text"
-                                                                className="form-control "
-                                                            />
-                                                            <span className="input-group-text" title="Linked Component Popup" onClick={(e) => alert("We Are Working On This Feature. It Will Be Live Soon...")}>
-                                                                <span className="svg__iconbox svg__icon--editBox"></span>
-
-                                                            </span>
-                                                        </div>
-
-                                                        {
-                                                            smartComponentData?.length > 0 ? <div>
-                                                                {smartComponentData?.map((com: any) => {
+                                                    <div className="input-group mb-2">
+                                                        <label className="full-width">
+                                                            Linked Portfolios
+                                                        </label>
+                                                        <input type="text"
+                                                            className="form-control"
+                                                            value={SearchedLinkedPortfolioKey}
+                                                            onChange={(e) => autoSuggestionsForServiceAndComponent(e, "Linked-Portfolios")}
+                                                            placeholder="Search Portfolio Components"
+                                                        />
+                                                        <span className="input-group-text">
+                                                            <span title="Component Popup" onClick={() => OpenTeamPortfolioPopupFunction(EditData, 'Linked-Portfolios')} className="svg__iconbox svg__icon--editBox"></span>
+                                                        </span>
+                                                    </div>
+                                                    {SearchedLinkedPortfolioData?.length > 0 ? (
+                                                        <div className="SmartTableOnTaskPopup">
+                                                            <ul className="list-group">
+                                                                {SearchedLinkedPortfolioData.map((Item: any) => {
                                                                     return (
-                                                                        <div>
-                                                                            <div className="d-flex justify-content-between block px-1 py-1 mt-1">
-
-                                                                                <a className="hreflink " target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
-                                                                                    {com.Title}
-                                                                                </a>
-                                                                                <a>
-                                                                                    <span onClick={() => setSmartComponentData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
-
-                                                                                </a>
-                                                                            </div>
-                                                                        </div>
+                                                                        <li className="hreflink list-group-item rounded-0 list-group-item-action" key={Item.id} onClick={() => setSelectedServiceAndCompnentData(Item, "Multi")} >
+                                                                            <a>{Item.Path}</a>
+                                                                        </li>
                                                                     )
-                                                                })}
-                                                            </div> :
-                                                                null
-                                                        }
-                                                    </div> : null}
+                                                                }
+                                                                )}
+                                                            </ul>
+                                                        </div>) : null}
+                                                    {linkedPortfolioData?.length > 0 ?
+                                                        <div className="full-width">
+                                                            {linkedPortfolioData?.map((com: any, Index: any) => {
+                                                                return (
+                                                                    <>
+                                                                        <div className="d-flex justify-content-between block px-2 py-1 border-bottom full-width selected-component">
+                                                                            <a title={com.Title} style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
+                                                                            <a>
+                                                                                <span onClick={() => RemoveLinkedPortfolio(Index)} className="bg-light svg__icon--cross svg__iconbox"></span>
+                                                                            </a>
+                                                                        </div>
+                                                                    </>
+                                                                )
+                                                            })}
+                                                        </div>
+                                                        :
+                                                        null
+                                                    }
                                                 </div>
                                                 <div className="col-12">
                                                     <div className="input-group">
@@ -4491,17 +4370,12 @@ const EditTaskPopup = (Items: any) => {
                                                             value={ProjectSearchKey}
                                                             onChange={(e) => autoSuggestionsForProject(e)}
                                                         />
-                                                        {ComponentTaskCheck == false && ServicesTaskCheck == false ?
-                                                            <span className="input-group-text" title="Project Popup" onClick={(e) => alert("Please select anyone from Portfolio/Services")}>
-                                                                <span className="svg__iconbox svg__icon--editBox"></span>
+
+                                                        <span className="input-group-text" onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" >
+                                                            <span className="svg__iconbox svg__icon--editBox">
 
                                                             </span>
-
-                                                            : <span className="input-group-text" onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" >
-                                                                <span className="svg__iconbox svg__icon--editBox">
-
-                                                                </span>
-                                                            </span>}
+                                                        </span>
                                                     </div>
                                                     {SearchedProjectData?.length > 0 ? (
                                                         <div className="SmartTableOnTaskPopup">
@@ -4814,7 +4688,6 @@ const EditTaskPopup = (Items: any) => {
                                                                             </span>
                                                                         </div>
                                                                         <div>
-
                                                                             <span onClick={() => openReplaceImagePopup(index)} title="Replace image"><TbReplace /> </span>
                                                                             <span className="mx-1" title="Delete" onClick={() => RemoveImageFunction(index, ImageDtl.ImageName, "Remove")}> | <RiDeleteBin6Line /> | </span>
                                                                             <span title="Customize the width of page" onClick={() => ImageCustomizeFunction(index)}>
@@ -4871,6 +4744,7 @@ const EditTaskPopup = (Items: any) => {
                                                 SmartLightStatus={SmartLightStatus}
                                                 SmartLightPercentStatus={SmartLightPercentStatus}
                                                 Context={Context}
+                                                FeedbackCount={FeedBackCount}
                                             />
                                             <Example
                                                 textItems={EditData.FeedBackArray}
@@ -4882,6 +4756,7 @@ const EditTaskPopup = (Items: any) => {
                                                 SmartLightStatus={SmartLightStatus}
                                                 SmartLightPercentStatus={SmartLightPercentStatus}
                                                 Context={Context}
+                                                FeedbackCount={FeedBackCount}
                                             />
                                         </>
                                             : null}
@@ -4894,32 +4769,6 @@ const EditTaskPopup = (Items: any) => {
                                     <NewTameSheetComponent props={Items} AllListId={AllListIdData}
                                         TeamConfigDataCallBack={getTeamConfigData}
                                     />
-                                    {/* <div className="col-sm-5">
-                                        {EditData.Id != null && AllListIdData.isShowSiteCompostion ?
-                                            <div className="site-composition-on-task-popup">
-                                                {SiteTypes != undefined && SiteTypes.length > 0 ?
-                                                    <SiteCompositionComponent
-                                                        AllListId={AllListIdData}
-                                                        siteUrls={siteUrls}
-                                                        SiteTypes={SiteTypes}
-                                                        ClientTime={EditData.siteCompositionData}
-                                                        SiteCompositionSettings={EditData.SiteCompositionSettings}
-                                                        SmartTotalTimeData={SmartTotalTimeData}
-                                                        currentListName={EditData.siteType}
-                                                        callBack={SiteCompositionCallBack}
-                                                        isServiceTask={ServicesTaskCheck}
-                                                        selectedComponentData={smartComponentData?.length > 0 ? smartComponentData : []}
-                                                        selectedServicesData={smartServicesData?.length > 0 ? smartServicesData : []}
-                                                        SelectedClientCategory={selectedClientCategory}
-                                                        isPortfolioConncted={ComponentTaskCheck || ServicesTaskCheck ? true : false}
-                                                        SitesTaggingData={SitesTaggingData}
-                                                    /> : null
-                                                }
-                                            </div>
-                                            : null
-                                        }
-
-                                    </div> */}
                                 </div>
                             </div>
                             {IsUserFromHHHHTeam ? null :
@@ -4938,27 +4787,25 @@ const EditTaskPopup = (Items: any) => {
                                 </div>
                             }
                         </div>
-                        {/* </>
-                                    )
-                                })} */}
+
                     </div>
 
-                    {IsComponent &&
+                    {openTeamPortfolioPopup &&
                         <ServiceComponentPortfolioPopup
-                            props={ShareWebComponent}
+                            props={EditData}
                             Dynamic={AllListIdData}
                             ComponentType={"Component"}
                             Call={ComponentServicePopupCallBack}
                             selectionType={"Single"}
                         />
                     }
-                    {IsServices &&
+                    {openLinkedPortfolioPopup &&
                         <ServiceComponentPortfolioPopup
-                            props={ShareWebComponent}
+                            props={EditData}
                             Dynamic={AllListIdData}
                             Call={ComponentServicePopupCallBack}
-                            ComponentType={"Service"}
-                            selectionType={"Single"}
+                            ComponentType={"Component"}
+                            selectionType={"Multi"}
                         />
                     }
                     {IsComponentPicker &&
@@ -4982,7 +4829,17 @@ const EditTaskPopup = (Items: any) => {
                             AllListId={AllListIdData}
                             Call={closeSiteCompsotionPanelFunction}
                         /> : null}
-                    {sendEmailComponentStatus ? <EmailComponent CurrentUser={currentUserData} CreatedApprovalTask={Items.sendApproverMail} statusUpdateMailSendStatus={ImmediateStatus && sendEmailComponentStatus ? true : false} IsEmailCategoryTask={EmailStatus} items={LastUpdateTaskData} Context={Context} ApprovalTaskStatus={ApprovalTaskStatus} callBack={SendEmailNotificationCallBack} /> : null}
+                    {sendEmailComponentStatus ?
+                        <EmailComponent
+                            CurrentUser={currentUserData}
+                            CreatedApprovalTask={Items.sendApproverMail}
+                            statusUpdateMailSendStatus={ImmediateStatus && sendEmailComponentStatus ? true : false}
+                            IsEmailCategoryTask={EmailStatus}
+                            items={LastUpdateTaskData}
+                            Context={Context}
+                            ApprovalTaskStatus={ApprovalTaskStatus}
+                            callBack={SendEmailNotificationCallBack}
+                        /> : null}
                 </div>
             </Panel>
             {/* ***************** this is Image compare panel *********** */}
@@ -5049,11 +4906,11 @@ const EditTaskPopup = (Items: any) => {
                                                 )
                                             })}
                                         </div>
-                                        <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev" data-bs-interval="false">
+                                        <button className="carousel-control-prev h-75" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev" data-bs-interval="false">
                                             <span className="carousel-control-prev-icon" aria-hidden="true"></span>
                                             <span className="visually-hidden">Previous</span>
                                         </button>
-                                        <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next" data-bs-interval="false">
+                                        <button className="carousel-control-next h-75" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next" data-bs-interval="false">
                                             <span className="carousel-control-next-icon" aria-hidden="true"></span>
                                             <span className="visually-hidden">Next</span>
                                         </button>
@@ -5141,10 +4998,10 @@ const EditTaskPopup = (Items: any) => {
                                                                 </span>
                                                             </div>
                                                             <input type="text" className="form-control" placeholder="Task Name"
-                                                                defaultValue={EditData.Title} onChange={(e) => setUpdateTaskInfo({ ...UpdateTaskInfo, Title: e.target.value })} />
+                                                                defaultValue={EditData.Title} onChange={(e) => setEditData({ ...EditData, Title: e.target.value })} />
                                                         </div>
                                                     </div>
-                                                    <div className="mx-0 row  ">
+                                                    <div className="mx-0 row taskdate ">
                                                         <div className="col-6 ps-0 mt-2">
                                                             <div className="input-group ">
                                                                 {/* <CDatePicker date={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}/> */}
@@ -5198,90 +5055,50 @@ const EditTaskPopup = (Items: any) => {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div className="mx-0 row mt-2">
+                                                    <div className="mx-0 row mt-2 taskservices">
                                                         <div className="col ps-0">
                                                             <div className="input-group mb-2">
                                                                 <label className="full-width">
-                                                                    <span className="form-check">
-                                                                        <label className="SpfxCheckRadio">
-                                                                            <input type="radio" id="Components"
-                                                                                name="Portfolios" checked={ComponentTaskCheck}
-                                                                                onClick={(e) => ChangeComponentStatus(e, "Component")}
-                                                                                title="Component"
-
-                                                                                className="radio" />
-                                                                            Component</label>
-                                                                    </span>
-                                                                    <span className="form-check ">
-                                                                        <label className="SpfxCheckRadio">
-                                                                            <input type="radio" id="Services"
-                                                                                name="Portfolios" value="Services"
-                                                                                title="Services"
-                                                                                checked={ServicesTaskCheck}
-                                                                                onClick={(e) => ChangeComponentStatus(e, "Service")}
-                                                                                className="radio" />
-                                                                            Services</label>
-                                                                    </span>
+                                                                    Portfolio
                                                                 </label>
-                                                                {smartComponentData?.length > 0 && ComponentTaskCheck || smartServicesData?.length > 0 && ServicesTaskCheck ? null :
+                                                                {TaggedPortfolioData?.length > 0 ?
+                                                                    <div className="full-width">
+                                                                        {TaggedPortfolioData?.map((com: any) => {
+                                                                            return (
+                                                                                <>
+                                                                                    <div
+                                                                                        className="d-flex justify-content-between block px-2 py-1 full-width selected-component"
+                                                                                    >
+                                                                                        <a title={com.Title} style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
+                                                                                        <a>
+                                                                                            <span onClick={() => setTaggedPortfolioData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
+                                                                                        </a>
+                                                                                    </div>
+                                                                                </>
+                                                                            )
+                                                                        })}
+                                                                    </div>
+                                                                    :
                                                                     <>
                                                                         <input type="text"
                                                                             className="form-control"
                                                                             value={SearchedServiceCompnentKey}
-                                                                            onChange={(e) => autoSuggestionsForServiceAndComponent(e)}
-                                                                            placeholder="Componets / Service"
+                                                                            onChange={(e) => autoSuggestionsForServiceAndComponent(e, "Portfolio")}
+                                                                            placeholder="Search Portfolio Components"
                                                                         />
+                                                                        <span className="input-group-text">
+                                                                            <span title="Component Popup" onClick={() => OpenTeamPortfolioPopupFunction(EditData, 'Portfolio')} className="svg__iconbox svg__icon--editBox"></span>
+                                                                        </span>
                                                                     </>
                                                                 }
-                                                                {smartComponentData.length > 0 && ComponentTaskCheck ? smartComponentData?.map((com: any) => {
-                                                                    return (
-                                                                        <>
-                                                                            <div className="d-flex justify-content-between block px-2 py-1" style={{ width: "88%" }}>
-                                                                                <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
-                                                                                <a>
-                                                                                    <span onClick={() => setSmartComponentData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
-
-                                                                                </a>
-                                                                            </div>
-                                                                        </>
-                                                                    )
-                                                                }) : null}
-                                                                {
-                                                                    smartServicesData?.length > 0 && ServicesTaskCheck ? smartServicesData?.map((com: any) => {
-                                                                        return (
-                                                                            <>
-                                                                                <div className="d-flex justify-content-between block px-2 py-1" style={{ width: "88%" }}>
-                                                                                    <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
-                                                                                    <a>
-                                                                                        <span onClick={() => setSmartServicesData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
-
-                                                                                    </a>
-                                                                                </div>
-                                                                            </>
-                                                                        )
-                                                                    }) : null
-                                                                }
-
-                                                                <span className="input-group-text">
-                                                                    {ComponentTaskCheck ?
-                                                                        <span title="Component Popup" onClick={() => EditComponent(EditData, 'Component')} className="svg__iconbox svg__icon--editBox"></span>
-
-                                                                        : null}
-
-                                                                    {ServicesTaskCheck ?
-                                                                        <span title="Service Popup" onClick={(e) => EditLinkedServices(EditData, 'Services')} className="svg__iconbox svg__icon--editBox"></span>
-
-                                                                        : null}
-
-                                                                </span>
                                                             </div>
                                                             {SearchedServiceCompnentData?.length > 0 ? (
                                                                 <div className="SmartTableOnTaskPopup">
                                                                     <ul className="list-group">
                                                                         {SearchedServiceCompnentData.map((Item: any) => {
                                                                             return (
-                                                                                <li className="hreflink list-group-item rounded-0 list-group-item-action" key={Item.id} onClick={() => setSelectedServiceAndCompnentData(Item)} >
-                                                                                    <a>{Item.NewLeble}</a>
+                                                                                <li className="hreflink list-group-item rounded-0 list-group-item-action" key={Item.id} onClick={() => setSelectedServiceAndCompnentData(Item, "Single")} >
+                                                                                    <a>{Item.Path}</a>
                                                                                 </li>
                                                                             )
                                                                         }
@@ -5383,30 +5200,31 @@ const EditTaskPopup = (Items: any) => {
 
                                                                     />
                                                                 </div>
-                                                                <div className="col ps-4">
-                                                                    <ul className="p-0 mt-1">
-                                                                        <li className="form-check l-radio">
-                                                                            <input className="form-check-input"
+                                                                <div className="col ps-4 mb-1">
+                                                                    <ul className="p-0 mt-1 list-none ">
+                                                                        <li className="SpfxCheckRadio ">
+                                                                            <input className="radio"
                                                                                 name="ApprovalLevel"
                                                                                 type="radio"
                                                                             />
                                                                             <label className="form-check-label">Normal Approval</label>
                                                                         </li>
                                                                         <li
-                                                                            className="form-check l-radio">
+                                                                            className="SpfxCheckRadio ">
+                                                                            <input
+                                                                                type="radio"
+                                                                                className="radio"
+                                                                                name="ApprovalLevel" />
                                                                             <label> Complex Approval</label>
-                                                                            <input
-                                                                                type="radio"
-                                                                                className="form-check-input"
-                                                                                name="ApprovalLevel" />
+
                                                                         </li>
-                                                                        <li
-                                                                            className="form-check l-radio">
-                                                                            <label>Quick Approval</label>
+                                                                        <li className="SpfxCheckRadio">
                                                                             <input
                                                                                 type="radio"
-                                                                                className="form-check-input"
+                                                                                className="radio"
                                                                                 name="ApprovalLevel" />
+                                                                            <label>Quick Approval</label>
+
                                                                         </li>
                                                                     </ul>
                                                                 </div>
@@ -5488,7 +5306,7 @@ const EditTaskPopup = (Items: any) => {
                                                             </div>
                                                         </div>
                                                         <div className="col-6 ps-0 pe-0 pt-4">
-                                                            <div>
+                                                            <div className="time-status">
                                                                 <div className="input-group">
                                                                     <input type="text" className="form-control"
                                                                         placeholder="Enter Priority"
@@ -5497,27 +5315,30 @@ const EditTaskPopup = (Items: any) => {
                                                                     />
                                                                 </div>
                                                                 <ul className="p-0 mt-1">
-                                                                    <li className="form-check l-radio">
-                                                                        <input className="form-check-input"
-                                                                            name="radioPriority" type="radio"
-                                                                            checked={EditData.PriorityRank <= 10 && EditData.PriorityRank >= 8}
-                                                                            onChange={() => setEditData({ ...EditData, PriorityRank: 8 })}
-                                                                        />
-                                                                        <label className="form-check-label">High</label>
+                                                                    <li className="form-check ">
+                                                                        <label className="SpfxCheckRadio">
+                                                                            <input className="radio"
+                                                                                name="radioPriority" type="radio"
+                                                                                checked={EditData.PriorityRank <= 10 && EditData.PriorityRank >= 8}
+                                                                                onChange={() => setEditData({ ...EditData, PriorityRank: 8 })}
+                                                                            />
+                                                                            High </label>
                                                                     </li>
-                                                                    <li className="form-check l-radio">
-                                                                        <input className="form-check-input" name="radioPriority"
-                                                                            type="radio" checked={EditData.PriorityRank <= 7 && EditData.PriorityRank >= 4}
-                                                                            onChange={() => setEditData({ ...EditData, PriorityRank: 4 })}
-                                                                        />
-                                                                        <label className="form-check-label">Normal</label>
+                                                                    <li className="form-check ">
+                                                                        <label className="SpfxCheckRadio">
+                                                                            <input className="radio" name="radioPriority"
+                                                                                type="radio" checked={EditData.PriorityRank <= 7 && EditData.PriorityRank >= 4}
+                                                                                onChange={() => setEditData({ ...EditData, PriorityRank: 4 })}
+                                                                            />
+                                                                            Normal </label>
                                                                     </li>
-                                                                    <li className="form-check l-radio">
-                                                                        <input className="form-check-input" name="radioPriority"
-                                                                            type="radio" checked={EditData.PriorityRank <= 3 && EditData.PriorityRank > 0}
-                                                                            onChange={() => setEditData({ ...EditData, PriorityRank: 1 })}
-                                                                        />
-                                                                        <label className="form-check-label">Low</label>
+                                                                    <li className="form-check ">
+                                                                        <label className="SpfxCheckRadio">
+                                                                            <input className="radio" name="radioPriority"
+                                                                                type="radio" checked={EditData.PriorityRank <= 3 && EditData.PriorityRank > 0}
+                                                                                onChange={() => setEditData({ ...EditData, PriorityRank: 1 })}
+                                                                            />
+                                                                            Low </label>
                                                                     </li>
                                                                 </ul>
                                                             </div>
@@ -5541,79 +5362,51 @@ const EditTaskPopup = (Items: any) => {
                                                                 </div>
                                                             </div>
                                                             <div className="col-12 mb-2 mt-2">
-                                                                {ComponentTaskCheck ?
-                                                                    <div>
-                                                                        <div className="input-group">
-                                                                            <label className="form-label full-width">
-                                                                                Linked Service
-                                                                            </label>
-                                                                            <input type="text"
-                                                                                className="form-control"
-                                                                            />
-                                                                            <span className="input-group-text" title="Linked Service Popup" onClick={(e) => alert("We Are Working On This Feature. It Will Be Live Soon...")}>
-                                                                                <span className="svg__iconbox svg__icon--editBox"></span>
-
-                                                                            </span>
-                                                                        </div>
-                                                                        {
-                                                                            smartServicesData?.length > 0 ?
-                                                                                <div>
-                                                                                    {smartServicesData?.map((com: any) => {
-                                                                                        return (
-                                                                                            <div>
-                                                                                                <div className="d-flex justify-content-between block px-2 py-2 mt-1">
-                                                                                                    <a className="hreflink " target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
-                                                                                                        {com.Title}
-                                                                                                    </a>
-                                                                                                    <a>
-                                                                                                        <span onClick={() => setSmartServicesData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
-
-                                                                                                    </a>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        )
-                                                                                    })}
-                                                                                </div> :
-                                                                                null
-                                                                        }
-
-                                                                    </div> : null}
-                                                                {ServicesTaskCheck ? <div >
-                                                                    <div className="input-group">
-                                                                        <label className="form-label full-width">
-                                                                            Linked Component
-                                                                        </label>
-                                                                        <input type="text"
-                                                                            className="form-control "
-                                                                        />
-                                                                        <span className="input-group-text" title="Linked Component Popup" onClick={(e) => alert("We Are Working On This Feature. It Will Be Live Soon...")}>
-                                                                            <span className="svg__iconbox svg__icon--editBox"></span>
-
-                                                                        </span>
-                                                                    </div>
-
-                                                                    {
-                                                                        smartComponentData?.length > 0 ? <div>
-                                                                            {smartComponentData?.map((com: any) => {
+                                                                <div className="input-group mb-2">
+                                                                    <label className="full-width">
+                                                                        Linked Portfolios
+                                                                    </label>
+                                                                    <input type="text"
+                                                                        className="form-control"
+                                                                        value={SearchedLinkedPortfolioKey}
+                                                                        onChange={(e) => autoSuggestionsForServiceAndComponent(e, "Linked-Portfolios")}
+                                                                        placeholder="Search Portfolio Components"
+                                                                    />
+                                                                    <span className="input-group-text">
+                                                                        <span title="Component Popup" onClick={() => OpenTeamPortfolioPopupFunction(EditData, 'Linked-Portfolios')} className="svg__iconbox svg__icon--editBox"></span>
+                                                                    </span>
+                                                                </div>
+                                                                {SearchedLinkedPortfolioData?.length > 0 ? (
+                                                                    <div className="SmartTableOnTaskPopup">
+                                                                        <ul className="list-group">
+                                                                            {SearchedLinkedPortfolioData.map((Item: any) => {
                                                                                 return (
-                                                                                    <div>
-                                                                                        <div className="d-flex justify-content-between block px-2 py-2 mt-1">
-
-                                                                                            <a className="hreflink " target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
-                                                                                                {com.Title}
-                                                                                            </a>
-                                                                                            <a>
-                                                                                                <span onClick={() => setSmartComponentData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
-
-                                                                                            </a>
-                                                                                        </div>
-                                                                                    </div>
+                                                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={Item.id} onClick={() => setSelectedServiceAndCompnentData(Item, "Multi")} >
+                                                                                        <a>{Item.Path}</a>
+                                                                                    </li>
                                                                                 )
-                                                                            })}
-                                                                        </div> :
-                                                                            null
-                                                                    }
-                                                                </div> : null}
+                                                                            }
+                                                                            )}
+                                                                        </ul>
+                                                                    </div>) : null}
+                                                                {linkedPortfolioData?.length > 0 ?
+                                                                    <div className="full-width">
+                                                                        {linkedPortfolioData?.map((com: any, Index: any) => {
+                                                                            return (
+                                                                                <>
+                                                                                    <div className="d-flex justify-content-between block px-2 py-1 border-bottom full-width selected-component">
+                                                                                        <a title={com.Title} style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
+                                                                                        <a>
+                                                                                            <span onClick={() => RemoveLinkedPortfolio(Index)} className="bg-light svg__icon--cross svg__iconbox"></span>
+                                                                                        </a>
+                                                                                    </div>
+                                                                                </>
+                                                                            )
+                                                                        })}
+                                                                    </div>
+                                                                    :
+                                                                    null
+                                                                }
                                                             </div>
                                                             <div className="col-12">
                                                                 <div className="input-group">
@@ -5626,17 +5419,11 @@ const EditTaskPopup = (Items: any) => {
                                                                         value={ProjectSearchKey}
                                                                         onChange={(e) => autoSuggestionsForProject(e)}
                                                                     />
-                                                                    {ComponentTaskCheck == false && ServicesTaskCheck == false ?
-                                                                        <span className="input-group-text" title="Project Popup" onClick={(e) => alert("Please select anyone from Portfolio/Services")}>
-                                                                            <span className="svg__iconbox svg__icon--editBox"></span>
+                                                                    <span className="input-group-text" onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" >
+                                                                        <span className="svg__iconbox svg__icon--editBox">
 
                                                                         </span>
-
-                                                                        : <span className="input-group-text" onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" >
-                                                                            <span className="svg__iconbox svg__icon--editBox">
-
-                                                                            </span>
-                                                                        </span>}
+                                                                    </span>
                                                                 </div>
                                                                 {SearchedProjectData?.length > 0 ? (
                                                                     <div className="SmartTableOnTaskPopup">
@@ -5660,7 +5447,8 @@ const EditTaskPopup = (Items: any) => {
                                                                                         <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}>
                                                                                             {ProjectData.Title}
                                                                                         </a>
-                                                                                        <svg onClick={() => setSelectedProject([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg>
+                                                                                        <span onClick={() => setSelectedProject([])} className="bg-light svg__icon--cross svg__iconbox"></span>
+
                                                                                     </div>
                                                                                 </div>
                                                                             )
@@ -5669,7 +5457,7 @@ const EditTaskPopup = (Items: any) => {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div className="col-12 mb-2">
+                                                    <div className="col-12 mb-2 taskurl">
                                                         <div className="input-group">
                                                             <label className="form-label full-width ">Relevant URL</label>
                                                             <input type="text" className="form-control" defaultValue={EditData.ComponentLink != null ? EditData.Relevant_Url : ''} placeholder="Url" onChange={(e) => setEditData({ ...EditData, Relevant_Url: e.target.value })}
@@ -5677,9 +5465,7 @@ const EditTaskPopup = (Items: any) => {
                                                             <span className={EditData.ComponentLink != null ? "input-group-text" : "input-group-text Disabled-Link"}>
                                                                 <a target="_blank" href={EditData.ComponentLink != null ? EditData.ComponentLink.Url : ''} data-interception="off"
                                                                 >
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" fill="none">
-                                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M12.3677 13.2672C11.023 13.7134 9.87201 14.4471 8.99831 15.4154C6.25928 18.4508 6.34631 23.1488 9.19578 26.0801C10.6475 27.5735 12.4385 28.3466 14.4466 28.3466H15.4749V27.2499V26.1532H14.8471C12.6381 26.1532 10.4448 24.914 9.60203 23.1898C8.93003 21.8151 8.9251 19.6793 9.5906 18.3208C10.4149 16.6384 11.9076 15.488 13.646 15.1955C14.7953 15.0022 22.5955 14.9933 23.7189 15.184C26.5649 15.6671 28.5593 18.3872 28.258 21.3748C27.9869 24.0644 26.0094 25.839 22.9861 26.1059L21.9635 26.1961V27.2913V28.3866L23.2682 28.3075C27.0127 28.0805 29.7128 25.512 30.295 21.6234C30.8413 17.9725 28.3779 14.1694 24.8492 13.2166C24.1713 13.0335 23.0284 12.9942 18.5838 13.0006C13.785 13.0075 13.0561 13.0388 12.3677 13.2672ZM23.3224 19.8049C18.7512 20.9519 16.3624 26.253 18.4395 30.6405C19.3933 32.6554 20.9948 34.0425 23.1625 34.7311C23.9208 34.9721 24.5664 35 29.3689 35C34.1715 35 34.8171 34.9721 35.5754 34.7311C38.1439 33.9151 39.9013 32.1306 40.6772 29.5502C41 28.4774 41.035 28.1574 40.977 26.806C40.9152 25.3658 40.8763 25.203 40.3137 24.0261C39.0067 21.2919 36.834 19.8097 33.8475 19.6151L32.5427 19.53V20.6267V21.7236L33.5653 21.8132C35.9159 22.0195 37.6393 23.0705 38.4041 24.7641C39.8789 28.0293 38.2035 31.7542 34.8532 32.6588C33.8456 32.9309 25.4951 32.9788 24.1462 32.7205C22.4243 32.3904 21.0539 31.276 20.2416 29.5453C19.8211 28.6492 19.7822 28.448 19.783 27.1768C19.7837 26.0703 19.8454 25.6485 20.0853 25.1039C20.4635 24.2463 21.3756 23.2103 22.1868 22.7175C22.8985 22.2851 24.7121 21.7664 25.5124 21.7664H26.0541V20.6697V19.573L25.102 19.5851C24.5782 19.5919 23.7775 19.6909 23.3224 19.8049Z" fill="#333333" />
-                                                                    </svg>
+                                                                    <span className="svg__iconbox svg__icon--link"></span>
                                                                 </a>
                                                             </span>
                                                         </div>
@@ -5737,7 +5523,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         </ul>
                                                                     </div> : null
                                                                 }
-                                                                <div className="bg-e9 border-1 p-2">
+                                                                <div className="bg-e9 border-1 p-1 total-time">
                                                                     <label className="siteColor">Total Time</label>
                                                                     {EditData.Id != null ? <span className="pull-right siteColor"><SmartTotalTime props={EditData} callBack={SmartTotalTimeCallBack} /> h</span> : null}
                                                                 </div>
@@ -5746,19 +5532,20 @@ const EditTaskPopup = (Items: any) => {
                                                         : null}
 
                                                     <div className="col mt-2">
-                                                        <div className="input-group">
+                                                        <div className="input-group taskTime">
                                                             <label className="form-label full-width">Status</label>
                                                             <input type="text" maxLength={3} placeholder="% Complete" disabled={InputFieldDisable} className="form-control px-2"
-                                                                defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? EditData.PercentComplete : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
+                                                                defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? Number(EditData.PercentComplete).toFixed(0) : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
                                                                 onChange={(e) => StatusAutoSuggestion(e)} />
                                                             <span className="input-group-text" title="Status Popup" onClick={() => openTaskStatusUpdatePopup(EditData)}>
                                                                 <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
 
                                                             </span>
                                                             {PercentCompleteStatus?.length > 0 ?
-                                                                <span className="full-width l-radio">
-                                                                    <input type='radio' className="form-check-input my-2" checked />
-                                                                    <label className="ps-2 pt-1">
+                                                                <span className="full-width ">
+                                                                    <label className="SpfxCheckRadio">
+                                                                        <input type='radio' className="my-2 radio" checked />
+
                                                                         {PercentCompleteStatus}
                                                                     </label>
                                                                 </span> : null}
@@ -5773,37 +5560,41 @@ const EditTaskPopup = (Items: any) => {
                                                                         defaultValue={EditData.Mileage != null ? EditData.Mileage : ""} onChange={(e) => setEditData({ ...EditData, Mileage: e.target.value })} />
                                                                 </div>
                                                                 <ul className="p-0 mt-1">
-                                                                    <li className="form-check l-radio">
-                                                                        <input name="radioTime" className="form-check-input"
-                                                                            checked={EditData.Mileage <= 15 && EditData.Mileage > 0 ? true : false} type="radio"
-                                                                            onChange={(e) => setEditData({ ...EditData, Mileage: '15' })}
-                                                                            defaultChecked={EditData.Mileage <= 15 && EditData.Mileage > 0 ? true : false}
-                                                                        />
-                                                                        <label className="form-check-label">Very Quick</label>
+                                                                    <li className="form-check">
+                                                                        <label className="SpfxCheckRadio">
+                                                                            <input name="radioTime" className=" radio"
+                                                                                checked={EditData.Mileage <= 15 && EditData.Mileage > 0 ? true : false} type="radio"
+                                                                                onChange={(e) => setEditData({ ...EditData, Mileage: '15' })}
+                                                                                defaultChecked={EditData.Mileage <= 15 && EditData.Mileage > 0 ? true : false}
+                                                                            />
+                                                                            Very Quick </label>
                                                                     </li>
-                                                                    <li className="form-check l-radio">
-                                                                        <input name="radioTime" className="form-check-input"
-                                                                            checked={EditData.Mileage <= 60 && EditData.Mileage > 15 ? true : false} type="radio"
-                                                                            onChange={(e) => setEditData({ ...EditData, Mileage: '60' })}
-                                                                            defaultChecked={EditData.Mileage <= 60 && EditData.Mileage > 15 ? true : false}
-                                                                        />
-                                                                        <label className="form-check-label">Quick</label>
+                                                                    <li className="form-check">
+                                                                        <label className="SpfxCheckRadio">
+                                                                            <input name="radioTime" className=" radio"
+                                                                                checked={EditData.Mileage <= 60 && EditData.Mileage > 15 ? true : false} type="radio"
+                                                                                onChange={(e) => setEditData({ ...EditData, Mileage: '60' })}
+                                                                                defaultChecked={EditData.Mileage <= 60 && EditData.Mileage > 15 ? true : false}
+                                                                            />
+                                                                            Quick</label>
                                                                     </li>
-                                                                    <li className="form-check l-radio">
-                                                                        <input name="radioTime" className="form-check-input"
-                                                                            checked={EditData.Mileage <= 240 && EditData.Mileage > 60 ? true : false} type="radio"
-                                                                            onChange={(e) => setEditData({ ...EditData, Mileage: '240' })}
-                                                                            defaultChecked={EditData.Mileage <= 240 && EditData.Mileage > 60 ? true : false}
-                                                                        />
-                                                                        <label className="form-check-label">Medium</label>
+                                                                    <li className="form-check">
+                                                                        <label className="SpfxCheckRadio">
+                                                                            <input name="radioTime" className="radio"
+                                                                                checked={EditData.Mileage <= 240 && EditData.Mileage > 60 ? true : false} type="radio"
+                                                                                onChange={(e) => setEditData({ ...EditData, Mileage: '240' })}
+                                                                                defaultChecked={EditData.Mileage <= 240 && EditData.Mileage > 60 ? true : false}
+                                                                            />
+                                                                            Medium</label>
                                                                     </li>
-                                                                    <li className="form-check l-radio">
-                                                                        <input name="radioTime" className="form-check-input"
-                                                                            checked={EditData.Mileage === '480'} type="radio"
-                                                                            onChange={(e) => setEditData({ ...EditData, Mileage: '480' })}
-                                                                            defaultChecked={EditData.Mileage <= 480 && EditData.Mileage > 240 ? true : false}
-                                                                        />
-                                                                        <label className="form-check-label">Long</label>
+                                                                    <li className="form-check">
+                                                                        <label className="SpfxCheckRadio">
+                                                                            <input name="radioTime" className=" radio"
+                                                                                checked={EditData.Mileage === '480'} type="radio"
+                                                                                onChange={(e) => setEditData({ ...EditData, Mileage: '480' })}
+                                                                                defaultChecked={EditData.Mileage <= 480 && EditData.Mileage > 240 ? true : false}
+                                                                            />
+                                                                            Long</label>
                                                                     </li>
                                                                 </ul>
                                                             </div>
@@ -5818,8 +5609,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 target="_blank"
                                                                                 data-interception="off"
                                                                                 href={`${siteUrls}/SitePages/TaskDashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`} >
-                                                                                <img data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''}
-                                                                                    style={{ width: "35px", height: "35px", marginLeft: "10px", borderRadius: "50px" }}
+                                                                                <img className="ProirityAssignedUserPhoto ms-2" data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''}
                                                                                     src={userDtl.Item_x0020_Cover ? userDtl.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
                                                                                 />
                                                                             </a>
@@ -5906,16 +5696,17 @@ const EditTaskPopup = (Items: any) => {
                                         </div>
                                     </div> : null
                                 }
+                                {
+                                    ShowTaskDetailsStatus ? null : <div className="mb-3">
+                                        <h6 className="siteColor" style={{ cursor: "pointer" }} onClick={() => setShowTaskDetailsStatus(ShowTaskDetailsStatus ? false : true)}>
+                                            Show task details +
+                                        </h6>
+                                    </div>
+                                }
+
                                 <div className="slider-image-section col-sm-6 p-2" style={{
                                     border: "2px solid #ccc"
                                 }}>
-                                    {
-                                        ShowTaskDetailsStatus ? null : <div className="mb-3">
-                                            <h6 className="siteColor" style={{ cursor: "pointer" }} onClick={() => setShowTaskDetailsStatus(ShowTaskDetailsStatus ? false : true)}>
-                                                Show task details +
-                                            </h6>
-                                        </div>
-                                    }
 
                                     <div id="carouselExampleControls" className="carousel slide" data-bs-interval="false">
                                         <div className="carousel-inner">
@@ -5928,23 +5719,26 @@ const EditTaskPopup = (Items: any) => {
                                                                 <span className="mx-1">{imgData.ImageName ? imgData.ImageName.slice(0, 6) : ''}</span>
                                                                 <span className="fw-semibold">{imgData.UploadeDate ? imgData.UploadeDate : ''}</span>
                                                                 <span className="mx-1">
-                                                                    <img style={{ width: "25px" }} src={imgData.UserImage ? imgData.UserImage : ''} />
+                                                                    <img className="imgAuthor" title={imgData.UserName ? imgData.UserName : ''} src={imgData.UserImage ? imgData.UserImage : ''} />
                                                                 </span>
                                                             </div>
-                                                            <div>
-                                                                <span className="mx-1"><TbReplace /> |</span>
-                                                                <span><RiDeleteBin6Line /></span>
+                                                            <div className="align-autoplay d-flex">
+                                                                <span onClick={() => openReplaceImagePopup(index)} title="Replace image"><TbReplace /> </span>
+                                                                <span className="ms-1" title="Delete" onClick={() => RemoveImageFunction(index, imgData.ImageName, "Remove")}> | <RiDeleteBin6Line /> | </span>
+                                                                <span title={imgData.Description != undefined && imgData.Description?.length > 1 ? imgData.Description : "Add Image Description"} className="img-info" onClick={() => openAddImageDescriptionFunction(index, imgData, "Opne-Model")}>
+                                                                    <span className="svg__iconbox svg__icon--info mt--5"></span>
+                                                                </span>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 )
                                             })}
                                         </div>
-                                        <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev" data-bs-interval="false">
+                                        <button className="carousel-control-prev h-75" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev" data-bs-interval="false">
                                             <span className="carousel-control-prev-icon" aria-hidden="true"></span>
                                             <span className="visually-hidden">Previous</span>
                                         </button>
-                                        <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next" data-bs-interval="false">
+                                        <button className="carousel-control-next h-75" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next" data-bs-interval="false">
                                             <span className="carousel-control-next-icon" aria-hidden="true"></span>
                                             <span className="visually-hidden">Next</span>
                                         </button>
@@ -6002,29 +5796,6 @@ const EditTaskPopup = (Items: any) => {
                                 <NewTameSheetComponent props={Items} AllListId={AllListIdData}
                                     TeamConfigDataCallBack={getTeamConfigData}
                                 />
-                                {/* <div className="col-sm-5">
-                                    {EditData.Id != null && AllListIdData.isShowSiteCompostion ?
-                                        <div className="site-composition-on-task-popup">
-                                            {SiteTypes != undefined && SiteTypes.length > 0 ?
-                                                <SiteCompositionComponent
-                                                    AllListId={AllListIdData}
-                                                    siteUrls={siteUrls}
-                                                    SiteTypes={SiteTypes}
-                                                    ClientTime={EditData.siteCompositionData}
-                                                    SiteCompositionSettings={EditData.SiteCompositionSettings}
-                                                    SmartTotalTimeData={SmartTotalTimeData}
-                                                    currentListName={EditData.siteType}
-                                                    callBack={SiteCompositionCallBack}
-                                                    isServiceTask={ServicesTaskCheck}
-                                                    SelectedClientCategory={selectedClientCategory}
-                                                    isPortfolioConncted={ComponentTaskCheck || ServicesTaskCheck ? true : false}
-                                                    SitesTaggingData={SitesTaggingData}
-                                                /> : null
-                                            }
-                                        </div>
-                                        : null
-                                    }
-                                </div> */}
                             </div>
                         </div>
                         {IsUserFromHHHHTeam ? null :
@@ -6321,14 +6092,14 @@ export default React.memo(EditTaskPopup);
 
 // step-2A :
 // var Items = {
-    // siteUrl:{Enter Site url here},
-    // siteType: {Enter Site type here},
-    // listId:{Enter Site listId here},
-    // ***** OR *****
-    // listName:{Enter Site listName here},
-    // Context:{Context}
-    // AllListIdData: { AllListIdData with site url,  }
-    // context:{Page Context}
+// siteUrl:{Enter Site url here},
+// siteType: {Enter Site type here},
+// listId:{Enter Site listId here},
+// ***** OR *****
+// listName:{Enter Site listName here},
+// Context:{Context}
+// AllListIdData: { AllListIdData with site url,  }
+// context:{Page Context}
 // }
 
 // step-2B :

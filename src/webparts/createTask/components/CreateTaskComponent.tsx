@@ -356,6 +356,11 @@ function CreateTaskComponent(props: any) {
                     let saveValue = save;
                     let setTaskTitle = 'Feedback - ' + setComponent[0]?.Title + ' ' + moment(new Date()).format('DD-MM-YYYY');
                     saveValue.taskName = setTaskTitle;
+                    subCategories?.map((item: any) => {
+                        if (item.Title == "Feedback") {
+                            selectSubTaskCategory(item.Title, item.Id, item)
+                        }
+                    })
                     saveValue.taskUrl = paramSiteUrl;
                     BurgerMenuData.TaskType = 'Feedback'
                     //  setTaskUrl(paramSiteUrl);
@@ -402,7 +407,7 @@ function CreateTaskComponent(props: any) {
     }
     const loadRelevantTask = async (Condition: any, type: any) => {
         let query = '';
-        if (type == 'Portfolio') {
+        if (type == 'PortfolioId') {
             query = "Categories,AssignedTo/Title,AssignedTo/Name,PriorityRank,TaskType/Id,TaskType/Title,AssignedTo/Id,Portfolio/Id,Portfolio/Title,AttachmentFiles/FileName,ComponentLink/Url,FileLeafRef,TaskLevel,TaskLevel,Title,Id,PriorityRank,PercentComplete,Company,WebpartId,StartDate,DueDate,Status,Body,WebpartId,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=AssignedTo,AttachmentFiles,TaskType,Portfolio,Author,Editor&$orderby=Modified desc" + Condition
         } else {
             query = "Categories,AssignedTo/Title,AssignedTo/Name,PriorityRank,TaskType/Id,TaskType/Title,AssignedTo/Id,Portfolio/Id,Portfolio/Title,AttachmentFiles/FileName,ComponentLink/Url,FileLeafRef,TaskLevel,TaskLevel,Title,Id,PriorityRank,PercentComplete,Company,WebpartId,StartDate,DueDate,Status,Body,WebpartId,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=AssignedTo,AttachmentFiles,TaskType,Portfolio,Author,Editor&$orderby=Modified desc"
@@ -436,8 +441,8 @@ function CreateTaskComponent(props: any) {
                         //type.Priority = type.Priority.split('')[1];
                         //type.Component = type.Component.results[0].Title,
                         item.ComponentTitle = '';
-                        item.portfolio={};
-                        if (item?.Portfolio?.Id !=undefined) {
+                        item.portfolio = {};
+                        if (item?.Portfolio?.Id != undefined) {
                             item.portfolio = item.Portfolio;
                         }
 
@@ -472,7 +477,7 @@ function CreateTaskComponent(props: any) {
                 count++;
                 if (count == SitesTypes.length - 1) {
                     console.log("inside Set Task")
-                    if (type == "ComponentId") {
+                    if (type == "PortfolioId") {
                         setRelTask.ComponentRelevantTask = SiteTaskTaggedToComp;
                     }
                     if (type == "UrlTask") {
@@ -821,8 +826,8 @@ function CreateTaskComponent(props: any) {
 
                     //Latest code for Creating Task
                     if (burgerMenuTaskDetails.TaskType == "Design") {
-                        AssignedToIds.push(40);
-                        TeamMembersIds.push(40);
+                        AssignedToIds.push(298);
+                        TeamMembersIds.push(298);
                         TeamMembersIds.push(49);
                     }
                     var newCopyUrl = CopyUrl != undefined ? CopyUrl : '';
@@ -1231,7 +1236,7 @@ function CreateTaskComponent(props: any) {
                 header: "",
                 resetSorting: false,
                 resetColumnFilters: false,
-                size: 50
+                size: 42
             },
             {
                 accessorKey: "TaskID",
@@ -1240,7 +1245,7 @@ function CreateTaskComponent(props: any) {
                 resetColumnFilters: false,
                 resetSorting: false,
                 size: 70,
-                cell: ({ row, getValue }) => (
+                cell: ({ row }) => (
                     <>
                         <span className="d-flex">
                             {row?.original?.TaskID}
@@ -1250,19 +1255,22 @@ function CreateTaskComponent(props: any) {
             },
             {
                 accessorFn: (row) => row?.Title,
-                cell: ({ row, column, getValue }) => (
+                cell: ({ row }) => (
                     <>
-                        <span className='d-flex'>
-                            <a
-                                className="hreflink"
-                                href={`${row?.original?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
-                                data-interception="off"
-                                target="_blank"
-                            >
-                                {row?.original?.Title}
-                            </a>
-                            {row?.original?.Body !== null && row?.original?.Body != undefined ? <InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} /> : ''}
-                        </span>
+                        <div className="alignCenter createTableTitle">
+                        <span className="column-description2 ">
+                                <a
+                                    className="text-content hreflink"
+                                    title={row?.original?.Title}
+                                    href={`${row?.original?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                                    data-interception="off"
+                                    target="_blank"
+                                >
+                                    {row?.original?.Title}
+                                </a>
+                                {row?.original?.Body !== null && row?.original?.Body != undefined ? <InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} /> : ''}
+                            </span>
+                        </div>
                     </>
                 ),
                 id: "Title",
@@ -1270,24 +1278,26 @@ function CreateTaskComponent(props: any) {
                 resetColumnFilters: false,
                 resetSorting: false,
                 header: "",
+                size: 480,
             },
             {
                 accessorFn: (row) => row?.Portfolio,
                 cell: ({ row }) => (
                     <span>
                         <a className="hreflink"
-                                data-interception="off"
-                                target="blank"
-                                href={`${row?.original?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`} >
-                                {row?.original?.portfolio?.Title}
-                            </a>
+                            data-interception="off"
+                            target="blank"
+                            href={`${row?.original?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`} >
+                            {row?.original?.portfolio?.Title}
+                        </a>
                     </span>
                 ),
                 id: "Portfolio",
                 placeholder: "Portfolio",
                 resetColumnFilters: false,
                 resetSorting: false,
-                header: ""
+                header: "",
+                size: 151,
             },
             {
                 accessorFn: (row) => row?.PriorityRank,
@@ -1309,7 +1319,7 @@ function CreateTaskComponent(props: any) {
                 header: "",
                 resetColumnFilters: false,
                 resetSorting: false,
-                size: 75
+                size: 42
             },
             {
                 accessorFn: (row) => row?.DueDate,
@@ -1328,23 +1338,7 @@ function CreateTaskComponent(props: any) {
                 resetSorting: false,
                 placeholder: "Due Date",
                 header: "",
-                size: 80
-            },
-            {
-                accessorKey: "descriptionsSearch",
-                placeholder: "descriptionsSearch",
-                header: "",
-                resetColumnFilters: false,
-                size: 100,
-                id: "descriptionsSearch",
-            },
-            {
-                accessorKey: "commentsSearch",
-                placeholder: "commentsSearch",
-                header: "",
-                resetColumnFilters: false,
-                size: 100,
-                id: "commentsSearch",
+                size: 100
             },
             {
                 accessorFn: (row) => row?.PercentComplete,
@@ -1365,13 +1359,13 @@ function CreateTaskComponent(props: any) {
                 resetColumnFilters: false,
                 resetSorting: false,
                 header: "",
-                size: 55
+                size: 42
             },
             {
                 accessorFn: (row) => row?.CreatedSearch,
                 cell: ({ row }) => (
-                    <span>
-                       <span className='ms-1'>{row?.original?.CreateDate} </span>
+                    <span className='alignCenter'>
+                        <span className='ms-1'>{row?.original?.CreateDate} </span>
                         {row?.original?.AuthorCover != undefined ? (
                             <>
                                 <a
@@ -1393,12 +1387,12 @@ function CreateTaskComponent(props: any) {
                 resetSorting: false,
                 placeholder: "Created",
                 header: "",
-                size: 125
+                size: 120
             },
             {
                 accessorFn: (row) => row?.ModifiedSearch,
                 cell: ({ row }) => (
-                    <span>
+                    <span className='alignCenter'>
                         <span className='ms-1'>{row?.original?.ModifiedDate} </span>
 
                         {row?.original?.EditorCover != undefined ? (
@@ -1422,7 +1416,7 @@ function CreateTaskComponent(props: any) {
                 resetSorting: false,
                 placeholder: "Modified",
                 header: "",
-                size: 125
+                size: 120
             },
             {
                 cell: ({ row }) => (
@@ -1440,78 +1434,12 @@ function CreateTaskComponent(props: any) {
                 resetSorting: false,
                 resetColumnFilters: false,
                 placeholder: "",
-                size: 35
+                size: 10
             },
         ],
         []
     );
-    // const columns: GridColDef[] = [
-    //     { field: 'siteType', headerName: 'Site', width: 60, renderCell: (params) => <img className="client-icons" src={params?.row?.siteCover} /> },
-    //     { field: 'TaskID', headerName: 'Task Id', width: 75 },
-    //     {
-    //         field: 'Title', headerName: 'Title', width: 300, renderCell: (params) => {
-    //             return (
-    //                 <div>
-    //                     <span><a data-interception="off" target="blank" href={`${base_Url}/SitePages/Task-Profile.aspx?taskId=${params?.row?.Id}&Site=${params?.row?.siteType}`}>{params?.row?.Title}</a></span>
-    //                 </div>
-    //             )
-    //         }
-    //     },
-    //     {
-    //         field: 'ComponentTitle', headerName: 'Component', width: 150, renderCell: (params) => {
-    //             return (
-    //                 <div>
-    //                     <span><a data-interception="off" target="blank" href={`${base_Url}/SitePages/Portfolio-Profile.aspx?taskId=${params?.row?.newComponentId}`}>{params?.row?.ComponentTitle}</a></span>
-    //                 </div>
-    //             )
-    //         }
-    //     },
-    //     {
-    //         field: 'PercentComplete', headerName: '% Complete', width: 100, renderCell: (params) => {
-    //             return (
-    //                 <div>
-    //                     <span>{params?.row?.PercentComplete}%</span>
-    //                 </div>
-    //             )
-    //         }
-    //     },
-    //     { field: 'Priority', headerName: 'Priority', width: 80 },
-    //     { field: 'Categories', headerName: 'Categories', width: 120 },
-
-    //     { field: 'TaskDueDate', headerName: 'Due Date', width: 115 },
-    //     {
-    //         field: 'Created', headerName: 'Created', width: 120, renderCell: (params) => {
-    //             return (
-    //                 <div>
-    //                     {params?.row?.AuthorCover != undefined ? <img className="client-icons" title={params?.row?.Author} src={params?.row?.AuthorCover} alt='' /> : ''}
-
-    //                     {params.row.CreateDate}
-    //                 </div>
-    //             )
-    //         }
-    //     },
-    //     {
-    //         field: 'Modified', headerName: 'Modified', width: 120, renderCell: (params) => {
-    //             return (
-    //                 <div>
-    //                     {params?.row?.EditorCover != undefined ? <img className="client-icons" title={params?.row?.Editor} src={params?.row?.EditorCover} alt='' /> : ''}
-
-    //                     {params.row.ModifiedDate}
-    //                 </div>
-    //             )
-    //         }
-    //     },
-    //     {
-    //         field: '', headerName: '', width: 40, renderCell: (params) => {
-    //             return (
-    //                 <div>
-    //                     <span onClick={() => EditPopup(params?.row)} className="svg__iconbox svg__icon--edit"></span>
-    //                     {/* <img onClick={() => EditPopup(params?.row)} src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"></img> */}
-    //                 </div>
-    //             )
-    //         }
-    //     },
-    // ];
+    
     const CallBack = React.useCallback((items) => {
         setEditTaskPopupData({
             isOpenEditPopup: false,
@@ -2009,13 +1937,19 @@ function CreateTaskComponent(props: any) {
     return (
         <>  <div className={save.portfolioType == "Service" ? "serviepannelgreena" : ''}>
             <div className='creatTaskPage'>
+<<<<<<< HEAD
                 <div className='row'>
                     {props?.projectId == undefined ?
+=======
+                <div className='generalInfo'>
+                    {/* {props?.projectId == undefined ?
+>>>>>>> 9a85e82844baef30690c02d512c71d26488dd140
                         <div className='heading d-flex justify-content-between align-items-center'>
                             <h2>Create Task </h2>
                             <span className='text-end fs-6'>
                              <a data-interception="off" className=' text-end pull-right' target='_blank' href={oldTaskIrl} style={{ cursor: "pointer", fontSize: "14px" }}>Old Create Task</a>
                              </span>
+<<<<<<< HEAD
                         </div>  : ''}
                     <div className='row'>
                         <h4 className="titleBorder">General Information</h4>
@@ -2025,15 +1959,28 @@ function CreateTaskComponent(props: any) {
                                 <input type="text" placeholder='Enter task Name' className='full-width' value={save.taskName} onChange={(e) => { changeTitle(e) }}></input>
                             </div>
                             <div className='col-sm-6 '>{
+=======
+                        </div>  : ''} */}
+                    <div>
+                        <h4 className="titleBorder">General Information</h4>
+                        <div className='row p-0'>
+                            <div className='col-sm-6'>
+                                <div className='input-group'>
+                                    <label className='full-width'>Task Name</label>
+                                    <input type="text" placeholder='Enter task Name' className='form-control' value={save.taskName} onChange={(e) => { changeTitle(e) }}></input>
+                                </div>
+                            </div>
+                            <div className='col-sm-6'>{
+>>>>>>> 9a85e82844baef30690c02d512c71d26488dd140
                                 save.portfolioType === 'Component' ?
                                     <div className="input-group">
-                                        <label className="form-label full-width">Portfolio</label>
+                                        <label className="full-width">Portfolio</label>
                                         {smartComponentData?.length > 0 ? null :
-                                            <>
+                                            <><div className='input-group'>
                                                 <input type="text" readOnly
                                                     className="form-control"
                                                     id="{{PortfoliosID}}" autoComplete="off"
-                                                />
+                                                /></div>
                                             </>
                                         }
                                         {smartComponentData?.length > 0 ? smartComponentData?.map((com: any) => {
@@ -2057,10 +2004,18 @@ function CreateTaskComponent(props: any) {
                                     </div> : ''
                             }
                             </div>
+<<<<<<< HEAD
                             <div className='col  mt-2'>
                                 <label className='full-width'>Task URL</label>
                                 <input type="text" className='full-width ' placeholder='Enter task Url' value={save.taskUrl} onChange={(e) => UrlPasteTitle(e)} disabled={burgerMenuTaskDetails?.Siteurl?.length > 0}></input>
 
+=======
+                            <div className='col mt-2'>
+                                <div className='input-group'>
+                                    <label className='full-width'>Task URL</label>
+                                    <input type="text" className='form-control' placeholder='Enter task Url' value={save.taskUrl} onChange={(e) => UrlPasteTitle(e)} disabled={burgerMenuTaskDetails?.Siteurl?.length > 0}></input>
+                                </div>
+>>>>>>> 9a85e82844baef30690c02d512c71d26488dd140
                             </div>
 
                         </div>
@@ -2073,17 +2028,18 @@ function CreateTaskComponent(props: any) {
                         <ul className="nav nav-tabs" id="myTab" role="tablist">
                             {burgerMenuTaskDetails?.Siteurl != undefined ?
                                 <button className="nav-link active" id="URL-Tasks" data-bs-toggle="tab" data-bs-target="#URLTasks" type="button" role="tab" aria-controls="URLTasks" aria-selected="true">
-                                    URL TASKS {relevantTasks?.ComponentRelevantTask?.length > 0 ? ("(" + relevantTasks?.TaskUrlRelevantTask?.length + ')') : ''}
+                                    URL TASKS { ("(" + (relevantTasks?.TaskUrlRelevantTask?.length > 0 ? relevantTasks?.TaskUrlRelevantTask?.length : 0 )+ ')') }
                                 </button> : ''}
                             {burgerMenuTaskDetails?.Siteurl != undefined ?
                                 <button className="nav-link " id="Page-Tasks" data-bs-toggle="tab" data-bs-target="#PageTasks" type="button" role="tab" aria-controls="PageTasks" aria-selected="true">
-                                    PAGE TASKS {relevantTasks?.ComponentRelevantTask?.length > 0 ? ("(" + relevantTasks?.PageRelevantTask?.length + ')') : ''}
+                                    PAGE TASKS { ("(" + (relevantTasks?.PageRelevantTask?.length > 0 ? relevantTasks?.PageRelevantTask?.length : 0 )+ ')') }
                                 </button> : ''}
                             {burgerMenuTaskDetails?.ComponentID != undefined ?
-                                <button className="nav-link " id="Component-Tasks" data-bs-toggle="tab" data-bs-target="#ComponentTasks" type="button" role="tab" aria-controls="ComponentTasks" aria-selected="false">COMPONENT TASKS {relevantTasks?.ComponentRelevantTask?.length > 0 ? ("(" + relevantTasks?.ComponentRelevantTask?.length + ')') : ''}</button>
+                                <button className="nav-link " id="Component-Tasks" data-bs-toggle="tab" data-bs-target="#ComponentTasks" type="button" role="tab" aria-controls="ComponentTasks" aria-selected="false">
+                                    COMPONENT TASKS { ("(" + (relevantTasks?.ComponentRelevantTask?.length > 0 ? relevantTasks?.ComponentRelevantTask?.length : 0 )+ ')') } </button>
                                 : ''}
                         </ul>
-                        <div className="border border-top-0 clearfix p-3 tab-content " id="myTabContent">
+                        <div className="border border-top-0 clearfix p-2 tab-content " id="myTabContent">
                             {burgerMenuTaskDetails?.Siteurl != undefined ? <div className="tab-pane Alltable mx-height show active" id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
                                 {relevantTasks?.TaskUrlRelevantTask?.length > 0 ?
                                     <>
@@ -2093,7 +2049,9 @@ function CreateTaskComponent(props: any) {
                                             {/* <GlobalCommanTable AllListId={ContextValue} callBackData={callBackData} columns={columns} data={relevantTasks?.TaskUrlRelevantTask} TaskUsers={taskUsers} showHeader={true} fixedWidth={true} showingAllPortFolioCount={true} showCreationAllButton={true} /> */}
                                             {/* <DataGrid rows={relevantTasks?.TaskUrlRelevantTask} columns={columns} getRowId={(row: any) => row.TaskID} /> */}
                                         </div>
-                                    </> : ''
+                                    </> : <div className='text-center full-width'>
+                                                <span>No Tasks Available</span>
+                                            </div>
                                 }
                             </div> : ''}
                             {burgerMenuTaskDetails?.Siteurl != undefined ? <div className="tab-pane Alltable mx-height" id="PageTasks" role="tabpanel" aria-labelledby="PageTasks">
@@ -2104,7 +2062,9 @@ function CreateTaskComponent(props: any) {
                                             {/* <GlobalCommanTable AllListId={ContextValue} columns={columns} data={relevantTasks?.PageRelevantTask} TaskUsers={taskUsers} showHeader={true} fixedWidth={true} showingAllPortFolioCount={true} showCreationAllButton={true} /> */}
                                             {/* <DataGrid rows={relevantTasks?.PageRelevantTask} columns={columns} getRowId={(row: any) => row.TaskID} /> */}
                                         </div>
-                                    </> : ''
+                                    </> : <div className='text-center full-width'>
+                                                <span>No Tasks Available</span>
+                                            </div>
                                 }
                             </div> : ''}
                             {burgerMenuTaskDetails?.ComponentID != undefined ?
@@ -2117,7 +2077,9 @@ function CreateTaskComponent(props: any) {
                                                 {/* <GlobalCommanTable AllListId={ContextValue} columns={columns} data={relevantTasks?.ComponentRelevantTask} TaskUsers={taskUsers} showHeader={true} fixedWidth={true} showingAllPortFolioCount={true} showCreationAllButton={true} /> */}
                                                 {/* <DataGrid rows={relevantTasks?.ComponentRelevantTask} columns={columns} getRowId={(row: any) => row.TaskID} /> */}
                                             </div>
-                                        </> : ''
+                                        </> : <div className='text-center full-width'>
+                                                <span>No Tasks Available</span>
+                                            </div>
                                     }
 
                                 </div> : ''}
@@ -2132,9 +2094,15 @@ function CreateTaskComponent(props: any) {
                 {/*---------------- Sites -------------
             -------------------------------*/}
                 {siteType?.length > 1 ?
+<<<<<<< HEAD
                     <div className='col mt-2'>
                         <h4 className="titleBorder ">Websites</h4>
                         <div className='p-0'>
+=======
+                    <div className='col mt-4'>
+                        <h4 className="titleBorder ">Websites</h4>
+                        <div className='clearfix p-0'>
+>>>>>>> 9a85e82844baef30690c02d512c71d26488dd140
                             <ul className="site-actions">
                                 {siteType?.map((item: any) => {
                                     return (
@@ -2142,7 +2110,7 @@ function CreateTaskComponent(props: any) {
                                             {(item.Title !== undefined && item.Title !== 'Offshore Tasks' && item.Title !== 'Master Tasks' && item.Title !== 'DRR' && item.Title !== 'SDC Sites' && item.Title !== 'QA') &&
                                                 <>
                                                     <li
-                                                        className={isActive.siteType && save.siteType === item.Title ? ' bgtile active text-center mb-2 position-relative' : " position-relative bgtile text-center  mb-2"} onClick={() => setActiveTile("siteType", "siteType", item.Title)} >
+                                                        className={isActive.siteType && save.siteType === item.Title ? 'bgtile active text-center position-relative' : "position-relative bgtile text-center"} onClick={() => setActiveTile("siteType", "siteType", item.Title)} >
                                                         {/*  */}
                                                         <a className=' text-decoration-none' >
                                                             <span className="icon-sites">
@@ -2165,6 +2133,7 @@ function CreateTaskComponent(props: any) {
                     <div className="clearfix"></div>
                     {/*---- Task Categories ---------
             -------------------------------*/}
+<<<<<<< HEAD
                     <div className='col mt-2 '>
                         <div className='p-0' >
                             <div className="col" >
@@ -2193,17 +2162,45 @@ function CreateTaskComponent(props: any) {
                     <div className="clearfix"></div>
                     {/*-----Priority Rank ---------------------------------------*/}
                     <div className='col  mt-2'>
+=======
+                    <div className="col" >
+                        {TaskTypes?.map((Task: any) => {
+                            return (
+                                <>
+                                    <div className='mt-4 clearfix'>
+                                        <h4 className="titleBorder "> {Task?.Title}</h4>
+                                        <div className='col p-0 taskcatgoryPannel'  >
+                                            {subCategory?.map((item: any) => {
+                                                return (
+                                                    <>
+                                                        {Task.Id === item.ParentID &&
+                                                            <a onClick={() => selectSubTaskCategory(item.Title, item.Id, item)} id={"subcategorytasks" + item.Id} className={item.ActiveTile ? 'bg-siteColor subcategoryTask active text-center' : 'bg-siteColor subcategoryTask text-center'} >
+                                                                <span className="tasks-label">{item.Title}</span>
+                                                            </a>
+                                                        }
+                                                    </>
+                                                )
+                                            })}
+                                        </div>
+                                    </div>
+                                </>)
+                        })}
+                    </div>
+                    <div className="clearfix"></div>
+                    {/*-----Priority Rank ---------------------------------------*/}
+                    <div className='col clearfix mt-4'>
+>>>>>>> 9a85e82844baef30690c02d512c71d26488dd140
                         <h4 className="titleBorder ">Priority Rank</h4>
 
                         {/* <legend className="border-bottom fs-6">Priority Rank</legend> */}
-                        <div className="row px-2 text-center taskcatgoryPannel Priority">
-                            <span className='subcategoryTask'>High priority</span>
+                        <div className="taskcatgoryPannel alignCenter Priority">
+                            <span className='me-2'>High priority</span>
                             {priorityRank?.map((item: any) => {
                                 return (
                                     <a className={isActive.rank && save.rank === item.Title ? 'subcategoryTask active' : 'subcategoryTask'} onClick={() => setActiveTile("rank", "rank", item.Title)}> {item?.Title} </a>
                                 )
                             })}
-                            <span className='subcategoryTask'>Low priority</span>
+                            <span className='ms-3'>Low priority</span>
 
                         </div>
 
@@ -2212,9 +2209,15 @@ function CreateTaskComponent(props: any) {
                     {/*-----Time --------
             -------------------------------*/}
 
+<<<<<<< HEAD
                     <div className='col mt-2'>
                         <h4 className="titleBorder ">Time</h4>
                         <div className="col  taskcatgoryPannel">
+=======
+                    <div className='col mt-4 clearfix'>
+                        <h4 className="titleBorder">Time</h4>
+                        <div className="taskcatgoryPannel">
+>>>>>>> 9a85e82844baef30690c02d512c71d26488dd140
                             {Timing?.map((item: any) => {
                                 return (
                                     <a className={isActive.time && save.Time === item.Title ? ' active subcategoryTask' : 'subcategoryTask'} onClick={() => setActiveTile("Time", "time", item.Title)}>{item.Title}</a>
@@ -2225,9 +2228,15 @@ function CreateTaskComponent(props: any) {
                     <div className="clearfix"></div>
                     {/*-----Due date --------
             -------------------------------*/}
+<<<<<<< HEAD
                     <div className='col mb-1 mt-2'>
                         <h4 className="titleBorder ">Due Date</h4>
                         <div className="col taskcatgoryPannel">
+=======
+                    <div className='col mt-4'>
+                        <h4 className="titleBorder ">Due Date</h4>
+                        <div className="taskcatgoryPannel">
+>>>>>>> 9a85e82844baef30690c02d512c71d26488dd140
                             <a className={isActive.dueDate && save.dueDate === 'Today' ? 'subcategoryTask active text-center' : 'subcategoryTask'} onClick={() => setActiveTile("dueDate", "dueDate", 'Today')}>Today&nbsp;{moment(new Date()).format('DD/MM/YYYY')}</a>
                             <a className={isActive.dueDate && save.dueDate === 'Tomorrow' ? 'subcategoryTask active text-center' : 'subcategoryTask'} onClick={() => setActiveTile("dueDate", "dueDate", 'Tomorrow')} id="Tomorrow">Tomorrow</a>
                             <a className={isActive.dueDate && save.dueDate === 'ThisWeek' ? 'subcategoryTask active text-center' : 'subcategoryTask'} onClick={() => setActiveTile("dueDate", "dueDate", 'ThisWeek')} id="ThisWeek">This Week</a>
@@ -2244,7 +2253,7 @@ function CreateTaskComponent(props: any) {
                                 return (
                                     <span className='ms-2'>
                                         {(site.Item_x005F_x0020_Cover !== undefined && site.Item_x005F_x0020_Cover?.Url !== undefined) &&
-                                            <img className="createTask-SiteIcon mx-2" style={{width:'31.5px'}} src={site.Item_x005F_x0020_Cover.Url} />
+                                            <img className="createTask-SiteIcon mx-2" style={{ width: '31.5px' }} src={site.Item_x005F_x0020_Cover.Url} />
                                         }
                                     </span>
                                 )

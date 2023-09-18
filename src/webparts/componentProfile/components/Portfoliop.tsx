@@ -27,6 +27,7 @@ interface EditableFieldProps {
 }
 
 
+
 export const EditableField: React.FC<EditableFieldProps> = ({ listName, itemId, fieldName, value, onChange,type,web }) => {
   const [editing, setEditing] = React.useState(false);
   const [fieldValue, setFieldValue] = React.useState(value);
@@ -382,6 +383,26 @@ function Portfolio({SelectedProp}:any) {
       showPopup: 'none'
 
   });
+
+  const [portfolioTyped, setPortfolioTypeData] = React.useState([])
+
+
+  // PortfolioType
+
+  const getPortFolioType = async () => {
+    let web = new Web(SelectedProp.siteUrl);
+    let PortFolioType = [];
+    PortFolioType = await web.lists
+        .getById(SelectedProp.PortFolioTypeID)
+        .items.select(
+            "Id",
+            "Title",
+            "Color",
+            "IdRange"
+        )
+        .get();
+    setPortfolioTypeData(PortFolioType);
+};
   ID=getQueryVariable('taskId');
   const handleOpen = (item:any) => {
     setIsActive((current) => !current);
@@ -471,8 +492,9 @@ function Portfolio({SelectedProp}:any) {
       SelectedProp.isShowTimeEntry = isShowTimeEntry
     }
     ContextValue = SelectedProp;
+    
     let web = ContextValue.siteUrl;
-    let url = `${web}/_api/lists/getbyid('${ContextValue.MasterTaskListID}')/items?$select=ItemRank,Item_x0020_Type,Portfolio_x0020_Type,Site,FolderID,PortfolioLevel,PortfolioStructureID,ValueAdded,Idea,TaskListName,TaskListId,WorkspaceType,CompletedDate,ClientActivityJson,ClientSite,Item_x002d_Image,Sitestagging,SiteCompositionSettings,TechnicalExplanations,Deliverables,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,Author/Id,Author/Title,Editor/Id,Editor/Title,ServicePortfolio/Title,Package,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,BasicImageInfo,Item_x0020_Type,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,Component/Id,Component/Title,Component/ItemType,Component/ItemType,Categories,FeedBack,ComponentLink,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,PermissionGroup/Id,PermissionGroup/Title,TeamMembers/Id,TeamMembers/Title,Services/Id,Services/Title,Services/ItemType,Parent/Id,Parent/Title,Parent/ItemType,TaskCategories/Id,TaskCategories/Title,ClientCategory/Id,ClientCategory/Title&$expand=Author,Editor,ClientCategory,ComponentPortfolio,ServicePortfolio,Parent,AssignedTo,Services,TeamMembers,Component,PermissionGroup,TaskCategories&$filter=Id eq ${ID}&$top=4999`;
+    let url = `${web}/_api/lists/getbyid('${ContextValue.MasterTaskListID}')/items?$select=ItemRank,Item_x0020_Type,Portfolios/Id,Portfolios/Title,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,PortfolioType/IdRange,Site,FolderID,PortfolioStructureID,ValueAdded,Idea,TaskListName,TaskListId,WorkspaceType,CompletedDate,ClientActivityJson,ClientSite,Item_x002d_Image,Sitestagging,SiteCompositionSettings,TechnicalExplanations,Deliverables,Author/Id,Author/Title,Editor/Id,Editor/Title,Package,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,BasicImageInfo,Item_x0020_Type,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,Categories,FeedBack,ComponentLink,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,TeamMembers/Id,TeamMembers/Title,Parent/Id,Parent/Title,Parent/ItemType,TaskCategories/Id,TaskCategories/Title,ClientCategory/Id,ClientCategory/Title&$expand=Author,Editor,ClientCategory,Parent,AssignedTo,TeamMembers,PortfolioType,Portfolios,TaskCategories&$filter=Id eq ${ID}&$top=4999`;
     let response: any = [];
     let responsen: any = []; // this variable is used for storing list items
     function GetListItems() {
@@ -551,11 +573,11 @@ function Portfolio({SelectedProp}:any) {
                 },
               });
             }
-            if (item.Portfolio_x0020_Type != undefined) {
+            if (item?.PortfolioType?.Title != undefined) {
               let filter = "";
-              if (item.Portfolio_x0020_Type == "Component") {
+              if (item?.PortfolioType?.Title == "Component") {
                 filter += "(Components / Id eq " + ID + ")";
-              } else if (item.Portfolio_x0020_Type == "Service") {
+              } else if (item?.PortfolioType?.Title == "Service") {
                 filter += "(Service / Id eq " + ID + ")";
               }
 
@@ -608,106 +630,10 @@ function Portfolio({SelectedProp}:any) {
     componentDetails = await web.lists
       .getById(ContextValue.MasterTaskListID)
       .items.select(
-        "ComponentPortfolio/Id",
-        "ComponentPortfolio/Title",
-        "ServicePortfolio/Id",
-        "ServicePortfolio/Title",
-        "SiteCompositionSettings",
-        "PortfolioStructureID",
-        "ItemRank",
-        "ShortDescriptionVerified",
-        "Portfolio_x0020_Type",
-        "BackgroundVerified",
-        "descriptionVerified",
-        "Synonyms",
-        "BasicImageInfo",
-        "DeliverableSynonyms",
-        "OffshoreComments",
-        "OffshoreImageUrl",
-        "HelpInformationVerified",
-        "IdeaVerified",
-        "TechnicalExplanationsVerified",
-        "Deliverables",
-        "DeliverablesVerified",
-        "ValueAddedVerified",
-        "CompletedDate",
-        "Idea",
-        "ValueAdded",
-        "TechnicalExplanations",
         "Item_x0020_Type",
-        "Sitestagging",
-        "Package",
-        "Short_x0020_Description_x0020_On",
-        "Short_x0020_Description_x0020__x",
-        "Short_x0020_description_x0020__x0",
-        "AdminNotes",
-        "AdminStatus",
-        "Background",
-        "Help_x0020_Information",
-        "SharewebComponent/Id",
-        "TaskCategories/Id",
-        "TaskCategories/Title",
-        "PriorityRank",
-        "Reference_x0020_Item_x0020_Json",
-        "TeamMembers/Title",
-        "TeamMembers/Name",
-        "Component/Id",
-        "Component/Title",
-        "Component/ItemType",
-        "TeamMembers/Id",
-        "Item_x002d_Image",
-        "ComponentLink",
-        "IsTodaysTask",
-        "AssignedTo/Title",
-        "AssignedTo/Name",
-        "AssignedTo/Id",
-        "AttachmentFiles/FileName",
-        "FileLeafRef",
-        "FeedBack",
         "Title",
         "Id",
         "PercentComplete",
-        "Company",
-        "StartDate",
-        "DueDate",
-        "Comments",
-        "Categories",
-        "Status",
-        "WebpartId",
-        "Body",
-        "Mileage",
-        "PercentComplete",
-        "Attachments",
-        "Priority",
-        "Created",
-        "Modified",
-        "Author/Id",
-        "Author/Title",
-        "Editor/Id",
-        "Editor/Title",
-        "ClientCategory/Id",
-        "ClientCategory/Title",
-        "ResponsibleTeam/Id",
-        "ResponsibleTeam/Title",
-        "Parent/Id",
-        "Parent/Title",
-        "Parent/ItemType"
-      )
-
-      .expand(
-        "ClientCategory",
-        "AssignedTo",
-        "Component",
-        "ComponentPortfolio",
-        "ServicePortfolio",
-        "AttachmentFiles",
-        "Author",
-        "Editor",
-        "TeamMembers",
-        "SharewebComponent",
-        "TaskCategories",
-        "ResponsibleTeam",
-        "Parent"
       )
       .filter("Item_x0020_Type  eq 'Project'").top(4000)
       .get();
@@ -732,7 +658,7 @@ if(num.Component != undefined){
     getMasterTaskListTasks();
     open();
     
-  }, []);
+    getPortFolioType() }, []);
 
   // Make Folder data unique
 
@@ -775,11 +701,11 @@ if(num.Component != undefined){
 
  
   data.map((item) => {
-    if (item.Portfolio_x0020_Type != undefined) {
-      TypeSite = item.Portfolio_x0020_Type;
+    if (item?.PortfolioType?.Title != undefined) {
+      TypeSite = item?.PortfolioType?.Title;
     }
     // Set the page titile
-    document.title = `${item.Portfolio_x0020_Type}-${item.Title}`;
+    document.title = `${item?.PortfolioType?.Title}-${item.Title}`;
     if (item.TeamMembers != undefined) {
       AllTaskuser.map((users) => {
         item.TeamMembers.map((members: any) => {
@@ -971,6 +897,9 @@ const [Item,setItem]=React.useState("")
     setItem(updatedItem);
   };
 
+// 
+
+
 
 
   return (
@@ -990,14 +919,14 @@ const [Item,setItem]=React.useState("")
                   return (
                     <>
                       <li>
-                        {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
-                        {item.Portfolio_x0020_Type != undefined && (
+                        {/* if="Task.PortfolioType=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                        {item?.PortfolioType?.Title != undefined && (
                           <a
                             target="_blank"
                             data-interception="off"
-                            href={SelectedProp.siteUrl+"/SitePages/"+item.Portfolio_x0020_Type+"-Portfolio.aspx"}
+                            href={SelectedProp.siteUrl+"/SitePages//Team-Portfolio.aspx"}
                           >
-                            {item.Portfolio_x0020_Type}-Portfolio
+                            Team-Portfolio
                           </a>
                         )}
                       </li>
@@ -1005,7 +934,7 @@ const [Item,setItem]=React.useState("")
                         item.Item_x0020_Type == "Feature") && (
                         <>
                           <li>
-                            {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                            {/* if="Task.PortfolioType=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
                             {ParentData != undefined &&
                               ParentData.map((ParentD: any) => {
                                 return (
@@ -1024,7 +953,7 @@ const [Item,setItem]=React.useState("")
                               })}
                           </li>
                           <li>
-                            {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                            {/* if="Task.PortfolioType=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
                             {item.Parent != undefined && (
                               <a
                                 target="_blank"
@@ -1054,7 +983,7 @@ const [Item,setItem]=React.useState("")
                 <>
                   <h2 className="heading d-flex justify-content-between align-items-center">
                     <span>
-                      {item.Portfolio_x0020_Type == "Component" &&
+                      {item?.PortfolioType?.Title == "Component" &&
                         item.Item_x0020_Type == "SubComponent" && (
                           <>
                             <img
@@ -1072,7 +1001,7 @@ const [Item,setItem]=React.useState("")
                             </span>
                           </>
                         )}
-                      {item.Portfolio_x0020_Type == "Service" &&
+                      {item?.PortfolioType?.Title == "Service" &&
                         item.Item_x0020_Type == "SubComponent" && (
                           <>
                             <img
@@ -1091,7 +1020,7 @@ const [Item,setItem]=React.useState("")
                           </>
                         )}
 
-                      {item.Portfolio_x0020_Type == "Component" &&
+                      {item?.PortfolioType?.Title == "Component" &&
                         item.Item_x0020_Type == "Feature" && (
                           <>
                             <img
@@ -1109,7 +1038,7 @@ const [Item,setItem]=React.useState("")
                             </span>
                           </>
                         )}
-                      {item.Portfolio_x0020_Type == "Service" &&
+                      {item?.PortfolioType?.Title == "Service" &&
                         item.Item_x0020_Type == "Feature" && (
                           <>
                             <img
@@ -1127,7 +1056,7 @@ const [Item,setItem]=React.useState("")
                             </span>
                           </>
                         )}
-                      {item.Portfolio_x0020_Type == "Component" &&
+                      {item?.PortfolioType?.Title == "Component" &&
                         item.Item_x0020_Type != "SubComponent" &&
                         item.Item_x0020_Type != "Feature" && (
                           <>
@@ -1146,7 +1075,7 @@ const [Item,setItem]=React.useState("")
                             </span>
                           </>
                         )}
-                      {item.Portfolio_x0020_Type == "Service" &&
+                      {item?.PortfolioType?.Title == "Service" &&
                         item.Item_x0020_Type != "SubComponent" &&
                         item.Item_x0020_Type != "Feature" && (
                           <>
@@ -1326,7 +1255,7 @@ const [Item,setItem]=React.useState("")
                                   <span className="pull-right">
                                     <span className="pencil_icon">
                                       <span className="hreflink">
-                                        {item.Portfolio_x0020_Type ==
+                                        {item?.PortfolioType?.Title ==
                                           "Component" && (
                                           <>
                                             <a
@@ -1339,7 +1268,7 @@ const [Item,setItem]=React.useState("")
                                             </a>
                                           </>
                                         )}
-                                        {item.Portfolio_x0020_Type ==
+                                        {item?.PortfolioType?.Title ==
                                           "Service" && (
                                           <>
                                             <a
@@ -1992,42 +1921,25 @@ const [Item,setItem]=React.useState("")
                   {data.map((item: any) => {
                     return (
                       <>
-                        {item.Portfolio_x0020_Type == "Component" && (
+                        {item?.PortfolioType?.Title && (
                           <dl>
-                            <dt className="bg-fxdark">Service Portfolio</dt>
-                            <dd className="bg-light serviepannelgreena">
-                              <div className="block">
+                            <dt className="bg-fxdark">{`${item?.PortfolioType?.Title}`} Portfolio</dt>
+                            <dd className={`bg-light `}>
+                            <div className="ps-1" style={{backgroundColor: `${item?.PortfolioType?.Color}`,boxSizing: "border-box"}}>
                                 <a
-                                  className="service"
+                                  className="text-light"
                                   style={{ border: "0px" }}
                                   target="_blank"
                                   data-interception="off"
-                                  href={SelectedProp.siteUrl+"/SitePages/Portfolio-Profile.aspx?taskId="+item?.ComponentPortfolio?.Id}
+                                  href={SelectedProp.siteUrl+`/SitePages/Portfolio-Profile.aspx?taskId=${item?.Portfolios?.results[0]?.Id}`}
                                 >
-                                  {item?.ComponentPortfolio?.Title}
+                                  {item?.Portfolios?.results[0]?.Title}
                                 </a>
                               </div>
                             </dd>
                           </dl>
                         )}
-                        {item.Portfolio_x0020_Type == "Service" && (
-                          <dl>
-                            <dt className="bg-fxdark">Component Portfolio</dt>
-                            <dd className="bg-light">
-                            <div style={{backgroundColor: "#292984",boxSizing: "border-box"}}>
-                                <a
-                                  className="service"
-                                  style={{ border: "0px" }}
-                                  target="_blank"
-                                  data-interception="off"
-                                  href={SelectedProp.siteUrl+`/SitePages/Portfolio-Profile.aspx?taskId=${item?.ServicePortfolio?.Id}`}
-                                >
-                                  {item?.ServicePortfolio?.Title}
-                                </a>
-                              </div>
-                            </dd>
-                          </dl>
-                        )}
+                       
                       </>
                     );
                   })}
@@ -2283,7 +2195,7 @@ const [Item,setItem]=React.useState("")
       </footer>
  
       {IsComponent && (
-        <EditInstituton item={SharewebComponent} SelectD={SelectedProp} Calls={Call}></EditInstituton>
+        <EditInstituton item={SharewebComponent} SelectD={SelectedProp} Calls={Call} portfolioTypeData={portfolioTyped}></EditInstituton>
       )}
     </div>
   );

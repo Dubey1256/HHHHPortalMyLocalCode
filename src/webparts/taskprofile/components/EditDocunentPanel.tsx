@@ -4,15 +4,17 @@ import Tooltip from '../../../globalComponents/Tooltip';
 import { Button, Tabs, Tab, Col, Nav, Row } from 'react-bootstrap';
 import moment from 'moment';
 import { Web } from 'sp-pnp-js';
+
+import HtmlEditorCard from '../../../globalComponents/./HtmlEditor/HtmlEditor'
 import ImageTabComponenet from './ImageTabComponent'
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 import Mycontext from './RelevantDocuments'
 const EditDocumentpanel=(props:any)=>{
   // const contextdata: any = React.useContext<any>(Mycontext)
-    const [Editdocpanel, setEditdocpanel] = React.useState(props?.editdocpanel);
+    const [Editdocpanel, setEditdocpanel] = React.useState(false);
     const [EditdocumentsData, setEditdocumentsData] = React.useState(null);
     const [servicespopup, setservicespopup] = React.useState(false);
-    const [componentpopup, setcomponentpopup] = React.useState(false);
+  
     const [isOpenImageTab, setisOpenImageTab] = React.useState(false);
     const [isopencomonentservicepopup, setisopencomonentservicepopup] = React.useState(false);
     const [editvalue, seteditvalue] = React.useState(null);
@@ -21,33 +23,27 @@ const EditDocumentpanel=(props:any)=>{
       })
 
       React.useEffect(() => {
-        // if (props?.editData?.SharewebTask != undefined && props?.editData?.SharewebTask?.length > 0) {
-    
-            // if (props?.editData?.SharewebTask[0]?.Portfolio_x0020_Type == "Component") {
-              if (props?.editData?.Portfolio!=undefined) {
-              setallSetValue({ ...allValue, componentservicesetdataTag: props?.editData?.Portfolio })
-              setservicespopup(false);
-              setcomponentpopup(true);
-            } 
-            // else {
-            //   setallSetValue({ ...allValue, componentservicesetdataTag: props?.editData?.SharewebTask[0] })
-      
-            //   setservicespopup(true);
-            //   setcomponentpopup(false);
-            // }
-          // }
-          if(props?.editData!+undefined)
-          {
-            props.editData. docTitle= props?.editData.Title.split(props?.editData.File_x0020_Type)[0]
-          }
-          setEditdocumentsData(props?.editData); 
+         if(props?.editData!=undefined){
+  
+          if (props?.editData?.Portfolio!=undefined) {
+            setallSetValue({ ...allValue, componentservicesetdataTag: props?.editData?.Portfolio })
+          
+          } 
+          
+        if(props?.editData!=undefined)
+        {
+          props.editData. docTitle= props?.editData.Title.split(props?.editData.File_x0020_Type)[0]
+        }
+        setEditdocumentsData(props?.editData); 
+         }
+             
     }, [])
        
     const handleClosedoc = () => {
-        setEditdocpanel(false)
+        
         props.callbackeditpopup();
         
-        // handleClose();
+       
       }
       let ItemRank = [
         { rankTitle: 'Select Item Rank', rank: null },
@@ -60,20 +56,7 @@ const EditDocumentpanel=(props:any)=>{
         { rankTitle: '(1) Archive', rank: 1 },
         { rankTitle: '(0) No Show', rank: 0 }
       ]
-      const checkradiobutton = (e: any, items: any) => {
-        if (items == "Component") {
-          setservicespopup(false);
-          setcomponentpopup(true);
-          setallSetValue({ ...allValue, componentservicesetdataTag: undefined })
-    
-        }
-        if (items == "Service") {
-          setservicespopup(true);
-          setcomponentpopup(false);
-          setallSetValue({ ...allValue, componentservicesetdataTag: undefined })
-    
-        }
-      }
+      
       const deleteDocumentsData = async (DeletItemId: any) => {
         console.log(DeletItemId);
         const web = new Web(props?.AllListId?.siteUrl);
@@ -124,6 +107,7 @@ const EditDocumentpanel=(props:any)=>{
             ItemType: EditdocumentsData.ItemType,
     
             PortfoliosId: { "results": allValue.componentservicesetdataTag != undefined ? [allValue.componentservicesetdataTag.Id] : [] },
+            Body:allValue?.Description != "" ? allValue?.Description : "",
             Item_x0020_Cover: {
               "__metadata": { type: 'SP.FieldUrlValue' },
               'Description': EditdocumentsData?.Item_x0020_Cover?.Url != "" ? EditdocumentsData?.UrItem_x0020_Coverl?.Url : "",
@@ -173,7 +157,7 @@ const EditDocumentpanel=(props:any)=>{
           <>
     
             <div className='ps-4 siteColor subheading'>
-              {Editdocpanel ? `Edit Document Metadata - ${EditdocumentsData?.FileLeafRef}` : null}
+              {true ? `Edit Document Metadata - ${EditdocumentsData?.FileLeafRef}` : null}
             </div>
             <Tooltip ComponentId={'359'} />
           </>
@@ -189,12 +173,12 @@ const EditDocumentpanel=(props:any)=>{
         console.log(Type)
         console.log(functionType)
         if (functionType == "Save") {
-          if (Type == "Component") {
+          // if (Type == "Component") {
             setallSetValue({ ...allValue, componentservicesetdataTag: DataItem[0] })
-          }
-          if (Type == "Service") {
-            setallSetValue({ ...allValue, componentservicesetdataTag: DataItem[0] })
-          }
+          // }
+          // if (Type == "Service") {
+          //   setallSetValue({ ...allValue, componentservicesetdataTag: DataItem[0] })
+          // }
           setisopencomonentservicepopup(false);
         }
         else {
@@ -202,17 +186,26 @@ const EditDocumentpanel=(props:any)=>{
         }
       }, [])
       const opencomonentservicepopup=()=>{
-        if(componentpopup||servicespopup){
-          setisopencomonentservicepopup(true)
-        }else{
-          alert("Please Choose Component/Service")
-        }
+        setisopencomonentservicepopup(true)
+       
      
       }
+      /////////folara editor function start//////////
+      const HtmlEditorCallBack = (items: any) => {
+        console.log(items);
+        var description = ""
+        if (items == '<p></p>\n') {
+          description = ""
+        } else {
+          description = items
+        }
+        setallSetValue({ ...allValue, Description: description })
+      }
+      //////// folora editor function end///////////
 return(
   <>
     <Panel onRenderHeader={onRenderCustomHeaderDocuments}
-        isOpen={Editdocpanel}
+        isOpen={true}
         type={PanelType.custom}
         customWidth="1091px"
         onDismiss={handleClosedoc}
@@ -272,8 +265,7 @@ return(
                 <div className="input-group mx-4">
                   <label className="form-label full-width">
                     portfolio
-                    {/* <span><input type="radio" name="radio" className="form-check-input" value="Component" checked={componentpopup} onClick={(e) => checkradiobutton(e, "Component")} /> Component</span>
-                    <span className='ps-3'><input type="radio" name="radio" className="form-check-input" value="Service" checked={servicespopup} onClick={(e) => checkradiobutton(e, "Service")} /> Service</span> */}
+                    
                   </label>
 
                   {allValue?.componentservicesetdataTag != undefined &&
@@ -288,12 +280,7 @@ return(
                     <span className="svg__iconbox svg__icon--editBox" onClick={(e) => opencomonentservicepopup()}></span>
                   </span>
                 </div>
-                {/* <div className="input-group"><label className="full-width ">Document Type </label>
-                  <input type="text" className="form-control" value={EditdocumentsData?.ItemType} onChange={(e) => { setEditdocumentsData({ ...EditdocumentsData, ItemType: e.target.value }) }} />
-                  <span className="input-group-text" title="Linked Component Task Popup">
-                    <span className="svg__iconbox svg__icon--editBox"></span>
-                  </span>
-                </div> */}
+    
               </div>
 
             </div>
@@ -307,11 +294,15 @@ return(
         </Tabs>
         <footer className='text-end mt-2'>
           <div className='col-sm-12 row m-0'>
+            
+            <div className='mt-3'> <HtmlEditorCard editorValue={EditdocumentsData?.Description != null ? EditdocumentsData?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>
             <div className="col-sm-6 text-lg-start">
-              {Editdocpanel && <div><div><span className='pe-2'>Created</span><span className='pe-2'>{EditdocumentsData?.Created !== null ? moment(editvalue?.Created).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Author}</a></span></div>
-                <div><span className='pe-2'>Last modified</span><span className='pe-2'>{EditdocumentsData?.Modified !== null ? moment(editvalue?.Modified).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Editor}</a></span></div>
+            <div>
+                {console.log("footerdiv")}
+                <div><span className='pe-2'>Created</span><span className='pe-2'>{EditdocumentsData?.Created !== null ? moment(editvalue?.Created).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Author?.Title}</a></span></div>
+                <div><span className='pe-2'>Last modified</span><span className='pe-2'>{EditdocumentsData?.Modified !== null ? moment(editvalue?.Modified).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Editor?.Title}</a></span></div>
                 <div><span onClick={() => deleteDocumentsData(EditdocumentsData?.Id)} className="svg__iconbox svg__icon--trash hreflink"></span>Delete this item</div>
-              </div>}
+              </div>
             </div>
 
             <div className='col-sm-6 mt-2 p-0'>
@@ -329,7 +320,7 @@ return(
           </div>
         </footer>
       </Panel>
-      {isopencomonentservicepopup && componentpopup &&
+      {isopencomonentservicepopup &&
         <ServiceComponentPortfolioPopup
 
           props={allValue?.componentservicesetdata}
@@ -339,15 +330,7 @@ return(
 
         />
       }
-      {isopencomonentservicepopup && servicespopup &&
-        <ServiceComponentPortfolioPopup
-          props={allValue?.componentservicesetdata}
-          Dynamic={props.AllListId}
-          Call={ComponentServicePopupCallBack}
-          ComponentType={"Service"}
-
-        />
-      }
+      
 </>
 )
 }

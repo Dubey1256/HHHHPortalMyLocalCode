@@ -76,9 +76,9 @@ const MeetingPopupComponent = (Props: any) => {
             smartMeta = await web.lists
                 .getById(AllListIdData?.MasterTaskListID)
                 .items
-                .select("Id", "Title", "DueDate", "AssignedTo/Id", "Attachments", "FeedBack", "Created", "Modified", "PortfolioStructureID", "AssignedTo/Title", "ResponsibleTeam/Title", "ResponsibleTeam/Id", 'AttachmentFiles', "ShortDescriptionVerified", "TaskType/Title", "BasicImageInfo", 'Author/Id', 'Author/Title', "Editor/Title", "Editor/Id", "OffshoreComments", "OffshoreImageUrl", "TeamMembers/Id", "TeamMembers/Title")
+                .select("Id", "Title", "DueDate", "AssignedTo/Id", "Attachments", "FeedBack", "Created", "Modified", "PortfolioStructureID", "AssignedTo/Title", "ResponsibleTeam/Title", "ResponsibleTeam/Id", 'AttachmentFiles', "ShortDescriptionVerified", "BasicImageInfo", 'Author/Id', 'Author/Title', "Editor/Title", "Editor/Id", "OffshoreComments", "OffshoreImageUrl", "TeamMembers/Id", "TeamMembers/Title")
                 .top(5000)
-                .filter(`Id eq ${Props.Items.Id}`).expand("AssignedTo", 'ResponsibleTeam', "AttachmentFiles", "Author", 'TaskType', "Editor", "TeamMembers").get();
+                .filter(`Id eq ${Props.Items.Id}`).expand("AssignedTo", 'ResponsibleTeam', "AttachmentFiles", "Author", "Editor", "TeamMembers").get();
 
             let statusValue: any
             smartMeta?.map((item: any) => {
