@@ -1857,3 +1857,30 @@ export const findTaskHierarchy = (row: any, AllMatsterAndTaskData: any): any[] =
     }
     return createGrouping(row);
 };
+export const loadAllTimeEntry = async (timesheetListConfig:any) => {
+    var AllTimeEntry:any=[]
+    if (timesheetListConfig?.Id !=undefined) {
+        let timesheetLists: any = [];
+        let taskLists: any = [];
+        timesheetLists = JSON.parse(timesheetListConfig?.Configurations)
+        taskLists = JSON.parse(timesheetListConfig?.Description)
+        if (timesheetLists?.length > 0) {
+            const fetchPromises = timesheetLists.map(async (list: any) => {
+                let web = new Web(list?.siteUrl);
+                try {
+                    const data = await web.lists
+                        .getById(list?.listId)
+                        .items.select(list?.query)
+                        .getAll();
+                        AllTimeEntry=[...AllTimeEntry,...data];
+                } catch (error) {
+                    console.log(error, 'HHHH Time');
+                }
+            });
+
+            await Promise.all(fetchPromises)
+            return AllTimeEntry
+        }
+
+    }
+}
