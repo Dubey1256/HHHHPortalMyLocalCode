@@ -43,8 +43,8 @@ const RelevantDocuments = (props: any,ref:any) => {
               let keydoc:any=[];
                 Data?.map((item: any, index: any) => {
                     item.siteType = 'sp'
-                    item.Author = item?.Author?.Title;
-                    item.Editor = item?.Editor?.Title;
+                    // item.Author = item?.Author?.Title;
+                    // item.Editor = item?.Editor?.Title;
                     item.ModifiedDate = moment(item?.ModifiedDate).format("'DD/MM/YYYY HH:mm'");
                     if(item.ItemRank===6){
                         keydoc.push(item)
@@ -70,9 +70,11 @@ const RelevantDocuments = (props: any,ref:any) => {
                   
                     setFileurl(Data[0]?.FileDirRef) 
                 }).catch((error:any)=>{
+                  var releventData=Data.filter((d)=>d.ItemRank!=6)
+                  setDocumentData(releventData);
                     console.log(error)
                 })
-              
+                
             })
             // .catch((err) => {
             //     console.log(err.message);

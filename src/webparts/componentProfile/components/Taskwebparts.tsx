@@ -1553,7 +1553,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     TaskUsers={AllUsers}
                     AllClientCategory={AllClientCategory}
                     LoadAllSiteTasks={LoadAllSiteTasks}
-                    SelectedProp={SelectedProp}
+                    SelectedProp={SelectedProp.NextProp}
                     portfolioTypeData={portfolioTypeData}
                 ></CreateActivity>
             )}
@@ -1564,7 +1564,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     TaskUsers={AllUsers}
                     AllClientCategory={AllClientCategory}
                     data={data}
-                    SelectedProp={SelectedProp}
+                    SelectedProp={SelectedProp.NextProp}
                     portfolioTypeData={portfolioTypeData}
                 ></CreateWS>
             )}
