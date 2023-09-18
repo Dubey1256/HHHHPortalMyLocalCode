@@ -46,9 +46,9 @@ const loadleave = async () =>  {
   const results =  await web.lists
           .getById(props.Listdata.SmalsusLeaveCalendar)
           .items.select(
-            "RecurrenceData,Duration,Author/Title,Editor/Title,Name,NameId,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type"
+            "RecurrenceData,Duration,Author/Title,Editor/Title,NameId,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type"
           )
-          .expand("Author,Editor")
+          .expand("Author,Editor,Employee")
           .top(500)
           .getAll();
 
@@ -97,7 +97,7 @@ const loadleave = async () =>  {
         Subject: "HHHH - Team Attendance- "+formattedDate +"-"+ totalteammemberonleave+" - "+Object?.keys(nameidTotals)?.length ,
         //Array of string for To of Email
         //   To: emailprops.To,
-        To: ["abhishek.tiwari@hochhuth-consulting.de","juli.kumari@hochhuth-consulting.de","juli.kumari@smalsus.com","anubhav@smalsus.com","ranu.trivedi@hochhuth-consulting.de"],
+        To: ["abhishek.tiwari@hochhuth-consulting.de"],
         AdditionalHeaders: {
           "content-type": "text/html",
         },
@@ -112,6 +112,7 @@ const loadleave = async () =>  {
       });
   };
 
+  // ,"juli.kumari@hochhuth-consulting.de","juli.kumari@smalsus.com","anubhav@smalsus.com","ranu.trivedi@hochhuth-consulting.de"
   //  LoadAll the task User
   const getTaskUser = async () => {
     let web = new Web(props.Listdata.siteUrl);
@@ -138,7 +139,7 @@ const loadleave = async () =>  {
   let arr:any=[];
   // Count all the leave of the user
   let year =  new Date().getFullYear();
-  let yeardata = leaveData.filter((item) =>item.EventDate.substring(0, 4) === `${year}`)
+  let yeardata = leaveData.filter((item) =>item?.EventDate?.substring(0, 4) === `${year}`)
  
 
 
@@ -178,12 +179,12 @@ React.useEffect(() => {
   // Assuming 'yeardata' is available from somewhere (prop, state, or elsewhere)
   // const yeardata = ...;
 
-  const userId = props.data.filter((item:any) => item.NameId != null);
+  const userId = props.data.filter((item:any) => item?.NameId != null);
 
   const nameidData:any = {};
 
   userId.forEach((username:any) => {
-    const matchedData:any = yeardata.filter((member) => member.NameId === username.NameId);
+    const matchedData:any = yeardata.filter((member) => member.Employee?.Id === username.NameId);
 
     if (matchedData.length !== 0) {
       

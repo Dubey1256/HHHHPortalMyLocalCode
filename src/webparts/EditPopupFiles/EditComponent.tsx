@@ -1,11 +1,8 @@
 import * as React from "react";
-// import ImagesC from "./Images";
 import {
   Panel,
   PanelType
 } from "office-ui-fabric-react";
-
-// import * as Moment from 'moment';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/js/dist/modal.js";
 import "bootstrap/js/dist/tab.js";
@@ -24,9 +21,9 @@ import { EditorState } from "draft-js";
 import HtmlEditorCard from "../../globalComponents/HtmlEditor/HtmlEditor";
 import TeamConfigurationCard from "./TeamConfigurationPortfolio";
 import Tooltip from "../../globalComponents/Tooltip";
-// import ImagesC from "./ImageInformation";
 import VersionHistoryPopup from "../../globalComponents/VersionHistroy/VersionHistory";
-import SiteCompositionComponent from "./PortfolioSiteCompsition";
+import Sitecomposition from "../../globalComponents/SiteComposition";
+
 import ImagesC from "./ImageInformation";
 var PostTechnicalExplanations = "";
 var PostDeliverables = "";
@@ -47,16 +44,8 @@ var AllClientCategoryDataBackup: any = [];
 let AutoCompleteItemsArray: any = [];
 var AllClientCategory: any = [];
 let ShowCategoryDatabackup: any = [];
-let portFolioTypeId:any=[]
-var portFolio:any=[]
 
-function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: any) {
-  if(portFolioTypeId?.length == 0 ){
-     portFolioTypeId = portfolioTypeData?.filter((elem: any) => elem?.Id === item?.PortfolioType?.Id)
-     portFolio = item?.Id
-  }
- 
-
+function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
   if (SelectD != undefined && SelectD?.siteUrl != undefined) {
     web = new Web(SelectD?.siteUrl);
     RequireData = SelectD
@@ -136,12 +125,10 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: a
   };
 
   const Call = React.useCallback((item1: any, type: any, functionType: any) => {
-    if (type == "SmartComponent" || type == "Component" || type == "Service") {
+    if (type == "SmartComponent") {
       if (EditData != undefined && item1 != undefined) {
         item.smartComponent = item1.smartComponent;
-         portFolioTypeId = portfolioTypeData?.filter((elem: any) => elem?.Id === item1[0]?.PortfolioType?.Id)
-         portFolio = item1[0]?.Id
-        setSmartComponentData(item1);
+        setSmartComponentData(item1.smartComponent);
       }
     }
     if (type == "Category-Task-Footertable") {
@@ -201,18 +188,18 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: a
         setIsComponent(false)
       }
     } else {
-      // if (type == "Component") {
-      //   if (item1 != undefined && item1.length > 0) {
-      //     setLinkedComponentData(item1);
-      //     console.log("Popup component linkedComponent", item1.linkedComponent);
-      //   }
-      // }
-      // if (type == "Service") {
-      //   if (item1 != undefined && item1.length > 0) {
-      //     setLinkedComponentData(item1);
-      //     console.log("Popup component linkedComponent", item1.linkedComponent);
-      //   }
-      // }
+      if (type == "Component") {
+        if (item1 != undefined && item1.length > 0) {
+          setLinkedComponentData(item1);
+          console.log("Popup component linkedComponent", item1.linkedComponent);
+        }
+      }
+      if (type == "Service") {
+        if (item1 != undefined && item1.length > 0) {
+          setLinkedComponentData(item1);
+          console.log("Popup component linkedComponent", item1.linkedComponent);
+        }
+      }
     }
     if (CategoriesData != undefined) {
       CategoriesData.forEach(function (type: any) {
@@ -227,7 +214,6 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: a
     }
     setIsComponentPicker(false);
     setIsComponent(false);
-    setIsService(false)
     // setComponent(CompoenetItem => ([...CompoenetItem]));
   }, []);
   var isItemExists = function (arr: any, Id: any) {
@@ -351,11 +337,12 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: a
     componentDetails = await web.lists
       .getById(RequireData.MasterTaskListID)
       .items.select(
-
+        "ComponentPortfolio/Id",
+        "ComponentPortfolio/Title",
+        "ServicePortfolio/Id",
+        "ServicePortfolio/Title",
         "SiteCompositionSettings",
         "PortfolioStructureID",
-        "Portfolios/Id",
-        "Portfolios/Title",
         "ItemRank",
         "ShortDescriptionVerified",
         "Portfolio_x0020_Type",
@@ -393,6 +380,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: a
         "Reference_x0020_Item_x0020_Json",
         "TeamMembers/Title",
         "TeamMembers/Name",
+        "Component/Id",
+        "Component/Title",
+        "Component/ItemType",
         "TeamMembers/Id",
         "Item_x002d_Image",
         "ComponentLink",
@@ -435,7 +425,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: a
       .expand(
         "ClientCategory",
         "AssignedTo",
-        "Portfolios",
+        "Component",
+        "ComponentPortfolio",
+        "ServicePortfolio",
         "AttachmentFiles",
         "Author",
         "Editor",
@@ -448,6 +440,14 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: a
       .get();
     console.log(componentDetails);
 
+    // var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,DeliverableSynonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,Component/Id,Component/Title,Component/ItemType,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title&$expand=ClientCategory,ComponentCategory,AssignedTo,Component,ComponentPortfolio,ServicePortfolio,AttachmentFiles,Author,Editor,TeamMembers,SharewebComponent,TaskCategories,Parent&$filter=Id eq " + item.Id + "";
+    // $.ajax({
+    //     url: "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('ec34b38f-0669-480a-910c-f84e92e58adf')/items?$select=" + query + "",
+    //     method: "GET",
+    //     headers: {
+    //         "Accept": "application/json; odata=verbose"
+    //     },
+    //     success: function (data) {
     var Tasks = componentDetails;
     let ParentData: any = [];
     $.each(Tasks, function (index: any, item: any) {
@@ -1222,8 +1222,6 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: a
           });
         }
       }
-      var myTaggedData:any=[]
-      myTaggedData.push(portFolio)
 
       // if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
       //     TaskResponsibleTeam.map((taskInfo) => {
@@ -1281,18 +1279,18 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: a
 
           ItemRank: ItemRank,
           PriorityRank: Items.PriorityRank,
-          
+          ComponentId: { results: smartComponentsIds },
           DeliverableSynonyms: Items.DeliverableSynonyms,
           StartDate: EditData?.StartDate ? moment(EditData?.StartDate).format("MM-DD-YYYY") : null,
           DueDate: EditData?.DueDate ? moment(EditData?.DueDate).format("MM-DD-YYYY") : null,
           CompletedDate: EditData?.CompletedDate ? moment(EditData?.CompletedDate).format("MM-DD-YYYY") : null,
-          PortfoliosId:{ "results":myTaggedData},
+
           // Categories:EditData?.smartCategories != undefined && EditData?.smartCategories != ''?EditData?.smartCategories[0].Title:EditData?.Categories,
           Categories: categoriesItem ? categoriesItem : null,
-          TaskCategoriesId: { results: CategoryID },
+          SharewebCategoriesId: { results: CategoryID },
           // ClientCategoryId: { "results": RelevantPortfolioIds },
-         
-          PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
+          ServicePortfolioId:
+            RelevantPortfolioIds != "" ? RelevantPortfolioIds : null,
           Synonyms: JSON.stringify(Items["Synonyms"]),
           Package: Items.Package,
           AdminStatus: Items.AdminStatus,
@@ -2421,7 +2419,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: a
                           </div>
                         </div>
                         <div className="col-4 ps-0 pe-0 mt-2 ">
-                          {portFolioTypeId[0]?.Title == "Service" && (
+                          {EditData?.Portfolio_x0020_Type == "Service" && (
                             <div className="input-group">
                               <label className="form-label full-width">
                                 Component Portfolio
@@ -2446,7 +2444,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: a
                               </span>
                             </div>
                           )}
-                          {portFolioTypeId[0]?.Title == "Component" && (
+                          {EditData?.Portfolio_x0020_Type == "Component" && (
                             <div className="input-group">
                               <label className="form-label full-width">
                                 Service Portfolio
@@ -2471,7 +2469,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: a
                               </span>
                             </div>
                           )}
-                          {portFolioTypeId[0]?.Title == "Component" && (
+                          {EditData?.Portfolio_x0020_Type == "Component" && (
                             <div className="col-sm-12  inner-tabb">
                               {linkedComponentData?.length > 0 ? (
                                 <div className="serviepannelgreena">
@@ -2485,9 +2483,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: a
                                             className="hreflink service ps-2"
                                             target="_blank"
                                             data-interception="off"
-                                            href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item?.Portfolios?.results[0]?.Id}`}
+                                            href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
                                           >
-                                            {item?.Portfolios?.results[0]?.Title}
+                                            {com.Title}
                                           </a>
                                           <a className='text-end'>  <span className="bg-light svg__icon--cross svg__iconbox" onClick={() =>
                                             setLinkedComponentData([])
@@ -2507,27 +2505,37 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: a
                                                         </span> */}
                             </div>
                           )}
-                          {portFolioTypeId[0]?.Title == "Service" && (
+                          {EditData?.Portfolio_x0020_Type == "Service" && (
                             <div className="col-sm-12  inner-tabb">
-                             <div className="colorComponentBgColor d-flex justify-content-between mb-1">
+                              {linkedComponentData?.length > 0 ? (
+                                <div>
+                                  {linkedComponentData?.map((com: any) => {
+                                    return (
+                                      <>
+                                        <div className="colorComponentBgColor d-flex justify-content-between mb-1">
 
-<a
-  className="hreflink service ps-2"
-  target="_blank"
-  data-interception="off"
-  href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item?.Portfolios?.results[0]?.Id}`}
->
-  {item?.Portfolios?.results[0]?.Title}
-</a>
-<a className='text-end'>
-  <span className="bg-light svg__icon--cross svg__iconbox" onClick={() =>
-    setLinkedComponentData([])
-  }></span>
-</a>
+                                          <a
+                                            className="hreflink service ps-2"
+                                            target="_blank"
+                                            data-interception="off"
+                                            href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
+                                          >
+                                            {com.Title}
+                                          </a>
+                                          <a className='text-end'>
+                                            <span className="bg-light svg__icon--cross svg__iconbox" onClick={() =>
+                                              setLinkedComponentData([])
+                                            }></span>
+                                          </a>
 
 
 
-</div>
+                                        </div>
+                                      </>
+                                    );
+                                  })}
+                                </div>
+                              ) : null}
                               {/* <span className="input-group-text">
                                                             <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                                                 onClick={(e) => EditComponent(EditData, 'Component')} />
@@ -2899,6 +2907,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: a
                       </div>
                     </div>
                     <div className="col-sm-2 ">
+                      <div className="col">
+                        <Sitecomposition props={EditData} sitedata={RequireData}/>
+                      </div>
                       <div className="col" title="Priority">
                         <div className="input-group mb-2">
                           <label className="form-label  full-width">
