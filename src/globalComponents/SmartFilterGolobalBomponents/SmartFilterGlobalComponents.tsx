@@ -512,6 +512,10 @@ const SmartFilterSearchGlobal = (item: any) => {
                 const taskTitle = `Task${site.Title}`;
                 const key = taskTitle + entry[taskTitle]?.Id
                 if (entry.hasOwnProperty(taskTitle) && entry.AdditionalTimeEntry !== null && entry.AdditionalTimeEntry !== undefined) {
+                    if(entry[taskTitle].Id === 168){
+                        console.log(entry[taskTitle].Id);
+                        
+                    }
                     const additionalTimeEntry = JSON.parse(entry.AdditionalTimeEntry);
                     let totalTaskTime = additionalTimeEntry?.reduce((total: any, time: any) => total + parseFloat(time.TaskTime), 0);
 
