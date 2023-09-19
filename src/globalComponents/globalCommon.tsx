@@ -729,7 +729,7 @@ export const loadTaskUsers = async () => {
         taskUser = await web.lists
             .getById('b318ba84-e21d-4876-8851-88b94b9dc300')
             .items
-            .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+            .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
             .get();
     }
     catch (error) {
@@ -1775,7 +1775,7 @@ const AllTaskUsers = async (siteUrl: any, ListId: any) => {
         taskUser = await web.lists
             .getById(ListId)
             .items
-            .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+            .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
             .get();
     }
     catch (error) {
@@ -1862,9 +1862,7 @@ export const loadAllTimeEntry = async (timesheetListConfig: any) => {
     var AllTimeEntry: any = []
     if (timesheetListConfig?.Id != undefined) {
         let timesheetLists: any = [];
-        let taskLists: any = [];
         timesheetLists = JSON.parse(timesheetListConfig?.Configurations)
-        taskLists = JSON.parse(timesheetListConfig?.Description)
         if (timesheetLists?.length > 0) {
             const fetchPromises = timesheetLists.map(async (list: any) => {
                 let web = new Web(list?.siteUrl);
