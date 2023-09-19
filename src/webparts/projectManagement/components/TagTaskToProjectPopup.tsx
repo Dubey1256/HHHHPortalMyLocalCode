@@ -38,7 +38,7 @@ const TagTaskToProjectPopup = (props: any) => {
         taskUser = await web.lists
             .getById('b318ba84-e21d-4876-8851-88b94b9dc300')
             .items
-            .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name")
+            .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name")
             .expand("AssingedToUser,Approver")
             .get();
         AllUser = taskUser;
@@ -54,7 +54,7 @@ const TagTaskToProjectPopup = (props: any) => {
             .items
             .select('Id', 'IsVisible', 'ParentID', 'Title', 'SmartSuggestions', 'TaxType', 'Description1', 'Item_x005F_x0020_Cover', 'listId', 'siteName', 'siteUrl', 'SortOrder', 'SmartFilters', 'Selectable', 'Parent/Id', 'Parent/Title')
             .top(5000)
-            .filter("TaxType eq 'Sites'")
+            .filter("TaxType eq 'Sites'or TaxType eq 'timesheetListConfigrations'")
             .expand('Parent')
             .get();
         siteConfig = smartmeta;

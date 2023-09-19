@@ -36,20 +36,24 @@ const RelevantDocuments = (props: any,ref:any) => {
             // .items.select("Id,Title,PriorityRank,Year,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl")
             // .expand("Author,Editor").filter(`${props?.siteName}/Id eq ${props?.ID}`).top(4999)
             // .get()
-            .items.select("Id,Title,PriorityRank,Year,Item_x0020_Cover,SharewebTask/Id,SharewebTask/Title,SharewebTask/ItemType,Portfolios/Id,Portfolios/Title,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl")
+            .items.select("Id,Title,PriorityRank,Year,Body,Item_x0020_Cover,SharewebTask/Id,SharewebTask/Title,SharewebTask/ItemType,Portfolios/Id,Portfolios/Title,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl")
           .expand("Author,Editor,SharewebTask,Portfolios").filter(`${props?.siteName}/Id eq ${props?.ID}`).top(4999)
           .get()
             .then((Data: any[]) => {
               let keydoc:any=[];
                 Data?.map((item: any, index: any) => {
+                  item.Title=item.Title.replace('.',"")
                     item.siteType = 'sp'
+                    item.Description=item?.Body
                     // item.Author = item?.Author?.Title;
                     // item.Editor = item?.Editor?.Title;
                     item.ModifiedDate = moment(item?.ModifiedDate).format("'DD/MM/YYYY HH:mm'");
                     if(item.ItemRank===6){
                         keydoc.push(item)
                     }
+                    
                 })
+
                 console.log("document data", Data);
                 let smartmetadta:any=[];
                 myContextData2.FunctionCall(keydoc,Data[0]?.FileDirRef,false)
@@ -65,8 +69,11 @@ const RelevantDocuments = (props: any,ref:any) => {
                         }
                       })
                
-                    var releventData=Data.filter((d)=>d.ItemRank!=6)
-                    setDocumentData(releventData);
+                    var releventData=Data.filter((d)=>d.ItemRank!=6 &&d.ItemRank!=0)
+                    if(releventData.length>0){
+                      setDocumentData(releventData);
+                    }
+                   
                   
                     setFileurl(Data[0]?.FileDirRef) 
                 }).catch((error:any)=>{

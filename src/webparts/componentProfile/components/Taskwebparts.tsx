@@ -24,9 +24,11 @@ import SmartFilterSearchGlobal from "../../../globalComponents/SmartFilterGoloba
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import PageLoader from "../../../globalComponents/pageLoader";
+
 import CreateActivity from "../../servicePortfolio/components/CreateActivity";
 
 import CreateWS from "../../servicePortfolio/components/CreateWS";
+
 //import RestructuringCom from "../../../globalComponents/Restructuring/RestructuringCom";
 var filt: any = "";
 var ContextValue: any = {};
@@ -615,9 +617,20 @@ function TeamPortlioTable(SelectedProp: any) {
                     componentActivity(levelType, masterTask);
             })
             portfolioTypeDataItem?.map((type: any) => {
-                if (masterTask?.Item_x0020_Type === type.Title && masterTask.PortfolioType != undefined) {
-                    type[type.Title + 'number'] += 1;
-                    type[type.Title + 'filterNumber'] += 1;
+                if(type.Title == "Component"){
+                    type["Componentnumber"]=0;
+                    type["ComponentfilterNumber"]=0;
+                }
+                if (masterTask?.Item_x0020_Type === type.Title && masterTask.PortfolioType !== undefined) {
+                    // Ensure that the properties are initialized as numbers.
+                    if (typeof type[type.Title + 'number'] === 'number' && typeof type[type.Title + 'filterNumber'] === 'number') {
+                        type[type.Title + 'number'] += 1;
+                        type[type.Title + 'filterNumber'] += 1;
+                    } else {
+                        // Initialize them as numbers if they are not.
+                        type[type.Title + 'number'] = 1;
+                        type[type.Title + 'filterNumber'] = 1;
+                    }
                 }
             })
             let allFeattData = AllProtFolioData?.filter((elem: any) => elem?.Parent?.Id === masterTask?.Id);
@@ -630,9 +643,20 @@ function TeamPortlioTable(SelectedProp: any) {
                         componentActivity(levelType, subFeat);
                 })
                 portfolioTypeDataItem?.map((type: any) => {
-                    if (subFeat?.Item_x0020_Type === type.Title && subFeat.PortfolioType != undefined) {
-                        type[type.Title + 'number'] += 1;
-                        type[type.Title + 'filterNumber'] += 1;
+                    if(type.Title == "Component"){
+                        type["Componentnumber"]=0;
+                        type["ComponentfilterNumber"]=0;
+                    }
+                    if (subFeat?.Item_x0020_Type === type.Title && subFeat.PortfolioType !== undefined) {
+                        // Ensure that the properties are initialized as numbers.
+                        if (typeof type[type.Title + 'number'] === 'number' && typeof type[type.Title + 'filterNumber'] === 'number') {
+                            type[type.Title + 'number'] += 1;
+                            type[type.Title + 'filterNumber'] += 1;
+                        } else {
+                            // Initialize them as numbers if they are not.
+                            type[type.Title + 'number'] = 1;
+                            type[type.Title + 'filterNumber'] = 1;
+                        }
                     }
                 })
                 
@@ -718,8 +742,8 @@ function TeamPortlioTable(SelectedProp: any) {
     }
     const countTaskAWTLevel = (countTaskAWTLevel: any) => {
         if (countTaskAWTLevel.length > 0) {
+            countTaskAWTLevel.map((result: any) => {
             taskTypeDataItem?.map((type: any) => {
-                countTaskAWTLevel.map((result: any) => {
                     if (result?.TaskType?.Title === type.Title) {
                         type[type.Title + 'number'] += 1;
                         type[type.Title + 'filterNumber'] += 1;
@@ -1423,7 +1447,7 @@ function TeamPortlioTable(SelectedProp: any) {
                                                 scale={1.0}
                                                 loadedClassName="loadedContent"
                                             />
-                                            <GlobalCommanTable ref={childRef} callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1} data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} protfolioProfileButton={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity} />
+                                            <GlobalCommanTable ref={childRef} AllMasterTasksData={AllMasterTasksData} callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1} data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} protfolioProfileButton={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity} />
                                         </div>
                                     </div>
                                 </div>

@@ -4,6 +4,8 @@ import Tooltip from '../../../globalComponents/Tooltip';
 import { Button, Tabs, Tab, Col, Nav, Row } from 'react-bootstrap';
 import moment from 'moment';
 import { Web } from 'sp-pnp-js';
+
+import HtmlEditorCard from '../../../globalComponents/./HtmlEditor/HtmlEditor'
 import ImageTabComponenet from './ImageTabComponent'
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 import Mycontext from './RelevantDocuments'
@@ -59,7 +61,7 @@ const EditDocumentpanel=(props:any)=>{
         console.log(DeletItemId);
         const web = new Web(props?.AllListId?.siteUrl);
         // await web.lists.getByTitle("SmartInformation")
-        var text: any = "are you sure want to Delete";
+        var text: any = "Are you sure want to Delete ?";
         if (confirm(text) == true) {
           await web.lists.getById(props?.AllListId?.DocumentsListID)
             .items.getById(DeletItemId).recycle()
@@ -105,6 +107,7 @@ const EditDocumentpanel=(props:any)=>{
             ItemType: EditdocumentsData.ItemType,
     
             PortfoliosId: { "results": allValue.componentservicesetdataTag != undefined ? [allValue.componentservicesetdataTag.Id] : [] },
+            Body:allValue?.Description != "" ? allValue?.Description : "",
             Item_x0020_Cover: {
               "__metadata": { type: 'SP.FieldUrlValue' },
               'Description': EditdocumentsData?.Item_x0020_Cover?.Url != "" ? EditdocumentsData?.UrItem_x0020_Coverl?.Url : "",
@@ -187,6 +190,18 @@ const EditDocumentpanel=(props:any)=>{
        
      
       }
+      /////////folara editor function start//////////
+      const HtmlEditorCallBack = (items: any) => {
+        console.log(items);
+        var description = ""
+        if (items == '<p></p>\n') {
+          description = ""
+        } else {
+          description = items
+        }
+        setallSetValue({ ...allValue, Description: description })
+      }
+      //////// folora editor function end///////////
 return(
   <>
     <Panel onRenderHeader={onRenderCustomHeaderDocuments}
@@ -279,6 +294,8 @@ return(
         </Tabs>
         <footer className='text-end mt-2'>
           <div className='col-sm-12 row m-0'>
+            
+            <div className='mt-3'> <HtmlEditorCard editorValue={EditdocumentsData?.Description != null ? EditdocumentsData?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>
             <div className="col-sm-6 text-lg-start">
             <div>
                 {console.log("footerdiv")}
@@ -313,15 +330,7 @@ return(
 
         />
       }
-      {/* {isopencomonentservicepopup && servicespopup &&
-        <ServiceComponentPortfolioPopup
-          props={allValue?.componentservicesetdata}
-          Dynamic={props.AllListId}
-          Call={ComponentServicePopupCallBack}
-          ComponentType={"Service"}
-
-        />
-      } */}
+      
 </>
 )
 }
