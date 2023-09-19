@@ -1,8 +1,7 @@
 import * as React from 'react';
 import * as $ from 'jquery';
 import "bootstrap/dist/css/bootstrap.min.css";
-import axios, { AxiosResponse } from 'axios';
-import { arraysEqual, Modal } from 'office-ui-fabric-react';
+import Tooltip from '../Tooltip';
 //import { BiTime, BiCalendar } from 'react-icons/Bi';
 //import './foundation.scss';
 import { Web } from "sp-pnp-js"
@@ -17,7 +16,7 @@ const BaseUrl = "SP"
 
 const TeamComposition = (props: any) => {
 
-    
+
     const dragItem: any = React.useRef();
     const dragOverItem = React.useRef();
     const [Task, setTask] = React.useState([])
@@ -31,107 +30,105 @@ const TeamComposition = (props: any) => {
     const [count, setCount] = React.useState(1)
     const [month, setMonth] = React.useState(1)
     const [year, setYear] = React.useState(1)
-    const [TimeInHours,setTimeInHours] = React.useState(0)
-
+    const [TimeInHours, setTimeInHours] = React.useState(0)
+    const [TeamUserExpended, setTeamUserExpended] = React.useState(false);
     const dragStart = (e: any, position: any) => {
         dragItem.current = position;
         console.log(e.target.innerHTML);
     };
-   // var count =0
-    const changeDate=(item:any)=>{
-      
-       
-        if(item == 'Date'){
-           setCount(count+1)
-          setchangeDates(moment().add(count,'days').format("MMMM Do YYYY"))
+    // var count =0
+    const changeDate = (item: any) => {
+        if (item == 'Date') {
+            setCount(count + 1)
+            setchangeDates(moment().add(count, 'days').format("MMMM Do YYYY"))
         }
-        if(item == 'month'){
-            setMonth(month+1)
-             setchangeDates(moment().add(month, 'months').format("MMMM Do YYYY"))
-          }
-          if(item == 'Year'){
-            setYear(year+1)
+        if (item == 'month') {
+            setMonth(month + 1)
+            setchangeDates(moment().add(month, 'months').format("MMMM Do YYYY"))
+        }
+        if (item == 'Year') {
+            setYear(year + 1)
             setchangeDates(moment().add(year, 'years').format("MMMM Do YYYY"))
-          }
-    }
-    const changeDateDec=(item:any)=>{
-      
-       
-        if(item == 'Date'){
-           setCount(count-1)
-          setchangeDates(moment().add(count,'days').format("MMMM Do YYYY"))
         }
-        if(item == 'month'){
-            setMonth(month-1)
-             setchangeDates(moment().add(month, 'months').format("MMMM Do YYYY"))
-          }
-          if(item == 'Year'){
-            setYear(year-1)
+    }
+    const changeDateDec = (item: any) => {
+
+
+        if (item == 'Date') {
+            setCount(count - 1)
+            setchangeDates(moment().add(count, 'days').format("MMMM Do YYYY"))
+        }
+        if (item == 'month') {
+            setMonth(month - 1)
+            setchangeDates(moment().add(month, 'months').format("MMMM Do YYYY"))
+        }
+        if (item == 'Year') {
+            setYear(year - 1)
             setchangeDates(moment().add(year, 'years').format("MMMM Do YYYY"))
-          }
+        }
     }
-const changeTimes=(items:any)=>{
-    if(items == '15'){
-        setchangeTime(changeTime+15)
+    const changeTimes = (items: any) => {
+        if (items == '15') {
+            setchangeTime(changeTime + 15)
 
-        if (changeTime != undefined) {
-            var TimeInHour:any = changeTime / 60;
-           setTimeInHours(TimeInHour.toFixed(2))
-           
+            if (changeTime != undefined) {
+                var TimeInHour: any = changeTime / 60;
+                setTimeInHours(TimeInHour.toFixed(2))
+
+            }
+
+        }
+        if (items == '60') {
+            setchangeTime(changeTime + 60)
+            if (changeTime != undefined) {
+                var TimeInHour: any = changeTime / 60;
+                setTimeInHours(TimeInHour.toFixed(2))
+            }
+
         }
 
     }
-    if(items == '60'){
-        setchangeTime(changeTime+60)
-        if (changeTime != undefined) {
-            var TimeInHour:any = changeTime / 60;
-            setTimeInHours(TimeInHour.toFixed(2))
+    const changeTimesDec = (items: any) => {
+        if (items == '15') {
+            setchangeTime(changeTime - 15)
+            if (changeTime != undefined) {
+                var TimeInHour: any = changeTime / 60;
+                setTimeInHours(TimeInHour.toFixed(2))
+            }
+
+        }
+        if (items == '60') {
+            setchangeTime(changeTime - 60)
+            if (changeTime != undefined) {
+                var TimeInHour: any = changeTime / 60;
+                setTimeInHours(TimeInHour.toFixed(2))
+            }
+
         }
 
     }
 
-}
-const changeTimesDec=(items:any)=>{
-    if(items == '15'){
-        setchangeTime(changeTime-15)
-        if (changeTime != undefined) {
-            var TimeInHour:any = changeTime / 60;
-            setTimeInHours(TimeInHour.toFixed(2))
-        }
 
-    }
-    if(items == '60'){
-        setchangeTime(changeTime-60)
-        if (changeTime != undefined) {
-            var TimeInHour:any = changeTime / 60;
-            setTimeInHours(TimeInHour.toFixed(2))
-        }
+    const GetTimeSheet = async () => {
+        var TimeSheets: any = []
 
-    }
+        const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
 
-}
-
-
-    const GetTimeSheet = async () => { 
-        var TimeSheets:any =[]
-
-         const web =new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP'); 
-        
-         const res = await web.lists.getById('01A34938-8C7E-4EA6-A003-CEE649E8C67A').items
-        .select("Id,Title,TaxType").top(4999).get();
-        res.map((item:any)=>{
-              if(item.TaxType == "TimesheetCategories"){
+        const res = await web.lists.getById('01A34938-8C7E-4EA6-A003-CEE649E8C67A').items
+            .select("Id,Title,TaxType").top(4999).get();
+        res.map((item: any) => {
+            if (item.TaxType == "TimesheetCategories") {
                 TimeSheets.push(item)
 
-              }
+            }
         })
         setTimeSheet(TimeSheets)
-        
-  }
-        React.useEffect(()=>{
-            GetTimeSheet();
-        },[])
-        
+
+    }
+    React.useEffect(() => {
+        GetTimeSheet();
+    }, [])
+
     const dragEnter = (e: any, position: any) => {
         dragOverItem.current = position;
         console.log(e.target.innerHTML);
@@ -194,7 +191,7 @@ const changeTimesDec=(items:any)=>{
     var ResponsibleTeam: any = []
     var TeamMemberUsers: any = []
     React.useEffect(() => {
-       
+
         InstitutionData();
     }, []);
     function InstitutionData() {
@@ -234,8 +231,8 @@ const changeTimesDec=(items:any)=>{
                 })
                 // setTeamMemberUser(TeamMemberUser)
                 // $.each(institute, function (index:any,item:any) {
-                //     if (props.props.Items.Team_x0020_Members.results.length>0) {
-                //         TeamMemberUsers = getUsersWithImage(props.props.Items.Team_x0020_Members.results);
+                //     if (props.props.Items.TeamMembers.results.length>0) {
+                //         TeamMemberUsers = getUsersWithImage(props.props.Items.TeamMembers.results);
                 //     }
                 //     if (props.props.Items != undefined) {
                 //         showComposition();
@@ -247,7 +244,7 @@ const changeTimesDec=(items:any)=>{
             }
         });
     }
-       
+
     const getChildsWithoutRoleBased = (item: any, items: any) => {
         item.childs = [];
         $.each(items, function (index: any, childItem: any) {
@@ -467,10 +464,10 @@ const changeTimesDec=(items:any)=>{
     var TeamMemberUsers: any = []
     var AssignedToUsers: any = []
     const showComposition = () => {
-        if (props.props.Items.Responsible_x0020_Team != undefined) {
+        if (props.props.Items.ResponsibleTeam != undefined) {
 
             if (ResponsibleTeam != undefined && ResponsibleTeam.length > 0) {
-                TeamLeaderData = getUsersWithImage(props.props.Items.Responsible_x0020_Team.results);
+                TeamLeaderData = getUsersWithImage(props.props.Items.ResponsibleTeam.results);
                 $.each(TeamLeaderData, function (index: any, item: any) {
                     if (!isItemExists(ResponsibleTeam, item.Id)) {
                         ResponsibleTeam.push(item);
@@ -478,7 +475,7 @@ const changeTimesDec=(items:any)=>{
                 });
             }
             else {
-                ResponsibleTeam = getUsersWithImage(props.props.Items.Responsible_x0020_Team.results);
+                ResponsibleTeam = getUsersWithImage(props.props.Items.ResponsibleTeam.results);
             }
 
 
@@ -487,9 +484,9 @@ const changeTimesDec=(items:any)=>{
         setResponsibleTeams(ResponsibleTeam)
 
 
-        if (props.props.Items.Team_x0020_Members != undefined) {
+        if (props.props.Items.TeamMembers != undefined) {
             if (TeamMemberUsers != undefined && TeamMemberUsers.length > 0) {
-                var TeamMemberUsersData = getUsersWithImage(props.props.Items.Team_x0020_Members.results);
+                var TeamMemberUsersData = getUsersWithImage(props.props.Items.TeamMembers.results);
                 $.each(TeamMemberUsersData, function (index: any, item: any) {
                     if (!isItemExists(TeamMemberUsers, item.Id)) {
                         TeamMemberUsers.push(item);
@@ -497,10 +494,10 @@ const changeTimesDec=(items:any)=>{
                 });
             }
             else {
-                TeamMemberUsers = getUsersWithImage(props.props.Items.Team_x0020_Members.results);
+                TeamMemberUsers = getUsersWithImage(props.props.Items.TeamMembers.results);
             }
 
-            TeamMemberUsers = getUsersWithImage(props.props.Items.Team_x0020_Members.results);
+            TeamMemberUsers = getUsersWithImage(props.props.Items.TeamMembers.results);
             // $scope.NewTeamConfigurations.push({ Title: 'Team Members', childs: $scope.TeamMemberUsers });
         }
         setTeamMemberUser(TeamMemberUsers)
@@ -581,53 +578,50 @@ const changeTimesDec=(items:any)=>{
     return (
         <>
             <div className='col'>
-                <div className="col-sm-7">
-                            <div className="row bg-ee p-1" ng-if="teamUserExpanded"  ng-click="forCollapse()">
-                                <img style={{ width: "10px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP//SiteCollectionImages/ICONS/32/list-iconwhite.png" />
-                                <span className="txtSizeClr">Select Team Members</span>
-                            </div>
-           
-                    <div className="border row" ng-show="teamUserExpanded">
+                <div className="col-sm-7 d-flex">
+                    <div className="row bg-ee p-1">
+                        {TeamUserExpended ? <img onClick={() => setTeamUserExpended(false)} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
+                            : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />}
+                        <img onClick={() => setTeamUserExpended(true)} style={{ width: "10px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP//SiteCollectionImages/ICONS/32/list-iconwhite.png" />
+                        <span className="txtSizeClr">Select Team Members</span>
+                    </div>
+                    <div>
+                        <Tooltip />
+                    </div>
+                    {TeamUserExpended ? <div className="border row">
                         <div className="col-sm-12">
-
                             {Task.map(function (index: any, user: any) {
                                 return (
-
-
-
                                     <div ui-on-drop="onDropRemoveTeam($event,$data,taskUsers)" className="top-assign" ng-repeat="user in taskUsers">
                                         <div ng-if="user.childs.length >0" className="team">
                                             <label className="BdrBtm" >
                                                 {index.Title}
                                             </label>
-
-                                      <div className='d-flex'>
-                                      {index.childs.map(function (item: any, index: any) {
-                                                return (
-                                                    <>
-                                                        <div>
-                                                            {(item.Item_x0020_Cover != undefined && item.Item_x0020_Cover.Url != undefined) &&
-                                                                <span>
-                                                                    <img className="AssignUserPhoto" ui-draggable="true"
-
-                                                                        title={item.Title}
-                                                                        src={item.Item_x0020_Cover.Url}
-                                                                        ng-click="openTeamPage(item)" />
-
-                                                                </span>
-                                                            }
-                                                        </div>
-                                                        {/* <div onDragStart={(e: any) => dragStart(e, index)}
+                                            <div className='d-flex'>
+                                                {index.childs.map(function (item: any, index: any) {
+                                                    return (
+                                                        <>
+                                                            <div>
+                                                                {(item.Item_x0020_Cover != undefined && item.Item_x0020_Cover.Url != undefined) &&
+                                                                    <span>
+                                                                        <img className="AssignUserPhoto"      ui-draggable="true"
+                                                                            title={item.Title}
+                                                                            src={item.Item_x0020_Cover.Url}
+                                                                            ng-click="openTeamPage(item)" />
+                                                                    </span>
+                                                                }
+                                                            </div>
+                                                            {/* <div onDragStart={(e: any) => dragStart(e, index)}
                                                      
                                                     
                                                      key={index}
                                                       draggable> 
                                                      </div> */}
-                                                    </>
-                                                )
-                                            })}
-                                      </div>
-                                         
+                                                        </>
+                                                    )
+                                                })}
+                                            </div>
+
                                         </div>
                                     </div>
                                 )
@@ -641,56 +635,56 @@ const changeTimesDec=(items:any)=>{
 
                                     <div className="border-end col-sm-5 p-0">
                                         {props.props.Items.Item_x0020_Type == undefined &&
-                                         
-                                                <div className='col' ng-show="" onDragEnd={drop} >
+
+                                            <div className='col' ng-show="" onDragEnd={drop} >
+                                                <div>
                                                     <div>
-                                                        <div>
-                                                            {ResponsibleTeams.map((image: any, index) => {
-                                                                return (
-                                                                    <>
-                                                                        {image.userImage != undefined &&
-                                                                            <img ui-draggable="true" onDragEnter={(e) => dragEnter(e, index)} data-toggle="popover" data-trigger="hover" className="ProirityAssignedUserPhoto" ng-repeat="image in ResponsibleTeam"
-                                                                                title={image.Title} src={image.userImage} ng-click="openTeamPage(image)" />
-                                                                        }
-                                                                    </>
-                                                                )
-                                                            })}
-                                                        </div>
-                                                        <div>
-                                                            {ResponsibleTeams.map((image: any) => {
-                                                                return (
-                                                                    <>
-                                                                        {(image.userImage == undefined && image.Item_x0020_Cover != undefined && image.Item_x0020_Cover.Url != undefined) &&
-                                                                            <img ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, ResponsibleTeam,'Team Leaders')" data-toggle="popover" data-trigger="hover" className="ProirityAssignedUserPhoto" title="{{image.Title}}"
-                                                                                src={image.Item_x0020_Cover.Url} ng-click="openTeamPage(image)" />
-                                                                        }
-                                                                    </>
-                                                                )
-                                                            })}
-                                                        </div>
                                                         {ResponsibleTeams.map((image: any, index) => {
                                                             return (
                                                                 <>
-                                                                    {(image.userImage == undefined && image.Item_x0020_Cover == undefined || image.Item_x0020_Cover.Url == undefined) &&
-                                                                        <div ui-draggable="true" onDragEnter={(e) => dragEnter(e, index)} data-toggle="popover" data-trigger="hover" ng-repeat="image in ResponsibleTeam"
-                                                                            title={image.Title} ng-src="{{image.userImage}}" ng-click="openTeamPage(image)"
-                                                                            className="text-center create title2  ng-binding ProirityAssignedUserPhoto">
-                                                                            {image.Suffix}
-                                                                        </div>
+                                                                    {image.userImage != undefined &&
+                                                                        <img ui-draggable="true" onDragEnter={(e) => dragEnter(e, index)} data-toggle="popover" data-trigger="hover" className="ProirityAssignedUserPhoto" ng-repeat="image in ResponsibleTeam"
+                                                                            title={image.Title} src={image.userImage} ng-click="openTeamPage(image)" />
                                                                     }
                                                                 </>
                                                             )
                                                         })}
                                                     </div>
-                                                    {ResponsibleTeams.length == 0 &&
-                                                        <span style={{ color: "#b1b0b0", paddingLeft: "8px" }}>
-                                                            Task
-                                                            Leaders
-                                                        </span>
-                                                    }
-
+                                                    <div>
+                                                        {ResponsibleTeams.map((image: any) => {
+                                                            return (
+                                                                <>
+                                                                    {(image.userImage == undefined && image.Item_x0020_Cover != undefined && image.Item_x0020_Cover.Url != undefined) &&
+                                                                        <img ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, ResponsibleTeam,'Team Leaders')" data-toggle="popover" data-trigger="hover" className="ProirityAssignedUserPhoto" title="{{image.Title}}"
+                                                                            src={image.Item_x0020_Cover.Url} ng-click="openTeamPage(image)" />
+                                                                    }
+                                                                </>
+                                                            )
+                                                        })}
+                                                    </div>
+                                                    {ResponsibleTeams.map((image: any, index) => {
+                                                        return (
+                                                            <>
+                                                                {(image.userImage == undefined && image.Item_x0020_Cover == undefined || image.Item_x0020_Cover.Url == undefined) &&
+                                                                    <div ui-draggable="true" onDragEnter={(e) => dragEnter(e, index)} data-toggle="popover" data-trigger="hover" ng-repeat="image in ResponsibleTeam"
+                                                                        title={image.Title} ng-src="{{image.userImage}}" ng-click="openTeamPage(image)"
+                                                                        className="text-center create title2  ng-binding ProirityAssignedUserPhoto">
+                                                                        {image.Suffix}
+                                                                    </div>
+                                                                }
+                                                            </>
+                                                        )
+                                                    })}
                                                 </div>
-                                         
+                                                {ResponsibleTeams.length == 0 &&
+                                                    <span style={{ color: "#b1b0b0", paddingLeft: "8px" }}>
+                                                        Task
+                                                        Leaders
+                                                    </span>
+                                                }
+
+                                            </div>
+
                                         }
 
                                         {props.props.Items.Item_x0020_Type != undefined &&
@@ -916,29 +910,31 @@ const changeTimesDec=(items:any)=>{
                                 </div>
                             </div>
                             <div className="col-sm-2 ">
-                           
-                                    <div ui-on-drop="onDropRemoveTeam($event,$data, taskUsers)">
-                                        <img className='full_width'  ng-show="Item.Portfolio_x0020_Type=='Component'"  src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Dustbin.png" />
-                                        {/* <img ng-show="Item.Portfolio_x0020_Type=='Service'" title="Drag user here to  remove user from team for this Network Activity." className="height80" ng-src="{{site_Url}}/SiteCollectionImages/ICONS/Service_Icons/icon_Dustbin-green.png" />
+
+                                <div ui-on-drop="onDropRemoveTeam($event,$data, taskUsers)">
+                                    <img className='full_width' ng-show="Item.Portfolio_x0020_Type=='Component'" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Dustbin.png" />
+                                    {/* <img ng-show="Item.Portfolio_x0020_Type=='Service'" title="Drag user here to  remove user from team for this Network Activity." className="height80" ng-src="{{site_Url}}/SiteCollectionImages/ICONS/Service_Icons/icon_Dustbin-green.png" />
                             <img ng-show="Item.Portfolio_x0020_Type=='Events'" title="Drag user here to  remove user from team for this Network Activity." className="height80" ng-src="{{site_Url}}/SiteCollectionImages/ICONS/Event_Icons/icon_Dustbin-orange.png" /> */}
-                                    </div>
-                            
+                                </div>
+
                             </div>
 
                             <div className='col'>
-                            <TimeEntryPopup props={props.props.Items} />
+                                <TimeEntryPopup props={props.props.Items} />
                             </div>
                         </div>
 
                     </div >
+                        : null}
+
                 </div>
                 <div className="col-sm-5"></div>
             </div>
 
             {/* ---------------------------------------------------TimeSheet --------------------------------------------------------------------------------------------------------------------------- */}
 
-          
-            
+
+
         </>
 
     )

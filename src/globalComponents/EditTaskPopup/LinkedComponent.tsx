@@ -1,65 +1,67 @@
 import * as React from "react";
-import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
-import pnp, { Web, SearchQuery, SearchResults } from "sp-pnp-js";
-import { Version } from '@microsoft/sp-core-library';
+import { Panel, PanelType } from 'office-ui-fabric-react';
+import pnp, { Web } from "sp-pnp-js";
+
+import Tooltip from "../Tooltip";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
 import * as moment from "moment";
-import { sortBy } from "@microsoft/sp-lodash-subset";
-const LinkedComponent = (item: any) => {
+var LinkedServicesBackupArray: any = [];
+const LinkedServices = ({ props, Dynamic, Call }: any) => {
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
-    const [data, setComponentsData] = React.useState([]);
-    const [CheckBoxdata, setcheckbox] = React.useState([]);
-    const [selectedComponent, selctedCompo] = React.useState('');
+    const [data, setData] = React.useState([]);
+    const [CheckBoxData, setCheckBoxData] = React.useState([]);
+    const [table, setTable] = React.useState(data);
+    const [selectedComponent, setSelectedComponent] = React.useState('');
+
+    const PopupType: any = props?.PopupType;
     React.useEffect(() => {
-        if (item.smartComponent != undefined && item.smartComponent.length > 0)
-            selctedCompo(item.smartComponent[0]);
+        if (props.smartComponent != undefined && props.smartComponent.length > 0)
+            setSelectedComponent(props?.smartComponent[0]);
         GetComponents();
     },
         []);
-    function Example(callBack: any, type:any) {
-        item.Call(callBack.props, type);
+    function Example(callBack: any, type: any) {
+        Call(callBack, type);
     }
     const setModalIsOpenToFalse = () => {
-        Example(item, "LinkedComponent");
+        Example(props, "LinkedServices");
         setModalIsOpen(false)
     }
     const setModalIsOpenToOK = () => {
-        if (item.props.linkedComponent != undefined && item.props.linkedComponent.length == 0)
-            item.props.linkedComponent = CheckBoxdata;
+        if (props.linkedComponent != undefined && props?.linkedComponent.length == 0)
+            props.linkedComponent = CheckBoxData;
         else {
-            item.props.linkedComponent = [];
-            item.props.linkedComponent = CheckBoxdata;
+            props.linkedComponent = [];
+            props.linkedComponent = CheckBoxData;
         }
-        Example(item, "LinkedComponent");
+        Example(props, "LinkedServices");
         setModalIsOpen(false);
     }
-
     const handleOpen = (item: any) => {
-        item.show = item.show = item.show == true ? false : true;
-        setComponentsData(data => ([...data]));
+        item.show = item.show = item?.show == true ? false : true;
+        setData(data => ([...data]));
     };
     var Response: [] = [];
     const GetTaskUsers = async () => {
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let web = new Web(Dynamic.siteUrl);
         let taskUsers = [];
         taskUsers = await web.lists
-            .getByTitle('Task Users')
+            .getById(Dynamic.TaskUsertListID)
             .items
             .get();
         Response = taskUsers;
-        //console.log(this.taskUsers);
     }
     const GetComponents = async () => {
-        var RootComponentsData: any[] = []; var ComponentsData: any[] = [];
-        var SubComponentsData: any[] = [];
-        var FeatureData: any[] = [];
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        var RootComponentsData: any = [];
+        var ComponentsData: any = [];
+        var SubComponentsData: any = [];
+        var FeatureData: any = [];
+        let web = new Web(Dynamic.siteUrl);
         let componentDetails = [];
         componentDetails = await web.lists
-            //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
-            .getByTitle('Master Tasks')
+            .getById(Dynamic.MasterTaskListID)
             .items
-            //.getById(this.state.itemID)
             .select("ID", "Title", "DueDate", "Status", "Portfolio_x0020_Type", "ItemRank", "Item_x0020_Type", "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "SharewebCategories/Id", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title")
             .expand("Team_x0020_Members", "Author", "ClientCategory", "Parent", "SharewebCategories", "AssignedTo", "ClientCategory")
             .top(4999)
@@ -108,12 +110,11 @@ const LinkedComponent = (item: any) => {
                 }
 
                 if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
-                    $.each(result.Team_x0020_Members, function (index: any, catego: any) {
-                        result.ClientCategory.push(catego);
+                    $.each(result.Team_x0020_Members, function (index: any, categoryData: any) {
+                        result.ClientCategory.push(categoryData);
                     })
                 }
                 if (result.Item_x0020_Type == 'Root Component') {
-                    result['Child'] = [];
                     RootComponentsData.push(result);
                 }
                 if (result.Item_x0020_Type == 'Component') {
@@ -121,7 +122,7 @@ const LinkedComponent = (item: any) => {
                     ComponentsData.push(result);
                 }
 
-                if (result.Item_x0020_Type == 'SubServices') {
+                if (result.Item_x0020_Type == 'SubComponent') {
                     result['Child'] = [];
                     SubComponentsData.push(result);
                 }
@@ -129,13 +130,14 @@ const LinkedComponent = (item: any) => {
                     result['Child'] = [];
                     FeatureData.push(result);
                 }
+
             }
         });
-        $.each(SubComponentsData, function (index: any, subcomp: any) {
+        $.each(SubComponentsData, function (subcomp: any) {
             if (subcomp.Title != undefined) {
-                $.each(FeatureData, function (index: any, featurecomp: any) {
+                $.each(FeatureData, function (featurecomp: any) {
                     if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
-                        subcomp['Child'].push(featurecomp);;
+                        subcomp['Child'].push(featurecomp);
                     }
                 })
             }
@@ -143,42 +145,106 @@ const LinkedComponent = (item: any) => {
         $.each(ComponentsData, function (index: any, subcomp: any) {
             if (subcomp.Title != undefined) {
                 $.each(SubComponentsData, function (index: any, featurecomp: any) {
-                    if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
-                        subcomp['Child'].push(featurecomp);;
+                    if (featurecomp != undefined) {
+                        if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
+                            subcomp['Child'].push(featurecomp);
+                        }
                     }
                 })
             }
         })
         //maidataBackup.push(ComponentsData)
         // setmaidataBackup(ComponentsData)
-        setComponentsData(ComponentsData);
-        setModalIsOpen(true)
+        setData(ComponentsData);
+        setModalIsOpen(true);
+        LinkedServicesBackupArray = ComponentsData;
+    }
+    const onRenderCustomHeader = (
+    ) => {
+        return (
+            <div className="d-flex full-width pb-1" >
+                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                    <span>
+                        {`Select Services`}
+                    </span>
+                </div>
+                <Tooltip ComponentId="1667" />
+            </div>
+        );
+    };
+    const sortBy = () => {
+        const copy = data
+        copy.sort((a, b) => (a.Title > b.Title) ? 1 : -1);
+        setTable(copy)
+    }
+    const sortByDng = () => {
+        const copy = data
+        copy.sort((a, b) => (a.Title > b.Title) ? -1 : 1);
+        setTable(copy)
+    }
+
+    const ColumnSearchForLinkedServices = (e: any, columnName: any) => {
+        let searchKey = e.target.value.toLoserCase();
+        let tempArray: any = [];
+        if (columnName == "Title") {
+            data?.map((dataItem: any) => {
+                if (dataItem.Title.toLowerCase() == searchKey) {
+                    tempArray.push(dataItem);
+                }
+            })
+            setData(tempArray);
+        }
+        if (columnName == "Client-Category") { }
+        if (columnName == "Team-Member") { }
+        if (columnName == "Status") { }
+        if (columnName == "Item-Rank") { }
+        if (columnName == "Due-Date") { }
+        if (searchKey.length == 0) {
+            setData(LinkedServicesBackupArray);
+        }
+    }
+
+    const CustomFooter = () => {
+        return (
+            <div className="me-3 p-2 serviepannelgreena text-end">
+            <button type="button" className="btn btn-primary">
+                <a target="_blank" data-interception="off"
+                    href={`${Dynamic.siteUrl}/SitePages/Service-Portfolio.aspx`}>
+                    <span className="text-light"> Create New One</span>
+                </a>
+            </button>
+            <button type="button" className="btn btn-primary mx-1" onClick={setModalIsOpenToOK}>OK</button>
+            <button type="button" className="btn btn-default" onClick={setModalIsOpenToFalse}>Cancel</button>
+        </div>
+        )
     }
     return (
         <Panel
-            headerText={`Select Components`}
-            type={PanelType.large}
+            type={PanelType.custom}
+            customWidth="1100px"
             isOpen={modalIsOpen}
             onDismiss={setModalIsOpenToFalse}
+            onRenderHeader={onRenderCustomHeader}
             isBlocking={false}
+            onRenderFooter={CustomFooter}
         >
-            <div className="">
-                <div className="modal-body">
+            <div className="serviepannelgreena">
+                <div className="modal-body p-0 mt-2">
                     <div className="Alltable mt-10">
                         <div className="col-sm-12 p-0 smart">
                             <div className="section-event">
                                 <div className="wrapper">
-                                    <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
+                                    <table className=" mb-0 table table-hover" id="EmpTable" style={{ width: "100%" }}>
                                         <thead>
                                             <tr>
                                                 <th style={{ width: "2%" }}>
                                                     <div style={{ width: "2%" }}>
-                                                        <div className="accordian-header" onClick={() => handleOpen(item)}>
-                                                            {item.Child != undefined &&
+                                                        <div className="accordian-header" onClick={() => handleOpen(props)}>
+                                                            {props?.Child != undefined &&
                                                                 <a className='hreflink'
                                                                     title="Tap to expand the childs">
-                                                                    <div className="sign">{item.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
-                                                                        : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />}
+                                                                    <div className="sign">{props?.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
+                                                                        : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />}
                                                                     </div>
                                                                 </a>
                                                             }
@@ -196,72 +262,75 @@ const LinkedComponent = (item: any) => {
                                                 </th>
                                                 <th style={{ width: "22%" }}>
                                                     <div style={{ width: "21%" }} className="smart-relative">
-                                                        <input type="search" placeholder="Title" className="full_width searchbox_height" />
-
-                                                        {/* <span className="sorticon">
-                                                                            <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                                            <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                        </span> */}
-
-
+                                                        <input type="search" placeholder="Title" onChange={(e) => ColumnSearchForLinkedServices(e, "Title")} className="full_width searchbox_height" />
+                                                        <span className="sorticon">
+                                                            <span className="up" onClick={sortBy}>
+                                                                < FaAngleUp />
+                                                            </span>
+                                                            <span className="down" onClick={sortByDng}>
+                                                                < FaAngleDown />
+                                                            </span>
+                                                        </span>
                                                     </div>
                                                 </th>
                                                 <th style={{ width: "18%" }}>
                                                     <div style={{ width: "17%" }} className="smart-relative">
                                                         <input id="searchClientCategory" type="search" placeholder="Client Category"
                                                             title="Client Category" className="full_width searchbox_height"
+                                                            onChange={(e) => ColumnSearchForLinkedServices(e, "Client-Category")}
                                                         />
-                                                        {/* <span className="sorticon">
-                                                                            <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                                            <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                        </span> */}
+                                                        <span className="sorticon">
+                                                            <span className="up" onClick={sortBy}>< FaAngleUp /></span>
+                                                            <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                        </span>
                                                     </div>
                                                 </th>
                                                 <th style={{ width: "20%" }}>
                                                     <div style={{ width: "19%" }} className="smart-relative">
                                                         <input id="searchClientCategory" type="search" placeholder="Team"
                                                             title="Client Category" className="full_width searchbox_height"
+                                                            onChange={(e) => ColumnSearchForLinkedServices(e, "Team-Member")}
                                                         />
-                                                        {/* <span className="sorticon">
-                                                                            <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                                            <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                        </span> */}
-
+                                                        <span className="sorticon">
+                                                            <span className="up" onClick={sortBy}>< FaAngleUp /></span>
+                                                            <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                        </span>
                                                     </div>
                                                 </th>
                                                 <th style={{ width: "10%" }}>
                                                     <div style={{ width: "9%" }} className="smart-relative">
                                                         <input id="searchClientCategory" type="search" placeholder="Status"
                                                             title="Client Category" className="full_width searchbox_height"
+                                                            onChange={(e) => ColumnSearchForLinkedServices(e, "Status")}
                                                         />
-                                                        {/* <span className="sorticon">
-                                                                        <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                                        <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                    </span> */}
-
+                                                        <span className="sorticon">
+                                                            <span className="up" onClick={sortBy}>< FaAngleUp /></span>
+                                                            <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                        </span>
                                                     </div>
                                                 </th>
                                                 <th style={{ width: "10%" }}>
                                                     <div style={{ width: "9%" }} className="smart-relative">
                                                         <input id="searchClientCategory" type="search" placeholder="Item Rank"
                                                             title="Client Category" className="full_width searchbox_height"
+                                                            onChange={(e) => ColumnSearchForLinkedServices(e, "Item-Rank")}
                                                         />
-                                                        {/* <span className="sorticon">
-                                                                        <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                                        <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                    </span> */}
+                                                        <span className="sorticon">
+                                                            <span className="up" onClick={sortBy}>< FaAngleUp /></span>
+                                                            <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                        </span>
                                                     </div>
                                                 </th>
                                                 <th style={{ width: "10%" }}>
                                                     <div style={{ width: "9%" }} className="smart-relative">
                                                         <input id="searchClientCategory" type="search" placeholder="Due"
                                                             title="Client Category" className="full_width searchbox_height"
+                                                            onChange={(e) => ColumnSearchForLinkedServices(e, "Due-Date")}
                                                         />
-                                                        {/* <span className="sorticon">
-                                                                        <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                                        <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                    </span> */}
-
+                                                        <span className="sorticon">
+                                                            <span className="up" onClick={sortBy}>< FaAngleUp /></span>
+                                                            <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                        </span>
                                                     </div>
                                                 </th>
                                             </tr>
@@ -271,7 +340,6 @@ const LinkedComponent = (item: any) => {
                                                 <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
                                             </div>
                                             {data && data.map(function (item, index) {
-
                                                 return (
                                                     <>
                                                         <tr >
@@ -281,11 +349,11 @@ const LinkedComponent = (item: any) => {
 
                                                                         <td style={{ width: "2%" }}>
                                                                             <div className="accordian-header" onClick={() => handleOpen(item)}>
-                                                                                {item.Child != undefined &&
+                                                                                {item?.Child != undefined &&
                                                                                     <a className='hreflink'
                                                                                         title="Tap to expand the childs">
-                                                                                        <div className="sign">{item.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
-                                                                                            : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />}
+                                                                                        <div className="sign">{item?.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
+                                                                                            : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />}
                                                                                         </div>
                                                                                     </a>
                                                                                 }
@@ -293,7 +361,7 @@ const LinkedComponent = (item: any) => {
 
                                                                         </td>
                                                                         <td style={{ width: "2%" }}>
-                                                                            <input type="checkbox" name="Active" checked={item.Id == (CheckBoxdata.length > 0 && CheckBoxdata[0]["Id"] ? CheckBoxdata[0]["Id"] : CheckBoxdata) ? true : false} onClick={() => { item.checked = !item.checked; setcheckbox([item.Title == (CheckBoxdata.length > 0 ? CheckBoxdata[0]["Title"] : CheckBoxdata) ? [] : item]) }} ></input>
+                                                                            <input type="checkbox" name="Active" checked={item?.Id == (CheckBoxData.length > 0 && CheckBoxData[0]["Id"] ? CheckBoxData[0]["Id"] : CheckBoxData) ? true : false} onClick={() => { item.checked = !item?.checked; setCheckBoxData([item?.Title == (CheckBoxData.length > 0 ? CheckBoxData[0]["Title"] : CheckBoxData) ? [] : item]) }} ></input>
 
                                                                         </td>
 
@@ -302,7 +370,7 @@ const LinkedComponent = (item: any) => {
                                                                                 <span>
                                                                                     <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                         <img className="icon-sites-img"
-                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />
+                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/service_icons/component_icon.png " />
                                                                                     </a>
                                                                                 </span>
                                                                             </div>
@@ -311,10 +379,10 @@ const LinkedComponent = (item: any) => {
                                                                             <div className="">
                                                                                 <span>
                                                                                     <div className="accordian-header" onClick={() => handleOpen(item)}>
-                                                                                        {item.Child != undefined &&
+                                                                                        {item?.Child != undefined &&
                                                                                             <a className='hreflink'
                                                                                                 title="Tap to expand the childs">
-                                                                                                <div className="sign">{item.show ? <img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Minus-Gray.png" />
+                                                                                                <div className="sign">{item?.show ? <img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Minus-Gray.png" />
                                                                                                     : <img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Add-New-Grey.png" />}
                                                                                                 </div>
                                                                                             </a>
@@ -326,19 +394,19 @@ const LinkedComponent = (item: any) => {
                                                                         </td>
                                                                         <td style={{ width: "22%" }}>
                                                                             <a className="hreflink serviceColor_Active" target="_blank"
-                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + item.Id}
-                                                                            >{item.Title}
+                                                                                href={Dynamic.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + item?.Id}
+                                                                            >{item?.Title}
                                                                             </a>
-                                                                            {item.Child != undefined &&
-                                                                                <span>({item.Child.length})</span>
+                                                                            {item?.Child != undefined &&
+                                                                                <span className="ms-1">({item?.Child.length})</span>
                                                                             }
 
-                                                                            {item.Short_x0020_Description_x0020_On != null &&
+                                                                            {item?.Short_x0020_Description_x0020_On != null &&
                                                                                 <span className="project-tool"><img
                                                                                     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
                                                                                         <span className="tooltiptext">
                                                                                             <div className="tooltip_Desc">
-                                                                                                <span>{item.Short_x0020_Description_x0020_On}</span>
+                                                                                                <span>{item?.Short_x0020_Description_x0020_On}</span>
                                                                                             </div>
                                                                                         </span>
                                                                                     </span>
@@ -347,7 +415,7 @@ const LinkedComponent = (item: any) => {
                                                                         </td>
                                                                         <td style={{ width: "18%" }}>
                                                                             <div>
-                                                                                {item.ClientCategory.map(function (client: { Title: string; }) {
+                                                                                {item?.ClientCategory.map(function (client: { Title: string; }) {
                                                                                     return (
                                                                                         <span className="ClientCategory-Usericon"
                                                                                             title={client.Title}>
@@ -357,7 +425,7 @@ const LinkedComponent = (item: any) => {
                                                                                 })}</div>
                                                                         </td>
                                                                         <td style={{ width: "20%" }}>
-                                                                            <div>{item.TeamLeaderUser.map(function (client1: { Title: string; }) {
+                                                                            <div>{item?.TeamLeaderUser.map(function (client1: { Title: string; }) {
                                                                                 return (
                                                                                     <span className="ClientCategory-Usericon"
                                                                                         title={client1.Title}>
@@ -367,18 +435,18 @@ const LinkedComponent = (item: any) => {
                                                                                     </span>
                                                                                 )
                                                                             })}</div></td>
-                                                                        <td style={{ width: "10%" }}>{item.PercentComplete}</td>
-                                                                        <td style={{ width: "10%" }}>{item.ItemRank}</td>
-                                                                        <td style={{ width: "10%" }}>{item.DueDate}</td>
+                                                                        <td style={{ width: "10%" }}>{item?.PercentComplete}</td>
+                                                                        <td style={{ width: "10%" }}>{item?.ItemRank}</td>
+                                                                        <td style={{ width: "10%" }}>{item?.DueDate}</td>
                                                                     </tr>
                                                                 </table>
                                                             </td>
 
 
                                                         </tr>
-                                                        {item.show && (
+                                                        {item?.show && (
                                                             <>
-                                                                {item.Child.map(function (childitem: any) {
+                                                                {item?.Child.map(function (childitem: any) {
 
                                                                     return (
 
@@ -392,8 +460,8 @@ const LinkedComponent = (item: any) => {
                                                                                                     {childitem.Child.length > 0 &&
                                                                                                         <a className='hreflink'
                                                                                                             title="Tap to expand the childs">
-                                                                                                            <div className="sign">{childitem.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
-                                                                                                                : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />}
+                                                                                                            <div className="sign">{childitem.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
+                                                                                                                : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />}
                                                                                                             </div>
                                                                                                         </a>
                                                                                                     }
@@ -401,7 +469,7 @@ const LinkedComponent = (item: any) => {
                                                                                                 </div>
                                                                                             </td>
                                                                                             <td style={{ width: "2%" }}>
-                                                                                                <input type="checkbox" name="Active" checked={childitem.Id == (CheckBoxdata.length > 0 && CheckBoxdata[0]["Id"] ? CheckBoxdata[0]["Id"] : CheckBoxdata) ? true : false} onClick={() => { childitem.checked = !childitem.checked; setcheckbox([childitem.Title == (CheckBoxdata.length > 0 ? CheckBoxdata[0]["Title"] : CheckBoxdata) ? [] : childitem]) }} ></input>
+                                                                                                <input type="checkbox" name="Active" checked={childitem.Id == (CheckBoxData.length > 0 && CheckBoxData[0]["Id"] ? CheckBoxData[0]["Id"] : CheckBoxData) ? true : false} onClick={() => { childitem.checked = !childitem.checked; setCheckBoxData([childitem.Title == (CheckBoxData.length > 0 ? CheckBoxData[0]["Title"] : CheckBoxData) ? [] : childitem]) }} ></input>
                                                                                             </td>
                                                                                             <td style={{ width: "4%" }}> <div>
 
@@ -431,11 +499,11 @@ const LinkedComponent = (item: any) => {
                                                                                             </td>
                                                                                             <td style={{ width: "22%" }}>
                                                                                                 <a className="hreflink serviceColor_Active" target="_blank"
-                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
+                                                                                                    href={Dynamic.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
                                                                                                 >{childitem.Title}
                                                                                                 </a>
                                                                                                 {childitem.Child.length > 0 &&
-                                                                                                    <span>({childitem.Child.length})</span>
+                                                                                                    <span className="ms-1">({childitem.Child.length})</span>
                                                                                                 }
 
                                                                                                 {childitem.Short_x0020_Description_x0020_On != null &&
@@ -494,7 +562,7 @@ const LinkedComponent = (item: any) => {
 
                                                                                                             </td>
 
-                                                                                                            <td style={{ width: "2%" }}><input type="checkbox" name="Active" checked={childinew.Id == (CheckBoxdata.length > 0 && CheckBoxdata[0]["Id"] ? CheckBoxdata[0]["Id"] : CheckBoxdata) ? true : false} onClick={() => { childinew.checked = !childinew.checked; setcheckbox([childinew.Title == (CheckBoxdata.length > 0 ? CheckBoxdata[0]["Title"] : CheckBoxdata) ? [] : childinew]) }}  ></input></td>
+                                                                                                            <td style={{ width: "2%" }}><input type="checkbox" name="Active" checked={childinew.Id == (CheckBoxData.length > 0 && CheckBoxData[0]["Id"] ? CheckBoxData[0]["Id"] : CheckBoxData) ? true : false} onClick={() => { childinew.checked = !childinew.checked; setCheckBoxData([childinew.Title == (CheckBoxData.length > 0 ? CheckBoxData[0]["Title"] : CheckBoxData) ? [] : childinew]) }}  ></input></td>
                                                                                                             <td style={{ width: "4%" }}> <div>
                                                                                                                 <span>
 
@@ -510,11 +578,11 @@ const LinkedComponent = (item: any) => {
                                                                                                             <td style={{ width: "22%" }}>
 
                                                                                                                 <a className="hreflink serviceColor_Active" target="_blank"
-                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childinew.Id}
+                                                                                                                    href={Dynamic.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + childinew.Id}
                                                                                                                 >{childinew.Title}
                                                                                                                 </a>
                                                                                                                 {childinew.Child.length > 0 &&
-                                                                                                                    <span>({childinew.Child.length})</span>
+                                                                                                                    <span className="ms-1">({childinew.Child.length})</span>
                                                                                                                 }
 
                                                                                                                 {childinew.Short_x0020_Description_x0020_On != null &&
@@ -584,11 +652,7 @@ const LinkedComponent = (item: any) => {
                         </div>
                     </div>
                 </div>
-                <footer className="float-end mt-2">
-                    <button type="button" className="btn btn-primary px-3" onClick={setModalIsOpenToOK}>OK</button>
-                    <button type="button" className="btn btn-greyb ms-2" onClick={setModalIsOpenToFalse}>Cancel</button>
-                </footer>
             </div >
         </Panel >
     )
-}; export default LinkedComponent;
+}; export default LinkedServices;

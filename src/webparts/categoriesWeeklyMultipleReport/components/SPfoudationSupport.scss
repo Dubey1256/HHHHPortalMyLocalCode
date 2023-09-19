@@ -7,7 +7,7 @@
 .RightBdr{border-right: 2px solid #ccc;}
 .mt-18{margin-top: 18px;}
 .f-500{font-weight: 500;}
-h5.TxtSize{font-size: 15px;font-weight: 500;padding-bottom: 5px; color: #0000BC;}
+h5.TxtSize{font-size: 15px;font-weight: 500;padding-bottom: 5px; color: #000066;}
 .arrow_up {margin-top: -4px;cursor: pointer;margin-left: 4px;}
 .arrow_down { margin-top: 10px; cursor: pointer; margin-left: 4px;}
 .brd-btm{border-bottom:1px solid #ccc;}    
@@ -21,12 +21,12 @@ h5.TxtSize{font-size: 15px;font-weight: 500;padding-bottom: 5px; color: #0000BC;
 .fortablee .glyphicon_active {right: auto !important;}
 /*table expand*/
 .table-expandsize .news_upload{padding: 0px 10px;margin: 5px 0px;display: inline-block;}
-.table-expandsize .news_upload .content_wrap{background: #0000BC;padding: 10px 1px;box-shadow: 0px 3px 6px 0px #ccc;height: 153px;width: 153px;}
+.table-expandsize .news_upload .content_wrap{background: #000066;padding: 10px 1px;box-shadow: 0px 3px 6px 0px #ccc;height: 153px;width: 153px;}
 .table-expandsize .permission{color: #fff;font-weight: 700 !important;text-align: center;font-family: "Segoe UI";margin: 0px 3px; height: 50px;font-size: 18px;margin-top: 43px !important;}
-.table-expandsize .news_upload .content_wrap.active {border: 4px solid #cccccc !important; box-shadow: 4px 6px 15px 0px #0000BC;}
+.table-expandsize .news_upload .content_wrap.active {border: 4px solid #cccccc !important; box-shadow: 4px 6px 15px 0px #000066;}
 /*table expand*/
 .ServicePortfoliopg table.indicator_search td fieldset legend span:first-child, .smartSearch-Filter-Section .td-manage fieldset legend span:first-child,.taskprofilepagegree table.indicator_search td fieldset legend span:first-child, .smartSearch-Filter-Section .td-manage fieldset legend span:first-child {border-bottom: 1.5px solid #228b22 !important;color: #228b22 !important;}
-table.indicator_search td fieldset legend span:first-child, .smartSearch-Filter-Section .td-manage fieldset legend span:first-child {border-bottom: 1.5px solid #0000BC !important;color: #0000BC !important;}
+table.indicator_search td fieldset legend span:first-child, .smartSearch-Filter-Section .td-manage fieldset legend span:first-child {border-bottom: 1.5px solid #000066 !important;color: #000066 !important;}
 table.indicator_search td fieldset legend span, .smartSearch-Filter-Section .td-manage fieldset legend span {padding: 5px 5px;font-weight: 600;font-size: 14px !important;width: 96%;font-family: "Segoe UI" !important;background: #e9e9e9;letter-spacing: 0;display: block;}
 table.indicator_search td fieldset .add_box, .smartSearch-Filter-Section .td-manage fieldset .filter-Item {width: 92%;margin-left: 7px;font-size: 13px;color: #444444;letter-spacing: 0;font-family: 'Segoe UI';}
 /*** Task-Profile ***/
@@ -110,7 +110,7 @@ table.indicator_search td fieldset .add_box, .smartSearch-Filter-Section .td-man
 /*** componentsdashboard ***/
 .componentsdashboard .dropBox {background: #ccc !important;}
 .componentsdashboard .dashboard {width: 1280px !important; margin-top: 1px;}
-.componentsdashboard .wrapper .glyphicon_active {position: absolute;right: 9px;color: #0000BC!important;}
+.componentsdashboard .wrapper .glyphicon_active {position: absolute;right: 9px;color: #000066!important;}
 .componentsdashboard .for_input {margin: -3px 0 0 !important;line-height: normal;}
 .width130{width:130px !important;} 
 .activity-T .ProirityAssignedUserPhoto {display: inline-flex;}
@@ -122,7 +122,7 @@ table.indicator_search td fieldset .add_box, .smartSearch-Filter-Section .td-man
 .taskprofilepagegreen .Feedback #li-brdr .glyphicon-comment,.ServicePortfoliopg .Feedback #li-brdr .glyphicon-comment,.ServicePortfoliopg .Feedback #li-brdr .glyphicon-question-sign,.taskprofilepagegreen .Feedback #li-brdr .glyphicon-question-sign{color: #228b22!important;}
 /*** SharewebPageSettings ***/
 .page-content {position: relative;height: 50px;top:7px !important;margin-right: 0px!important;margin-left: -26px !important;}
-.Feedback #li-brdr .glyphicon-comment, .Feedback #li-brdr .glyphicon-question-sign, .Feedback #li-brdr .fa {color: #0000BC !important;font-size: 12px;}
+.Feedback #li-brdr .glyphicon-comment, .Feedback #li-brdr .glyphicon-question-sign, .Feedback #li-brdr .fa {color: #000066 !important;font-size: 12px;}
 .Feedback .glyphicon.glyphicon-comment, .Feedback .glyphicon.glyphicon-question-sign {position: relative !important;top: 2px !important;right: 3px !important;}
 .Feedback .dropdown-menu > li > a {padding: 3px 10px;}
 .fixnum{position: absolute;left: -10%;}
@@ -140,13 +140,13 @@ table.indicator_search td fieldset .add_box, .smartSearch-Filter-Section .td-man
 .taskuserpopuptemplate .AllsiteRadio input[type=checkbox], input[type=radio] {margin: 0px 0 0;}
 .bdr_top2 {border-top: 1px solid #2a2a2a}
 .taskuserpopuptemplate .update_fieldset {padding: 20px;border: 1px solid transparent;}
-.taskuserpopuptemplate .lengthToAlignWithTab span {position: absolute;top: 11px;right: 15px;color: #0000BC;}
+.taskuserpopuptemplate .lengthToAlignWithTab span {position: absolute;top: 11px;right: 15px;color: #000066;}
 .taskuserpopuptemplate #tabs .nav-pills > li.active > span,
 .nav-pills > li.active > span:hover,
 .nav-pills > li.active > span:focus {color: #000;}
 .taskuserpopuptemplate .divPanelBody #main-menu li:hover > ul.sub-menu {display: block !important;}
 .PtL-5{padding-top: 5px;padding-left: 5px;}
-.LeaderDashboard li {display: block;width: 100%;border: 1px solid #ccc;background: #ececec;border-radius: 2px;color: #0000BC; font-size: 17px;font-weight: 500;padding: 8px 0px 8px 5px;}
+.LeaderDashboard li {display: block;width: 100%;border: 1px solid #ccc;background: #ececec;border-radius: 2px;color: #000066; font-size: 17px;font-weight: 500;padding: 8px 0px 8px 5px;}
 .LeaderDashboard li ul li{background: #b9afaf;width: 92%;padding: 5px 0px 5px 5px;font-size: 14px;}
 .TableSpace {padding-top: 10px;padding-bottom: 10px;padding-left: 5px;padding-right: 5px;}
 .Teamleaderdashboardpage .nav-tabs>li.active>a,
@@ -155,8 +155,8 @@ table.indicator_search td fieldset .add_box, .smartSearch-Filter-Section .td-man
 .Teamleaderdashboardpage .nav>li>a {width: 100%;display: block;padding: 10px 0px 10px 5px;margin-right: 0px;line-height: 0;border: none;border-radius: 0px; }
 .Teamleaderdashboardpage li.active {background: #ffffff;}
 .ml15 {margin-left: 15px;}
-.Teamleaderdashboardpage .dashboard-head {background: #0000BC;color: #ffffff;}
-.Teamleaderdashboardpage li.active {background: #0000BC;border-right: none;}
+.Teamleaderdashboardpage .dashboard-head {background: #000066;color: #ffffff;}
+.Teamleaderdashboardpage li.active {background: #000066;border-right: none;}
 .Teamleaderdashboardpage .nav-tabs>li ul li.active>a,
 .nav-tabs>li ul li.active>a:focus,
 .nav-tabs>li ul li.active>a:hover{color: #ffffff;}
@@ -167,7 +167,7 @@ table.indicator_search td fieldset .add_box, .smartSearch-Filter-Section .td-man
 .SmartMetaSearchpage .left64 {left: 64px !important;}
 .SmartMetaSearchpage #myDropdown1 button, .SmartMetaSearchpage  #myDropdown2 button {min-width: 4.5em}
  .SmartMetaSearchpage .dropdown-content {position: absolute;background-color: #f6f6f6;max-width: 210px;border: 1px solid #ddd;z-index: 1;margin-left: 5px; top:13%}
- .SmartMetaSearchpage h5.title {margin-bottom: 2px;margin-top: 7px;font-size: 13px;font-weight: 600;color: #0000BC !important;}
+ .SmartMetaSearchpage h5.title {margin-bottom: 2px;margin-top: 7px;font-size: 13px;font-weight: 600;color: #000066 !important;}
  .SmartMetaSearchpage .expandtableicon {position: absolute;z-index: 999;right: 0.3%;top: 20px;}
  .px-7{padding-left: 7px!important;padding-right: 7px!important;}
  .mheight {min-height: 300px;}
@@ -200,7 +200,7 @@ table.indicator_search td fieldset .add_box, .smartSearch-Filter-Section .td-man
 .serchkey {width: 100%;float: left;margin-left: 15px;}
 .serchkey input[type="text"] {width: 60%;margin-right: 10px;height: 30px;border: 1px solid #ccc;}
 .herfbtn {width: 100%;float: left;text-align: right;}
-.herfbtn a:link {background: #0000BC;padding: 10px 10px;color: #fff !important;text-decoration: none;line-height: 33px;}
+.herfbtn a:link {background: #000066;padding: 10px 10px;color: #fff !important;text-decoration: none;line-height: 33px;}
 .herfbtn a:last-child {background: #ccc;color: #000;}
 .serchpannel {float: left;width: 100%;padding: 10px 0px;}
 .dropck input[type="checkbox"] {position: relative;margin-top: 0px;}
@@ -260,7 +260,7 @@ table.indicator_search td fieldset .add_box, .smartSearch-Filter-Section .td-man
 .table-head .dropdown-content {position: absolute;background-color: #f6f6f6;border: 1px solid #ddd;z-index: 1;top: 37px;left: 0px;min-width: 200px;padding: 0px 10px;margin-left: 0px;}
 .subckeak {margin-left: 10px;}
 .listdropdown {width: 100%;float: left;}
-.listdropdown h3{border-bottom:1px solid #0000BC;margin-bottom: 10px;font-weight: 600;padding-bottom: 5px;margin-top:10px;}
+.listdropdown h3{border-bottom:1px solid #000066;margin-bottom: 10px;font-weight: 600;padding-bottom: 5px;margin-top:10px;}
 .allcek p{margin-bottom: 0px;}
 .subckeak > span {width: 100%;float: left;line-height: 22px;}
 .allcek input[type="checkbox"]{margin-top: 0px;}
@@ -269,4 +269,4 @@ table.indicator_search td fieldset .add_box, .smartSearch-Filter-Section .td-man
 .pagescroll{width: 100%;float: left;height: 130px;overflow-y: scroll;}
 .p-ions{padding-left:5px ;}
 button i.fa.fa-expand {border: none;padding: 0px;font-size: 14px !important;}
-.table-head .active {color: #0000BC !important;}
+.table-head .active {color: #000066 !important;}

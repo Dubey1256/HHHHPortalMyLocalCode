@@ -1,0 +1,13 @@
+.user_TeamLeaders{
+    border-right: 2px solid #ccc;
+    margin-right: 4px;
+    padding-right: 4px;
+    margin-left: 0px;
+}
+.column-description {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+  }

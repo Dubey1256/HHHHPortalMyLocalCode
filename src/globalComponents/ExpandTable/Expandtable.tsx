@@ -1,7 +1,7 @@
 import * as React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.min.js";
-
+import Tooltip from '../Tooltip';
 const ExpndTable = (props: any) => {
   //  Must include id in the table section
   if (props !=undefined && props.prop1 != undefined) {
@@ -12,7 +12,7 @@ const ExpndTable = (props: any) => {
 
   const showExpended = function (prope: any) {
     $('#spPageCanvasContent').removeClass();
-    $('#spPageCanvasContent').addClass(prope)
+    $('#spPageCanvasContent').addClass(prope)       
     props.prop(prope)
   }
 
@@ -46,12 +46,12 @@ const ExpndTable = (props: any) => {
           <div className="modal-content">
             <div className="modal-header">
               <h1
-                className="modal-title fs-5"
+                className="modal-title"
                 id="exampleModalLabel"
-                style={{ color: "#0000bc" }}
               >
                 Expand Search Result
               </h1>
+              <span><Tooltip ComponentId='3299'/></span>
               <button
                 type="button"
                 className="btn-close"
@@ -59,15 +59,15 @@ const ExpndTable = (props: any) => {
                 aria-label="Close"
               />
             </div>
-            <div className="modal-body" style={{ backgroundColor: "#F2EDED" }}>
-              <div className="row d-flex justify-content-center">
+            <div className="modal-body bg-f5f5" >
+              <div className="row d-flex justify-content-center py-2 expandedpopup">
                 <div
                   data-bs-dismiss="modal"
                   role={"button"}
                   onClick={() => showExpended("fifty")}
                   // props.prop("fifty")}
-                  className="card p-5 text-light fw-bold col-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center"
-                  id={props.prop1 == "fifty" ? "boxtrue" : "boxfalse"}
+                  className={props.prop1 == "fifty"?" block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center BoxShadow":" block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center"}
+                  id={props.prop1 == "fifty" ? "boxtrue " : "boxfalse"}
                 >
                   50%
                 </div>
@@ -75,8 +75,8 @@ const ExpndTable = (props: any) => {
                   data-bs-dismiss="modal"
                   role={"button"}
                   onClick={() => showExpended("sixty")}
-                  className="card p-5 text-light fw-bold expandtiles  rounded-0 m-2 d-flex align-items-center justify-content-center"
-                  id={props.prop1 == "sixty" ? "boxtrue" : "boxfalse"}
+                  className={props.prop1 == "sixty"?" block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center BoxShadow":" block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center"}
+                   id={props.prop1 == "sixty" ? "boxtrue " : "boxfalse"}
                 >
                   60%
                 </div>
@@ -85,8 +85,8 @@ const ExpndTable = (props: any) => {
                   role={"button"}
                   onClick={() => showExpended("seventyfive")}
                   // props.prop("seventyfive")}
-                  className="card p-5 text-light fw-bold expandtiles  rounded-0 m-2 d-flex align-items-center justify-content-center"
-                  id={props.prop1 == "seventyfive" ? "boxtrue" : "boxfalse"}
+                  className={props.prop1 == "seventyfive"?" block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center BoxShadow":" block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center"}
+                  id={props.prop1 == "seventyfive" ? "boxtrue " : "boxfalse"}
                 >
                   75%
                 </div>
@@ -95,19 +95,15 @@ const ExpndTable = (props: any) => {
                   role={"button"}
                   onClick={() => showExpended("hundred")}
                   // props.prop("hundred")}
-                  className="card p-5 text-light fw-bold expandtiles  rounded-0 m-2 d-flex align-items-center justify-content-center"
-                  id={props.prop1 == "hundred" ? "boxtrue" : "boxfalse"}
+                  className={props.prop1 == "hundred"?" block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center BoxShadow":" block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center"}
+                  id={props.prop1 == "hundred" ? "boxtrue " : "boxfalse"}
                 >
                   100%
                 </div>
               </div>
             </div>
             <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-light px-3 border"
-                data-bs-dismiss="modal"
-              >
+              <button  type="button" className="btn btn-default"  data-bs-dismiss="modal" >
                 Cancel
               </button>
             </div>
