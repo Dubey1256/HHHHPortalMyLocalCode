@@ -41,8 +41,7 @@ let ProjectData: any = [];
 let copyDtaArray: any = [];
 let renderData: any = [];
 let countAllTasksData: any = []
-
-
+let afterFilter = false;
 
 
 function TeamPortlioTable(SelectedProp: any) {
@@ -264,30 +263,33 @@ function TeamPortlioTable(SelectedProp: any) {
               console.log(AllTasksMatches);
               Counter++;
               console.log(AllTasksMatches.length);
-              if (AllTasksMatches != undefined && AllTasksMatches.length > 0) {
-                  $.each(AllTasksMatches, function (index: any, item: any) {
-                      item.isDrafted = false;
-                      item.flag = true;
-                      item.TitleNew = item.Title;
-                      item.siteType = config.Title;
-                      item.childs = [];
-                      item.listId = config.listId;
-                      item.siteUrl = ContextValue.siteUrl;
-                      item["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
-                      item.fontColorTask = "#000"
-                      // if (item.TaskCategories.results != undefined) {
-                      //     if (item.TaskCategories.results.length > 0) {
-                      //         $.each(
-                      //             item.TaskCategories.results,
-                      //             function (ind: any, value: any) {
-                      //                 if (value.Title.toLowerCase() == "draft") {
-                      //                     item.isDrafted = true;
-                      //                 }
-                      //             }
-                      //         );
-                      //     }
-                      // }
-                  });
+              if (AllTasksMatches != undefined ) {
+                if(AllTasksMatches?.length>0){
+                    $.each(AllTasksMatches, function (index: any, item: any) {
+                        item.isDrafted = false;
+                        item.flag = true;
+                        item.TitleNew = item.Title;
+                        item.siteType = config.Title;
+                        item.childs = [];
+                        item.listId = config.listId;
+                        item.siteUrl = ContextValue.siteUrl;
+                        item["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
+                        item.fontColorTask = "#000"
+                        // if (item.TaskCategories.results != undefined) {
+                        //     if (item.TaskCategories.results.length > 0) {
+                        //         $.each(
+                        //             item.TaskCategories.results,
+                        //             function (ind: any, value: any) {
+                        //                 if (value.Title.toLowerCase() == "draft") {
+                        //                     item.isDrafted = true;
+                        //                 }
+                        //             }
+                        //         );
+                        //     }
+                        // }
+                    });
+                
+                } 
                   AllTasks = AllTasks.concat(AllTasksMatches);
                   AllTasks = $.grep(AllTasks, function (type: any) {
                       return type.isDrafted == false;
@@ -530,11 +532,11 @@ function TeamPortlioTable(SelectedProp: any) {
         setAllMasterTasks(componentDetails)
         AllComponetsData = componentDetails;
         ComponetsData["allComponets"] = componentDetails;
-        
-        if (AllSiteTasksData?.length > 0 && AllComponetsData?.length > 0) {
-          portfolioTypeData.forEach((port, index) => {
-            componentGrouping(port?.Id, index);
-          });
+        // AllSiteTasksData?.length > 0 &&
+        if((AllSiteTasksData?.length > 0 && AllComponetsData?.length > 0)){
+            portfolioTypeData.forEach((port, index) => {
+                componentGrouping(port?.Id, index);
+              });
         }
         
 
@@ -547,6 +549,7 @@ function TeamPortlioTable(SelectedProp: any) {
             setIsUpdated(query);
             isUpdated = query;
         }
+
     }, [])
    
     React.useEffect(() => {
@@ -587,13 +590,6 @@ function TeamPortlioTable(SelectedProp: any) {
     }, [AllMetadata.length > 0 && portfolioTypeData.length > 0])
 
 
-
-      
-      
-
-
-    
-
     const DynamicSort = function (items: any, column: any,orderby:any) {
         items?.sort(function (a: any, b: any) {
             var aID = a[column];
@@ -606,10 +602,12 @@ function TeamPortlioTable(SelectedProp: any) {
     };
     const componentGrouping = (portId: any, index:any) => {
         let FinalComponent: any = []
-       
+      
         let AllProtFolioData = AllComponetsData?.filter((comp: any) => comp?.PortfolioType?.Id === portId && comp.TaskType === undefined );
+
         // let AllComponents = AllProtFolioData?.filter((comp: any) => comp?.Parent?.Id === 0 || comp?.Parent?.Id === undefined && comp?.Id === 321 );
         let subComFeat = AllProtFolioData?.filter((comp: any) => comp?.Parent?.Id === SelectedProp?.props?.Id )
+        
         subComFeat?.map((masterTask: any) => {
             masterTask.subRows = [];
             taskTypeData?.map((levelType: any) => {
@@ -633,7 +631,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     }
                 }
             })
-            let allFeattData = AllProtFolioData?.filter((elem: any) => elem?.Parent?.Id === masterTask?.Id);
+            let allFeattData = AllComponetsData?.filter((elem: any) => elem?.Parent?.Id === masterTask?.Id);
            
             masterTask.subRows = masterTask?.subRows?.concat(allFeattData);
             allFeattData?.forEach((subFeat: any) => {
@@ -665,7 +663,7 @@ function TeamPortlioTable(SelectedProp: any) {
             
         FinalComponent.push(masterTask)
         })
-        
+    
         componentData = componentData?.concat(FinalComponent);
         DynamicSort(componentData, 'PortfolioLevel','')
         componentData.forEach((element: any) => {
@@ -695,7 +693,7 @@ function TeamPortlioTable(SelectedProp: any) {
           temp.ItemRank = "";
           temp.DueDate = "";
           temp.Project = "";
-          temp.subRows = AllSiteTasksData?.filter((elem1: any) => elem1?.TaskType?.Id != undefined &&  elem1?.ParentTask?.Id === undefined && elem1?.Portfolio?.Id === SelectedProp?.props?.Id);
+          temp.subRows = AllSiteTasksData?.filter((elem1: any) => elem1?.TaskType?.Id != undefined &&  elem1?.ParentTask?.Id === undefined && elem1?.Portfolio?.Id === SelectedProp?.props?.Id );
           countAllTasksData = countAllTasksData.concat(temp.subRows);
           temp.subRows.forEach((task: any) => {
               if (task.TaskID === undefined || task.TaskID === '')
@@ -734,11 +732,14 @@ function TeamPortlioTable(SelectedProp: any) {
                 if (allTasksData.length > 0) {
                     wrkst.subRows = wrkst?.subRows?.concat(allTasksData)
                     countAllTasksData = countAllTasksData.concat(allTasksData)
+                   
                 }
             })
+            
         })
         items.subRows = items?.subRows?.concat(findActivity)
         items.subRows = items?.subRows?.concat(findTasks)
+        afterFilter=true;
     }
     const countTaskAWTLevel = (countTaskAWTLevel: any) => {
         if (countTaskAWTLevel.length > 0) {
@@ -1588,7 +1589,9 @@ function TeamPortlioTable(SelectedProp: any) {
             </Panel>
             {isOpenActivity && (
                 <CreateActivity
-                    props={checkedList}
+                    props={ checkedList != null && checkedList?.Id != undefined
+                        ? checkedList
+                        : SelectedProp.props}
                     Call={Call}
                     TaskUsers={AllUsers}
                     AllClientCategory={AllClientCategory}
