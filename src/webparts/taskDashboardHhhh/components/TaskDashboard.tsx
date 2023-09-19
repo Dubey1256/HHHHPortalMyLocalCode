@@ -144,12 +144,7 @@ const TaskDashboard = (props: any) => {
         }
 
     }, []);
-    React.useEffect(() => {
-        if (AllListId?.isShowTimeEntry == true) {
-            loadAllTimeEntry()
-        }
 
-    }, [timesheetListConfig]);
     React.useEffect(() => {
         let CONTENT = !updateContent;
         setUpdateContent(CONTENT);
@@ -242,6 +237,8 @@ const TaskDashboard = (props: any) => {
 
 
     const loadAllTimeEntry = async () => {
+        AllTaskTimeEntries=[];
+        setPageLoader(true)
         if (timesheetListConfig?.length > 0) {
             let timesheetLists: any = [];
             let startDate = getStartingDate('Last Month').toISOString();
@@ -260,11 +257,12 @@ const TaskDashboard = (props: any) => {
                             .getAll();
 
                         data?.forEach((item: any) => {
-                            item.taskDetails = checkTimeEntrySite(item, taskLists);
+                            item.taskDetails = checkTimeEntrySite(item);
                             AllTaskTimeEntries.push(item);
                         });
                         currentUserTimeEntry('This Week');
                     } catch (error) {
+                        setPageLoader(false)
                         console.log(error, 'HHHH Time');
                     }
                 });
@@ -274,108 +272,112 @@ const TaskDashboard = (props: any) => {
 
         }
     }
-    const checkTimeEntrySite = (timeEntry: any, sitesArray: any) => {
+
+    const checkTimeEntrySite = (timeEntry: any) => {
         let result = ''
-        sitesArray?.map((site: any) => {
-            if (timeEntry[site.Tasklist]?.Id != undefined) {
-                result = AllTasks?.filter((task: any) => {
-                    if (task?.Id == timeEntry[site.Tasklist]?.Id && task?.siteType.toLowerCase() == site.siteType.toLowerCase()) {
-                        return task;
-                    }
-                });
-                //  = getTaskDetails(timeEntry[site.Tasklist].Id, site.siteType)
+        result = AllTasks?.filter((task: any) => {
+            if (timeEntry[`Task${task?.siteType}`]!=undefined && task?.Id == timeEntry[`Task${task?.siteType}`]?.Id) {
+                return task;
             }
-        })
+        });    
         return result;
     }
 
-    const currentUserTimeEntry = (start: any) => {
-        let totalTime = 0;
-        setSelectedTimeReport(start)
-        let startDate = getStartingDate(start);
-        let endDate = getEndingDate(start);
-        startDate = new Date(startDate.setHours(0, 0, 0, 0));
-        endDate = new Date(endDate.setHours(0, 0, 0, 0));
-        let weekTimeEntries: any = [];
-        AllTaskTimeEntries?.map((timeEntry: any) => {
-            if (timeEntry?.AdditionalTimeEntry != undefined) {
-                let AdditionalTime = JSON.parse(timeEntry?.AdditionalTimeEntry)
-                AdditionalTime?.map((filledTime: any) => {
-                    let [day, month, year] = filledTime?.TaskDate?.split('/')
-                    const timeFillDate = new Date(+year, +month - 1, +day)
-                    if (filledTime?.AuthorId == currentUserId) {
-                        if (timeFillDate >= startDate && timeFillDate <= endDate && timeEntry?.taskDetails[0] != undefined) {
-                            let data = { ...timeEntry?.taskDetails[0] };
-                            if (data == '' || data == undefined)
-                                data = {};
-                            totalTime += parseFloat(filledTime?.TaskTime);
-                            data.TaskTime = filledTime?.TaskTime;
-                            data.timeDate = filledTime?.TaskDate;
-                            data.Description = filledTime?.Description
-                            data.timeFillDate = timeFillDate;
-                            weekTimeEntries.push(data);
-                        }
-                        // }
-                    }
-
-                })
-            }
-        })
+    const currentUserTimeEntry = (start:any) => {
+        setPageLoader(false)
+        setPageLoader(true)
+        const startDate = getStartingDate(start);
+        const endDate = getEndingDate(start);
+        const startDateMidnight = new Date(startDate.setHours(0, 0, 0, 0));
+        const endDateMidnight = new Date(endDate.setHours(0, 0, 0, 0));
+      
+        const { weekTimeEntries, totalTime } = AllTaskTimeEntries?.reduce(
+          (acc:any, timeEntry:any) => {
+           try {
+            if (timeEntry?.AdditionalTimeEntry) {
+                const AdditionalTime = JSON.parse(timeEntry.AdditionalTimeEntry);
+        
+                AdditionalTime?.forEach((filledTime:any) => {
+                  const [day, month, year] = filledTime?.TaskDate?.split('/');
+                  const timeFillDate = new Date(+year, +month - 1, +day);
+        
+                  if (
+                    filledTime?.AuthorId == currentUserId &&
+                    timeFillDate >= startDateMidnight &&
+                    timeFillDate <= endDateMidnight &&
+                    timeEntry.taskDetails[0]
+                  ) {
+                    const data = { ...timeEntry.taskDetails[0] } || {};
+                    const taskTime = parseFloat(filledTime.TaskTime);
+        
+                    data.TaskTime = taskTime;
+                    data.timeDate = filledTime.TaskDate;
+                    data.Description = filledTime.Description;
+                    data.timeFillDate = timeFillDate;
+        
+                    acc.weekTimeEntries.push(data);
+                    acc.totalTime += taskTime;
+                  }
+                });
+              }
+        
+           } catch (error) {
+            setPageLoader(false)
+           }
+            return acc;
+          },
+          { weekTimeEntries: [], totalTime: 0 }
+        );
         weekTimeEntries.sort((a: any, b: any) => {
             return b.timeFillDate - a.timeFillDate;
         });
-        setWeeklyTimeReport(weekTimeEntries)
+        setSelectedTimeReport(start);
+        setWeeklyTimeReport(weekTimeEntries);
         setTimeEntryTotal(totalTime);
         weekTimeEntry = weekTimeEntries;
-    }
+        setPageLoader(false)
+      };
     const currentUserTimeEntryCalculation = () => {
-        let todaysTimeTotal = 0;
-        let thisMonthTimeTotal = 0;
-        let thisWeekTimeTotal = 0;
-        let allTimeCategoryTime = {
-            today: 0,
-            thisWeek: 0,
-            thisMonth: 0
-        }
-        let timesheetDistribution = ['Today', 'This Week', 'This Month']
-        timesheetDistribution?.map((start: any) => {
-            let startDate = getStartingDate(start);
-            startDate = new Date(startDate.setHours(0, 0, 0, 0));
-            let endDate = getEndingDate(start);
-            endDate = new Date(endDate.setHours(0, 0, 0, 0));
-            AllTaskTimeEntries?.map((timeEntry: any) => {
-                if (timeEntry?.AdditionalTimeEntry != undefined) {
-                    let AdditionalTime = JSON.parse(timeEntry?.AdditionalTimeEntry)
-                    AdditionalTime?.map((filledTime: any) => {
-                        let [day, month, year] = filledTime?.TaskDate?.split('/')
-                        const timeFillDate = new Date(+year, +month - 1, +day)
-                        if (filledTime?.AuthorId == currentUserId) {
-                            if (start == 'Today') {
-                                if (startDate.getTime() == timeFillDate.getTime() && timeEntry?.taskDetails[0] != undefined) {
-                                    todaysTimeTotal += parseFloat(filledTime?.TaskTime);
-                                }
-                            } else if (start == 'This Week') {
-                                if (timeFillDate >= startDate && timeEntry?.taskDetails[0] != undefined) {
-                                    thisMonthTimeTotal += parseFloat(filledTime?.TaskTime);
-                                }
-                            } else if (start == 'This Month') {
-                                if (timeFillDate >= startDate && timeEntry?.taskDetails[0] != undefined) {
-                                    thisWeekTimeTotal += parseFloat(filledTime?.TaskTime);
-                                }
-                            }
-                        }
-
-                    })
+        const timesheetDistribution = ['Today', 'This Week', 'This Month'];
+      
+        const allTimeCategoryTime = timesheetDistribution.reduce((totals, start) => {
+          const startDate = getStartingDate(start);
+          const startDateMidnight = new Date(startDate.setHours(0, 0, 0, 0));
+      
+          const total = AllTaskTimeEntries?.reduce((acc:any, timeEntry:any) => {
+            if (timeEntry?.AdditionalTimeEntry) {
+              const AdditionalTime = JSON.parse(timeEntry.AdditionalTimeEntry);
+      
+              const taskTime = AdditionalTime.reduce((taskAcc:any, filledTime:any) => {
+                const [day, month, year] = filledTime?.TaskDate?.split('/');
+                const timeFillDate = new Date(+year, +month - 1, +day);
+      
+                if (
+                  filledTime?.AuthorId === currentUserId &&
+                  timeFillDate.getTime() === startDateMidnight.getTime() &&
+                  timeEntry.taskDetails[0]
+                ) {
+                  return taskAcc + parseFloat(filledTime.TaskTime);
                 }
-            })
+      
+                return taskAcc;
+              }, 0);
+      
+              return acc + taskTime;
+            }
+      
+            return acc;
+          }, 0);
+      
+          return { ...totals, [start.toLowerCase()]: total };
+        }, {
+          today: 0,
+          thisWeek: 0,
+          thisMonth: 0,
         });
-        allTimeCategoryTime = {
-            today: todaysTimeTotal,
-            thisWeek: thisMonthTimeTotal,
-            thisMonth: thisWeekTimeTotal
-        }
+      
         return allTimeCategoryTime;
-    }
+      };
 
     //End 
 
@@ -555,6 +557,9 @@ const TaskDashboard = (props: any) => {
                             }
                             backupTaskArray.allTasks = AllSiteTasks;
                             setPageLoader(false);
+                            if(timesheetListConfig?.length > 0){
+                                loadAllTimeEntry()
+                            }
                         }
                     } else {
                         arraycount++;
@@ -569,8 +574,8 @@ const TaskDashboard = (props: any) => {
         let web = new Web(AllListId?.siteUrl);
         MasterListData = await web.lists
             .getById(AllListId?.MasterTaskListID)
-            .items.select("ComponentCategory/Id", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "DeliverableSynonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "AdminNotes", "AdminStatus", "Background", "Help_x0020_Information", "TaskCategories/Id", "TaskCategories/Title", "PriorityRank", "Reference_x0020_Item_x0020_Json", "TeamMembers/Title", "TeamMembers/Name", "TeamMembers/Id", "Item_x002d_Image", "ComponentLink", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
-            .expand("ClientCategory", "ComponentCategory", "AssignedTo", "AttachmentFiles", "Author", "Editor", "TeamMembers",  "TaskCategories", "Parent")
+            .items.select("ComponentCategory/Id", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "DeliverableSynonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "AdminNotes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "TaskCategories/Id", "TaskCategories/Title", "PriorityRank", "Reference_x0020_Item_x0020_Json", "TeamMembers/Title", "TeamMembers/Name", "TeamMembers/Id", "Item_x002d_Image", "ComponentLink", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
+            .expand("ClientCategory", "ComponentCategory", "AssignedTo", "AttachmentFiles", "Author", "Editor", "TeamMembers", "SharewebComponent", "TaskCategories", "Parent")
             .top(4999)
             .get().then((data) => {
                 data?.forEach((val: any) => {
@@ -1446,6 +1451,13 @@ const TaskDashboard = (props: any) => {
     };
 
 
+    const getComponentasString = function (results: any) {
+        var component = "";
+        $.each(results, function (cmp: any) {
+            component += cmp.Title + "; ";
+        });
+        return component;
+    };
     // Toggle Side Bar Function
     const toggleSideBar = () => {
         setSidebarStatus({ ...sidebarStatus, dashboard: !sidebarStatus.dashboard });
@@ -1488,7 +1500,7 @@ const TaskDashboard = (props: any) => {
                 taskUser = await web.lists
                     .getById(AllListId?.TaskUsertListID)
                     .items
-                    .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,showAllTimeEntry,IsShowTeamLeader,Company,Group,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+                    .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,showAllTimeEntry,Company,Group,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
                     .get();
             }
             catch (error) {
@@ -1528,7 +1540,7 @@ const TaskDashboard = (props: any) => {
                 let Mail = Approver?.Name?.split('|')[2]
                 childItem.UserManagerMail.push(Mail)
             })
-            if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID && childItem.IsShowTeamLeader == true) {
+            if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID ) {
                 item.childs.push(childItem);
             }
         })
@@ -2577,84 +2589,87 @@ const TaskDashboard = (props: any) => {
                                                 </dt>
                                             </dl>
                                         </div>
-                                        <details>
-                                            {timeEntryTotal > 1 ?
-                                                <summary>{selectedTimeReport}'s Time Entry {'(' + timeEntryTotal.toFixed(2) + ' Hours)'}
-                                                    {
-                                                        currentUserId == currentUserData?.AssingedToUserId && selectedTimeReport == "Today" ? <span className="align-autoplay d-flex float-end" onClick={() => shareTaskInEmail('today time entries')}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Share {selectedTimeReport}'s Time Entry</span> : ""
-                                                    }
-                                                </summary> :
-                                                <summary>{selectedTimeReport}'s Time Entry {'(' + timeEntryTotal.toFixed(2) + ' Hour)'}
-                                                    {
-                                                        currentUserId == currentUserData?.AssingedToUserId && selectedTimeReport == "Today" ? <span className="align-autoplay d-flex float-end" onClick={() => shareTaskInEmail('today time entries')}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Share {selectedTimeReport}'s Time Entry</span> : ""
-                                                    }
-                                                </summary>
-                                            }
+                                        <div>
+                                            <a className='accordion-Btn-right mt-1' title='Refresh Time Entries' onClick={() => { loadAllTimeEntry() }}><span className="svg__iconbox svg__icon--refresh mx-1" ></span></a>
+                                            <details open>
+                                                {timeEntryTotal > 1 ?
+                                                    <summary>{selectedTimeReport}'s Time Entry {'(' + timeEntryTotal.toFixed(2) + ' Hours)'}
+                                                        {
+                                                            currentUserId == currentUserData?.AssingedToUserId && selectedTimeReport == "Today" ? <span className="align-autoplay d-flex float-end" onClick={() => shareTaskInEmail('today time entries')}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Share {selectedTimeReport}'s Time Entry</span> : ""
+                                                        }
+                                                    </summary> :
+                                                    <summary>{selectedTimeReport}'s Time Entry {'(' + timeEntryTotal.toFixed(2) + ' Hour)'}
+                                                        {
+                                                            currentUserId == currentUserData?.AssingedToUserId && selectedTimeReport == "Today" ? <span className="align-autoplay d-flex float-end" onClick={() => shareTaskInEmail('today time entries')}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Share {selectedTimeReport}'s Time Entry</span> : ""
+                                                        }
+                                                    </summary>
+                                                }
 
-                                            <div className='AccordionContent mx-height timeEntryReport'  >
-                                                {weeklyTimeReport?.length > 0 ?
-                                                    <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover  {...getTablePropsApprover()}>
-                                                        <thead className="fixed-Header">
-                                                            {headerGroupsTimeReport?.map((headerGroup: any) => (
-                                                                <tr {...headerGroup.getHeaderGroupProps()}>
-                                                                    {headerGroup.headers.map((column: any) => (
-                                                                        <th {...column.getHeaderProps()} style={column?.style}>
-                                                                            <span
-                                                                                class="Table-SortingIcon"
-                                                                                style={{ marginTop: "-6px" }}
-                                                                                {...column.getSortByToggleProps()}
-                                                                            >
-                                                                                {column.render("Header")}
-                                                                                {generateSortingIndicator(column)}
-                                                                            </span>
-                                                                            <Filter column={column} />
-                                                                        </th>
-                                                                    ))}
-                                                                </tr>
-                                                            ))}
-                                                        </thead>
-                                                        {pageTimeReport?.length > 0 ?
-                                                            <tbody {...getTableBodyPropsTimeReport}>
-                                                                {pageTimeReport?.map((row: any) => {
-                                                                    prepareRowTimeReport(row);
-                                                                    return (
-                                                                        <tr onClick={() => { selectedInlineTask = { table: "timeEntry Task", taskId: row?.original?.Id } }}  {...row.getRowProps()} >
-                                                                            {row.cells.map(
-                                                                                (cell: {
-                                                                                    getCellProps: () => JSX.IntrinsicAttributes &
-                                                                                        React.ClassAttributes<HTMLTableDataCellElement> &
-                                                                                        React.TdHTMLAttributes<HTMLTableDataCellElement>;
-                                                                                    render: (
-                                                                                        arg0: string
-                                                                                    ) =>
-                                                                                        | boolean
-                                                                                        | React.ReactChild
-                                                                                        | React.ReactFragment
-                                                                                        | React.ReactPortal;
-                                                                                }) => {
-                                                                                    return (
-                                                                                        <td {...cell.getCellProps()}>
-                                                                                            {cell.render("Cell")}
-                                                                                        </td>
-                                                                                    );
-                                                                                }
-                                                                            )}
-                                                                        </tr>
-                                                                    );
-                                                                })}
-                                                            </tbody> :
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td colSpan={columns?.length}>
-                                                                        <div className="text-center full-width"><span>No Search Result</span></div>
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>}
-                                                    </Table> : <div className='text-center full-width'>
-                                                        <span>No Time Entry Available</span>
-                                                    </div>}
-                                            </div>
-                                        </details>
+                                                <div className='AccordionContent mx-height timeEntryReport'  >
+                                                    {weeklyTimeReport?.length > 0 ?
+                                                        <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover  {...getTablePropsApprover()}>
+                                                            <thead className="fixed-Header">
+                                                                {headerGroupsTimeReport?.map((headerGroup: any) => (
+                                                                    <tr {...headerGroup.getHeaderGroupProps()}>
+                                                                        {headerGroup.headers.map((column: any) => (
+                                                                            <th {...column.getHeaderProps()} style={column?.style}>
+                                                                                <span
+                                                                                    class="Table-SortingIcon"
+                                                                                    style={{ marginTop: "-6px" }}
+                                                                                    {...column.getSortByToggleProps()}
+                                                                                >
+                                                                                    {column.render("Header")}
+                                                                                    {generateSortingIndicator(column)}
+                                                                                </span>
+                                                                                <Filter column={column} />
+                                                                            </th>
+                                                                        ))}
+                                                                    </tr>
+                                                                ))}
+                                                            </thead>
+                                                            {pageTimeReport?.length > 0 ?
+                                                                <tbody {...getTableBodyPropsTimeReport}>
+                                                                    {pageTimeReport?.map((row: any) => {
+                                                                        prepareRowTimeReport(row);
+                                                                        return (
+                                                                            <tr onClick={() => { selectedInlineTask = { table: "timeEntry Task", taskId: row?.original?.Id } }}  {...row.getRowProps()} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''}>
+                                                                                {row.cells.map(
+                                                                                    (cell: {
+                                                                                        getCellProps: () => JSX.IntrinsicAttributes &
+                                                                                            React.ClassAttributes<HTMLTableDataCellElement> &
+                                                                                            React.TdHTMLAttributes<HTMLTableDataCellElement>;
+                                                                                        render: (
+                                                                                            arg0: string
+                                                                                        ) =>
+                                                                                            | boolean
+                                                                                            | React.ReactChild
+                                                                                            | React.ReactFragment
+                                                                                            | React.ReactPortal;
+                                                                                    }) => {
+                                                                                        return (
+                                                                                            <td {...cell.getCellProps()}>
+                                                                                                {cell.render("Cell")}
+                                                                                            </td>
+                                                                                        );
+                                                                                    }
+                                                                                )}
+                                                                            </tr>
+                                                                        );
+                                                                    })}
+                                                                </tbody> :
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td colSpan={columns?.length}>
+                                                                            <div className="text-center full-width"><span>No Search Result</span></div>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>}
+                                                        </Table> : <div className='text-center full-width'>
+                                                            <span>No Time Entry Available</span>
+                                                        </div>}
+                                                </div>
+                                            </details>
+                                        </div>
                                     </>
                                     : ''
                                 }
