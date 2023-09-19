@@ -1080,7 +1080,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 accessorFn: (row) => row?.TaskID,
                 cell: ({ row, getValue }) => (
                     <>
-                        <ReactPopperTooltip ShareWebId={getValue()} row={row} />
+                        <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={ContextValue} />
                     </>
                 ),
                 id: "TaskID",
