@@ -123,7 +123,7 @@ function TasksTable(props: any) {
   const [SharewebTimeComponent, setSharewebTimeComponent] = React.useState([]);
   const [AllClientCategory, setAllClientCategory] = React.useState([])
   const [count, setCount] = React.useState(0);
-
+   const [AllMasterTasksData,setAllMasterTasksData]=React.useState([])
   const [ActivityDisable, setActivityDisable] = React.useState(false);
   const [addModalOpen, setAddModalOpen] = React.useState(false);
 
@@ -205,7 +205,7 @@ function TasksTable(props: any) {
     await web.lists
       .getById(props?.AllListId?.TaskUsertListID)
       .items
-      .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+      .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
       .get().then((Response: any) => {
         setTaskUser(Response);
         console.log(Response);
@@ -401,6 +401,7 @@ function TasksTable(props: any) {
       .filter(filt)
       .get()
     componentDetails = compo[0]
+    setAllMasterTasksData(componentDetails)
     IsUpdated = componentDetails?.PortfoliType?.Title;
     // if (props.props.ParentTask != undefined && props.props.ParentTask.Title != undefined)
     //   props.props.ParentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Activity.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png';
@@ -1362,6 +1363,7 @@ function TasksTable(props: any) {
                 callBackData={callBackData}
                 TaskUsers={AllUsers}
                 showHeader={true}
+                AllMasterTasksData={AllMasterTasksData}
                 // portfolioColor={portfolioColor} 
                 // portfolioTypeData={portfolioTypeDataItem}
                 //  taskTypeDataItem={taskTypeDataItem} 

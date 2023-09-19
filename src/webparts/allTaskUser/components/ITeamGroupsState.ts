@@ -27,7 +27,6 @@ interface ITaskItem {
     isActive?: boolean;
     company?: any;
     isTaskNotifications?: boolean;
-    isShowTeamLeader?: boolean;
     isApprovalMail?: string;
     isShowCommentUser?: boolean;
     isShowReportPage?: boolean;
