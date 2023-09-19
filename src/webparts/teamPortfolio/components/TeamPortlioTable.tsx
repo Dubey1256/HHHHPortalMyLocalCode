@@ -1583,7 +1583,7 @@ function TeamPortlioTable(SelectedProp: any) {
         }
         if (checkedList?.TaskType?.Id == 2) {
 
-            alert("You can not create ny item inside Task")
+            alert("You can not create any item inside Task")
         }
     }
     const closeActivity = () => {
@@ -1605,7 +1605,7 @@ function TeamPortlioTable(SelectedProp: any) {
         }
         if (checkedList?.TaskType?.Id == 2) {
 
-            alert("You can not create ny item inside Task")
+            alert("You can not create any item inside Task")
         }
 
     }
