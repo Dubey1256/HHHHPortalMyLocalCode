@@ -1366,7 +1366,7 @@ const MeetingProfile = (props: any) => {
 }
 {
 
-   showMeetingPopup ? <MeetingPopupComponent Items={resultData} isShow={showMeetingPopup} closePopup={closeMeetingPopupFunction} /> : null
+   showMeetingPopup ? <MeetingPopupComponent Items={resultData} isShow={showMeetingPopup} listName={"Master Tasks"} closePopup={closeMeetingPopupFunction} /> : null
 
 
 
