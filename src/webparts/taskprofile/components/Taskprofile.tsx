@@ -1992,7 +1992,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                 : null
                                               }
                                             </div>
-                                            <div className='pb-1'>
+                                            <div className='m-0'>
                                               <span className="d-block">
                                                 <a style={{ cursor: 'pointer' }} onClick={(e) => this.showhideCommentBox(i)}>Add Comment</a>
                                               </span>
@@ -2154,7 +2154,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                   : null
                                                 }
                                               </div>
-                                              <div>
+                                              <div className='m-0'>
                                                 <a className="d-block text-end">
                                                   <a style={{ cursor: 'pointer' }}
                                                     onClick={(e) => this.showhideCommentBoxOfSubText(j, i)}
