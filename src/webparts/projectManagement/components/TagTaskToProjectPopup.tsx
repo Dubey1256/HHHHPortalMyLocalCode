@@ -1,7 +1,7 @@
 
 import axios, { AxiosResponse } from 'axios';
 import * as React from 'react';
-//import '../components/TagTaskToProjectPopup.css';
+// import '../components/TagTaskToProjectPopup.css';
 import Button from 'react-bootstrap/Button';
 import { Panel, PanelType } from "office-ui-fabric-react";
 import { useEffect, useState } from 'react';
@@ -540,9 +540,6 @@ const TagTaskToProjectPopup = (props: any) => {
                     </div> : 'Loading ...'
                 }
             </Panel>
-
-
-
         </>
     )
 }

@@ -265,7 +265,7 @@ function EditProjectPopup(item: any) {
   // };
   const Call = React.useCallback((item: any, type: any) => {
     setIsPortfolio(false);
-    
+
     if (type == "Category") {
       if (item != undefined && item?.Categories != "") {
         var title: any = {};
@@ -281,7 +281,7 @@ function EditProjectPopup(item: any) {
         setCategoriesData(CategoriesData);
       }
     }
-  
+
     if (CategoriesData != undefined) {
       CategoriesData.forEach(function (type: any) {
         CheckCategory.forEach(function (val: any) {
@@ -304,15 +304,12 @@ function EditProjectPopup(item: any) {
         setIsComponent(false);
         setIsPortfolio(false);
       } else {
-        
-        if (Type === "Portfolios") {
-          if (DataItem?.length > 0) {
-            DataItem.map((selectedData: any) => {
-              TaggedPortfolios.push(selectedData);
-            });
-          }
-          setProjectTaggedPortfolios(TaggedPortfolios);
+        if (DataItem?.length > 0) {
+          DataItem.map((selectedData: any) => {
+            TaggedPortfolios.push(selectedData);
+          });
         }
+        setProjectTaggedPortfolios(TaggedPortfolios);
         setIsPortfolio(false);
       }
     },
@@ -648,7 +645,7 @@ function EditProjectPopup(item: any) {
         setProjectTaggedPortfolios(item.Portfolios);
         TaggedPortfolios = item.Portfolios;
       }
-   
+
       var Rr: any = [];
       if (item.ServicePortfolio != undefined) {
         Rr.push(item.ServicePortfolio);
@@ -936,7 +933,7 @@ function EditProjectPopup(item: any) {
           });
         }
       }
-    } 
+    }
 
     portfolioType = type;
     setIsPortfolio(true);
@@ -1338,7 +1335,7 @@ function EditProjectPopup(item: any) {
   const RemoveSelectedServiceComponent = (DataId: any, ComponentType: any) => {
     let BackupArray: any = [];
     let TempArray: any = [];
- 
+
     if (ComponentType == "Portfolios") {
       BackupArray = TaggedPortfolios;
     }
@@ -2330,7 +2327,7 @@ function EditProjectPopup(item: any) {
                     >
                       Cancel
                     </button>
-                  
+
 
                   </div>
                 </div>

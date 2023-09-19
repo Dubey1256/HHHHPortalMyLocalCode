@@ -158,37 +158,17 @@ function CreateTaskComponent(props: any) {
         if (functionType == "Close") {
             setIsOpenPortfolio(false)
         } else {
-            if (Type == "Service") {
-                if (DataItem != undefined && DataItem.length > 0) {
-                    // saveItem.linkedServices = DataItem;
-                    // saveItem.portfolioType = "Service";
-                    setSave(prevSave => ({
-                        ...prevSave,
-                        linkedServices: DataItem,
-                        portfolioType: "Service"
-                    }));
-                    // setSave({ ...save, linkedServices: DataItem, portfolioType : "Service" });
-                    setLinkedComponentData(DataItem);
-                    // selectPortfolioType('Service')
-                    console.log("Popup component services", DataItem);
-                    setSmartComponentData([])
-                }
-
-            }
-            if (Type == "Component") {
-                if (DataItem != undefined && DataItem.length > 0) {
-                    setSave(prevSave => ({
-                        ...prevSave,
-                        Component: DataItem,
-                        portfolioType: "Component"
-                    }));
-                    // setSave({ ...save, Component: DataItem });
-                    setSmartComponentData(DataItem);
-                    // selectPortfolioType('Component');
-                    setLinkedComponentData([]);
-                    console.log("Popup component component ", DataItem)
-                }
-
+            if (DataItem != undefined && DataItem.length > 0) {
+                setSave(prevSave => ({
+                    ...prevSave,
+                    Component: DataItem,
+                    portfolioType: "Component"
+                }));
+                // setSave({ ...save, Component: DataItem });
+                setSmartComponentData(DataItem);
+                // selectPortfolioType('Component');
+                setLinkedComponentData([]);
+                console.log("Popup component component ", DataItem)
             }
             setIsOpenPortfolio(false)
         }
