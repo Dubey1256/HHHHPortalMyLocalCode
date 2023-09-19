@@ -704,42 +704,97 @@ function TeamPortlioTable(SelectedProp: any) {
           }
           }
           countTaskAWTLevel(countAllTasksData);
+
+        //  const finalData = componentData[0]?.subRows?.filter((val: any, TaskId: any, array: any) => {
+        //     return array.indexOf(val) == TaskId;
+        //   })
         setLoaded(true);
         setData(componentData);
         console.log(countAllTasksData);
     }
+    // const componentActivity = (levelType: any, items: any) => {
+    //     if (items.ID === 5610) {
+    //         console.log("items", items);
+    //     }
+    //     let findActivity = AllSiteTasksData?.filter((elem: any) => elem?.TaskType?.Id === levelType.Id && elem?.Portfolio?.Id === items?.Id);
+    //     let findTasks = AllSiteTasksData?.filter((elem1: any) => elem1?.TaskType?.Id != levelType.Id && elem1?.Portfolio?.Id === items?.Id);
+    //     countAllTasksData = countAllTasksData.concat(findTasks)
+    //     countAllTasksData = countAllTasksData.concat(findActivity)
+
+    //     findActivity?.forEach((act: any) => {
+    //         act.subRows = [];
+    //         let worstreamAndTask = AllSiteTasksData?.filter((taskData: any) => taskData?.ParentTask?.Id === act?.Id && taskData?.siteType === act?.siteType)
+    //         // findTasks = findTasks?.filter((taskData: any) => taskData?.ParentTask?.Id != act?.Id && taskData?.siteType != act?.siteType);
+    //         if (worstreamAndTask.length > 0) {
+    //             act.subRows = act?.subRows?.concat(worstreamAndTask);
+    //             countAllTasksData = countAllTasksData.concat(worstreamAndTask)
+    //         }
+    //         worstreamAndTask?.forEach((wrkst: any) => {
+    //             wrkst.subRows = wrkst.subRows === undefined ? [] : wrkst.subRows;
+    //             let allTasksData = AllSiteTasksData?.filter((elem: any) => elem?.ParentTask?.Id === wrkst?.Id && elem?.siteType === wrkst?.siteType);
+    //             // findTasks = findTasks?.filter((elem: any) => elem?.ParentTask?.Id != wrkst?.Id && elem?.siteType != wrkst?.siteType);
+    //             if (allTasksData.length > 0) {
+    //                 wrkst.subRows = wrkst?.subRows?.concat(allTasksData)
+    //                 countAllTasksData = countAllTasksData.concat(allTasksData)
+                   
+    //             }
+    //         })
+            
+    //     })
+    //     items.subRows = items?.subRows?.concat(findActivity)
+    //     items.subRows = items?.subRows?.concat(findTasks)
+    //     afterFilter=true;
+    // }
+
+
     const componentActivity = (levelType: any, items: any) => {
+        let findActivityData:any=[]
+        let findTaskData:any=[]
+        let findtasks:any=[]
+        let findalltask:any=[]
         if (items.ID === 5610) {
             console.log("items", items);
         }
         let findActivity = AllSiteTasksData?.filter((elem: any) => elem?.TaskType?.Id === levelType.Id && elem?.Portfolio?.Id === items?.Id);
-        let findTasks = AllSiteTasksData?.filter((elem1: any) => elem1?.TaskType?.Id != levelType.Id && elem1?.Portfolio?.Id === items?.Id);
-        countAllTasksData = countAllTasksData.concat(findTasks)
-        countAllTasksData = countAllTasksData.concat(findActivity)
+        let findTasks = AllSiteTasksData?.filter((elem1: any) => elem1?.TaskType?.Id != levelType.Id && (elem1?.ParentTask?.Id === 0 || elem1?.ParentTask?.Id === undefined ) && elem1?.Portfolio?.Id === items?.Id);
+        
 
-        findActivity?.forEach((act: any) => {
+        findActivityData = findActivity.filter((val: any, TaskId: any, array: any) => {
+       return array.indexOf(val) == TaskId;
+        })
+
+       findTaskData = findTasks.filter((val: any, TaskId: any, array: any) => {
+             return array.indexOf(val) == TaskId;
+       })
+           
+       
+        countAllTasksData = countAllTasksData.concat(findTaskData);
+        countAllTasksData = countAllTasksData.concat(findActivityData);
+
+        findActivityData?.forEach((act: any) => {
             act.subRows = [];
             let worstreamAndTask = AllSiteTasksData?.filter((taskData: any) => taskData?.ParentTask?.Id === act?.Id && taskData?.siteType === act?.siteType)
-            // findTasks = findTasks?.filter((taskData: any) => taskData?.ParentTask?.Id != act?.Id && taskData?.siteType != act?.siteType);
-            if (worstreamAndTask.length > 0) {
-                act.subRows = act?.subRows?.concat(worstreamAndTask);
-                countAllTasksData = countAllTasksData.concat(worstreamAndTask)
+            findtasks = worstreamAndTask.filter((val: any, TaskId: any, array: any) => {
+                return array.indexOf(val) == TaskId;
+          })
+            if (findtasks.length > 0) {
+                act.subRows = act?.subRows?.concat(findtasks);
+                countAllTasksData = countAllTasksData.concat(findtasks);
             }
             worstreamAndTask?.forEach((wrkst: any) => {
                 wrkst.subRows = wrkst.subRows === undefined ? [] : wrkst.subRows;
                 let allTasksData = AllSiteTasksData?.filter((elem: any) => elem?.ParentTask?.Id === wrkst?.Id && elem?.siteType === wrkst?.siteType);
-                // findTasks = findTasks?.filter((elem: any) => elem?.ParentTask?.Id != wrkst?.Id && elem?.siteType != wrkst?.siteType);
-                if (allTasksData.length > 0) {
-                    wrkst.subRows = wrkst?.subRows?.concat(allTasksData)
-                    countAllTasksData = countAllTasksData.concat(allTasksData)
-                   
+                findalltask  = allTasksData.filter((val: any, TaskId: any, array: any) => {
+                    return array.indexOf(val) == TaskId;
+              })
+                if (findalltask.length > 0) {
+                    wrkst.subRows = wrkst?.subRows?.concat(findalltask);
+                    countAllTasksData = countAllTasksData.concat(findalltask);
                 }
             })
-            
         })
-        items.subRows = items?.subRows?.concat(findActivity)
-        items.subRows = items?.subRows?.concat(findTasks)
-        afterFilter=true;
+        items.subRows = items?.subRows?.concat(findActivityData)
+        items.subRows = items?.subRows?.concat(findTaskData)
     }
     const countTaskAWTLevel = (countTaskAWTLevel: any) => {
         if (countTaskAWTLevel.length > 0) {

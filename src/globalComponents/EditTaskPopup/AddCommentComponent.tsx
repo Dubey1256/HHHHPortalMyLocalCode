@@ -59,7 +59,7 @@ const AddCommentComponent = (FbData: any) => {
             setFeedBackArray(tempArray);
         }
         getCurrentUserDetails();
-    }, [])
+    }, [FbData.FeedbackCount])
 
     const openEditModal = (comment: any, indexOfUpdateElement: any, indexOfSubtext: any, isSubtextComment: any, usedFor: any) => {
         const commentDetails: any = {
@@ -363,7 +363,7 @@ const AddCommentComponent = (FbData: any) => {
                                     <label className="siteColor">Mark as Approval Comment</label>
                                 </div> : null}
                                 <div className="col-10 d-flex float-end my-1 align-autoplay">
-                                    <textarea id="txtComment SubTestBorder" style={{ height: "40px" }} onChange={(e) => handleChangeInput(e)} className="full-width" ></textarea>
+                                    <textarea id="txtComment SubTestBorder" style={{ height: "33px" }} onChange={(e) => handleChangeInput(e)} className="full-width" ></textarea>
                                     <button type="button" className="post btn btn-primary mx-1" onClick={() => PostButtonClick(FbData.postStatus, FbData.index)}>Post</button>
                                     <button type="button" className="post btn btn-default" onClick={cancelCommentBtn}>Cancel</button>
                                 </div>

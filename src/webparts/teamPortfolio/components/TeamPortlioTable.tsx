@@ -597,16 +597,16 @@ function TeamPortlioTable(SelectedProp: any) {
                     }
                 })
             }
-            if (count === portfolioTypeData?.length) {
-                countAllTasksData = countAllTasksData?.filter((ele: any, ind: any, arr: any) => {
-                    const isDuplicate = arr.findIndex((elem: any) => {
-                        return (elem.ID === ele.ID || elem.Id === ele.Id) && elem.siteType === ele.siteType;
-                    }) !== ind
-                    return !isDuplicate;
-                })
-                countTaskAWTLevel(countAllTasksData, '');
-                setFilterCounters(true);
-            }
+            // if (count === portfolioTypeData?.length) {
+            countAllTasksData = countAllTasksData?.filter((ele: any, ind: any, arr: any) => {
+                const isDuplicate = arr.findIndex((elem: any) => {
+                    return (elem.ID === ele.ID || elem.Id === ele.Id) && elem.siteType === ele.siteType;
+                }) !== ind
+                return !isDuplicate;
+            })
+            countTaskAWTLevel(countAllTasksData, '');
+            setFilterCounters(true);
+            // }
         }
     }, [AllSiteTasksData.length > 0 && AllMasterTasksData.length > 0 && allLoadeDataMasterTaskAndTask?.length > 0])
 
@@ -683,7 +683,7 @@ function TeamPortlioTable(SelectedProp: any) {
     }
     const componentAllTaskActivity = (levelType: any, items: any) => {
         let findActivity = allLoadeDataMasterTaskAndTask?.filter((elem: any) => elem?.TaskType?.Id === levelType.Id && elem?.Portfolio?.Id === items?.Id);
-        let findTasks = allLoadeDataMasterTaskAndTask?.filter((elem1: any) => elem1?.TaskType?.Id != levelType.Id && (elem1?.ParentTask?.Id === 0 || elem1?.ParentTask?.Id === undefined ) && elem1?.Portfolio?.Id === items?.Id);
+        let findTasks = allLoadeDataMasterTaskAndTask?.filter((elem1: any) => elem1?.TaskType?.Id != levelType.Id && (elem1?.ParentTask?.Id === 0 || elem1?.ParentTask?.Id === undefined) && elem1?.Portfolio?.Id === items?.Id);
         countAllTasksData = countAllTasksData.concat(findTasks)
         countAllTasksData = countAllTasksData.concat(findActivity)
         findActivity?.forEach((act: any) => {
@@ -734,14 +734,14 @@ function TeamPortlioTable(SelectedProp: any) {
                     }
                 })
             }
-            if (count === portfolioTypeData?.length) {
+            // if (count === portfolioTypeData?.length) {
                 taskTypeDataItem?.filter((taskLevelcount: any) => { taskLevelcount[taskLevelcount.Title + 'filterNumber'] = 0 });
                 AfterFilterTaskCount = AfterFilterTaskCount?.filter((ele: any, ind: any, arr: any) => {
                     const isDuplicate = arr.findIndex((elem: any) => { return (elem.ID === ele.ID || elem.Id === ele.Id) && elem.siteType === ele.siteType; }) !== ind
                     return !isDuplicate;
                 })
                 countTaskAWTLevel(AfterFilterTaskCount, afterFilter);
-            }
+            // }
         }
         if (smartAllFilterData?.length > 0 && updatedSmartFilter === true) {
             setLoaded(false);
@@ -844,7 +844,7 @@ function TeamPortlioTable(SelectedProp: any) {
             console.log("items", items);
         }
         let findActivity = smartAllFilterData?.filter((elem: any) => elem?.TaskType?.Id === levelType.Id && elem?.Portfolio?.Id === items?.Id);
-        let findTasks = smartAllFilterData?.filter((elem1: any) => elem1?.TaskType?.Id != levelType.Id && (elem1?.ParentTask?.Id === 0 || elem1?.ParentTask?.Id === undefined ) && elem1?.Portfolio?.Id === items?.Id);
+        let findTasks = smartAllFilterData?.filter((elem1: any) => elem1?.TaskType?.Id != levelType.Id && (elem1?.ParentTask?.Id === 0 || elem1?.ParentTask?.Id === undefined) && elem1?.Portfolio?.Id === items?.Id);
         AfterFilterTaskCount = AfterFilterTaskCount.concat(findTasks);
         AfterFilterTaskCount = AfterFilterTaskCount.concat(findActivity);
 
@@ -1583,7 +1583,7 @@ function TeamPortlioTable(SelectedProp: any) {
         }
         if (checkedList?.TaskType?.Id == 2) {
 
-            alert("You can not create ny item inside Task")
+            alert("You can not create any item inside Task")
         }
     }
     const closeActivity = () => {
@@ -1605,7 +1605,7 @@ function TeamPortlioTable(SelectedProp: any) {
         }
         if (checkedList?.TaskType?.Id == 2) {
 
-            alert("You can not create ny item inside Task")
+            alert("You can not create any item inside Task")
         }
 
     }
@@ -1652,6 +1652,9 @@ function TeamPortlioTable(SelectedProp: any) {
                         )}
                         {IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf("component") > -1 && (
                             <div style={{ color: `${portfolioColor}` }}>{IsUpdated} Portfolio</div>
+                        )}
+                        {IsUpdated === "" && IsUpdated != undefined && (
+                            <div style={{ color: `${portfolioColor}` }}>Team Portfolio</div>
                         )}
                         {IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf("component") > -1 && (
                             <div className="text-end fs-6">
