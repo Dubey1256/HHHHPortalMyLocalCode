@@ -49,6 +49,7 @@ import BackgroundCommentComponent from "./BackgroundCommentComponent";
 import { TooltipHost, ITooltipHostStyles } from '@fluentui/react/lib/Tooltip';
 import { useId } from '@fluentui/react-hooks';
 import context from "react-bootstrap/esm/AccordionContext";
+import { update } from "@microsoft/sp-lodash-subset";
 
 var AllMetaData: any = []
 var attachments: any = []
@@ -89,6 +90,7 @@ var GlobalServiceAndComponentData: any = [];
 var AddImageDescriptionsIndex: any;
 var LinkedPortfolioDataBackup: any = [];
 var userSendAttentionEmails: any = [];
+var TempSmartInformationIds: any = [];
 
 const EditTaskPopup = (Items: any) => {
     const Context = Items.context;
@@ -280,10 +282,10 @@ const EditTaskPopup = (Items: any) => {
                 extraLookupColumnData = await web.lists
                     .getById(Items.Items.listId)
                     .items
-                    .select("Project/Id, Project/Title, AttachmentFiles/Title, Approver/Id, Approver/Title, ClientCategory/Id,ClientCategory/Title, ApproverHistory")
+                    .select("Project/Id, Project/Title,SmartInformation/Id, AttachmentFiles, Approver/Id, Approver/Title, ClientCategory/Id,ClientCategory/Title, ApproverHistory")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
-                    .expand('Project, Approver, ClientCategory')
+                    .expand('Project, Approver,SmartInformation, ClientCategory,AttachmentFiles')
                     .get();
                 if (extraLookupColumnData.length > 0) {
                     let Data: any;
@@ -335,6 +337,14 @@ const EditTaskPopup = (Items: any) => {
                         if (TempApproverHistory != undefined && TempApproverHistory.length > 0) {
                             setApproverHistoryData(TempApproverHistory);
                         }
+
+
+
+                    }
+                    if (extraLookupColumnData[0]?.SmartInformation?.length > 0) {
+                        extraLookupColumnData[0]?.SmartInformation?.map((smartInfo: any) => {
+                            TempSmartInformationIds.push(smartInfo.Id)
+                        })
                     }
                     if (ClientCategory != undefined && ClientCategory.length > 0) {
                         let selectedCC: any = [];
@@ -359,7 +369,7 @@ const EditTaskPopup = (Items: any) => {
                 extraLookupColumnData = await web.lists
                     .getByTitle(Items.Items.listName)
                     .items
-                    .select("Project/Id, Project/Title, AttachmentFiles/Title, Approver/Id, Approver/Title, ClientCategory/Id,ClientCategory/Title, ApproverHistory")
+                    .select("Project/Id, Project/Title,SmartInformation/Id, AttachmentFiles/Title, Approver/Id, Approver/Title, ClientCategory/Id,ClientCategory/Title, ApproverHistory")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
                     .expand('Project, Approver, ClientCategory')
@@ -408,7 +418,7 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getById(Items.Items.listId)
                     .items
-                    .select("Id,Title,PriorityRank,workingThisWeek,EstimatedTime,EstimatedTimeDescription,waitForResponse,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,PriorityRank,Comments,workingThisWeek,EstimatedTime,EstimatedTimeDescription,waitForResponse,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
                     .expand('AssignedTo,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio')
@@ -418,7 +428,7 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getByTitle(Items.Items.listName)
                     .items
-                    .select("Id,Title,PriorityRank,BasicImageInfo,EstimatedTime,EstimatedTimeDescription,workingThisWeek,OffshoreImageUrl,OffshoreComments,waitForResponse,SiteCompositionSettings,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,PriorityRank,Comments,BasicImageInfo,EstimatedTime,EstimatedTimeDescription,workingThisWeek,OffshoreImageUrl,OffshoreComments,waitForResponse,SiteCompositionSettings,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
                     .expand('AssignedTo,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio')
@@ -1599,11 +1609,13 @@ const EditTaskPopup = (Items: any) => {
                 .getById(AllListIdData?.MasterTaskListID).items.select("Sitestagging,SiteCompositionSettings,Title,Id,PortfolioType/Title").expand('PortfolioType').top(5000).filter(`Id eq ${ProtfolioId}`).get();
             if (DataFromCall != undefined) {
                 let TempSiteCompositionArray: any = [];
-                if (DataFromCall[0].PortfolioType.Title === 'Component') {
-                    setComponentTaskCheck(true);
-                }
-                if (DataFromCall[0].PortfolioType.Title === 'Service') {
-                    setServicesTaskCheck(true);
+                if (DataFromCall[0]?.PortfolioType?.Title != undefined) {
+                    if (DataFromCall[0].PortfolioType.Title === 'Component') {
+                        setComponentTaskCheck(true);
+                    }
+                    if (DataFromCall[0].PortfolioType.Title === 'Service') {
+                        setServicesTaskCheck(true);
+                    }
                 }
                 setTaggedPortfolioData(DataFromCall);
                 if (DataFromCall[0].Sitestagging != undefined) {
@@ -1978,7 +1990,21 @@ const EditTaskPopup = (Items: any) => {
         if (IsSendAttentionMsgStatus) {
             let txtComment = `You have been tagged as ${SendCategoryName} in the below task by ${Items.context.pageContext._user.displayName}`;
             let TeamMsg = txtComment + `</br> <a href=${window.location.href}>${EditData.TaskId}-${EditData.Title}</a>`
-            await globalCommon.SendTeamMessage(userSendAttentionEmails, TeamMsg, Items.context);
+            if (SendCategoryName == "Bottleneck") {
+                let sendUserEmail:any = [];
+                TaskAssignedTo?.map((userDtl: any) => {
+                    taskUsers?.map((allUserItem:any)=>{
+                         if(userDtl.Id == allUserItem.AssingedToUserId){
+                            sendUserEmail.push(allUserItem.Email);
+                         }
+                    })
+                })
+                if(sendUserEmail?.length > 0){
+                    await globalCommon.SendTeamMessage(sendUserEmail, TeamMsg, Items.context);
+                }
+            }else{
+                await globalCommon.SendTeamMessage(userSendAttentionEmails, TeamMsg, Items.context);
+            }
         }
         let TaskShuoldBeUpdate = true;
         let DataJSONUpdate: any = await MakeUpdateDataJSON();
@@ -2050,6 +2076,7 @@ const EditTaskPopup = (Items: any) => {
                         TaskCreatorApproverBackupArray = []
                         TaskApproverBackupArray = []
                         ApproverIds = []
+                        TempSmartInformationIds = []
                         userSendAttentionEmails = []
                         SiteCompositionPrecentageValue = 0
                         let CalculateStatusPercentage: any = smartMetaCall[0].PercentComplete ? smartMetaCall[0].PercentComplete * 100 : 0;
@@ -2219,7 +2246,7 @@ const EditTaskPopup = (Items: any) => {
         } else {
             updateFeedbackArray = JSON.parse(EditData.FeedBack);
         }
-        FeedBackBackupArray = [];
+        // FeedBackBackupArray = [];
         if (tempShareWebTypeData != undefined && tempShareWebTypeData?.length > 0) {
             tempShareWebTypeData.map((typeData: any) => {
                 CategoryTypeID.push(typeData.Id)
@@ -2350,7 +2377,8 @@ const EditTaskPopup = (Items: any) => {
             SiteCompositionSettings: (SiteCompositionSetting != undefined && SiteCompositionSetting.length > 0) ? JSON.stringify(SiteCompositionSetting) : EditData.SiteCompositionSettings,
             ApproverHistory: ApproverHistoryData?.length > 0 ? JSON.stringify(ApproverHistoryData) : null,
             EstimatedTime: EditData.EstimatedTime ? EditData.EstimatedTime : null,
-            EstimatedTimeDescription: EditData.EstimatedTimeDescriptionArray ? JSON.stringify(EditData.EstimatedTimeDescriptionArray) : null
+            EstimatedTimeDescription: EditData.EstimatedTimeDescriptionArray ? JSON.stringify(EditData.EstimatedTimeDescriptionArray) : null,
+
         }
         return UpdateDataObject;
     }
@@ -3112,7 +3140,7 @@ const EditTaskPopup = (Items: any) => {
         //   .filter(`${SiteId}/Id eq '${Items?.Items?.Id}'`)
         //  .get(); 
 
-        let TaskDataJSON: any = await MakeUpdateDataJSON();;
+        let TaskDataJSON: any = await MakeUpdateDataJSON();
         if (SiteTypes != undefined && SiteTypes.length > 0) {
             SiteTypes.map((dataItem: any) => {
                 if (dataItem.isSelected == true) {
@@ -3120,6 +3148,11 @@ const EditTaskPopup = (Items: any) => {
                 }
             })
         }
+        let UpdatedJSON = {
+            Comments: EditData.Comments,
+            SmartInformationId: { "results": (TempSmartInformationIds != undefined && TempSmartInformationIds.length > 0) ? TempSmartInformationIds : [] },
+        }
+        TaskDataJSON = { ...TaskDataJSON, ...UpdatedJSON }
         try {
             if (SelectedSite.length > 0) {
                 let web = new Web(siteUrls);
@@ -3827,7 +3860,7 @@ const EditTaskPopup = (Items: any) => {
     }
 
     return (
-        <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
+        <div className={ServicesTaskCheck ? `serviepannelgreena ${EditData.Id}` : `${EditData.Id}`}>
             {/* ***************** this is status panel *********** */}
             <Panel
                 // headerText={`Update Task Status`}
@@ -4757,6 +4790,17 @@ const EditTaskPopup = (Items: any) => {
                                                 SmartLightPercentStatus={SmartLightPercentStatus}
                                                 Context={Context}
                                                 FeedbackCount={FeedBackCount}
+                                                TaskUpdatedData={MakeUpdateDataJSON}
+                                                TaskListDetails={{
+                                                    SiteURL: siteUrls,
+                                                    ListId: Items.Items.listId,
+                                                    TaskId: Items.Items.Id,
+                                                    TaskDetails: EditData,
+                                                    AllListIdData: AllListIdData,
+                                                    Context: Context,
+                                                    siteType: Items.Items.siteType
+                                                }}
+                                                taskCreatedCallback={GetExtraLookupColumnData}
                                             />
                                         </>
                                             : null}
@@ -4971,7 +5015,7 @@ const EditTaskPopup = (Items: any) => {
                                 {ShowTaskDetailsStatus ?
                                     <div>
                                         <h6 className="siteColor mb-3" style={{ cursor: "pointer" }} onClick={() => setShowTaskDetailsStatus(ShowTaskDetailsStatus ? false : true)}>
-                                            Show task details -
+                                            Show task details <SlArrowDown />
                                         </h6>
                                         <div>
                                             <div className="row">
@@ -5699,7 +5743,7 @@ const EditTaskPopup = (Items: any) => {
                                 {
                                     ShowTaskDetailsStatus ? null : <div className="mb-3">
                                         <h6 className="siteColor" style={{ cursor: "pointer" }} onClick={() => setShowTaskDetailsStatus(ShowTaskDetailsStatus ? false : true)}>
-                                            Show task details +
+                                            Show task details <SlArrowRight />
                                         </h6>
                                     </div>
                                 }
