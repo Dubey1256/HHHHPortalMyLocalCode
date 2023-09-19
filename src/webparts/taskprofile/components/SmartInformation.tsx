@@ -264,6 +264,7 @@ const SmartInformation = (props: any,ref:any) => {
           .then(async (result: any[]) => {
             console.log(result);
             result?.map((servicecomponent: any) => {
+              servicecomponent.Title=servicecomponent.Title.replace('.',"")
               servicecomponent.Description=servicecomponent?.Body
               if (servicecomponent.Portfolios != undefined && servicecomponent.Portfolios.length > 0) {
                 mastertaskdetails.map((mastertask: any) => {
@@ -1404,114 +1405,7 @@ const SmartInformation = (props: any,ref:any) => {
 
       {/* ===============edit  uploaded documents and link both  data panel============== */}
       {Editdocpanel&&<EditDocument  editData={EditdocumentsData} AllListId={props.AllListId}Context={props.Context}editdocpanel={Editdocpanel}callbackeditpopup={callbackeditpopup}/>}
-      {/* <Panel onRenderHeader={onRenderCustomHeaderDocuments}
-        isOpen={Editdocpanel}
-        type={PanelType.custom}
-        customWidth="1091px"
-        onDismiss={handleClosedoc}
-        isBlocking={!isopencomonentservicepopup}
-        
-        // className={servicespopup == true ? "serviepannelgreena" : "siteColor"}
-      >
-        <Tabs
-          defaultActiveKey="BASICINFORMATION"
-          transition={false}
-          id="noanim-tab-example"
-          className=""
-        >
-          <Tab eventKey="BASICINFORMATION" title="BASICINFORMATION">
-            <div className='border border-top-0 p-2'>
-              {EditdocumentsData?.Url?.Url && <div className='d-flex'>
-                <div className='input-group'><label className='form-label full-width'>URL</label>
-                  <input type='text' className="from-control w-75" value={EditdocumentsData?.Url?.Url} onChange={(e => setEditdocumentsData({ ...EditdocumentsData, Url: { ...EditdocumentsData.Url, Url: e.target.value } }))}></input>
-                </div>
-              </div>}
-
-              <div className='d-flex'>
-                <div className="input-group"><label className=" full-width ">Name </label>
-                  <input type="text" className="form-control" value={EditdocumentsData?.Title} onChange={(e => setEditdocumentsData({ ...EditdocumentsData, Title: e.target.value }))} />.{EditdocumentsData?.File_x0020_Type}
-                </div>
-
-                <div className="input-group mx-4"><label className="full-width ">Year </label>
-                  <input type="text" className="form-control" value={EditdocumentsData?.Year} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, Year: e.target.value })} />
-                  <span className="input-group-text" title="Linked Component Task Popup">
-                    <span className="svg__iconbox svg__icon--editBox"></span>
-                  </span>
-                </div>
-
-                <div className="input-group">
-                  <label className="full-width">Item Rank</label>
-                  <select className="form-select" defaultValue={EditdocumentsData?.ItemRank} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, ItemRank: e.target.value })}>
-                    {ItemRank.map(function (h: any, i: any) {
-                      return (
-                        <option key={i} selected={allValue?.ItemRank == h?.rank} value={h?.rank} >{h?.rankTitle}</option>
-                      )
-                    })}
-                  </select>
-                </div>
-              </div>
-              <div className='d-flex mt-3'>
-                <div className="input-group"><label className="full-width ">Title </label>
-                  <input type="text" className="form-control" value={EditdocumentsData?.Title} onChange={(e => setallSetValue({ ...allValue, Title: e.target.value }))} />
-                </div>
-                <div className="input-group mx-4">
-                  <label className="form-label full-width">
-                      Portfolio
-                  </label>
-
-                  {allValue?.componentservicesetdataTag != undefined &&
-                    <div className="d-flex justify-content-between block px-2 py-1" style={{ width: '85%' }}>
-                      <a target="_blank" data-interception="off" href="HHHH/SitePages/Portfolio-Profile.aspx?taskId=undefined">{allValue?.componentservicesetdataTag.Title}</a>
-                      <a>
-                        <span className="bg-light svg__icon--cross svg__iconbox"></span>
-                      </a></div>}
-
-                  {allValue?.componentservicesetdataTag == undefined && <input type="text" className="form-control" readOnly />}
-                  <span className="input-group-text" title="Linked Component Task Popup">
-                    <span className="svg__iconbox svg__icon--editBox" onClick={(e) => setisopencomonentservicepopup(true)}></span>
-                  </span>
-                </div>
-                <div className="input-group"><label className="full-width ">Document Type </label>
-                  <input type="text" className="form-control" value={EditdocumentsData?.ItemType} onChange={(e) => { setEditdocumentsData({ ...EditdocumentsData, ItemType: e.target.value }) }} />
-                  <span className="input-group-text" title="Linked Component Task Popup">
-                    <span className="svg__iconbox svg__icon--editBox"></span>
-                  </span>
-                </div>
-              </div>
-
-            </div>
-          </Tab>
-          <Tab eventKey="IMAGEINFORMATION" title="IMAGEINFORMATION" >
-            <div className='border border-top-0 p-2'>
-
-              <ImageTabComponenet EditdocumentsData={EditdocumentsData} AllListId={props.AllListId} Context={props.Context} callBack={imageTabCallBack} />
-            </div>
-          </Tab>
-        </Tabs>
-        <footer className='text-end mt-2'>
-          <div className='col-sm-12 row m-0'>
-          <div className='mt-3'> <HtmlEditorCard editorValue={EditdocumentsData?.Description != null ? EditdocumentsData?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>
-            <div className="col-sm-6 text-lg-start">
-              {Editdocpanel && <div><div><span className='pe-2'>Created</span><span className='pe-2'>{EditdocumentsData?.Created !== null ? moment(editvalue?.Created).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Author?.Title}</a></span></div>
-                <div><span className='pe-2'>Last modified</span><span className='pe-2'>{EditdocumentsData?.Modified !== null ? moment(editvalue?.Modified).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Editor?.Title}</a></span></div>
-                <div><span onClick={() => deleteDocumentsData(EditdocumentsData?.Id)} className="svg__iconbox svg__icon--trash"></span>Delete this item</div>
-              </div>}
-            </div>
-
-            <div className='col-sm-6 mt-2 p-0'>
-              <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/Documents/Forms/EditForm.aspx?ID=${EditdocumentsData?.Id != null ? EditdocumentsData?.Id : null}`}>Open out-of-the-box form |</a></span>
-
-              <Button className='btn btn-primary ms-1  mx-2' onClick={updateDocumentsData}>
-                Save
-              </Button>
-              <Button className='btn btn-default' onClick={() => handleClosedoc()}>
-                Cancel
-              </Button>
-            </div>
-          </div>
-        </footer>
-      </Panel> */}
-      {allValue.EditTaskpopupstatus && <EditTaskPopup Items={EditTaskdata} context={props?.Context} AllListId={props?.AllListId} Call={() => { CallBack() }} />}
+     {allValue.EditTaskpopupstatus && <EditTaskPopup Items={EditTaskdata} context={props?.Context} AllListId={props?.AllListId} Call={() => { CallBack() }} />}
       {/* {isopencomonentservicepopup && componentpopup && <ComponentPortPolioPopup props={allValue?.componentservicesetdata} Call={ServiceComponentCallBack} Dynamic={props.AllListId}></ComponentPortPolioPopup>}
       {isopencomonentservicepopup && servicespopup && <LinkedComponent props={allValue?.componentservicesetdata} Call={ServiceComponentCallBack} Dynamic={props.AllListId}></LinkedComponent>} */}
       {isopencomonentservicepopup  &&

@@ -42,6 +42,7 @@ const RelevantDocuments = (props: any,ref:any) => {
             .then((Data: any[]) => {
               let keydoc:any=[];
                 Data?.map((item: any, index: any) => {
+                  item.Title=item.Title.replace('.',"")
                     item.siteType = 'sp'
                     item.Description=item?.Body
                     // item.Author = item?.Author?.Title;
@@ -50,7 +51,9 @@ const RelevantDocuments = (props: any,ref:any) => {
                     if(item.ItemRank===6){
                         keydoc.push(item)
                     }
+                    
                 })
+
                 console.log("document data", Data);
                 let smartmetadta:any=[];
                 myContextData2.FunctionCall(keydoc,Data[0]?.FileDirRef,false)
@@ -66,8 +69,11 @@ const RelevantDocuments = (props: any,ref:any) => {
                         }
                       })
                
-                    var releventData=Data.filter((d)=>d.ItemRank!=6)
-                    setDocumentData(releventData);
+                    var releventData=Data.filter((d)=>d.ItemRank!=6 &&d.ItemRank!=0)
+                    if(releventData.length>0){
+                      setDocumentData(releventData);
+                    }
+                   
                   
                     setFileurl(Data[0]?.FileDirRef) 
                 }).catch((error:any)=>{
