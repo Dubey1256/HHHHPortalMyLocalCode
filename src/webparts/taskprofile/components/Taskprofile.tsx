@@ -355,7 +355,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       truncatedTitle = taskDetails["Title"].substring(0, maxTitleLength - 3) + "...";
     }
  
-    let portfolio:any
+    let portfolio:any=[];
     if(taskDetails?.Portfolio!=undefined){
  
       portfolio =this.masterTaskData.filter((item:any)=>item.Id==taskDetails?.Portfolio?.Id)
@@ -438,11 +438,10 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     }, () => {
 
       this.getSmartTime();
-      // if (tempTask.Portfolio != undefined) {
-      //   this.getAllTaskData();
-      // }
-      this.getAllTaskData();
-
+      if (tempTask.Portfolio != undefined) {
+        this.getAllTaskData();
+      }
+     
 
     });
   }
@@ -1581,10 +1580,14 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                       }
                       {this.state.breadCrumData?.map((breadcrumbitem: any, index: any) => {
                         return <>
-                          <li>
+                          {breadcrumbitem?.siteType==undefined &&<li>
 
                             <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Id}`}>{breadcrumbitem?.Title}</a>
-                          </li>
+                          </li>}
+                          {breadcrumbitem?.siteType!=undefined &&<li>
+
+                        <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${breadcrumbitem?.Id}&Site=${breadcrumbitem?.siteType} `}>{breadcrumbitem?.Title}</a>
+                           </li>}
                           {this.state.breadCrumData.length == index &&
                             <li>
                               <a  >
@@ -2064,11 +2067,11 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                           <div><span dangerouslySetInnerHTML={{ __html: fbComment?.Title.replace(/\n/g, "<br />") }}></span></div>
                                                         </div>
                                                       </div>
-                                                      <div className="col-12 ps-3 pe-0">
+                                                      <div className="col-12 ps-3 pe-0 mt-1">
                                                         {fbComment?.ReplyMessages != undefined && fbComment?.ReplyMessages.length > 0 && fbComment?.ReplyMessages?.map((replymessage: any, index: any) => {
                                                           return (
                                                             <div className="d-flex border ms-3 p-2  mb-1">
-                                                              <div className="col-1 p-0 mx-1">
+                                                              <div className="col-1 p-0 wid30">
                                                                 <img className="workmember" src={replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != '' ?
                                                                   replymessage.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
                                                               </div>
@@ -2225,11 +2228,11 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                             <div ><span dangerouslySetInnerHTML={{ __html: fbComment?.Title.replace(/\n/g, "<br />") }}></span></div>
                                                           </div>
                                                         </div>
-                                                        <div className="col-12 ps-3 pe-0">
+                                                        <div className="col-12 ps-3 pe-0 mt-1">
                                                           {fbComment?.ReplyMessages != undefined && fbComment?.ReplyMessages.length > 0 && fbComment?.ReplyMessages?.map((replymessage: any, ReplyIndex: any) => {
                                                             return (
                                                               <div className="d-flex border ms-3 p-2  mb-1">
-                                                                <div className="col-1 p-0 mx-1">
+                                                                <div className="col-1 p-0 wid30">
                                                                   <img className="workmember" src={replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != '' ?
                                                                     replymessage.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
                                                                 </div>
@@ -2481,7 +2484,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
           }
           {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} context={this.props.Context} AllListId={AllListId} Call={(Type: any) => { this.CallBack(Type) }} /> : ''}
           {/* {this.state.isTimeEntry ? <TimeEntry props={this.state.Result} isopen={this.state.isTimeEntry} CallBackTimesheet={() => { this.CallBackTimesheet() }} /> : ''} */}
-          {this.state.EditSiteCompositionStatus ? <EditSiteComposition EditData={this.state.Result} context={this.props.Context} ServicesTaskCheck={this.state.Result["Services"] != undefined && this.state.Result["Services"].length > 0 ? true : false} AllListId={AllListId} Call={(Type: any) => { this.CallBack(Type) }} /> : ''}
+          {this.state.EditSiteCompositionStatus ? <EditSiteComposition EditData={this.state.Result} context={this.props.Context} ServicesTaskCheck={this.state.Result["Portfolio"] != undefined ? true : false} AllListId={AllListId} Call={(Type: any) => { this.CallBack(Type) }} /> : ''}
           {this.state?.emailcomponentopen && countemailbutton == 0 && <EmailComponenet approvalcallback={() => { this.approvalcallback() }} Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus} currentUser={this?.currentUser} items={this.state?.Result} />}
         </div>
       </MyContext.Provider>

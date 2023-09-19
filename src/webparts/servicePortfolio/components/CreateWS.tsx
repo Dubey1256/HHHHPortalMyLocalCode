@@ -256,27 +256,41 @@ const CreateWS = (props: any) => {
         } else {
             WorstreamLatestId = componentDetails[0].TaskLevel + 1;
         }
-        SelectedTasks.forEach((item: any, index: any) => {
+        SelectedTasks.forEach(async (item: any, index: any) => {
             if (item.Title != "") {
                 if (SharewebTasknewTypeId == 3 || SharewebTasknewTypeId == 5) {
-                    createChildAsWorkStream(item, Type, index, WorstreamLatestId);
+                    await createChildAsWorkStream(item, Type, index, WorstreamLatestId);
                     if (inputFields != undefined && inputFields.length > 0) {
-                        inputFields.forEach((obj: any) => {
-                            if (obj.Title != undefined && obj.Title != "") {
-                                index++
-                                createMultiChildAsWorkStream(obj, Type, index, WorstreamLatestId);
+                       for( let i=0 ;inputFields.length>i;){
+                            if (inputFields[i].Title != undefined && inputFields[i].Title != "") {
+                                
+;
+                                componentDetails =  await web.lists
+                                .getById(AllItems.listId)
+                                .items
+                                .select("Id,FolderID,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,TaskLevel,TaskID,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,Priority,Created,Modified,TaskType/Id,TaskType/Title,ParentTask/Id,ParentTask/Title,Author/Id,Author/Title,Editor/Id,Editor/Title")
+                                .expand("TaskType,ParentTask,Author,Editor,AssignedTo")
+                                .filter(("TaskType/Title eq 'Workstream'") && ("ParentTask/Id eq '" + AllItems?.Id + "'"))
+                                .orderBy("Created", false)
+                                .top(1)
+                                .get()
+                                await createMultiChildAsWorkStream(inputFields[i], Type, index, componentDetails).then((data)=>{
+                                    i++
+                                });
                             }
-                        })
+                        }
                     }
                 } else {
-                    createChildAsTask(item, Type, index);
+                    await createChildAsTask(item, Type, index);
                     if (inputFields != undefined && inputFields.length > 0) {
-                        inputFields.forEach((obj: any) => {
-                            if (obj.Title != undefined && obj.Title != "") {
-                                index++
-                                createMultiChildTask(obj, Type, index, WorstreamLatestId);
+                        for( let i=0 ;inputFields.length>i;){
+                            if (inputFields[i].Title != undefined && inputFields[i].Title != "") {
+                                
+                                await createMultiChildTask(inputFields[i], Type, index, componentDetails).then((data)=>{
+                                    i++
+                                });
                             }
-                        })
+                        }
                     }
                 }
             }
@@ -286,140 +300,123 @@ const CreateWS = (props: any) => {
 
     }
   
-    const createMultiChildAsWorkStream = async (item: any, Type: any, index: any, newWorstreamLatestId: any) => {
-        var clientcaterogiesdata2: any = [];
-        var AssignedToUser: any = [];
-        var AllTeamMembers: any = [];
-        var TeamLeaderws: any = [];
-        let LetestLevelData: any = []
-        let Tasklevel: any = ''
-        let TaskID = ''
-        var NewDate = ''
-        let componentDetails: any = []
-        var SharewebID = '';
-        let web = new Web(dynamicList.siteUrl);
+    const createMultiChildAsWorkStream = async (item: any, Type: any, index: any, componentDetails: any) => {
+return new Promise<void>((resolve, reject) => {
+    var clientcaterogiesdata2: any = [];
+    var LatestId=''
+    var AssignedToUser: any = [];
+    var AllTeamMembers: any = [];
+    var TeamLeaderws: any = [];
+    let LetestLevelData: any = []
+    let Tasklevel: any = ''
+    let TaskID = ''
+    var NewDate = ''
+    //let componentDetails: any = []pro
+    var SharewebID = '';
+    
+    var Component: any = []
+    let web = new Web(dynamicList.siteUrl);
 
-        componentDetails = await web.lists
-            .getById(AllItems.listId)
-            .items
-            .select("FolderID,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,TaskLevel,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,Priority,Created,Modified,TaskType/Id,TaskType/Title,ParentTask/Id,ParentTask/Title,Author/Id,Author/Title,Editor/Id,Editor/Title")
-            .expand("TaskType,ParentTask,Author,Editor,AssignedTo")
-            .filter(("TaskType/Title eq 'Workstream'") && ("ParentTask/Id eq '" + AllItems?.Id + "'"))
-            .orderBy("Created", false)
-            .top(4999)
-            .get()
-        console.log(componentDetails)
-        if (componentDetails.length == 0) {
-            WorstreamLatestId = 1;
-        } else {
-            WorstreamLatestId = componentDetails.length + 1;
+   
+
+            console.log(componentDetails)
+            if (componentDetails.length == 0) {
+                WorstreamLatestId = 1;
+            } else {
+                WorstreamLatestId = componentDetails[0].TaskLevel + 1;
+                LatestId = componentDetails[0].Id + 1;
+            }
+            if (Task == undefined || Task == '')
+                Task = SelectedTasks[0];
+            if (TaskprofileId == '' || SelectedTasks.length > 0) {
+                TaskprofileId = SelectedTasks[0].Id;
+            }
+        
+  
+
+    var categoriesItem = '';
+    CategoriesData.map((category: { Title: string; }) => {
+        if (category.Title != undefined) {
+            categoriesItem = categoriesItem == "" ? category.Title : categoriesItem + ';' + category.Title;
         }
-        if (Task == undefined || Task == '')
-            Task = SelectedTasks[0];
-        if (TaskprofileId == '' || SelectedTasks.length > 0) {
-            TaskprofileId = SelectedTasks[0].Id;
-        }
-
-        componentDetails = await web.lists
-            .getById(AllItems?.listId)
-            .items
-            .select("Id,Title,TaskType/Id,TaskType/Title,TaskLevel,TaskID")
-            .expand('TaskType')
-            .orderBy("Id", false)
-            .filter(`Id eq '${props.props.Id}'`)
-            .get()
-        console.log(componentDetails)
-
-        var LatestId = componentDetails[0].Id + 1;
-        LatestId += index;
-        var Component: any = []
-
-        if (date != undefined) {
-            NewDate = new Date(date).toDateString();
+    })
+    smartComponentData.forEach((com: any) => {
+        if (com != undefined) {
+            Component.push(com[0].Id)
         }
 
-        var categoriesItem = '';
-        CategoriesData.map((category: { Title: string; }) => {
-            if (category.Title != undefined) {
-                categoriesItem = categoriesItem == "" ? category.Title : categoriesItem + ';' + category.Title;
-            }
+    })
+
+    AllItems?.subRows?.forEach((vall: any) => {
+        if (vall?.TaskType?.Title == 'Workstream' || vall?.SharewebTaskType?.Title == 'Workstream') {
+            LetestLevelData.push(vall)
+        }
+
+    })
+    let result = componentDetails[0].TaskID.substring(0, 4);
+
+    Tasklevel = WorstreamLatestId
+    TaskID = result +'-W' + WorstreamLatestId;
+
+    var CategoryID: any = []
+    CategoriesData.map((category: { Id: any; }) => {
+        if (category.Id != undefined) {
+            CategoryID.push(category.Id)
+        }
+    })
+    if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length > 0) {
+        AllItems.AssignedTo.forEach((obj: any) => {
+            AssignedToIds.push(obj.Id);
         })
-        smartComponentData.forEach((com: any) => {
-            if (com != undefined) {
-                Component.push(com[0].Id)
-            }
-
-        })
-
-        AllItems?.subRows?.forEach((vall: any) => {
-            if (vall?.TaskType?.Title == 'Workstream' || vall?.SharewebTaskType?.Title == 'Workstream') {
-                LetestLevelData.push(vall)
-            }
-
-        })
-
-        Tasklevel = WorstreamLatestId
-        TaskID = componentDetails[0]?.TaskID + '-W' + WorstreamLatestId;
-
-        var CategoryID: any = []
-        CategoriesData.map((category: { Id: any; }) => {
-            if (category.Id != undefined) {
-                CategoryID.push(category.Id)
-            }
-        })
-        if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length > 0) {
-            AllItems.AssignedTo.forEach((obj: any) => {
-                AssignedToIds.push(obj.Id);
+    }
+    if (isDropItemRes == true) {
+        if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
+            TaskAssignedTo.map((taskInfo: any) => {
+                AssignedToIds.push(taskInfo.Id);
             })
         }
-        if (isDropItemRes == true) {
-            if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
-                TaskAssignedTo.map((taskInfo: any) => {
-                    AssignedToIds.push(taskInfo.Id);
-                })
-            }
-        }
-        if (AllItems?.TeamMembers != undefined && AllItems?.TeamMembers?.length > 0) {
-            AllItems.TeamMembers.forEach((obj: any) => {
-                TeamMemberIds.push(obj.Id);
+    }
+    if (AllItems?.TeamMembers != undefined && AllItems?.TeamMembers?.length > 0) {
+        AllItems.TeamMembers.forEach((obj: any) => {
+            TeamMemberIds.push(obj.Id);
+        })
+    }
+    if (isDropItem == true) {
+        if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
+            TaskTeamMembers.map((taskInfo: any) => {
+                TeamMemberIds.push(taskInfo.Id);
             })
         }
-        if (isDropItem == true) {
-            if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
-                TaskTeamMembers.map((taskInfo: any) => {
-                    TeamMemberIds.push(taskInfo.Id);
-                })
-            }
-        }
-        if (AllItems?.TeamLeader != undefined && AllItems?.TeamLeader?.length > 0) {
-            AllItems.TeamLeader.forEach((obj: any) => {
-                ResponsibleTeamIds.push(obj.Id);
+    }
+    if (AllItems?.TeamLeader != undefined && AllItems?.TeamLeader?.length > 0) {
+        AllItems.TeamLeader.forEach((obj: any) => {
+            ResponsibleTeamIds.push(obj.Id);
+        })
+    }
+    if (isDropItem == true) {
+        if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
+            TaskResponsibleTeam.map((taskInfo: any) => {
+                ResponsibleTeamIds.push(taskInfo.Id);
             })
         }
-        if (isDropItem == true) {
-            if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
-                TaskResponsibleTeam.map((taskInfo: any) => {
-                    ResponsibleTeamIds.push(taskInfo.Id);
-                })
-            }
-        }
+    }
 
 
-        let FeedBackItemArrayNew: any = [];
-        if (item.Description != undefined) {
-            let param: any = Moment(new Date().toLocaleString())
-            let FeedBackItem: any = {};
-            FeedBackItem['Title'] = "FeedBackPicture" + param;
-            FeedBackItem['FeedBackDescriptions'] = [];
-            FeedBackItem.FeedBackDescriptions = [{
-                'Title': item.Description
-            }]
-            FeedBackItem['ImageDate'] = "" + param;
-            FeedBackItem['Completed'] = '';
-            if (FeedBackItem != undefined && FeedBackItem.length > 1)
-                FeedBackItemArrayNew.push(FeedBackItem)
-        }
-        await web.lists.getById(AllItems.listId).items.add({
+    let FeedBackItemArrayNew: any = [];
+    if (item.Description != undefined) {
+        let param: any = Moment(new Date().toLocaleString())
+        let FeedBackItem: any = {};
+        FeedBackItem['Title'] = "FeedBackPicture" + param;
+        FeedBackItem['FeedBackDescriptions'] = [];
+        FeedBackItem.FeedBackDescriptions = [{
+            'Title': item.Description
+        }]
+        FeedBackItem['ImageDate'] = "" + param;
+        FeedBackItem['Completed'] = '';
+        if (FeedBackItem != undefined && FeedBackItem.length > 1)
+            FeedBackItemArrayNew.push(FeedBackItem)
+    }
+     web.lists.getById(AllItems.listId).items.add({
             Title: item?.Title != undefined ? item?.Title : AllItems.Title,
             Categories: categoriesItem ? categoriesItem : null,
             TaskCategoriesId: { "results": CategoryID },
@@ -441,31 +438,29 @@ const CreateWS = (props: any) => {
             TeamMembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] },
             TaskID: TaskID,
             TaskLevel: Tasklevel
-
-
         }).then((res: any) => {
             console.log(res);
             if (PopupType == 'CreatePopup') {
-                res.data['SiteIcon'] = AllItems.SiteIcon
-                res.data['listId'] = AllItems.listId
-                res.data['SharewebTaskType'] = { Title: 'Workstream' }
+                res.data['SiteIcon'] = AllItems.SiteIcon;
+                res.data['listId'] = AllItems.listId;
+                res.data['SharewebTaskType'] = { Title: 'Workstream' };
                 res.data['TaskType'] = { 'Id': res.data?.TaskTypeId };
-                res.data['listId'] = AllItems.listId
+                res.data['listId'] = AllItems.listId;
                 res.data['Shareweb_x0020_ID'] = SharewebID;
-                res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0] : null
+                res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0] : null;
                 res.data['Portfolio'] = { 'Id': portFolio };
-                res.data.AssignedTo = []
-                res.data.ResponsibleTeam = []
-                res.data.TeamMembers = []
+                res.data.AssignedTo = [];
+                res.data.ResponsibleTeam = [];
+                res.data.TeamMembers = [];
                 if (res?.data?.TeamMembersId?.length > 0) {
                     res.data?.MembersId?.map((teamUser: any) => {
                         let elementFound = props?.TaskUsers?.filter((User: any) => {
                             if (User?.AssingedToUser?.Id == teamUser) {
-                                res.data.TeamMembers.push(User?.AssingedToUser)
+                                res.data.TeamMembers.push(User?.AssingedToUser);
                             }
-                        })
+                        });
 
-                    })
+                    });
                 }
                 if (res?.data?.ResponsibleTeamId?.length > 0) {
                     res.data?.ResponsibleTeamId?.map((teamUser: any) => {
@@ -473,53 +468,59 @@ const CreateWS = (props: any) => {
                             if (User?.AssingedToUser?.Id == teamUser) {
                                 res.data.ResponsibleTeam.push(User?.AssingedToUser);
                             }
-                        })
+                        });
 
-                    })
+                    });
                 }
                 if (res?.data?.AssignedToId?.length > 0) {
                     res.data?.AssignedToId?.map((teamUser: any) => {
                         let elementFound = props?.TaskUsers?.filter((User: any) => {
                             if (User?.AssingedToUser?.Id == teamUser) {
-                                res.data.AssignedTo.push(User?.AssingedToUser)
+                                res.data.AssignedTo.push(User?.AssingedToUser);
                             }
-                        })
+                        });
 
-                    })
+                    });
                 }
                 res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("DD-MM-YYYY") : null,
-                    res.data['siteType'] = AllItems.siteType
-                res.data['Shareweb_x0020_ID'] = SharewebID
+                    res.data['siteType'] = AllItems.siteType;
+                res.data['Shareweb_x0020_ID'] = SharewebID;
                 if (SelectedTasks != undefined && SelectedTasks.length > 0)
-                    setIsPopupComponent(true)
-                setSharewebTask(res.data)
+                    setIsPopupComponent(true);
+                resolve(res)
+                setSharewebTask(res.data);
                 closeTaskStatusUpdatePoup(res);
             }
             else {
-                res.data['SiteIcon'] = AllItems.SiteIcon
-                res.data['listId'] = AllItems.listId
-                res.data['SharewebTaskType'] = { Title: 'Workstream' }
+                res.data['SiteIcon'] = AllItems.SiteIcon;
+                res.data['listId'] = AllItems.listId;
+                res.data['SharewebTaskType'] = { Title: 'Workstream' };
                 res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : null,
-                    res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0] : null
-                res.data['siteType'] = AllItems.siteType
-                res.data['Shareweb_x0020_ID'] = SharewebID
+                    res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0] : null;
+                res.data['siteType'] = AllItems.siteType;
+                res.data['Shareweb_x0020_ID'] = SharewebID;
                 res.data.ClientCategory = clientcaterogiesdata2,
                     res.data.Created = new Date();
                 res.data.Author = {
                     Id: res?.data?.AuthorId
-                }
-                res.data.TeamMembers = AllTeamMembers?.length > 0 ? AllTeamMembers : []
-                res.data.Responsible_x0020_Team = TeamLeaderws?.length > 0 ? TeamLeaderws : []
-                res.data.AssignedTo = AssignedToUser?.length > 0 ? AssignedToUser : []
-                res.Item_x0020_Type = ""
-                setSharewebTask(res.data)
+                };
+                res.data.TeamMembers = AllTeamMembers?.length > 0 ? AllTeamMembers : [];
+                res.data.Responsible_x0020_Team = TeamLeaderws?.length > 0 ? TeamLeaderws : [];
+                res.data.AssignedTo = AssignedToUser?.length > 0 ? AssignedToUser : [];
+                res.Item_x0020_Type = "";
+                resolve(res)
+                setSharewebTask(res.data);
                 closeTaskStatusUpdatePoup(res);
 
             }
 
 
 
-        })
+        });
+    
+ 
+})
+       
 
     }
 
@@ -532,7 +533,7 @@ const CreateWS = (props: any) => {
         let Tasklevel: any = ''
         let TaskID = ''
         var NewDate = ''
-        WorstreamLatestId += index;
+      
         var SharewebID = '';
         let web = new Web(dynamicList.siteUrl);
         if (Task == undefined || Task == '')
@@ -875,7 +876,7 @@ const CreateWS = (props: any) => {
             Categories: categoriesItem ? categoriesItem : null,
             SharewebCategoriesId: { "results": CategoryID },
             Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
-            PortfolioId: AllItems?.Portfolio?.Id,
+           PortfolioId: AllItems?.Portfolio?.Id,
             PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
             ParentTaskId: AllItems.Id,
             TaskTypeId: SharewebTasknewTypeId,
@@ -916,9 +917,11 @@ const CreateWS = (props: any) => {
                 res.data.ResponsibleTeam = TeamLeaderws?.length > 0 ? TeamLeaderws : []
                 res.data.AssignedTo = AssignedToUser?.length > 0 ? AssignedToUser : []
                 res.Item_x0020_Type = ""
+               
                 setIsPopupComponent(true)
                 setSharewebTask(res.data)
                 closeTaskStatusUpdatePoup(res);
+                
             }
             else {
                 res.data['SiteIcon'] = AllItems.SiteIcon
@@ -939,8 +942,11 @@ const CreateWS = (props: any) => {
                 res.data.ResponsibleTeam = TeamLeaderws?.length > 0 ? TeamLeaderws : []
                 res.data.AssignedTo = AssignedToUser?.length > 0 ? AssignedToUser : []
                 res.Item_x0020_Type = ""
-                setSharewebTask(res.data)
-                closeTaskStatusUpdatePoup(res);
+                
+             
+                    setSharewebTask(res.data)
+                    closeTaskStatusUpdatePoup(res);
+                    
             }
 
 
@@ -1385,7 +1391,7 @@ const CreateWS = (props: any) => {
                         </div>
                         <div className='col-sm-4'>
                             <div className='Create-Priority'>
-                                <label className="full-width">
+                                <label className="full-width">Priority
                                     <span>
                                         <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                                             <span title="Edit" className="alignIcon svg__icon--info svg__iconbox"></span>

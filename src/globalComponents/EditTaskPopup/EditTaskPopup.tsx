@@ -1532,14 +1532,14 @@ const EditTaskPopup = (Items: any) => {
     const loadTaskUsers = async () => {
         var AllTaskUsers: any = []
         let currentUserId = Context.pageContext._legacyPageContext.userId
-        axios.get(`${siteUrls}/_api/web/lists/getbyid('${AllListIdData?.TaskUsertListID}')/items?$select=Id,UserGroupId,TimeCategory,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver&$orderby=SortOrder asc,Title asc`)
+        axios.get(`${siteUrls}/_api/web/lists/getbyid('${AllListIdData?.TaskUsertListID}')/items?$select=Id,UserGroupId,TimeCategory,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver&$orderby=SortOrder asc,Title asc`)
             .then((response: AxiosResponse) => {
                 taskUsers = response.data.value;
                 getAllEmployeeData();
                 $.each(taskUsers, function (index: any, user: any) {
                     var ApproverUserItem = '';
                     var UserApproverMail: any = []
-                    if (user.Title != undefined && user.IsShowTeamLeader === true) {
+                    if (user.Title != undefined) {
                         if (user.Approver != undefined) {
                             $.each(user.Approver.results, function (ApproverUser: any, index) {
                                 ApproverUserItem += ApproverUser.Title + (index === user.Approver.results?.length - 1 ? '' : ',');

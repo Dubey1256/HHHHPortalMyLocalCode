@@ -89,7 +89,7 @@ const TimeReport = (props:any) => {
         taskUsers = await web.lists
             .getByTitle('Task Users')
             .items
-            .select('Id,UserGroup/Id,UserGroup/Title,TimeCategory,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name')
+            .select('Id,UserGroup/Id,UserGroup/Title,TimeCategory,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name')
             .expand('AssingedToUser,Approver,UserGroup')
             .top(4999)
             .get();
@@ -315,7 +315,7 @@ const TimeReport = (props:any) => {
                     // var TodayDate:any = new Date()
                     // TodayDate =  Moment(TodayDate).format("DD/MM/YYYY")
                    //var TodayDate =  selectDate.split("/")
-                   var a = val.EndDate.substring(0, 10)
+                   var a = val.EndDate?.substring(0, 10)
                    var TodayDate =  selectDate[2] + selectDate[1] + selectDate[0]
                     var endDate = Moment(a).format("DD/MM/YYYY")
                     var eventDate = Moment(val.EventDate).format("DD/MM/YYYY")

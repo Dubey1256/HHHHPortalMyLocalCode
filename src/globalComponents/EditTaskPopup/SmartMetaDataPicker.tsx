@@ -12,7 +12,7 @@ var AutoCompleteItemsArray: any = [];
 var SelectedCategoryBackupArray: any = [];
 const Picker = (item: any) => {
     const usedFor = item.usedFor;
-    const isServiceTask: any = item?.isServiceTask!=undefined?item.isServiceTask:item?.props?.Services?.length>0?true:false;
+    const isServiceTask: any = item?.isServiceTask != undefined ? item.isServiceTask : item?.props?.Services?.length > 0 ? true : false;
     const AllListIdData: any = item?.AllListId;
     const siteUrls: any = item?.AllListId?.siteUrl;
     const selectedCategoryData: any = item.selectedCategoryData;
@@ -38,19 +38,19 @@ const Picker = (item: any) => {
     }, [])
     const closePopupSmartTaxanomy = () => {
         setPopupSmartTaxanomy(false)
-        if(usedFor=="Task-Footertable"){
+        if (usedFor == "Task-Footertable") {
             item?.Call(selectedCategoryData, "Category-Task-Footertable")
-           NewArray = []
-           SelectedCategoryBackupArray = [];
-           setSelect([])
-       }else{
-        NewArray = []
-        setSelect([])
-        item?.Call()
-        item?.closePopupCallBack();
-        SelectedCategoryBackupArray = [];
-       }
-       
+            NewArray = []
+            SelectedCategoryBackupArray = [];
+            setSelect([])
+        } else {
+            NewArray = []
+            setSelect([])
+            item?.Call()
+            item?.closePopupCallBack();
+            SelectedCategoryBackupArray = [];
+        }
+
     }
     const saveCategories = () => {
         if (usedFor == "Task-Popup") {
@@ -59,8 +59,8 @@ const Picker = (item: any) => {
             SelectedCategoryBackupArray = [];
             setSelect([])
         }
-        else if(usedFor=="Task-Footertable"){
-             item?.Call(select, "Category-Task-Footertable")
+        else if (usedFor == "Task-Footertable") {
+            item?.Call(select, "Category-Task-Footertable")
             NewArray = []
             SelectedCategoryBackupArray = [];
             setSelect([])
@@ -142,7 +142,7 @@ const Picker = (item: any) => {
     }
 
     const selectPickerData = (item: any) => {
-        if (usedFor == "Task-Popup"||usedFor=="Task-Footertable") {
+        if (usedFor == "Task-Popup" || usedFor == "Task-Footertable") {
             let tempArray: any = [];
             let checkDataExistCount = 0;
             if (SelectedCategoryBackupArray != undefined && SelectedCategoryBackupArray.length > 0) {
@@ -155,7 +155,7 @@ const Picker = (item: any) => {
             if (checkDataExistCount == 0) {
                 tempArray.push(item);
             }
-            SelectedCategoryBackupArray=select
+            SelectedCategoryBackupArray = select
             if (tempArray != undefined && tempArray.length > 0) {
                 SelectedCategoryBackupArray = SelectedCategoryBackupArray.concat(tempArray)
             } else {
@@ -273,7 +273,7 @@ const Picker = (item: any) => {
 
     const customFooter = () => {
         return (
-            <footer className={isServiceTask ||item?.props?.Portfolio_x0020_Type=="Service" ? "serviepannelgreena" : ""}>
+            <footer className={isServiceTask || item?.props?.Portfolio_x0020_Type == "Service" ? "serviepannelgreena" : ""}>
                 <span>
                     <a className="siteColor mx-1" target="_blank" data-interception="off" href={`{}/SitePages/SmartMetadata.aspx`} >Manage Smart Taxonomy</a>
                 </span>
@@ -287,9 +287,9 @@ const Picker = (item: any) => {
 
     const customHeader = () => {
         return (
-            <div className={isServiceTask ||item?.props?.Portfolio_x0020_Type=="Service" ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"} >
+            <div className={isServiceTask || item?.props?.Portfolio_x0020_Type == "Service" ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"} >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                <h2 className="heading">Select Category</h2>
+                    <h2 className="heading">Select Category</h2>
                 </div>
                 <Tooltip ComponentId="1626" />
             </div>
@@ -333,10 +333,9 @@ const Picker = (item: any) => {
                                 </tr>
                             </tbody>
                         </table> */}
-                        <section>
+                        {/* <section>
                             <div className="row">
                                 <div className="d-flex text-muted pt-3 showCateg">
-                                    <ImPriceTags />
                                     <div className="pb-3 mb-0">
                                         <div id="addNewTermDescription">
                                             <p className="mb-1"> New items are added under the currently selected item.
@@ -348,7 +347,6 @@ const Picker = (item: any) => {
                                                 <span><a className="hreflink"> Send Feedback </a></span>
                                             </p>
                                         </div>
-                                        {/* <div className="block col p-1"> {select}</div> */}
                                     </div>
                                     <div className="d-end">
                                         <button type="button" className="btn btn-primary" onClick={saveCategories}>
@@ -357,7 +355,7 @@ const Picker = (item: any) => {
                                     </div>
                                 </div>
                             </div>
-                        </section>
+                        </section> */}
                         <div className="mb-3">
                             <div className="mb-2 col-sm-12 p-0">
                                 <div>
@@ -452,7 +450,8 @@ const Picker = (item: any) => {
                                                                                     null}
                                                                                 {child1.Title}
                                                                                 {child1.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                                                                    {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /> */}
+                                                                                    <span className="svg__iconbox svg__icon--info"></span>
                                                                                     <div className="popover__content">
                                                                                         <span>{child1.Description1}</span>
                                                                                     </div>
@@ -474,7 +473,8 @@ const Picker = (item: any) => {
                                                                                                         null}
                                                                                                     {subChilds.Title}
                                                                                                     {subChilds.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                                                                                        {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /> */}
+                                                                                                        <span className="svg__iconbox svg__icon--info"></span>
                                                                                                         <div className="popover__content">
                                                                                                             <span ng-bind-html="child1.Description1 | trustedHTML">{subChilds.Description1}</span>
                                                                                                         </div>
@@ -501,12 +501,29 @@ const Picker = (item: any) => {
                         </div>
                     </div>
                     <footer className={isServiceTask ? "serviepannelgreena fixed-bottom bg-f4 text-end pe-2 py-2" : "fixed-bottom bg-f4 text-end pe-2 py-2"}>
-                        <span>
-                            <a className="siteColor mx-1" target="_blank" data-interception="off" href={`${siteUrls}/SitePages/SmartMetadata.aspx`} >Manage Smart Taxonomy</a>
-                        </span>
-                        <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveCategories} >
-                            Save
-                        </button>
+                        <div className="alignCenter">
+                            <div className="pb-3 mb-0 pull-left">
+                                <div id="addNewTermDescription">
+                                    <p className="mb-1"> New items are added under the currently selected item.
+                                        <span><a className="hreflink" target="_blank" data-interception="off" href={`${siteUrls}/SitePages/SmartMetadata.aspx`} > Add New Item </a></span>
+                                    </p>
+                                </div>
+                                <div id="SendFeedbackTr">
+                                    <p className="mb-1">Make a request or send feedback to the Term Set manager.
+                                        <span><a className="hreflink"> Send Feedback </a></span>
+                                    </p>
+                                </div>
+                                {/* <div className="block col p-1"> {select}</div> */}
+                            </div>
+                            <div className="pull-right">
+                                <span>
+                                    <a className="siteColor mx-1" target="_blank" data-interception="off" href={`${siteUrls}/SitePages/SmartMetadata.aspx`} >Manage Smart Taxonomy</a>
+                                </span>
+                                <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveCategories} >
+                                    Save
+                                </button>
+                            </div>
+                        </div>
                     </footer>
                 </div>
             </Panel>

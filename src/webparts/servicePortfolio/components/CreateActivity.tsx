@@ -866,9 +866,17 @@ const CreateActivity = (props: any) => {
                               .top(1)
                               .get()
                           console.log(componentDetails)
-                          var LatestId = componentDetails[0].TaskLevel + 1;
-                          Tasklevel = LatestId
-                          TaskID =  'A' + LatestId 
+                          if(componentDetails.length == 0){
+                            var LatestId:any =  1;
+                            Tasklevel = LatestId
+                            TaskID =  'A' + LatestId
+                          }
+                          else{
+                            var LatestId = componentDetails[0].TaskLevel + 1;
+                            Tasklevel = LatestId
+                            TaskID =  'A' + LatestId
+                          }
+                           
                      
 
                        

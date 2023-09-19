@@ -459,9 +459,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       ev.currentTarget.classList.remove('seclected-Image');
       item.IsSelected = false;
       //uncheck the group checkbox if any one child is unchecked
-      if (ev.currentTarget.closest('.ng-binding').children[0].checked) {
-        ev.currentTarget.closest('.ng-binding').children[0].checked = false
-      }
+      // if (ev.currentTarget.closest('.ng-binding').children[0].checked) {
+      //   ev.currentTarget.closest('.ng-binding').children[0].checked = false
+      // }
       //remove element from array
       for (let index = 0; index < ImageSelectedUsers.length; index++) {
         let sel = ImageSelectedUsers[index];
@@ -927,6 +927,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     if (filterItemTimeTab.length > 0) {
       for (let index = 0; index < filterItemTimeTab.length; index++) {
         let itemtype = filterItemTimeTab[index];
+        if(itemtype.ListName == 'OffshoreTasks'){
+          itemtype.ListName = 'Offshore Tasks'
+        }
         for (let j = 0; j < itemtype.Query.length; j++) {
           let queryType = itemtype.Query[j];
           let results = await web.lists
@@ -976,13 +979,13 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
 
             filterItem.CategoryParentId = 0;
             filterItem.ClientCategory = getItem.ClientCategory;
-            getItem.ClientCategory.forEach(function (client: any, index: any) {
-              if (!this.isExistsclient(filterItem.clientCategory, client.Title))
-                filterItem.clientCategory += client.Title + '; ';
-              filterItem.clientCategoryIds += client.Id + '; ';
-              if (index == 0 && client.ParentID != undefined)
-                filterItem.CategoryParentId = client.ParentID;
-            })
+            // getItem?.ClientCategory.forEach(function (client: any, index: any) {
+            //   if (!this.isExistsclient(filterItem?.ClientCategory, client?.Id))
+            //     filterItem.clientCategory += client.Title + '; ';
+            //   filterItem.clientCategoryIds += client.Id + '; ';
+            //   if (index == 0 && client.ParentID != undefined)
+            //     filterItem.CategoryParentId = client.ParentID;
+            // })
 
             let clientTimeArr: any = [];
             getItem.ClientTime.forEach(function (val: { [x: string]: number; ClienTimeDescription: number; }) {
