@@ -1937,29 +1937,13 @@ function CreateTaskComponent(props: any) {
     return (
         <>  <div className={save.portfolioType == "Service" ? "serviepannelgreena" : ''}>
             <div className='creatTaskPage'>
-<<<<<<< HEAD
-                <div className='row'>
-                    {props?.projectId == undefined ?
-=======
                 <div className='generalInfo'>
                     {/* {props?.projectId == undefined ?
->>>>>>> 9a85e82844baef30690c02d512c71d26488dd140
                         <div className='heading d-flex justify-content-between align-items-center'>
                             <h2>Create Task </h2>
                             <span className='text-end fs-6'>
                              <a data-interception="off" className=' text-end pull-right' target='_blank' href={oldTaskIrl} style={{ cursor: "pointer", fontSize: "14px" }}>Old Create Task</a>
                              </span>
-<<<<<<< HEAD
-                        </div>  : ''}
-                    <div className='row'>
-                        <h4 className="titleBorder">General Information</h4>
-                        <div className='row '>
-                            <div className='col-sm-6'>
-                                <label className='full-width'>Task Name</label>
-                                <input type="text" placeholder='Enter task Name' className='full-width' value={save.taskName} onChange={(e) => { changeTitle(e) }}></input>
-                            </div>
-                            <div className='col-sm-6 '>{
-=======
                         </div>  : ''} */}
                     <div>
                         <h4 className="titleBorder">General Information</h4>
@@ -1971,7 +1955,6 @@ function CreateTaskComponent(props: any) {
                                 </div>
                             </div>
                             <div className='col-sm-6'>{
->>>>>>> 9a85e82844baef30690c02d512c71d26488dd140
                                 save.portfolioType === 'Component' ?
                                     <div className="input-group">
                                         <label className="full-width">Portfolio</label>
@@ -2004,18 +1987,11 @@ function CreateTaskComponent(props: any) {
                                     </div> : ''
                             }
                             </div>
-<<<<<<< HEAD
-                            <div className='col  mt-2'>
-                                <label className='full-width'>Task URL</label>
-                                <input type="text" className='full-width ' placeholder='Enter task Url' value={save.taskUrl} onChange={(e) => UrlPasteTitle(e)} disabled={burgerMenuTaskDetails?.Siteurl?.length > 0}></input>
-
-=======
                             <div className='col mt-2'>
                                 <div className='input-group'>
                                     <label className='full-width'>Task URL</label>
                                     <input type="text" className='form-control' placeholder='Enter task Url' value={save.taskUrl} onChange={(e) => UrlPasteTitle(e)} disabled={burgerMenuTaskDetails?.Siteurl?.length > 0}></input>
                                 </div>
->>>>>>> 9a85e82844baef30690c02d512c71d26488dd140
                             </div>
 
                         </div>
@@ -2094,15 +2070,9 @@ function CreateTaskComponent(props: any) {
                 {/*---------------- Sites -------------
             -------------------------------*/}
                 {siteType?.length > 1 ?
-<<<<<<< HEAD
-                    <div className='col mt-2'>
-                        <h4 className="titleBorder ">Websites</h4>
-                        <div className='p-0'>
-=======
                     <div className='col mt-4'>
                         <h4 className="titleBorder ">Websites</h4>
                         <div className='clearfix p-0'>
->>>>>>> 9a85e82844baef30690c02d512c71d26488dd140
                             <ul className="site-actions">
                                 {siteType?.map((item: any) => {
                                     return (
@@ -2133,36 +2103,6 @@ function CreateTaskComponent(props: any) {
                     <div className="clearfix"></div>
                     {/*---- Task Categories ---------
             -------------------------------*/}
-<<<<<<< HEAD
-                    <div className='col mt-2 '>
-                        <div className='p-0' >
-                            <div className="col" >
-                                {TaskTypes?.map((Task: any) => {
-                                    return (
-                                        <>
-                                            <h4 className="titleBorder "> {Task?.Title}</h4>
-                                            <div className='col p-0 taskcatgoryPannel'  >
-                                                {subCategory?.map((item: any) => {
-                                                    return (
-                                                        <>
-                                                            {Task.Id === item.ParentID &&
-                                                                <a onClick={() => selectSubTaskCategory(item.Title, item.Id, item)} id={"subcategorytasks" + item.Id} className={item.ActiveTile ? 'bg-siteColor subcategoryTask active text-center' : 'bg-siteColor subcategoryTask text-center'} >
-                                                                    <span className="tasks-label">{item.Title}</span>
-                                                                </a>
-                                                            }
-                                                        </>
-                                                    )
-                                                })}
-                                            </div>
-                                        </>)
-                                })}
-                            </div>
-                        </div>
-                    </div>
-                    <div className="clearfix"></div>
-                    {/*-----Priority Rank ---------------------------------------*/}
-                    <div className='col  mt-2'>
-=======
                     <div className="col" >
                         {TaskTypes?.map((Task: any) => {
                             return (
@@ -2189,7 +2129,6 @@ function CreateTaskComponent(props: any) {
                     <div className="clearfix"></div>
                     {/*-----Priority Rank ---------------------------------------*/}
                     <div className='col clearfix mt-4'>
->>>>>>> 9a85e82844baef30690c02d512c71d26488dd140
                         <h4 className="titleBorder ">Priority Rank</h4>
 
                         {/* <legend className="border-bottom fs-6">Priority Rank</legend> */}
@@ -2209,15 +2148,9 @@ function CreateTaskComponent(props: any) {
                     {/*-----Time --------
             -------------------------------*/}
 
-<<<<<<< HEAD
-                    <div className='col mt-2'>
-                        <h4 className="titleBorder ">Time</h4>
-                        <div className="col  taskcatgoryPannel">
-=======
                     <div className='col mt-4 clearfix'>
                         <h4 className="titleBorder">Time</h4>
                         <div className="taskcatgoryPannel">
->>>>>>> 9a85e82844baef30690c02d512c71d26488dd140
                             {Timing?.map((item: any) => {
                                 return (
                                     <a className={isActive.time && save.Time === item.Title ? ' active subcategoryTask' : 'subcategoryTask'} onClick={() => setActiveTile("Time", "time", item.Title)}>{item.Title}</a>
@@ -2228,15 +2161,9 @@ function CreateTaskComponent(props: any) {
                     <div className="clearfix"></div>
                     {/*-----Due date --------
             -------------------------------*/}
-<<<<<<< HEAD
-                    <div className='col mb-1 mt-2'>
-                        <h4 className="titleBorder ">Due Date</h4>
-                        <div className="col taskcatgoryPannel">
-=======
                     <div className='col mt-4'>
                         <h4 className="titleBorder ">Due Date</h4>
                         <div className="taskcatgoryPannel">
->>>>>>> 9a85e82844baef30690c02d512c71d26488dd140
                             <a className={isActive.dueDate && save.dueDate === 'Today' ? 'subcategoryTask active text-center' : 'subcategoryTask'} onClick={() => setActiveTile("dueDate", "dueDate", 'Today')}>Today&nbsp;{moment(new Date()).format('DD/MM/YYYY')}</a>
                             <a className={isActive.dueDate && save.dueDate === 'Tomorrow' ? 'subcategoryTask active text-center' : 'subcategoryTask'} onClick={() => setActiveTile("dueDate", "dueDate", 'Tomorrow')} id="Tomorrow">Tomorrow</a>
                             <a className={isActive.dueDate && save.dueDate === 'ThisWeek' ? 'subcategoryTask active text-center' : 'subcategoryTask'} onClick={() => setActiveTile("dueDate", "dueDate", 'ThisWeek')} id="ThisWeek">This Week</a>

@@ -243,19 +243,11 @@ export default function DocumentSearchPage(Props: any) {
                         {row?.original?.File_x0020_Type == 'docx' || row?.original?.File_x0020_Type == 'doc' && <span className="alignIcon  svg__iconbox svg__icon--docx "></span>}
                         {/* <img src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/24/icon_pdf_16.jpg`}></img> */}
 
-<<<<<<< HEAD
-                        {/* {row?.original?.File_x0020_Type != 'flv' && row?.original?.File_x0020_Type != 'js' && row?.original?.File_x0020_Type != 'css' && row?.original?.File_x0020_Type != 'zip' && row?.original?.File_x0020_Type != 'aspx' && row?.original?.File_x0020_Type != 'mp4' && row?.original?.File_x0020_Type != 'pdf' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'png' && row?.original?.File_x0020_Type != 'gif' &&
-                            <img src={`/_layouts/15/images/ic${row?.original?.File_x0020_Type}.png`}></img>} */}
-
-                        {/* {row?.original?.File_x0020_Type == 'flv' || row?.original?.File_x0020_Type == 'js' || row?.original?.File_x0020_Type == 'css' || row?.original?.File_x0020_Type == 'zip' || row?.original?.File_x0020_Type == 'aspx' || row?.original?.File_x0020_Type == 'mp4' || row?.original?.File_x0020_Type == 'jpg' || row?.original?.File_x0020_Type == 'png' || row?.original?.File_x0020_Type == 'gif' &&
-                            <img src="/_layouts/15/images/icgen.gif?rev=23"></img>} */}
-=======
                         {row?.original?.File_x0020_Type != 'flv' && row?.original?.File_x0020_Type != 'js' && row?.original?.File_x0020_Type != 'css' && row?.original?.File_x0020_Type != 'zip' && row?.original?.File_x0020_Type != 'aspx' && row?.original?.File_x0020_Type != 'mp4' && row?.original?.File_x0020_Type != 'pdf' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'png' && row?.original?.File_x0020_Type != 'gif' &&
                             <img src={`/_layouts/15/images/ic${row?.original?.File_x0020_Type}.png`}></img>}
 
                         {row?.original?.File_x0020_Type == 'flv' || row?.original?.File_x0020_Type == 'js' || row?.original?.File_x0020_Type == 'css' || row?.original?.File_x0020_Type == 'zip' || row?.original?.File_x0020_Type == 'aspx' || row?.original?.File_x0020_Type == 'mp4' || row?.original?.File_x0020_Type == 'jpg' || row?.original?.File_x0020_Type == 'png' || row?.original?.File_x0020_Type == 'gif' &&
                             <img src="/_layouts/15/images/icgen.gif?rev=23"></img>}
->>>>>>> 9a85e82844baef30690c02d512c71d26488dd140
                     </a>
                     <a target="_blank" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.FileLeafRef} </a>
                 </>
@@ -280,11 +272,7 @@ export default function DocumentSearchPage(Props: any) {
                 <>
                     {row?.original?.AllModifiedImages?.map((item: any) => (
                         <a target="_blank" href={`${PageContext.context._pageContext._web.serverRelativeUrl}/SitePages/TaskDashboard.aspx?UserId=${item.UserId}&Name=${item.Title}`}>
-<<<<<<< HEAD
-                            {row?.original?.Modified} {item?.UserImage != undefined && item?.UserImage != '' ? <img title={item?.Title} className="workmember" src={item?.UserImage}></img> : <img title={item?.Title} className="workmember" src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg`}></img>}
-=======
                             {moment(row?.original?.Modified).format('DD/MM/YYYY')} {item?.UserImage != undefined && item?.UserImage != '' ? <img title={item?.Title} className="workmember" src={item?.UserImage}></img> : <img title={item?.Title} className="workmember" src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg`}></img>}
->>>>>>> 9a85e82844baef30690c02d512c71d26488dd140
                         </a>
                     ))}
                 </>
@@ -294,12 +282,8 @@ export default function DocumentSearchPage(Props: any) {
 
             cell: ({ row }) => (
                 <>
-<<<<<<< HEAD
-                    <a onClick={() => EditItem(row.original.Id)} title="Edit"><span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink"></span></a>
-=======
 
                     <a onClick={() => EditItem(row.original)} title="Edit"><span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink"></span></a>
->>>>>>> 9a85e82844baef30690c02d512c71d26488dd140
                     <a onClick={() => deleteData(row.original)}><span title="Remove Task" className="svg__iconbox svg__icon--cross dark hreflink"></span></a>
                 </>
             ),
@@ -308,11 +292,7 @@ export default function DocumentSearchPage(Props: any) {
             placeholder: '',
             header: '',
             id: 'row.original',
-<<<<<<< HEAD
-            size: 50,
-=======
             size: 20,
->>>>>>> 9a85e82844baef30690c02d512c71d26488dd140
         },
         ],
         [AllDocs]);
