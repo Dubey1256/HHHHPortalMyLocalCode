@@ -187,7 +187,7 @@ function TeamPortlioTable(SelectedProp: any) {
         let smartmetaDetails: any = [];
         smartmetaDetails = await web.lists
             .getById(ContextValue.SmartMetadataListID)
-            .items.select("Id", "Title", "IsVisible", "ParentID", "SmartSuggestions", "TaxType", 'Description', "Configurations", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", 'Color_x0020_Tag', "Parent/Id", "Parent/Title")
+            .items.select("Id", "Title", "IsVisible", "ParentID", "SmartSuggestions", "TaxType", "Configurations", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", 'Color_x0020_Tag', "Parent/Id", "Parent/Title")
             .top(4999).expand("Parent").get();
         setAllClientCategory(smartmetaDetails?.filter((metadata: any) => metadata?.TaxType == 'Client Category'));
         smartmetaDetails?.map((newtest: any) => {

@@ -1862,9 +1862,7 @@ export const loadAllTimeEntry = async (timesheetListConfig: any) => {
     var AllTimeEntry: any = []
     if (timesheetListConfig?.Id != undefined) {
         let timesheetLists: any = [];
-        let taskLists: any = [];
         timesheetLists = JSON.parse(timesheetListConfig?.Configurations)
-        taskLists = JSON.parse(timesheetListConfig?.Description)
         if (timesheetLists?.length > 0) {
             const fetchPromises = timesheetLists.map(async (list: any) => {
                 let web = new Web(list?.siteUrl);
