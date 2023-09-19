@@ -1813,8 +1813,8 @@ export const GetTaskId = (Item: any) => {
     }
     if (Item?.Portfolio?.PortfolioStructureID != undefined && Item.TaskID == undefined) {
         taskIds = Item?.Portfolio?.PortfolioStructureID + '-T' + Item.Id;
-     }
-     else if(Item?.Portfolio==undefined){
+    }
+    else if (Item?.Portfolio == undefined) {
         taskIds = 'T' + Item.Id;
     }
     // else if(Item.TaskID==undefined){
@@ -1847,7 +1847,7 @@ export const findTaskHierarchy = (row: any, AllMatsterAndTaskData: any): any[] =
                 Object.subRows.push(row);
                 return createGrouping(Object);
             }
-            else if (row?.Portfolio != undefined && Object.Id === row?.Portfolio?.Id && row?.ParentTask?.Id==undefined) {
+            else if (row?.Portfolio != undefined && Object.Id === row?.Portfolio?.Id && row?.ParentTask?.Id == undefined) {
                 Object.subRows = [];
                 Object.subRows.push(row);
                 return createGrouping(Object);
@@ -1857,9 +1857,10 @@ export const findTaskHierarchy = (row: any, AllMatsterAndTaskData: any): any[] =
     }
     return createGrouping(row);
 };
-export const loadAllTimeEntry = async (timesheetListConfig:any) => {
-    var AllTimeEntry:any=[]
-    if (timesheetListConfig?.Id !=undefined) {
+
+export const loadAllTimeEntry = async (timesheetListConfig: any) => {
+    var AllTimeEntry: any = []
+    if (timesheetListConfig?.Id != undefined) {
         let timesheetLists: any = [];
         let taskLists: any = [];
         timesheetLists = JSON.parse(timesheetListConfig?.Configurations)
@@ -1868,19 +1869,15 @@ export const loadAllTimeEntry = async (timesheetListConfig:any) => {
             const fetchPromises = timesheetLists.map(async (list: any) => {
                 let web = new Web(list?.siteUrl);
                 try {
-                    const data = await web.lists
-                        .getById(list?.listId)
-                        .items.select(list?.query)
-                        .getAll();
-                        AllTimeEntry=[...AllTimeEntry,...data];
+                    const data = await web.lists.getById(list?.listId).items.select(list?.query).getAll();
+                    AllTimeEntry = [...AllTimeEntry, ...data];
                 } catch (error) {
                     console.log(error, 'HHHH Time');
                 }
             });
-
             await Promise.all(fetchPromises)
             return AllTimeEntry
         }
 
-    }
+    } 
 }

@@ -315,7 +315,7 @@ const TimeReport = (props:any) => {
                     // var TodayDate:any = new Date()
                     // TodayDate =  Moment(TodayDate).format("DD/MM/YYYY")
                    //var TodayDate =  selectDate.split("/")
-                   var a = val.EndDate.substring(0, 10)
+                   var a = val.EndDate?.substring(0, 10)
                    var TodayDate =  selectDate[2] + selectDate[1] + selectDate[0]
                     var endDate = Moment(a).format("DD/MM/YYYY")
                     var eventDate = Moment(val.EventDate).format("DD/MM/YYYY")

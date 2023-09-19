@@ -2,9 +2,11 @@ import * as React from 'react';
 import { Web } from "sp-pnp-js";
 import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
+import * as globalCommon from "../../globalComponents/globalCommon";
 import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
 let filterGroupsDataBackup: any = [];
 let filterGroupData1: any = [];
+let timeSheetConfig: any = {};
 const SmartFilterSearchGlobal = (item: any) => {
     let allMasterTasksData: any = item.AllMasterTasksData;
     let allTastsData: any = item.AllSiteTasksData;
@@ -23,6 +25,7 @@ const SmartFilterSearchGlobal = (item: any) => {
     const [finalArray, setFinalArray] = React.useState([])
     const [updatedSmartFilter, setUpdatedSmartFilter] = React.useState(false)
     const [firstTimecallFilterGroup, setFirstTimecallFilterGroup] = React.useState(false)
+    const [hideTimeEntryButton, setHideTimeEntryButton] = React.useState(0);
     let finalArrayData: any = [];
     let SetAllData: any = [];
     let filt: any = "";
@@ -72,7 +75,7 @@ const SmartFilterSearchGlobal = (item: any) => {
         let smartmetaDetails = await web.lists
             .getById(ContextValue.SmartMetadataListID)
             .items
-            .select('Id', 'Title', 'IsVisible', 'ParentID', 'SmartSuggestions', 'TaxType', 'Description1', 'Item_x005F_x0020_Cover', 'listId', 'siteName', 'siteUrl', 'SortOrder', 'SmartFilters', 'Selectable', 'Parent/Id', 'Parent/Title')
+            .select('Id', 'Title', 'IsVisible', 'ParentID', 'SmartSuggestions', 'TaxType', 'Description', "Configurations", 'Description1', 'Item_x005F_x0020_Cover', 'listId', 'siteName', 'siteUrl', 'SortOrder', 'SmartFilters', 'Selectable', 'Parent/Id', 'Parent/Title')
             .top(4999)
             .expand('Parent')
             .get();
@@ -80,8 +83,12 @@ const SmartFilterSearchGlobal = (item: any) => {
         smartmetaDetails?.map((newtest: any) => {
             if (newtest.Title == "SDC Sites" || newtest.Title == "DRR" || newtest.Title == "Small Projects" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
                 newtest.DataLoadNew = false;
-            else if (newtest.TaxType == 'Sites')
+            else if (newtest.TaxType == 'Sites') {
                 siteConfigSites.push(newtest)
+            }
+            if (newtest?.TaxType == 'timesheetListConfigrations') {
+                timeSheetConfig = newtest;
+            }
         })
         if (siteConfigSites?.length > 0) {
             setSiteConfig(siteConfigSites)
@@ -121,7 +128,7 @@ const SmartFilterSearchGlobal = (item: any) => {
         Title: 'Status', values: [], checked: [], checkedObj: [], expanded: []
     }, {
         Title: 'Priority', values: [], checked: [], checkedObj: [], expanded: []
-    },{
+    }, {
         Title: 'TeamMember', values: [], checked: [], checkedObj: [], expanded: []
     }];
 
@@ -156,7 +163,7 @@ const SmartFilterSearchGlobal = (item: any) => {
             if (element.TaxType == 'Percent Complete') {
                 filterGroups[3].values.push(element);
                 if (element.Title != "Completed (90-100)") {
-                filterGroups[3].checked.push(element.Id)
+                    filterGroups[3].checked.push(element.Id)
                 }
             }
         });
@@ -340,6 +347,7 @@ const SmartFilterSearchGlobal = (item: any) => {
         allTastsData?.map((data: any) => {
             if (checkSiteMatch(data, site) && checkTypeMatch(data, type)) {
                 if (percentCompleteMatch(data, percentComplete)) {
+                    data.TotalTaskTime = data.TotalTaskTime
                     updateArray.push(data);
                 }
             }
@@ -438,7 +446,7 @@ const SmartFilterSearchGlobal = (item: any) => {
         setFinalArray([]);
     };
     const UpdateFilterData = () => {
-       item?.setLoaded(false);
+        item?.setLoaded(false);
         setUpdatedSmartFilter(true);
         FilterDataOnCheck();
     };
@@ -486,6 +494,52 @@ const SmartFilterSearchGlobal = (item: any) => {
     React.useEffect(() => {
         checkBoxColor();
     }, [expanded]);
+
+
+
+    //*************************************************************smartTimeTotal*********************************************************************/
+    const timeEntryIndex: any = {};
+    const smartTimeTotal = async () => {
+        item?.setLoaded(false);
+        // setHideTimeEntryButton(1);
+        let AllTimeEntries = [];
+        if (timeSheetConfig?.Id !== undefined) {
+            AllTimeEntries = await globalCommon.loadAllTimeEntry(timeSheetConfig);
+        }
+        let allSites = smartmetaDataDetails.filter((e) => e.TaxType === "Sites")
+        AllTimeEntries?.forEach((entry: any) => {
+            allSites.forEach((site) => {
+                const taskTitle = `Task${site.Title}`;
+                const key = taskTitle + entry[taskTitle]?.Id
+                if (entry.hasOwnProperty(taskTitle) && entry.AdditionalTimeEntry !== null && entry.AdditionalTimeEntry !== undefined) {
+                    const additionalTimeEntry = JSON.parse(entry.AdditionalTimeEntry);
+                    let totalTaskTime = additionalTimeEntry?.reduce((total: any, time: any) => total + parseFloat(time.TaskTime), 0);
+
+                    if (timeEntryIndex.hasOwnProperty(key)) {
+                        timeEntryIndex[key].TotalTaskTime += totalTaskTime
+                    } else {
+                        timeEntryIndex[`${taskTitle}${entry[taskTitle]?.Id}`] = {
+                            ...entry[taskTitle],
+                            TotalTaskTime: totalTaskTime,
+                            siteType: site.Title,
+                        };
+                    }
+                }
+            });
+        });
+        allTastsData?.map((task: any) => {
+            task.TotalTaskTime = 0;
+            const key = `Task${task?.siteType + task.Id}`;
+            if (timeEntryIndex.hasOwnProperty(key) && timeEntryIndex[key]?.Id === task.Id && timeEntryIndex[key]?.siteType === task.siteType) {
+                task.TotalTaskTime = timeEntryIndex[key]?.TotalTaskTime;
+            }
+        })
+        console.log("timeEntryIndex", timeEntryIndex)
+        UpdateFilterData();
+        return allTastsData;
+    };
+    //*************************************************************smartTimeTotal End*********************************************************************/
+
     return (
         <>
             <section className="ContentSection smartFilterSection row">
@@ -558,6 +612,12 @@ const SmartFilterSearchGlobal = (item: any) => {
                                                 <button type="button" style={{ backgroundColor: `${portfolioColor}`, borderColor: ` ${portfolioColor}` }} className="btn pull-right  btn-primary" title="Smart Filter" onClick={UpdateFilterData}>
                                                     Update Filter
                                                 </button>
+                                                <button type="button" disabled={hideTimeEntryButton === 1 ? true : false} style={{ backgroundColor: `${portfolioColor}`, borderColor: ` ${portfolioColor}` }} className="btn pull-right  btn-primary mx-2" title="Smart Filter" onClick={smartTimeTotal}>
+                                                    Load Smart-Time
+                                                </button>
+                                                {/* <button type="button" disabled={hideTimeEntryButton === 1 ? true : false} style={{ backgroundColor: `${portfolioColor}`, borderColor: ` ${portfolioColor}` }} className="btn pull-right  btn-primary mx-2" title="Smart Filter" onClick={smartTimeTotal1}>
+                                                    Load Smart-Time1
+                                                </button> */}
                                             </div>
                                         </div>
                                     </div>

@@ -61,7 +61,7 @@ const EditDocumentpanel=(props:any)=>{
         console.log(DeletItemId);
         const web = new Web(props?.AllListId?.siteUrl);
         // await web.lists.getByTitle("SmartInformation")
-        var text: any = "are you sure want to Delete";
+        var text: any = "Are you sure want to Delete ?";
         if (confirm(text) == true) {
           await web.lists.getById(props?.AllListId?.DocumentsListID)
             .items.getById(DeletItemId).recycle()
