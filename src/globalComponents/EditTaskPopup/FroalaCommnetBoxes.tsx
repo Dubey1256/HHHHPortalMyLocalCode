@@ -466,7 +466,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                             </span>
                                             <span> | </span>
                                             <span className="mx-1">
-                                                <span className="siteColor hreflink" title=" Create a separate task for this point" onClick={() => CreateSeperateTaskFunction(obj, i)}>
+                                                <span className="siteColor hreflink" onClick={() => CreateSeperateTaskFunction(obj, i)}>
                                                     Create Task
                                                 </span>
                                             </span>
@@ -508,6 +508,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                             Context={Context}
                                             ApprovalStatus={ApprovalStatus}
                                             isCurrentUserApprover={isCurrentUserApprover}
+                                            SmartLightStatus={obj.isShowLight}
                                         />
                                     </div>
                                     <div>
