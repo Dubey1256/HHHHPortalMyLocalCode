@@ -10,8 +10,8 @@ import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
 import * as strings from 'CreateTaskWebPartStrings';
 // import CreateTask from './components/CreateTask';
-import CreateTask from './components/CreateTask';
-import { ICreateTaskProps } from './components/ICreateTaskProps';
+import CreateTask from './CreateTask';
+import { ICreateTaskProps } from './ICreateTaskProps';
 
 export interface ICreateTaskWebPartProps {
   description: string;
