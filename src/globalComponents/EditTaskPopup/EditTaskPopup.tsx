@@ -49,7 +49,7 @@ import BackgroundCommentComponent from "./BackgroundCommentComponent";
 import { TooltipHost, ITooltipHostStyles } from '@fluentui/react/lib/Tooltip';
 import { useId } from '@fluentui/react-hooks';
 import context from "react-bootstrap/esm/AccordionContext";
-import { update } from "@microsoft/sp-lodash-subset";
+
 
 var AllMetaData: any = []
 var attachments: any = []
@@ -1991,18 +1991,18 @@ const EditTaskPopup = (Items: any) => {
             let txtComment = `You have been tagged as ${SendCategoryName} in the below task by ${Items.context.pageContext._user.displayName}`;
             let TeamMsg = txtComment + `</br> <a href=${window.location.href}>${EditData.TaskId}-${EditData.Title}</a>`
             if (SendCategoryName == "Bottleneck") {
-                let sendUserEmail:any = [];
+                let sendUserEmail: any = [];
                 TaskAssignedTo?.map((userDtl: any) => {
-                    taskUsers?.map((allUserItem:any)=>{
-                         if(userDtl.Id == allUserItem.AssingedToUserId){
+                    taskUsers?.map((allUserItem: any) => {
+                        if (userDtl.Id == allUserItem.AssingedToUserId) {
                             sendUserEmail.push(allUserItem.Email);
-                         }
+                        }
                     })
                 })
-                if(sendUserEmail?.length > 0){
+                if (sendUserEmail?.length > 0) {
                     await globalCommon.SendTeamMessage(sendUserEmail, TeamMsg, Items.context);
                 }
-            }else{
+            } else {
                 await globalCommon.SendTeamMessage(userSendAttentionEmails, TeamMsg, Items.context);
             }
         }
@@ -2787,7 +2787,7 @@ const EditTaskPopup = (Items: any) => {
                     let item = web.lists.getById(listId).items.getById(Id);
                     item.attachmentFiles.add(imageName, data).then(() => {
                         console.log("Attachment added");
-                        UpdateBasicImageInfoJSON(DataJson);
+                        UpdateBasicImageInfoJSON(DataJson, "Upload", 0);
                     });
                     setUploadBtnStatus(false);
                 })().catch(console.log)
@@ -2797,7 +2797,7 @@ const EditTaskPopup = (Items: any) => {
                     let item = web.lists.getByTitle(listName).items.getById(Id);
                     item.attachmentFiles.add(imageName, data).then(() => {
                         console.log("Attachment added");
-                        UpdateBasicImageInfoJSON(DataJson);
+                        UpdateBasicImageInfoJSON(DataJson, "Upload", 0);
                     });
                     setUploadBtnStatus(false);
                 })().catch(console.log)
@@ -2806,15 +2806,22 @@ const EditTaskPopup = (Items: any) => {
     }
 
 
-    const UpdateBasicImageInfoJSON = async (JsonData: any) => {
+    const UpdateBasicImageInfoJSON = async (JsonData: any, usedFor: any, ImageIndex: any) => {
         var UploadImageArray: any = []
         if (JsonData != undefined && JsonData.length > 0) {
-            JsonData?.map((imgItem: any) => {
+            JsonData?.map((imgItem: any, Index: any) => {
                 if (imgItem.ImageName != undefined && imgItem.ImageName != null) {
                     if (imgItem.imageDataUrl != undefined && imgItem.imageDataUrl != null) {
+                        let TimeStamp: any = Moment(new Date().toLocaleString())
+                        let ImageUpdatedURL: any;
+                        if (usedFor == "Update" && Index == ImageIndex) {
+                            ImageUpdatedURL = imgItem.imageDataUrl + "?Updated=" + TimeStamp;
+                        } else {
+                            ImageUpdatedURL = imgItem.imageDataUrl
+                        }
                         let tempObject: any = {
                             ImageName: imgItem.ImageName,
-                            ImageUrl: imgItem.imageDataUrl,
+                            ImageUrl: ImageUpdatedURL,
                             UploadeDate: imgItem.UploadeDate,
                             UserName: imgItem.UserName,
                             UserImage: imgItem.UserImage,
@@ -2822,7 +2829,15 @@ const EditTaskPopup = (Items: any) => {
                         }
                         UploadImageArray.push(tempObject)
                     } else {
+                        let TimeStamp: any = Moment(new Date().toLocaleString())
+                        let ImageUpdatedURL: any;
+                        if (usedFor == "Update" && Index == ImageIndex) {
+                            ImageUpdatedURL = imgItem.ImageUrl + "?Updated=" + TimeStamp;
+                        } else {
+                            ImageUpdatedURL = imgItem.ImageUrl;
+                        }
                         imgItem.Description = imgItem.Description != undefined ? imgItem.Description : '';
+                        imgItem.ImageUrl = ImageUpdatedURL;
                         UploadImageArray.push(imgItem);
                     }
                 }
@@ -2852,7 +2867,7 @@ const EditTaskPopup = (Items: any) => {
                 let web = new Web(siteUrls);
                 let item = web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id);
                 item.attachmentFiles.getByName(imageName).recycle();
-                UpdateBasicImageInfoJSON(tempArray);
+                UpdateBasicImageInfoJSON(tempArray, "Upload", 0);
                 console.log("Attachment deleted");
 
             })().catch(console.log)
@@ -2861,7 +2876,7 @@ const EditTaskPopup = (Items: any) => {
                 let web = new Web(siteUrls);
                 let item = web.lists.getByTitle(Items.Items.listName).items.getById(Items.Items.Id);
                 item.attachmentFiles.getByName(imageName).recycle();
-                UpdateBasicImageInfoJSON(tempArray);
+                UpdateBasicImageInfoJSON(tempArray, "Upload", 0);
                 console.log("Attachment deleted");
 
             })().catch(console.log)
@@ -2884,6 +2899,7 @@ const EditTaskPopup = (Items: any) => {
                 let item = web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id);
                 item.attachmentFiles.getByName(ImageName).setContent(data);
                 console.log("Attachment Updated");
+                UpdateBasicImageInfoJSON(EditData.UploadedImage, "Update", ImageIndex);
             })().catch(console.log)
         } else {
             (async () => {
@@ -2891,6 +2907,7 @@ const EditTaskPopup = (Items: any) => {
                 let item = web.lists.getById(Items.Items.listName).items.getById(Items.Items.Id);
                 item.attachmentFiles.getByName(ImageName).setContent(data);
                 console.log("Attachment Updated");
+                UpdateBasicImageInfoJSON(EditData.UploadedImage, "Update", ImageIndex);
             })().catch(console.log)
         }
         setTaskImages(EditData.UploadedImage);
@@ -2948,75 +2965,75 @@ const EditTaskPopup = (Items: any) => {
         setModalIsOpen(true);
         UpdateTaskInfoFunction("Image-Tab");
         // GetExtraLookupColumnData();
-        if (CommentBoxData?.length > 0 || SubCommentBoxData?.length > 0) {
-            if (CommentBoxData?.length == 0 && SubCommentBoxData?.length > 0) {
-                let message = JSON.parse(EditData.FeedBack);
-                let feedbackArray: any = [];
-                if (message != null) {
-                    feedbackArray = message[0]?.FeedBackDescriptions
-                }
-                let tempArray: any = [];
-                if (feedbackArray[0] != undefined) {
-                    tempArray.push(feedbackArray[0])
-                } else {
-                    let tempObject: any =
-                    {
-                        "Title": '<p> </p>',
-                        "Completed": false,
-                        "isAddComment": false,
-                        "isShowComment": false,
-                        "isPageType": '',
-                    }
-                    tempArray.push(tempObject);
-                }
+        // if (CommentBoxData?.length > 0 || SubCommentBoxData?.length > 0) {
+        //     if (CommentBoxData?.length == 0 && SubCommentBoxData?.length > 0) {
+        //         let message = JSON.parse(EditData.FeedBack);
+        //         let feedbackArray: any = [];
+        //         if (message != null) {
+        //             feedbackArray = message[0]?.FeedBackDescriptions
+        //         }
+        //         let tempArray: any = [];
+        //         if (feedbackArray[0] != undefined) {
+        //             tempArray.push(feedbackArray[0])
+        //         } else {
+        //             let tempObject: any =
+        //             {
+        //                 "Title": '<p> </p>',
+        //                 "Completed": false,
+        //                 "isAddComment": false,
+        //                 "isShowComment": false,
+        //                 "isPageType": '',
+        //             }
+        //             tempArray.push(tempObject);
+        //         }
 
-                CommentBoxData = tempArray;
-                let result: any = [];
-                if (SubCommentBoxData == "delete") {
-                    result = tempArray
-                } else {
-                    result = tempArray.concat(SubCommentBoxData);
-                }
-                updateFeedbackArray[0].FeedBackDescriptions = result;
-            }
-            if (CommentBoxData?.length > 0 && SubCommentBoxData?.length == 0) {
-                let result: any = [];
-                if (SubCommentBoxData == "delete") {
-                    result = CommentBoxData;
-                } else {
-                    let message = JSON.parse(EditData.FeedBack);
-                    if (message != null) {
-                        let feedbackArray = message[0]?.FeedBackDescriptions;
-                        feedbackArray?.map((array: any, index: number) => {
-                            if (index > 0) {
-                                SubCommentBoxData.push(array);
-                            }
-                        })
-                        result = CommentBoxData.concat(SubCommentBoxData);
-                    } else {
-                        result = CommentBoxData;
-                    }
-                }
-                updateFeedbackArray[0].FeedBackDescriptions = result;
-            }
-            if (CommentBoxData?.length > 0 && SubCommentBoxData?.length > 0) {
-                let result: any = [];
-                if (SubCommentBoxData == "delete") {
-                    result = CommentBoxData
-                } else {
-                    result = CommentBoxData.concat(SubCommentBoxData)
-                }
-                updateFeedbackArray[0].FeedBackDescriptions = result;
-            }
-        } else {
-            updateFeedbackArray = JSON.parse(EditData.FeedBack);
-        }
-        let AllEditData: any = updateFeedbackArray[0].FeedBackDescriptions
+        //         CommentBoxData = tempArray;
+        //         let result: any = [];
+        //         if (SubCommentBoxData == "delete") {
+        //             result = tempArray
+        //         } else {
+        //             result = tempArray.concat(SubCommentBoxData);
+        //         }
+        //         updateFeedbackArray[0].FeedBackDescriptions = result;
+        //     }
+        //     if (CommentBoxData?.length > 0 && SubCommentBoxData?.length == 0) {
+        //         let result: any = [];
+        //         if (SubCommentBoxData == "delete") {
+        //             result = CommentBoxData;
+        //         } else {
+        //             let message = JSON.parse(EditData.FeedBack);
+        //             if (message != null) {
+        //                 let feedbackArray = message[0]?.FeedBackDescriptions;
+        //                 feedbackArray?.map((array: any, index: number) => {
+        //                     if (index > 0) {
+        //                         SubCommentBoxData.push(array);
+        //                     }
+        //                 })
+        //                 result = CommentBoxData.concat(SubCommentBoxData);
+        //             } else {
+        //                 result = CommentBoxData;
+        //             }
+        //         }
+        //         updateFeedbackArray[0].FeedBackDescriptions = result;
+        //     }
+        //     if (CommentBoxData?.length > 0 && SubCommentBoxData?.length > 0) {
+        //         let result: any = [];
+        //         if (SubCommentBoxData == "delete") {
+        //             result = CommentBoxData
+        //         } else {
+        //             result = CommentBoxData.concat(SubCommentBoxData)
+        //         }
+        //         updateFeedbackArray[0].FeedBackDescriptions = result;
+        //     }
+        // } else {
+        //     updateFeedbackArray = JSON.parse(EditData.FeedBack);
+        // }
+        // let AllEditData: any = updateFeedbackArray[0].FeedBackDescriptions
         // AllEditData.FeedBackArray = updateFeedbackArray;
         FeedBackCount++;
-        console.log(updateFeedbackArray)
-        setEditData((prev: any) => ({ ...prev, FeedBackArray: AllEditData }))
-        console.log(EditData)
+        // console.log(updateFeedbackArray)
+        // setEditData((prev: any) => ({ ...prev, FeedBackArray: AllEditData }))
+        // console.log(EditData)
     }
 
     const CommonClosePopupFunction = () => {
@@ -3078,7 +3095,7 @@ const EditTaskPopup = (Items: any) => {
     }
 
     const SaveImageDescription = () => {
-        UpdateBasicImageInfoJSON(TaskImages);
+        UpdateBasicImageInfoJSON(TaskImages, "Upload", 0);
         closeAddImageDescriptionFunction();
     }
 
