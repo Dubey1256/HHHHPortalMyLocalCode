@@ -21,7 +21,7 @@ import MeetingPopupComponent from '../../../globalComponents/MeetingPopup/Meetin
 import TagTaskToProjectPopup from '../../projectManagement/components/TagTaskToProjectPopup';
 import MettingTable from './MeetingFooterTable';
 import { map } from 'jquery';
-
+var count=0;
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
 var AllListId: any;
@@ -29,13 +29,17 @@ var taskUsers: any;
 var currentUser: any;
 var buttonId:any;
 var resultDatabackup:any;
-
+var dataLength: any = [];
 var meetinDatabackup:any
+let allData: any = [];
 const mycontextValue:any = React.createContext<any>({ AllListId: {}, context: {},  currentUser: {}, taskUsers: [] });
 const MeetingProfile = (props: any) => {
+ 
   const [commenttoPost, setCommenttoPost] = React.useState("")
   const [updateComment, setUpdateComment] = React.useState(false);
   const [resultData, setResultData] = React.useState<any>({})
+  const [timesheetListConfig,setTimesheetListConfig]=React.useState<any>()
+  const [AllSite, setAllSite] = React.useState<any>([]);
   const relevantDocRef = React.useRef<any>();
   const smartInfoRef = React.useRef<any>();
     const [meetingId, setmeetingId] = React.useState(null)
@@ -72,7 +76,13 @@ const MeetingProfile = (props: any) => {
         GetTaskUsers().then((data) => {
             console.log(data)
             currentUser = GetUserObject(props?.props?.userDisplayName);
-            getQueryVariable()
+            smartMetaData().then((data:any)=>{
+              if(data!=undefined){
+                getQueryVariable()
+              }
+              
+            })
+           
         }).catch((error: any) => {
             console.log(error)
         });
@@ -80,7 +90,83 @@ const MeetingProfile = (props: any) => {
 
 
     }, [])
+    const smartMetaData = async () => {
+return new Promise<void>((resolve, reject) => {
+  let sites = [];
+  
+  const web = new Web(props.props?.siteUrl);
+        web.lists
+      .getById(props?.props?.SmartMetadataListID,)
+      .items.select("Configurations", "ID", "Title", "TaxType", "listId")
+      .filter("TaxType eq 'Sites'or TaxType eq 'timesheetListConfigrations'")
+      .getAll().then(async (data:any)=>{
+      var  AllsiteData:any = [];
 
+      var timesheetListConfig = data.filter((data3: any) => {
+        if (data3?.TaxType == 'timesheetListConfigrations') {
+            return data3;
+        }
+    });
+    setTimesheetListConfig(timesheetListConfig)
+        data?.map((item: any) => {
+          if (item.TaxType == "Sites") {
+            if (item.Title != "DRR" && item.Title != "Master Tasks" && item.Title != "SDC Sites" && item.Configurations != null)
+             {
+              AllsiteData.push(item)
+              let a: any = JSON.parse(item.Configurations);
+             a?.map((newitem: any) => {
+                dataLength.push(newitem);
+                getAllData(newitem).then((data:any)=>{
+                  resolve(data)
+                });
+              });
+             
+            }
+          }
+        });
+      
+   
+        setAllSite(AllsiteData)
+      })
+       
+      
+    
+    .catch((error:any)=>{
+        console.log(error)
+      })
+})
+     
+      
+    
+    };
+    const getAllData = async (site: any) => {
+      return new Promise<void>((resolve, reject) => {
+        const web = new Web(site?.siteUrl);
+        web.lists
+            .getById(site?.listId)
+            .items.select("Title","PercentComplete","Categories", "workingThisWeek",'TaskID' ,"IsTodaysTask","Priority","Priority_x0020_Rank","DueDate","Created","Modified","Team_x0020_Members/Id","Team_x0020_Members/Title","ID","Responsible_x0020_Team/Id","Responsible_x0020_Team/Title","Editor/Title","Editor/Id","Author/Title","Author/Id","AssignedTo/Id","AssignedTo/Title")
+            .expand("Team_x0020_Members","Author","Editor","Responsible_x0020_Team","AssignedTo")
+            .top(5000)
+            .getAll()
+            .then((data: any) => {
+                   count++;
+                   data.map((items:any)=>{
+                    items.siteType=site?.Title
+                   })
+                   allData= allData.concat(data)
+                   if (count == dataLength.length) {
+                    resolve(allData)
+                   }
+                 
+               })
+            
+            .catch((err: any) => {
+                console.log("then catch error", err);
+            });
+      })
+     
+  };
+  
     //  ============current user details=========
     const GetUserObject = (username: any) => {
         //username = username.Title != undefined ? username.Title : username;
@@ -174,16 +260,11 @@ const MeetingProfile = (props: any) => {
 
                 .select("Id", "Title", "DueDate", "AssignedTo/Id","Attachments","Sitestagging", "FeedBack", "PortfolioStructureID","AssignedTo/Title", "ResponsibleTeam/Title", "ResponsibleTeam/Id", 'AttachmentFiles', "ShortDescriptionVerified", "BasicImageInfo", 'Author/Id', 'Author/Title', "Editor/Title", "Editor/Id", "OffshoreComments", "OffshoreImageUrl", "TeamMembers/Id", "TeamMembers/Title")
 
-                // .top(5000)
+             
 
                 .expand("AssignedTo", 'ResponsibleTeam', "AttachmentFiles", "Author", "Editor", "TeamMembers").get()
-            // await web.lists
-            //     .getById(AllListId?.MasterTaskListID)
-            //     .items.select("Id", "Title", "DueDate", "AssignedTo/Id", "AssignedTo/Title", "ResponsibleTeam/Title", "ResponsibleTeam/Id",'Attachments', 'AttachmentFiles', "ShortDescriptionVerified", "TaskType/Title", "BasicImageInfo", 'Author/Id', 'Author/Title', "Editor/Title", "Editor/Id", "OffshoreComments", "OffshoreImageUrl", "TeamMembers/Id", "TeamMembers/Title")
-            //     .expand("AssignedTo", 'ResponsibleTeam', "AttachmentFiles", "Author", 'TaskType', "Editor", "TeamMembers")
-            //     .getById(AllListId?.meetingId)
-            //     .get()
-                .then((taskDetails: any) => {
+            
+                .then(async (taskDetails: any) => {
                     console.log(taskDetails)
                     
     if (taskDetails["AssignedTo"] != undefined) {
@@ -201,19 +282,25 @@ const MeetingProfile = (props: any) => {
   
         });
       }
-  
+    let siteTaggJson:any=  taskDetails.Sitestagging!=undefined?JSON.parse(taskDetails.Sitestagging):null
+  let  siteTagg2 :any=[]
+  allData.map((item:any)=>{
+      siteTagg2= siteTagg2.concat(siteTaggJson.filter((data:any)=>data.Id==item.Id && data.siteType==item.siteType))
+  })
+
       var array2: any = taskDetails["AssignedTo"] != undefined ? taskDetails["AssignedTo"] : []
       if (taskDetails["TeamMembers"] != undefined) {
         taskDetails.array = array2.concat(taskDetails["TeamMembers"]?.filter((item: any) => array2?.Id != item?.Id))
   
       }
+    
                  
                     let data = {
                         Id: taskDetails.Id,
                         Title: taskDetails?.Title,
                         MeetingId:taskDetails?.PortfolioStructureID,
                         listName:"Master Tasks",
-                        Sitestagging:taskDetails.Sitestagging!=undefined?JSON.parse(taskDetails.Sitestagging):null,
+                        Sitestagging:siteTagg2!=undefined &&siteTagg2.length>0?siteTagg2:null,
                         DueDate: taskDetails["DueDate"],
                         Created: taskDetails["Created"],
                         Creation: taskDetails["Created"],
@@ -739,19 +826,9 @@ const MeetingProfile = (props: any) => {
             })
             
           }
-            meetingTagTask.push(tagTask[0]);
+            meetingTagTask=meetingTagTask.concat(tagTask);
           
-          // tagTask.map((task:any)=>{
-          //   var data={
-          //    Id:task?.Id,
-          //    Title:task?.Title,
-          //    siteType:task?.siteType,
-          //    PriorityRank:task?.PriorityRank,
-          //    Component:task?.Component
-          //   }
-          //   meetingTagTask.push(data);
-  
-          // })
+          
           let web = new Web(props?.props?.siteUrl);
           const i = await web.lists
               .getById(AllListId?.MasterTaskListID)
@@ -779,17 +856,17 @@ const MeetingProfile = (props: any) => {
           <mycontextValue.Provider value={{ ...mycontextValue, AllListId: AllListId, Context: props?.props?.Context,  currentUser: currentUser, taskUsers: taskUsers }}>
             <div>
               {console.log("resultData",resultData)}
-                <section className='row p-0'>
+                <section className='row'>
                     <h2 className="heading d-flex ps-0 justify-content-between align-items-center">
                         <span>
-                            {resultData["SiteIcon"] != "" && <img className="imgWid29 pe-1 " title={resultData?.siteType} src={resultData["SiteIcon"]} />}
-                            {resultData["SiteIcon"] === "" && <img className="imgWid29 pe-1 " src="" />}
+                            {/* {resultData["SiteIcon"] != "" && <img className="imgWid29 pe-1 " title={resultData?.siteType} src={resultData["SiteIcon"]} />}
+                            {resultData["SiteIcon"] === "" && <img className="imgWid29 pe-1 " src="" />} */}
                             <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                <span title={resultData['Title']}>
+                                <span >
                                     {resultData['Title']}</span>
-                                <span className="f-13 popover__content" >
+                                {/* <span className="f-13 popover__content" >
                                     {resultData['Title']}
-                                </span>
+                                </span> */}
                             </span>
                             <a className="hreflink" title='Edit'
                               onClick={() => setshowMeetingPopup(true)}
@@ -809,7 +886,7 @@ const MeetingProfile = (props: any) => {
             </div>
 
             <div className='row'>
-                <section className='col-9'>
+                <section className='col-9 ps-0'>
                     <div className='team_member row'>
                         <div className='col-6'>
                         <dl>
@@ -888,7 +965,7 @@ const MeetingProfile = (props: any) => {
                     <div className="col mt-2">
                         <div className="Taskaddcomment row">
                             {resultData?.BasicImageInfo != null && resultData?.BasicImageInfo.length > 0 ?
-                                <div className="bg-white col-sm-4 mt-4 p-0">
+                                <div className="bg-white col-sm-4 mt-4 pe-0">
                                 {resultData?.BasicImageInfo != null || resultData?.BasicImageInfo != '' ? resultData?.BasicImageInfo?.map((imgData: any, i: any) => {
                                     return (
                                     <div className="taskimage border mb-3 mt-2">
@@ -1266,7 +1343,7 @@ const MeetingProfile = (props: any) => {
                 <section className='col-3' >
                     <div>
                         <div>
-                            {AllListId != null && <CommentCard siteUrl={props?.props?.siteUrl}listName={resultData?.listName} AllListId={AllListId} Context={props?.props.Context} itemID={AllListId.meetingId}></CommentCard>}
+                            {AllListId != null && <CommentCard siteUrl={props?.props?.siteUrl}listName={"Master Tasks"} AllListId={AllListId} Context={props?.props.Context} itemID={AllListId.meetingId}></CommentCard>}
 
                             {AllListId != null &&<AncTool 
                     item={resultData}
@@ -1300,7 +1377,7 @@ const MeetingProfile = (props: any) => {
              
             <section>
                     <section className='col-sm-12'>
-                    {resultData?.Sitestagging?.length>0&&<MettingTable data={resultData.Sitestagging}/>}
+                    {resultData?.Sitestagging?.length>0&&<MettingTable data={resultData.Sitestagging}AllListId={AllListId}/>}
                     </section>
                      
           

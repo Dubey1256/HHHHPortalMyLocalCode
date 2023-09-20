@@ -1508,7 +1508,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     return (
       <>
 
-        <div className='ps-4 siteColor subheading' >
+        <div className='siteColor subheading' >
           Update Comment
         </div>
         <Tooltip ComponentId='1683' />
@@ -1855,13 +1855,13 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                             <div className="spxdropdown-menu" style={{ display: this.state.ShowEstimatedTimeDescription ? 'block' : 'none' }}>
                               <div className="col-12" style={{ fontSize: "14px" }}>
                                 {this.state.Result?.EstimatedTimeDescriptionArray != null && this.state.Result?.EstimatedTimeDescriptionArray?.length > 0 ?
-                                  <div className="p-1">
+                                  <div>
                                     {this.state.Result?.EstimatedTimeDescriptionArray?.map((EstimatedTimeData: any, Index: any) => {
                                       return (
-                                        <div className={this.state.Result?.EstimatedTimeDescriptionArray?.length == Index + 1 ? "align-content-center d-flex justify-content-between p-1 px-2" : "align-content-center border-bottom d-flex justify-content-between p-1 px-2"}>
+                                        <div className={this.state.Result?.EstimatedTimeDescriptionArray?.length == Index + 1 ? "align-content-center alignCenter  p-1 px-2" : "align-content-center border-bottom alignCenter p-1 px-2"}>
                                           <img className="ProirityAssignedUserPhoto m-0" title={EstimatedTimeData.UserName} src={EstimatedTimeData.UserImage != undefined && EstimatedTimeData.UserImage?.length > 0 ? EstimatedTimeData.UserImage : ''} />
-                                          <span>{EstimatedTimeData.Team ? EstimatedTimeData.Team : null}</span> |
-                                          <span>Time : {EstimatedTimeData.EstimatedTime ? (EstimatedTimeData.EstimatedTime > 1 ? EstimatedTimeData.EstimatedTime + " hours" : EstimatedTimeData.EstimatedTime + " hour") : "0 hour"}</span>
+                                          <span className='mx-2'>{EstimatedTimeData.Team ? EstimatedTimeData.Team : null}</span> |
+                                          <span className='ms-2 me-1'>Time : {EstimatedTimeData.EstimatedTime ? (EstimatedTimeData.EstimatedTime > 1 ? EstimatedTimeData.EstimatedTime + " hours" : EstimatedTimeData.EstimatedTime + " hour") : "0 hour"}</span>
                                           <span className="svg__iconbox svg__icon--info" title={EstimatedTimeData.EstimatedTimeDescription} ></span>
                                         </div>
                                       )
@@ -2294,8 +2294,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                             <div className='col'><textarea id="txtUpdateComment" rows={6} className="full-width" onChange={(e) => this.handleUpdateComment(e)}  >{this.state?.CommenttoUpdate}</textarea></div>
                                           </div>
                                           <footer className='modal-footer'>
+                                          <button className="btn btn-primary ms-1" onClick={(e) => this.updateComment()}>Save</button>
                                             <button className='btn btn-default ms-1' onClick={this.Closecommentpopup}>Cancel</button>
-                                            <button className="btn btn-primary ms-1" onClick={(e) => this.updateComment()}>Save</button>
+                                           
 
                                           </footer>
 
