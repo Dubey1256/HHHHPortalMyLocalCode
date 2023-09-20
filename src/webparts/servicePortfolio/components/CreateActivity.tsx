@@ -766,6 +766,7 @@ const CreateActivity = (props: any) => {
 
         if (save?.IsShowSelectedSite === false && AllItems?.NoteCall !== 'Task')
             alert("Please select the site")
+
         else {
             FeedBackItemArray.push(FeedBackItem?.FeedBackDescriptions != undefined ? FeedBackItem : "")
             var TaskprofileId: any = ''

@@ -48,7 +48,7 @@ const SelectFilterPanel = (props: any) => {
         return (
             <div className="d-flex full-width pb-1">
                 <div className="subheading">
-                    <span style={{ color: `${props?.portfolioColor}` }}>Select Filter</span>
+                    <span style={{ color: `${props?.portfolioColor}` }}>Settings Advanced Search</span>
                 </div>
             </div>
         );
@@ -57,7 +57,7 @@ const SelectFilterPanel = (props: any) => {
     return (
         <Panel
             type={PanelType.custom}
-            customWidth="250px"
+            customWidth="310px"
             isOpen={props?.isOpen}
             onDismiss={setModalIsOpenToFalse}
             onRenderHeader={onRenderCustomHeader}
@@ -69,17 +69,7 @@ const SelectFilterPanel = (props: any) => {
                     <div className="">
                         <div>
                             <label>
-                                <input style={props?.portfolioColor ? { marginRight: '6px', marginBottom: '6px', backgroundColor: `${props?.portfolioColor}`, borderColor: `${props?.portfolioColor}` }:{ marginRight: '6px', marginBottom: '6px', backgroundColor:"", borderColor: "" }} className="cursor-pointer form-check-input rounded-0"
-                                    type="checkbox"
-                                    name="selectAll"
-                                    checked={props?.selectedFilterPannelData.Title.Selected && props?.selectedFilterPannelData.commentsSearch.Selected && props?.selectedFilterPannelData.descriptionsSearch.Selected}
-                                    onChange={handleSelectAllChange}
-                                />
-                                Select All
-                            </label>
-                            <br />
-                            <label>
-                                <input className="cursor-pointer form-check-input rounded-0" style={props?.portfolioColor ? { marginRight: '6px', marginBottom: '6px', backgroundColor: `${props?.portfolioColor}`, borderColor: `${props?.portfolioColor}` }:{ marginRight: '6px', marginBottom: '6px', backgroundColor:"", borderColor: "" }}
+                                <input className="cursor-pointer form-check-input rounded-0" style={props?.selectedFilterPannelData.Title.Selected && props?.portfolioColor ? { marginRight: '6px', marginBottom: '6px', backgroundColor: `${props?.portfolioColor}`, borderColor: `${props?.portfolioColor}` } : { marginRight: '6px', marginBottom: '6px', backgroundColor: "", borderColor: "" }}
                                     type="checkbox"
                                     name="Title"
                                     checked={props?.selectedFilterPannelData.Title.Selected}
@@ -89,7 +79,17 @@ const SelectFilterPanel = (props: any) => {
                             </label>
                             <br />
                             <label>
-                                <input className="cursor-pointer form-check-input rounded-0" style={props?.portfolioColor ? { marginRight: '6px', marginBottom: '6px', backgroundColor: `${props?.portfolioColor}`, borderColor: `${props?.portfolioColor}` }:{ marginRight: '6px', marginBottom: '6px', backgroundColor:"", borderColor: "" }}
+                                <input className="cursor-pointer form-check-input rounded-0" style={props?.selectedFilterPannelData.descriptionsSearch.Selected && props?.portfolioColor ? { marginRight: '6px', marginBottom: '6px', backgroundColor: `${props?.portfolioColor}`, borderColor: `${props?.portfolioColor}` } : { marginRight: '6px', marginBottom: '6px', backgroundColor: "", borderColor: "" }}
+                                    type="checkbox"
+                                    name="descriptionsSearch"
+                                    checked={props?.selectedFilterPannelData.descriptionsSearch.Selected}
+                                    onChange={handleCheckboxChange}
+                                />
+                                Descriptions
+                            </label>
+                            <br />
+                            <label>
+                                <input className="cursor-pointer form-check-input rounded-0" style={props?.selectedFilterPannelData.commentsSearch.Selected && props?.portfolioColor ? { marginRight: '6px', marginBottom: '6px', backgroundColor: `${props?.portfolioColor}`, borderColor: `${props?.portfolioColor}` } : { marginRight: '6px', marginBottom: '6px', backgroundColor: "", borderColor: "" }}
                                     type="checkbox"
                                     name="commentsSearch"
                                     checked={props?.selectedFilterPannelData.commentsSearch.Selected}
@@ -99,26 +99,26 @@ const SelectFilterPanel = (props: any) => {
                             </label>
                             <br />
                             <label>
-                                <input className="cursor-pointer form-check-input rounded-0" style={props?.portfolioColor ? { marginRight: '6px', marginBottom: '6px', backgroundColor: `${props?.portfolioColor}`, borderColor: `${props?.portfolioColor}` }:{ marginRight: '6px', marginBottom: '6px', backgroundColor:"", borderColor: "" }}
+                                <input style={props?.selectedFilterPannelData.Title.Selected && props?.selectedFilterPannelData.commentsSearch.Selected && props?.selectedFilterPannelData.descriptionsSearch.Selected && props?.portfolioColor ? { marginRight: '6px', marginBottom: '6px', backgroundColor: `${props?.portfolioColor}`, borderColor: `${props?.portfolioColor}` } : { marginRight: '6px', marginBottom: '6px', backgroundColor: "", borderColor: "" }} className="cursor-pointer form-check-input rounded-0"
                                     type="checkbox"
-                                    name="descriptionsSearch"
-                                    checked={props?.selectedFilterPannelData.descriptionsSearch.Selected}
-                                    onChange={handleCheckboxChange}
+                                    name="selectAll"
+                                    checked={props?.selectedFilterPannelData.Title.Selected && props?.selectedFilterPannelData.commentsSearch.Selected && props?.selectedFilterPannelData.descriptionsSearch.Selected}
+                                    onChange={handleSelectAllChange}
                                 />
-                                Descriptions
+                                Select All
                             </label>
                         </div>
                     </div>
                 </div>
             </div>
             <footer>
-            <button type="button" className="btn btn-default pull-right" style={{ backgroundColor: `${props?.portfolioColor}`, borderColor:`${props?.portfolioColor}` }} onClick={setModalIsOpenToFalse}>
+                <button type="button" className="btn btn-default pull-right" style={{ backgroundColor: `${props?.portfolioColor}`, borderColor: `${props?.portfolioColor}` }} onClick={setModalIsOpenToFalse}>
                     Cancel
                 </button>
                 <button type="button" className="btn btn-primary mx-1 pull-right" style={{ backgroundColor: `${props?.portfolioColor}` }} onClick={() => handleChangeData()}>
                     Apply
                 </button>
-                
+
             </footer>
         </Panel>
     );
