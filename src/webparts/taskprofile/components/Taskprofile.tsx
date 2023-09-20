@@ -2067,11 +2067,11 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                           <div><span dangerouslySetInnerHTML={{ __html: fbComment?.Title.replace(/\n/g, "<br />") }}></span></div>
                                                         </div>
                                                       </div>
-                                                      <div className="col-12 ps-3 pe-0">
+                                                      <div className="col-12 ps-3 pe-0 mt-1">
                                                         {fbComment?.ReplyMessages != undefined && fbComment?.ReplyMessages.length > 0 && fbComment?.ReplyMessages?.map((replymessage: any, index: any) => {
                                                           return (
                                                             <div className="d-flex border ms-3 p-2  mb-1">
-                                                              <div className="col-1 p-0 mx-1">
+                                                              <div className="col-1 p-0 wid30">
                                                                 <img className="workmember" src={replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != '' ?
                                                                   replymessage.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
                                                               </div>
@@ -2228,11 +2228,11 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                             <div ><span dangerouslySetInnerHTML={{ __html: fbComment?.Title.replace(/\n/g, "<br />") }}></span></div>
                                                           </div>
                                                         </div>
-                                                        <div className="col-12 ps-3 pe-0">
+                                                        <div className="col-12 ps-3 pe-0 mt-1">
                                                           {fbComment?.ReplyMessages != undefined && fbComment?.ReplyMessages.length > 0 && fbComment?.ReplyMessages?.map((replymessage: any, ReplyIndex: any) => {
                                                             return (
                                                               <div className="d-flex border ms-3 p-2  mb-1">
-                                                                <div className="col-1 p-0 mx-1">
+                                                                <div className="col-1 p-0 wid30">
                                                                   <img className="workmember" src={replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != '' ?
                                                                     replymessage.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
                                                                 </div>

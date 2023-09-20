@@ -1,7 +1,11 @@
 import { Panel, PanelType } from 'office-ui-fabric-react'
 import React, { useState } from 'react'
 import { Web } from "sp-pnp-js";
+import * as Moment from 'moment';
+import ComponentPortPolioPopup from '../../EditPopupFiles/ComponentPortfolioSelection';
 import Button from 'react-bootstrap/Button';
+import LinkedComponent from '../../../globalComponents/EditTaskPopup/LinkedComponent';
+import PortfolioTagging from './PortfolioTagging';
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 let portfolioType = '';
 let AllListId: any = {};
@@ -25,12 +29,7 @@ const AddProject = (props: any) => {
                     selectedComponent.push(smart?.Id);
                 })
             }
-            let selectedService: any[] = [];
-            if (linkedComponentData !== undefined && linkedComponentData.length > 0) {
-                $.each(linkedComponentData, function (index: any, smart: any) {
-                    selectedService.push(smart?.Id);
-                })
-            }
+          
             let web = new Web(props?.AllListId?.siteUrl);
             await web.lists.getById(props?.AllListId?.MasterTaskListID).items
                 .select("Id,Title,PortfolioLevel,PortfolioStructureID").filter("Item_x0020_Type eq 'Project'")
@@ -71,15 +70,8 @@ const AddProject = (props: any) => {
             setIsComponent(false);
             setIsPortfolio(false);
         } else {
-            if (Type === "Service") {
-                if (DataItem?.length > 0) {
-                    setLinkedComponentData(DataItem);
-                }
-            }
-            if (Type === "Component") {
-                if (DataItem?.length > 0) {
-                    setSmartComponentData(DataItem);
-                }
+            if (DataItem?.length > 0) {
+                setSmartComponentData(DataItem);
             }
             setIsPortfolio(false);
         }
@@ -146,9 +138,7 @@ const AddProject = (props: any) => {
                                 <input type="text"
                                     readOnly className="form-control" />
                                 <span className="input-group-text">
-                                    <svg onClick={(e) => EditPortfolio(save, 'Component')} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
-                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z" fill="#333333" />
-                                    </svg>
+                                    <span onClick={(e) => EditPortfolio(save, 'Component')} title="Edit Portfolios" className="svg__iconbox svg__icon--editBox"></span>
                                 </span>
                             </div>
                             {smartComponentData?.length > 0 ?

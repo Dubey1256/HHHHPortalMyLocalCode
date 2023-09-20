@@ -729,7 +729,7 @@ export const loadTaskUsers = async () => {
         taskUser = await web.lists
             .getById('b318ba84-e21d-4876-8851-88b94b9dc300')
             .items
-            .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+            .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
             .get();
     }
     catch (error) {
@@ -1775,7 +1775,7 @@ const AllTaskUsers = async (siteUrl: any, ListId: any) => {
         taskUser = await web.lists
             .getById(ListId)
             .items
-            .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+            .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
             .get();
     }
     catch (error) {
@@ -1813,8 +1813,8 @@ export const GetTaskId = (Item: any) => {
     }
     if (Item?.Portfolio?.PortfolioStructureID != undefined && Item.TaskID == undefined) {
         taskIds = Item?.Portfolio?.PortfolioStructureID + '-T' + Item.Id;
-     }
-     else if(Item?.Portfolio==undefined){
+    }
+    else if (Item?.Portfolio == undefined) {
         taskIds = 'T' + Item.Id;
     }
     // else if(Item.TaskID==undefined){
@@ -1847,7 +1847,7 @@ export const findTaskHierarchy = (row: any, AllMatsterAndTaskData: any): any[] =
                 Object.subRows.push(row);
                 return createGrouping(Object);
             }
-            else if (row?.Portfolio != undefined && Object.Id === row?.Portfolio?.Id && row?.ParentTask?.Id==undefined) {
+            else if (row?.Portfolio != undefined && Object.Id === row?.Portfolio?.Id && row?.ParentTask?.Id == undefined) {
                 Object.subRows = [];
                 Object.subRows.push(row);
                 return createGrouping(Object);
@@ -1857,30 +1857,25 @@ export const findTaskHierarchy = (row: any, AllMatsterAndTaskData: any): any[] =
     }
     return createGrouping(row);
 };
-export const loadAllTimeEntry = async (timesheetListConfig:any) => {
-    var AllTimeEntry:any=[]
-    if (timesheetListConfig?.Id !=undefined) {
+
+export const loadAllTimeEntry = async (timesheetListConfig: any) => {
+    var AllTimeEntry: any = []
+    if (timesheetListConfig?.Id != undefined) {
         let timesheetLists: any = [];
-        let taskLists: any = [];
         timesheetLists = JSON.parse(timesheetListConfig?.Configurations)
-        taskLists = JSON.parse(timesheetListConfig?.Description)
         if (timesheetLists?.length > 0) {
             const fetchPromises = timesheetLists.map(async (list: any) => {
                 let web = new Web(list?.siteUrl);
                 try {
-                    const data = await web.lists
-                        .getById(list?.listId)
-                        .items.select(list?.query)
-                        .getAll();
-                        AllTimeEntry=[...AllTimeEntry,...data];
+                    const data = await web.lists.getById(list?.listId).items.select(list?.query).getAll();
+                    AllTimeEntry = [...AllTimeEntry, ...data];
                 } catch (error) {
                     console.log(error, 'HHHH Time');
                 }
             });
-
             await Promise.all(fetchPromises)
             return AllTimeEntry
         }
 
-    }
+    } 
 }
