@@ -508,6 +508,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                             Context={Context}
                                             ApprovalStatus={ApprovalStatus}
                                             isCurrentUserApprover={isCurrentUserApprover}
+                                            SmartLightStatus={obj.isShowLight}
                                         />
                                     </div>
                                     <div>

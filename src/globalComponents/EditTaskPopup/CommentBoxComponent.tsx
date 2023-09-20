@@ -60,7 +60,7 @@ const CommentBoxComponent = (commentData: any) => {
             setIsCurrentUserApprover(true);
         }
         getCurrentUserDetails();
-    }, [])
+    }, [commentData.FeedbackCount])
 
     const getCurrentUserDetails = async () => {
         let currentUserId: number;
@@ -283,6 +283,8 @@ const CommentBoxComponent = (commentData: any) => {
                                             Context={Context}
                                             ApprovalStatus={ApprovalStatus}
                                             isCurrentUserApprover={isCurrentUserApprover}
+                                            FeedbackCount = {commentData.FeedbackCount}
+                                            SmartLightStatus = {obj.isShowLight}
                                         />
                                     </div>
                                     <div>
@@ -299,6 +301,7 @@ const CommentBoxComponent = (commentData: any) => {
                                             Context={Context}
                                             isCurrentUserApprover={isCurrentUserApprover}
                                             isFirstComment = {true}
+                                            FeedbackCount = {commentData.FeedbackCount}
                                         />
                                     </div>
                                 </div>
