@@ -1202,10 +1202,10 @@ const SiteCompositionComponent = (Props: any) => {
     const onRenderComponentChildrenHeader = () => {
         return (
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"} >
-                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                <div className="sub">
                     <span>
                         Select Item
-                    </span>
+                    </span> 
                 </div>
                 <Tooltip ComponentId="1263" />
             </div>

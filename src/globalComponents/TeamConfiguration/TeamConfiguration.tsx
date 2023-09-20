@@ -2,6 +2,7 @@ import React from 'react';
 import { TbTruckDelivery } from 'react-icons/tb';
 import { Web } from "sp-pnp-js";
 import Tooltip from '../Tooltip';
+import {SlArrowRight, SlArrowLeft, SlArrowUp, SlArrowDown}from "react-icons/sl";
 
 export interface ITeamConfigurationProps {
     parentCallback: (dt: any) => void;
@@ -416,9 +417,9 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                         <div ng-if="teamUserExpanded" className="d-flex justify-content-between align-items-center commonheader" ng-click="forCollapse()">
                             <span>
                                 {this.state.TeamUserExpended ?
-                                    <img onClick={() => this.setState({ TeamUserExpended: false })} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
+                                   <SlArrowRight  onClick={() => this.setState({ TeamUserExpended: false })}></SlArrowRight>
                                     :
-                                    <img onClick={() => this.setState({ TeamUserExpended: true })} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />
+                                    <SlArrowDown onClick={() => this.setState({ TeamUserExpended: true })}></SlArrowDown>
                                 }
                                 <span className='mx-2'>
                                     Select Team Members
@@ -470,7 +471,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                             <div className="row ">
 
                                 <div className="col-sm-7">
-                                    <h6>Team Members</h6>
+                                    <h6 className='mb-0'>Team Members</h6>
                                     <div className="d-flex p-1  UserTimeTabGray">
                                         <div className="col-sm-5 border-end p-0" >
                                             <div className="col"
@@ -518,7 +519,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                 </div>
 
                                 <div className='col-sm-3'>
-                                    <h6 >Working Members</h6>
+                                    <h6  className='mb-0'>Working Members</h6>
                                     <div className="col"
                                         onDrop={(e) => this.onDropTeam1(e, this.state.AssignedToUsers, 'Assigned User', this.state.taskUsers, 'Assigned User')}
                                         onDragOver={(e) => e.preventDefault()}>

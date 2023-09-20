@@ -303,12 +303,12 @@ export default function ProjectOverview(props: any) {
             {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, getValue }) => (
-                    <>
+                    <div className='alignCenter'>
                         {row?.original?.siteType === "Project" ? <>
                             <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
                             {row?.original?.Body !== null && <InfoIconsToolTip Discription={row?.original?.Body} row={row?.original} />}
                         </> : ''}
-                        {row?.original?.Item_x0020_Type === "tasks" ? <span>
+                        {row?.original?.Item_x0020_Type === "tasks" ? <>
                             <a className='hreflink'
                                 href={`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                                 data-interception="off"
@@ -316,12 +316,12 @@ export default function ProjectOverview(props: any) {
                             >
                                 {row?.original?.Title}
                             </a>
-                            {row?.original?.Body !== null && <InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} />}
+                            {row?.original?.Body !== null && <span className='alignIcon '><InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} /></span> }
 
 
-                        </span> : ''}
+                        </> : ''}
 
-                    </>
+                    </div>
 
                 ),
                 id: "Title",
@@ -440,7 +440,7 @@ export default function ProjectOverview(props: any) {
                             <span onClick={(e) => EditDataTimeEntry(e, row.original)}
                                 className="svg__iconbox svg__icon--clock"
                                 title="Click To Edit Timesheet"  ></span>
-                            <span title="Edit Task" onClick={(e) => EditPopup(row?.original)} className="svg__iconbox svg__icon--edit hreflink" ></span>
+                            <span title="Edit Task" onClick={(e) => EditPopup(row?.original)} className="alignIcon svg__iconbox svg__icon--edit hreflink" ></span>
                         </> : ''}
                     </>
                 ),
@@ -503,7 +503,7 @@ export default function ProjectOverview(props: any) {
             {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, getValue }) => (
-                    <>
+                    <div  className='alignCenter'>
                         {row?.original?.type == 'Category' && row?.original?.Title != undefined ? row?.original?.Title : ''}
                         {row?.original?.Item_x0020_Type == "tasks" ?
                             <span>
@@ -516,7 +516,7 @@ export default function ProjectOverview(props: any) {
                                 </a>
                                 {row?.original?.Body !== null && <InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} />}
                             </span> : ''}
-                    </>
+                    </div>
 
                 ),
                 id: "Title",
@@ -735,10 +735,10 @@ export default function ProjectOverview(props: any) {
             {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, getValue }) => (
-                    <>
+                    <div  className='alignCenter'>
                         <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
                         {row?.original?.Body !== null && <InfoIconsToolTip Discription={row?.original?.Body} row={row?.original} />}
-                    </>
+                    </div>
 
                 ),
                 id: "Title",
@@ -899,7 +899,7 @@ export default function ProjectOverview(props: any) {
             {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, getValue }) => (
-                    <>
+                    <div className='alignCenter'>
                         <span>
                             <a className='hreflink'
                                 href={`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
@@ -911,7 +911,7 @@ export default function ProjectOverview(props: any) {
                             {row?.original?.Body !== null && <InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} />}
 
                         </span>
-                    </>
+                    </div>
 
                 ),
                 id: "Title",
@@ -1624,29 +1624,26 @@ export default function ProjectOverview(props: any) {
                 <div className="col-sm-12 pad0 smart">
                     <div className="section-event project-overview-Table">
                         <div >
-                            <div className='header-section justify-content-between row'>
-                                <div className="col-sm-8">
-                                    <h2 style={{ color: "#000066", fontWeight: "600" }}>Project Management Overview</h2>
-                                </div>
-                                <div className="col-sm-4 text-end">
+                            <div className='align-items-center d-flex justify-content-between'>
+                                    <h2 className='heading'>Project Management Overview</h2>
                                     <AddProject CallBack={CallBack} AllListId={AllListId} />
                                     {/* {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a></span> : ''} */}
-                                </div>
+                               
                             </div>
                             <>
-                                <div className='ProjectOverViewRadioFlat  d-flex justify-content-between'>
+                                <div className='ProjectOverViewRadioFlat  d-flex justify-content-between SpfxCheckRadio mb-2 mt-1'>
                                     <dl className='alignCenter gap-2 mb-0'>
-                                        <dt className='form-check l-radio'>
-                                            <input className='form-check-input' type="radio" value="Projects" name="date" checked={selectedView == 'Projects'} onClick={() => setSelectedView('Projects')} /> Projects
+                                        <dt>
+                                            <input className='radio' type="radio" value="Projects" name="date" checked={selectedView == 'Projects'} onClick={() => setSelectedView('Projects')} /> Projects
                                         </dt>
-                                        <dt className='form-check l-radio'>
-                                            <input className='form-check-input' type="radio" value="flat" name="date" checked={selectedView == 'flat'} onClick={() => setSelectedView('flat')} /> Today's Tasks
+                                        <dt>
+                                            <input className='radio' type="radio" value="flat" name="date" checked={selectedView == 'flat'} onClick={() => setSelectedView('flat')} /> Today's Tasks
                                         </dt>
-                                        <dt className='form-check l-radio'>
-                                            <input className='form-check-input' type="radio" value="grouped" name="date" checked={selectedView == 'grouped'} onClick={() => setSelectedView('grouped')} /> Grouped View
+                                        <dt>
+                                            <input className='radio' type="radio" value="grouped" name="date" checked={selectedView == 'grouped'} onClick={() => setSelectedView('grouped')} /> Grouped View
                                         </dt>
-                                        <dt className='form-check l-radio'>
-                                            <input className='form-check-input' type="radio" value="teamWise" name="date" checked={selectedView == 'teamWise'} onClick={() => setSelectedView('teamWise')} /> Team View
+                                        <dt>
+                                            <input className='radio' type="radio" value="teamWise" name="date" checked={selectedView == 'teamWise'} onClick={() => setSelectedView('teamWise')} /> Team View
                                         </dt>
 
                                     </dl>
