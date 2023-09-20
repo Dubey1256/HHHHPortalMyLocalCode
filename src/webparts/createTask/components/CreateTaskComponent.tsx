@@ -158,37 +158,17 @@ function CreateTaskComponent(props: any) {
         if (functionType == "Close") {
             setIsOpenPortfolio(false)
         } else {
-            if (Type == "Service") {
-                if (DataItem != undefined && DataItem.length > 0) {
-                    // saveItem.linkedServices = DataItem;
-                    // saveItem.portfolioType = "Service";
-                    setSave(prevSave => ({
-                        ...prevSave,
-                        linkedServices: DataItem,
-                        portfolioType: "Service"
-                    }));
-                    // setSave({ ...save, linkedServices: DataItem, portfolioType : "Service" });
-                    setLinkedComponentData(DataItem);
-                    // selectPortfolioType('Service')
-                    console.log("Popup component services", DataItem);
-                    setSmartComponentData([])
-                }
-
-            }
-            if (Type == "Component") {
-                if (DataItem != undefined && DataItem.length > 0) {
-                    setSave(prevSave => ({
-                        ...prevSave,
-                        Component: DataItem,
-                        portfolioType: "Component"
-                    }));
-                    // setSave({ ...save, Component: DataItem });
-                    setSmartComponentData(DataItem);
-                    // selectPortfolioType('Component');
-                    setLinkedComponentData([]);
-                    console.log("Popup component component ", DataItem)
-                }
-
+            if (DataItem != undefined && DataItem.length > 0) {
+                setSave(prevSave => ({
+                    ...prevSave,
+                    Component: DataItem,
+                    portfolioType: "Component"
+                }));
+                // setSave({ ...save, Component: DataItem });
+                setSmartComponentData(DataItem);
+                // selectPortfolioType('Component');
+                setLinkedComponentData([]);
+                console.log("Popup component component ", DataItem)
             }
             setIsOpenPortfolio(false)
         }
@@ -567,7 +547,7 @@ function CreateTaskComponent(props: any) {
             AllTaskUsers = await web.lists
                 .getById(props?.SelectedProp?.TaskUsertListID)
                 .items
-                .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,IsTaskNotifications,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+                .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsTaskNotifications,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
                 .get();
 
             // let pageContent = await globalCommon.pageContext();

@@ -6,15 +6,17 @@ import AddCommentComponent from './AddCommentComponent'
 import pnp from 'sp-pnp-js';
 import * as Moment from 'moment';
 import { Panel, PanelType } from 'office-ui-fabric-react';
+import { Web } from "sp-pnp-js";
 // import { TiMessage } from 'react-icons/ti'
 import ApprovalHistoryPopup from "./ApprovalHistoryPopup";
-
+import EditTaskPopup from "./EditTaskPopup";
+let globalCount = 0;
 export default function FroalaCommnetBoxes(textItems: any) {
     const Context = textItems.Context;
     const TextItems = textItems.textItems;
     const callBack = textItems.callBack;
-    const ItemId: any = textItems.ItemId;
-    const SiteUrl = textItems.SiteUrl
+    const taskCreatedCallback = textItems.taskCreatedCallback;
+    const TaskDetails: any = textItems.TaskListDetails;
     const [State, setState] = useState([]);
     const [Texts, setTexts] = useState(false);
     const [btnStatus, setBtnStatus] = useState(false);
@@ -24,9 +26,11 @@ export default function FroalaCommnetBoxes(textItems: any) {
     const [ApprovalPointCurrentIndex, setApprovalPointCurrentIndex] = useState('');
     const [isCurrentUserApprover, setIsCurrentUserApprover] = useState(false);
     const [ApprovalPointHistoryStatus, setApprovalPointHistoryStatus] = useState(false);
+    const [TaskPopupPanelStatus, UpdateTaskPopupPanelStatus] = useState(false);
     const [currentUserData, setCurrentUserData] = useState<any>([]);
     const [UpdatedFeedBackParentArray, setUpdatedFeedBackParentArray] = useState([]);
     let [IndexCount, setIndexCount] = useState(1);
+    const [newlyCreatedTask, UpdateNewlyCreatedTask] = useState<any>([]);
 
     let ApprovalStatus: any = textItems.ApprovalStatus;
     let SmartLightPercentStatus: any = textItems.SmartLightPercentStatus;
@@ -34,7 +38,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
     useEffect(() => {
         if (TextItems != undefined && TextItems.length > 0) {
             setState([]);
-            let testItems:any=[]
+            let testItems: any = []
             TextItems.map((item: any, index: any) => {
                 if (index > 0) {
                     if (item.ApproverData == undefined) {
@@ -92,7 +96,8 @@ export default function FroalaCommnetBoxes(textItems: any) {
             Phone: '',
             LowImportance: '',
             HighImportance: '',
-            isShowLight: ''
+            isShowLight: '',
+            TaskCreatedForThis: false
         };
         State.push(object);
         UpdatedFeedBackParentArray.push(object)
@@ -209,10 +214,6 @@ export default function FroalaCommnetBoxes(textItems: any) {
     }
 
     const subTextCallBack = useCallback((subTextData: any, subTextIndex: any) => {
-        // const copy = State;
-        // const obj = { ...State[subTextIndex], Subtext: subTextData};    
-        // copy[subTextIndex] = obj;
-        // setState(copy);
         UpdatedFeedBackParentArray[subTextIndex].Subtext = subTextData
         callBack(UpdatedFeedBackParentArray);
     }, [])
@@ -262,9 +263,107 @@ export default function FroalaCommnetBoxes(textItems: any) {
     }, [])
 
     // ********************* this is for the Approval Point History Popup ************************
-    // const ApprovalPointPopupClose = () => {
-    //     setApprovalPointHistoryStatus(false)
+
+    const CreateSeperateTaskFunction = async (FeedbackData: any, Index: any) => {
+        let callForData = textItems?.TaskUpdatedData;
+        try {
+            let UpdateJSONData: any = {};
+            UpdateJSONData = await callForData();
+            let OldItemDataDetails: any = { ...UpdateJSONData }
+            var FeedBackItem: any = {};
+            let CreateTaskFor: any = FeedbackData;
+            CreateTaskFor.Subtext = [];
+            let param: any = Moment(new Date().toLocaleString())
+            FeedBackItem['Title'] = "FeedBackPicture" + param;
+            FeedBackItem['FeedBackDescriptions'] = [CreateTaskFor];
+            FeedBackItem['ImageDate'] = "" + param;
+            FeedBackItem['Completed'] = '';
+            let FeedbackArray: any = [FeedBackItem];
+            if (UpdateJSONData?.Title?.length > 1) {
+                UpdateJSONData.FeedBack = FeedbackArray?.length > 0 != undefined ? JSON.stringify(FeedbackArray) : null;
+            }
+            let web = new Web(TaskDetails?.SiteURL);
+            await web.lists.getById(TaskDetails?.ListId).items.add(UpdateJSONData).then((res: any) => {
+                console.log("Created Task Successfully !!!");
+                let responseData: any = res.data;
+                responseData.listId = TaskDetails.ListId;
+                responseData.siteUrl = TaskDetails.SiteURL;
+                responseData.siteType = TaskDetails.siteType;
+                UpdateNewlyCreatedTask(responseData);
+                try {
+                    UpdateFeedbackDetails(responseData, Index, OldItemDataDetails);
+
+                } catch (error) {
+                    console.log("Error:", error.message)
+                }
+                UpdateTaskPopupPanelStatus(true);
+                globalCount++;
+            })
+
+
+        } catch (error) {
+            console.log("Error :", error.message);
+        }
+
+    }
+
+    const UpdateFeedbackDetails = async (NewTaskDetails: any, Index: any, OldItemData: any) => {
+        let param: any = Moment(new Date().toLocaleString());
+        let baseUrl = window.location.href;
+        let TaskURL = baseUrl.replace(TaskDetails.TaskDetails?.Id, NewTaskDetails.Id)
+        let CommentTitle: any = `A separate task for this point has been created and below is the URL for same. Task URL : ${TaskURL}`;
+        let oldTaskDetails: any = OldItemData;
+        let oldFeedbackData: any;
+        if (oldTaskDetails?.FeedBack?.length > 0) {
+            oldFeedbackData = JSON.parse(oldTaskDetails.FeedBack)
+        }
+        let FeedbackBackupArray: any = oldFeedbackData?.length > 0 ? oldFeedbackData[0].FeedBackDescriptions : [];
+        let CreateTaskFor: any = [{
+            AuthorImage: currentUserData.ImageUrl != undefined ? currentUserData.ImageUrl : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+            AuthorName: currentUserData.Title != undefined ? currentUserData.Title : Context.pageContext._user.displayName,
+            Created: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+            Title: CommentTitle,
+            NewestCreated: "" + param,
+            editableItem: false,
+            isApprovalComment: false,
+            isShowLight: ""
+        }]
+        let UpdateJSONIndex = Index + 1;
+        FeedbackBackupArray[UpdateJSONIndex].TaskCreatedForThis = true;
+        FeedbackBackupArray[UpdateJSONIndex].Completed = true;
+        if (FeedbackBackupArray[UpdateJSONIndex].Comments?.length > 0) {
+            FeedbackBackupArray[UpdateJSONIndex].Comments.unshift(CreateTaskFor[0]);
+        } else {
+            FeedbackBackupArray[UpdateJSONIndex].Comments = CreateTaskFor;
+        }
+        let web = new Web(TaskDetails?.SiteURL);
+        oldFeedbackData[0].FeedBackDescriptions = FeedbackBackupArray;
+        await web.lists.getById(TaskDetails?.ListId).items.getById(TaskDetails?.TaskId).update({
+            FeedBack: oldFeedbackData?.length > 0 ? JSON.stringify(oldFeedbackData) : null
+        }).then(async (res: any) => {
+            console.log("Onld Feedback Updated");
+        })
+        const copy = [...State];
+        const obj = { ...State[Index], TaskCreatedForThis: true, Comments: FeedbackBackupArray[UpdateJSONIndex].Comments, Completed: true };
+        copy[Index] = obj;
+        setState(copy);
+        taskCreatedCallback();
+    }
+
+    // function updateTaskIdInUrl(url: any, newTaskId: any) {
+    //     const urlParams = new URLSearchParams(url);
+    //     urlParams.set('taskId', newTaskId);
+    //     const baseUrl = url.split('?')[0];
+    //     const updatedUrl = `${baseUrl}?${urlParams.toString()}`;
+    //     return updatedUrl;
     // }
+
+    const TaskPopupCallBack = () => {
+        UpdateTaskPopupPanelStatus(false);
+    }
+
+    // ********************* this is for the Approval Point History Popup ************************
+
 
     const ApprovalPopupOpenHandle = (index: any, data: any) => {
         setApprovalPointCurrentIndex(index);
@@ -282,13 +381,13 @@ export default function FroalaCommnetBoxes(textItems: any) {
                 {TextItems?.length > 0 ? <div className={IndexCount % 2 == 0 ? "add-text-box" : "add-text-box"}>
                     {state?.map((obj, i) => {
                         return (
-                            <div className="FeedBack-comment row my-1">
+                            <div className={"FeedBack-comment row my-1"}>
                                 <div
                                     data-id={i}
-                                    className="col"
+                                    className={obj.TaskCreatedForThis != undefined && obj.TaskCreatedForThis == true ? "Disabled-Link bg-e9 col py-3" : "col"}
                                     onChange={handleChange}
                                 >
-                                    <div className="Task-panel d-flex justify-content-between ">
+                                    <div className="Task-panel d-flex justify-content-between">
                                         <div className="d-flex">
                                             {ApprovalStatus ?
                                                 <div>
@@ -367,10 +466,9 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                             </span>
                                             <span> | </span>
                                             <span className="mx-1">
-                                                <a target="_blank" data-interception="off" href={SiteUrl ?
-                                                    `https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?ItemID=${ItemId}?Siteurl=${SiteUrl}`
-                                                    : `https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?ItemID=${ItemId}`}
-                                                    className="hreflink commentSectionLabel" style={{ color: "#000066" }}> Create Task </a>
+                                                <span className="siteColor hreflink" onClick={() => CreateSeperateTaskFunction(obj, i)}>
+                                                    Create Task
+                                                </span>
                                             </span>
                                             <span> | </span>
                                             <span className="mx-1">
@@ -384,12 +482,12 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                             </span>
                                         </div>
                                     </div>
-                                    <div>
+                                    <div className={obj.TaskCreatedForThis != undefined && obj.TaskCreatedForThis == true ? "Disabled-Link bg-e9" : ""}>
                                         <div className="d-flex" title={obj.isShowLight}>
                                             <span className="SubTestBorder p-1 me-1">{obj.taskIndex + 1}</span>
                                             <textarea
                                                 style={{ width: "100%" }}
-                                                className={`form-control`}
+                                                className={obj.TaskCreatedForThis != undefined && obj.TaskCreatedForThis == true ? "form-control Disabled-Link bg-e9" : "form-control"}
                                                 defaultValue={obj?.Title?.replace(/<[^>]*>/g, ' ')}
                                                 value={obj?.Title?.replace(/<[^>]*>/g, ' ')}
                                                 name='Title'
@@ -445,6 +543,15 @@ export default function FroalaCommnetBoxes(textItems: any) {
                     />
                     : null
                 }
+                {/* ********************* this is Task Popup panel ****************** */}
+                {TaskPopupPanelStatus ?
+                    <EditTaskPopup
+                        Items={newlyCreatedTask}
+                        context={TaskDetails.Context}
+                        AllListId={TaskDetails.AllListIdData}
+                        Call={TaskPopupCallBack}
+                    /> : null
+                }
             </div>
         )
     }
@@ -452,7 +559,6 @@ export default function FroalaCommnetBoxes(textItems: any) {
     return (
         <div className="col mt-2">
             {State.length ? null : <button className="btn btn-primary" onClick={addMainRow}>Add New Box</button>}
-            {/* <button onClick={showState}>Show state</button> */}
             {State.length ? createRows(State) : null}
         </div>
     );
