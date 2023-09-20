@@ -581,7 +581,7 @@ function Portfolio({SelectedProp}:any) {
                 filter += "(Service / Id eq " + ID + ")";
               }
 
-              let urln = `${web}/_api/lists/getbyid('${ContextValue.SmartHelptListID}')/items?$select=Id,Title,ItemRank,PercentComplete,Categories,AssignedTo/Id,AssignedTo/Title,Body,Components/Id,Components/Title,Components/ItemType,Service/Id,Service/Title,Service/ItemType,DueDate,ItemType,Priority,StartDate,Status&$expand=AssignedTo,Components,Service&$filter=${filter}`;
+              let urln = `${web}/_api/lists/getbyid('${ContextValue.SmartHelptListID}')/items?$select=Id,Title,ItemRank,PercentComplete,Categories,AssignedTo/Id,AssignedTo/Title,Body,DueDate,ItemType,Priority,StartDate,Status&$expand=AssignedTo&$filter=${filter}`;
               $.ajax({
                 url: urln,
                 method: "GET",
@@ -591,9 +591,9 @@ function Portfolio({SelectedProp}:any) {
                 success: function (data) {
                   if (data != undefined) {
                     data.d.results.forEach(function (item: any) {
-                      item.AssignedTo = item.AssignedTo.results === undefined ? [] : item.AssignedTo.results;
+                      item.AssignedTo = item?.AssignedTo?.results === undefined ? [] : item?.AssignedTo?.results;
 
-                      item.TeamMembers = item.TeamMembers.results === undefined ? [] : item.TeamMembers.results;
+                      item.TeamMembers = item?.TeamMembers?.results === undefined ? [] : item?.TeamMembers?.results;
           
                       if (item.ItemType == "Question")
                         AllQuestion.unshift(item);
@@ -924,7 +924,7 @@ const [Item,setItem]=React.useState("")
                           <a
                             target="_blank"
                             data-interception="off"
-                            href={SelectedProp.siteUrl+"/SitePages//Team-Portfolio.aspx"}
+                            href={SelectedProp.siteUrl+"/SitePages/Team-Portfolio.aspx"}
                           >
                             Team-Portfolio
                           </a>
@@ -983,31 +983,10 @@ const [Item,setItem]=React.useState("")
                 <>
                   <h2 className="heading d-flex justify-content-between align-items-center">
                     <span>
-                      {item?.PortfolioType?.Title == "Component" &&
+                      {(item?.PortfolioType?.Id === 1 || item?.PortfolioType?.Id === 2 || item?.PortfolioType?.Id === 3) &&
                         item.Item_x0020_Type == "SubComponent" && (
                           <>
-                            <img
-                              className="client-icons"
-                              src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/subComponent_icon.png"
-                            />{" "}
-                            <a>{item.Title}</a>{" "}
-                            <span>
-                              {" "}
-                              <img
-                               src={require('../../../Assets/ICON/edit_page.svg')}
-                                width="30" height="25"
-                                onClick={(e) => EditComponentPopup(item)}
-                              />
-                            </span>
-                          </>
-                        )}
-                      {item?.PortfolioType?.Title == "Service" &&
-                        item.Item_x0020_Type == "SubComponent" && (
-                          <>
-                            <img
-                              className="client-icons"
-                              src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/subcomponent_icon.png"
-                            />{" "}
+                            <span className="Dyicons">S</span>{" "}
                             <a>{item.Title}</a>{" "}
                             <span>
                               {" "}
@@ -1020,31 +999,11 @@ const [Item,setItem]=React.useState("")
                           </>
                         )}
 
-                      {item?.PortfolioType?.Title == "Component" &&
+                      
+                      {(item?.PortfolioType?.Id === 1 || item?.PortfolioType?.Id === 2 || item?.PortfolioType?.Id === 3) &&
                         item.Item_x0020_Type == "Feature" && (
                           <>
-                            <img
-                              className="client-icons"
-                              src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feature_icon.png"
-                            />{" "}
-                            <a>{item.Title}</a>{" "}
-                            <span >
-                              {" "}
-                              <img
-                               src={require('../../../Assets/ICON/edit_page.svg')}
-                                width="30" height="25"
-                                onClick={(e) => EditComponentPopup(item)}
-                              />
-                            </span>
-                          </>
-                        )}
-                      {item?.PortfolioType?.Title == "Service" &&
-                        item.Item_x0020_Type == "Feature" && (
-                          <>
-                            <img
-                              className="client-icons"
-                              src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png"
-                            />{" "}
+                            <span className="Dyicons">F</span>{" "}
                             <a>{item.Title}</a>{" "}
                             <span>
                               {" "}
@@ -1056,14 +1015,11 @@ const [Item,setItem]=React.useState("")
                             </span>
                           </>
                         )}
-                      {item?.PortfolioType?.Title == "Component" &&
+                      {(item?.PortfolioType?.Id === 1 || item?.PortfolioType?.Id === 2 || item?.PortfolioType?.Id === 3) &&
                         item.Item_x0020_Type != "SubComponent" &&
                         item.Item_x0020_Type != "Feature" && (
                           <>
-                            <img
-                              className="client-icons"
-                              src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png"
-                            />{" "}
+                            <span className="Dyicons">C</span>{" "}
                             <a>{item.Title}</a>{" "}
                             <span>
                               {" "}
@@ -1075,25 +1031,7 @@ const [Item,setItem]=React.useState("")
                             </span>
                           </>
                         )}
-                      {item?.PortfolioType?.Title == "Service" &&
-                        item.Item_x0020_Type != "SubComponent" &&
-                        item.Item_x0020_Type != "Feature" && (
-                          <>
-                            <img
-                              className="client-icons"
-                              src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png"
-                            />{" "}
-                            <a>{item.Title}</a>{" "}
-                            <span>
-                              {" "}
-                              <img
-                               src={require('../../../Assets/ICON/edit_page.svg')}
-                                width="30" height="25"
-                                onClick={(e) => EditComponentPopup(item)}
-                              />
-                            </span>
-                          </>
-                        )}
+                      
                     </span>
                     <span className="text-end fs-6">
                       <a
@@ -1918,7 +1856,7 @@ const [Item,setItem]=React.useState("")
                   </section>
                 </div>
                 <div className="col-md-4 p-0">
-                  {data.map((item: any) => {
+                {data.map((item: any) => {
                     return (
                       <>
                         {item?.PortfolioType?.Title && (
