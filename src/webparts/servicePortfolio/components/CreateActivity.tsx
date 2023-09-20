@@ -1824,12 +1824,7 @@ const CreateActivity = (props: any) => {
 
                                     )
                                 }) : null}
-
-
-
                             </div>
-
-
                             <div className="col-sm-12 padL-0 Prioritytp PadR0 mt-2">
 
                                 <div>

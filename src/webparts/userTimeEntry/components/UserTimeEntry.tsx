@@ -2220,4 +2220,3 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     );
   }
 }
-
