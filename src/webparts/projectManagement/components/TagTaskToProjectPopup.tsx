@@ -1,7 +1,7 @@
 
 import axios, { AxiosResponse } from 'axios';
 import * as React from 'react';
-// import '../components/TagTaskToProjectPopup.css';
+//import '../components/TagTaskToProjectPopup.css';
 import Button from 'react-bootstrap/Button';
 import { Panel, PanelType } from "office-ui-fabric-react";
 import { useEffect, useState } from 'react';
@@ -33,7 +33,7 @@ const TagTaskToProjectPopup = (props: any) => {
         taskUser = await web.lists
             .getById('b318ba84-e21d-4876-8851-88b94b9dc300')
             .items
-            .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name")
+            .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name")
             .expand("AssingedToUser,Approver")
             .get();
         AllUser = taskUser;
@@ -97,17 +97,19 @@ const TagTaskToProjectPopup = (props: any) => {
                 smartmeta = await web.lists
                     .getById(config?.listId)
                     .items
-                    .select("Id,Title,PriorityRank,Remark,Project/PriorityRank,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,PriorityRank,Remark,Project/PriorityRank,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,Project/StructureID,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
                     .expand('AssignedTo,Project,Portfolio,SmartInformation,Author,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory')
                     .top(4999)
                     // .filter("Project/Id ne " + props.projectId)
                     .get();
                 arraycount++;
                 smartmeta.map((items: any) => {
+            
                     items.AllTeamMember = [];
                     items.HierarchyData = [];
                     items.descriptionsSearch = '';
                     items.siteType = config.Title;
+                    items.projectStructerId=items?.Project?.StructureID,
                     items.bodys = items.Body != null && items.Body.split('<p><br></p>').join('');
                     if (items?.Body != undefined && items?.Body != null) {
                         items.descriptionsSearch = items?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
@@ -540,6 +542,9 @@ const TagTaskToProjectPopup = (props: any) => {
                     </div> : 'Loading ...'
                 }
             </Panel>
+
+
+
         </>
     )
 }
