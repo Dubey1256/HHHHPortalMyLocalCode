@@ -1808,18 +1808,23 @@ export const getParameterByName = async (name: any) => {
 
 export const GetTaskId = (Item: any) => {
     let taskIds = '';
-    if (Item?.Portfolio?.PortfolioStructureID != undefined && Item.TaskID != undefined) {
+    if (Item?.Portfolio?.PortfolioStructureID != undefined && Item.TaskID != undefined && Item?.ParentTask?.TaskID != undefined) {
+        taskIds = Item?.Portfolio?.PortfolioStructureID + '-' + Item.ParentTask?.TaskID + '-' + Item.TaskID;
+    }
+    else if (Item?.Portfolio?.PortfolioStructureID != undefined && Item?.TaskID != undefined ) {
         taskIds = Item?.Portfolio?.PortfolioStructureID + '-' + Item.TaskID;
     }
-    if (Item?.Portfolio?.PortfolioStructureID != undefined && Item.TaskID == undefined) {
+    if (Item?.Portfolio?.PortfolioStructureID != undefined && Item.TaskID == undefined && Item?.ParentTask?.TaskID != undefined) {
+        taskIds = Item?.Portfolio?.PortfolioStructureID + '-' +Item.ParentTask?.TaskID + '-T' +  Item.Id;
+    }else if (Item?.Portfolio?.PortfolioStructureID != undefined && Item.TaskID == undefined) {
         taskIds = Item?.Portfolio?.PortfolioStructureID + '-T' + Item.Id;
     }
-    else if (Item?.Portfolio == undefined) {
-        taskIds = 'T' + Item.Id;
+    else if (Item.TaskID != undefined) {
+        taskIds = Item.TaskID;
     }
-    // else if(Item.TaskID==undefined){
-    //     taskIds = "T"+Item.Id;
-    // }
+    else if (Item.TaskID == undefined) {
+        taskIds = "T" + Item.Id;
+    }
 
     return taskIds;
 }
