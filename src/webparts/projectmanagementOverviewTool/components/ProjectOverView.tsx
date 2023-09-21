@@ -176,7 +176,7 @@ export default function ProjectOverview(props: any) {
                         let smartmeta = [];
                         await web.lists
                             .getById(config.listId)
-                            .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Modified")
+                            .items.select("ID", "Title", "ClientCategory/Id","Portfolio/PortfolioStructureID", "ClientCategory/Title", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime","Portfolio/PortfolioStructureID", "Portfolio/Id", "Portfolio/Title", "Modified")
                             .expand("TeamMembers", "Approver", "ParentTask", "ClientCategory", "AssignedTo", "TaskCategories", "Author", "ResponsibleTeam", "TaskType", "Portfolio")
                             .getAll().then((data: any) => {
                                 smartmeta = data;
@@ -201,7 +201,7 @@ export default function ProjectOverview(props: any) {
 
                                     task["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
                                     task.TeamMembersSearch = "";
-                                    task.TaskID = globalCommon.getTaskId(task);
+                                    task.TaskID = globalCommon.GetTaskId(task);
 
 
                                     AllSiteTasks.push(task)
@@ -1442,7 +1442,7 @@ export default function ProjectOverview(props: any) {
                     smartmeta = await web.lists
                         .getById(config.listId)
                         .items
-                        .select("Id,Title,PriorityRank,Portfolio/Id,Portfolio/Title,EstimatedTime,EstimatedTimeDescription,Project/PriorityRank,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+                        .select("Id,Title,PriorityRank,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,EstimatedTime,EstimatedTimeDescription,Project/PriorityRank,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
                         .expand('AssignedTo,Project,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory')
                         .filter("IsTodaysTask eq 1")
                         .top(4999)
@@ -1514,7 +1514,7 @@ export default function ProjectOverview(props: any) {
                             });
                         }
 
-                        items.TaskID = globalCommon.getTaskId(items);
+                        items.TaskID = globalCommon.GetTaskId(items);
                         AllTaskUsers?.map((user: any) => {
                             if (user.AssingedToUserId == items.Author.Id) {
                                 items.createdImg = user?.Item_x0020_Cover?.Url;
