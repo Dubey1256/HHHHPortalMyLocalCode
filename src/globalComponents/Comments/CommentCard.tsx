@@ -826,7 +826,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                 <div>
                   <ul className="list-unstyled">
                     {this.state.Result["Comments"] != null && this.state.Result["Comments"].length > 0 && this.state.Result["Comments"]?.slice(0, 3)?.map((cmtData: any, i: any) => {
-                      return <li className="media border p-1 my-1">
+                      return cmtData?.Description&& <li className="media border p-1 my-1">
 
                         <div className="media-bodyy">
                           <div className="d-flex justify-content-between align-items-center">
