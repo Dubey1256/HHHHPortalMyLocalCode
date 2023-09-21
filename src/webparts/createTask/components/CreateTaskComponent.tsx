@@ -769,7 +769,7 @@ function CreateTaskComponent(props: any) {
 
                         //var query = "SiteCompositionSettings,Sitestagging&$top=1&$filter=Id eq " + smartComponentData[0]?.Id;
                         //const web = new Web(PageContent?.SiteFullUrl + '/sp');
-                        const web = new Web(PageContent?.WebFullUrl);
+                        const web = new Web(AllListId?.siteUrl);
                         await web.lists.getById(ContextValue.MasterTaskListID).items.select("SiteCompositionSettings,Sitestagging").filter(`Id eq ${smartComponentData[0]?.Id}`).top(1).get().then((data: any) => {
                             Tasks = data[0];
                         });

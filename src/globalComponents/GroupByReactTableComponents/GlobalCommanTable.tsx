@@ -31,6 +31,8 @@ import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
 import Loader from "react-loader";
 import PageLoader from '../pageLoader';
 import { BsSearch } from 'react-icons/bs';
+import Tooltip from "../../globalComponents/Tooltip";
+
 
 // ReactTable Part/////
 declare module "@tanstack/table-core" {
@@ -776,7 +778,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                             </span>
                         </span>
                     </div> :
-                        <span style={{ color: `${portfolioColor}` }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} out of ${data?.length}`}</span>}
+                        <span style={{ color: `${portfolioColor}` }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} of ${data?.length}`}</span>}
                     <DebouncedInput
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}
@@ -818,7 +820,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         {
                             trueRestructuring == true ?
                                 <RestructuringCom
-                                AllMasterTasksData={items.AllMasterTasksData} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
+                                    AllMasterTasksData={items.AllMasterTasksData} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
                                 : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>
                         }
                     </>
@@ -853,6 +855,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     {expandIcon === true && <a className="expand" title="Expand table section" style={{ color: `${portfolioColor}` }}>
                         <ExpndTable prop={expndpopup} prop1={tablecontiner} />
                     </a>}
+                    <Tooltip ComponentId={5756} />
                 </span>
             </div>}
 
