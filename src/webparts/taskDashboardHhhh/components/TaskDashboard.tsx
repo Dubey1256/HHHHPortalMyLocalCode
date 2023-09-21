@@ -528,6 +528,7 @@ const TaskDashboard = (props: any) => {
                             });
                         let currentCount = siteConfig?.length;
                         if (arraycount === currentCount) {
+                            setPageLoader(false);
                             AllTasks = AllSiteTasks;
                             backupTaskArray.assignedApproverTasks = approverTask;
                             setAllPriorityTasks(sortOnCreated(AllPriority))
@@ -556,7 +557,7 @@ const TaskDashboard = (props: any) => {
                                 filterCurrentUserTask();
                             }
                             backupTaskArray.allTasks = AllSiteTasks;
-                            setPageLoader(false);
+                           
                             if(timesheetListConfig?.length > 0){
                                 loadAllTimeEntry()
                             }
@@ -1430,7 +1431,7 @@ const TaskDashboard = (props: any) => {
                 AllMetadata = smartmeta;
                 setAllSmartMetadata(AllMetadata)
                 siteConfig = smartmeta.filter((data: any) => {
-                    if (data?.IsVisible && data?.TaxType == 'Sites' && data?.Title != 'Master Tasks') {
+                    if (data?.IsVisible && data?.TaxType == 'Sites' && data?.Title != 'Master Tasks' && data?.listId!=undefined && data?.listId?.length>32) {
                         return data;
                     }
                 });
@@ -1500,7 +1501,8 @@ const TaskDashboard = (props: any) => {
                 taskUser = await web.lists
                     .getById(AllListId?.TaskUsertListID)
                     .items
-                    .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,showAllTimeEntry,Company,Group,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+                    .select("Id,UserGroupId,Suffix,IsActive,Title,Email,SortOrder,Role,showAllTimeEntry,Company,Group,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+                    .filter('IsActive eq 1')
                     .get();
             }
             catch (error) {
@@ -1540,7 +1542,7 @@ const TaskDashboard = (props: any) => {
                 let Mail = Approver?.Name?.split('|')[2]
                 childItem.UserManagerMail.push(Mail)
             })
-            if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID ) {
+            if (childItem?.UserGroupId != undefined && parseInt(childItem?.UserGroupId) == item.ID  ) {
                 item.childs.push(childItem);
             }
         })
@@ -2595,12 +2597,12 @@ const TaskDashboard = (props: any) => {
                                                 {timeEntryTotal > 1 ?
                                                     <summary>{selectedTimeReport}'s Time Entry {'(' + timeEntryTotal.toFixed(2) + ' Hours)'}
                                                         {
-                                                            currentUserId == currentUserData?.AssingedToUserId && selectedTimeReport == "Today" ? <span className="align-autoplay d-flex float-end" onClick={() => shareTaskInEmail('today time entries')}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Share {selectedTimeReport}'s Time Entry</span> : ""
+                                                            currentUserId == currentUserData?.AssingedToUserId && selectedTimeReport == "Today" ? <span className="align-autoplay d-flex float-end me-5" onClick={() => shareTaskInEmail('today time entries')}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Share {selectedTimeReport}'s Time Entry</span> : ""
                                                         }
                                                     </summary> :
                                                     <summary>{selectedTimeReport}'s Time Entry {'(' + timeEntryTotal.toFixed(2) + ' Hour)'}
                                                         {
-                                                            currentUserId == currentUserData?.AssingedToUserId && selectedTimeReport == "Today" ? <span className="align-autoplay d-flex float-end" onClick={() => shareTaskInEmail('today time entries')}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Share {selectedTimeReport}'s Time Entry</span> : ""
+                                                            currentUserId == currentUserData?.AssingedToUserId && selectedTimeReport == "Today" ? <span className="align-autoplay d-flex float-end me-5" onClick={() => shareTaskInEmail('today time entries')}><span className="svg__iconbox svg__icon--mail mx-1 me" ></span>Share {selectedTimeReport}'s Time Entry</span> : ""
                                                         }
                                                     </summary>
                                                 }
