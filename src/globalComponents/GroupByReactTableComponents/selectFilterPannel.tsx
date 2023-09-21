@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Panel, PanelType } from 'office-ui-fabric-react';
-
+import Tooltip from "../../globalComponents/Tooltip";
 
 const SelectFilterPanel = (props: any) => {
     // const [props?.selectedFilterPannelData, setCheckboxes] = React.useState({
@@ -47,8 +47,9 @@ const SelectFilterPanel = (props: any) => {
     const onRenderCustomHeader = () => {
         return (
             <div className="d-flex full-width pb-1">
-                <div className="subheading">
+                <div className="alignCenter subheading">
                     <span style={{ color: `${props?.portfolioColor}` }}>Settings Advanced Search</span>
+                    <span className="ms-3"><Tooltip ComponentId={839} /></span>
                 </div>
             </div>
         );
@@ -57,7 +58,7 @@ const SelectFilterPanel = (props: any) => {
     return (
         <Panel
             type={PanelType.custom}
-            customWidth="310px"
+            customWidth="340px"
             isOpen={props?.isOpen}
             onDismiss={setModalIsOpenToFalse}
             onRenderHeader={onRenderCustomHeader}
