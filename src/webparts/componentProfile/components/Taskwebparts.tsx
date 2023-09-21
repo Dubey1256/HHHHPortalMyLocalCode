@@ -28,6 +28,7 @@ import PageLoader from "../../../globalComponents/pageLoader";
 import CreateActivity from "../../servicePortfolio/components/CreateActivity";
 
 import CreateWS from "../../servicePortfolio/components/CreateWS";
+
 //import RestructuringCom from "../../../globalComponents/Restructuring/RestructuringCom";
 var filt: any = "";
 var ContextValue: any = {};
@@ -582,47 +583,21 @@ function TeamPortlioTable(SelectedProp: any) {
         let AllProtFolioData = AllComponetsData?.filter((comp: any) => comp?.PortfolioType?.Id === portId && comp.TaskType === undefined );
       
         // let AllComponents = AllProtFolioData?.filter((comp: any) => comp?.Parent?.Id === 0 || comp?.Parent?.Id === undefined && comp?.Id === 321 );
-        let subComFeat = AllProtFolioData?.filter((comp: any) => comp?.Parent?.Id === SelectedProp?.props?.Id  )
-        
-        subComFeat?.map((masterTask: any) => {
-            masterTask.subRows = [];
-            taskTypeData?.map((levelType: any) => {
-                if (levelType.Level === 1)
-                    componentActivity(levelType, masterTask);
-            })
-            portfolioTypeDataItem?.map((type: any) => {
-                if(type.Title == "Component"){
-                    type["Componentnumber"]=0;
-                    type["ComponentfilterNumber"]=0;
-                }
-                if (masterTask?.Item_x0020_Type === type.Title && masterTask.PortfolioType !== undefined) {
-                    // Ensure that the properties are initialized as numbers.
-                    if (typeof type[type.Title + 'number'] === 'number' && typeof type[type.Title + 'filterNumber'] === 'number') {
-                        type[type.Title + 'number'] += 1;
-                        type[type.Title + 'filterNumber'] += 1;
-                    } else {
-                        // Initialize them as numbers if they are not.
-                        type[type.Title + 'number'] = 1;
-                        type[type.Title + 'filterNumber'] = 1;
-                    }
-                }
-            })
-            let allFeattData = AllComponetsData?.filter((elem: any) => elem?.Parent?.Id === masterTask?.Id);
-           
-            masterTask.subRows = masterTask?.subRows?.concat(allFeattData);
-            allFeattData?.forEach((subFeat: any) => {
-                subFeat.subRows = [];
+       
+    
+            let subComFeat = AllProtFolioData?.filter((comp: any) => comp?.Parent?.Id === SelectedProp?.props?.Id  )
+            subComFeat?.map((masterTask: any) => {
+                masterTask.subRows = [];
                 taskTypeData?.map((levelType: any) => {
                     if (levelType.Level === 1)
-                        componentActivity(levelType, subFeat);
+                        componentActivity(levelType, masterTask);
                 })
-
                 portfolioTypeDataItem?.map((type: any) => {
                     if(type.Title == "Component"){
                         type["Componentnumber"]=0;
                         type["ComponentfilterNumber"]=0;
                     }
-                    if (subFeat?.Item_x0020_Type === type.Title && subFeat.PortfolioType !== undefined) {
+                    if (masterTask?.Item_x0020_Type === type.Title && masterTask.PortfolioType !== undefined) {
                         // Ensure that the properties are initialized as numbers.
                         if (typeof type[type.Title + 'number'] === 'number' && typeof type[type.Title + 'filterNumber'] === 'number') {
                             type[type.Title + 'number'] += 1;
@@ -634,13 +609,40 @@ function TeamPortlioTable(SelectedProp: any) {
                         }
                     }
                 })
-                
-                
-            })
-            
-        FinalComponent.push(masterTask)
-        })
+                let allFeattData = AllComponetsData?.filter((elem: any) => elem?.Parent?.Id === masterTask?.Id);
+               
+                masterTask.subRows = masterTask?.subRows?.concat(allFeattData);
+                allFeattData?.forEach((subFeat: any) => {
+                    subFeat.subRows = [];
+                    taskTypeData?.map((levelType: any) => {
+                        if (levelType.Level === 1)
+                            componentActivity(levelType, subFeat);
+                    })
     
+                    portfolioTypeDataItem?.map((type: any) => {
+                        if(type.Title == "Component"){
+                            type["Componentnumber"]=0;
+                            type["ComponentfilterNumber"]=0;
+                        }
+                        if (subFeat?.Item_x0020_Type === type.Title && subFeat.PortfolioType !== undefined) {
+                            // Ensure that the properties are initialized as numbers.
+                            if (typeof type[type.Title + 'number'] === 'number' && typeof type[type.Title + 'filterNumber'] === 'number') {
+                                type[type.Title + 'number'] += 1;
+                                type[type.Title + 'filterNumber'] += 1;
+                            } else {
+                                // Initialize them as numbers if they are not.
+                                type[type.Title + 'number'] = 1;
+                                type[type.Title + 'filterNumber'] = 1;
+                            }
+                        }
+                    })
+                    
+                    
+                })
+                
+            FinalComponent.push(masterTask)
+            })
+
         componentData = componentData?.concat(FinalComponent);
         DynamicSort(componentData, 'PortfolioLevel','')
         componentData.forEach((element: any) => {
@@ -662,46 +664,15 @@ function TeamPortlioTable(SelectedProp: any) {
             }
         });
         if (portfolioTypeData?.length - 1 === index || index === '') {
-            let temp1: any = {};
+
             let Actatcomponent = AllSiteTasksData?.filter((elem1: any) => elem1?.TaskType?.Id === 1 &&  elem1?.ParentTask?.Id === undefined && elem1?.Portfolio?.Id === SelectedProp?.props?.Id );
             Actatcomponent?.map((masterTask1: any) => {
-                temp1.Title = masterTask1?.Title;
-          temp1.TaskID = masterTask1?.TaskID;
-          temp1.Id = masterTask1?.Id;
-          temp1.ID = masterTask1?.ID;
-          temp1.siteType = masterTask1?.siteType;
-          temp1.SiteIcon = masterTask1?.SiteIcon;
-          temp1.listId = masterTask1?.listId;
-          temp1.joinedData = masterTask1?.joinedData;
-          temp1.descriptionsSearch = masterTask1?.descriptionsSearch;
-          temp1.TitleNew = masterTask1?.TitleNew;
-          temp1.TeamMembers = masterTask1?.TeamMembers;
-          temp1.TeamLeaderUser = masterTask1?.TeamLeaderUser;
-          temp1.TaskType = masterTask1?.TaskType;
-          temp1.Status = masterTask1?.Status;
-          temp1.ResponsibleTeam = masterTask1?.ResponsibleTeam;
-          temp1.Project = masterTask1?.Project;
-          temp1.PriorityRank = masterTask1?.PriorityRank;
-          temp1.Portfolio = masterTask1?.Portfolio;
-          temp1.ParentTask = masterTask1?.ParentTask;
-          temp1.Item_x0020_Type = masterTask1?.Item_x0020_Type;
-          temp1.Created = masterTask1?.Created;
-          temp1.Author = masterTask1?.Author;
-          temp1.FeedBack = masterTask1?.FeedBack;
-          temp1.AllTeamMembers = masterTask1?.AllTeamMembers;
-          temp1.subRows = [];
-          temp1.PercentComplete = "";
-          temp1.ItemRank = "";
-          temp1.DueDate = "";
-          temp1.Project = "";
-          
-          temp1.subRows= AllSiteTasksData.filter((elem:any)=> elem?.ParentTask?.Id === masterTask1?.Id)
-               if(temp1?.subRows?.length>0){
-                componentData.push(temp1)
-              }
-              else if(temp1.Id != undefined){
-                componentData.push(temp1)
-              }
+                masterTask1.subRows = [];
+                taskTypeData?.map((levelType: any) => {
+                    if (levelType.Level === 1)
+                    componentWsT(levelType, masterTask1);
+                })
+                componentData.push(masterTask1)
         })
           var temp: any = {};
           temp.Title = "Others";
@@ -728,6 +699,28 @@ function TeamPortlioTable(SelectedProp: any) {
         setData(componentData);
         console.log(countAllTasksData);
     }
+// ComponentWS
+
+const componentWsT = (levelType: any, items: any) => {
+      
+    let findws = AllSiteTasksData.filter((elem1:any)=>elem1?.ParentTask?.Id === items?.Id && elem1?.siteType === items?.siteType)
+    // let findtask = AllSiteTasksData.filter((elem1:any)=>elem1?.ParentTask?.Id === items?.Id && elem1?.siteType === items?.siteType)
+    countAllTasksData = countAllTasksData.concat(findws);
+    // countAllTasksData = countAllTasksData.concat(findtask);
+
+    findws?.forEach((act: any) => {
+        act.subRows = [];
+        let allTasksData = AllSiteTasksData.filter((elem1:any)=>elem1?.ParentTask?.Id === act?.Id && elem1?.siteType === act?.siteType)
+            if (allTasksData.length > 0) {
+                act.subRows = act?.subRows?.concat(allTasksData);
+                countAllTasksData = countAllTasksData.concat(allTasksData);
+            }
+        
+    })
+    items.subRows = items?.subRows?.concat(findws)
+    // items.subRows = items?.subRows?.concat(findtask)
+}
+// Componentwsend
 
     const componentActivity = (levelType: any, items: any) => {
       

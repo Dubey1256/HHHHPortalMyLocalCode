@@ -4536,7 +4536,10 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="col mt-2">
                                             <div className="input-group taskTime">
                                                 <label className="form-label full-width">Status</label>
-                                                <input type="text" maxLength={3} placeholder="% Complete" disabled={InputFieldDisable} className="form-control px-2"
+                                                <input type="text" maxLength={3} placeholder="% Complete" 
+                                                // disabled={InputFieldDisable} 
+                                                disabled
+                                                className="form-control px-2"
                                                     defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? Number(EditData.PercentComplete).toFixed(0) : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
                                                     onChange={(e) => StatusAutoSuggestion(e)} />
                                                 <span className="input-group-text" title="Status Popup" onClick={() => openTaskStatusUpdatePopup(EditData)}>

@@ -1782,15 +1782,16 @@ const handlePeoplePickerChange = (items: any[]): void => {
                   Created {CDate} {CTime} by {createdBY}
                 </div>
                 <div>
-                  Last Modified {MDate} {MTime} by {modofiedBy} <VersionHistoryPopup   taskId={vId}
-                          listId={props.props.SmalsusLeaveCalendar}
-                          siteUrls={props.props.siteUrl} />
+                  Last Modified {MDate} {MTime} by {modofiedBy} 
                 </div>
                 <div>
                   <a href="#" onClick={()=>deleteElement(vId)}>
                     <span className="svg__iconbox svg__icon--trash"></span>{" "}
                     Delete this Item
                   </a>
+                  <VersionHistoryPopup   taskId={vId}
+                          listId={props.props.SmalsusLeaveCalendar}
+                          siteUrls={props.props.siteUrl} />
                 </div>
                         
               </div>
