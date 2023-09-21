@@ -97,7 +97,7 @@ const TagTaskToProjectPopup = (props: any) => {
                 smartmeta = await web.lists
                     .getById(config?.listId)
                     .items
-                    .select("Id,Title,PriorityRank,Remark,Project/PriorityRank,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,PriorityRank,Remark,Project/PriorityRank,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,Portfolio/PortfolioStructureID,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
                     .expand('AssignedTo,Project,Portfolio,SmartInformation,Author,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory')
                     .top(4999)
                     // .filter("Project/Id ne " + props.projectId)
@@ -147,7 +147,7 @@ const TagTaskToProjectPopup = (props: any) => {
                         });
                     }
                   
-                    items.TaskID = globalCommon.getTaskId(items);
+                    items.TaskID = globalCommon.GetTaskId(items);
                     AllUser?.map((user: any) => {
                         if (user.AssingedToUserId == items.Author.Id) {
                             items.createdImg = user?.Item_x0020_Cover?.Url;

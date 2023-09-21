@@ -402,7 +402,7 @@ const ProjectManagementMain = (props: any) => {
           smartmeta = await web.lists
             .getById(config.listId)
             .items
-            .select("Id,Title,PriorityRank,Remark,Project/PriorityRank,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+            .select("Id,Title,PriorityRank,Remark,Project/PriorityRank,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
             .expand('AssignedTo,Project,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory')
             .top(4999)
             .filter("ProjectId eq " + QueryId)
@@ -468,7 +468,7 @@ const ProjectManagementMain = (props: any) => {
                 });
               });
             }
-            items.TaskID = globalCommon.getTaskId(items);
+            items.TaskID = globalCommon.GetTaskId(items);
             AllUser?.map((user: any) => {
               if (user.AssingedToUserId == items.Author.Id) {
                 items.createdImg = user?.Item_x0020_Cover?.Url;
@@ -576,7 +576,7 @@ const ProjectManagementMain = (props: any) => {
                   }
                   task["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
                   task.TeamMembersSearch = "";
-                  task.TaskID = globalCommon.getTaskId(task);
+                  task.TaskID = globalCommon.GetTaskId(task);
                   AllSiteTasks.push(task)
                 });
                 arraycount++;
