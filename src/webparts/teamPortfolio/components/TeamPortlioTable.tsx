@@ -735,12 +735,12 @@ function TeamPortlioTable(SelectedProp: any) {
                 })
             }
             // if (count === portfolioTypeData?.length) {
-                taskTypeDataItem?.filter((taskLevelcount: any) => { taskLevelcount[taskLevelcount.Title + 'filterNumber'] = 0 });
-                AfterFilterTaskCount = AfterFilterTaskCount?.filter((ele: any, ind: any, arr: any) => {
-                    const isDuplicate = arr.findIndex((elem: any) => { return (elem.ID === ele.ID || elem.Id === ele.Id) && elem.siteType === ele.siteType; }) !== ind
-                    return !isDuplicate;
-                })
-                countTaskAWTLevel(AfterFilterTaskCount, afterFilter);
+            taskTypeDataItem?.filter((taskLevelcount: any) => { taskLevelcount[taskLevelcount.Title + 'filterNumber'] = 0 });
+            AfterFilterTaskCount = AfterFilterTaskCount?.filter((ele: any, ind: any, arr: any) => {
+                const isDuplicate = arr.findIndex((elem: any) => { return (elem.ID === ele.ID || elem.Id === ele.Id) && elem.siteType === ele.siteType; }) !== ind
+                return !isDuplicate;
+            })
+            countTaskAWTLevel(AfterFilterTaskCount, afterFilter);
             // }
         }
         if (smartAllFilterData?.length > 0 && updatedSmartFilter === true) {
@@ -1474,6 +1474,11 @@ function TeamPortlioTable(SelectedProp: any) {
                 });
                 // }
             }
+            if (item?.CreateOpenType === 'CreatePopup') {
+                const openEditItem = (item?.CreatedItem != undefined ? item.CreatedItem[0]?.data : item.data);
+                setSharewebComponent(openEditItem);
+                setIsComponent(true);
+            }
             renderData = [];
             renderData = renderData.concat(copyDtaArray)
             refreshData();
@@ -1583,7 +1588,7 @@ function TeamPortlioTable(SelectedProp: any) {
         }
         if (checkedList?.TaskType?.Id == 2) {
 
-            alert("You can not create any item inside Task")
+            alert("You can not create ny item inside Task")
         }
     }
     const closeActivity = () => {
@@ -1605,7 +1610,7 @@ function TeamPortlioTable(SelectedProp: any) {
         }
         if (checkedList?.TaskType?.Id == 2) {
 
-            alert("You can not create any item inside Task")
+            alert("You can not create ny item inside Task")
         }
 
     }

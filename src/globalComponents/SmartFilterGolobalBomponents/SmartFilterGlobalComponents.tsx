@@ -26,6 +26,7 @@ const SmartFilterSearchGlobal = (item: any) => {
     const [updatedSmartFilter, setUpdatedSmartFilter] = React.useState(false)
     const [firstTimecallFilterGroup, setFirstTimecallFilterGroup] = React.useState(false)
     const [hideTimeEntryButton, setHideTimeEntryButton] = React.useState(0);
+    const [timeEntryDataLocalStorage, setTimeEntryDataLocalStorage] = React.useState<any>(localStorage.getItem('timeEntryIndex'));
     let finalArrayData: any = [];
     let SetAllData: any = [];
     let filt: any = "";
@@ -94,6 +95,7 @@ const SmartFilterSearchGlobal = (item: any) => {
             setSiteConfig(siteConfigSites)
         }
         setSmartmetaDataDetails(smartmetaDetails);
+        smartTimeUseLocalStorage();
     }
 
     React.useEffect(() => {
@@ -512,9 +514,9 @@ const SmartFilterSearchGlobal = (item: any) => {
                 const taskTitle = `Task${site.Title}`;
                 const key = taskTitle + entry[taskTitle]?.Id
                 if (entry.hasOwnProperty(taskTitle) && entry.AdditionalTimeEntry !== null && entry.AdditionalTimeEntry !== undefined) {
-                    if(entry[taskTitle].Id === 168){
+                    if (entry[taskTitle].Id === 168) {
                         console.log(entry[taskTitle].Id);
-                        
+
                     }
                     const additionalTimeEntry = JSON.parse(entry.AdditionalTimeEntry);
                     let totalTaskTime = additionalTimeEntry?.reduce((total: any, time: any) => total + parseFloat(time.TaskTime), 0);
@@ -538,10 +540,32 @@ const SmartFilterSearchGlobal = (item: any) => {
                 task.TotalTaskTime = timeEntryIndex[key]?.TotalTaskTime;
             }
         })
+        if (timeEntryIndex) {
+            const dataString = JSON.stringify(timeEntryIndex);
+            localStorage.setItem('timeEntryIndex', dataString);
+        }
         console.log("timeEntryIndex", timeEntryIndex)
         UpdateFilterData();
         return allTastsData;
     };
+
+    const smartTimeUseLocalStorage = () => {
+        if (timeEntryDataLocalStorage) {
+            const timeEntryIndexLocalStorage = JSON.parse(timeEntryDataLocalStorage)
+            allTastsData?.map((task: any) => {
+                task.TotalTaskTime = 0;
+                const key = `Task${task?.siteType + task.Id}`;
+                if (timeEntryIndexLocalStorage.hasOwnProperty(key) && timeEntryIndexLocalStorage[key]?.Id === task.Id && timeEntryIndexLocalStorage[key]?.siteType === task.siteType) {
+                    task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime;
+                }
+            })
+            console.log("timeEntryIndexLocalStorage", timeEntryIndexLocalStorage)
+            UpdateFilterData();
+            return allTastsData;
+        }
+    };
+
+
     //*************************************************************smartTimeTotal End*********************************************************************/
 
     return (
