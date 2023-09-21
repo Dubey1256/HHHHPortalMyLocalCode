@@ -94,10 +94,10 @@ const loadleave = async () =>  {
         Body: BindHtmlBody(),
         //Subject of Email
         //   Subject: emailprops.Subject,
-        Subject: "HHHH - Team Attendance- "+formattedDate +"-"+ totalteammemberonleave+" - "+Object?.keys(nameidTotals)?.length ,
+        Subject: "HHHH - Team Attendance "+formattedDate+" "+totalteammemberonleave +" available - "+Object?.keys(nameidTotals)?.length+" on leave" ,
         //Array of string for To of Email
         //   To: emailprops.To,
-        To: ["abhishek.tiwari@hochhuth-consulting.de"],
+        To: ["abhishek.tiwari@hochhuth-consulting.de","ranu.trivedi@hochhuth-consulting.de","jyoti.prasad@hochhuth-consulting.de"],
         AdditionalHeaders: {
           "content-type": "text/html",
         },
@@ -123,8 +123,8 @@ const loadleave = async () =>  {
       .get()
       .then((Data: any[]) => {
         console.log(Data);
-
-        setAllTaskuser(Data);
+        const mydata = Data.filter((item)=>item.UserGroupId != null && item?.UserGroupId != 131 && item?.UserGroupId != 147)
+        setAllTaskuser(mydata);
       })
       .catch((err:any) => {
         console.log(err.message);

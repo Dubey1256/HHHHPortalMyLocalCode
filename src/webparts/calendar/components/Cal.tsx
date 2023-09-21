@@ -431,11 +431,13 @@ const handlePeoplePickerChange = (items: any[]): void => {
   ];
   const Designation = [
     { key: "SPFx", text: "SPFx" },
-    { key: "Shareweb(Contact)", text: "Shareweb(Contact) " },
-    { key: "Shareweb(ANC)", text: "Shareweb(ANC) " },
-    { key: "Shareweb(Project)", text: "Shareweb(Project) " },
+    { key: "Shareweb (Contact)", text: "Shareweb (Contact) " },
+    { key: "Shareweb (ANC)", text: "Shareweb (ANC) " },
+    { key: "Shareweb (Project)", text: "Shareweb (Project) " },
     { key: "QA", text: "QA " },
-    { key: "Design", text: "Design" }
+    { key: "Design", text: "Design" },
+    { key: "HR", text: "HR" },
+    { key: "Admin", text: "Admin" }
 
 
   ];
@@ -1780,17 +1782,15 @@ const handlePeoplePickerChange = (items: any[]): void => {
                   Created {CDate} {CTime} by {createdBY}
                 </div>
                 <div>
-                  Last Modified {MDate} {MTime} by {modofiedBy} 
+                  Last Modified {MDate} {MTime} by {modofiedBy} <VersionHistoryPopup   taskId={vId}
+                          listId={props.props.SmalsusLeaveCalendar}
+                          siteUrls={props.props.siteUrl} />
                 </div>
                 <div>
-              
                   <a href="#" onClick={()=>deleteElement(vId)}>
                     <span className="svg__iconbox svg__icon--trash"></span>{" "}
                     Delete this Item
                   </a>
-                  <VersionHistoryPopup   taskId={vId}
-                          listId={props.props.SmalsusLeaveCalendar}
-                          siteUrls={props.props.siteUrl} />
                 </div>
                         
               </div>

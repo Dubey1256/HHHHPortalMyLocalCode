@@ -52,7 +52,7 @@ export default function InfoIconsToolTip({ Discription, row }: any) {
     }, []);
     return (
         <>
-            <span ref={setTriggerRef} onClick={() => handlAction("click")} onMouseEnter={() => handlAction("hover")} onMouseLeave={() => handleMouseLeave()} title="Edit" className="svg__iconbox svg__icon--info dark"></span>
+            <span ref={setTriggerRef} onClick={() => handlAction("click")} onMouseEnter={() => handlAction("hover")} onMouseLeave={() => handleMouseLeave()} title="Edit" className=" svg__iconbox svg__icon--info dark"></span>
             
             {action === "click" && visible && (
                 <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container p-0 m-0" })}>

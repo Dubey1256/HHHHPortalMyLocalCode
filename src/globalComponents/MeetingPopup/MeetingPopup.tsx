@@ -783,6 +783,7 @@ const MeetingPopupComponent = (Props: any) => {
                                     <CommentCard
                                         siteUrl={siteUrls}
                                         itemID={MeetingData?.Id}
+                                        listName={"Master Tasks"}
                                         AllListId={AllListIdData}
                                         Context={Context}
                                     /> : null}

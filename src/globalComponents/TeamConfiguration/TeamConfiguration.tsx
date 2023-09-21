@@ -2,6 +2,7 @@ import React from 'react';
 import { TbTruckDelivery } from 'react-icons/tb';
 import { Web } from "sp-pnp-js";
 import Tooltip from '../Tooltip';
+import { SlArrowRight, SlArrowLeft, SlArrowUp, SlArrowDown } from "react-icons/sl";
 
 export interface ITeamConfigurationProps {
     parentCallback: (dt: any) => void;
@@ -60,6 +61,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
             .getById(this.props.AllListId?.TaskUsertListID)
             .items
             .select('Id', 'IsActive', 'UserGroupId', 'Suffix', 'Title', 'Email', 'SortOrder', 'Role', 'Company', 'ParentID1', 'TaskStatusNotification', 'Status', 'Item_x0020_Cover', 'AssingedToUserId', 'isDeleted', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail', 'ItemType')
+            .filter('IsActive eq 1')
             .expand('AssingedToUser')
             .orderBy('SortOrder', true)
             .orderBy("Title", true)
@@ -118,16 +120,16 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 .getById(this.props.ItemInfo.listId)
                 .items
                 .getById(this.props.ItemInfo.Id)
-                .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "TeamMembers/Title", "TeamMembers/Id", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title","Portfolio/Title","Portfolio/Id")
-                .expand("TeamMembers", "AssignedTo", "ResponsibleTeam", "TaskType","Portfolio")
+                .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "TeamMembers/Title", "TeamMembers/Id", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "Portfolio/Title", "Portfolio/Id")
+                .expand("TeamMembers", "AssignedTo", "ResponsibleTeam", "TaskType", "Portfolio")
                 .get()
         } else {
             taskDetails = await web.lists
                 .getByTitle('Master Tasks')
                 .items
                 .getById(this.props.ItemInfo.Id)
-                .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "TeamMembers/Title", "TeamMembers/Id", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title","Portfolio/Title","Portfolio/Id")
-                .expand("TeamMembers", "AssignedTo", "ResponsibleTeam", "TaskType","Portfolio")
+                .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "TeamMembers/Title", "TeamMembers/Id", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "Portfolio/Title", "Portfolio/Id")
+                .expand("TeamMembers", "AssignedTo", "ResponsibleTeam", "TaskType", "Portfolio")
                 .get()
         }
 
@@ -416,9 +418,9 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                         <div ng-if="teamUserExpanded" className="d-flex justify-content-between align-items-center commonheader" ng-click="forCollapse()">
                             <span>
                                 {this.state.TeamUserExpended ?
-                                    <img onClick={() => this.setState({ TeamUserExpended: false })} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
+                                    <SlArrowRight onClick={() => this.setState({ TeamUserExpended: false })}></SlArrowRight>
                                     :
-                                    <img onClick={() => this.setState({ TeamUserExpended: true })} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />
+                                    <SlArrowDown onClick={() => this.setState({ TeamUserExpended: true })}></SlArrowDown>
                                 }
                                 <span className='mx-2'>
                                     Select Team Members
@@ -428,8 +430,8 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                 <a target="_blank " className="text-end siteColor mx-1" href={`${this.props.AllListId?.siteUrl}/SitePages/TaskUser-Management.aspx`} data-interception="off">
                                     Task User Management
                                 </a>
-                                <Tooltip ComponentId="1745"/>
-                              
+                                <Tooltip ComponentId="1745" />
+
                             </span>
                         </div>
                     </div>
@@ -470,14 +472,14 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                             <div className="row ">
 
                                 <div className="col-sm-7">
-                                    <h6>Team Members</h6>
+                                    <h6 className='mb-0'>Team Members</h6>
                                     <div className="d-flex p-1  UserTimeTabGray">
                                         <div className="col-sm-5 border-end p-0" >
                                             <div className="col"
                                                 onDrop={(e) => this.onDropTeam(e, this.state.ResponsibleTeam, 'Team Leaders', this.state.taskUsers, 'ResponsibleTeam')}
                                                 onDragOver={(e) => e.preventDefault()}>
                                                 <div className="p-1">
-                                                    <div data-placeholder="Team Leader"  className='d-flex flex-wrap selectmember'>
+                                                    <div data-placeholder="Team Leader" className='d-flex flex-wrap selectmember'>
                                                         {this.state.ResponsibleTeam != null && this.state.ResponsibleTeam.length > 0 && this.state.ResponsibleTeam.map((image: any, index: number) => {
                                                             return <img
                                                                 className="ProirityAssignedUserPhoto"
@@ -518,12 +520,12 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                 </div>
 
                                 <div className='col-sm-3'>
-                                    <h6 >Working Members</h6>
+                                    <h6 className='mb-0'>Working Members</h6>
                                     <div className="col"
                                         onDrop={(e) => this.onDropTeam1(e, this.state.AssignedToUsers, 'Assigned User', this.state.taskUsers, 'Assigned User')}
                                         onDragOver={(e) => e.preventDefault()}>
                                         <div className="working-box p-1" >
-                                            <div className='d-flex flex-wrap'data-placeholder="Working Members" style={{ minHeight: "30px", height: 'auto' }}>
+                                            <div className='d-flex flex-wrap' data-placeholder="Working Members" style={{ minHeight: "30px", height: 'auto' }}>
                                                 {this.state.AssignedToUsers && this.state.AssignedToUsers.map((image: any, index: number) => {
                                                     return <img
                                                         className="ProirityAssignedUserPhoto"
