@@ -2,8 +2,6 @@ import * as React from 'react';
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import { Web } from "sp-pnp-js";
 import TeamConfigurationCard from '../../../globalComponents/TeamConfiguration/TeamConfiguration';
-import FroalaImageUploadComponent from '../../../globalComponents/FlorarComponents/FlorarImageUploadComponent';
-//import FroalaCommentBox from '../../../globalComponents/FlorarComponents/FroalaCommentBoxComponent';
 import HtmlEditorCard from '../../../globalComponents/HtmlEditor/HtmlEditor';
 import * as Moment from 'moment';
 import Picker from '../../../globalComponents/EditTaskPopup/SmartMetaDataPicker';
@@ -19,7 +17,6 @@ import * as globalCommon from "../../../globalComponents/globalCommon";
 
 import Froala from "react-froala-wysiwyg";
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
-import { expandRows } from '@tanstack/react-table';
 let action = false;
 
 
@@ -36,16 +33,13 @@ var FeedBackItem: any = {};
 var SelectedTasks: any = []
 var Task: any = []
 var TeamMemberIds: any = [];
-var portfolioId: any = ''
-var WorstreamLatestId: any = ''
-var newIndex: any = ''
-var BackupCat: any = "";
+let WorstreamLatestId: any = ''
+let newIndex: any = ''
+let BackupCat: any = "";
 var FeedBackItemArray: any = [];
 var NewArray: any = [];
-var feedbackArray: any = [];
 var dynamicList: any = {}
 var SiteTypeBackupArray: any = [];
-var counts = 0
 var isModelChange = false
 var TaskImagess: any = []
 var AllClientCategory: any = [];
@@ -61,7 +55,6 @@ const CreateActivity = (props: any) => {
         dynamicList = props.SelectedProp;
     }
     if (props != undefined) {
-        //props.props.DueDate =  Moment(props.props.DueDate).format('DD/MM/YYYY
         AllItems = { ...props?.props };
         SelectedTasks.push(AllItems)
 
@@ -370,7 +363,7 @@ const CreateActivity = (props: any) => {
         setSiteType(tempArray);
         //  setIsShowSelectedSite(flag);
         getActivitiesDetails(value)
-        if (AllItems.NoteCall != 'Task') {
+        if (AllItems?.TaskType?.Title != 'Workstream') {
             setSave({ ...save, recentClick: isActiveItem, IsShowSelectedSite: flag })
         }
 
@@ -444,24 +437,7 @@ const CreateActivity = (props: any) => {
 
             }
         }
-        // if (type == "LinkedComponent") {
-        //     let ServiceData: any = []
-        //     if (item1?.linkedComponent?.length > 0) {
-        //         // Item.props.linkedComponent = item1.linkedComponent;
-        //         // setEditData({ ...EditData, RelevantPortfolio: propsItems.linkedComponent })
-        //         item1.linkedComponent.forEach((val: any) => {
-        //             ServiceData.push(val)
-        //         })
-        //         setLinkedComponentData(ServiceData);
-        //         console.log("Popup component linkedComponent", item1.linkedComponent)
-        //     }
-        // }
-        // if (type == "Service") {
-
-
-        //     setSmartComponentData(item1);
-        //     console.log("Popup component taskfootertable", item1)
-        // }
+       
 
 
         if (CategoriesData != undefined) {
@@ -541,55 +517,7 @@ const CreateActivity = (props: any) => {
         }
     };
 
-    // const froalaEditorConfig1 = {
-    //     heightMin: 230,
-    //     heightMax: 500,
-    //     // width:250,
-    //     pastePlain: true,
-    //     wordPasteModal: false,
-    //     listAdvancedTypes: false,
-    //     paragraphDefaultSelection: 'Normal',
-    //     attribution: false,
-    //     quickInsertEnabled: false,
-    //     imageAllowedTypes: ["jpeg", "jpg", "png", "gif"],
-    //     placeholderText: "Copy & Paste Image Here!",
-    //     key: 'nB3B2F2A1C2F2E1rA1C7A6D6E1D4G3E1C10C6eUd1QBRVCDLPAZMBQ==',
-
-    //     events: {
-    //         "image.beforeUpload": function (defaultfile: any, arg1: any, arg2: any) {
-    //             // defaultfile = files;
-    //             let files = defaultfile
-    //             var editor = this;
-    //             if (files.length) {
-    //                 // Create a File Reader.
-    //                 var reader = new FileReader();
-    //                 // Set the reader to insert images when they are loaded.
-    //                 reader.onload = (e) => {
-    //                     var result = e.target.result;
-    //                     editor.image.insert(result, null, null, editor.image.get());
-    //                 };
-    //                 // Read image as base64.
-    //                 reader.readAsDataURL(files[0]);
-    //                 let data = files[0]
-    //                 var reader = new FileReader();
-    //                 reader.readAsDataURL(data);
-    //                 let ImageRawData: any = ''
-    //                 reader.onloadend = function () {
-    //                     var base64String: any = reader.result;
-    //                     console.log('Base64 String - ', base64String);
-    //                     ImageRawData = base64String.substring(base64String.indexOf(', ') + 1)
-
-    //                 }
-    //                 if (ImageRawData.length > 0) {
-    //                   imageArrayUpdateFunction(ImageRawData);
-    //                 }
-
-    //             }
-    //             editor.popups.hideAll();
-    //             return false;
-    //         }
-    //     }
-    // };
+    
     const copyImage = (dt: any) => {
 
         let DataObject = {
@@ -648,12 +576,7 @@ const CreateActivity = (props: any) => {
     var SharewebID: any = ''
 
     const getActivitiesDetails = async (item: any) => {
-        // siteTypess?.forEach((ba:any)=>{
-        //     if(item.Title == ba.Title){
-        //         ba.IscreateTask = true;
-        //         ba.isSiteSelect = true;
-        //     }
-        // })
+      
         console.log(item)
         let web = new Web(dynamicList.siteUrl);
         let componentDetails:any = [];
@@ -675,22 +598,22 @@ const CreateActivity = (props: any) => {
             LatestTaskNumber += 1;
             item.LatestTaskNumber = LatestTaskNumber
         }
-        if (AllItems != undefined) {
-            if (AllItems?.Portfolio_x0020_Type != undefined) {
-                if (AllItems?.Portfolio_x0020_Type == 'Component') {
-                    SharewebID = 'CA' + LatestTaskNumber;
-                }
-                if (AllItems?.Portfolio_x0020_Type == 'Service') {
-                    SharewebID = 'SA' + LatestTaskNumber;
-                }
-                if (AllItems?.Portfolio_x0020_Type == 'Events') {
-                    SharewebID = 'EA' + LatestTaskNumber;
-                }
-            } else {
-                SharewebID = 'A' + LatestTaskNumber;
-            }
-            item.SharewebID = SharewebID
-        }
+        // if (AllItems != undefined) {
+        //     if (AllItems?.Portfolio_x0020_Type != undefined) {
+        //         if (AllItems?.Portfolio_x0020_Type == 'Component') {
+        //             SharewebID = 'CA' + LatestTaskNumber;
+        //         }
+        //         if (AllItems?.Portfolio_x0020_Type == 'Service') {
+        //             SharewebID = 'SA' + LatestTaskNumber;
+        //         }
+        //         if (AllItems?.Portfolio_x0020_Type == 'Events') {
+        //             SharewebID = 'EA' + LatestTaskNumber;
+        //         }
+        //     } else {
+        //         SharewebID = 'A' + LatestTaskNumber;
+        //     }
+        //     item.SharewebID = SharewebID
+        // }
         siteTypess?.forEach(async (val: any) => {
             if (val.IscreateTask == true) {
                 if (AllItems?.NoteCall == 'Task' && AllItems.Item_x0020_Type == 'Component' || AllItems.Item_x0020_Type == 'SubComponent' || AllItems.Item_x0020_Type == 'Feature') {
@@ -754,17 +677,11 @@ const CreateActivity = (props: any) => {
 
 
     }, [])
-    // const tooltiphierarchy = React.useMemo(() => {
-    //     if (action === true) {
-    //         return getTooltiphierarchyWithoutGroupByTable(props.props);
-    //     }
-    //     return [];
-    // }, [action]);
-
+   
     const saveNoteCall = () => {
 
 
-        if (save?.IsShowSelectedSite === false && AllItems?.NoteCall !== 'Task')
+        if (save?.IsShowSelectedSite === false && AllItems?.TaskType?.Title != 'Workstream')
             alert("Please select the site")
 
         else {
@@ -1315,21 +1232,7 @@ const CreateActivity = (props: any) => {
         setDate(finalDate);
 
     };
-    // const Priority = (e: any) => {
-    //     if (e.target.value == '1' || e.target.value == '2' || e.target.value == '3') {
-    //         setselectPriority(e.target.value)
-    //         setPriorityy(true)
-    //     }
-    //     if (e.target.value == '4' || e.target.value == '5' || e.target.value == '6' || e.target.value == '7') {
-    //         setselectPriority(e.target.value)
-    //         setPriorityy(true)
-    //     }
-    //     if (e.target.value == '8' || e.target.value == '9' || e.target.value == '10') {
-    //         setselectPriority(e.target.value)
-    //         setPriorityy(true)
-    //     }
-
-    // }
+   
     const onRenderCustomHeaderMain = () => {
         return (
             <div className={AllItems?.PortfolioType?.Id == 2 ? "serviepannelgreena d-flex full-width pb-1" : "d-flex full-width pb-1"} >
