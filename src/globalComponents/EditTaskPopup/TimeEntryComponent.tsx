@@ -1128,9 +1128,11 @@ function TimeEntryPopup(item: any) {
         }
         else {
 
-            var filteres = "Task" + items.siteType + "/Id eq " + items.Id;
-            var linkedSite = "Task" + items.siteType
-        }
+            let siteTypes =   items.siteType[0].toUpperCase() + items.siteType.slice(1)
+  
+              var filteres = "Task" + siteTypes + "/Id eq " + items.Id;
+              var linkedSite = "Task" + siteTypes
+          }
         var select = `Id,Title,TaskDate,Created,Modified,TaskTime,${linkedSite}/Title,${linkedSite}/Id,Description,SortOrder,AdditionalTimeEntry,AuthorId,Author/Title,Editor/Id,Editor/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title&$expand=Editor,Author,Category,TimesheetTitle,${linkedSite}&$filter= ${filteres}`;
         var count = 0;
 
