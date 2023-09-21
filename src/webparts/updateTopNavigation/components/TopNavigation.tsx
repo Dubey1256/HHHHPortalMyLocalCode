@@ -140,7 +140,7 @@ const TopNavigation = (dynamicData: any) => {
     const onRenderCustomHeaderUpdate = () => {
         return (
       <>
-       <div className='subheading' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+       <div className='subheading siteColor'>
                   Update TopNavigation
                   </div>
                   <Tooltip ComponentId='1810' />
@@ -152,7 +152,7 @@ const TopNavigation = (dynamicData: any) => {
     const onRenderCustomHeaderAdd = () => {
         return (
       <>
-       <div className='subheading' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+       <div className='subheading siteColor'>
                  Add TopNavigation
                   </div>
                   <Tooltip ComponentId='1810' />
@@ -164,7 +164,7 @@ const TopNavigation = (dynamicData: any) => {
     const onRenderCustomHeaderSortOrder = () => {
         return (
       <>
-       <div className='subheading' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+       <div className='subheading siteColor'>
                  Update SortOrder
                   </div>
                   <Tooltip ComponentId='1810' />
@@ -176,7 +176,7 @@ const TopNavigation = (dynamicData: any) => {
     const onRenderCustomHeaderSelect = () => {
         return (
       <>
-       <div className='subheading' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+       <div className='subheading siteColor'>
                 Select Parent
                   </div>
                   <Tooltip ComponentId='1810' />
@@ -505,12 +505,12 @@ const callBackData = React.useCallback((elem: any, ShowingData: any) => {
                         </div>
                     </div>
                 </div>
-                <div className="modal-footer mt-3">
-                    <div className='row w-100'>
-                        <div className="col-sm-6 pe-0">
+                <footer className="bg-f4" style={{ position: 'absolute',width:'100%', bottom:"0px", zIndex:"9", left:"0px" }} >
+                    <div className='align-items-center d-flex justify-content-between me-3 px-4 py-2'>
+                        <div className="col">
                             <div className="text-left">
                                 Created
-                                <span> {popupData[0]?.CreatedDate} </span>
+                                < > {popupData[0]?.CreatedDate} </>
                                 by <span
                                     className="siteColor"> {popupData[0]?.Author?.Title} </span>
                             </div>
@@ -525,7 +525,7 @@ const callBackData = React.useCallback((elem: any, ShowingData: any) => {
                                <span className='svg__iconbox svg__icon--trash' onClick={() => deleteDataFunction(popupData[0])}></span>
                             </div>
                         </div>
-                        <div className="col-sm-6 text-end p-0">
+                        <div className="col  text-end">
                             <a data-interception="off" target="_blank"
                                 href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TopNavigation/EditForm.aspx?ID=${popupData[0]?.Id}`}>
                                 Open out-of-the-box
@@ -542,7 +542,7 @@ const callBackData = React.useCallback((elem: any, ShowingData: any) => {
                         </div>
                     </div>
 
-                </div>
+                </footer>
             </Panel>
             <Panel
                 onRenderHeader={onRenderCustomHeaderAdd}
@@ -643,7 +643,7 @@ const callBackData = React.useCallback((elem: any, ShowingData: any) => {
                                     className="siteColor">Santosh</span>
                             </div>
                         </div> */}
-                        <div className="text-end">
+                        <div className="text-end pe-0">
                             {/* <a target="_blank"
                                 ng-if="AdditionalTaskTime.siteListName === 'SP.Data.TasksTimesheet2ListItem'"
                                 href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TaskTimeSheetListNew/EditForm.aspx?ID=112`}>
@@ -674,7 +674,7 @@ const callBackData = React.useCallback((elem: any, ShowingData: any) => {
                             <label><b>Top Level</b></label>
                         </div>
                         <div className='col-sm-10'>
-                            <select value={value == ''?'Select Item':value} onChange={(e) => handleChange('Parent', e)}>
+                            <select className='full-width' value={value == ''?'Select Item':value} onChange={(e) => handleChange('Parent', e)}>
                                 {
                                     root?.map((item: any) => {
                                         return (
@@ -696,7 +696,7 @@ const callBackData = React.useCallback((elem: any, ShowingData: any) => {
                             <label><b>Second Level</b></label>
                         </div>
                         <div className='col-sm-10'>
-                            <select value={child == ''?'Select Item':child} onChange={(e) => handleChange('child', e)}>
+                            <select className='full-width' value={child == ''?'Select Item':child} onChange={(e) => handleChange('child', e)}>
                                 {
                                     ParentData?.map((item: any) => {
                                         return (
@@ -721,7 +721,7 @@ const callBackData = React.useCallback((elem: any, ShowingData: any) => {
                             <label><b>Third Level</b></label>
                         </div>
                         <div className='col-sm-10'>
-                            <select value={subchild} onChange={(e) => handleChange('subchild', e)}>
+                            <select className='full-width' value={subchild} onChange={(e) => handleChange('subchild', e)}>
                                 
                                    
                                                 {childData?.map((child: any) => {
@@ -748,7 +748,7 @@ const callBackData = React.useCallback((elem: any, ShowingData: any) => {
                 <div className="modal-footer mt-3">
                     <div className='row w-100'>
                        
-                        <div className="text-end">
+                        <div className="text-end pe-0">
                             <button type="button" className="btn btn-primary ms-2"
                                 onClick={() => UpdateParentLevelData()} >
                                 Save

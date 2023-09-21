@@ -494,7 +494,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
             if (item?.ImageName == Attach?.FileName) {
               ImagesInfo.push({
                 ImageName: Attach?.FileName,
-                ImageUrl: Attach?.ServerRelativeUrl,
+                ImageUrl: item?.ImageUrl,
                 UploadeDate: item?.UploadeDate,
                 UserImage: item?.UserImage,
                 UserName: item?.UserName,

@@ -49,7 +49,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
             setIsCurrentUserApprover(true);
         }
         getCurrentUserDetails();
-    }, [])
+    }, [SubTextItemsArray.FeedbackCount])
     const getCurrentUserDetails = async () => {
         let currentUserId: number;
         await pnp.sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
@@ -250,6 +250,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
     function createSubRows(state: any[]) {
         return (
             <div>
+                
                 <div className="add-text-box my-1">
                     {state?.map((obj, index) => {
                         return (
@@ -372,6 +373,8 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                             Context={Context}
                                             ApprovalStatus={ApprovalStatus}
                                             isCurrentUserApprover={isCurrentUserApprover}
+                                            FeedbackCount = {SubTextItemsArray.FeedbackCount}
+                                            SmartLightStatus = {obj.isShowLight}
                                         />
                                     </div>
                                 </div>
