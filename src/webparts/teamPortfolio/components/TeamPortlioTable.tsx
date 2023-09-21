@@ -1500,6 +1500,11 @@ function TeamPortlioTable(SelectedProp: any) {
             copyDtaArray.unshift(item.data);
             renderData = [];
             renderData = renderData.concat(copyDtaArray)
+            if (item?.CreateOpenType === 'CreatePopup') {
+                const openEditItem = (item?.CreatedItem != undefined ? item.CreatedItem[0]?.data : item.data);
+                setSharewebComponent(openEditItem);
+                setIsComponent(true);
+            }
             refreshData();
         }
         setOpenAddStructurePopup(false);
