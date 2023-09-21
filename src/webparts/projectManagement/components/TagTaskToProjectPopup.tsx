@@ -49,7 +49,7 @@ const TagTaskToProjectPopup = (props: any) => {
             .items
             .select('Id', 'IsVisible', 'ParentID', 'Title', 'SmartSuggestions', 'TaxType', 'Description1', 'Item_x005F_x0020_Cover', 'listId', 'siteName', 'siteUrl', 'SortOrder', 'SmartFilters', 'Selectable', 'Parent/Id', 'Parent/Title')
             .top(5000)
-            .filter("TaxType eq 'Sites'or TaxType eq 'timesheetListConfigrations'")
+            .filter("TaxType eq 'Sites'")
             .expand('Parent')
             .get();
         siteConfig = smartmeta;
@@ -97,19 +97,17 @@ const TagTaskToProjectPopup = (props: any) => {
                 smartmeta = await web.lists
                     .getById(config?.listId)
                     .items
-                    .select("Id,Title,PriorityRank,Remark,Project/PriorityRank,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,Project/StructureID,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,PriorityRank,Remark,Project/PriorityRank,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
                     .expand('AssignedTo,Project,Portfolio,SmartInformation,Author,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory')
                     .top(4999)
                     // .filter("Project/Id ne " + props.projectId)
                     .get();
                 arraycount++;
                 smartmeta.map((items: any) => {
-            
                     items.AllTeamMember = [];
                     items.HierarchyData = [];
                     items.descriptionsSearch = '';
                     items.siteType = config.Title;
-                    items.projectStructerId=items?.Project?.StructureID,
                     items.bodys = items.Body != null && items.Body.split('<p><br></p>').join('');
                     if (items?.Body != undefined && items?.Body != null) {
                         items.descriptionsSearch = items?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
@@ -207,37 +205,62 @@ const TagTaskToProjectPopup = (props: any) => {
             // }
 
         } else {
+            let tasksWithTaggedProjects:any=[];
+            let tasksWithNoProjects:any=[];
             selectedTasks?.map(async (item: any, index: any) => {
                 if (index == 0) {
                     selectedTaskId = selectedTaskId + '(' + item?.siteType + ') ' + item?.TaskID
                 } else {
                     selectedTaskId = selectedTaskId + ',' + '(' + item?.siteType + ') ' + item?.TaskID
                 }
+                if(item?.Project?.Id!=undefined){
+                    tasksWithTaggedProjects.push(item)
+                }else{
+                    tasksWithNoProjects.push(item)
+                }
             })
 
             let confirmation = confirm('Are you sure you want to tag ' + selectedTaskId + ' to this project ?')
             if (confirmation == true) {
-
-                selectedTasks?.map(async (item: any, index: any) => {
-                    const web = new Web(item?.siteUrl);
-                    await web.lists.getById(item?.listId).items.getById(item?.Id).update({
-                        ProjectId: props?.projectId != undefined ? props?.projectId : ''
-                    }).then((e: any) => {
-                        if (index == selectedTasks?.length - 1) {
-                            props.callBack();
-
+                if(tasksWithTaggedProjects?.length>0){
+                    let projectTagedTasks:any=''
+                    tasksWithTaggedProjects?.map(async (item: any, index: any) => {
+                        if (index == 0) {
+                            projectTagedTasks = projectTagedTasks + '(' + item?.siteType + ') ' + item?.TaskID
+                        } else {
+                            projectTagedTasks = projectTagedTasks + ',' + '(' + item?.siteType + ') ' + item?.TaskID
                         }
                     })
-                        .catch((err: { message: any; }) => {
-                            console.log(err.message);
-                        });
-                })
-
+                    let taggedProjectConfirmation = confirm('These Tasks ' + projectTagedTasks + ' are already tagged to some other Projects, Do you want to over ride there project ?')
+                    if(taggedProjectConfirmation){
+                        updateSelectedTask(selectedTasks);
+                    }else{
+                        updateSelectedTask(tasksWithNoProjects)
+                    }
+                }else{
+                    updateSelectedTask(selectedTasks)
+                }
                 handleClose()
             }
 
         }
 
+    }
+
+    const updateSelectedTask=(selectedTasksArray:any)=>{
+        selectedTasksArray?.map(async (item: any, index: any) => {
+            const web = new Web(item?.siteUrl);
+            await web.lists.getById(item?.listId).items.getById(item?.Id).update({
+                ProjectId: props?.projectId != undefined ? props?.projectId : ''
+            }).then((e: any) => {
+                if (index == selectedTasksArray?.length - 1) {
+                    props.callBack();
+                }
+            })
+                .catch((err: { message: any; }) => {
+                    console.log(err.message);
+                });
+        })
     }
 
     const handleClose = () => {
@@ -278,26 +301,7 @@ const TagTaskToProjectPopup = (props: any) => {
 
         )
     }
-    function IndeterminateCheckbox({
-        indeterminate,
-        className = "",
-        ...rest
-    }: { indeterminate?: boolean } & React.HTMLProps<HTMLInputElement>) {
-        const ref = React.useRef<HTMLInputElement>(null!);
-        React.useEffect(() => {
-            if (typeof indeterminate === "boolean") {
-                ref.current.indeterminate = !rest.checked && indeterminate;
-            }
-        }, [ref, indeterminate]);
-        return (
-            <input
-                type="checkbox"
-                ref={ref}
-                className={className + "  cursor-pointer form-check-input rounded-0"}
-                {...rest}
-            />
-        );
-    }
+    
     const inlineCallBack = React.useCallback((item: any) => {
         setAllTasks(prevTasks => {
             const updatedTasks = prevTasks.map((task: any) => {
