@@ -7,7 +7,6 @@ import {
     getCoreRowModel,
     getFilteredRowModel,
     getExpandedRowModel,
-    ColumnDef,
     flexRender,
     ColumnFiltersState,
     getSortedRowModel,
@@ -16,7 +15,7 @@ import {
     getPaginationRowModel
 } from "@tanstack/react-table";
 import { RankingInfo, rankItem, compareItems } from "@tanstack/match-sorter-utils";
-import { FaSearch, FaSort, FaSortDown, FaSortUp, FaChevronRight, FaChevronLeft, FaAngleDoubleRight, FaAngleDoubleLeft, FaInfoCircle, FaPlus, FaMinus } from 'react-icons/fa';
+import { FaSort, FaSortDown, FaSortUp, FaChevronRight, FaChevronLeft, FaAngleDoubleRight, FaAngleDoubleLeft, FaInfoCircle, FaPlus, FaMinus } from 'react-icons/fa';
 import { HTMLProps } from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -28,12 +27,8 @@ import SelectFilterPanel from './selectFilterPannel';
 import ExpndTable from '../ExpandTable/Expandtable';
 import RestructuringCom from '../Restructuring/RestructuringCom';
 import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
-import Loader from "react-loader";
-import PageLoader from '../pageLoader';
-import { BsSearch } from 'react-icons/bs';
+import { BsClockHistory, BsSearch } from 'react-icons/bs';
 import Tooltip from "../../globalComponents/Tooltip";
-
-
 // ReactTable Part/////
 declare module "@tanstack/table-core" {
     interface FilterFns {
@@ -709,6 +704,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
             items?.addActivity();
         } else if (eventValue === "Add Workstream-Task") {
             items?.AddWorkstreamTask();
+        } else if (eventValue === "Smart-Time") {
+            items?.smartTimeTotalFunction();
         }
     }
 
@@ -845,6 +842,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         <a onClick={() => openTaskAndPortfolioMulti()} title='Open in new tab' className="openWebIcon p-0"><span style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--openWeb"></span></a>
                         : <a className="openWebIcon p-0" title='Open in new tab'><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a>}
                     <a className='excal' title='Export to excal' onClick={() => exportToExcel()}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a>
+
+                    {items?.SmartTimeIconShow === true && items?.AllListId?.isShowTimeEntry === true && <a className='smartTotalTime' title="Load SmartTime of AWT" onClick={() => openCreationAllStructure("Smart-Time")} > <BsClockHistory style={{ color: `${portfolioColor}` }} /></a>}
 
                     <a className='brush'><i className="fa fa-paint-brush hreflink" style={{ color: `${portfolioColor}` }} aria-hidden="true" title="Clear All" onClick={() => { setGlobalFilter(''); setColumnFilters([]); }}></i></a>
 
