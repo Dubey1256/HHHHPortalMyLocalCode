@@ -522,7 +522,7 @@ const callBackData = React.useCallback((elem: any, ShowingData: any) => {
                             </div>
                             <div className="text-left">
                                Delete this item
-                               <span className='svg__iconbox svg__icon--trash' onClick={() => deleteDataFunction(popupData[0])}></span>
+                               <span className='alignIcon  svg__iconbox svg__icon--trash' onClick={() => deleteDataFunction(popupData[0])}></span>
                             </div>
                         </div>
                         <div className="col  text-end">
