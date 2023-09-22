@@ -2,7 +2,7 @@ import * as React from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
-import { Web } from "sp-pnp-js";
+import { Web, sp } from "sp-pnp-js";
 import pnp, { PermissionKind } from "sp-pnp-js";
 import "@pnp/sp/sputilities";
 import { IEmailProperties } from "@pnp/sp/sputilities";
@@ -108,6 +108,7 @@ function CreateTaskComponent(props: any) {
             console.log(error)
         }
         base_Url = AllListId?.siteUrl
+        pageContext();
         setRefreshPage(!refreshPage);
     }, [relevantTasks])
 
@@ -343,7 +344,6 @@ function CreateTaskComponent(props: any) {
                     })
                     saveValue.taskUrl = paramSiteUrl;
                     BurgerMenuData.TaskType = 'Feedback'
-                    //  setTaskUrl(paramSiteUrl);
                     setSave(saveValue);
                     let e = {
                         target: {
@@ -351,132 +351,111 @@ function CreateTaskComponent(props: any) {
                         }
                     }
                     UrlPasteTitle(e);
-                    await loadRelevantTask(paramSiteUrl, "UrlTask")
-                    await loadRelevantTask(PageName, "PageTask")
                 }
-                let Condition = "&$filter=Portfolio/Id eq  '" + paramComponentId + "'"
-                await loadRelevantTask(Condition, "PortfolioId").then((response: any) => {
+                await loadRelevantTask(paramComponentId, paramSiteUrl, PageName).then((response: any) => {
                     setRefreshPage(!refreshPage);
                 })
             }
         } else if (props?.projectId != undefined && props?.projectItem != undefined) {
             AllComponents?.map((item: any) => {
-                // if (item?.Id == props?.projectItem?.ComponentId[0]) {
-                //     setComponent.push(item)
-                //     setSave({ ...save, Component: setComponent });
-                //     setSmartComponentData(setComponent);
-                // }
                 if (item?.Id == props?.createComponent?.portfolioData?.Id) {
                     if (props?.createComponent?.portfolioType === 'Component') {
-                        selectPortfolioType('Component');
                         setComponent.push(item)
                         setSave((prev: any) => ({ ...prev, portfolioType: 'Component' }))
                         setSmartComponentData(setComponent);
-                    }
-
-                    if (props?.createComponent?.portfolioType === 'Service') {
-                        selectPortfolioType('Service');
-                        setComponent.push(item);
-                        setSave((prev: any) => ({ ...prev, portfolioType: 'Service' }))
-                        setLinkedComponentData(setComponent);
                     }
                 }
             })
         }
         setBurgerMenuTaskDetails(BurgerMenuData)
     }
-    const loadRelevantTask = async (Condition: any, type: any) => {
+   
+    const loadRelevantTask = async (PortfolioId: any, UrlTask: any, PageTask: any) => {
+        let allData: any = [];
         let query = '';
-        if (type == 'PortfolioId') {
-            query = "Categories,AssignedTo/Title,AssignedTo/Name,PriorityRank,TaskType/Id,TaskType/Title,AssignedTo/Id,Portfolio/Id,Portfolio/Title,AttachmentFiles/FileName,ComponentLink/Url,FileLeafRef,TaskLevel,TaskLevel,Title,Id,PriorityRank,PercentComplete,Company,WebpartId,StartDate,DueDate,Status,Body,WebpartId,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=AssignedTo,AttachmentFiles,TaskType,Portfolio,Author,Editor&$orderby=Modified desc" + Condition
-        } else {
-            query = "Categories,AssignedTo/Title,AssignedTo/Name,PriorityRank,TaskType/Id,TaskType/Title,AssignedTo/Id,Portfolio/Id,Portfolio/Title,AttachmentFiles/FileName,ComponentLink/Url,FileLeafRef,TaskLevel,TaskLevel,Title,Id,PriorityRank,PercentComplete,Company,WebpartId,StartDate,DueDate,Status,Body,WebpartId,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=AssignedTo,AttachmentFiles,TaskType,Portfolio,Author,Editor&$orderby=Modified desc"
-        }
+        query = "Categories,AssignedTo/Title,AssignedTo/Name,PriorityRank,TaskType/Id,TaskType/Title,AssignedTo/Id,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,AttachmentFiles/FileName,ComponentLink/Url,FileLeafRef,TaskLevel,TaskLevel,Title,Id,PriorityRank,PercentComplete,Company,WebpartId,StartDate,DueDate,Status,Body,WebpartId,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=AssignedTo,AttachmentFiles,TaskType,Portfolio,Author,Editor&$orderby=Modified desc"
         let setRelTask = relevantTasks;
-        try {
-            let SiteTaskTaggedToComp: any[] = []
-            let count = 0
-            SitesTypes?.map(async (site: any) => {
-                await globalCommon.getData(site?.siteUrl?.Url, site?.listId, query).then((data: any) => {
-                    data?.map((item: any) => {
-
-                        item.SiteIcon = site?.Item_x005F_x0020_Cover?.Url
-                        item.siteType = site?.siteName;
-                        item.TaskName = item.Title;
-                        item.siteUrl = site?.siteUrl?.Url
-                        item.listId = site?.listId
-                        taskUsers?.map((user: any) => {
-                            if (user?.AssingedToUser?.Id == item.Author.Id) {
-                                item.AuthorCover = user?.Item_x0020_Cover?.Url
-                            }
-                            if (user?.AssingedToUser?.Id == item.Editor.Id) {
-                                item.EditorCover = user?.Item_x0020_Cover?.Url
-                            }
-
-                        })
-                        item.PercentComplete = item?.PercentComplete * 100;
-                        item.Priority = item.PriorityRank * 1;
-                        if (item.Categories == null)
-                            item.Categories = '';
-                        //type.Priority = type.Priority.split('')[1];
-                        //type.Component = type.Component.results[0].Title,
-                        item.ComponentTitle = '';
-                        item.portfolio = {};
-                        if (item?.Portfolio?.Id != undefined) {
-                            item.portfolio = item.Portfolio;
-                        }
-
-                        item.TaskID = globalCommon.getTaskId(item);
-
-                        item.DisplayDueDate = moment(item?.DueDate).format('DD/MM/YYYY');
-                        if (item.DisplayDueDate == "Invalid date" || item.DisplayDueDate == undefined) {
-                            item.DisplayDueDate = '';
-                        }
-                        item.CreateDate = moment(item?.Created).format('DD/MM/YYYY');
-                        item.CreatedSearch = item.CreateDate + '' + item.Author;
-                        item.bodys = item.Body != null && item.Body.split('<p><br></p>').join('');
-                        item.DateModified = item.Modified;
-                        item.ModifiedDate = moment(item?.Modified).format('DD/MM/YYYY');
-                        item.ModifiedSearch = item.ModifiedDate + '' + item.Editor;
-                        if (item.siteType != 'Offshore Tasks') {
-                            try {
-                                if (type == 'PageTask' || type == "UrlTask") {
-                                    if (item?.ComponentLink?.Url.indexOf(Condition) > -1) {
-                                        SiteTaskTaggedToComp.push(item);
+        const web = new Web(AllListId?.siteUrl);
+        const batch = sp.createBatch();
+        let count: any = 0;
+        SitesTypes?.map((site: any) => {
+       
+            try {
+                if(site?.listId!=undefined){
+                    const lists = web.lists.getById(site?.listId)
+                    lists.items.inBatch(batch).select(query)
+                        .getAll()
+                        .then((data: any) => {
+                           
+                            data.map((item: any) => {
+                                item.SiteIcon = site?.Item_x005F_x0020_Cover?.Url
+                                item.siteType = site?.siteName;
+                                item.TaskName = item.Title;
+                                item.siteUrl = site?.siteUrl?.Url
+                                item.listId = site?.listId
+                                taskUsers?.map((user: any) => {
+                                    if (user?.AssingedToUser?.Id == item.Author.Id) {
+                                        item.AuthorCover = user?.Item_x0020_Cover?.Url
                                     }
-                                } else {
-                                    SiteTaskTaggedToComp.push(item);
+                                    if (user?.AssingedToUser?.Id == item.Editor.Id) {
+                                        item.EditorCover = user?.Item_x0020_Cover?.Url
+                                    }
+    
+                                })
+                                item.PercentComplete = item?.PercentComplete * 100;
+                                item.Priority = item.PriorityRank * 1;
+                                if (item.Categories == null)
+                                    item.Categories = '';
+                                //type.Priority = type.Priority.split('')[1];
+                                //type.Component = type.Component.results[0].Title,
+                                item.ComponentTitle = '';
+                                item.portfolio = {};
+                                if (item?.Portfolio?.Id != undefined) {
+                                    item.portfolio = item.Portfolio;
                                 }
-
-                            } catch (error) {
-                                console.log(error.message)
-                            }
-                        }
-                    })
-                })
-                count++;
-                if (count == SitesTypes.length - 1) {
-                    console.log("inside Set Task")
-                    if (type == "PortfolioId") {
-                        setRelTask.ComponentRelevantTask = SiteTaskTaggedToComp;
-                    }
-                    if (type == "UrlTask") {
-                        setRelTask.TaskUrlRelevantTask = SiteTaskTaggedToComp;
-                    }
-                    if (type == "PageTask") {
-                        setRelTask.PageRelevantTask = SiteTaskTaggedToComp;
-                    }
-                    setRelevantTasks(setRelTask)
-                    setSave({ ...save, recentClick: type })
+                                if (item?.Portfolio?.Id == PortfolioId) {
+                                    setRelTask.ComponentRelevantTask.push(item);
+                                }
+    
+                                item.TaskID = globalCommon.GetTaskId(item);
+    
+                                item.DisplayDueDate = moment(item?.DueDate).format('DD/MM/YYYY');
+                                if (item.DisplayDueDate == "Invalid date" || item.DisplayDueDate == undefined) {
+                                    item.DisplayDueDate = '';
+                                }
+                                item.CreateDate = moment(item?.Created).format('DD/MM/YYYY');
+                                item.CreatedSearch = item.CreateDate + '' + item.Author;
+                                item.bodys = item.Body != null && item.Body.split('<p><br></p>').join('');
+                                item.DateModified = item.Modified;
+                                item.ModifiedDate = moment(item?.Modified).format('DD/MM/YYYY');
+                                item.ModifiedSearch = item.ModifiedDate + '' + item.Editor;
+                                if (item.siteType != 'Offshore Tasks') {
+                                    try {
+                                        if (item?.ComponentLink?.Url.indexOf(UrlTask) > -1) {
+                                            setRelTask.TaskUrlRelevantTask.push(item);
+                                        }
+                                        if (item?.ComponentLink?.Url.indexOf(PageTask) > -1) {
+                                            setRelTask.PageRelevantTask.push(item);
+                                        }
+    
+                                    } catch (error) {
+                                        console.log(error.message)
+                                    }
+                                } 
+                            })
+                            count++;
+                                if (count == SitesTypes.length-1) {
+                                    console.log("inside Set Task")
+                                    setRelevantTasks(setRelTask)
+                                    setSave({ ...save, recentClick: 'PortfolioId' })
+                                }
+                        })
+    
                 }
-                // setRelevantTasks(setRelTask)
-
-            })
-        } catch (error) {
-            console.log(error.message)
-        }
-
-
+            } catch (error) {
+                console.log(error)
+            }
+        })
     }
     const GetSmartMetadata = async () => {
         SitesTypes = [];
@@ -547,7 +526,7 @@ function CreateTaskComponent(props: any) {
             AllTaskUsers = await web.lists
                 .getById(props?.SelectedProp?.TaskUsertListID)
                 .items
-                .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsTaskNotifications,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+                .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,IsTaskNotifications,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
                 .get();
 
             // let pageContent = await globalCommon.pageContext();
@@ -607,18 +586,7 @@ function CreateTaskComponent(props: any) {
             }
         });
     }
-    const savaData = () => {
-        var data: any = {}
-        data['taskName'] = save.taskName;
-        data['taskUrl'] = save.taskUrl;
-        data['siteType'] = save.siteType;
-        data['taskCategory'] = save.taskCategory;
-        data['taskCategoryParent'] = save.taskCategoryParent;
-        data['priorityRank'] = save.rank;
-        data['Time'] = save.Time;
-        data['portfolioType'] = save.portfolioType;
-        console.log(data)
-    }
+
     let PageContent: any;
     const pageContext = async () => {
         try {
@@ -631,7 +599,7 @@ function CreateTaskComponent(props: any) {
         return PageContent;
 
     }
-    pageContext();
+
     const createTask = async () => {
         let currentUserId = loggedInUser?.AssingedToUserId
         var AssignedToIds: any[] = [];
@@ -801,14 +769,14 @@ function CreateTaskComponent(props: any) {
 
                         //var query = "SiteCompositionSettings,Sitestagging&$top=1&$filter=Id eq " + smartComponentData[0]?.Id;
                         //const web = new Web(PageContent?.SiteFullUrl + '/sp');
-                        const web = new Web(PageContent?.WebFullUrl);
+                        const web = new Web(AllListId?.siteUrl);
                         await web.lists.getById(ContextValue.MasterTaskListID).items.select("SiteCompositionSettings,Sitestagging").filter(`Id eq ${smartComponentData[0]?.Id}`).top(1).get().then((data: any) => {
                             Tasks = data[0];
                         });
                     }
 
                     //Latest code for Creating Task
-                
+
                     var newCopyUrl = CopyUrl != undefined ? CopyUrl : '';
 
 
@@ -1487,7 +1455,7 @@ function CreateTaskComponent(props: any) {
                     }
                     if (ToEmails.length > 0) {
                         var query = '';
-                        query += "AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,ComponentLink,Categories,FeedBack,ComponentLink,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,Portfolio/Id,Portfolio/Title,TaskCategories/Id,TaskCategories/Title,TaskType/Id,TaskType/Title,TaskID,CompletedDate,TaskLevel,TaskLevel&$expand=AssignedTo,AttachmentFiles,Author,Editor,TaskCategories,TaskType,Portfolio&$filter=Id eq " + itemId;
+                        query += "AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,ComponentLink,Categories,FeedBack,ComponentLink,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,TaskCategories/Id,TaskCategories/Title,TaskType/Id,TaskType/Title,TaskID,CompletedDate,TaskLevel,TaskLevel&$expand=AssignedTo,AttachmentFiles,Author,Editor,TaskCategories,TaskType,Portfolio&$filter=Id eq " + itemId;
                         await getData(siteUrl, listId, query)
                             .then(async (data: any) => {
                                 data?.map((item: any) => {
@@ -1523,7 +1491,7 @@ function CreateTaskComponent(props: any) {
                                     }
                                     UpdateItem.siteType = siteType;
                                 }
-                                UpdateItem.TaskID = globalCommon.getTaskId(UpdateItem);
+                                UpdateItem.TaskID = globalCommon.GetTaskId(UpdateItem);
                                 if (UpdateItem?.Author != undefined) {
                                     UpdateItem.Author1 = '';
                                     UpdateItem.Author1 = UpdateItem.Author.Title;
@@ -1861,7 +1829,6 @@ function CreateTaskComponent(props: any) {
                 function (error) { });
     }
     const GetImmediateTaskNotificationEmails = async (item: any, isLoadNotification: any, rootsite: any) => {
-        let pageContent = await pageContext()
         var isLoadNotification = isLoadNotification;
         var CurrentItem = item;
         var Allmail: any[] = [];
@@ -1929,7 +1896,8 @@ function CreateTaskComponent(props: any) {
                              </span>
                         </div>  : ''} */}
                     <div>
-                        <h4 className="titleBorder">General Information</h4>
+                    {props?.projectId == undefined ?
+                        <h4 className="titleBorder">General Information</h4>: ''}
                         <div className='row p-0'>
                             <div className='col-sm-6'>
                                 <div className='input-group'>
@@ -2004,7 +1972,7 @@ function CreateTaskComponent(props: any) {
                                     <>
                                         <div className={relevantTasks?.TaskUrlRelevantTask?.length > 0 ? 'fxhg' : ''}>
                                             {/* ?ComponentID=1682&Siteurl=https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskDashboard.aspx */}
-                                            <GlobalCommanTable columns={column2} data={relevantTasks?.TaskUrlRelevantTask} paginatedTable={true} callBackData={callBackData} />
+                                            <GlobalCommanTable columns={column2} data={relevantTasks?.TaskUrlRelevantTask} pageSize={100} showPagination={true} callBackData={callBackData} />
                                             {/* <GlobalCommanTable AllListId={ContextValue} callBackData={callBackData} columns={columns} data={relevantTasks?.TaskUrlRelevantTask} TaskUsers={taskUsers} showHeader={true} fixedWidth={true} showingAllPortFolioCount={true} showCreationAllButton={true} /> */}
                                             {/* <DataGrid rows={relevantTasks?.TaskUrlRelevantTask} columns={columns} getRowId={(row: any) => row.TaskID} /> */}
                                         </div>
@@ -2017,7 +1985,7 @@ function CreateTaskComponent(props: any) {
                                 {relevantTasks?.PageRelevantTask?.length > 0 ?
                                     <>
                                         <div className={relevantTasks?.PageRelevantTask?.length > 0 ? 'fxhg' : ''}>
-                                            <GlobalCommanTable columns={column2} data={relevantTasks?.PageRelevantTask} paginatedTable={true} callBackData={callBackData} />
+                                            <GlobalCommanTable columns={column2} data={relevantTasks?.PageRelevantTask} pageSize={100} showPagination={true} callBackData={callBackData} />
                                             {/* <GlobalCommanTable AllListId={ContextValue} columns={columns} data={relevantTasks?.PageRelevantTask} TaskUsers={taskUsers} showHeader={true} fixedWidth={true} showingAllPortFolioCount={true} showCreationAllButton={true} /> */}
                                             {/* <DataGrid rows={relevantTasks?.PageRelevantTask} columns={columns} getRowId={(row: any) => row.TaskID} /> */}
                                         </div>
@@ -2032,7 +2000,7 @@ function CreateTaskComponent(props: any) {
                                     {relevantTasks?.ComponentRelevantTask?.length > 0 ?
                                         <>
                                             <div className={relevantTasks?.ComponentRelevantTask?.length > 0 ? 'fxhg' : ''}>
-                                                <GlobalCommanTable columns={column2} data={relevantTasks?.ComponentRelevantTask} paginatedTable={true} callBackData={callBackData} />
+                                                <GlobalCommanTable columns={column2} data={relevantTasks?.ComponentRelevantTask} pageSize={100} showPagination={true} callBackData={callBackData} />
                                                 {/* <GlobalCommanTable AllListId={ContextValue} columns={columns} data={relevantTasks?.ComponentRelevantTask} TaskUsers={taskUsers} showHeader={true} fixedWidth={true} showingAllPortFolioCount={true} showCreationAllButton={true} /> */}
                                                 {/* <DataGrid rows={relevantTasks?.ComponentRelevantTask} columns={columns} getRowId={(row: any) => row.TaskID} /> */}
                                             </div>

@@ -373,7 +373,7 @@ const inlineEditingcolumns = (props: any) => {
         })
             .then((res: any) => {
 
-                web.lists.getById(props?.item?.listId).items.select("ID", "Title", "EstimatedTime", "Comments", "Remark", "DueDate", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Editor/Title", "Modified")
+                web.lists.getById(props?.item?.listId).items.select("ID", "Title", "EstimatedTime", "Comments", "Remark", "DueDate", "Approver/Id", "Approver/Title", "Portfolio/PortfolioStructureID","ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Editor/Title", "Modified")
                     .expand("TeamMembers", "Approver", "ParentTask", "AssignedTo", "TaskCategories", "Author", "ResponsibleTeam", "TaskType", "Portfolio", "Editor")
                     .getById(props?.item?.Id).get().then((task) => {
                         task.AllTeamMember = [];
@@ -404,7 +404,7 @@ const inlineEditingcolumns = (props: any) => {
                             });
                         });
                         task.TeamMembersId = [];
-                        task.TaskID = globalCommon.getTaskId(task);
+                        task.TaskID = globalCommon.GetTaskId(task);
                         task?.TeamMembersId?.map((taskUser: any) => {
                             task.TeamMembersId.push(taskUser);
                             var newuserdata: any = {};

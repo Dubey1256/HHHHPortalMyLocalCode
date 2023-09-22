@@ -26,6 +26,7 @@ const SmartFilterSearchGlobal = (item: any) => {
     const [updatedSmartFilter, setUpdatedSmartFilter] = React.useState(false)
     const [firstTimecallFilterGroup, setFirstTimecallFilterGroup] = React.useState(false)
     const [hideTimeEntryButton, setHideTimeEntryButton] = React.useState(0);
+    const [timeEntryDataLocalStorage, setTimeEntryDataLocalStorage] = React.useState<any>(localStorage.getItem('timeEntryIndex'));
     let finalArrayData: any = [];
     let SetAllData: any = [];
     let filt: any = "";
@@ -94,6 +95,7 @@ const SmartFilterSearchGlobal = (item: any) => {
             setSiteConfig(siteConfigSites)
         }
         setSmartmetaDataDetails(smartmetaDetails);
+        smartTimeUseLocalStorage();
     }
 
     React.useEffect(() => {
@@ -142,6 +144,7 @@ const SmartFilterSearchGlobal = (item: any) => {
         let SitesData: any = [];
         let PriorityData: any = [];
         let PortfolioData: any = [];
+        let PrecentComplete: any = [];
         let Type: any = [];
         smartmetaDataDetails.forEach((element: any) => {
             element.label = element.Title;
@@ -161,12 +164,26 @@ const SmartFilterSearchGlobal = (item: any) => {
                 PriorityData.push(element);
             }
             if (element.TaxType == 'Percent Complete') {
-                filterGroups[3].values.push(element);
-                if (element.Title != "Completed (90-100)") {
-                    filterGroups[3].checked.push(element.Id)
-                }
+                PrecentComplete.push(element);
             }
+            // if (element.TaxType == 'Percent Complete') {
+            //     filterGroups[3].values.push(element);
+            //     if (element.Title != "Completed (90-100)") {
+            //         filterGroups[3].checked.push(element.Id)
+            //     }
+            // }
+
+
+
         });
+        PrecentComplete.forEach((element: any) => {
+            if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
+                element.value = element.Id;
+                element.label = element.Title;
+                getChildsBasedOn(element, PrecentComplete);
+                filterGroups[3].values.push(element);
+            }
+        })
         SitesData.forEach((element: any) => {
             if (element.Title != 'Master Tasks' && (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined))) {
                 element.value = element.Id;
@@ -216,11 +233,19 @@ const SmartFilterSearchGlobal = (item: any) => {
             delete item.children;
         }
         if (item.TaxType == 'Sites' || item.TaxType == 'Sites Old') {
-            if (item.Title == "Shareweb Old" || item.Title == "DRR" || item.Title == "Small Projects" || item.Title == "Offshore Tasks" || item.Title == "Health" || item.Title == "Gender" || item.Title == "QA" || item.Title == "DE") {
+            if (item.Title == "Shareweb Old" || item.Title == "DRR" || item.Title == "Small Projects" || item.Title == "Offshore Tasks" || item.Title == "Health" || item.Title == "Gender" || item.Title == "QA" || item.Title == "DE" || item.Title == "Completed" || item.Title == "90%" || item.Title == "93%" || item.Title == "96%" || item.Title == "100%") {
 
             }
             else {
                 filterGroups[2].checked.push(item.Id);
+            }
+        }
+        if (item.TaxType == 'Percent Complete') {
+            if (item.Title == "Completed" || item.Title == "90% Task completed" || item.Title == "93% For Review" || item.Title == "96% Follow-up later" || item.Title == "100% Closed") {
+
+            }
+            else {
+                filterGroups[3].checked.push(item.Id);
             }
         }
 
@@ -328,10 +353,9 @@ const SmartFilterSearchGlobal = (item: any) => {
             else if (filter.Title === 'Status' && filter.checked.length > 0 && filter.checkedObj.length > 0) {
                 filter.checkedObj.map(function (elem4: any) {
                     if (elem4.Title) {
-                        const match = elem4.Title.match(/\((\d+)\s*-\s*(\d+)\)/)
+                        const match = elem4.Title.match(/(\d+)%/);
                         if (match) {
-                            elem4.lowerBound = parseInt(match[1]);
-                            elem4.upperBound = parseInt(match[2]);
+                            elem4.TaskStatus = parseInt(match[1]);
                         }
                     }
                     return percentComplete.push(elem4);
@@ -434,7 +458,7 @@ const SmartFilterSearchGlobal = (item: any) => {
         } else {
             if (percentData.PercentComplete !== undefined && percentData.PercentComplete !== '' && percentData.PercentComplete !== null) {
                 const percentCompleteValue = parseInt(percentData?.PercentComplete);
-                return percentComplete.some((value: any) => percentCompleteValue >= value.lowerBound && percentCompleteValue <= value.upperBound);
+                return percentComplete.some((value: any) => percentCompleteValue === value?.TaskStatus);
             }
         }
         return false;
@@ -512,9 +536,9 @@ const SmartFilterSearchGlobal = (item: any) => {
                 const taskTitle = `Task${site.Title}`;
                 const key = taskTitle + entry[taskTitle]?.Id
                 if (entry.hasOwnProperty(taskTitle) && entry.AdditionalTimeEntry !== null && entry.AdditionalTimeEntry !== undefined) {
-                    if(entry[taskTitle].Id === 168){
+                    if (entry[taskTitle].Id === 168) {
                         console.log(entry[taskTitle].Id);
-                        
+
                     }
                     const additionalTimeEntry = JSON.parse(entry.AdditionalTimeEntry);
                     let totalTaskTime = additionalTimeEntry?.reduce((total: any, time: any) => total + parseFloat(time.TaskTime), 0);
@@ -538,10 +562,32 @@ const SmartFilterSearchGlobal = (item: any) => {
                 task.TotalTaskTime = timeEntryIndex[key]?.TotalTaskTime;
             }
         })
+        if (timeEntryIndex) {
+            const dataString = JSON.stringify(timeEntryIndex);
+            localStorage.setItem('timeEntryIndex', dataString);
+        }
         console.log("timeEntryIndex", timeEntryIndex)
         UpdateFilterData();
         return allTastsData;
     };
+
+    const smartTimeUseLocalStorage = () => {
+        if (timeEntryDataLocalStorage) {
+            const timeEntryIndexLocalStorage = JSON.parse(timeEntryDataLocalStorage)
+            allTastsData?.map((task: any) => {
+                task.TotalTaskTime = 0;
+                const key = `Task${task?.siteType + task.Id}`;
+                if (timeEntryIndexLocalStorage.hasOwnProperty(key) && timeEntryIndexLocalStorage[key]?.Id === task.Id && timeEntryIndexLocalStorage[key]?.siteType === task.siteType) {
+                    task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime;
+                }
+            })
+            console.log("timeEntryIndexLocalStorage", timeEntryIndexLocalStorage)
+            UpdateFilterData();
+            return allTastsData;
+        }
+    };
+
+
     //*************************************************************smartTimeTotal End*********************************************************************/
 
     return (

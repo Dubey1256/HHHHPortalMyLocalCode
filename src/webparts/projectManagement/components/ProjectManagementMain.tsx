@@ -1,35 +1,24 @@
 import * as React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import InlineEditingcolumns from "../../projectmanagementOverviewTool/components/inlineEditingcolumns";
-import { Button, Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
-import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaCaretDown, FaCaretRight, FaChevronDown, FaChevronRight, FaSort, FaSortDown, FaSortUp, } from "react-icons/fa";
-import { useTable, useSortBy, useFilters, useExpanded, usePagination, HeaderGroup, } from "react-table";
-import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewTool/components/filters";
-import { FaAngleDown, FaAngleUp, FaHome } from "react-icons/fa";
+import {  FaSort, FaSortDown, FaSortUp, } from "react-icons/fa";
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import { Web } from "sp-pnp-js";
 import EditProjectPopup from "../../projectmanagementOverviewTool/components/EditProjectPopup";
-import { IoMdArrowDropright, IoMdArrowDropdown } from "react-icons/io";
 import * as Moment from "moment";
 import {
   ColumnDef,
 } from "@tanstack/react-table";
 import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup";
-import axios, { AxiosResponse } from "axios";
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import TagTaskToProjectPopup from "./TagTaskToProjectPopup";
 import CreateTaskFromProject from "./CreateTaskFromProject";
 import * as globalCommon from "../../../globalComponents/globalCommon";
-//// import PortfolioTagging from "../../projectmanagementOverviewTool/components/PortfolioTagging"; // replace
 import ServiceComponentPortfolioPopup from "../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup";
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
 import CommentCard from "../../../globalComponents/Comments/CommentCard";
 import SmartInformation from "../../taskprofile/components/SmartInformation";
-import Accordion from 'react-bootstrap/Accordion';
-//import { useAccordionButton } from 'react-bootstrap/AccordionButton';
-import Card from 'react-bootstrap/Card';
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
-import { reject } from "lodash";
 var QueryId: any = "";
 let smartPortfoliosData: any = [];
 let portfolioType = "";
@@ -44,9 +33,8 @@ var AllSitesAllTasks: any = [];
 var AllListId: any = {};
 var backupAllTasks: any = [];
 var MasterListData: any = []
-let taskTaggedServices: any = []
 let taskTaggedComponents: any = []
-let TaggedPortfoliosToProject: any = [];
+let TaggedPortfoliosToProject:any=[];
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
 const ProjectManagementMain = (props: any) => {
@@ -199,7 +187,7 @@ const ProjectManagementMain = (props: any) => {
       taskUser = await web.lists
         .getById(AllListId?.TaskUsertListID)
         .items
-        .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+        .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
         .get();
     }
     catch (error) {
@@ -214,7 +202,7 @@ const ProjectManagementMain = (props: any) => {
         let web = new Web(props?.siteUrl);
         await web.lists
           .getById(AllListId?.MasterTaskListID)
-          .items.select("ComponentCategory/Id", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "PortfoliosId", "Portfolios/Id", "Portfolios/Title", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "DeliverableSynonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "AdminNotes", "AdminStatus", "Background", "Help_x0020_Information", "TaskCategories/Id", "TaskCategories/Title", "PriorityRank", "Reference_x0020_Item_x0020_Json", "TeamMembers/Title", "TeamMembers/Name", "TeamMembers/Id", "Item_x002d_Image", "ComponentLink", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
+          .items.select("ComponentCategory/Id", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "PortfoliosId","Portfolios/Id","Portfolios/Title","ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "DeliverableSynonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "AdminNotes", "AdminStatus", "Background", "Help_x0020_Information", "TaskCategories/Id", "TaskCategories/Title", "PriorityRank", "Reference_x0020_Item_x0020_Json", "TeamMembers/Title", "TeamMembers/Name", "TeamMembers/Id", "Item_x002d_Image", "ComponentLink", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
           .expand("ClientCategory", "ComponentCategory", "AssignedTo", "AttachmentFiles", "Author", "Editor", "TeamMembers", "Portfolios", "TaskCategories", "Parent")
           .getById(QueryId)
           .get().then((fetchedProject: any) => {
@@ -234,7 +222,7 @@ const ProjectManagementMain = (props: any) => {
               fetchedProject.DisplayDueDate = '';
             }
             TaggedPortfoliosToProject = fetchedProject?.PortfoliosId?.length > 0 ? fetchedProject?.PortfoliosId : [];
-
+           
             fetchedProject.taggedPortfolios = [];
             fetchedProject?.PortfoliosId?.map((item: any) => {
               MasterListData?.map((portfolio: any) => {
@@ -414,8 +402,8 @@ const ProjectManagementMain = (props: any) => {
           smartmeta = await web.lists
             .getById(config.listId)
             .items
-            .select("Id,Title,PriorityRank,Remark,Project/PriorityRank,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
-            .expand('AssignedTo,Project,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory')
+            .select("Id,Title,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+            .expand('AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory')
             .top(4999)
             .filter("ProjectId eq " + QueryId)
             .orderBy("PriorityRank", false)
@@ -480,7 +468,7 @@ const ProjectManagementMain = (props: any) => {
                 });
               });
             }
-            items.TaskID = globalCommon.getTaskId(items);
+            items.TaskID = globalCommon.GetTaskId(items);
             AllUser?.map((user: any) => {
               if (user.AssingedToUserId == items.Author.Id) {
                 items.createdImg = user?.Item_x0020_Cover?.Url;
@@ -564,8 +552,8 @@ const ProjectManagementMain = (props: any) => {
             let smartmeta = [];
             await web.lists
               .getById(config.listId)
-              .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Modified")
-              .expand("TeamMembers", "Approver", "ParentTask", "ClientCategory", "AssignedTo", "TaskCategories", "Author", "ResponsibleTeam", "TaskType", "Portfolio")
+              .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "ParentTask/Id", "ParentTask/Title", "ParentTask/TaskID", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Modified")
+              .expand("TeamMembers", "ParentTask", "ClientCategory", "AssignedTo", "TaskCategories", "Author", "ResponsibleTeam", "TaskType", "Portfolio")
               .getAll().then((data: any) => {
                 smartmeta = data;
                 smartmeta.map((task: any) => {
@@ -588,7 +576,7 @@ const ProjectManagementMain = (props: any) => {
                   }
                   task["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
                   task.TeamMembersSearch = "";
-                  task.TaskID = globalCommon.getTaskId(task);
+                  task.TaskID = globalCommon.GetTaskId(task);
                   AllSiteTasks.push(task)
                 });
                 arraycount++;
@@ -664,111 +652,11 @@ const ProjectManagementMain = (props: any) => {
       })
       TagPotfolioToProject();
     }
-    console.log(Masterdata)
-    setIsComponent(false);
-    setIsPortfolio(false);
-
+      console.log(Masterdata)
+      setIsComponent(false);
+      setIsPortfolio(false);
+    
   }, [])
-  const column = React.useMemo<ColumnDef<any, unknown>[]>(
-    () => [
-      {
-        accessorKey: "",
-        size: 7,
-        canSort: false,
-        placeholder: "",
-        id: 'PortfolioStructureID',
-        // header: ({ table }: any) => (
-        //   <>
-        //     <button className='border-0 bg-Ff'
-        //       {...{
-        //         onClick: table.getToggleAllRowsExpandedHandler(),
-        //       }}
-        //     >
-        //       {table.getIsAllRowsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
-        //     </button>{" "}
-        //   </>
-        // ),
-        cell: ({ row, getValue }) => (
-          <div
-            style={row.getCanExpand() ? {
-              paddingLeft: `${row.depth * 5}px`,
-            } : {
-              paddingLeft: "18px",
-            }}
-          >
-            <>
-              {row.getCanExpand() ? (
-                <span className=' border-0'
-                  {...{
-                    onClick: row.getToggleExpandedHandler(),
-                    style: { cursor: "pointer" },
-                  }}
-                >
-                  {row.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
-                </span>
-              ) : (
-                ""
-              )}{" "}
-
-              <> {row?.original?.SiteIcon != undefined ?
-                <a className="hreflink" title="Show All Child" data-toggle="modal">
-                  <img className="icon-sites-img ml20 me-1" src={row?.original?.SiteIcon}></img>
-                </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</>
-              }
-                <span>{row?.original?.PortfolioStructureID}</span></>
-
-              {getValue()}
-            </>
-          </div>
-        ),
-      },
-      {
-        cell: ({ row }) => (
-          <>
-            <span>{row.original.Title}</span>
-          </>
-        ),
-        id: "Title",
-        canSort: false,
-        placeholder: "",
-        header: "",
-        size: 15,
-      },
-      {
-        cell: ({ row }) => (
-          <>
-            <span className="hreflink" onClick={() => createOpenTask(row.original)}>+</span>
-          </>
-        ),
-        id: "Title",
-        canSort: false,
-        placeholder: "",
-        header: "",
-        size: 5,
-      },
-    ],
-    [data]
-  );
-  function IndeterminateCheckbox({
-    indeterminate,
-    className = "",
-    ...rest
-  }: { indeterminate?: boolean } & React.HTMLProps<HTMLInputElement>) {
-    const ref = React.useRef<HTMLInputElement>(null!);
-    React.useEffect(() => {
-      if (typeof indeterminate === "boolean") {
-        ref.current.indeterminate = !rest.checked && indeterminate;
-      }
-    }, [ref, indeterminate]);
-    return (
-      <input
-        type="checkbox"
-        ref={ref}
-        className={className + "  cursor-pointer form-check-input rounded-0"}
-        {...rest}
-      />
-    );
-  }
 
   const column2 = React.useMemo<ColumnDef<any, unknown>[]>(
     () => [
@@ -1096,7 +984,7 @@ const ProjectManagementMain = (props: any) => {
     if (type == 'Component' || type == 'taskComponent') {
       if (createTaskId?.portfolioData?.Id != portfolio?.Id) {
         displayTasks = AllTasks.filter((items: any) => {
-          if (items?.Portfolio?.Id != undefined && items?.Portfolio?.Id == portfolio?.Id) {
+          if (items?.Portfolio?.Id !=undefined && items?.Portfolio?.Id == portfolio?.Id) {
             return true;
           }
           return false;
@@ -1197,7 +1085,7 @@ const ProjectManagementMain = (props: any) => {
                       <li className="nav__item  pb-1 pt-0">
                         <div className="nav__text">
                           {Masterdata?.taggedPortfolios?.length > 0 || TaskTaggedPortfolios?.length > 0 ? (
-                            <ul className="nav__subList maXh-200 scrollbar pt-1 ps-0">
+                            <ul className="nav__subList wrapper scrollbar pt-1 ps-0">
                               {Masterdata?.taggedPortfolios?.map(
                                 (component: any, index: any) => {
                                   return (
@@ -1277,7 +1165,7 @@ const ProjectManagementMain = (props: any) => {
                     </ul>
                   </nav>
                 </section>
-
+             
               </aside>
               <div className="dashboard-content ps-2 full-width">
                 <article className="row">
@@ -1303,7 +1191,7 @@ const ProjectManagementMain = (props: any) => {
                           </div>
                           <div>
                             <div className="d-flex">
-                              {isOpenCreateTask && (
+
                                 <CreateTaskFromProject
                                   projectItem={Masterdata}
                                   SelectedProp={props?.props}
@@ -1312,7 +1200,7 @@ const ProjectManagementMain = (props: any) => {
                                   callBack={CreateTask}
                                   createComponent={createTaskId}
                                 />
-                              )}
+                            
                               {projectId && (
                                 <TagTaskToProjectPopup
                                   projectItem={Masterdata}
