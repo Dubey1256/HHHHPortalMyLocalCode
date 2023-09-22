@@ -1935,8 +1935,8 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     return (
       <div>
         <div className="p-0  " style={{ verticalAlign: "top" }}><h2 className="heading d-flex justify-content-between align-items-center"><span> <a>Timesheet</a> </span><span className="text-end fs-6"><a target="_blank" data-interception="off" href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/UserTimeEntry-Old.aspx`}>Old UserTimeEntry</a></span></h2></div>
-        <Row className='smartFilter'>
-        <details className='p-0' open>
+        <Row className='smartFilter bg-light border mb-3 col'>
+        <details className='p-0 m-0' open>
         <summary><a className="hreflink pull-left mr-5">Task User : </a>
               {this.state.ImageSelectedUsers != null && this.state.ImageSelectedUsers.length > 0 && this.state.ImageSelectedUsers.map((user: any, i: number) => {
                 return <span className="ng-scope">
@@ -1944,6 +1944,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                 </span>
               })
               }
+              <span className="pull-right"><a href="#">Add smart favorite</a></span>
               <hr></hr>
             </summary>
        
@@ -2078,11 +2079,11 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           <Row className='ps-30 mt-2'>
           <div className="col">
               <label ng-required="true" className="full_width ng-binding" ng-bind-html="GetColumnDetails('StartDate') | trustedHTML">Start Date</label>
-              <DatePicker selected={this.state.startdate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setStartDate(date)} className="form-control ng-pristine ng-valid ng-touched ng-not-empty" />
+              <DatePicker selected={this.state.startdate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setStartDate(date)} className=" full-width searchbox_height ng-pristine ng-valid ng-touched ng-not-empty" />
             </div>
             <div className="col">
               <label ng-required="true" className="full_width ng-binding" ng-bind-html="GetColumnDetails('EndDate') | trustedHTML" >End Date</label>
-              <DatePicker selected={this.state.enddate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setEndDate(date)} className="form-control ng-pristine ng-valid ng-touched ng-not-empty" />
+              <DatePicker selected={this.state.enddate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setEndDate(date)} className=" full-width searchbox_height  ng-pristine ng-valid ng-touched ng-not-empty" />
             </div>
             <div className='col'>
               <label></label>
@@ -2146,12 +2147,11 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                         <tr>
                           <td valign="top" ng-repeat="item in filterGroups">
                             <div>
-                                <span className="ng-binding">
+                                <label className='border-bottom full-width pb-1'>
                                   <input id='chkAllCategory' defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} type="checkbox" ng-model="item.Selected" className="form-check-input me-1" />
                                   Client Category
-                                </span>
-                                <hr></hr>
-                      
+                                </label>
+                                               
                               <CheckboxTree
                                 nodes={this.state.filterItems}
                                 checked={this.state.checked}
@@ -2167,12 +2167,11 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                           <td valign="top" ng-repeat="item in filterGroups" className="ng-scope">
                             <div>
                            
-                                <span>
+                                <label className='border-bottom full-width pb-1'>
                                   <input type="checkbox" id='chkAllSites' defaultChecked={this.state.checkedAllSites} onClick={(e) => this.SelectAllSits(e)} ng-model="item.Selected" className="form-check-input me-1" />
                                   Sites
-                                </span>
-                                <hr></hr>
-                          
+                                </label>
+                               
                               <CheckboxTree
                                 nodes={this.state.filterSites}
                                 checked={this.state.checkedSites}
@@ -2191,11 +2190,12 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
 
                   </div>
                   <div className="col text-end mb-2 ">
-                    <button type="button" className="btn btn-default me-1" onClick={() => this.ClearFilters()}>
-                      Clear Filters
-                    </button>
+                  
                     <button type="button" className="btnCol btn btn-primary me-1" onClick={(e) => this.updatefilter()}>
                       Update Filters
+                    </button>
+                    <button type="button" className="btn btn-default me-1" onClick={() => this.ClearFilters()}>
+                      Clear Filters
                     </button>
                   </div>
 
@@ -2208,7 +2208,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         </details>
         </Row>
         {this.state.AllTimeEntry != undefined && this.state.AllTimeEntry.length > 0 &&
-          <div className='row'>
+          <div className='col'>
             <div className="Alltable p-0">
               <div className="wrapper">
                 <GlobalCommanTable showHeader={true} showDateTime={' | Time: ' + this.state.resultSummary.totalTime + ' | Days: (' + this.state.resultSummary.totalDays + ')'} columns={this.state.columns} data={this.state.AllTimeEntry} callBackData={this.callBackData} />

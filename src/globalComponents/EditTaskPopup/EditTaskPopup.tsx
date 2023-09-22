@@ -19,7 +19,6 @@ import { FaExpandAlt } from 'react-icons/fa'
 import { RiDeleteBin6Line, RiH6 } from 'react-icons/ri'
 import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
 import { TbReplace } from 'react-icons/tb'
-import { BiInfoCircle } from 'react-icons/bi'
 import NewTameSheetComponent from "./NewTimeSheet";
 import CommentBoxComponent from "./CommentBoxComponent";
 import TimeEntryPopup from './TimeEntryComponent';
@@ -39,9 +38,7 @@ import {
 } from 'react-table';
 import { Filter, DefaultColumnFilter } from '../ReactTableComponents/filters';
 import ShowTaskTeamMembers from "../ShowTaskTeamMembers";
-import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import EmailComponent from "../EmailComponents";
-// import SiteCompositionComponent from "./SiteCompositionComponent";
 import EditSiteComposition from "./EditSiteComposition";
 import SmartTotalTime from './SmartTimeTotal';
 import "react-datepicker/dist/react-datepicker.css";
@@ -52,7 +49,6 @@ import context from "react-bootstrap/esm/AccordionContext";
 
 
 var AllMetaData: any = []
-var attachments: any = []
 var taskUsers: any = []
 var IsShowFullViewImage = false;
 var CommentBoxData: any = [];
@@ -118,7 +114,6 @@ const EditTaskPopup = (Items: any) => {
         }
     )
     const [EditData, setEditData] = React.useState<any>({});
-    const [ShareWebComponent, setShareWebComponent] = React.useState('');
     const [modalIsOpen, setModalIsOpen] = React.useState(true);
     const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
     const [TimeSheetPopup, setTimeSheetPopup] = React.useState(false);
@@ -135,7 +130,6 @@ const EditTaskPopup = (Items: any) => {
     const [PercentCompleteStatus, setPercentCompleteStatus] = React.useState('');
     const [taskStatus, setTaskStatus] = React.useState('');
     const [PercentCompleteCheck, setPercentCompleteCheck] = React.useState(true)
-
     const [PriorityStatus, setPriorityStatus] = React.useState();
     const [PhoneStatus, setPhoneStatus] = React.useState(false);
     const [EmailStatus, setEmailStatus] = React.useState(false);
@@ -155,7 +149,6 @@ const EditTaskPopup = (Items: any) => {
     const [categorySearchKey, setCategorySearchKey] = React.useState('');
     const [ServicesTaskCheck, setServicesTaskCheck] = React.useState(false);
     const [ComponentTaskCheck, setComponentTaskCheck] = React.useState(false);
-
     const [AllProjectData, SetAllProjectData] = React.useState([]);
     const [selectedProject, setSelectedProject] = React.useState([]);
     const [SearchedProjectData, setSearchedProjectData] = React.useState([]);
@@ -194,6 +187,7 @@ const EditTaskPopup = (Items: any) => {
     const buttonId = useId(`callout-button`);
     const calloutProps = { gapSpace: 0 };
     let FeedBackCount: any = 0;
+    var AutoCompleteItems: any = [];
     const StatusArray = [
         { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
         { value: 2, status: "2% Follow Up", taskStatusComment: "Follow Up" },
@@ -258,19 +252,292 @@ const EditTaskPopup = (Items: any) => {
         if (FeedBackCount == 0) {
             loadTaskUsers();
             GetExtraLookupColumnData();
-            getAllSitesData();
-            // getCurrentUserDetails();
-            loadAllCategoryData("Categories");
-            loadAllClientCategoryData("Client Category");
             GetMasterData();
+            SmartMetaDataListInformations();
             AddImageDescriptionsIndex = undefined;
         }
     }, [FeedBackCount])
 
 
+    const SmartMetaDataListInformations = async () => {
+        let AllSmartDataListData: any = [];
+        let AllSitesData: any = [];
+        let AllClientCategoryData: any = [];
+        let AllCategoriesData: any = [];
+        let AllTimesheetCategoriesData: any = [];
+        let AllStatusData: any = [];
+        let AllPriorityData: any = [];
+        let AllPriorityRankData: any = [];
+        let CategoriesGroupByData: any = [];
+        let tempArray: any = [];
+        try {
+            let web = new Web(siteUrls);
+            AllSmartDataListData = await web.lists
+                .getById(AllListIdData.SmartMetadataListID)
+                .items
+                .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,Configurations,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail")
+                .expand('Author,Editor,IsSendAttentionEmail')
+                .getAll();
+
+            if (AllSmartDataListData?.length > 0) {
+                AllSmartDataListData?.map((SmartItemData: any, index: any) => {
+                    if (SmartItemData.TaxType == 'Client Category') {
+                        if (SmartItemData.Title.toLowerCase() == 'pse' && SmartItemData.TaxType == 'Client Category') {
+                            SmartItemData.newTitle = 'EPS';
+                        }
+                        else if (SmartItemData.Title.toLowerCase() == 'e+i' && SmartItemData.TaxType == 'Client Category') {
+                            SmartItemData.newTitle = 'EI';
+                        }
+                        else if (SmartItemData.Title.toLowerCase() == 'education' && SmartItemData.TaxType == 'Client Category') {
+                            SmartItemData.newTitle = 'Education';
+                        }
+                        else {
+                            SmartItemData.newTitle = SmartItemData.Title;
+                        }
+                    } else {
+                        SmartItemData.newTitle = SmartItemData.Title;
+                    }
+                })
+            }
+            AllSitesData = getSmartMetadataItemsByTaxType(AllSmartDataListData, 'Sites');
+            AllClientCategoryData = getSmartMetadataItemsByTaxType(AllSmartDataListData, 'Client Category');
+            AllCategoriesData = getSmartMetadataItemsByTaxType(AllSmartDataListData, 'Categories');
+            AllTimesheetCategoriesData = getSmartMetadataItemsByTaxType(AllSmartDataListData, 'TimesheetCategories');
+            AllStatusData = getSmartMetadataItemsByTaxType(AllSmartDataListData, 'Status');
+            AllPriorityData = getSmartMetadataItemsByTaxType(AllSmartDataListData, 'Priority');
+            AllPriorityRankData = getSmartMetadataItemsByTaxType(AllSmartDataListData, 'Priority Rank');
+
+            // ########## this is for All Site Data related validations ################
+            AllSitesData?.map((site: any) => {
+                if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== "SDC Sites") {
+                    site.BtnStatus = false;
+                    site.isSelected = false;
+                    tempArray.push(site);
+                }
+                if (site.Title !== undefined && site.Title == 'Shareweb') {
+                    ShareWebConfigData = site.Configurations;
+                }
+            })
+            setSiteTypes(tempArray);
+            tempArray?.map((tempData: any) => {
+                SiteTypeBackupArray.push(tempData);
+            })
+
+            // ########## this is for All Client Category related validations ################
+            if (AllClientCategoryData?.length > 0) {
+                setAllClientCategoryData(AllMetaData);
+                BuildClieantCategoryAllDataArray(AllMetaData);
+            }
+            // ########## this is for All Categories related validations ################
+            if (AllCategoriesData?.length > 0) {
+                let tempGroupByCategory: any = [];
+                CategoriesGroupByData = loadSmartTaxonomyPortfolioPopup(AllCategoriesData, "Categories");
+                if (CategoriesGroupByData?.length > 0) {
+                    CategoriesGroupByData?.map((item: any) => {
+                        if (item.newTitle != undefined) {
+                            item['Newlabel'] = item.newTitle;
+                            AutoCompleteItemsArray.push(item)
+                            if (item.childs != null && item.childs != undefined && item.childs.length > 0) {
+                                item.childs.map((childitem: any) => {
+                                    if (childitem.newTitle != undefined) {
+                                        childitem['Newlabel'] = item['Newlabel'] + ' > ' + childitem.Title;
+                                        AutoCompleteItemsArray.push(childitem)
+                                    }
+                                    if (childitem.childs.length > 0) {
+                                        childitem.childs.map((subchilditem: any) => {
+                                            if (subchilditem.newTitle != undefined) {
+                                                subchilditem['Newlabel'] = childitem['Newlabel'] + ' > ' + subchilditem.Title;
+                                                AutoCompleteItemsArray.push(subchilditem)
+                                            }
+                                        })
+                                    }
+                                })
+                            }
+                        }
+                    })
+                }
+                if (AutoCompleteItemsArray?.length > 0) {
+                    AutoCompleteItemsArray = AutoCompleteItemsArray.reduce(function (previous: any, current: any) {
+                        var alredyExists = previous.filter(function (item: any) {
+                            return item.Title === current.Title
+                        }).length > 0
+                        if (!alredyExists) {
+                            previous.push(current)
+                        }
+                        return previous
+                    }, [])
+                }
+                setAllCategoryData(AutoCompleteItemsArray);
+            }
+
+        } catch (error) {
+            console.log("Error : ", error.message)
+        }
+    }
+    var getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
+        var Items: any = [];
+        metadataItems.map((taxItem: any) => {
+            if (taxItem.TaxType === taxType)
+                Items.push(taxItem);
+        });
+        Items.sort((a: any, b: any) => {
+            return a.SortOrder - b.SortOrder;
+        });
+        return Items;
+    }
+
+    const BuildClieantCategoryAllDataArray = (DataItem: any) => {
+        let MainParentArray: any = [];
+        let FinalArray: any = [];
+        if (DataItem != undefined && DataItem.length > 0) {
+            DataItem.map((Item: any) => {
+                if (Item.ParentID == 0) {
+                    Item.Child = [];
+                    MainParentArray.push(Item);
+                }
+            })
+        }
+        if (MainParentArray?.length > 0) {
+            MainParentArray.map((ParentArray: any) => {
+                if (DataItem?.length > 0) {
+                    DataItem.map((ChildArray: any) => {
+                        if (ParentArray.Id == ChildArray.ParentID) {
+                            ChildArray.siteName = ParentArray.newTitle;
+                            ChildArray.Child = [];
+                            ParentArray.Child.push(ChildArray);
+                        }
+                    })
+                }
+
+            })
+        }
+        if (MainParentArray?.length > 0) {
+            MainParentArray.map((ParentArray: any) => {
+                if (ParentArray?.Child?.length > 0) {
+                    ParentArray?.Child.map((ChildLevelFirst: any) => {
+                        if (DataItem?.length > 0) {
+                            DataItem.map((ChildArray: any) => {
+                                if (ChildLevelFirst.Id == ChildArray.ParentID) {
+                                    ChildArray.siteName = ParentArray.newTitle;
+                                    ChildArray.Child = [];
+                                    ChildLevelFirst.Child.push(ChildArray);
+                                }
+                            })
+                        }
+                    })
+                }
+            })
+        }
+        if (MainParentArray?.length > 0) {
+            MainParentArray.map((ParentArray: any) => {
+                if (ParentArray?.Child?.length > 0) {
+                    ParentArray?.Child.map((ChildLevelFirst: any) => {
+                        if (ChildLevelFirst.Child?.length > 0) {
+                            ChildLevelFirst.Child.map((lastChild: any) => {
+                                if (DataItem?.length > 0) {
+                                    DataItem.map((ChildArray: any) => {
+                                        if (lastChild.Id == ChildArray.ParentID) {
+                                            ChildArray.siteName = ParentArray.newTitle;
+                                            ChildArray.Child = [];
+                                            lastChild.Child.push(ChildArray);
+                                        }
+                                    })
+                                }
+                            })
+
+                        }
+
+                    })
+                }
+            })
+        }
+        if (MainParentArray?.length > 0) {
+            MainParentArray.map((ParentArray: any) => {
+                if (ParentArray?.Child?.length > 0) {
+                    ParentArray?.Child.map((ChildLevelFirst: any) => {
+                        if (ChildLevelFirst.Child?.length > 0) {
+                            ChildLevelFirst.Child.map((lastChild: any) => {
+                                if (lastChild.Child?.length > 0) {
+                                    lastChild.Child?.map((endChild: any) => {
+                                        if (DataItem?.length > 0) {
+                                            DataItem.map((ChildArray: any) => {
+                                                if (endChild.Id == ChildArray.ParentID) {
+                                                    ChildArray.siteName = ParentArray.newTitle;
+                                                    ChildArray.Child = [];
+                                                    endChild.Child.push(ChildArray);
+                                                }
+                                            })
+                                        }
+
+                                    })
+                                }
+
+                            })
+
+                        }
+
+                    })
+                }
+            })
+        }
+        if (MainParentArray?.length > 0) {
+            MainParentArray.map((finalItem: any) => {
+                FinalArray.push(finalItem);
+                if (finalItem.Child?.length > 0) {
+                    finalItem.Child.map((FinalChild: any) => {
+                        FinalArray.push(FinalChild);
+                        if (FinalChild.Child?.length > 0) {
+                            FinalChild.Child.map((LastChild: any) => {
+                                FinalArray.push(LastChild)
+                                if (LastChild.Child?.length > 0) {
+                                    LastChild.Child?.map((endChild: any) => {
+                                        FinalArray.push(endChild);
+                                    })
+                                }
+                            })
+
+                        }
+                    })
+
+                }
+            })
+        }
+        AllClientCategoryDataBackup = FinalArray;
+    }
+
+    //  ######################  This is Smart Category Get Data Call From Backend and Bulid Nested Array According to Parent Child Categories #######################
+
+    var loadSmartTaxonomyPortfolioPopup = (AllTaxonomyItems: any, SmartTaxonomy: any) => {
+        var TaxonomyItems: any = [];
+        var uniqueNames: any = [];
+        $.each(AllTaxonomyItems, function (index: any, item: any) {
+            if (item.ParentID == 0 && SmartTaxonomy == item.TaxType) {
+                TaxonomyItems.push(item);
+                getChilds(item, AllTaxonomyItems);
+                if (item.childs != undefined && item.childs.length > 0) {
+                    TaxonomyItems.push(item)
+                }
+                uniqueNames = TaxonomyItems.filter((val: any, id: any, array: any) => {
+                    return array.indexOf(val) == id;
+                });
+            }
+        });
+        return uniqueNames;
+    }
+    const getChilds = (item: any, items: any) => {
+        item.childs = [];
+        $.each(items, function (index: any, childItem: any) {
+            if (childItem.ParentID != undefined && parseInt(childItem.ParentID) == item.ID) {
+                childItem.isChild = true;
+                item.childs.push(childItem);
+                getChilds(childItem, items);
+            }
+        });
+    }
+
+
 
     // ************************** This is the Fetch All Data for the slected Task and related to Task from Backend *******************************
-
 
     // #################### this is used for getting more the 12 lookup column data for selected task from Backend ##############################
 
@@ -864,19 +1131,6 @@ const EditTaskPopup = (Items: any) => {
 
     // ################# this is for Change Task Component And Service Component #######################
 
-    const ChangeComponentStatus = (e: any, Type: any) => {
-        if (Type == "Component") {
-            setServicesTaskCheck(false);
-            setComponentTaskCheck(true);
-            GetAllComponentAndServiceData(Type)
-        }
-        if (Type == "Service") {
-            setServicesTaskCheck(true);
-            setComponentTaskCheck(false);
-            GetAllComponentAndServiceData(Type)
-        }
-    }
-
     const GetAllComponentAndServiceData = async (ComponentType: any) => {
         let PropsObject: any = {
             MasterTaskListID: AllListIdData.MasterTaskListID,
@@ -978,280 +1232,6 @@ const EditTaskPopup = (Items: any) => {
         }
     }, [])
 
-    // ********** this is for smart category Related all function and callBack function for Picker Component Popup ********
-
-
-    //  ######################  This is  Client Category Get Data Call From Backend  #######################
-
-    const loadAllClientCategoryData = function (SmartTaxonomy: any) {
-        var AllTaskusers = []
-        var AllMetaData: any = []
-        var TaxonomyItems: any = []
-        var url = (`${siteUrls}/_api/web/lists/getbyid('${AllListIdData?.SmartMetadataListID}')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '` + SmartTaxonomy + "'")
-        $.ajax({
-            url: url,
-            method: "GET",
-            headers: {
-                "Accept": "application/json; odata=verbose"
-            },
-            success: function (data) {
-                AllTaskusers = data.d.results;
-                $.each(AllTaskusers, function (index: any, item: any) {
-                    if (item.Title.toLowerCase() == 'pse' && item.TaxType == 'Client Category') {
-                        item.newTitle = 'EPS';
-                    }
-                    else if (item.Title.toLowerCase() == 'e+i' && item.TaxType == 'Client Category') {
-                        item.newTitle = 'EI';
-                    }
-                    else if (item.Title.toLowerCase() == 'education' && item.TaxType == 'Client Category') {
-                        item.newTitle = 'Education';
-                    }
-                    else if (item.Title.toLowerCase() == 'migration' && item.TaxType == 'Client Category') {
-                        item.newTitle = 'Migration';
-                    }
-                    else {
-                        item.newTitle = item.Title;
-                    }
-                    AllMetaData.push(item);
-                })
-                if (SmartTaxonomy == "Client Category") {
-                    setAllClientCategoryData(AllMetaData);
-                    // AllClientCategoryDataBackup = AllMetaData;
-                    BuildClieantCategoryAllDataArray(AllMetaData);
-                }
-            },
-            error: function (error: any) {
-                console.log('Error:', error)
-            }
-        })
-    };
-
-    const BuildClieantCategoryAllDataArray = (DataItem: any) => {
-        let MainParentArray: any = [];
-        let FinalArray: any = [];
-        if (DataItem != undefined && DataItem.length > 0) {
-            DataItem.map((Item: any) => {
-                if (Item.ParentID == 0) {
-                    Item.Child = [];
-                    MainParentArray.push(Item);
-                }
-            })
-        }
-        if (MainParentArray?.length > 0) {
-            MainParentArray.map((ParentArray: any) => {
-                if (DataItem?.length > 0) {
-                    DataItem.map((ChildArray: any) => {
-                        if (ParentArray.Id == ChildArray.ParentID) {
-                            ChildArray.siteName = ParentArray.newTitle;
-                            ChildArray.Child = [];
-                            ParentArray.Child.push(ChildArray);
-                        }
-                    })
-                }
-
-            })
-        }
-        if (MainParentArray?.length > 0) {
-            MainParentArray.map((ParentArray: any) => {
-                if (ParentArray?.Child?.length > 0) {
-                    ParentArray?.Child.map((ChildLevelFirst: any) => {
-                        if (DataItem?.length > 0) {
-                            DataItem.map((ChildArray: any) => {
-                                if (ChildLevelFirst.Id == ChildArray.ParentID) {
-                                    ChildArray.siteName = ParentArray.newTitle;
-                                    ChildArray.Child = [];
-                                    ChildLevelFirst.Child.push(ChildArray);
-                                }
-                            })
-                        }
-                    })
-                }
-            })
-        }
-        if (MainParentArray?.length > 0) {
-            MainParentArray.map((ParentArray: any) => {
-                if (ParentArray?.Child?.length > 0) {
-                    ParentArray?.Child.map((ChildLevelFirst: any) => {
-                        if (ChildLevelFirst.Child?.length > 0) {
-                            ChildLevelFirst.Child.map((lastChild: any) => {
-                                if (DataItem?.length > 0) {
-                                    DataItem.map((ChildArray: any) => {
-                                        if (lastChild.Id == ChildArray.ParentID) {
-                                            ChildArray.siteName = ParentArray.newTitle;
-                                            ChildArray.Child = [];
-                                            lastChild.Child.push(ChildArray);
-                                        }
-                                    })
-                                }
-                            })
-
-                        }
-
-                    })
-                }
-            })
-        }
-        if (MainParentArray?.length > 0) {
-            MainParentArray.map((ParentArray: any) => {
-                if (ParentArray?.Child?.length > 0) {
-                    ParentArray?.Child.map((ChildLevelFirst: any) => {
-                        if (ChildLevelFirst.Child?.length > 0) {
-                            ChildLevelFirst.Child.map((lastChild: any) => {
-                                if (lastChild.Child?.length > 0) {
-                                    lastChild.Child?.map((endChild: any) => {
-                                        if (DataItem?.length > 0) {
-                                            DataItem.map((ChildArray: any) => {
-                                                if (endChild.Id == ChildArray.ParentID) {
-                                                    ChildArray.siteName = ParentArray.newTitle;
-                                                    ChildArray.Child = [];
-                                                    endChild.Child.push(ChildArray);
-                                                }
-                                            })
-                                        }
-
-                                    })
-                                }
-
-                            })
-
-                        }
-
-                    })
-                }
-            })
-        }
-        if (MainParentArray?.length > 0) {
-            MainParentArray.map((finalItem: any) => {
-                FinalArray.push(finalItem);
-                if (finalItem.Child?.length > 0) {
-                    finalItem.Child.map((FinalChild: any) => {
-                        FinalArray.push(FinalChild);
-                        if (FinalChild.Child?.length > 0) {
-                            FinalChild.Child.map((LastChild: any) => {
-                                FinalArray.push(LastChild)
-                                if (LastChild.Child?.length > 0) {
-                                    LastChild.Child?.map((endChild: any) => {
-                                        FinalArray.push(endChild);
-                                    })
-                                }
-                            })
-
-                        }
-                    })
-
-                }
-            })
-        }
-        AllClientCategoryDataBackup = FinalArray;
-    }
-
-
-    var AutoCompleteItems: any = [];
-    const loadAllCategoryData = function (SmartTaxonomy: any) {
-        var AllTaskusers = []
-        var AllMetaData: any = []
-        var TaxonomyItems: any = []
-        var url = (`${siteUrls}/_api/web/lists/getbyid('${AllListIdData?.SmartMetadataListID}')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '` + SmartTaxonomy + "'")
-        $.ajax({
-            url: url,
-            method: "GET",
-            headers: {
-                "Accept": "application/json; odata=verbose"
-            },
-            success: function (data) {
-                AllTaskusers = data.d.results;
-                $.each(AllTaskusers, function (index: any, item: any) {
-                    if (item.Title.toLowerCase() == 'pse' && item.TaxType == 'Client Category') {
-                        item.newTitle = 'EPS';
-                    }
-                    else if (item.Title.toLowerCase() == 'e+i' && item.TaxType == 'Client Category') {
-                        item.newTitle = 'EI';
-                    }
-                    else if (item.Title.toLowerCase() == 'education' && item.TaxType == 'Client Category') {
-                        item.newTitle = 'Education';
-                    }
-                    else {
-                        item.newTitle = item.Title;
-                    }
-                    AllMetaData.push(item);
-
-                })
-                if (SmartTaxonomy == "Categories") {
-                    TaxonomyItems = loadSmartTaxonomyPortfolioPopup(AllMetaData, SmartTaxonomy);
-                    setAllCategoryData(TaxonomyItems)
-                }
-            },
-            error: function (error: any) {
-                console.log('Error:', error)
-            }
-        })
-    };
-    // **************** this is for Smart Category Data fetch from Backend and Call Back functions ******************
-
-    //  ######################  This is Smart Category Get Data Call From Backend and Bulid Nested Array According to Parent Child Categories #######################
-
-    var loadSmartTaxonomyPortfolioPopup = (AllTaxonomyItems: any, SmartTaxonomy: any) => {
-        var TaxonomyItems: any = [];
-        var uniqueNames: any = [];
-        $.each(AllTaxonomyItems, function (index: any, item: any) {
-            if (item.ParentID == 0 && SmartTaxonomy == item.TaxType) {
-                TaxonomyItems.push(item);
-                getChilds(item, AllTaxonomyItems);
-                if (item.childs != undefined && item.childs.length > 0) {
-                    TaxonomyItems.push(item)
-                }
-                uniqueNames = TaxonomyItems.filter((val: any, id: any, array: any) => {
-                    return array.indexOf(val) == id;
-                });
-            }
-        });
-        return uniqueNames;
-    }
-    const getChilds = (item: any, items: any) => {
-        item.childs = [];
-        $.each(items, function (index: any, childItem: any) {
-            if (childItem.ParentID != undefined && parseInt(childItem.ParentID) == item.ID) {
-                childItem.isChild = true;
-                item.childs.push(childItem);
-                getChilds(childItem, items);
-            }
-        });
-    }
-
-    if (AllCategoryData?.length > 0) {
-        AllCategoryData?.map((item: any) => {
-            if (item.newTitle != undefined) {
-                item['Newlabel'] = item.newTitle;
-                AutoCompleteItems.push(item)
-                if (item.childs != null && item.childs != undefined && item.childs.length > 0) {
-                    item.childs.map((childitem: any) => {
-                        if (childitem.newTitle != undefined) {
-                            childitem['Newlabel'] = item['Newlabel'] + ' > ' + childitem.Title;
-                            AutoCompleteItems.push(childitem)
-                        }
-                        if (childitem.childs.length > 0) {
-                            childitem.childs.map((subchilditem: any) => {
-                                if (subchilditem.newTitle != undefined) {
-                                    subchilditem['Newlabel'] = childitem['Newlabel'] + ' > ' + subchilditem.Title;
-                                    AutoCompleteItems.push(subchilditem)
-                                }
-                            })
-                        }
-                    })
-                }
-            }
-        })
-    }
-
-    AutoCompleteItemsArray = AutoCompleteItems.reduce(function (previous: any, current: any) {
-        var alredyExists = previous.filter(function (item: any) {
-            return item.Title === current.Title
-        }).length > 0
-        if (!alredyExists) {
-            previous.push(current)
-        }
-        return previous
-    }, [])
 
 
     //  ###################  Smart Category Popup Call Back Functions and Validations ##################
@@ -1282,7 +1262,6 @@ const EditTaskPopup = (Items: any) => {
             }
             if (existingData?.Title == "Bottleneck") {
                 setIsSendAttentionMsgStatus(true);
-                console.log("dxfcgvhbj dxfcgvhbj", TaskAssignedTo);
                 if (EditData?.TaskAssignedUsers?.length > 0) {
                     EditData?.TaskAssignedUsers?.map((AssignedUser: any, Index: any) => {
                         userSendAttentionEmails.push(AssignedUser.Email);
@@ -1483,49 +1462,6 @@ const EditTaskPopup = (Items: any) => {
 
     // $$$$$$$$$$$$$$$$$$$$$$$$$ End Smart Category Section Functions $$$$$$$$$$$$$$$$
 
-    //  ******************  This is All Site Details Get Data Call From Backend **************
-
-    const getAllSitesData = async () => {
-        let web = new Web(siteUrls);
-        let MetaData: any = [];
-        //let siteConfig: any = [];
-        let tempArray: any = [];
-        MetaData = await web.lists
-            .getById(AllListIdData.SmartMetadataListID)
-            .items
-            .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,Configurations,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title")
-            .top(4999)
-            .expand('Author,Editor')
-            .get()
-
-        siteConfig = getSmartMetadataItemsByTaxType(MetaData, 'Sites');
-        siteConfig?.map((site: any) => {
-            if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== "SDC Sites") {
-                site.BtnStatus = false;
-                site.isSelected = false;
-                tempArray.push(site);
-            }
-            if (site.Title !== undefined && site.Title == 'Shareweb') {
-                // setShareWebConfigData(site.Configurations);
-                ShareWebConfigData = site.Configurations;
-            }
-        })
-        setSiteTypes(tempArray);
-        tempArray?.map((tempData: any) => {
-            SiteTypeBackupArray.push(tempData);
-        })
-    }
-    var getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
-        var Items: any = [];
-        metadataItems.map((taxItem: any) => {
-            if (taxItem.TaxType === taxType)
-                Items.push(taxItem);
-        });
-        Items.sort((a: any, b: any) => {
-            return a.SortOrder - b.SortOrder;
-        });
-        return Items;
-    }
 
     // **************************  This is for Loading All Task Users From Back End Call Functions And validations ****************************
     var count = 0;
@@ -1681,8 +1617,14 @@ const EditTaskPopup = (Items: any) => {
 
     //    ************************* This is for status section Functions **************************
 
-    const openTaskStatusUpdatePopup = (itemData: any) => {
-        setTaskStatusPopup(true);
+    const openTaskStatusUpdatePopup = (itemData: any, usedFor: any) => {
+        if (usedFor == "Status") {
+            setTaskStatusPopup(true);
+        }
+        if (usedFor == "Estimated-Time") {
+            setTaskStatusPopup(true);
+        }
+
     }
 
     //   ###################### This is used for Status Auto Suggesution Function #########################
@@ -3683,7 +3625,7 @@ const EditTaskPopup = (Items: any) => {
                         Replace Image
                     </span>
                 </div>
-                <Tooltip ComponentId="756" isServiceTask={ServicesTaskCheck} />
+                <Tooltip ComponentId="6776" isServiceTask={ServicesTaskCheck} />
             </div>
         )
     }
@@ -4536,10 +4478,13 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="col mt-2">
                                             <div className="input-group taskTime">
                                                 <label className="form-label full-width">Status</label>
-                                                <input type="text" maxLength={3} placeholder="% Complete" disabled={InputFieldDisable} className="form-control px-2"
+                                                <input type="text" maxLength={3} placeholder="% Complete"
+                                                    //  disabled={InputFieldDisable}
+                                                    disabled readOnly
+                                                    className="form-control px-2"
                                                     defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? Number(EditData.PercentComplete).toFixed(0) : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
                                                     onChange={(e) => StatusAutoSuggestion(e)} />
-                                                <span className="input-group-text" title="Status Popup" onClick={() => openTaskStatusUpdatePopup(EditData)}>
+                                                <span className="input-group-text" title="Status Popup" onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}>
                                                     <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
 
                                                 </span>
@@ -4622,28 +4567,32 @@ const EditTaskPopup = (Items: any) => {
                                             </div>
                                         </div>
                                         <div className="col-12 mb-2">
-                                            <div className="input-group ">
-                                                <label className="form-label full-width">Estimated Task Time Details</label>
-                                                <div onChange={UpdateEstimatedTimeDescriptions} className="full-width">
-                                                    <textarea
-                                                        className="form-control p-1" name="Description"
-                                                        defaultValue={EstimatedDescription}
-                                                        value={EstimatedDescription}
-                                                        rows={1}
-                                                        placeholder="Estimated Time Description"
+                                            <div onChange={UpdateEstimatedTimeDescriptions} className="full-width">
+                                                {/* <div className="input-group">
+                                                    <label className="form-label full-width">Estimated Task Time Details</label>
+                                                    <input type="text" className="form-control" placeholder="Select Category" />
+                                                    <span className="input-group-text" title="Status Popup" onClick={() => openTaskStatusUpdatePopup(EditData, "Estimated-Time")}>
+                                                        <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
+                                                    </span>
+                                                </div> */}
 
-                                                    >
-                                                    </textarea>
-                                                    <div className="gap-2 my-1 d-flex">
-                                                        <input type="number" className="col-6 my-1 p-1" name="Time"
-                                                            defaultValue={EstimatedTime}
-                                                            value={EstimatedTime}
-                                                            placeholder="Estimated Hours"
-                                                        />
-                                                        <button className="btn btn-primary full-width my-1" onClick={SaveEstimatedTimeDescription}>
-                                                            Submit
-                                                        </button>
-                                                    </div>
+                                                <textarea
+                                                    className="form-control p-1" name="Description"
+                                                    defaultValue={EstimatedDescription}
+                                                    value={EstimatedDescription}
+                                                    rows={1}
+                                                    placeholder="Add comment if necessary"
+                                                >
+                                                </textarea>
+                                                <div className="gap-2 my-1 d-flex">
+                                                    <input type="number" className="col-6 my-1 p-1" name="Time"
+                                                        defaultValue={EstimatedTime}
+                                                        value={EstimatedTime}
+                                                        placeholder="Estimated Hours"
+                                                    />
+                                                    <button className="btn btn-primary full-width my-1" onClick={SaveEstimatedTimeDescription}>
+                                                        Add
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -4730,14 +4679,14 @@ const EditTaskPopup = (Items: any) => {
                                                                             className="card-img-top" />
                                                                     </a>
 
-                                                                    <div className="card-footer d-flex justify-content-between p-1 px-2">
-                                                                        <div>
+                                                                    <div className="card-footer alignCenter justify-content-between pt-0 pb-1 px-2">
+                                                                        <div className="alignCenter">
                                                                             <span className="fw-semibold">{ImageDtl.UploadeDate ? ImageDtl.UploadeDate : ''}</span>
                                                                             <span className="mx-1">
                                                                                 <img className="imgAuthor" title={ImageDtl.UserName} src={ImageDtl.UserImage ? ImageDtl.UserImage : ''} />
                                                                             </span>
                                                                         </div>
-                                                                        <div>
+                                                                        <div className="alignCenter">
                                                                             <span onClick={() => openReplaceImagePopup(index)} title="Replace image"><TbReplace /> </span>
                                                                             <span className="mx-1" title="Delete" onClick={() => RemoveImageFunction(index, ImageDtl.ImageName, "Remove")}> | <RiDeleteBin6Line /> | </span>
                                                                             <span title="Customize the width of page" onClick={() => ImageCustomizeFunction(index)}>
@@ -4871,7 +4820,7 @@ const EditTaskPopup = (Items: any) => {
                     }
                     {IsComponentPicker &&
                         <Picker
-                            props={ShareWebComponent}
+                            props={EditData}
                             selectedCategoryData={ShareWebTypeData}
                             usedFor="Task-Popup"
                             siteUrls={siteUrls}
@@ -4927,15 +4876,15 @@ const EditTaskPopup = (Items: any) => {
                                     border: "2px solid #ccc"
                                 }}>
                                     <img src={compareImageArray?.length > 0 ? compareImageArray[0]?.ImageUrl : ""} className='img-fluid card-img-top' />
-                                    <div className="card-footer d-flex justify-content-between p-1 px-2">
-                                        <div>
+                                    <div className="card-footer alignCenter justify-content-between pt-0 pb-1 px-2">
+                                        <div className="alignCenter">
                                             <span className="mx-1">{compareImageArray[0]?.ImageName ? compareImageArray[0]?.ImageName.slice(0, 6) : ''}</span>
                                             <span className="fw-semibold">{compareImageArray[0]?.UploadeDate ? compareImageArray[0]?.UploadeDate : ''}</span>
                                             <span className="mx-1">
                                                 <img style={{ width: "25px" }} src={compareImageArray[0]?.UserImage ? compareImageArray[0]?.UserImage : ''} />
                                             </span>
                                         </div>
-                                        <div>
+                                        <div className="alignCenter">
                                             <span className="mx-1"> <TbReplace /> |</span>
                                             <span><RiDeleteBin6Line /></span>
                                         </div>
@@ -4950,15 +4899,15 @@ const EditTaskPopup = (Items: any) => {
                                                 return (
                                                     <div className={index == 0 ? "carousel-item active" : "carousel-item"}>
                                                         <img src={imgData.ImageUrl} className="d-block w-100" alt="..." />
-                                                        <div className="card-footer d-flex justify-content-between p-1 px-2">
-                                                            <div>
+                                                        <div className="card-footer alignCenter justify-content-between pt-0 pb-1 px-2">
+                                                            <div className="alignCenter">
                                                                 <span className="mx-1">{imgData.ImageName ? imgData.ImageName.slice(0, 6) : ''}</span>
                                                                 <span className="fw-semibold">{imgData.UploadeDate ? imgData.UploadeDate : ''}</span>
                                                                 <span className="mx-1">
                                                                     <img style={{ width: "25px" }} src={imgData.UserImage ? imgData.UserImage : ''} />
                                                                 </span>
                                                             </div>
-                                                            <div>
+                                                            <div className="alignCenter">
                                                                 <span className="mx-1"> <TbReplace /> |</span>
                                                                 <span><RiDeleteBin6Line /></span>
                                                             </div>
@@ -5595,10 +5544,13 @@ const EditTaskPopup = (Items: any) => {
                                                     <div className="col mt-2">
                                                         <div className="input-group taskTime">
                                                             <label className="form-label full-width">Status</label>
-                                                            <input type="text" maxLength={3} placeholder="% Complete" disabled={InputFieldDisable} className="form-control px-2"
+                                                            <input type="text" maxLength={3} placeholder="% Complete"
+                                                                //  disabled={InputFieldDisable} 
+                                                                disabled readOnly
+                                                                className="form-control px-2"
                                                                 defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? Number(EditData.PercentComplete).toFixed(0) : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
                                                                 onChange={(e) => StatusAutoSuggestion(e)} />
-                                                            <span className="input-group-text" title="Status Popup" onClick={() => openTaskStatusUpdatePopup(EditData)}>
+                                                            <span className="input-group-text" title="Status Popup" onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}>
                                                                 <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
 
                                                             </span>
@@ -5775,19 +5727,19 @@ const EditTaskPopup = (Items: any) => {
                                                 return (
                                                     <div className={index == 0 ? "carousel-item active" : "carousel-item"}>
                                                         <img src={imgData.ImageUrl} className="d-block w-100" alt="..." />
-                                                        <div className="card-footer d-flex justify-content-between p-1 px-2">
-                                                            <div>
+                                                        <div className="card-footer alignCenter justify-content-between pt-0 pb-1 px-2">
+                                                            <div className="alignCenter">
                                                                 <span className="mx-1">{imgData.ImageName ? imgData.ImageName.slice(0, 6) : ''}</span>
                                                                 <span className="fw-semibold">{imgData.UploadeDate ? imgData.UploadeDate : ''}</span>
                                                                 <span className="mx-1">
                                                                     <img className="imgAuthor" title={imgData.UserName ? imgData.UserName : ''} src={imgData.UserImage ? imgData.UserImage : ''} />
                                                                 </span>
                                                             </div>
-                                                            <div className="align-autoplay d-flex">
+                                                            <div className="alignCenter">
                                                                 <span onClick={() => openReplaceImagePopup(index)} title="Replace image"><TbReplace /> </span>
-                                                                <span className="ms-1" title="Delete" onClick={() => RemoveImageFunction(index, imgData.ImageName, "Remove")}> | <RiDeleteBin6Line /> | </span>
+                                                                <span className="mx-1" title="Delete" onClick={() => RemoveImageFunction(index, imgData.ImageName, "Remove")}> | <RiDeleteBin6Line /> | </span>
                                                                 <span title={imgData.Description != undefined && imgData.Description?.length > 1 ? imgData.Description : "Add Image Description"} className="img-info" onClick={() => openAddImageDescriptionFunction(index, imgData, "Opne-Model")}>
-                                                                    <span className="svg__iconbox svg__icon--info mt--5"></span>
+                                                                    <span className="svg__iconbox svg__icon--info"></span>
                                                                 </span>
                                                             </div>
                                                         </div>
@@ -6156,6 +6108,7 @@ export default React.memo(EditTaskPopup);
 // siteUrl:{Enter Site url here},
 // siteType: {Enter Site type here},
 // listId:{Enter Site listId here},
+// siteIcon:{Enter Site siteIcon here}
 // ***** OR *****
 // listName:{Enter Site listName here},
 // Context:{Context}
