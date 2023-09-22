@@ -43,8 +43,6 @@ let renderData: any = [];
 let countAllTasksData: any = [];
 let AfterFilterTaskCount: any = [];
 let allLoadeDataMasterTaskAndTask: any = [];
-// let timeSheetConfig: any = {};
-// const timeEntryIndex: any = {};
 function TeamPortlioTable(SelectedProp: any) {
     const childRef = React.useRef<any>();
     if (childRef != null) {
@@ -100,6 +98,7 @@ function TeamPortlioTable(SelectedProp: any) {
     const [checkedList1, setCheckedList1] = React.useState([]);
     const [topCompoIcon, setTopCompoIcon]: any = React.useState(false);
     const [IsTimeEntry, setIsTimeEntry] = React.useState(false);
+    const [smartTimeTotalFunction, setSmartTimeTotalFunction] = React.useState(null);
     // const [tableHeight, setTableHeight] = React.useState(window.innerHeight);
     const [portfolioTypeConfrigration, setPortfolioTypeConfrigration] = React.useState<any>([{ Title: 'Component', Suffix: 'C', Level: 1 }, { Title: 'SubComponent', Suffix: 'S', Level: 2 }, { Title: 'Feature', Suffix: 'F', Level: 3 }]);
     let ComponetsData: any = {};
@@ -196,41 +195,12 @@ function TeamPortlioTable(SelectedProp: any) {
             else if (newtest.TaxType == 'Sites') {
                 siteConfigSites.push(newtest)
             }
-            // if (newtest?.TaxType == 'timesheetListConfigrations') {
-            //     timeSheetConfig = newtest;
-            // }
         })
         if (siteConfigSites?.length > 0) {
             setSiteConfig(siteConfigSites)
         }
         setMetadata(smartmetaDetails);
-        // smartTimeTotal();
     };
-
-    // const smartTimeTotal = async () => {
-    //     let AllTimeEntries:any = [];
-    //     if (timeSheetConfig?.Id !== undefined) {
-    //         AllTimeEntries = await globalCommon.loadAllTimeEntry(timeSheetConfig);
-    //     }
-    //     let allSites = AllMetadata?.filter((e: any) => e.TaxType === "Sites");
-    //     AllTimeEntries?.forEach((entry: any) => {
-    //         allSites.forEach((site: any) => {
-    //             const taskTitle = `Task${site.Title}`;
-    //             if (entry.hasOwnProperty(taskTitle) && entry.AdditionalTimeEntry !== null && entry.AdditionalTimeEntry !== undefined) {
-    //                 const additionalTimeEntry = JSON.parse(entry.AdditionalTimeEntry);
-    //                 let totalTaskTime = additionalTimeEntry?.reduce((total: any, time: any) => total + parseFloat(time.TaskTime), 0);
-    //                 timeEntryIndex[`${taskTitle}${entry[taskTitle]?.Id}`] = {
-    //                     ...entry[taskTitle],
-    //                     TotalTaskTime: totalTaskTime,
-    //                     siteType: site.Title,
-    //                 };
-    //             }
-    //         });
-    //     });
-    //     console.log("timeEntryIndex", timeEntryIndex)
-    // };
-
-
     const findPortFolioIconsAndPortfolio = async () => {
         try {
             let newarray: any = [];
@@ -387,10 +357,6 @@ function TeamPortlioTable(SelectedProp: any) {
                                 result.ClientCategorySearch = ''
                             }
                             result.TotalTaskTime = 0;
-                            // const key = `Task${result?.siteType + result.Id}`;
-                            // if (timeEntryIndex.hasOwnProperty(key) && timeEntryIndex[key]?.Id === result?.Id && timeEntryIndex[key]?.siteType === result?.siteType) {
-                            //     result.TotalTaskTime = timeEntryIndex[key]?.TotalTaskTime;
-                            // }
                             result["TaskID"] = globalCommon.GetTaskId(result);
                             if (result.Project) {
                                 result.ProjectTitle = result?.Project?.Title;
@@ -707,12 +673,16 @@ function TeamPortlioTable(SelectedProp: any) {
     }
 
 
-    const smartFiltercallBackData = React.useCallback((filterData, updatedSmartFilter) => {
-        setUpdatedSmartFilter(updatedSmartFilter);
-        setAllSmartFilterOriginalData(filterData);
-        let filterDataBackup = JSON.parse(JSON.stringify(filterData));
-        setAllSmartFilterData(filterDataBackup);
+    const smartFiltercallBackData = React.useCallback((filterData, updatedSmartFilter, smartTimeTotal) => {
+        if(filterData && smartTimeTotal){
+            setUpdatedSmartFilter(updatedSmartFilter);
+            setAllSmartFilterOriginalData(filterData);
+            let filterDataBackup = JSON.parse(JSON.stringify(filterData));
+            setAllSmartFilterData(filterDataBackup);
+            setSmartTimeTotalFunction(() => smartTimeTotal);
+        }
     }, []);
+
     React.useEffect(() => {
         if (smartAllFilterData?.length > 0 && updatedSmartFilter === false) {
             setLoaded(false);
@@ -1704,7 +1674,7 @@ function TeamPortlioTable(SelectedProp: any) {
                                                 scale={1.0}
                                                 loadedClassName="loadedContent"
                                             />
-                                            <GlobalCommanTable AllMasterTasksData={AllMasterTasksData} ref={childRef} callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1} data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity} />
+                                            <GlobalCommanTable smartTimeTotalFunction={smartTimeTotalFunction} SmartTimeIconShow={true} AllMasterTasksData={AllMasterTasksData} ref={childRef} callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1} data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity} />
                                         </div>
                                     </div>
                                 </div>
