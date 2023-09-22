@@ -27,25 +27,121 @@ const RestructuringCom = (props: any, ref: any) => {
   useEffect(() => {
 
      if (props?.restructureItem != undefined && props?.restructureItem?.length > 0) {
-      props.allData?.map((obj:any)=>{
-        const matchingTask = props?.AllMasterTasksData?.find((task:any) => obj?.Portfolio?.Id === task?.Id);
-      if (matchingTask) {
-        obj.PortfolioType = matchingTask.PortfolioType;
-  }
-  })
-  setAllData(props.allData); 
-
       let array: any = []
+      let portfolioTypeCheck:any;
       props?.restructureItem?.map((obj: any) => {
-        const matchingTask = props?.AllMasterTasksData?.find((task:any) => obj?.original?.Portfolio?.Id === task?.Id);
-        if (matchingTask) {
-          obj.original.PortfolioType = matchingTask.PortfolioType;
-    }
+        if(obj?.original?.Item_x0020_Type === 'Task'){
+          const matchingTask = props?.AllMasterTasksData?.find((task:any) => obj?.original?.Portfolio?.Id === task?.Id);
+          if (matchingTask) {
+            portfolioTypeCheck = matchingTask?.PortfolioType;
+            obj.original.PortfolioType = matchingTask?.PortfolioType;
+          }else{
+            portfolioTypeCheck = '';
+            obj.original.PortfolioType = '';
+          }
+        }
         array.push(obj.original);
       })
       setRestructureItem(array);
+
+      props.allData?.map((obj:any)=>{
+        if(obj?.Item_x0020_Type === 'Task' || obj?.Title == "Others"){
+          const matchingTask = props?.AllMasterTasksData?.find((task:any) => obj?.Portfolio?.Id === task?.Id);
+          if (matchingTask && portfolioTypeCheck != '') {
+            obj.PortfolioType = matchingTask.PortfolioType;
+          }else{
+            if(portfolioTypeCheck != '' && obj?.Title == "Others"){
+              obj.PortfolioType = portfolioTypeCheck;
+            }else{
+              obj.PortfolioType = ''
+            }
+           }
+        }
+        if (obj?.subRows.length > 0 && obj?.subRows != undefined) {
+          obj?.subRows?.map((sub: any) => {
+            if(sub?.Item_x0020_Type === 'Task'  || obj?.Title == "Others"){
+              const matchingTask = props?.AllMasterTasksData?.find((task:any) => sub?.Portfolio?.Id === task?.Id);
+              if (matchingTask && portfolioTypeCheck != '') {
+                sub.PortfolioType = matchingTask.PortfolioType;
+              }else{
+                if(portfolioTypeCheck != '' && obj?.Title == "Others"){
+                  sub.PortfolioType = portfolioTypeCheck;
+                }else{
+                  sub.PortfolioType = ''
+                }
+              }
+            }
+            if (sub?.subRows?.length > 0 && sub?.subRows != undefined) {
+              sub?.subRows?.map((feature: any) => {
+                if(feature?.Item_x0020_Type === 'Task'  || obj?.Title == "Others"){
+                  const matchingTask = props?.AllMasterTasksData?.find((task:any) => feature?.Portfolio?.Id === task?.Id);
+                  if (matchingTask && portfolioTypeCheck != '') {
+                    feature.PortfolioType = matchingTask.PortfolioType;
+                  }else{
+                    if(portfolioTypeCheck != '' && obj?.Title == "Others"){
+                      feature.PortfolioType = portfolioTypeCheck;
+                    }else{
+                      feature.PortfolioType = ''
+                    }
+                  }
+                }
+
+                  if (feature?.subRows?.length > 0 && feature?.subRows != undefined) {
+                  feature?.subRows?.map((activity: any) => {
+                  if(activity?.Item_x0020_Type === 'Task'  || obj?.Title == "Others"){
+                  const matchingTask = props?.AllMasterTasksData?.find((task:any) => activity?.Portfolio?.Id === task?.Id);
+                  if (matchingTask && portfolioTypeCheck != '') {
+                    activity.PortfolioType = matchingTask.PortfolioType;
+                  }else{
+                    if(portfolioTypeCheck != '' && obj?.Title == "Others"){
+                      activity.PortfolioType = portfolioTypeCheck;
+                    }else{
+                      activity.PortfolioType = ''
+                    }
+                   }
+                }
+                if (activity?.subRows?.length > 0 && activity?.subRows != undefined) {
+                  activity?.subRows?.map((wrkstrm: any) => {
+                    if(wrkstrm?.Item_x0020_Type === 'Task'  || obj?.Title == "Others"){
+                      const matchingTask = props?.AllMasterTasksData?.find((task:any) => wrkstrm?.Portfolio?.Id === task?.Id);
+                      if (matchingTask && portfolioTypeCheck != '') {
+                        wrkstrm.PortfolioType = matchingTask.PortfolioType;
+                      }else{
+                        if(portfolioTypeCheck != '' && obj?.Title == "Others"){
+                          wrkstrm.PortfolioType = portfolioTypeCheck;
+                        }else{
+                          wrkstrm.PortfolioType = ''
+                        }
+                        }
+                    }
+
+                    if (wrkstrm?.subRows?.length > 0 && wrkstrm?.subRows != undefined) {
+                      wrkstrm?.subRows?.map((task: any) => {
+                        if(task?.Item_x0020_Type === 'Task'  || obj?.Title == "Others"){
+                          const matchingTask = props?.AllMasterTasksData?.find((task:any) => task?.Portfolio?.Id === task?.Id);
+                          if (matchingTask && portfolioTypeCheck != '') {
+                            task.PortfolioType = matchingTask.PortfolioType;
+                          }else{
+                            if(portfolioTypeCheck != '' && obj?.Title == "Others"){
+                              task.PortfolioType = portfolioTypeCheck;
+                            }else{
+                              task.PortfolioType = ''
+                            }
+                          }
+                        }
+                      })}
+                  })}
+                  })}
+              })}
+          })}
+        
+  })
+  setAllData(props.allData); 
+
+      
     }
   }, [props?.restructureItem])
+
 
   useEffect(() => {
     if (restructureItem?.length === 0 && checkItemLength) {
@@ -1857,7 +1953,6 @@ const RestructuringCom = (props: any, ref: any) => {
             latestCheckedList?.map((items: any) => {
               items.Parent = { Id: ParentTask },
                 items.PortfolioLevel = PortfolioLevel,
-                items.Portfolio = { Id: ParentTask, ItemType: RestructureChecked[0]?.TaskType?.Title == undefined ? RestructureChecked[0]?.Item_x0020_Type : RestructureChecked[0]?.TaskType?.Title, Title: restructureItem[0]?.Title },
                 items.Item_x0020_Type = Item_x0020_Type,
                 items.SiteIconTitle = SiteIconTitle,
                 items.PortfolioStructureID = PortfolioStructureID + '-' + SiteIconTitle + PortfolioLevel,
@@ -2058,182 +2153,190 @@ const RestructuringCom = (props: any, ref: any) => {
 
 
 
-  const UpdateRestructure = async function () {
-    let PortfolioStructureIDs: any = "";
-    var ItemId: any = "";
-    let ItemTitle: any = '';
-    let flag: any = false;
-    let count: any = 0;
-    let newItem: any = "";
-    let ChengedItemTitle: any = "";
-    let siteIcon: any = '';
-    let PortfolioLevelNum: any = 0;
+  // const UpdateRestructure = async function () {
+  //   let PortfolioStructureIDs: any = "";
+  //   var ItemId: any = "";
+  //   let ItemTitle: any = '';
+  //   let flag: any = false;
+  //   let count: any = 0;
+  //   let newItem: any = "";
+  //   let ChengedItemTitle: any = "";
+  //   let siteIcon: any = '';
+  //   let PortfolioLevelNum: any = 0;
 
 
 
-    if (RestructureChecked != undefined && RestructureChecked?.length > 0) {
-      RestructureChecked?.map((items: any) => {
-        if ((items.Item_x0020_Type == "Feature" || items.Item_x0020_Type == "SubComponent") && newItemBackUp?.Item_x0020_Type == "Component") {
-          ChengedItemTitle = items?.Item_x0020_Type;
-          siteIcon = items?.siteIcon;
-        }
-        else if (items.Item_x0020_Type == "Component" && newItemBackUp?.Item_x0020_Type == "Component") {
-          ChengedItemTitle = "SubComponent";
-          siteIcon = "S";
-        }
-        else if (newItemBackUp?.Item_x0020_Type == "SubComponent" && (items.Item_x0020_Type == "Feature" || items.Item_x0020_Type == "SubComponent" || items.Item_x0020_Type == "Component")) {
-          ChengedItemTitle = "Feature";
-          siteIcon = "F";
-        }
+  //   if (RestructureChecked != undefined && RestructureChecked?.length > 0) {
+  //     RestructureChecked?.map((items: any) => {
+  //       if ((items.Item_x0020_Type == "Feature" || items.Item_x0020_Type == "SubComponent") && newItemBackUp?.Item_x0020_Type == "Component") {
+  //         ChengedItemTitle = items?.Item_x0020_Type;
+  //         siteIcon = items?.siteIcon;
+  //       }
+  //       else if (items.Item_x0020_Type == "Component" && newItemBackUp?.Item_x0020_Type == "Component") {
+  //         ChengedItemTitle = "SubComponent";
+  //         siteIcon = "S";
+  //       }
+  //       else if (newItemBackUp?.Item_x0020_Type == "SubComponent" && (items.Item_x0020_Type == "Feature" || items.Item_x0020_Type == "SubComponent" || items.Item_x0020_Type == "Component")) {
+  //         ChengedItemTitle = "Feature";
+  //         siteIcon = "F";
+  //       }
 
-      })
-    }
-
-
-    allData?.forEach((obj: any) => {
-      if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj?.subRows?.length == 0) {
-        PortfolioLevelNum = 1;
-        ItemId = obj.Id;
-        ItemTitle = obj.Title;
-        PortfolioStructureIDs = obj.PortfolioStructureID + "-" + siteIcon + PortfolioLevelNum;
-      }
+  //     })
+  //   }
 
 
-      if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj?.subRows?.length > 0) {
-        obj.subRows.forEach((sub: any) => {
-          if (sub.Item_x0020_Type === ChengedItemTitle) {
-            PortfolioLevelNum = sub.PortfolioLevel + 1;
-          } else {
-            PortfolioLevelNum = 1;
-          }
-        });
-        ItemId = obj.Id;
-        ItemTitle = obj.Title;
-        PortfolioStructureIDs = obj.PortfolioStructureID + "-" + siteIcon + PortfolioLevelNum;
-      } else {
-        obj.subRows.forEach((sub: any) => {
-          if (sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub?.subRows?.length == 0) {
-            PortfolioLevelNum = 1;
-            ItemId = sub.Id;
-            ItemTitle = sub.Title;
-            PortfolioStructureIDs = sub.PortfolioStructureID + "-" + siteIcon + PortfolioLevelNum;
-          }
-
-          if (sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub?.subRows?.length > 0) {
-            sub.subRows.forEach((newsub: any) => {
-              if (newsub.Item_x0020_Type === ChengedItemTitle) {
-                PortfolioLevelNum = newsub.PortfolioLevel + 1;
-              } else {
-                PortfolioLevelNum = 1;
-              }
-            });
-            ItemId = sub.Id;
-            ItemTitle = sub.Title;
-            PortfolioStructureIDs = sub.PortfolioStructureID + "-" + siteIcon + PortfolioLevelNum;
-          }
-        });
-      }
-    });
+  //   allData?.forEach((obj: any) => {
+  //     if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj?.subRows?.length == 0) {
+  //       PortfolioLevelNum = 1;
+  //       ItemId = obj.Id;
+  //       ItemTitle = obj.Title;
+  //       PortfolioStructureIDs = obj.PortfolioStructureID + "-" + siteIcon + PortfolioLevelNum;
+  //     }
 
 
+  //     if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj?.subRows?.length > 0) {
+  //       obj.subRows.forEach((sub: any) => {
+  //         if (sub.Item_x0020_Type === ChengedItemTitle) {
+  //           PortfolioLevelNum = sub.PortfolioLevel + 1;
+  //         } else {
+  //           PortfolioLevelNum = 1;
+  //         }
+  //       });
+  //       ItemId = obj.Id;
+  //       ItemTitle = obj.Title;
+  //       PortfolioStructureIDs = obj.PortfolioStructureID + "-" + siteIcon + PortfolioLevelNum;
+  //     } else {
+  //       obj.subRows.forEach((sub: any) => {
+  //         if (sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub?.subRows?.length == 0) {
+  //           PortfolioLevelNum = 1;
+  //           ItemId = sub.Id;
+  //           ItemTitle = sub.Title;
+  //           PortfolioStructureIDs = sub.PortfolioStructureID + "-" + siteIcon + PortfolioLevelNum;
+  //         }
+
+  //         if (sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub?.subRows?.length > 0) {
+  //           sub.subRows.forEach((newsub: any) => {
+  //             if (newsub.Item_x0020_Type === ChengedItemTitle) {
+  //               PortfolioLevelNum = newsub.PortfolioLevel + 1;
+  //             } else {
+  //               PortfolioLevelNum = 1;
+  //             }
+  //           });
+  //           ItemId = sub.Id;
+  //           ItemTitle = sub.Title;
+  //           PortfolioStructureIDs = sub.PortfolioStructureID + "-" + siteIcon + PortfolioLevelNum;
+  //         }
+  //       });
+  //     }
+  //   });
 
 
-    if (ChengedItemTitle != undefined && ChengedItemTitle != "") {
-      let web = new Web(props.contextValue.siteUrl);
-      var postData: any = {
-        ParentId: ItemId,
-        PortfolioLevel: PortfolioLevelNum,
-        PortfolioStructureID: PortfolioStructureIDs,
-        Item_x0020_Type: ChengedItemTitle,
-      };
-
-      await web.lists
-        .getById(props.contextValue.MasterTaskListID)
-        .items.getById(restructureItem[0].Id)
-        .update(postData)
-        .then(async (res: any) => {
 
 
-          let checkUpdate: number = 1;
-          let array: any = [...allData];
-          let backupCheckedList: any = [];
-          let latestCheckedList: any = [];
-          RestructureChecked?.map((items: any) => {
-            latestCheckedList.push({ ...items })
-            backupCheckedList.push({ ...items })
-          })
+  //   if (ChengedItemTitle != undefined && ChengedItemTitle != "") {
+  //     let web = new Web(props.contextValue.siteUrl);
+  //     var postData: any = {
+  //       ParentId: ItemId,
+  //       PortfolioLevel: PortfolioLevelNum,
+  //       PortfolioStructureID: PortfolioStructureIDs,
+  //       Item_x0020_Type: ChengedItemTitle,
+  //     };
 
-          latestCheckedList?.map((items: any) => {
-            items.Parent = { Id: postData.ParentId, Title: ItemTitle }
-            items.PortfolioLevel = postData.PortfolioLevel,
-              items.PortfolioStructureID = postData.PortfolioStructureID,
-              items.Item_x0020_Type = postData.Item_x0020_Type
-            items.TaskID = postData.PortfolioStructureID,
-              items.SiteIconTitle = siteIcon
-          })
-
-          array?.map((obj: any, index: any) => {
-            obj.isRestructureActive = false;
-            if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && checkUpdate != 3) {
-              obj.subRows.push(...latestCheckedList);
-              checkUpdate = checkUpdate + 1;
-            }
-            if (obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && checkUpdate != 3) {
-              array.splice(index, 1);
-              checkUpdate = checkUpdate + 1;
-            }
-
-            if (obj.subRows != undefined && obj.subRows.length > 0) {
-              obj.subRows.forEach((sub: any, indexsub: any) => {
-                sub.isRestructureActive = false;
-                if (sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && checkUpdate != 3) {
-
-                  sub.subRows.push(...latestCheckedList);
-                  checkUpdate = checkUpdate + 1;
-                }
-                if (sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && checkUpdate != 3) {
-                  array[index]?.subRows.splice(indexsub, 1);
-
-                  checkUpdate = checkUpdate + 1;
-                }
-
-                if (sub.subRows != undefined && sub.subRows.length > 0) {
-                  sub.subRows.forEach((newsub: any, lastIndex: any) => {
-                    newsub.isRestructureActive = false;
-                    if (newsub.Id === newItemBackUp?.Id && newsub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && checkUpdate != 3) {
-
-                      newsub.subRows.push(...latestCheckedList);
-                      checkUpdate = checkUpdate + 1;
-                    }
-                    if (newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && checkUpdate != 3) {
-                      array[index]?.subRows[indexsub]?.subRows.splice(lastIndex, 1);
-
-                      checkUpdate = checkUpdate + 1;
-                    }
-                  })
-                }
-              })
-            }
-
-          })
+  //     await web.lists
+  //       .getById(props.contextValue.MasterTaskListID)
+  //       .items.getById(restructureItem[0].Id)
+  //       .update(postData)
+  //       .then(async (res: any) => {
 
 
-          restructureCallBack(array);
-          setResturuningOpen(false);
+  //         let checkUpdate: number = 1;
+  //         let array: any = [...allData];
+  //         let backupCheckedList: any = [];
+  //         let latestCheckedList: any = [];
+  //         RestructureChecked?.map((items: any) => {
+  //           latestCheckedList.push({ ...items })
+  //           backupCheckedList.push({ ...items })
+  //         })
+
+  //         latestCheckedList?.map((items: any) => {
+  //           items.Parent = { Id: postData.ParentId, Title: ItemTitle }
+  //           items.PortfolioLevel = postData.PortfolioLevel,
+  //             items.PortfolioStructureID = postData.PortfolioStructureID,
+  //             items.Item_x0020_Type = postData.Item_x0020_Type
+  //           items.TaskID = postData.PortfolioStructureID,
+  //             items.SiteIconTitle = siteIcon
+  //         })
+
+  //         array?.map((obj: any, index: any) => {
+  //           obj.isRestructureActive = false;
+  //           if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && checkUpdate != 3) {
+  //             obj.subRows.push(...latestCheckedList);
+  //             checkUpdate = checkUpdate + 1;
+  //           }
+  //           if (obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && checkUpdate != 3) {
+  //             array.splice(index, 1);
+  //             checkUpdate = checkUpdate + 1;
+  //           }
+
+  //           if (obj.subRows != undefined && obj.subRows.length > 0) {
+  //             obj.subRows.forEach((sub: any, indexsub: any) => {
+  //               sub.isRestructureActive = false;
+  //               if (sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && checkUpdate != 3) {
+
+  //                 sub.subRows.push(...latestCheckedList);
+  //                 checkUpdate = checkUpdate + 1;
+  //               }
+  //               if (sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && checkUpdate != 3) {
+  //                 array[index]?.subRows.splice(indexsub, 1);
+
+  //                 checkUpdate = checkUpdate + 1;
+  //               }
+
+  //               if (sub.subRows != undefined && sub.subRows.length > 0) {
+  //                 sub.subRows.forEach((newsub: any, lastIndex: any) => {
+  //                   newsub.isRestructureActive = false;
+  //                   if (newsub.Id === newItemBackUp?.Id && newsub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && checkUpdate != 3) {
+
+  //                     newsub.subRows.push(...latestCheckedList);
+  //                     checkUpdate = checkUpdate + 1;
+  //                   }
+  //                   if (newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && checkUpdate != 3) {
+  //                     array[index]?.subRows[indexsub]?.subRows.splice(lastIndex, 1);
+
+  //                     checkUpdate = checkUpdate + 1;
+  //                   }
+  //                 })
+  //               }
+  //             })
+  //           }
+
+  //         })
 
 
-        });
-    }
-  };
+  //         restructureCallBack(array);
+  //         setResturuningOpen(false);
+
+
+  //       });
+  //   }
+  // };
 
 
 
   const UpdateTaskRestructure = async function () {
 
     if (restructureItem[0]?.Item_x0020_Type == 'Task') {
-      let ParentTask_Portfolio: any = newItemBackUp?.Id;
+      let ParentTask_Id: any = newItemBackUp?.Id;
+      let Portfolio:any;
       let TaskId = newItemBackUp?.TaskID == undefined ? newItemBackUp?.TaskID : newItemBackUp?.PortfolioStructureID
       let TaskLevel: number = 0;
+
+      if(newItemBackUp?.Item_x0020_Type != 'Task'){
+        Portfolio = newItemBackUp?.Id
+      }else{
+        Portfolio = newItemBackUp?.Portfolio?.Id;
+      }
+
       if (newItemBackUp?.subRows != undefined && newItemBackUp?.subRows?.length > 0) {
         newItemBackUp?.subRows.map((sub: any) => {
           if (RestructureChecked[0]?.TaskType?.Id === sub?.TaskType?.Id) {
@@ -2251,8 +2354,8 @@ const RestructuringCom = (props: any, ref: any) => {
 
       let web = new Web(props.contextValue.siteUrl);
       var postData: any = {
-        ParentTaskId: ParentTask_Portfolio,
-        PortfolioId: ParentTask_Portfolio,
+        ParentTaskId: ParentTask_Id,
+        PortfolioId: Portfolio,
         TaskLevel: TaskLevel,
         TaskTypeId: RestructureChecked[0]?.TaskType?.Id,
         TaskID: RestructureChecked[0]?.TaskType?.Id == 2 ? TaskId + '-' + 'T' + RestructureChecked[0]?.Id : (RestructureChecked[0]?.TaskType?.Id == 1 ? TaskId + '-' + 'A' + TaskLevel : (RestructureChecked[0]?.TaskType?.Id == 3 && newItemBackUp?.Item_x0020_Type == 'Task' ? TaskId + '-' + 'W' + TaskLevel : TaskId + '-' + 'A' + TaskLevel))
@@ -2273,8 +2376,8 @@ const RestructuringCom = (props: any, ref: any) => {
           })
 
           latestCheckedList?.map((items: any) => {
-            items.ParentTask = { Id: ParentTask_Portfolio },
-              items.Portfolio = { Id: ParentTask_Portfolio, ItemType: RestructureChecked[0]?.TaskType?.Title == undefined ? RestructureChecked[0]?.Item_x0020_Type : RestructureChecked[0]?.TaskType?.Title, Title: restructureItem[0].Title },
+            items.ParentTask = { Id: ParentTask_Id },
+              items.Portfolio = { Id: Portfolio, ItemType: RestructureChecked[0]?.TaskType?.Title == undefined ? RestructureChecked[0]?.Item_x0020_Type : RestructureChecked[0]?.TaskType?.Title, Title: restructureItem[0].Title },
               items.TaskLevel = TaskLevel,
               items.TaskType = { Id: RestructureChecked[0]?.TaskType?.Id, Level: RestructureChecked[0]?.TaskType?.Level, Title: RestructureChecked[0]?.TaskType?.Title },
               items.TaskID = RestructureChecked[0]?.TaskType?.Id == 2 ? TaskId + '-' + 'T' + RestructureChecked[0]?.Id : (RestructureChecked[0]?.TaskType?.Id == 1 ? TaskId + '-' + 'A' + TaskLevel : (RestructureChecked[0]?.TaskType?.Id == 3 && newItemBackUp?.Item_x0020_Type == 'Task' ? TaskId + '-' + 'W' + TaskLevel : TaskId + '-' + 'A' + TaskLevel))
@@ -2282,23 +2385,23 @@ const RestructuringCom = (props: any, ref: any) => {
 
           array?.map((obj: any, index: any) => {
             obj.isRestructureActive = false;
-            if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
-              obj.subRows.push(...latestCheckedList);
+            if (obj.Id === newItemBackUp?.Id && obj?.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj?.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
+              obj?.subRows.push(...latestCheckedList);
               checkUpdate = checkUpdate + 1;
             }
-            if (obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
+            if (obj?.Id === backupCheckedList[0]?.Id && obj?.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj?.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
               array.splice(index, 1);
               checkUpdate = checkUpdate + 1;
             }
 
-            if (obj.subRows != undefined && obj.subRows.length > 0) {
-              obj.subRows.forEach((sub: any, indexsub: any) => {
+            if (obj?.subRows != undefined && obj?.subRows.length > 0) {
+              obj?.subRows?.forEach((sub: any, indexsub: any) => {
                 sub.isRestructureActive = false;
-                if (sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
+                if (sub?.Id === newItemBackUp?.Id && sub?.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub?.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                   sub.subRows.push(...latestCheckedList);
                   checkUpdate = checkUpdate + 1;
                 }
-                if (sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
+                if (sub.Id === backupCheckedList[0]?.Id && sub?.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub?.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                   array[index]?.subRows.splice(indexsub, 1);
                   checkUpdate = checkUpdate + 1;
                 }
@@ -2310,7 +2413,7 @@ const RestructuringCom = (props: any, ref: any) => {
                       newsub.subRows.push(...latestCheckedList);
                       checkUpdate = checkUpdate + 1;
                     }
-                    if (newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && newsub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
+                    if (newsub?.Id === backupCheckedList[0]?.Id && newsub?.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && newsub?.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                       array[index]?.subRows[indexsub]?.subRows.splice(lastIndex, 1);
                       checkUpdate = checkUpdate + 1;
                     }
@@ -2318,11 +2421,11 @@ const RestructuringCom = (props: any, ref: any) => {
                     if (newsub.subRows != undefined && newsub.subRows.length > 0) {
                       newsub.subRows.forEach((activity: any, activityIndex: any) => {
                         activity.isRestructureActive = false;
-                        if (activity.Id === newItemBackUp?.Id && activity.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && activity.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
+                        if (activity.Id === newItemBackUp?.Id && activity?.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && activity?.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                           activity.subRows.push(...latestCheckedList);
                           checkUpdate = checkUpdate + 1;
                         }
-                        if (activity.Id === backupCheckedList[0]?.Id && activity.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && activity.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
+                        if (activity.Id === backupCheckedList[0]?.Id && activity?.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && activity?.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
                           array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows.splice(activityIndex, 1);
                           checkUpdate = checkUpdate + 1;
                         }
@@ -2379,6 +2482,16 @@ const RestructuringCom = (props: any, ref: any) => {
       let SiteIconTitle: any = RestructureChecked[0]?.siteIcon;
       let Item_x0020_Type: any = RestructureChecked[0]?.Item_x0020_Type;
 
+      if(newItemBackUp.Item_x0020_Type === "SubComponent"){
+        Item_x0020_Type = 'Feature';
+        SiteIconTitle = "F";
+      }
+
+      if(newItemBackUp.Item_x0020_Type === "Component" && RestructureChecked[0]?.Item_x0020_Type === "Component"){
+        Item_x0020_Type = 'SubComponent';
+        SiteIconTitle = "S";
+      }
+
       if (newItemBackUp?.subRows != undefined && newItemBackUp?.subRows?.length > 0) {
         newItemBackUp?.subRows.map((sub: any) => {
           if (Item_x0020_Type === sub?.Item_x0020_Type) {
@@ -2394,7 +2507,8 @@ const RestructuringCom = (props: any, ref: any) => {
         PortfolioLevel = 1;
       }
 
-      //  let level : number = PortfolioLevel+index;
+     
+      
       let web = new Web(props.contextValue.siteUrl);
       var postData: any = {
         ParentId: ParentTask,
@@ -2419,7 +2533,6 @@ const RestructuringCom = (props: any, ref: any) => {
           latestCheckedList?.map((items: any) => {
             items.Parent = { Id: ParentTask },
               items.PortfolioLevel = PortfolioLevel,
-              items.Portfolio = { Id: ParentTask, ItemType: RestructureChecked[0]?.TaskType?.Title == undefined ? RestructureChecked[0]?.Item_x0020_Type : RestructureChecked[0]?.TaskType?.Title, Title: restructureItem[0].Title },
               items.Item_x0020_Type = Item_x0020_Type,
               items.SiteIconTitle = SiteIconTitle,
               items.PortfolioStructureID = PortfolioStructureID + '-' + SiteIconTitle + PortfolioLevel,
@@ -2428,17 +2541,17 @@ const RestructuringCom = (props: any, ref: any) => {
 
           array?.map((obj: any, index: any) => {
             obj.isRestructureActive = false;
-            if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
+            if (obj?.Id === newItemBackUp?.Id && obj?.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
               obj.subRows.push(...latestCheckedList);
               checkUpdate = checkUpdate + 1;
             }
-            if (obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
+            if (obj?.Id === backupCheckedList[0]?.Id && obj?.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
               array.splice(index, 1);
               checkUpdate = checkUpdate + 1;
             }
 
-            if (obj.subRows != undefined && obj.subRows.length > 0) {
-              obj.subRows.forEach((sub: any, indexsub: any) => {
+            if (obj?.subRows != undefined && obj?.subRows.length > 0) {
+              obj?.subRows.forEach((sub: any, indexsub: any) => {
                 sub.isRestructureActive = false;
                 if (sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                   sub.subRows.push(...latestCheckedList);
@@ -2724,7 +2837,7 @@ const RestructuringCom = (props: any, ref: any) => {
                 {OldArrayBackup?.map(function (obj: any) {
                   return (
                     <span>
-                      {obj.siteIcon.length === 1 ? <span className="Dyicons ">{obj.siteIcon}</span> : <span><img width={"25px"} height={"25px"} src={obj?.siteIcon} /></span>}
+                      {obj?.siteIcon?.length === 1 ? <span className="Dyicons ">{obj.siteIcon}</span> : <span><img width={"25px"} height={"25px"} src={obj?.siteIcon} /></span>}
 
                       <a
                         data-interception="off"
@@ -2757,7 +2870,7 @@ const RestructuringCom = (props: any, ref: any) => {
                 {NewArrayBackup?.map(function (obj: any) {
                   return (
                     <span>
-                      {obj.siteIcon.length === 1 ? <span className="Dyicons ">{obj.siteIcon}</span> : <span><img width={"25px"} height={"25px"} src={obj?.siteIcon} /></span>}
+                      {obj?.siteIcon?.length === 1 ? <span className="Dyicons ">{obj?.siteIcon}</span> : <span><img width={"25px"} height={"25px"} src={obj?.siteIcon} /></span>}
 
                       <a
                         data-interception="off"
