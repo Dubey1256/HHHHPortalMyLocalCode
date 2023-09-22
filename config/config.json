@@ -317,6 +317,21 @@
         }
       ]
     },
+    "employe-dash-board-web-part": {
+
+      "components": [
+
+        {
+
+          "entrypoint": "./lib/webparts/employeDashBoard/EmployeDashBoardWebPart.js",
+
+          "manifest": "./src/webparts/employeDashBoard/EmployeDashBoardWebPart.manifest.json"
+
+        }
+
+      ]
+
+    },
     "meeting-over-view-page-web-part": {
       "components": [
         {
@@ -357,6 +372,7 @@
     "FeedbackWebPartStrings": "lib/webparts/TimeReport/loc/{locale}.js",
     "TaskStepsWebPartStrings": "lib/webparts/taskSteps/loc/{locale}.js",
     "HrToolWebPartStrings": "lib/webparts/hrTool/loc/{locale}.js",
+    "EmployeDashBoardWebPartStrings": "lib/webparts/employeDashBoard/loc/{locale}.js",
     "TestProjectWebPartStrings": "lib/webparts/BackupData/loc/{locale}.js",
     "ProjectManagementWebPartStrings": "lib/webparts/projectManagement/loc/{locale}.js",
     "HRjointcontactserachWebPartStrings": "lib/webparts/hRjointcontactserach/loc/{locale}.js",

@@ -4,6 +4,7 @@ import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 import * as globalCommon from "../../globalComponents/globalCommon";
 import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
+
 let filterGroupsDataBackup: any = [];
 let filterGroupData1: any = [];
 let timeSheetConfig: any = {};
@@ -111,14 +112,6 @@ const SmartFilterSearchGlobal = (item: any) => {
             FilterDataOnCheck();
         }
     }, [filterGroupsData && firstTimecallFilterGroup]);
-
-    React.useEffect(() => {
-        if (finalArray.length > 0 && updatedSmartFilter === true) {
-            smartFiltercallBackData(finalArray, updatedSmartFilter)
-        } else if (finalArray.length > 0 && updatedSmartFilter === false) {
-            smartFiltercallBackData(finalArray, updatedSmartFilter)
-        }
-    }, [finalArray])
 
     let filterGroups: any = [{ Title: 'Portfolio', values: [], checked: [], checkedObj: [], expanded: [] },
     {
@@ -241,7 +234,7 @@ const SmartFilterSearchGlobal = (item: any) => {
             }
         }
         if (item.TaxType == 'Percent Complete') {
-            if (item.Title == "Completed" || item.Title == "90% Task completed" || item.Title == "93% For Review" || item.Title == "96% Follow-up later" || item.Title == "100% Closed") {
+            if (item.Title == "Completed" || item.Title == "90% Task completed" || item.Title == "93% For Review" || item.Title == "96% Follow-up later" || item.Title == "100% Closed" || item.Title == "99% Completed") {
 
             }
             else {
@@ -525,7 +518,6 @@ const SmartFilterSearchGlobal = (item: any) => {
     const timeEntryIndex: any = {};
     const smartTimeTotal = async () => {
         item?.setLoaded(false);
-        // setHideTimeEntryButton(1);
         let AllTimeEntries = [];
         if (timeSheetConfig?.Id !== undefined) {
             AllTimeEntries = await globalCommon.loadAllTimeEntry(timeSheetConfig);
@@ -572,7 +564,7 @@ const SmartFilterSearchGlobal = (item: any) => {
     };
 
     const smartTimeUseLocalStorage = () => {
-        if (timeEntryDataLocalStorage) {
+        if (timeEntryDataLocalStorage?.length > 0) {
             const timeEntryIndexLocalStorage = JSON.parse(timeEntryDataLocalStorage)
             allTastsData?.map((task: any) => {
                 task.TotalTaskTime = 0;
@@ -588,7 +580,18 @@ const SmartFilterSearchGlobal = (item: any) => {
     };
 
 
+
     //*************************************************************smartTimeTotal End*********************************************************************/
+
+
+    /// **************** CallBack Part *********************///
+    React.useEffect(() => {
+        if (finalArray.length > 0 && updatedSmartFilter === true) {
+            smartFiltercallBackData(finalArray, updatedSmartFilter, smartTimeTotal)
+        } else if (finalArray.length > 0 && updatedSmartFilter === false) {
+            smartFiltercallBackData(finalArray, updatedSmartFilter, smartTimeTotal)
+        }
+    }, [finalArray])
 
     return (
         <>
@@ -662,11 +665,8 @@ const SmartFilterSearchGlobal = (item: any) => {
                                                 <button type="button" style={{ backgroundColor: `${portfolioColor}`, borderColor: ` ${portfolioColor}` }} className="btn pull-right  btn-primary" title="Smart Filter" onClick={UpdateFilterData}>
                                                     Update Filter
                                                 </button>
-                                                <button type="button" disabled={hideTimeEntryButton === 1 ? true : false} style={{ backgroundColor: `${portfolioColor}`, borderColor: ` ${portfolioColor}` }} className="btn pull-right  btn-primary mx-2" title="Smart Filter" onClick={smartTimeTotal}>
+                                                {/* <button type="button" disabled={hideTimeEntryButton === 1 ? true : false} style={{ backgroundColor: `${portfolioColor}`, borderColor: ` ${portfolioColor}` }} className="btn pull-right  btn-primary mx-2" title="Smart Filter" onClick={smartTimeTotal}>
                                                     Load Smart-Time
-                                                </button>
-                                                {/* <button type="button" disabled={hideTimeEntryButton === 1 ? true : false} style={{ backgroundColor: `${portfolioColor}`, borderColor: ` ${portfolioColor}` }} className="btn pull-right  btn-primary mx-2" title="Smart Filter" onClick={smartTimeTotal1}>
-                                                    Load Smart-Time1
                                                 </button> */}
                                             </div>
                                         </div>

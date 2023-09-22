@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import * as $ from 'jquery';
 import * as Moment from 'moment';
 import { Web } from "sp-pnp-js";
@@ -94,100 +95,100 @@ const EditTaskPopup = (Items: any) => {
     AllListIdData.listId = Items.Items.listId;
     Items.Items.Id = Items.Items.ID;
     let ShareWebConfigData: any = [];
-    const [TaskImages, setTaskImages] = React.useState([]);
-    const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
-    const [openTeamPortfolioPopup, setOpenTeamPortfolioPopup] = React.useState(false);
-    const [openLinkedPortfolioPopup, setopenLinkedPortfolioPopup] = React.useState(false);
-    const [TaggedPortfolioData, setTaggedPortfolioData] = React.useState([]);
-    const [linkedPortfolioData, setLinkedPortfolioData] = React.useState([]);
-    const [CategoriesData, setCategoriesData] = React.useState('');
-    const [ShareWebTypeData, setShareWebTypeData] = React.useState([]);
-    const [AllCategoryData, setAllCategoryData] = React.useState([]);
-    const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
-    let [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
-    let [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
-    let [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
-    const maxNumber = 69;
-    const [UpdateTaskInfo, setUpdateTaskInfo] = React.useState(
+    const [TaskImages, setTaskImages] = useState([]);
+    const [SmartMetaDataAllItems, setSmartMetaDataAllItems] = useState<any>([]);
+    const [IsComponentPicker, setIsComponentPicker] = useState(false);
+    const [openTeamPortfolioPopup, setOpenTeamPortfolioPopup] = useState(false);
+    const [openLinkedPortfolioPopup, setopenLinkedPortfolioPopup] = useState(false);
+    const [TaggedPortfolioData, setTaggedPortfolioData] = useState([]);
+    const [linkedPortfolioData, setLinkedPortfolioData] = useState([]);
+    const [CategoriesData, setCategoriesData] = useState('');
+    const [ShareWebTypeData, setShareWebTypeData] = useState([]);
+    const [AllCategoryData, setAllCategoryData] = useState([]);
+    const [SearchedCategoryData, setSearchedCategoryData] = useState([]);
+    let [TaskAssignedTo, setTaskAssignedTo] = useState([]);
+    let [TaskTeamMembers, setTaskTeamMembers] = useState([]);
+    let [TaskResponsibleTeam, setTaskResponsibleTeam] = useState([]);
+    const [UpdateTaskInfo, setUpdateTaskInfo] = useState(
         {
             Title: '', PercentCompleteStatus: '', ComponentLink: ''
         }
     )
-    const [EditData, setEditData] = React.useState<any>({});
-    const [modalIsOpen, setModalIsOpen] = React.useState(true);
-    const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
-    const [TimeSheetPopup, setTimeSheetPopup] = React.useState(false);
-    const [hoverImageModal, setHoverImageModal] = React.useState('None');
-    const [AddImageDescriptions, setAddImageDescriptions] = React.useState(false);
-    const [AddImageDescriptionsDetails, setAddImageDescriptionsDetails] = React.useState<any>('');
-    const [ImageComparePopup, setImageComparePopup] = React.useState(false);
-    const [CopyAndMoveTaskPopup, setCopyAndMoveTaskPopup] = React.useState(false);
-    const [ImageCustomizePopup, setImageCustomizePopup] = React.useState(false);
-    const [replaceImagePopup, setReplaceImagePopup] = React.useState(false);
-    const [ProjectManagementPopup, setProjectManagementPopup] = React.useState(false);
-    const [compareImageArray, setCompareImageArray] = React.useState([]);
-    const [composition, setComposition] = React.useState(true);
-    const [PercentCompleteStatus, setPercentCompleteStatus] = React.useState('');
-    const [taskStatus, setTaskStatus] = React.useState('');
-    const [PercentCompleteCheck, setPercentCompleteCheck] = React.useState(true)
-    const [PriorityStatus, setPriorityStatus] = React.useState();
-    const [PhoneStatus, setPhoneStatus] = React.useState(false);
-    const [EmailStatus, setEmailStatus] = React.useState(false);
-    const [DesignStatus, setDesignStatus] = React.useState(false);
-    const [OnlyCompletedStatus, setOnlyCompletedStatus] = React.useState(false);
-    const [ImmediateStatus, setImmediateStatus] = React.useState(false);
-    const [ApprovalStatus, setApprovalStatus] = React.useState(false);
-    const [ApproverData, setApproverData] = React.useState([]);
-    const [SmartLightStatus, setSmartLightStatus] = React.useState(false);
-    const [SmartLightPercentStatus, setSmartLightPercentStatus] = React.useState(false);
-    const [ShowTaskDetailsStatus, setShowTaskDetailsStatus] = React.useState(false);
-    const [currentUserData, setCurrentUserData] = React.useState([]);
-    const [UploadBtnStatus, setUploadBtnStatus] = React.useState(false);
-    const [InputFieldDisable, setInputFieldDisable] = React.useState(false);
-    const [HoverImageData, setHoverImageData] = React.useState([]);
-    const [SiteTypes, setSiteTypes] = React.useState([]);
-    const [categorySearchKey, setCategorySearchKey] = React.useState('');
-    const [ServicesTaskCheck, setServicesTaskCheck] = React.useState(false);
-    const [ComponentTaskCheck, setComponentTaskCheck] = React.useState(false);
-    const [AllProjectData, SetAllProjectData] = React.useState([]);
-    const [selectedProject, setSelectedProject] = React.useState([]);
-    const [SearchedProjectData, setSearchedProjectData] = React.useState([]);
-    const [ProjectSearchKey, setProjectSearchKey] = React.useState('');
-    const [ApproverPopupStatus, setApproverPopupStatus] = React.useState(false);
-    const [ApproverSearchKey, setApproverSearchKey] = React.useState('');
-    const [ApproverSearchedData, setApproverSearchedData] = React.useState([]);
-    const [ApproverSearchedDataForPopup, setApproverSearchedDataForPopup] = React.useState([]);
-    const [sendEmailStatus, setSendEmailStatus] = React.useState(false);
-    const [sendEmailComponentStatus, setSendEmailComponentStatus] = React.useState(false);
-    const [sendEmailGlobalCount, setSendEmailGlobalCount] = React.useState(0);
-    const [AllEmployeeData, setAllEmployeeData] = React.useState([]);
-    const [ApprovalTaskStatus, setApprovalTaskStatus] = React.useState(false);
-    const [SmartTotalTimeData, setSmartTotalTimeData] = React.useState(0);
-    const [ClientTimeData, setClientTimeData] = React.useState([]);
-    const [selectedClientCategory, setSelectedClientCategory] = React.useState([]);
-    const [SiteCompositionSetting, setSiteCompositionSetting] = React.useState([]);
-    const [AllClientCategoryData, setAllClientCategoryData] = React.useState([]);
-    const [ApproverHistoryData, setApproverHistoryData] = React.useState([]);
-    const [LastUpdateTaskData, setLastUpdateTaskData] = React.useState<any>({});
-    const [SitesTaggingData, setSitesTaggingData] = React.useState<any>([]);
-    const [SearchedServiceCompnentData, setSearchedServiceCompnentData] = React.useState<any>([]);
-    const [SearchedLinkedPortfolioData, setSearchedLinkedPortfolioData] = React.useState<any>([]);
-    const [SearchedServiceCompnentKey, setSearchedServiceCompnentKey] = React.useState<any>('');
-    const [SearchedLinkedPortfolioKey, setSearchedLinkedPortfolioKey] = React.useState<any>('');
-    const [IsUserFromHHHHTeam, setIsUserFromHHHHTeam] = React.useState(false);
-    const [IsCopyOrMovePanel, setIsCopyOrMovePanel] = React.useState<any>('');
-    const [EnableSiteCompositionValidation, setEnableSiteCompositionValidation] = React.useState(false);
-    const [EstimatedDescription, setEstimatedDescription] = React.useState('');
-    const [EstimatedTime, setEstimatedTime] = React.useState<any>('');
-    const [TotalEstimatedTime, setTotalEstimatedTime] = React.useState(0);
-    const [SiteCompositionShow, setSiteCompositionShow] = React.useState(false);
-    const [IsSendAttentionMsgStatus, setIsSendAttentionMsgStatus] = React.useState(false);
-    const [SendCategoryName, setSendCategoryName] = React.useState('');
+    const [EditData, setEditData] = useState<any>({});
+    const [modalIsOpen, setModalIsOpen] = useState(true);
+    const [SmartMedaDataUsedPanel, setSmartMedaDataUsedPanel] = useState('');
+    const [TimeSheetPopup, setTimeSheetPopup] = useState(false);
+    const [hoverImageModal, setHoverImageModal] = useState('None');
+    const [AddImageDescriptions, setAddImageDescriptions] = useState(false);
+    const [AddImageDescriptionsDetails, setAddImageDescriptionsDetails] = useState<any>('');
+    const [ImageComparePopup, setImageComparePopup] = useState(false);
+    const [CopyAndMoveTaskPopup, setCopyAndMoveTaskPopup] = useState(false);
+    const [ImageCustomizePopup, setImageCustomizePopup] = useState(false);
+    const [replaceImagePopup, setReplaceImagePopup] = useState(false);
+    const [ProjectManagementPopup, setProjectManagementPopup] = useState(false);
+    const [compareImageArray, setCompareImageArray] = useState([]);
+    const [composition, setComposition] = useState(true);
+    const [PercentCompleteStatus, setPercentCompleteStatus] = useState('');
+    const [taskStatus, setTaskStatus] = useState('');
+    const [PercentCompleteCheck, setPercentCompleteCheck] = useState(true)
+    const [PriorityStatus, setPriorityStatus] = useState();
+    const [PhoneStatus, setPhoneStatus] = useState(false);
+    const [EmailStatus, setEmailStatus] = useState(false);
+    const [DesignStatus, setDesignStatus] = useState(false);
+    const [OnlyCompletedStatus, setOnlyCompletedStatus] = useState(false);
+    const [ImmediateStatus, setImmediateStatus] = useState(false);
+    const [ApprovalStatus, setApprovalStatus] = useState(false);
+    const [ApproverData, setApproverData] = useState([]);
+    const [SmartLightStatus, setSmartLightStatus] = useState(false);
+    const [SmartLightPercentStatus, setSmartLightPercentStatus] = useState(false);
+    const [ShowTaskDetailsStatus, setShowTaskDetailsStatus] = useState(false);
+    const [currentUserData, setCurrentUserData] = useState([]);
+    const [UploadBtnStatus, setUploadBtnStatus] = useState(false);
+    const [InputFieldDisable, setInputFieldDisable] = useState(false);
+    const [HoverImageData, setHoverImageData] = useState([]);
+    const [SiteTypes, setSiteTypes] = useState([]);
+    const [categorySearchKey, setCategorySearchKey] = useState('');
+    const [ServicesTaskCheck, setServicesTaskCheck] = useState(false);
+    const [ComponentTaskCheck, setComponentTaskCheck] = useState(false);
+    const [AllProjectData, SetAllProjectData] = useState([]);
+    const [selectedProject, setSelectedProject] = useState([]);
+    const [SearchedProjectData, setSearchedProjectData] = useState([]);
+    const [ProjectSearchKey, setProjectSearchKey] = useState('');
+    const [ApproverPopupStatus, setApproverPopupStatus] = useState(false);
+    const [ApproverSearchKey, setApproverSearchKey] = useState('');
+    const [ApproverSearchedData, setApproverSearchedData] = useState([]);
+    const [ApproverSearchedDataForPopup, setApproverSearchedDataForPopup] = useState([]);
+    const [sendEmailStatus, setSendEmailStatus] = useState(false);
+    const [sendEmailComponentStatus, setSendEmailComponentStatus] = useState(false);
+    const [sendEmailGlobalCount, setSendEmailGlobalCount] = useState(0);
+    const [AllEmployeeData, setAllEmployeeData] = useState([]);
+    const [ApprovalTaskStatus, setApprovalTaskStatus] = useState(false);
+    const [SmartTotalTimeData, setSmartTotalTimeData] = useState(0);
+    const [ClientTimeData, setClientTimeData] = useState([]);
+    const [selectedClientCategory, setSelectedClientCategory] = useState([]);
+    const [SiteCompositionSetting, setSiteCompositionSetting] = useState([]);
+    const [AllClientCategoryData, setAllClientCategoryData] = useState([]);
+    const [ApproverHistoryData, setApproverHistoryData] = useState([]);
+    const [LastUpdateTaskData, setLastUpdateTaskData] = useState<any>({});
+    const [SitesTaggingData, setSitesTaggingData] = useState<any>([]);
+    const [SearchedServiceCompnentData, setSearchedServiceCompnentData] = useState<any>([]);
+    const [SearchedLinkedPortfolioData, setSearchedLinkedPortfolioData] = useState<any>([]);
+    const [SearchedServiceCompnentKey, setSearchedServiceCompnentKey] = useState<any>('');
+    const [SearchedLinkedPortfolioKey, setSearchedLinkedPortfolioKey] = useState<any>('');
+    const [IsUserFromHHHHTeam, setIsUserFromHHHHTeam] = useState(false);
+    const [IsCopyOrMovePanel, setIsCopyOrMovePanel] = useState<any>('');
+    const [EnableSiteCompositionValidation, setEnableSiteCompositionValidation] = useState(false);
+    const [EstimatedDescription, setEstimatedDescription] = useState('');
+    const [EstimatedDescriptionCategory, setEstimatedDescriptionCategory] = useState('');
+    const [EstimatedTime, setEstimatedTime] = useState<any>('');
+    const [TotalEstimatedTime, setTotalEstimatedTime] = useState(0);
+    const [SiteCompositionShow, setSiteCompositionShow] = useState(false);
+    const [IsSendAttentionMsgStatus, setIsSendAttentionMsgStatus] = useState(false);
+    const [SendCategoryName, setSendCategoryName] = useState('');
     const hostStyles: Partial<ITooltipHostStyles> = { root: { display: 'inline-block' } };
     const buttonId = useId(`callout-button`);
     const calloutProps = { gapSpace: 0 };
     let FeedBackCount: any = 0;
-    var AutoCompleteItems: any = [];
     const StatusArray = [
         { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
         { value: 2, status: "2% Follow Up", taskStatusComment: "Follow Up" },
@@ -248,7 +249,7 @@ const EditTaskPopup = (Items: any) => {
 
 
     }
-    React.useEffect(() => {
+    useEffect(() => {
         if (FeedBackCount == 0) {
             loadTaskUsers();
             GetExtraLookupColumnData();
@@ -270,6 +271,7 @@ const EditTaskPopup = (Items: any) => {
         let AllPriorityRankData: any = [];
         let CategoriesGroupByData: any = [];
         let tempArray: any = [];
+        let TempTimeSheetCategoryArray: any = [];
         try {
             let web = new Web(siteUrls);
             AllSmartDataListData = await web.lists
@@ -282,13 +284,13 @@ const EditTaskPopup = (Items: any) => {
             if (AllSmartDataListData?.length > 0) {
                 AllSmartDataListData?.map((SmartItemData: any, index: any) => {
                     if (SmartItemData.TaxType == 'Client Category') {
-                        if (SmartItemData.Title.toLowerCase() == 'pse' && SmartItemData.TaxType == 'Client Category') {
+                        if (SmartItemData.Title?.toLowerCase() == 'pse' && SmartItemData.TaxType == 'Client Category') {
                             SmartItemData.newTitle = 'EPS';
                         }
-                        else if (SmartItemData.Title.toLowerCase() == 'e+i' && SmartItemData.TaxType == 'Client Category') {
+                        else if (SmartItemData.Title?.toLowerCase() == 'e+i' && SmartItemData.TaxType == 'Client Category') {
                             SmartItemData.newTitle = 'EI';
                         }
-                        else if (SmartItemData.Title.toLowerCase() == 'education' && SmartItemData.TaxType == 'Client Category') {
+                        else if (SmartItemData.Title?.toLowerCase() == 'education' && SmartItemData.TaxType == 'Client Category') {
                             SmartItemData.newTitle = 'Education';
                         }
                         else {
@@ -325,12 +327,11 @@ const EditTaskPopup = (Items: any) => {
 
             // ########## this is for All Client Category related validations ################
             if (AllClientCategoryData?.length > 0) {
-                setAllClientCategoryData(AllMetaData);
-                BuildClieantCategoryAllDataArray(AllMetaData);
+                setAllClientCategoryData(AllClientCategoryData);
+                BuildClieantCategoryAllDataArray(AllClientCategoryData);
             }
             // ########## this is for All Categories related validations ################
             if (AllCategoriesData?.length > 0) {
-                let tempGroupByCategory: any = [];
                 CategoriesGroupByData = loadSmartTaxonomyPortfolioPopup(AllCategoriesData, "Categories");
                 if (CategoriesGroupByData?.length > 0) {
                     CategoriesGroupByData?.map((item: any) => {
@@ -367,7 +368,27 @@ const EditTaskPopup = (Items: any) => {
                         return previous
                     }, [])
                 }
+
+                // ############## this is used for filttering time sheet category data from smart medatadata list ##########
+                if (AllTimesheetCategoriesData?.length > 0) {
+                    AllTimesheetCategoriesData = AllTimesheetCategoriesData.map((TimeSheetCategory: any) => {
+                        if (TimeSheetCategory.ParentId == 303) {
+                            TempTimeSheetCategoryArray.push(TimeSheetCategory);
+                        }
+                    })
+                }
+                console.log("Timesheet Category Data ====", TempTimeSheetCategoryArray);
                 setAllCategoryData(AutoCompleteItemsArray);
+                let AllSmartMetaDataGroupBy: any = {
+                    TimeSheetCategory: TempTimeSheetCategoryArray,
+                    Categories: AutoCompleteItemsArray,
+                    Sites: tempArray,
+                    Status: AllStatusData,
+                    Priority: AllPriorityData,
+                    PriorityRank: AllPriorityRankData,
+                    ClientCategory: AllClientCategoryData
+                }
+                setSmartMetaDataAllItems(AllSmartMetaDataGroupBy);
             }
 
         } catch (error) {
@@ -1186,7 +1207,7 @@ const EditTaskPopup = (Items: any) => {
 
     //  ###################  Service And Component Portfolio Popup Call Back Functions and Validations ##################
 
-    const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
+    const ComponentServicePopupCallBack = useCallback((DataItem: any, Type: any, functionType: any) => {
         if (functionType == "Close") {
             setOpenTeamPortfolioPopup(false);
             setopenLinkedPortfolioPopup(false);
@@ -1236,7 +1257,7 @@ const EditTaskPopup = (Items: any) => {
 
     //  ###################  Smart Category Popup Call Back Functions and Validations ##################
 
-    const SelectCategoryCallBack = React.useCallback((selectCategoryDataCallBack: any) => {
+    const SelectCategoryCallBack = useCallback((selectCategoryDataCallBack: any) => {
         setSelectedCategoryData(selectCategoryDataCallBack, "For-Panel");
     }, [])
 
@@ -1334,7 +1355,7 @@ const EditTaskPopup = (Items: any) => {
         }
     }
 
-    const smartCategoryPopup = React.useCallback(() => {
+    const smartCategoryPopup = useCallback(() => {
         setIsComponentPicker(false);
     }, [])
 
@@ -1617,16 +1638,6 @@ const EditTaskPopup = (Items: any) => {
 
     //    ************************* This is for status section Functions **************************
 
-    const openTaskStatusUpdatePopup = (itemData: any, usedFor: any) => {
-        if (usedFor == "Status") {
-            setTaskStatusPopup(true);
-        }
-        if (usedFor == "Estimated-Time") {
-            setTaskStatusPopup(true);
-        }
-
-    }
-
     //   ###################### This is used for Status Auto Suggesution Function #########################
 
     const StatusAutoSuggestion = (e: any) => {
@@ -1751,93 +1762,94 @@ const EditTaskPopup = (Items: any) => {
             alert("Status not should be greater than 100");
             setEditData({ ...EditData, PriorityRank: 0 })
         }
-
-
-        // value: 5, status: "05% Acknowledged", taskStatusComment: "Acknowledged"
     }
 
     //   ######################  This is used for Status Popup Chnage Status #########################
-    const PercentCompleted = (StatusData: any) => {
-        setTaskStatusPopup(false);
-        setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusData.value })
-        setPercentCompleteStatus(StatusData.status);
-        setTaskStatus(StatusData.taskStatusComment);
-        setPercentCompleteCheck(false);
-        if (StatusData.value == 1) {
-            let tempArray: any = [];
-            if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
-                TaskApproverBackupArray.map((dataItem: any) => {
-                    tempArray.push(dataItem);
-                })
-            } else if (TaskCreatorApproverBackupArray != undefined && TaskCreatorApproverBackupArray.length > 0) {
-                TaskCreatorApproverBackupArray.map((dataItem: any) => {
-                    tempArray.push(dataItem);
-                })
-            }
-            setTaskAssignedTo(tempArray);
-            setTaskTeamMembers(tempArray);
-            setApproverData(tempArray);
-        }
-        if (StatusData.value == 2) {
-            setInputFieldDisable(true)
-        }
-        if (StatusData.value != 2) {
-            setInputFieldDisable(false)
-        }
-
-        if (StatusData.value == 80) {
-            // let tempArray: any = [];
-            EditData.IsTodaysTask = false;
-            EditData.workingThisWeek = false;
-            if (EditData.TeamMembers != undefined && EditData.TeamMembers?.length > 0) {
-                setWorkingMemberFromTeam(EditData.TeamMembers, "QA", 143);
-            } else {
-                setWorkingMember(143);
-            }
-            EditData.IsTodaysTask = false;
-            EditData.CompletedDate = undefined;
-        }
-
-        if (StatusData.value == 5) {
-            EditData.CompletedDate = undefined;
-            EditData.IsTodaysTask = false;
-        }
-        if (StatusData.value == 10) {
-            EditData.CompletedDate = undefined;
-            if (EditData.StartDate == undefined) {
-                EditData.StartDate = Moment(new Date()).format("MM-DD-YYYY")
-            }
-            EditData.IsTodaysTask = true;
-        }
-        if (StatusData.value == 93 || StatusData.value == 96 || StatusData.value == 99) {
-            EditData.IsTodaysTask = false;
-            EditData.workingThisWeek = false;
-            setWorkingMember(9);
-            StatusArray?.map((item: any) => {
-                if (StatusData.value == item.value) {
-                    setPercentCompleteStatus(item.status);
-                    setTaskStatus(item.taskStatusComment);
+    const SmartMetaDataPanelSelectDataFunction = (StatusData: any, usedFor: any) => {
+        if (usedFor == "Estimated-Time") {
+            setEstimatedDescriptionCategory(StatusData);
+        } else {
+            setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusData.value })
+            setPercentCompleteStatus(StatusData.status);
+            setTaskStatus(StatusData.taskStatusComment);
+            setPercentCompleteCheck(false);
+            if (StatusData.value == 1) {
+                let tempArray: any = [];
+                if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
+                    TaskApproverBackupArray.map((dataItem: any) => {
+                        tempArray.push(dataItem);
+                    })
+                } else if (TaskCreatorApproverBackupArray != undefined && TaskCreatorApproverBackupArray.length > 0) {
+                    TaskCreatorApproverBackupArray.map((dataItem: any) => {
+                        tempArray.push(dataItem);
+                    })
                 }
-            })
-        }
-        if (StatusData.value == 90) {
-            EditData.IsTodaysTask = false;
-            EditData.workingThisWeek = false;
-            if (EditData.siteType == 'Offshore Tasks') {
-                setWorkingMember(36);
-            } else if (DesignStatus) {
-                setWorkingMember(298);
-            } else {
-                setWorkingMember(42);
+                setTaskAssignedTo(tempArray);
+                setTaskTeamMembers(tempArray);
+                setApproverData(tempArray);
             }
-            EditData.CompletedDate = Moment(new Date()).format("MM-DD-YYYY")
-            StatusArray?.map((item: any) => {
-                if (StatusData.value == item.value) {
-                    setPercentCompleteStatus(item.status);
-                    setTaskStatus(item.taskStatusComment);
+            if (StatusData.value == 2) {
+                setInputFieldDisable(true)
+            }
+            if (StatusData.value != 2) {
+                setInputFieldDisable(false)
+            }
+
+            if (StatusData.value == 80) {
+                // let tempArray: any = [];
+                EditData.IsTodaysTask = false;
+                EditData.workingThisWeek = false;
+                if (EditData.TeamMembers != undefined && EditData.TeamMembers?.length > 0) {
+                    setWorkingMemberFromTeam(EditData.TeamMembers, "QA", 143);
+                } else {
+                    setWorkingMember(143);
                 }
-            })
+                EditData.IsTodaysTask = false;
+                EditData.CompletedDate = undefined;
+            }
+
+            if (StatusData.value == 5) {
+                EditData.CompletedDate = undefined;
+                EditData.IsTodaysTask = false;
+            }
+            if (StatusData.value == 10) {
+                EditData.CompletedDate = undefined;
+                if (EditData.StartDate == undefined) {
+                    EditData.StartDate = Moment(new Date()).format("MM-DD-YYYY")
+                }
+                EditData.IsTodaysTask = true;
+            }
+            if (StatusData.value == 93 || StatusData.value == 96 || StatusData.value == 99) {
+                EditData.IsTodaysTask = false;
+                EditData.workingThisWeek = false;
+                setWorkingMember(9);
+                StatusArray?.map((item: any) => {
+                    if (StatusData.value == item.value) {
+                        setPercentCompleteStatus(item.status);
+                        setTaskStatus(item.taskStatusComment);
+                    }
+                })
+            }
+            if (StatusData.value == 90) {
+                EditData.IsTodaysTask = false;
+                EditData.workingThisWeek = false;
+                if (EditData.siteType == 'Offshore Tasks') {
+                    setWorkingMember(36);
+                } else if (DesignStatus) {
+                    setWorkingMember(298);
+                } else {
+                    setWorkingMember(42);
+                }
+                EditData.CompletedDate = Moment(new Date()).format("MM-DD-YYYY")
+                StatusArray?.map((item: any) => {
+                    if (StatusData.value == item.value) {
+                        setPercentCompleteStatus(item.status);
+                        setTaskStatus(item.taskStatusComment);
+                    }
+                })
+            }
         }
+        setSmartMedaDataUsedPanel('');
     }
 
 
@@ -1880,19 +1892,6 @@ const EditTaskPopup = (Items: any) => {
         })
     }
 
-
-
-    const closeTaskStatusUpdatePopup = () => {
-        setTaskStatusPopup(false)
-        // setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: (EditData.PercentComplete ? EditData.PercentComplete : null) })
-        // StatusArray?.map((array: any) => {
-        //     if (EditData.PercentComplete == array.value) {
-        //         setPercentCompleteStatus(array.status);
-        //         setTaskStatus(array.taskStatusComment);
-        //     }
-        // })
-        // setPercentCompleteCheck(false);
-    }
     const setModalIsOpenToFalse = () => {
         Items.Call("Close");
         // callBack();
@@ -2043,8 +2042,6 @@ const EditTaskPopup = (Items: any) => {
                                 setSendEmailComponentStatus(true)
                             }
                         }
-
-
                         if (
                             Items?.pageName == "TaskDashBoard" ||
                             Items?.pageName == "ProjectProfile" ||
@@ -2062,7 +2059,6 @@ const EditTaskPopup = (Items: any) => {
                             Items.Call(DataJSONUpdate);
                         }
                         else {
-
                             Items.Call("Save");
                         }
                     }
@@ -2364,7 +2360,7 @@ const EditTaskPopup = (Items: any) => {
 
     //    ************* This is team configuration call Back function **************
 
-    const getTeamConfigData = React.useCallback((teamConfigData: any, Type: any) => {
+    const getTeamConfigData = useCallback((teamConfigData: any, Type: any) => {
         if (Type == "TimeSheet") {
             const timesheetDatass = teamConfigData;
             console.log(timesheetDatass)
@@ -2484,12 +2480,12 @@ const EditTaskPopup = (Items: any) => {
 
     // ************* this is for FeedBack Comment Section Functions ************
 
-    const CommentSectionCallBack = React.useCallback((EditorData: any) => {
+    const CommentSectionCallBack = useCallback((EditorData: any) => {
         CommentBoxData = EditorData
         BuildFeedBackArray();
 
     }, [])
-    const SubCommentSectionCallBack = React.useCallback((feedBackData: any) => {
+    const SubCommentSectionCallBack = useCallback((feedBackData: any) => {
         SubCommentBoxData = feedBackData;
         BuildFeedBackArray();
     }, [])
@@ -3278,7 +3274,7 @@ const EditTaskPopup = (Items: any) => {
         setSelectedProject(data);
     }
 
-    const columns = React.useMemo(
+    const columns = useMemo(
         () => [
             {
                 internalHeader: '',
@@ -3459,13 +3455,13 @@ const EditTaskPopup = (Items: any) => {
 
     // *********** this is for Send Email Notification for Approval Category Task Functions ****************************
 
-    const SendEmailNotificationCallBack = React.useCallback((items: any) => {
+    const SendEmailNotificationCallBack = useCallback((items: any) => {
         setSendEmailComponentStatus(false);
         Items.Call(items);
     }, [])
     // ************************ this is for Site Composition Component Section Functions ***************************
 
-    const SmartTotalTimeCallBack = React.useCallback((TotalTime: any) => {
+    const SmartTotalTimeCallBack = useCallback((TotalTime: any) => {
         let Time: any = TotalTime;
         setSmartTotalTimeData(Time)
     }, [])
@@ -3475,7 +3471,7 @@ const EditTaskPopup = (Items: any) => {
         GetExtraLookupColumnData();
     }
 
-    // const SiteCompositionCallBack = React.useCallback((Data: any, Type: any) => {
+    // const SiteCompositionCallBack = useCallback((Data: any, Type: any) => {
     //     if (Data.ClientTime != undefined && Data.ClientTime.length > 0) {
     //         setEnableSiteCompositionValidation(true)
     //         let tempArray: any = [];
@@ -3534,7 +3530,7 @@ const EditTaskPopup = (Items: any) => {
             let EstimatedTimeDescriptionsJSON: any = {
                 EstimatedTime: EstimatedTime,
                 EstimatedTimeDescription: EstimatedDescription,
-                Team: currentUserData[0].TimeCategory,
+                Category: EstimatedDescriptionCategory,
                 CreatedDate: PresentDate,
                 TimeStamp: "" + TimeStamp,
                 UserName: currentUserData[0].Title,
@@ -3558,16 +3554,16 @@ const EditTaskPopup = (Items: any) => {
                 })
             }
             setTotalEstimatedTime(TempTotalTimeData);
-            // console.log("datatta tatysu====", EstimatedDescription, EstimatedTime);
             console.log("Data JSON =======", EstimatedTimeDescriptionsJSON);
             setEstimatedDescription('');
             setEstimatedTime('');
+            setEstimatedDescriptionCategory('');
         } else {
             if (EstimatedTime == 0 || EstimatedTime == undefined) {
                 alert("Please Enter Estimated Time");
             }
-            if (EstimatedDescription.length == 0 || EstimatedDescription == undefined) {
-                alert("Please Enter Estimated Time Description");
+            if (EstimatedDescriptionCategory.length == 0 || EstimatedDescriptionCategory == undefined) {
+                alert("Please Enter Catgory");
             }
         }
 
@@ -3596,10 +3592,10 @@ const EditTaskPopup = (Items: any) => {
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
                 <div className="subheading">
                     <span className="siteColor">
-                        Update Task Status
+                        {SmartMedaDataUsedPanel ==  "Status" ? `Update Status` : `Select Category`}
                     </span>
                 </div>
-                <Tooltip ComponentId="1683" isServiceTask={ServicesTaskCheck} />
+                <Tooltip ComponentId={SmartMedaDataUsedPanel == "Status" ? "1683" : "1735"} isServiceTask={ServicesTaskCheck} />
             </div>
         );
     };
@@ -3822,38 +3818,52 @@ const EditTaskPopup = (Items: any) => {
         <div className={ServicesTaskCheck ? `serviepannelgreena ${EditData.Id}` : `${EditData.Id}`}>
             {/* ***************** this is status panel *********** */}
             <Panel
-                // headerText={`Update Task Status`}
                 onRenderHeader={onRenderStatusPanelHeader}
-                isOpen={TaskStatusPopup}
-                onDismiss={closeTaskStatusUpdatePopup}
-                isBlocking={TaskStatusPopup}
+                isOpen={SmartMedaDataUsedPanel?.length > 0}
+                onDismiss={() => setSmartMedaDataUsedPanel('')}
+                isBlocking={SmartMedaDataUsedPanel?.length > 0}
             >
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
                     <div className="modal-body">
                         <div className="TaskStatus">
-                            {StatusArray?.map((item: any, index) => {
-                                return (
-                                    <li key={index}>
-
-                                        <div className="form-check ">
-                                            <label className="SpfxCheckRadio">
-                                                <input className="radio"
-                                                    type="radio" checked={(PercentCompleteCheck ? EditData.PercentComplete : UpdateTaskInfo.PercentCompleteStatus) == item.value}
-                                                    onClick={() => PercentCompleted(item)} />
-                                                {item.status} </label>
-                                        </div>
-
-                                    </li>
-                                )
-                            })}
-
+                            <div>
+                                {SmartMedaDataUsedPanel === "Status" ? <div>
+                                    {StatusArray?.map((item: any, index: any) => {
+                                        return (
+                                            <li key={index}>
+                                                <div className="form-check ">
+                                                    <label className="SpfxCheckRadio">
+                                                        <input className="radio"
+                                                            type="radio" checked={(PercentCompleteCheck ? EditData.PercentComplete : UpdateTaskInfo.PercentCompleteStatus) == item.value}
+                                                            onClick={() => SmartMetaDataPanelSelectDataFunction(item, "Status")} />
+                                                        {item.status} </label>
+                                                </div>
+                                            </li>
+                                        )
+                                    })}
+                                </div> : null}
+                                {SmartMedaDataUsedPanel === "Estimated-Time" ? <div>
+                                    {SmartMetaDataAllItems?.TimeSheetCategory?.map((item: any, index: any) => {
+                                        return (
+                                            <li key={index}>
+                                                <div className="form-check ">
+                                                    <label className="SpfxCheckRadio">
+                                                        <input
+                                                            className="radio"
+                                                            type="radio"
+                                                            onClick={() => SmartMetaDataPanelSelectDataFunction(item.Title, "Estimated-Time")}
+                                                        />
+                                                        {item.Title}
+                                                    </label>
+                                                </div>
+                                            </li>
+                                        )
+                                    })}
+                                </div> : null}
+                            </div>
                         </div>
                     </div>
-                    {/* <footer className="float-end">
-                        <button type="button" className="btn btn-primary px-3" onClick={() => setTaskStatusPopup(false)}>
-                            OK
-                        </button>
-                    </footer> */}
+                   
                 </div>
             </Panel>
             {/* ***************** this is Save And Time Sheet panel *********** */}
@@ -4484,9 +4494,13 @@ const EditTaskPopup = (Items: any) => {
                                                     className="form-control px-2"
                                                     defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? Number(EditData.PercentComplete).toFixed(0) : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
                                                     onChange={(e) => StatusAutoSuggestion(e)} />
-                                                <span className="input-group-text" title="Status Popup" onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}>
+                                                <span
+                                                    className="input-group-text"
+                                                    title="Status Popup"
+                                                    // onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}
+                                                    onClick={() => setSmartMedaDataUsedPanel("Status")}
+                                                >
                                                     <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
-
                                                 </span>
                                                 {PercentCompleteStatus?.length > 0 ?
                                                     <span className="full-width ">
@@ -4566,66 +4580,79 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="col-12 mb-2">
-                                            <div onChange={UpdateEstimatedTimeDescriptions} className="full-width">
-                                                {/* <div className="input-group">
-                                                    <label className="form-label full-width">Estimated Task Time Details</label>
-                                                    <input type="text" className="form-control" placeholder="Select Category" />
-                                                    <span className="input-group-text" title="Status Popup" onClick={() => openTaskStatusUpdatePopup(EditData, "Estimated-Time")}>
-                                                        <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
-                                                    </span>
-                                                </div> */}
-
-                                                <textarea
-                                                    className="form-control p-1" name="Description"
-                                                    defaultValue={EstimatedDescription}
-                                                    value={EstimatedDescription}
-                                                    rows={1}
-                                                    placeholder="Add comment if necessary"
-                                                >
-                                                </textarea>
-                                                <div className="gap-2 my-1 d-flex">
-                                                    <input type="number" className="col-6 my-1 p-1" name="Time"
-                                                        defaultValue={EstimatedTime}
-                                                        value={EstimatedTime}
-                                                        placeholder="Estimated Hours"
-                                                    />
-                                                    <button className="btn btn-primary full-width my-1" onClick={SaveEstimatedTimeDescription}>
-                                                        Add
-                                                    </button>
+                                        <div className="border p-2">
+                                            <div>Estimated Task Time Details</div>
+                                            <div className="col-12">
+                                                <div onChange={UpdateEstimatedTimeDescriptions} className="full-width">
+                                                    <div className="input-group mt-2">
+                                                        <label className="form-label full-width">Select Category</label>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control"
+                                                            defaultValue={EstimatedDescriptionCategory}
+                                                            value={EstimatedDescriptionCategory}
+                                                            placeholder="Select Category"
+                                                            onChange={(e)=>setEstimatedDescriptionCategory(e.target.value)}
+                                                        />
+                                                        <span
+                                                            className="input-group-text"
+                                                            title="Status Popup"
+                                                            onClick={() => setSmartMedaDataUsedPanel("Estimated-Time")}
+                                                        >
+                                                            <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
+                                                        </span>
+                                                    </div>
+                                                    <div className="gap-2 my-1 d-flex">
+                                                        <input type="number" className="col-6 my-1 p-1" name="Time"
+                                                            defaultValue={EstimatedTime}
+                                                            value={EstimatedTime}
+                                                            placeholder="Estimated Hours"
+                                                        />
+                                                        <button className="btn btn-primary full-width my-1" onClick={SaveEstimatedTimeDescription}>
+                                                            Add
+                                                        </button>
+                                                    </div>
+                                                    <textarea
+                                                        className="form-control p-1" name="Description"
+                                                        defaultValue={EstimatedDescription}
+                                                        value={EstimatedDescription}
+                                                        rows={1}
+                                                        placeholder="Add comment if necessary"
+                                                    >
+                                                    </textarea>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="col-12 mb-2">
-                                            {EditData?.EstimatedTimeDescriptionArray != null && EditData?.EstimatedTimeDescriptionArray?.length > 0 ?
-                                                <div className="border p-1">
-                                                    {EditData?.EstimatedTimeDescriptionArray?.map((EstimatedTimeData: any, Index: any) => {
-                                                        return (
-                                                            <div>
-                                                                <div className="align-content-center border-bottom d-flex justify-content-between p-1">
-                                                                    <img className="ProirityAssignedUserPhoto m-0" title={EstimatedTimeData.UserName} src={EstimatedTimeData.UserImage != undefined && EstimatedTimeData.UserImage?.length > 0 ? EstimatedTimeData.UserImage : ''} />
-                                                                    <span>{EstimatedTimeData.Team ? EstimatedTimeData.Team : null}</span> |
-                                                                    <span>Time : {EstimatedTimeData.EstimatedTime ? (EstimatedTimeData.EstimatedTime > 1 ? EstimatedTimeData.EstimatedTime + " hours" : EstimatedTimeData.EstimatedTime + " hour") : "0 hour"}</span>
-                                                                    <TooltipHost
-                                                                        content={EstimatedTimeData.EstimatedTimeDescription}
-                                                                        id={buttonId + "-" + Index}
-                                                                        calloutProps={calloutProps}
-                                                                        styles={hostStyles}
-                                                                    >
-                                                                        <span className="svg__iconbox svg__icon--info" ></span>
-                                                                    </TooltipHost>
-                                                                    {/* <span title="Edit" className="svg__iconbox svg__icon--editBox" onClick={() => alert("We are working on this feature. It will be live soon..")}></span> */}
+                                            <div className="col-12">
+                                                {EditData?.EstimatedTimeDescriptionArray != null && EditData?.EstimatedTimeDescriptionArray?.length > 0 ?
+                                                    <div>
+                                                        {EditData?.EstimatedTimeDescriptionArray?.map((EstimatedTimeData: any, Index: any) => {
+                                                            return (
+                                                                <div className="align-content-center d-flex justify-content-between py-1">
+                                                                    <div>
+                                                                        <span className="me-1">{EstimatedTimeData.Team != undefined ? EstimatedTimeData.Team : EstimatedTimeData.Category != undefined ? EstimatedTimeData.Category : null}</span> |
+                                                                        <span className="mx-1">{EstimatedTimeData.EstimatedTime ? (EstimatedTimeData.EstimatedTime > 1 ? EstimatedTimeData.EstimatedTime + " Hours" : EstimatedTimeData.EstimatedTime + " Hour") : "0 Hour"}</span>
+                                                                        <img className="ProirityAssignedUserPhoto m-0 mx-2" title={EstimatedTimeData.UserName} src={EstimatedTimeData.UserImage != undefined && EstimatedTimeData.UserImage?.length > 0 ? EstimatedTimeData.UserImage : ''} />
+                                                                    </div>
+                                                                    <div>
+                                                                        <TooltipHost
+                                                                            content={EstimatedTimeData.EstimatedTimeDescription}
+                                                                            id={buttonId + "-" + Index}
+                                                                            calloutProps={calloutProps}
+                                                                            styles={hostStyles}
+                                                                        >
+                                                                            <span className="svg__iconbox svg__icon--info" ></span>
+                                                                        </TooltipHost>
+                                                                    </div>
                                                                 </div>
-
-                                                            </div>
-                                                        )
-                                                    })}
-                                                    <div className="text-end">
-                                                        <span>Total Estimated Time : </span><span className="mx-1">{TotalEstimatedTime > 1 ? TotalEstimatedTime + " hours" : TotalEstimatedTime + " hour"} </span>
+                                                            )
+                                                        })}
+                                                        <div className="border-top pt-1">
+                                                            <span>Total Estimated Time : </span><span className="mx-1">{TotalEstimatedTime > 1 ? TotalEstimatedTime + " hours" : TotalEstimatedTime + " hour"} </span>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                : null
-                                            }
+                                                    : null
+                                                }
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="col-md-4">
@@ -4717,18 +4744,12 @@ const EditTaskPopup = (Items: any) => {
                                                         </div>
                                                         {UploadBtnStatus ?
                                                             <div>
-
                                                                 <FlorarImageUploadComponent callBack={FlorarImageUploadComponentCallBack} />
-
                                                             </div> : null}
                                                         {TaskImages?.length == 0 ? <div>
-
                                                             <FlorarImageUploadComponent callBack={FlorarImageUploadComponentCallBack} />
-
                                                         </div> : null}
-
                                                     </div>
-
                                                 )}
                                             </ImageUploading>
                                         </div>
@@ -4997,7 +5018,6 @@ const EditTaskPopup = (Items: any) => {
                                                                             onChange={(e) => changeStatus(e, "workingThisWeek")} />
                                                                         <label className="form-check-label">Working This Week?</label>
                                                                     </span>
-
                                                                     <span className="form-check">
                                                                         <input className="form-check-input rounded-0" type="checkbox"
                                                                             checked={EditData.IsTodaysTask}
@@ -5014,10 +5034,6 @@ const EditTaskPopup = (Items: any) => {
                                                     <div className="mx-0 row taskdate ">
                                                         <div className="col-6 ps-0 mt-2">
                                                             <div className="input-group ">
-                                                                {/* <CDatePicker date={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}/> */}
-                                                                {/* <DatePicker value={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : null} onChange={(date) => setEditData({
-                                                        ...EditData, StartDate: date
-                                                    })} /> */}
                                                                 <label className="form-label full-width" >Start Date</label>
                                                                 <input type="date" className="form-control" max="9999-12-31" min={EditData.Created ? Moment(EditData.Created).format("YYYY-MM-DD") : ""}
                                                                     defaultValue={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}
@@ -5550,7 +5566,12 @@ const EditTaskPopup = (Items: any) => {
                                                                 className="form-control px-2"
                                                                 defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? Number(EditData.PercentComplete).toFixed(0) : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
                                                                 onChange={(e) => StatusAutoSuggestion(e)} />
-                                                            <span className="input-group-text" title="Status Popup" onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}>
+                                                            <span
+                                                                className="input-group-text"
+                                                                title="Status Popup"
+                                                                // onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}
+                                                                onClick={() => setSmartMedaDataUsedPanel("Status")}
+                                                            >
                                                                 <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
 
                                                             </span>
