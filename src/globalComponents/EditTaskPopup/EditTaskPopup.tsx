@@ -4592,6 +4592,7 @@ const EditTaskPopup = (Items: any) => {
                                                             defaultValue={EstimatedDescriptionCategory}
                                                             value={EstimatedDescriptionCategory}
                                                             placeholder="Select Category"
+                                                            onChange={(e)=>setEstimatedDescriptionCategory(e.target.value)}
                                                         />
                                                         <span
                                                             className="input-group-text"
