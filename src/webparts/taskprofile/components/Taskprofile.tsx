@@ -186,11 +186,12 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       .orderBy('Modified', false)
       .getAll(4000).then((data: any) => {
         this.masterTaskData = this.masterTaskData.concat(data)
+        this.GetResult();
       }).catch((error: any) => {
         console.log(error)
       })
 
-    this.GetResult();
+    
   }
 
   // public async componentDidMount() {
@@ -1573,7 +1574,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                       {this.state.Result["Portfolio"] != null && this.state.breadCrumData.length > 0 &&
                         <li >
                           {this.state.Result["Portfolio"] != null &&
-                            <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Component-Portfolio.aspx`}>Component Portfolio</a>
+                            <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Team-Portfolio.aspx`}>Team Portfolio</a>
                           }
 
                         </li>
@@ -1964,7 +1965,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                         {/* { this.state?.emailcomponentopen && countemailbutton==0 &&<EmailComponenet approvalcallback={() => { this.approvalcallback() }}  Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus}  currentUser={this.props?.CurrentUser} items={this.props?.Result} />} */}
                                         <div className="col mb-2">
                                           <div className='justify-content-between d-flex'>
-                                            <div className="pt-1">
+                                            <div className="pt-1 m-0">
                                               {this.state.ApprovalStatus ?
                                                 <span className="MR5">
                                                   <span title="Rejected"
@@ -2029,12 +2030,13 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                             </div>
 
                                             <div className="border p-2 full-width text-break"
-                                              title={fbData.ApproverData != undefined && fbData.ApproverData.length > 0 ? fbData.ApproverData[fbData.ApproverData.length - 1].isShowLight : ""}>
+                                              // title={fbData.ApproverData != undefined && fbData.ApproverData.length > 0 ? fbData.ApproverData[fbData.ApproverData.length - 1].isShowLight : ""}
+                                              >
 
                                               <span dangerouslySetInnerHTML={{ __html: fbData?.Title?.replace(/\n/g, "<br />") }}></span>
                                               <div className="col">
                                                 {fbData['Comments'] != null && fbData['Comments']?.length > 0 && fbData['Comments']?.map((fbComment: any, k: any) => {
-                                                  return <div className={fbComment.isShowLight != undefined && fbComment.isApprovalComment ? `col add_cmnt my-1 ${fbComment.isShowLight}` : "col add_cmnt my-1"}>
+                                                  return <div className={fbComment.isShowLight != undefined && fbComment.isApprovalComment ? `col add_cmnt my-1 ${fbComment.isShowLight}` : "col add_cmnt my-1"}title={fbComment.isShowLight!=undefined?fbComment.isShowLight:""}>
                                                     <div className="">
                                                       <div className="d-flex p-0">
                                                         <div className="col-1 p-0 wid30">
@@ -2127,7 +2129,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                         {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext']?.map((fbSubData: any, j: any) => {
                                           return <div className="col-sm-12 p-0 mb-2" style={{ width: '100%' }}>
                                             <div className='justify-content-between d-flex'>
-                                              <div>
+                                              <div className='m-0 pt-1'>
                                                 {this.state.ApprovalStatus ?
                                                   <span className="MR5">
                                                     <span title="Rejected"
@@ -2191,11 +2193,12 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                               </div>
 
                                               <div className="border p-2 full-width text-break"
-                                                title={fbSubData?.ApproverData != undefined && fbSubData?.ApproverData?.length > 0 ? fbSubData?.ApproverData[fbSubData?.ApproverData.length - 1]?.isShowLight : ""}>
+                                                // title={fbSubData?.ApproverData != undefined && fbSubData?.ApproverData?.length > 0 ? fbSubData?.ApproverData[fbSubData?.ApproverData.length - 1]?.isShowLight : ""}
+                                                >
                                                 <span ><span dangerouslySetInnerHTML={{ __html: fbSubData?.Title?.replace(/\n/g, "<br />") }}></span></span>
                                                 <div className="feedbackcomment col-sm-12 PadR0 mt-10">
                                                   {fbSubData?.Comments != null && fbSubData.Comments.length > 0 && fbSubData?.Comments?.map((fbComment: any, k: any) => {
-                                                    return <div className={fbComment?.isShowLight != undefined && fbComment.isApprovalComment ? `col-sm-12  mb-2 add_cmnt my-1 ${fbComment?.isShowLight}` : "col-sm-12  mb-2 add_cmnt my-1 "}>
+                                                    return <div className={fbComment?.isShowLight != undefined && fbComment.isApprovalComment ? `col-sm-12  mb-2 add_cmnt my-1 ${fbComment?.isShowLight}` : "col-sm-12  mb-2 add_cmnt my-1 "} title={fbComment?.isShowLight!=undefined?fbComment?.isShowLight:""}>
                                                       <div className="">
                                                         <div className="d-flex p-0">
                                                           <div className="col-1 p-0 wid30">

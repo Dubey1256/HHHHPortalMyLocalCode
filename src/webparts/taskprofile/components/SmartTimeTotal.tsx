@@ -30,8 +30,12 @@ let AllAvailableTitle: any = [];
             var filteres = "Task" + siteType + "/Id eq " + items.Id;
         }
         else {
-            var filteres = "Task" + items.siteType + "/Id eq " + items.Id;
-        }
+
+            let siteTypes =   items.siteType[0].toUpperCase() + items.siteType.slice(1)
+  
+              var filteres = "Task" + siteTypes + "/Id eq " + items.Id;
+              var linkedSite = "Task" + siteTypes
+          }
 
         var select = "Id,Title,TaskDate,Created,Modified,TaskTime,Description,SortOrder,AdditionalTimeEntry,AuthorId,Author/Title,Editor/Id,Editor/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title&$expand=Editor,Author,Category,TimesheetTitle&$filter=" + filteres + "";
         var count = 0;

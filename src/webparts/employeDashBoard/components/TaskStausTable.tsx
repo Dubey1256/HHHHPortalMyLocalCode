@@ -5,7 +5,7 @@ import ReactPopperTooltip from '../../../globalComponents/Hierarchy-Popper-toolt
 import { ColumnDef } from '@tanstack/react-table';
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import EmployeePieChart from './EmployeePieChart';
-import WorldClock from './WorldClock';
+
 import ComingBirthday from './comingBirthday';
 import MyNotes from './MyNotes';
 // import GlobalCommanTable from '../../../globalComponents/GlobalCommanTable';
