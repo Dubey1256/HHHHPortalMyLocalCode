@@ -22,7 +22,7 @@ import {
   DatePicker,
   PrimaryButton,
   Dropdown,
-  Toggle,
+  Toggle
 } from "office-ui-fabric-react";
 
 //import $ from "jquery";
@@ -40,7 +40,10 @@ import VersionHistoryPopup from "../../../globalComponents/VersionHistroy/Versio
 //import Modal from "react-bootstrap/Modal";
 //import MoreSlot from "./Slots";
 
-import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/PeoplePicker";
+import {
+  PeoplePicker,
+  PrincipalType
+} from "@pnp/spfx-controls-react/lib/PeoplePicker";
 
 interface IPeoplePickerComponentProps {
   context: any; // Your SPFx context
@@ -48,11 +51,6 @@ interface IPeoplePickerComponentProps {
   itemId: number; // ID of the item you want to update
   columnName: string; // Name of the people and group column
 }
-
-
-
-
-
 
 interface IEventData {
   [x: string]: any;
@@ -106,7 +104,7 @@ let createdBY: any,
   MTime: any,
   MDate: any,
   localArr: any = [],
-  vHistory:any=[]
+  vHistory: any = [];
 let startTime: any,
   //   startDateTime: any,
   eventPass: any = {},
@@ -119,26 +117,16 @@ let startTime: any,
 let maxD = new Date(8640000000000000);
 
 const App = (props: any) => {
-
-
-
-
-
-
   React.useEffect(() => {
-   
-        try {
-            $('#spPageCanvasContent').removeClass();
-            $('#spPageCanvasContent').addClass('Calendarcl')
-            $('#workbenchPageContent').removeClass();
-            $('#workbenchPageContent').addClass('Calendarcl')
-        } catch (e) {
-            console.log(e);
-        }
+    try {
+      $("#spPageCanvasContent").removeClass();
+      $("#spPageCanvasContent").addClass("Calendarcl");
+      $("#workbenchPageContent").removeClass();
+      $("#workbenchPageContent").addClass("Calendarcl");
+    } catch (e) {
+      console.log(e);
     }
-,[])
-
-
+  }, []);
 
   const [m, setm]: any = React.useState(false);
   const [events, setEvents]: any = React.useState([]);
@@ -153,7 +141,7 @@ const App = (props: any) => {
   const [inputValueName, setInputValueName] = React.useState("");
   const [inputValueReason, setInputValueReason] = React.useState("");
   // const myButton = document.getElementById("myButton");
-  const [vId,setVId]=React.useState()
+  const [vId, setVId] = React.useState();
   const [disabl, setdisabl] = React.useState(false);
   const [disab, setdisab] = React.useState(false);
   const [dt, setDt] = React.useState();
@@ -183,27 +171,20 @@ const App = (props: any) => {
     React.useState(null);
   const [recurrenceData, setRecurrenceData] = React.useState(null);
 
+  // People picker function start
+  const [selectedUsers, setSelectedUsers] = React.useState([]);
 
+  const handlePeoplePickerChange = (items: any[]): void => {
+    setSelectedUsers(items);
+  };
 
-// People picker function start 
-const [selectedUsers, setSelectedUsers] = React.useState([]);
-
-const handlePeoplePickerChange = (items: any[]): void => {
-  setSelectedUsers(items);
-};
-
-
-
-
-
-
-//  People Picker Function close
+  //  People Picker Function close
 
   const returnRecurrenceInfo = (startDate: Date, recurrenceData: string) => {
     const returnedRecurrenceInfo = {
       recurrenceData: recurrenceData,
       eventDate: startDate,
-      endDate: moment().add(20, "years").toDate(),
+      endDate: moment().add(20, "years").toDate()
     };
     setReturnedRecurrenceInfo(returnedRecurrenceInfo);
     console.log(returnedRecurrenceInfo);
@@ -226,7 +207,7 @@ const handlePeoplePickerChange = (items: any[]): void => {
             marginRight: "auto",
             fontSize: "20px",
             fontWeight: "600",
-            marginLeft: "20px",
+            marginLeft: "20px"
           }}
         >
           <span>
@@ -279,7 +260,7 @@ const handlePeoplePickerChange = (items: any[]): void => {
             events.push({
               Id: event.ID,
               ID: event.ID,
-              NameId:event?.Employee?.Id,
+              NameId: event?.Employee?.Id,
               EventType: event.EventType,
               title: event.Title ? await deCodeHtmlEntities(event.Title) : "",
               Description: event.Description,
@@ -300,7 +281,7 @@ const handlePeoplePickerChange = (items: any[]): void => {
               MasterSeriesItemID: event.MasterSeriesItemID,
               UID: event.UID ? event.UID.replace("{", "").replace("}", "") : "",
               Author: event.Author,
-              Editor: event.Editor,
+              Editor: event.Editor
             });
           }
 
@@ -412,7 +393,7 @@ const handlePeoplePickerChange = (items: any[]): void => {
         : "",
       fRecurrence: event.fRecurrence,
       RecurrenceID: event.RecurrenceID,
-      MasterSeriesItemID: event.MasterSeriesItemID,
+      MasterSeriesItemID: event.MasterSeriesItemID
     };
 
     return returnEvent;
@@ -427,7 +408,7 @@ const handlePeoplePickerChange = (items: any[]): void => {
     { key: "Planned Leave", text: "Planned" },
     { key: "Un-Planned", text: "Un-Planned" },
     { key: "Restricted Holiday", text: "Restricted Holiday" },
-    { key: "LWP", text: "LWP" },
+    { key: "LWP", text: "LWP" }
   ];
   const Designation = [
     { key: "SPFx", text: "SPFx" },
@@ -438,8 +419,6 @@ const handlePeoplePickerChange = (items: any[]): void => {
     { key: "Design", text: "Design" },
     { key: "HR", text: "HR" },
     { key: "Admin", text: "Admin" }
-
-
   ];
 
   const openm = () => {
@@ -502,7 +481,7 @@ const handlePeoplePickerChange = (items: any[]): void => {
     const eventsFormatted: any[] = events.map((event) => ({
       iD: event.ID,
       title: event.title,
-      NameId:event.NameId,
+      NameId: event.NameId,
       start: event.EventDate,
       end: event.EndDate,
       alldayevent: event.fAllDayEvent,
@@ -514,7 +493,7 @@ const handlePeoplePickerChange = (items: any[]): void => {
       RecurrenceData: event.RecurrenceData,
       RecurrenceID: event.RecurrenceID,
       UID: event.UID,
-      fRecurrence: event.fRecurrence,
+      fRecurrence: event.fRecurrence
     }));
     // localArr = eventsFormatted;
     // setEvents(eventsFormatted);
@@ -525,10 +504,17 @@ const handlePeoplePickerChange = (items: any[]): void => {
     const web = new Web(props.props.siteUrl);
     await web.lists
       .getById(props.props.SmalsusLeaveCalendar)
-      .items.select("*", "fAllDayEvent", "Author/Title", "Editor/Title","Employee/Id","Employee/Title")
+      .items.select(
+        "*",
+        "fAllDayEvent",
+        "Author/Title",
+        "Editor/Title",
+        "Employee/Id",
+        "Employee/Title"
+      )
       .top(4999)
       .orderBy("Created", false)
-      .expand("Author", "Editor","Employee")
+      .expand("Author", "Editor", "Employee")
       .get()
       .then((dataaa: any[]) => {
         console.log("datata----", dataaa);
@@ -542,7 +528,7 @@ const handlePeoplePickerChange = (items: any[]): void => {
             iD: item.ID,
             title: item.Title,
             start: convertDateTimeOffset(item.EventDate),
-            end: convertDateTimeOffset(item.EndDate),
+            end: convertDateTimeOffset(item.EndDate)
           };
           let a = new Date(comp.start);
           let b = new Date(comp.end);
@@ -574,7 +560,7 @@ const handlePeoplePickerChange = (items: any[]): void => {
             enddate.setHours(enddate.getHours() - 5);
             enddate.setMinutes(enddate.getMinutes() - 30);
           }
-          let a=item.Title;;
+          let a = item.Title;
 
           // if (item?.Employee?.Title != undefined && item.Event_x002d_Type != undefined) {
           //   a = item?.Employee?.Title + "-" + item.Event_x002d_Type + "-" + item.Title;
@@ -585,7 +571,7 @@ const handlePeoplePickerChange = (items: any[]): void => {
           const dataEvent = {
             shortD: item.Title,
             iD: item.ID,
-            NameId:item?.Employee?.Id,
+            NameId: item?.Employee?.Id,
             title: a,
             start: startdate,
             end: enddate,
@@ -598,7 +584,7 @@ const handlePeoplePickerChange = (items: any[]): void => {
             cTime: createdAt,
             mTime: modifyAt,
             Name: item.Employee?.Title,
-            Designation: item.Designation,
+            Designation: item.Designation
           };
           // const create ={
           //   id:item.Id,
@@ -617,7 +603,7 @@ const handlePeoplePickerChange = (items: any[]): void => {
       });
   };
 
-  const deleteElement = async (eventids:any) => {
+  const deleteElement = async (eventids: any) => {
     const confirmed = window.confirm(
       "Are you sure you want to delete this item?"
     );
@@ -633,14 +619,14 @@ const handlePeoplePickerChange = (items: any[]): void => {
           //console.log(i);
           void getData();
           closem();
-          closeModal()
+          closeModal();
           void getData();
         });
     }
   };
   const [details, setDetails]: any = React.useState([]);
   const saveEvent = async () => {
-    if (inputValueName?.length > 0 && dType?.length>0      ) {
+    if (inputValueName?.length > 0 && dType?.length > 0) {
       const chkstartDate = new Date(startDate);
       const chkendDate = new Date(endDate);
       if (chkstartDate > chkendDate) {
@@ -656,7 +642,9 @@ const handlePeoplePickerChange = (items: any[]): void => {
             setSelectedTimeEnd(selectedTimeEnd);
             return;
           }
-          if (peopleName === props.props.context._pageContext._user.displayName) {
+          if (
+            peopleName === props.props.context._pageContext._user.displayName
+          ) {
             // If the condition is true, update the peopleName to match the display name
             setPeopleName(props.props.context._pageContext._user.displayName);
           } else {
@@ -672,23 +660,24 @@ const handlePeoplePickerChange = (items: any[]): void => {
           // }
           const newEvent = {
             name: peopleName,
-            nameId:title_Id,
+            nameId: title_Id,
             title: inputValueName,
             start: startDate,
             end: endDate,
             reason: inputValueReason,
             type: type,
             loc: location,
-            Designation: dType,
+            Designation: dType
           };
 
           setDetails(newEvent);
-            let mytitle= newEvent.name + "-" + newEvent.type + "-" + newEvent.title;
+          let mytitle =
+            newEvent.name + "-" + newEvent.type + "-" + newEvent.title;
           let eventData = {
             Title: mytitle,
 
             // Name: newEvent.name,
-            EmployeeId:newEvent.nameId,
+            EmployeeId: newEvent.nameId,
 
             Location: newEvent.loc,
 
@@ -708,7 +697,7 @@ const handlePeoplePickerChange = (items: any[]): void => {
 
             fAllDayEvent: allDay,
 
-            Designation: newEvent.Designation,
+            Designation: newEvent.Designation
           };
 
           let web = new Web(props.props.siteUrl);
@@ -762,7 +751,7 @@ const handlePeoplePickerChange = (items: any[]): void => {
         fAllDayEvent: allDay,
         fRecurrence: true,
         RecurrenceData: returnedRecurrenceInfo.recurrenceData,
-        UID: uuidv4(),
+        UID: uuidv4()
       };
       await addEvent(newEventData);
     } else if (editRecurrenceEvent) {
@@ -777,7 +766,7 @@ const handlePeoplePickerChange = (items: any[]): void => {
         fAllDayEvent: allDay,
         fRecurrence: true,
         RecurrenceData: returnedRecurrenceInfo.recurrenceData,
-        UID: uuidv4(),
+        UID: uuidv4()
       };
       await editEvent(editEventData);
     }
@@ -1027,7 +1016,7 @@ const handlePeoplePickerChange = (items: any[]): void => {
       "♠": "&spades;",
       "♣": "&clubs;",
       "♥": "&hearts;",
-      "♦": "&diams;",
+      "♦": "&diams;"
     };
 
     var entityMap = HtmlEntitiesMap;
@@ -1110,7 +1099,7 @@ const handlePeoplePickerChange = (items: any[]): void => {
           ? await deCodeHtmlEntities(newEvent.RecurrenceData)
           : "",
         MasterSeriesItemID: newEvent.MasterSeriesItemID,
-        RecurrenceID: newEvent.RecurrenceID ? newEvent.RecurrenceID : undefined,
+        RecurrenceID: newEvent.RecurrenceID ? newEvent.RecurrenceID : undefined
       };
       results = await web.lists
         .getById(props.props.SmalsusLeaveCalendar)
@@ -1125,7 +1114,8 @@ const handlePeoplePickerChange = (items: any[]): void => {
     let results = null;
     try {
       const web = new Web(props.props.siteUrl);
-      let mytitle= editEvent.name + "-" + editEvent.type + "-" + editEvent.title;
+      let mytitle =
+        editEvent.name + "-" + editEvent.type + "-" + editEvent.title;
       const editEventItem = {
         Title: mytitle,
         Description: editEvent.Description,
@@ -1142,7 +1132,7 @@ const handlePeoplePickerChange = (items: any[]): void => {
         MasterSeriesItemID: editEvent.MasterSeriesItemID,
         RecurrenceID: editEvent.RecurrenceID
           ? editEvent.RecurrenceID
-          : undefined,
+          : undefined
       };
       results = await web.lists
         .getById(props.props.SmalsusLeaveCalendar)
@@ -1174,7 +1164,7 @@ const handlePeoplePickerChange = (items: any[]): void => {
       reason: inputValueReason,
       type: type,
       Designation: dType,
-      loc: location,
+      loc: location
     };
     if (
       selectedTime == undefined ||
@@ -1185,6 +1175,14 @@ const handlePeoplePickerChange = (items: any[]): void => {
       setSelectedTimeEnd("19:00");
       newEvent.loc = "Noida";
     }
+    newEvent.title = newEvent.title.replace("Un-Planned", newEvent.type);
+    newEvent.title = newEvent.title.replace("Sick", newEvent.type);
+    newEvent.title = newEvent.title.replace("Planned Leave", newEvent.type);
+    newEvent.title = newEvent.title.replace(
+      "Restricted Holiday",
+      newEvent.type
+    );
+    newEvent.title = newEvent.title.replace("LWP", newEvent.type);
     await web.lists
       .getById(props.props.SmalsusLeaveCalendar)
       .items.getById(eventPass.iD)
@@ -1209,7 +1207,7 @@ const handlePeoplePickerChange = (items: any[]): void => {
           " " +
           (selectedTime + "" + ":00"),
 
-        fAllDayEvent: allDay,
+        fAllDayEvent: allDay
       })
       .then((i: any) => {
         //console.log(i);
@@ -1268,10 +1266,9 @@ const handlePeoplePickerChange = (items: any[]): void => {
       return;
     }
     localArr.map((item: any) => {
-      
       if (item.iD == event.iD) {
         setdisab(true);
-        setVId(item.iD)
+        setVId(item.iD);
         eventPass = event;
         setInputValueName(item.shortD);
         setStartDate(item.start);
@@ -1305,7 +1302,7 @@ const handlePeoplePickerChange = (items: any[]): void => {
     let yname;
     people(yname);
     setLocation("");
-    setType("Un-Planned")
+    setType("Un-Planned");
     setPeoplePickerShow(true);
     setshowRecurrence(true);
     setRecurrenceData(null);
@@ -1384,11 +1381,11 @@ const handlePeoplePickerChange = (items: any[]): void => {
     const userEndPoint: any = `${props.props.context.pageContext.web.absoluteUrl}/_api/Web/EnsureUser`;
 
     const userData: string = JSON.stringify({
-      logonName: userMail,
+      logonName: userMail
     });
 
     const userReqData = {
-      body: userData,
+      body: userData
     };
 
     const resUserInfo = await props.props.context.spHttpClient.post(
@@ -1418,8 +1415,10 @@ const handlePeoplePickerChange = (items: any[]): void => {
       title_Id = userId;
       title_people = userTitle;
       setPeopleName(userTitle);
-    }else{
-      let userInfo = await getUserInfo(props.props.context._pageContext._legacyPageContext.userPrincipalName );
+    } else {
+      let userInfo = await getUserInfo(
+        props.props.context._pageContext._legacyPageContext.userPrincipalName
+      );
       userId = userInfo.Id;
       userTitle = userInfo.Title;
       userSuffix = userTitle
@@ -1438,11 +1437,11 @@ const handlePeoplePickerChange = (items: any[]): void => {
     const formattedDate: any = dat.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
-      year: "numeric",
+      year: "numeric"
     });
     setDt(formattedDate);
     // handleSelectSlot(slotinfo2);
-    
+
     console.log("clicked", event, date);
     setShowM(event);
     openModal();
@@ -1487,14 +1486,28 @@ const handlePeoplePickerChange = (items: any[]): void => {
     void getData();
   }, []);
 
-
- 
-  
-  
   return (
     <div>
-      <div className="w-100 text-end"><a target="_blank" data-interception="off" href={`${props.props.siteUrl}/SitePages/SmalsusLeaveCalendar-old.aspx`}> Old Leave Calendar</a></div>
-      <div className="w-100 text-end"><a target="_blank" data-interception="off" href={`${props.props.siteUrl}/Lists/SmalsusLeaveCalendar/calendar.aspx`}> Add to Outlook Calendar</a></div>
+      <div className="w-100 text-end">
+        <a
+          target="_blank"
+          data-interception="off"
+          href={`${props.props.siteUrl}/SitePages/SmalsusLeaveCalendar-old.aspx`}
+        >
+          {" "}
+          Old Leave Calendar
+        </a>
+      </div>
+      <div className="w-100 text-end">
+        <a
+          target="_blank"
+          data-interception="off"
+          href={`${props.props.siteUrl}/Lists/SmalsusLeaveCalendar/calendar.aspx`}
+        >
+          {" "}
+          Add to Outlook Calendar
+        </a>
+      </div>
       <div style={{ height: "500pt" }}>
         <a className="mailBtn me-4 mt-4" href="#" onClick={emailComp}>
           <FaPaperPlane></FaPaperPlane> <span>Send Leave Summary</span>
@@ -1512,7 +1525,7 @@ const handlePeoplePickerChange = (items: any[]): void => {
           defaultDate={moment().toDate()}
           // defaultView={Views.MONTH}
           onShowMore={handleShowMore}
-          views={{ month: true, week: true, day:true , agenda: true }}
+          views={{ month: true, week: true, day: true, agenda: true }}
           localizer={localizer}
           onSelectEvent={handleDateClick}
         />
@@ -1559,7 +1572,7 @@ const handlePeoplePickerChange = (items: any[]): void => {
                       </a>
                     </td>
                     <td>
-                      <a href="#" onClick={()=>deleteElement(item?.iD)}>
+                      <a href="#" onClick={() => deleteElement(item?.iD)}>
                         <span className="svg__iconbox svg__icon--trash"></span>
                       </a>
                     </td>
@@ -1592,7 +1605,6 @@ const handlePeoplePickerChange = (items: any[]): void => {
                 showtooltip={true}
                 required={true}
               ></PeoplePicker>
-
             </div>
           ) : (
             ""
@@ -1678,7 +1690,7 @@ const handlePeoplePickerChange = (items: any[]): void => {
                   style={{
                     display: "inline-block",
                     verticalAlign: "top",
-                    width: "200px",
+                    width: "200px"
                   }}
                 >
                   <Toggle
@@ -1711,20 +1723,20 @@ const handlePeoplePickerChange = (items: any[]): void => {
             />
           </div>{" "}
           <Dropdown
-  label="Leave Type"
-  options={leaveTypes}
-  selectedKey={type}
-  // defaultSelectedKey="Un-Planned" // Set the defaultSelectedKey to the key of "Planned Leave"
-  onChange={(e, option) => setType(option.key)}
-  required // Add the "required" attribute
-  errorMessage={type ? "" : "Please select a leave type"} // Display an error message if no type is selected
-/>
+            label="Leave Type"
+            options={leaveTypes}
+            selectedKey={type}
+            // defaultSelectedKey="Un-Planned" // Set the defaultSelectedKey to the key of "Planned Leave"
+            onChange={(e, option) => setType(option.key)}
+            required // Add the "required" attribute
+            errorMessage={type ? "" : "Please select a leave type"} // Display an error message if no type is selected
+          />
           <Dropdown
             label="Team"
             options={Designation}
             selectedKey={dType}
             onChange={(e, option) => sedType(option.key)}
-            required 
+            required
           />
           <div className="col-md-12">
             <ReactQuill
@@ -1782,22 +1794,29 @@ const handlePeoplePickerChange = (items: any[]): void => {
                   Created {CDate} {CTime} by {createdBY}
                 </div>
                 <div>
-                  Last Modified {MDate} {MTime} by {modofiedBy} 
+                  Last Modified {MDate} {MTime} by {modofiedBy}
                 </div>
                 <div>
-                  <a href="#" onClick={()=>deleteElement(vId)}>
+                  <a href="#" onClick={() => deleteElement(vId)}>
                     <span className="svg__iconbox svg__icon--trash"></span>{" "}
                     Delete this Item
                   </a>
-                  <VersionHistoryPopup   taskId={vId}
-                          listId={props.props.SmalsusLeaveCalendar}
-                          siteUrls={props.props.siteUrl} />
+                  <VersionHistoryPopup
+                    taskId={vId}
+                    listId={props.props.SmalsusLeaveCalendar}
+                    siteUrls={props.props.siteUrl}
+                  />
                 </div>
-                        
               </div>
-              <a target='_blank' data-interception="off" href ={`${props.props.siteUrl}/Lists/SmalsusLeaveCalendar/EditForm.aspx?ID=${vId}`}>Open out-of-the-box form</a>
+              <a
+                target="_blank"
+                data-interception="off"
+                href={`${props.props.siteUrl}/Lists/SmalsusLeaveCalendar/EditForm.aspx?ID=${vId}`}
+              >
+                Open out-of-the-box form
+              </a>
               <div>
-              <button
+                <button
                   type="button"
                   className="btn btn-default  px-3"
                   onClick={closem}
@@ -1810,7 +1829,6 @@ const handlePeoplePickerChange = (items: any[]): void => {
                 >
                   Save
                 </button>
-               
               </div>
             </div>
           </footer>
@@ -1820,7 +1838,7 @@ const handlePeoplePickerChange = (items: any[]): void => {
 
         {!disab ? (
           <div className="modal-footer">
-                <button
+            <button
               type="button"
               className="btn btn-default  px-3"
               onClick={closem}
@@ -1830,7 +1848,6 @@ const handlePeoplePickerChange = (items: any[]): void => {
             <button className="btn btn-primary ms-1 px-3" onClick={saveEvent}>
               Save
             </button>
-        
           </div>
         ) : (
           ""

@@ -47,7 +47,7 @@ let AllItems: any = {}
 const defaultContent = "";
 let defaultfile = [];
 let AllMatsterAndTaskData: any = []
-
+var AllMetadata: any = []
 const CreateActivity = (props: any) => {
     if (props.SelectedProp != undefined && props.SelectedProp.SelectedProp != undefined) {
         dynamicList = props.SelectedProp.SelectedProp;
@@ -108,8 +108,7 @@ const CreateActivity = (props: any) => {
 
 
     React.useEffect(() => {
-        GetCategoryData();
-
+     
         loadAllCategoryData("Categories");
         setPost({ ...post, Title: (AllItems.NoteCall === 'Activities' || AllItems.NoteCall === 'Task' ? AllItems.Title : AllItems.NoteCall + ' - ' + AllItems.Title) })
         if (AllItems?.Clientcategories != undefined && AllItems?.Clientcategories?.length > 0) {
@@ -188,7 +187,7 @@ const CreateActivity = (props: any) => {
     const GetSmartMetadata = async () => {
         var SitesTypes: any = [];
         var siteConfig = []
-        var AllMetadata: any = []
+        let PreCategoryData:any=[]
         let web = new Web(dynamicList?.siteUrl);
         let MetaData = [];
         MetaData = await web.lists
@@ -199,6 +198,8 @@ const CreateActivity = (props: any) => {
             .expand('Author,Editor')
             .get();
         AllMetadata = MetaData;
+        GetCategoryData();
+     
         siteConfig = getSmartMetadataItemsByTaxType(AllMetadata, 'Sites')
         siteConfig?.forEach((site: any) => {
             if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== 'Health' && site.Title !== 'Gender') {
@@ -207,6 +208,12 @@ const CreateActivity = (props: any) => {
                 SitesTypes.push(site);
             }
 
+        })
+        AllMetadata?.forEach((val:any)=>{
+            if(AllItems?.NoteCall == val.Title && val.TaxType == 'Categories'){
+                PreCategoryData.push(val)
+                setCategoriesData(PreCategoryData);
+            }
         })
         if (AllItems?.NoteCall == 'Task' && AllItems?.Item_x0020_Type != 'Component' && AllItems?.Item_x0020_Type != 'SubComponent' && AllItems?.Item_x0020_Type != 'Feature') {
             SitesTypes?.forEach((type: any) => {
@@ -986,7 +993,13 @@ const CreateActivity = (props: any) => {
                         if (TaskprofileId == '' || SelectedTasks.length > 0) {
                             TaskprofileId = SelectedTasks[0].Id;
                         }
-                        
+
+                        if(AllItems?.TaskType?.Title == 'Workstream'){
+                            var PortfolioData = AllItems?.Portfolio?.Id
+                        }
+                        else{
+                            var PortfolioData = AllItems?.Id
+                        }
                        
                         var arrayy = []
                         web = new Web(dynamicList.siteUrl);
@@ -997,7 +1010,7 @@ const CreateActivity = (props: any) => {
                             // DueDate: date != undefined ? new Date(date).toDateString() : date,
                             DueDate: date != undefined ? Moment(date).format("MM-DD-YYYY") : null,
                             SharewebCategoriesId: { "results": CategoryID },
-                            PortfolioId: AllItems?.Portfolio != undefined ? AllItems?.Portfolio?.Id:AllItems?.Id,
+                            PortfolioId: PortfolioData,
                             PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
                             TaskTypeId: SharewebTasknewTypeId,
                             ParentTaskId: AllItems.Id,
@@ -1274,7 +1287,7 @@ const CreateActivity = (props: any) => {
 
     //  ###################  Smart Category Auto Suggesution Functions  ##################
 
-    const autoSuggestionsForCategory = (e: any) => {
+    const autoSuggestionsForCategory = async (e: any) => {
         let searchedKey: any = e.target.value;
         setCategorySearchKey(e.target.value);
         let tempArray: any = [];
@@ -1333,6 +1346,7 @@ const CreateActivity = (props: any) => {
                     })
 
                 }
+               
             },
             error: function (error: any) {
                 console.log('Error:', error)
@@ -1610,42 +1624,6 @@ const CreateActivity = (props: any) => {
                         </div>
 
                         <div className='col-sm-2'>
-                            {/* {AllItems.Portfolio_x0020_Type == 'Component'
-                            &&
-                            <div className="col-sm-12 padL-0 PadR0">
-                                <div ng-show="smartComponent.length==0" className="col-sm-12 mb-10 padL-0 input-group">
-                                    <label ng-show="!IsShowComSerBoth" className="full_width">Component</label>
-                                    <input type="text" className="ui-autocomplete-input form-control" id="txtSharewebComponentcrt"
-                                    /><span role="status" aria-live="polite"
-                                        className="ui-helper-hidden-accessible"></span>
-                                        <span className="input-group-text">
-                                        <a className="hreflink" title="Edit Component" data-toggle="modal"
-                                                onClick={(e) => EditComponent(AllItems)}>
-                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png" />
-                                            </a>
-                                        </span>
-                                </div>
-                                <div className="col-sm-12 padL-0 PadR0">
-                                    <div className="col-sm-12  top-assign  mb-10 padL-0 PadR0">
-                                        {smartComponentData?.map((cat: any) => {
-                                            return (
-                                                <>
-                                                    <div className=" col-sm-12 block" ng-mouseover="HoverIn(item);"
-                                                        ng-mouseleave="ComponentTitle.STRING='';" title="{{ComponentTitle.STRING}}">
-                                                        <a className="hreflink" target="_blank"
-                                                            ng-href="{{CuurentSiteUrl}}/SitePages/Portfolio-Profile.aspx?taskId={{item.Id}}">{cat.Title}</a>
-                                                        <a className="hreflink" ng-click="removeSmartComponent(item.Id)">
-                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" />
-                                                        </a>
-                                                    </div>
-                                                </>
-                                            )
-                                        })}
-                                      
-                                    </div>
-                                </div>
-                            </div>} */}
-
 
                             {props?.props?.PortfolioType == 1 &&
                                 <div className="input-group">
@@ -1703,10 +1681,7 @@ const CreateActivity = (props: any) => {
                                         </div> : null
 
                                     }
-                                    {/* <span className="input-group-text">
-                                                        <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
-                                                            onClick={(e) => EditComponent(EditData, 'Component')} />
-                                                    </span> */}
+                                   
                                 </div>
                             }
 
@@ -1731,6 +1706,25 @@ const CreateActivity = (props: any) => {
                             <div className="col-sm-12 padL-0 Prioritytp PadR0 mt-2">
 
                                 <div>
+                                    <fieldset>
+                                    <label className="full-width">Priority
+                                                    <span>
+                                                        <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                            <span title="Edit" className="alignIcon svg__icon--info svg__iconbox"></span>
+
+                                                            <div className="popover__content">
+                                                                <span>
+
+                                                                    8-10 = High Priority,<br />
+                                                                    4-7 = Normal Priority,<br />
+                                                                    1-3 = Low Priority
+                                                                </span>
+
+                                                            </div>
+
+                                                        </div>
+                                                    </span></label>
+                                   
                                     <div className="input-group">
                                         <input type="text" className="form-control"
                                             placeholder="Enter Priority"
@@ -1738,6 +1732,7 @@ const CreateActivity = (props: any) => {
                                             onChange={(e) => ChangePriorityStatusFunction(e)}
                                         />
                                     </div>
+                                    
                                     <ul className="p-0 mt-1">
                                         <li className="form-check l-radio">
                                             <input className="form-check-input"
@@ -1762,6 +1757,7 @@ const CreateActivity = (props: any) => {
                                             <label className="form-check-label">Low</label>
                                         </li>
                                     </ul>
+                                    </fieldset>
                                 </div>
                             </div>
 
@@ -1883,7 +1879,19 @@ const CreateActivity = (props: any) => {
                                     </div>
                                 </div>
 
-
+                                {SearchedCategoryData?.length > 0 ? (
+                                <div className="SmartTableOnTaskPopup">
+                                    <ul className="list-group">
+                                        {SearchedCategoryData.map((item: any) => {
+                                            return (
+                                                <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                    <a>{item.Newlabel}</a>
+                                                </li>
+                                            )
+                                        }
+                                        )}
+                                    </ul>
+                                </div>) : null}
 
                             </div>
                             {(ClientCategoriesData != undefined && ClientCategoriesData?.length > 0) ?
