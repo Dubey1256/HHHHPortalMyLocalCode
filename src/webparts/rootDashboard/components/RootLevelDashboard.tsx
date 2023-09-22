@@ -169,8 +169,8 @@ const RootLevelDashboard = (props: any) => {
           smartmeta = await web.lists
             .getById(config?.listId)
             .items
-            .select("Id,Title,PriorityRank,Project/PriorityRank,Project/Id,Project/Title,Portfolio/Id,Portfolio/Title,PortfolioId,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,SiteCompositionSettings,IsTodaysTask,Body,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
-            .expand('AssignedTo,Portfolio,Project,Author,Editor,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory')
+            .select("Id,Title,PriorityRank,Project/PriorityRank,ParentTask/TaskID,ParentTask/Title,ParentTask/Id,Project/Id,Project/Title,Portfolio/Id,Portfolio/Title,PortfolioId,Portfolio/PortfolioStructureID,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,SiteCompositionSettings,IsTodaysTask,Body,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+            .expand('AssignedTo,Portfolio,Project,Author,Editor,ParentTask,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory')
             .top(4999)
             .get();
           arraycount++;
@@ -214,7 +214,7 @@ const RootLevelDashboard = (props: any) => {
               items.ClientCategorySearch = ''
             }
             
-            items.TaskID = globalCommon.getTaskId(items);
+            items.TaskID = globalCommon.GetTaskId(items);
             allSitesTasks.push(items);
           });
           let setCount = siteConfig?.length
