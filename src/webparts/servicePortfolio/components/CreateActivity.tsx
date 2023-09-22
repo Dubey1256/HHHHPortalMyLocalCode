@@ -2,8 +2,6 @@ import * as React from 'react';
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import { Web } from "sp-pnp-js";
 import TeamConfigurationCard from '../../../globalComponents/TeamConfiguration/TeamConfiguration';
-import FroalaImageUploadComponent from '../../../globalComponents/FlorarComponents/FlorarImageUploadComponent';
-//import FroalaCommentBox from '../../../globalComponents/FlorarComponents/FroalaCommentBoxComponent';
 import HtmlEditorCard from '../../../globalComponents/HtmlEditor/HtmlEditor';
 import * as Moment from 'moment';
 import Picker from '../../../globalComponents/EditTaskPopup/SmartMetaDataPicker';
@@ -19,7 +17,6 @@ import * as globalCommon from "../../../globalComponents/globalCommon";
 
 import Froala from "react-froala-wysiwyg";
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
-import { expandRows } from '@tanstack/react-table';
 let action = false;
 
 
@@ -36,16 +33,13 @@ var FeedBackItem: any = {};
 var SelectedTasks: any = []
 var Task: any = []
 var TeamMemberIds: any = [];
-var portfolioId: any = ''
-var WorstreamLatestId: any = ''
-var newIndex: any = ''
-var BackupCat: any = "";
+let WorstreamLatestId: any = ''
+let newIndex: any = ''
+let BackupCat: any = "";
 var FeedBackItemArray: any = [];
 var NewArray: any = [];
-var feedbackArray: any = [];
 var dynamicList: any = {}
 var SiteTypeBackupArray: any = [];
-var counts = 0
 var isModelChange = false
 var TaskImagess: any = []
 var AllClientCategory: any = [];
@@ -53,7 +47,7 @@ let AllItems: any = {}
 const defaultContent = "";
 let defaultfile = [];
 let AllMatsterAndTaskData: any = []
-
+var AllMetadata: any = []
 const CreateActivity = (props: any) => {
     if (props.SelectedProp != undefined && props.SelectedProp.SelectedProp != undefined) {
         dynamicList = props.SelectedProp.SelectedProp;
@@ -61,7 +55,6 @@ const CreateActivity = (props: any) => {
         dynamicList = props.SelectedProp;
     }
     if (props != undefined) {
-        //props.props.DueDate =  Moment(props.props.DueDate).format('DD/MM/YYYY
         AllItems = { ...props?.props };
         SelectedTasks.push(AllItems)
 
@@ -115,8 +108,7 @@ const CreateActivity = (props: any) => {
 
 
     React.useEffect(() => {
-        GetCategoryData();
-
+     
         loadAllCategoryData("Categories");
         setPost({ ...post, Title: (AllItems.NoteCall === 'Activities' || AllItems.NoteCall === 'Task' ? AllItems.Title : AllItems.NoteCall + ' - ' + AllItems.Title) })
         if (AllItems?.Clientcategories != undefined && AllItems?.Clientcategories?.length > 0) {
@@ -195,7 +187,7 @@ const CreateActivity = (props: any) => {
     const GetSmartMetadata = async () => {
         var SitesTypes: any = [];
         var siteConfig = []
-        var AllMetadata: any = []
+        let PreCategoryData:any=[]
         let web = new Web(dynamicList?.siteUrl);
         let MetaData = [];
         MetaData = await web.lists
@@ -206,6 +198,8 @@ const CreateActivity = (props: any) => {
             .expand('Author,Editor')
             .get();
         AllMetadata = MetaData;
+        GetCategoryData();
+     
         siteConfig = getSmartMetadataItemsByTaxType(AllMetadata, 'Sites')
         siteConfig?.forEach((site: any) => {
             if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== 'Health' && site.Title !== 'Gender') {
@@ -214,6 +208,12 @@ const CreateActivity = (props: any) => {
                 SitesTypes.push(site);
             }
 
+        })
+        AllMetadata?.forEach((val:any)=>{
+            if(AllItems?.NoteCall == val.Title && val.TaxType == 'Categories'){
+                PreCategoryData.push(val)
+                setCategoriesData(PreCategoryData);
+            }
         })
         if (AllItems?.NoteCall == 'Task' && AllItems?.Item_x0020_Type != 'Component' && AllItems?.Item_x0020_Type != 'SubComponent' && AllItems?.Item_x0020_Type != 'Feature') {
             SitesTypes?.forEach((type: any) => {
@@ -370,7 +370,7 @@ const CreateActivity = (props: any) => {
         setSiteType(tempArray);
         //  setIsShowSelectedSite(flag);
         getActivitiesDetails(value)
-        if (AllItems.NoteCall != 'Task') {
+        if (AllItems?.TaskType?.Title != 'Workstream') {
             setSave({ ...save, recentClick: isActiveItem, IsShowSelectedSite: flag })
         }
 
@@ -444,24 +444,7 @@ const CreateActivity = (props: any) => {
 
             }
         }
-        // if (type == "LinkedComponent") {
-        //     let ServiceData: any = []
-        //     if (item1?.linkedComponent?.length > 0) {
-        //         // Item.props.linkedComponent = item1.linkedComponent;
-        //         // setEditData({ ...EditData, RelevantPortfolio: propsItems.linkedComponent })
-        //         item1.linkedComponent.forEach((val: any) => {
-        //             ServiceData.push(val)
-        //         })
-        //         setLinkedComponentData(ServiceData);
-        //         console.log("Popup component linkedComponent", item1.linkedComponent)
-        //     }
-        // }
-        // if (type == "Service") {
-
-
-        //     setSmartComponentData(item1);
-        //     console.log("Popup component taskfootertable", item1)
-        // }
+       
 
 
         if (CategoriesData != undefined) {
@@ -541,55 +524,7 @@ const CreateActivity = (props: any) => {
         }
     };
 
-    // const froalaEditorConfig1 = {
-    //     heightMin: 230,
-    //     heightMax: 500,
-    //     // width:250,
-    //     pastePlain: true,
-    //     wordPasteModal: false,
-    //     listAdvancedTypes: false,
-    //     paragraphDefaultSelection: 'Normal',
-    //     attribution: false,
-    //     quickInsertEnabled: false,
-    //     imageAllowedTypes: ["jpeg", "jpg", "png", "gif"],
-    //     placeholderText: "Copy & Paste Image Here!",
-    //     key: 'nB3B2F2A1C2F2E1rA1C7A6D6E1D4G3E1C10C6eUd1QBRVCDLPAZMBQ==',
-
-    //     events: {
-    //         "image.beforeUpload": function (defaultfile: any, arg1: any, arg2: any) {
-    //             // defaultfile = files;
-    //             let files = defaultfile
-    //             var editor = this;
-    //             if (files.length) {
-    //                 // Create a File Reader.
-    //                 var reader = new FileReader();
-    //                 // Set the reader to insert images when they are loaded.
-    //                 reader.onload = (e) => {
-    //                     var result = e.target.result;
-    //                     editor.image.insert(result, null, null, editor.image.get());
-    //                 };
-    //                 // Read image as base64.
-    //                 reader.readAsDataURL(files[0]);
-    //                 let data = files[0]
-    //                 var reader = new FileReader();
-    //                 reader.readAsDataURL(data);
-    //                 let ImageRawData: any = ''
-    //                 reader.onloadend = function () {
-    //                     var base64String: any = reader.result;
-    //                     console.log('Base64 String - ', base64String);
-    //                     ImageRawData = base64String.substring(base64String.indexOf(', ') + 1)
-
-    //                 }
-    //                 if (ImageRawData.length > 0) {
-    //                   imageArrayUpdateFunction(ImageRawData);
-    //                 }
-
-    //             }
-    //             editor.popups.hideAll();
-    //             return false;
-    //         }
-    //     }
-    // };
+    
     const copyImage = (dt: any) => {
 
         let DataObject = {
@@ -648,12 +583,7 @@ const CreateActivity = (props: any) => {
     var SharewebID: any = ''
 
     const getActivitiesDetails = async (item: any) => {
-        // siteTypess?.forEach((ba:any)=>{
-        //     if(item.Title == ba.Title){
-        //         ba.IscreateTask = true;
-        //         ba.isSiteSelect = true;
-        //     }
-        // })
+      
         console.log(item)
         let web = new Web(dynamicList.siteUrl);
         let componentDetails:any = [];
@@ -675,22 +605,22 @@ const CreateActivity = (props: any) => {
             LatestTaskNumber += 1;
             item.LatestTaskNumber = LatestTaskNumber
         }
-        if (AllItems != undefined) {
-            if (AllItems?.Portfolio_x0020_Type != undefined) {
-                if (AllItems?.Portfolio_x0020_Type == 'Component') {
-                    SharewebID = 'CA' + LatestTaskNumber;
-                }
-                if (AllItems?.Portfolio_x0020_Type == 'Service') {
-                    SharewebID = 'SA' + LatestTaskNumber;
-                }
-                if (AllItems?.Portfolio_x0020_Type == 'Events') {
-                    SharewebID = 'EA' + LatestTaskNumber;
-                }
-            } else {
-                SharewebID = 'A' + LatestTaskNumber;
-            }
-            item.SharewebID = SharewebID
-        }
+        // if (AllItems != undefined) {
+        //     if (AllItems?.Portfolio_x0020_Type != undefined) {
+        //         if (AllItems?.Portfolio_x0020_Type == 'Component') {
+        //             SharewebID = 'CA' + LatestTaskNumber;
+        //         }
+        //         if (AllItems?.Portfolio_x0020_Type == 'Service') {
+        //             SharewebID = 'SA' + LatestTaskNumber;
+        //         }
+        //         if (AllItems?.Portfolio_x0020_Type == 'Events') {
+        //             SharewebID = 'EA' + LatestTaskNumber;
+        //         }
+        //     } else {
+        //         SharewebID = 'A' + LatestTaskNumber;
+        //     }
+        //     item.SharewebID = SharewebID
+        // }
         siteTypess?.forEach(async (val: any) => {
             if (val.IscreateTask == true) {
                 if (AllItems?.NoteCall == 'Task' && AllItems.Item_x0020_Type == 'Component' || AllItems.Item_x0020_Type == 'SubComponent' || AllItems.Item_x0020_Type == 'Feature') {
@@ -754,17 +684,11 @@ const CreateActivity = (props: any) => {
 
 
     }, [])
-    // const tooltiphierarchy = React.useMemo(() => {
-    //     if (action === true) {
-    //         return getTooltiphierarchyWithoutGroupByTable(props.props);
-    //     }
-    //     return [];
-    // }, [action]);
-
+   
     const saveNoteCall = () => {
 
 
-        if (save?.IsShowSelectedSite === false && AllItems?.NoteCall !== 'Task')
+        if (save?.IsShowSelectedSite === false && AllItems?.TaskType?.Title != 'Workstream')
             alert("Please select the site")
 
         else {
@@ -1069,7 +993,13 @@ const CreateActivity = (props: any) => {
                         if (TaskprofileId == '' || SelectedTasks.length > 0) {
                             TaskprofileId = SelectedTasks[0].Id;
                         }
-                        
+
+                        if(AllItems?.TaskType?.Title == 'Workstream'){
+                            var PortfolioData = AllItems?.Portfolio?.Id
+                        }
+                        else{
+                            var PortfolioData = AllItems?.Id
+                        }
                        
                         var arrayy = []
                         web = new Web(dynamicList.siteUrl);
@@ -1080,7 +1010,7 @@ const CreateActivity = (props: any) => {
                             // DueDate: date != undefined ? new Date(date).toDateString() : date,
                             DueDate: date != undefined ? Moment(date).format("MM-DD-YYYY") : null,
                             SharewebCategoriesId: { "results": CategoryID },
-                            PortfolioId: AllItems?.Portfolio != undefined ? AllItems?.Portfolio?.Id:AllItems?.Id,
+                            PortfolioId: PortfolioData,
                             PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
                             TaskTypeId: SharewebTasknewTypeId,
                             ParentTaskId: AllItems.Id,
@@ -1315,21 +1245,7 @@ const CreateActivity = (props: any) => {
         setDate(finalDate);
 
     };
-    // const Priority = (e: any) => {
-    //     if (e.target.value == '1' || e.target.value == '2' || e.target.value == '3') {
-    //         setselectPriority(e.target.value)
-    //         setPriorityy(true)
-    //     }
-    //     if (e.target.value == '4' || e.target.value == '5' || e.target.value == '6' || e.target.value == '7') {
-    //         setselectPriority(e.target.value)
-    //         setPriorityy(true)
-    //     }
-    //     if (e.target.value == '8' || e.target.value == '9' || e.target.value == '10') {
-    //         setselectPriority(e.target.value)
-    //         setPriorityy(true)
-    //     }
-
-    // }
+   
     const onRenderCustomHeaderMain = () => {
         return (
             <div className={AllItems?.PortfolioType?.Id == 2 ? "serviepannelgreena d-flex full-width pb-1" : "d-flex full-width pb-1"} >
@@ -1371,7 +1287,7 @@ const CreateActivity = (props: any) => {
 
     //  ###################  Smart Category Auto Suggesution Functions  ##################
 
-    const autoSuggestionsForCategory = (e: any) => {
+    const autoSuggestionsForCategory = async (e: any) => {
         let searchedKey: any = e.target.value;
         setCategorySearchKey(e.target.value);
         let tempArray: any = [];
@@ -1430,6 +1346,7 @@ const CreateActivity = (props: any) => {
                     })
 
                 }
+               
             },
             error: function (error: any) {
                 console.log('Error:', error)
@@ -1707,42 +1624,6 @@ const CreateActivity = (props: any) => {
                         </div>
 
                         <div className='col-sm-2'>
-                            {/* {AllItems.Portfolio_x0020_Type == 'Component'
-                            &&
-                            <div className="col-sm-12 padL-0 PadR0">
-                                <div ng-show="smartComponent.length==0" className="col-sm-12 mb-10 padL-0 input-group">
-                                    <label ng-show="!IsShowComSerBoth" className="full_width">Component</label>
-                                    <input type="text" className="ui-autocomplete-input form-control" id="txtSharewebComponentcrt"
-                                    /><span role="status" aria-live="polite"
-                                        className="ui-helper-hidden-accessible"></span>
-                                        <span className="input-group-text">
-                                        <a className="hreflink" title="Edit Component" data-toggle="modal"
-                                                onClick={(e) => EditComponent(AllItems)}>
-                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png" />
-                                            </a>
-                                        </span>
-                                </div>
-                                <div className="col-sm-12 padL-0 PadR0">
-                                    <div className="col-sm-12  top-assign  mb-10 padL-0 PadR0">
-                                        {smartComponentData?.map((cat: any) => {
-                                            return (
-                                                <>
-                                                    <div className=" col-sm-12 block" ng-mouseover="HoverIn(item);"
-                                                        ng-mouseleave="ComponentTitle.STRING='';" title="{{ComponentTitle.STRING}}">
-                                                        <a className="hreflink" target="_blank"
-                                                            ng-href="{{CuurentSiteUrl}}/SitePages/Portfolio-Profile.aspx?taskId={{item.Id}}">{cat.Title}</a>
-                                                        <a className="hreflink" ng-click="removeSmartComponent(item.Id)">
-                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" />
-                                                        </a>
-                                                    </div>
-                                                </>
-                                            )
-                                        })}
-                                      
-                                    </div>
-                                </div>
-                            </div>} */}
-
 
                             {props?.props?.PortfolioType == 1 &&
                                 <div className="input-group">
@@ -1800,10 +1681,7 @@ const CreateActivity = (props: any) => {
                                         </div> : null
 
                                     }
-                                    {/* <span className="input-group-text">
-                                                        <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
-                                                            onClick={(e) => EditComponent(EditData, 'Component')} />
-                                                    </span> */}
+                                   
                                 </div>
                             }
 
@@ -1828,6 +1706,25 @@ const CreateActivity = (props: any) => {
                             <div className="col-sm-12 padL-0 Prioritytp PadR0 mt-2">
 
                                 <div>
+                                    <fieldset>
+                                    <label className="full-width">Priority
+                                                    <span>
+                                                        <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                            <span title="Edit" className="alignIcon svg__icon--info svg__iconbox"></span>
+
+                                                            <div className="popover__content">
+                                                                <span>
+
+                                                                    8-10 = High Priority,<br />
+                                                                    4-7 = Normal Priority,<br />
+                                                                    1-3 = Low Priority
+                                                                </span>
+
+                                                            </div>
+
+                                                        </div>
+                                                    </span></label>
+                                   
                                     <div className="input-group">
                                         <input type="text" className="form-control"
                                             placeholder="Enter Priority"
@@ -1835,6 +1732,7 @@ const CreateActivity = (props: any) => {
                                             onChange={(e) => ChangePriorityStatusFunction(e)}
                                         />
                                     </div>
+                                    
                                     <ul className="p-0 mt-1">
                                         <li className="form-check l-radio">
                                             <input className="form-check-input"
@@ -1859,6 +1757,7 @@ const CreateActivity = (props: any) => {
                                             <label className="form-check-label">Low</label>
                                         </li>
                                     </ul>
+                                    </fieldset>
                                 </div>
                             </div>
 
@@ -1980,7 +1879,19 @@ const CreateActivity = (props: any) => {
                                     </div>
                                 </div>
 
-
+                                {SearchedCategoryData?.length > 0 ? (
+                                <div className="SmartTableOnTaskPopup">
+                                    <ul className="list-group">
+                                        {SearchedCategoryData.map((item: any) => {
+                                            return (
+                                                <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                    <a>{item.Newlabel}</a>
+                                                </li>
+                                            )
+                                        }
+                                        )}
+                                    </ul>
+                                </div>) : null}
 
                             </div>
                             {(ClientCategoriesData != undefined && ClientCategoriesData?.length > 0) ?
