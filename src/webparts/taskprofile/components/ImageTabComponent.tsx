@@ -180,15 +180,15 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
 
 
                 <div className="input-group mx-3">
-                    <label className=" full-width "></label>
-                    <input type="text" className="form-control" placeholder='Alt text' />
+                    <label className=" full-width ">Alt text</label>
+                    <input type="text" className="form-control" placeholder='Alt text' />   
                 </div>
             </div>
 
-            <div className="col-sm-12 mt-3 row">
+            <div className="col-sm-12 mt-3 mb-2 ps-3 pe-4 imgTab">
                 <Tab.Container id="left-tabs-example" defaultActiveKey="Logos">
                     <Row>
-                        <        Col sm={3} className='mt-5'>
+                        <        Col sm={2} className='mt-5 pe-0 ps-0'>
                             <Nav variant="pills" className="flex-column">
                                 <Nav.Item >
                                     <Nav.Link eventKey="Logos" onClick={() => changesTabFunction("Logos")}>Logos</Nav.Link>
@@ -199,33 +199,33 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                 <Nav.Item>
                                     <Nav.Link eventKey="Images1" onClick={() => changesTabFunction("Images1")}> Images</Nav.Link>
                                 </Nav.Item>
-                               <div className='mt-3 mx-4'>
+                               <div className='mt-3 mx-0'>
                                {editData.Item_x0020_Cover!=undefined &&<div><div><img src={editData?.Item_x0020_Cover?.Url}/></div>
                                     <span><a  href={editData?.Item_x0020_Cover?.Url}target="_blank" data-interception="off"><span className='svg__iconbox svg__icon--jpeg' title="jpeg"></span></a></span>
                                     </div>}
                                   <ul className='alignCenter list-none'>
                                         <li>
                                             <span><a href={`${props.EditdocumentsData.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off">
-                                                {props.EditdocumentsData?.File_x0020_Type == "pdf" && <span className='svg__iconbox svg__icon--pdf' title="pdf"></span>}
-                                                {props.EditdocumentsData?.File_x0020_Type == "docx" && <span className='svg__iconbox svg__icon--docx' title="docx"></span>}
+                                                {props.EditdocumentsData?.File_x0020_Type == "pdf" && <span className='alignIcon  svg__iconbox svg__icon--pdf' title="pdf"></span>}
+                                                {props.EditdocumentsData?.File_x0020_Type == "docx" && <span className='alignIcon  svg__iconbox svg__icon--docx' title="docx"></span>}
                                                 {props.EditdocumentsData?.File_x0020_Type == "csv" || props.EditdocumentsData?.File_x0020_Type == "xlsx" && <span className='svg__iconbox svg__icon--csv' title="csv"></span>}
                                                 {props.EditdocumentsData?.File_x0020_Type == "jpeg" || props.EditdocumentsData?.File_x0020_Type == "jpg " && <span className='svg__iconbox svg__icon--jpeg' title="jpeg"></span>}
                                                 {props.EditdocumentsData?.File_x0020_Type == "ppt" || props.EditdocumentsData?.File_x0020_Type == "pptx" && <span className='svg__iconbox svg__icon--ppt' title="ppt"></span>}
-                                                {props.EditdocumentsData?.File_x0020_Type == "svg" && <span className='svg__iconbox svg__icon--svg' title="svg"></span>}
-                                                {props.EditdocumentsData?.File_x0020_Type == "zip" && <span className='svg__iconbox svg__icon--zip' title="zip"></span>}
-                                                {props.EditdocumentsData?.File_x0020_Type == "png" && <span className='svg__iconbox svg__icon--png' title="png"></span>}
-                                                {props.EditdocumentsData?.File_x0020_Type == "txt" && <span className='svg__iconbox svg__icon--txt' title="txt"></span>}
-                                                {props.EditdocumentsData?.File_x0020_Type == "smg" && <span className='svg__iconbox svg__icon--smg' title="smg"></span>}
-                                                {props.EditdocumentsData.Url != null && <span className='svg__iconbox svg__icon--link' title="smg"></span>}
+                                                {props.EditdocumentsData?.File_x0020_Type == "svg" && <span className='alignIcon  svg__iconbox svg__icon--svg' title="svg"></span>}
+                                                {props.EditdocumentsData?.File_x0020_Type == "zip" && <span className='alignIcon  svg__iconbox svg__icon--zip' title="zip"></span>}
+                                                {props.EditdocumentsData?.File_x0020_Type == "png" && <span className='alignIcon  svg__iconbox svg__icon--png' title="png"></span>}
+                                                {props.EditdocumentsData?.File_x0020_Type == "txt" && <span className='alignIcon  svg__iconbox svg__icon--txt' title="txt"></span>}
+                                                {props.EditdocumentsData?.File_x0020_Type == "smg" && <span className='alignIcon  svg__iconbox svg__icon--smg' title="smg"></span>}
+                                                {props.EditdocumentsData.Url != null && <span className='alignIcon  svg__iconbox svg__icon--link' title="smg"></span>}
                                             </a>Open this Document</span>
                                         </li>
                                     </ul>
                                     {/* <span> <a href={`${props.EditdocumentsData.EncodedAbsUrl}?web=1`}>Open this Document</a></span> */}
                                 </div>
-                                <div className='mt-2 mx-4'><span className="svg__iconbox svg__icon--trash" onClick={()=>clearImage(editData?.Item_x0020_Cover?.itemCoverId)}></span>Clear Image</div>
+                                <div className='mt-2 mx-0'><span className="alignIcon  svg__iconbox svg__icon--trash" onClick={()=>clearImage(editData?.Item_x0020_Cover?.itemCoverId)}></span>Clear Image</div>
                             </Nav>
                         </Col>
-                        <Col sm={9}>
+                        <Col sm={10} className='p-0'>
                             <Tab.Content>
                                 <Tab.Pane eventKey="Logos">
                                     <Tabs
@@ -234,18 +234,18 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                         id="noanim-tab-example"
                                         className=""
                                     >
-                                        <Tab eventKey="copy & paste" title="copy & paste">
+                                        <Tab eventKey="copy & paste" title="copy & paste" className='p-0'>
                                             <div className='border border-top-0  p-2'>
                                                 <div className="input-group "><label className=" full-width ">Image Name</label>
                                                     <input type="text" className="form-control" value={props?.EditdocumentsData?.Title} placeholder='image Name' />
                                                 </div>
                                                 <div className='mt-3'>
                                                     <DragDrop callBack={florarImageUploadCallBackFunction}></DragDrop>
-                                                    <div className='text-lg-end mt-2'><Button className='btn btn-primary ms-1  mx-2' onClick={() => uploadImage()}>Upload</Button></div>
+                                                    <div className='text-lg-end mt-2'><Button className='btn btn-primary ms-1 mx-2 btnCol' onClick={() => uploadImage()}>Upload</Button></div>
                                                 </div>
                                             </div>
                                         </Tab>
-                                        <Tab eventKey="Upload" title="Upload">
+                                        <Tab eventKey="Upload" title="Upload" className='p-0'>
                                             <div className='border border-top-0  p-2'>
                                                 <div className='mt-3 ' style={{ height: "500px" }}>
                                                     <input type="file" accept="image/*" className='full-width' onChange={(e) => UploadImageValue(e, "upload")} />
@@ -254,7 +254,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
 
                                             </div>
                                         </Tab>
-                                        <Tab eventKey="Choose from existing (0)" title={`Choose from existing (${chooseExistingFile?.ChooseExistinglogo.length})`}>
+                                        <Tab className='p-0' eventKey="Choose from existing (0)" title={`Choose from existing (${chooseExistingFile?.ChooseExistinglogo.length})`}>
                                             <div className='border border-top-0 ImageSec p-2'>
                                                 {chooseExistingFile?.ChooseExistinglogo != undefined && chooseExistingFile.ChooseExistinglogo.length > 0 && chooseExistingFile?.ChooseExistinglogo?.map((imagesData: any) => {
                                                     return (
@@ -273,7 +273,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                         id="noanim-tab-example"
                                         className=""
                                     >
-                                        <Tab eventKey="copy & paste" title="copy & paste">
+                                        <Tab eventKey="copy & paste" title="copy & paste" className='p-0'>
                                             <div className='border border-top-0  p-2'>
                                                 <div className="input-group "><label className=" full-width ">Image Name</label>
                                                     <input type="text" className="form-control"value={props?.EditdocumentsData?.Title} placeholder='image Name' />
@@ -284,7 +284,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                                 </div>
                                             </div>
                                         </Tab>
-                                        <Tab eventKey="Upload" title="Upload">
+                                        <Tab eventKey="Upload" title="Upload" className='p-0'>
                                             <div className='border border-top-0  p-2'>
                                                 <div className='mt-3' style={{ height: "500px" }}>
                                                     <input type="file" multiple accept='image/*' className='full-width' onChange={(e) => UploadImageValue(e, "upload")} />
@@ -292,7 +292,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                                 </div>
                                             </div>
                                         </Tab>
-                                        <Tab eventKey="Choose from existing (0)" title={`Choose from existing (${chooseExistingFile?.ChooseExistingCover.length})`}>
+                                        <Tab className='p-0' eventKey="Choose from existing (0)" title={`Choose from existing (${chooseExistingFile?.ChooseExistingCover.length})`}>
                                             <div className='border border-top-0 ImageSec p-2'>
                                                 {chooseExistingFile?.ChooseExistingCover != undefined && chooseExistingFile?.ChooseExistingCover?.length > 0 && chooseExistingFile?.ChooseExistingCover?.map((imagesData: any) => {
                                                     return (
@@ -312,7 +312,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                         id="noanim-tab-example"
                                         className=""
                                     >
-                                        <Tab eventKey="copy & paste" title="copy & paste">
+                                        <Tab eventKey="copy & paste" title="copy & paste" className='p-0'>
                                             <div className='border border-top-0  p-2'>
                                                 <div className="input-group "><label className=" full-width ">Image Name</label>
                                                     <input type="text" className="form-control"  value={props?.EditdocumentsData?.Title}  placeholder='image Name' />
@@ -323,7 +323,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                                 </div>
                                             </div>
                                         </Tab>
-                                        <Tab eventKey="Upload" title="Upload">
+                                        <Tab eventKey="Upload" title="Upload" className='p-0'>
                                             <div className='border border-top-0 p-2'>
                                                 <div className='mt-3' style={{ height: "500px" }}>
                                                     <input type="file" multiple accept='image/*' className='full-width' onChange={(e) => UploadImageValue(e, "upload")} />
@@ -331,7 +331,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                                 </div>
                                             </div>
                                         </Tab>
-                                        <Tab eventKey="Choose from existing (0)" title={`Choose from existing (${chooseExistingFile?.ChooseExistingImages1?.length})`} >
+                                        <Tab className='p-0' eventKey="Choose from existing (0)" title={`Choose from existing (${chooseExistingFile?.ChooseExistingImages1?.length})`} >
                                             <div className='border border-top-0 ImageSec p-2'>
                                                 {chooseExistingFile?.ChooseExistingImages1 != undefined && chooseExistingFile?.ChooseExistingImages1?.length > 0 && chooseExistingFile?.ChooseExistingImages1?.map((imagesData: any) => {
                                                     return (
