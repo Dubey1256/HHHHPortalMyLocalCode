@@ -29,7 +29,6 @@ const SmartTimeTotalFunction = (item: any) => {
       let siteTypes = items.siteType[0].toUpperCase() + items.siteType.slice(1);
 
       var filteres = "Task" + siteTypes + "/Id eq " + items.Id;
-
       var linkedSite = "Task" + siteTypes;
     }
 
@@ -44,25 +43,25 @@ const SmartTimeTotalFunction = (item: any) => {
           Url:
             "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('9ed5c649-3b4e-42db-a186-778ba43c5c93')/items?$select=" +
             select +
-            "",
-        },
+            ""
+        }
       ];
       //TasksTimesheet2
     } else if (item?.props?.sitePage == "SH") {
       var allurls = [
         {
-          Url: `${item?.props?.siteUrl}/_api/web/lists/getbyTitle('TaskTimesheet')/items?$select= ${select}`,
-        },
+          Url: `${item?.props?.siteUrl}/_api/web/lists/getbyTitle('TaskTimesheet')/items?$select= ${select}`
+        }
       ];
     } else {
       var allurls = [
         {
           // 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('464FB776-E4B3-404C-8261-7D3C50FF343F')/items?$select=" + select + "" },
 
-          Url: `${item?.props?.siteUrl}/_api/web/lists/getbyId('${item.AllListId.TaskTimeSheetListID}')/items?$select=${select}`,
+          Url: `${item?.props?.siteUrl}/_api/web/lists/getbyId('${item.AllListId.TaskTimeSheetListID}')/items?$select=${select}`
 
           //	TaskTimeSheetListNew
-        },
+        }
       ];
     }
 
@@ -73,7 +72,7 @@ const SmartTimeTotalFunction = (item: any) => {
         method: "GET",
 
         headers: {
-          Accept: "application/json; odata=verbose",
+          Accept: "application/json; odata=verbose"
         },
 
         success: function (data) {
@@ -97,7 +96,7 @@ const SmartTimeTotalFunction = (item: any) => {
               getStructureData();
             }
           }
-        },
+        }
       });
     });
   };

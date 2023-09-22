@@ -5,30 +5,30 @@ import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-toolt
 import { ColumnDef } from "@tanstack/react-table";
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import EmployeePieChart from "./EmployeePieChart";
-import WorldClock from "./WorldClock";
+
 import ComingBirthday from "./comingBirthday";
-// import MyNotes from './MyNotes';
+import MyNotes from "./MyNotes";
 // import GlobalCommanTable from '../../../globalComponents/GlobalCommanTable';
 
 const TaskStatusTbl = () => {
   const ContextData: any = React.useContext(myContextValue);
   const [draftCatogary, setDraftCatogary]: any = [
-    ContextData?.AlltaskData.DraftCatogary,
+    ContextData?.AlltaskData.DraftCatogary
   ];
   const [todaysTask, setTodaysTask]: any = [
-    ContextData?.AlltaskData.TodaysTask,
+    ContextData?.AlltaskData.TodaysTask
   ];
   const [bottleneckTask, setBottleneckTask]: any = [
-    ContextData?.AlltaskData.BottleneckTask,
+    ContextData?.AlltaskData.BottleneckTask
   ];
   const [immediateTask, setImmediateTask]: any = [
-    ContextData?.AlltaskData.ImmediateTask,
+    ContextData?.AlltaskData.ImmediateTask
   ];
   const [thisWeekTask, setThisWeekTask]: any = [
-    ContextData?.AlltaskData.ThisWeekTask,
+    ContextData?.AlltaskData.ThisWeekTask
   ];
   const [approvalTask, setApprovalTask]: any = [
-    ContextData?.AlltaskData.ApprovalTask,
+    ContextData?.AlltaskData.ApprovalTask
   ];
   const columns: any = React.useMemo<ColumnDef<any, unknown>[]>(
     () => [
@@ -39,7 +39,7 @@ const TaskStatusTbl = () => {
         hasCustomExpanded: true,
         hasExpanded: true,
         size: 55,
-        id: "Id",
+        id: "Id"
       },
       {
         cell: ({ row, getValue }: any) => (
@@ -56,7 +56,7 @@ const TaskStatusTbl = () => {
         id: "row?.original.Id",
         canSort: false,
         placeholder: "",
-        size: 95,
+        size: 95
       },
       {
         accessorFn: (row: any) => row?.TaskID,
@@ -69,7 +69,7 @@ const TaskStatusTbl = () => {
         placeholder: "ID",
         header: "",
         resetColumnFilters: false,
-        size: 195,
+        size: 195
       },
       {
         accessorFn: (row) => row?.Title,
@@ -77,7 +77,7 @@ const TaskStatusTbl = () => {
         placeholder: "Title",
         resetColumnFilters: false,
         header: "",
-        size: 480,
+        size: 480
       },
       {
         accessorKey: "Priority_x0020_Rank",
@@ -85,7 +85,7 @@ const TaskStatusTbl = () => {
         header: "",
         resetColumnFilters: false,
         size: 42,
-        id: "Priority_x0020_Rank",
+        id: "Priority_x0020_Rank"
       },
       {
         accessorKey: "PercentComplete",
@@ -93,8 +93,8 @@ const TaskStatusTbl = () => {
         header: "",
         resetColumnFilters: false,
         size: 42,
-        id: "PercentComplete",
-      },
+        id: "PercentComplete"
+      }
     ],
     [draftCatogary]
   );
@@ -108,7 +108,7 @@ const TaskStatusTbl = () => {
         hasCustomExpanded: true,
         hasExpanded: true,
         size: 55,
-        id: "Id",
+        id: "Id"
       },
       {
         cell: ({ row, getValue }: any) => (
@@ -125,7 +125,7 @@ const TaskStatusTbl = () => {
         id: "row?.original.Id",
         canSort: false,
         placeholder: "",
-        size: 95,
+        size: 95
       },
       {
         accessorFn: (row: any) => row?.TaskID,
@@ -138,7 +138,7 @@ const TaskStatusTbl = () => {
         placeholder: "ID",
         header: "",
         resetColumnFilters: false,
-        size: 195,
+        size: 195
       },
       {
         accessorFn: (row) => row?.Title,
@@ -146,7 +146,7 @@ const TaskStatusTbl = () => {
         placeholder: "Title",
         resetColumnFilters: false,
         header: "",
-        size: 480,
+        size: 480
       },
       {
         accessorKey: "Priority_x0020_Rank",
@@ -154,7 +154,7 @@ const TaskStatusTbl = () => {
         header: "",
         resetColumnFilters: false,
         size: 42,
-        id: "Priority_x0020_Rank",
+        id: "Priority_x0020_Rank"
       },
       {
         accessorKey: "PercentComplete",
@@ -162,8 +162,8 @@ const TaskStatusTbl = () => {
         header: "",
         resetColumnFilters: false,
         size: 42,
-        id: "PercentComplete",
-      },
+        id: "PercentComplete"
+      }
     ],
     [todaysTask]
   );
