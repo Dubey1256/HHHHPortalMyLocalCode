@@ -373,7 +373,7 @@ function CreateTaskComponent(props: any) {
     const loadRelevantTask = async (PortfolioId: any, UrlTask: any, PageTask: any) => {
         let allData: any = [];
         let query = '';
-        query = "Categories,AssignedTo/Title,AssignedTo/Name,PriorityRank,TaskType/Id,TaskType/Title,AssignedTo/Id,Portfolio/Id,Portfolio/Title,AttachmentFiles/FileName,ComponentLink/Url,FileLeafRef,TaskLevel,TaskLevel,Title,Id,PriorityRank,PercentComplete,Company,WebpartId,StartDate,DueDate,Status,Body,WebpartId,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=AssignedTo,AttachmentFiles,TaskType,Portfolio,Author,Editor&$orderby=Modified desc"
+        query = "Categories,AssignedTo/Title,AssignedTo/Name,PriorityRank,TaskType/Id,TaskType/Title,AssignedTo/Id,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,AttachmentFiles/FileName,ComponentLink/Url,FileLeafRef,TaskLevel,TaskLevel,Title,Id,PriorityRank,PercentComplete,Company,WebpartId,StartDate,DueDate,Status,Body,WebpartId,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=AssignedTo,AttachmentFiles,TaskType,Portfolio,Author,Editor&$orderby=Modified desc"
         let setRelTask = relevantTasks;
         const web = new Web(AllListId?.siteUrl);
         const batch = sp.createBatch();
@@ -417,7 +417,7 @@ function CreateTaskComponent(props: any) {
                                     setRelTask.ComponentRelevantTask.push(item);
                                 }
     
-                                item.TaskID = globalCommon.getTaskId(item);
+                                item.TaskID = globalCommon.GetTaskId(item);
     
                                 item.DisplayDueDate = moment(item?.DueDate).format('DD/MM/YYYY');
                                 if (item.DisplayDueDate == "Invalid date" || item.DisplayDueDate == undefined) {
@@ -1455,7 +1455,7 @@ function CreateTaskComponent(props: any) {
                     }
                     if (ToEmails.length > 0) {
                         var query = '';
-                        query += "AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,ComponentLink,Categories,FeedBack,ComponentLink,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,Portfolio/Id,Portfolio/Title,TaskCategories/Id,TaskCategories/Title,TaskType/Id,TaskType/Title,TaskID,CompletedDate,TaskLevel,TaskLevel&$expand=AssignedTo,AttachmentFiles,Author,Editor,TaskCategories,TaskType,Portfolio&$filter=Id eq " + itemId;
+                        query += "AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,ComponentLink,Categories,FeedBack,ComponentLink,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,TaskCategories/Id,TaskCategories/Title,TaskType/Id,TaskType/Title,TaskID,CompletedDate,TaskLevel,TaskLevel&$expand=AssignedTo,AttachmentFiles,Author,Editor,TaskCategories,TaskType,Portfolio&$filter=Id eq " + itemId;
                         await getData(siteUrl, listId, query)
                             .then(async (data: any) => {
                                 data?.map((item: any) => {
@@ -1491,7 +1491,7 @@ function CreateTaskComponent(props: any) {
                                     }
                                     UpdateItem.siteType = siteType;
                                 }
-                                UpdateItem.TaskID = globalCommon.getTaskId(UpdateItem);
+                                UpdateItem.TaskID = globalCommon.GetTaskId(UpdateItem);
                                 if (UpdateItem?.Author != undefined) {
                                     UpdateItem.Author1 = '';
                                     UpdateItem.Author1 = UpdateItem.Author.Title;
