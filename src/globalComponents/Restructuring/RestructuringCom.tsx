@@ -46,7 +46,6 @@ const RestructuringCom = (props: any, ref: any) => {
 
       props.allData?.map((obj:any)=>{
         obj.PortfolioTypeCheck=''
-        if(obj?.Item_x0020_Type === 'Task' || obj?.Title == "Others"){
           const matchingTask = props?.AllMasterTasksData?.find((task:any) => obj?.Portfolio?.Id === task?.Id);
           if (matchingTask && portfolioTypeCheck != '') {
             obj.PortfolioTypeCheck = matchingTask?.PortfolioType?.Title;
@@ -57,11 +56,9 @@ const RestructuringCom = (props: any, ref: any) => {
               obj.PortfolioTypeCheck = ''
             }
            }
-        }
         if (obj?.subRows.length > 0 && obj?.subRows != undefined) {
           obj?.subRows?.map((sub: any) => {
             sub.PortfolioTypeCheck=''
-            if(sub?.Item_x0020_Type === 'Task'  || obj?.Title == "Others"){
               const matchingTask = props?.AllMasterTasksData?.find((task:any) => sub?.Portfolio?.Id === task?.Id);
               if (matchingTask && portfolioTypeCheck != '') {
                 sub.PortfolioTypeCheck = matchingTask?.PortfolioType?.Title;
@@ -72,11 +69,9 @@ const RestructuringCom = (props: any, ref: any) => {
                   sub.PortfolioTypeCheck = ''
                 }
               }
-            }
             if (sub?.subRows?.length > 0 && sub?.subRows != undefined) {
               sub?.subRows?.map((feature: any) => {
                 feature.PortfolioTypeCheck=''
-                if(feature?.Item_x0020_Type === 'Task'  || obj?.Title == "Others"){
                   const matchingTask = props?.AllMasterTasksData?.find((task:any) => feature?.Portfolio?.Id === task?.Id);
                   if (matchingTask && portfolioTypeCheck != '') {
                     feature.PortfolioTypeCheck = matchingTask?.PortfolioType?.Title;
@@ -87,12 +82,9 @@ const RestructuringCom = (props: any, ref: any) => {
                       feature.PortfolioTypeCheck = ''
                     }
                   }
-                }
-
-                  if (feature?.subRows?.length > 0 && feature?.subRows != undefined) {
+                if (feature?.subRows?.length > 0 && feature?.subRows != undefined) {
                   feature?.subRows?.map((activity: any) => {
                     activity.PortfolioTypeCheck=''
-                  if(activity?.Item_x0020_Type === 'Task'  || obj?.Title == "Others"){
                   const matchingTask = props?.AllMasterTasksData?.find((task:any) => activity?.Portfolio?.Id === task?.Id);
                   if (matchingTask && portfolioTypeCheck != '') {
                     activity.PortfolioTypeCheck = matchingTask?.PortfolioType?.Title;
@@ -103,11 +95,9 @@ const RestructuringCom = (props: any, ref: any) => {
                       activity.PortfolioTypeCheck = ''
                     }
                    }
-                }
                 if (activity?.subRows?.length > 0 && activity?.subRows != undefined) {
                   activity?.subRows?.map((wrkstrm: any) => {
                     wrkstrm.PortfolioTypeCheck=''
-                    if(wrkstrm?.Item_x0020_Type === 'Task'  || obj?.Title == "Others"){
                       const matchingTask = props?.AllMasterTasksData?.find((task:any) => wrkstrm?.Portfolio?.Id === task?.Id);
                       if (matchingTask && portfolioTypeCheck != '') {
                         wrkstrm.PortfolioTypeCheck = matchingTask?.PortfolioType?.Title;
@@ -118,12 +108,9 @@ const RestructuringCom = (props: any, ref: any) => {
                           wrkstrm.PortfolioTypeCheck = ''
                         }
                         }
-                    }
-
                     if (wrkstrm?.subRows?.length > 0 && wrkstrm?.subRows != undefined) {
                       wrkstrm?.subRows?.map((task: any) => {
                         task.PortfolioTypeCheck=''
-                        if(task?.Item_x0020_Type === 'Task'  || obj?.Title == "Others"){
                           const matchingTask = props?.AllMasterTasksData?.find((task:any) => task?.Portfolio?.Id === task?.Id);
                           if (matchingTask && portfolioTypeCheck != '') {
                             task.PortfolioTypeCheck = matchingTask?.PortfolioType?.Title;
@@ -134,7 +121,6 @@ const RestructuringCom = (props: any, ref: any) => {
                               task.PortfolioTypeCheck = ''
                             }
                           }
-                        }
                       })}
                   })}
                   })}
