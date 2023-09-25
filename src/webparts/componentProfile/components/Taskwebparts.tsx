@@ -1882,6 +1882,7 @@ function TeamPortlioTable(SelectedProp: any) {
                         AddStructureFeature={
                           SelectedProp?.props?.Item_x0020_Type
                         }
+                        PortfolioFeature={SelectedProp?.props?.Item_x0020_Type}
                         AllMasterTasksData={AllMasterTasksData}
                         callChildFunction={callChildFunction}
                         AllListId={ContextValue}
