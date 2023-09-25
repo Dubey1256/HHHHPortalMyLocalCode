@@ -1816,13 +1816,25 @@ export const GetTaskId = (Item: any) => {
     }
   
     if (ParentTask?.TaskID) {
-      taskIds += `-${ParentTask.TaskID}`;
+        if(taskIds?.length>0){
+            taskIds += `-${ParentTask.TaskID}`;
+        }else{
+            taskIds += `${ParentTask.TaskID}`;
+        }
     }
   
     if (TaskID) {
-      taskIds += `-${TaskID}`;
+        if(taskIds?.length>0){
+            taskIds += `-${TaskID}`;
+        }else{
+            taskIds += `${TaskID}`;
+        }
     } else {
-      taskIds += `-T${Id}`;
+        if(taskIds?.length>0){
+            taskIds += `-T${Id}`;
+        }else{
+            taskIds += `T${Id}`;
+        }
     }
   
     return taskIds;
