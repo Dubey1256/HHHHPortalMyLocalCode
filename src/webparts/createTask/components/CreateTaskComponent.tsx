@@ -1921,7 +1921,7 @@ function CreateTaskComponent(props: any) {
                                             return (
                                                 <>
                                                     <div className="block d-flex justify-content-between pt-1 px-2" style={{ width: "95%" }}>
-                                                        <a style={{ color: "#fff !important" }} target="_blank" href={`${base_Url}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                                        <a style={{ color: "#fff !important" }} data-interception="off" target="_blank" href={`${base_Url}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                         <a>
                                                             <span title="Remove Component" onClick={() => setSmartComponentData([])}
                                                                 style={{ backgroundColor: 'white' }} className="svg__iconbox svg__icon--cross hreflink mx-2"></span>
