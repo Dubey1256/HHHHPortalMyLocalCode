@@ -1807,27 +1807,38 @@ export const getParameterByName = async (name: any) => {
 }
 
 export const GetTaskId = (Item: any) => {
-    let taskIds = '';
-    if (Item?.Portfolio?.PortfolioStructureID != undefined && Item.TaskID != undefined && Item?.ParentTask?.TaskID != undefined) {
-        taskIds = Item?.Portfolio?.PortfolioStructureID + '-' + Item.ParentTask?.TaskID + '-' + Item.TaskID;
+    const { Portfolio, TaskID, ParentTask, Id } = Item;
+    
+    let taskIds = "";
+  
+    if (Portfolio?.PortfolioStructureID) {
+      taskIds += Portfolio.PortfolioStructureID;
     }
-    else if (Item?.Portfolio?.PortfolioStructureID != undefined && Item?.TaskID != undefined ) {
-        taskIds = Item?.Portfolio?.PortfolioStructureID + '-' + Item.TaskID;
+  
+    if (ParentTask?.TaskID) {
+        if(taskIds?.length>0){
+            taskIds += `-${ParentTask.TaskID}`;
+        }else{
+            taskIds += `${ParentTask.TaskID}`;
+        }
     }
-    if (Item?.Portfolio?.PortfolioStructureID != undefined && Item.TaskID == undefined && Item?.ParentTask?.TaskID != undefined) {
-        taskIds = Item?.Portfolio?.PortfolioStructureID + '-' +Item.ParentTask?.TaskID + '-T' +  Item.Id;
-    }else if (Item?.Portfolio?.PortfolioStructureID != undefined && Item.TaskID == undefined) {
-        taskIds = Item?.Portfolio?.PortfolioStructureID + '-T' + Item.Id;
+  
+    if (TaskID) {
+        if(taskIds?.length>0){
+            taskIds += `-${TaskID}`;
+        }else{
+            taskIds += `${TaskID}`;
+        }
+    } else {
+        if(taskIds?.length>0){
+            taskIds += `-T${Id}`;
+        }else{
+            taskIds += `T${Id}`;
+        }
     }
-    else if (Item.TaskID != undefined) {
-        taskIds = Item.TaskID;
-    }
-    else if (Item.TaskID == undefined) {
-        taskIds = "T" + Item.Id;
-    }
-
+  
     return taskIds;
-}
+  };
 export const findTaskHierarchy = (row: any, AllMatsterAndTaskData: any): any[] => {
     let createGrouping = (row: any): any[] => {
         for (let i = 0; i < AllMatsterAndTaskData.length; i++) {
