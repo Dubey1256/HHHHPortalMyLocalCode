@@ -62,9 +62,7 @@ const Tabless = (props: any) => {
   const [checkPriority, setPriorityss]: any = React.useState([]);
   let filteringColumn: any = { idType: true, due: true, modify: true, created: true, priority: true, percentage: true, catogries: true, teamMembers: true };
   let excelSelct: any = [{ item: 'Task ID', value: 'siteType' }, { item: 'Category Item', value: 'Categories' }, { item: 'Priority', value: 'priority' }, { item: "Modified", value: 'newModified' }, { item: "Usertitle", value: 'Editorss' }, { item: "Title", value: 'Title' }, { item: "Percent Complete", value: 'percentage' }, { item: "Due Date", value: "newDueDate" }, { item: "Created", value: 'newCreated' }, { item: "URL", value: 'Urlss' }]
-  // let [clearFiltering, setClearFiltering]: any = {due: "",modify: "",created: "",priority: "",percentage: "",catogries: ""};
   const [result, setResult]: any = React.useState(false);
-  // const [masterTasks, setMasterTasks]: any = React.useState([]);
   const [editPopup, setEditPopup]: any = React.useState(false);
   const [queryId, setQueryId]: any = React.useState([]);
   const [data, setData]: any = React.useState([]);
@@ -73,13 +71,11 @@ const Tabless = (props: any) => {
   const [catogries, setCatogries]: any = React.useState([]);
   const [filterCatogries, setFilterCatogries]: any = React.useState([]);
   const [allLists, setAllLists]: any = React.useState([]);
-  // const [tablecontiner, settablecontiner]: any = React.useState("hundred");
   const [checkPercentages, setCheckPercentage]: any = React.useState([]);
   const [checkTeamMembers, setCheckTeamMembers]: any = React.useState([]);
   const [checkPrioritys, setCheckPriority]: any = React.useState([]);
   const [checkedValues, setCheckedValues]: any = React.useState([]);
   const [copyData, setCopyData]: any = React.useState([]);
-  // const [copyData1, setCopyData1]: any = React.useState([]);
   const [date, setDate]: any = React.useState({ due: null, modify: null, created: null });
   const [priorAndPerc, setPriorAndPerc]: any = React.useState({ priority: true, percentage: true })
   const [selectAllChecks, setSelectAllChecks]: any = React.useState({ idType: false, priority: false, percentage: false, catogries: false, teamMembers: false });
@@ -116,512 +112,6 @@ const Tabless = (props: any) => {
     setEditPopup(true);
     setResult(item)
   }
-
-  // const {
-  //     getTableProps,
-  //     getTableBodyProps,
-  //     headerGroups,
-  //     page,
-  //     prepareRow,
-  //     canPreviousPage,
-  //     canNextPage,
-  //     gotoPage,
-  //      pageCount,
-  //      previousPage,
-  //      nextPage,
-  //     setPageSize,
-  //     filter,
-  //     setGlobalFilter,
-  //     state,
-  //     state: { pageIndex, pageSize },
-  // }: any = useTable(
-  //     {
-  //         columns,
-  //         data,
-  //         defaultColumn: { Filter: DefaultColumnFilter },
-  //         initialState: { pageIndex: 0, pageSize: 10,sortBy: [
-  //           {
-  //               id: 'created',
-  //               desc: true
-  //           }
-  //       ] },
-  //     },
-  //     useFilters,
-  //     useGlobalFilter,
-  //     useSortBy,
-  //     useExpanded,
-  //     usePagination,
-
-  // );
-
-
-
-  //  const {globalFilter} = state;
-
-  //  const onChangeInSelect = (event: any) => {
-  //   setPageSize(Number(event.target.value));
-  //     };
-
-  //   const getSelectedSite = (e: any, column: any) => {
-  //     const { value, checked } = e.target;
-  //     console.log(value, checked);
-  //     switch (column) {
-  //       case "idType":
-  //         if (checked) {
-  //           setCheckedValues([...checkedValues, value]);
-  //         } else {
-  //           setSelectAllChecks({...selectAllChecks,idType:false})
-  //           setCheckedValues(checkedValues.filter((val:any) => val !== value));
-  //         }
-  //         break;
-  //       case "Categories":
-  //         if (checked) {
-  //           setFilterCatogries([...filterCatogries, value]);
-  //         } else {
-  //           setSelectAllChecks({...selectAllChecks,catogries:false})
-  //           setFilterCatogries(
-  //             filterCatogries.filter((val: any) => val !== value)
-  //           );
-  //         }
-  //         break;
-  //       case "percentage":
-  //         if (checked) {
-  //           setCheckPercentage([...checkPercentages, value]);
-  //         } else {
-  //           setSelectAllChecks({...selectAllChecks,percentage:false})
-  //           setCheckPercentage(
-  //             checkPercentages.filter((val: any) => val !== value)
-  //           );
-  //         }
-  //         break;
-  //       case "priority":
-  //         if (checked) {
-  //           setCheckPriority([...checkPrioritys, value]);
-  //         } else {
-  //           setSelectAllChecks({...selectAllChecks,priority:false})
-  //           setCheckPriority(
-  //             checkPrioritys.filter((val: any) => val !== value)
-  //           );
-  //         }
-
-  //         break;
-  //         case "TeamMembersSearch":
-  //         if (checked) {
-  //           setCheckTeamMembers([...checkTeamMembers, value]);
-  //         } else {
-  //           setSelectAllChecks({...selectAllChecks,teamMembers:false})
-  //           setCheckTeamMembers(
-  //             checkTeamMembers.filter((val: any) => val !== value)
-  //           );
-  //         }
-  //         break;
-  //     }
-  //   };
-
-  //   const expndpopup = (e: any) => {
-  //     settablecontiner(e);
-  //   };
-
-
-
-
-  // const listFilters1=()=>{
-  //     let newData=copyData;
-
-
-  //     if (checkedValues.length >= 1 && filteringColumn.idType) {
-  //       let localArray: any = [];
-  //       newData?.map((alldataitem: any) => {
-  //         checkedValues?.map((item: any) => {
-  //           if (alldataitem.site == item) {
-  //             localArray.push(alldataitem);
-  //           }
-  //         });
-  //       });
-  //       newData = localArray;
-  //     }
-
-
-  //         if (filterCatogries.length >= 1 && filteringColumn.catogries) {
-  //           let localArray: any = [];
-  //           newData?.map((alldataitem: any) => {
-  //             filterCatogries?.map((item: any) => {
-  //               if (alldataitem.Categories == item) {
-  //                 localArray.push(alldataitem);
-  //               }
-  //             });
-  //           });
-  //           newData = localArray;
-  //         }
-
-  //         if (checkPercentages.length >= 1 && filteringColumn.percentage) {
-  //           let localArray: any = [];
-  //           newData?.map((alldataitem: any) => {
-  //             let percent = parseInt(alldataitem.percentage);
-  //             checkPercentages?.map((item: any) => {
-  //                 if (radio.percentage == "==" || radio.percentage == true) {
-  //                   if (percent == item) {
-  //                     localArray.push(alldataitem);
-  //                   }
-  //                 } else if (radio.percentage == ">") {
-  //                   if (percent > item) {
-  //                     localArray.push(alldataitem);
-  //                   }
-  //                 } else if (radio.percentage == "<") {
-  //                   if (percent < item) {
-  //                     localArray.push(alldataitem);
-  //                   }
-  //                 } else {
-  //                   if (percent != item) {
-  //                     localArray.push(alldataitem);
-  //                   }
-  //                 }
-  //               });
-  //           });
-  //           newData = localArray;
-  //         }else{
-  //           if(priorAndPerc.percentage !== true){
-  //             let localArray: any = [];
-  //             newData?.map((alldataitem: any) => {
-  //               let percent = parseInt(alldataitem.percentage);
-  //                   if (radio.percentage == "==" || radio.percentage == true) {
-  //                     if (percent == parseInt(priorAndPerc.percentage)) {
-  //                       localArray.push(alldataitem);
-  //                     }
-  //                   } else if (radio.percentage == ">") {
-  //                     if (percent > parseInt(priorAndPerc.percentage)) {
-  //                       localArray.push(alldataitem);
-  //                     }
-  //                   } else if (radio.percentage == "<") {
-  //                     if (percent < parseInt(priorAndPerc.percentage)) {
-  //                       localArray.push(alldataitem);
-  //                     }
-  //                   } else {
-  //                     if (percent != parseInt(priorAndPerc.percentage)) {
-  //                       localArray.push(alldataitem);
-  //                     }
-  //                   }
-  //             });
-  //             newData = localArray;
-  //           }
-  //         }
-
-
-
-  //         if (checkPrioritys.length >= 1 && filteringColumn.priority) {
-  //           let localArray: any = [];
-  //           newData?.map((alldataitem: any) => {
-  //             checkPrioritys?.map((item: any) => {
-  //               if (radio.priority == "==" || radio.priority == true) {
-  //                 if (alldataitem.priority == item) {
-  //                   localArray.push(alldataitem);
-  //                 }
-  //               } else if (radio.priority == ">") {
-  //                 if (alldataitem.priority > item) {
-  //                   localArray.push(alldataitem);
-  //                 }
-  //               } else if (radio.priority == "<") {
-  //                 if (alldataitem.priority < item) {
-  //                   localArray.push(alldataitem);
-  //                 }
-  //               } else {
-  //                 if (alldataitem.priority != item) {
-  //                   localArray.push(alldataitem);
-  //                 }
-  //               }
-  //             });
-  //           });
-  //           newData = localArray;
-  //         }else{
-  //           if(priorAndPerc.priority !== true){
-  //             let localArray: any = [];
-  //             newData?.map((alldataitem: any) => {
-  //                 if (radio.priority == "==" || radio.priority == true) {
-  //                   if (alldataitem.priority == parseInt(priorAndPerc.priority) ) {
-  //                     localArray.push(alldataitem);
-  //                   }
-  //                 } else if (radio.priority == ">") {
-  //                   if (alldataitem.priority > parseInt(priorAndPerc.priority)) {
-  //                     localArray.push(alldataitem);
-  //                   }
-  //                 } else if (radio.priority == "<") {
-  //                   if (alldataitem.priority < parseInt(priorAndPerc.priority)) {
-  //                     localArray.push(alldataitem);
-  //                   }
-  //                 } else {
-  //                   if (alldataitem.priority != parseInt(priorAndPerc.priority)) {
-  //                     localArray.push(alldataitem);
-  //                   }
-  //                 }
-
-  //             });
-  //             newData = localArray;
-  //           }
-  //         }
-
-
-
-  //         if (checkTeamMembers.length >= 1 && filteringColumn.teamMembers) {
-  //           let localArray: any = [];
-  //           newData?.map((alldataitem: any) => {
-  //             checkTeamMembers?.map((item: any) => {
-  //               alldataitem.Team_x0020_Members?.forEach((element:any) => {
-  //                 if(element.Title == item){
-  //                   localArray.push(alldataitem);
-  //                 }
-  //               });
-  //               alldataitem.Responsible_x0020_Team?.forEach((element:any) => {
-  //                 if(element.Title == item){
-  //                   localArray.push(alldataitem);
-  //                 }
-  //               });
-  //             });
-  //           });
-  //           newData = localArray;
-  //         }
-
-  //         if(date.due != null && filteringColumn.due){
-  //             let localArray:any=[];
-  //             newData?.map((alldataitem:any)=>{
-  //                 let dueDate = moment(alldataitem.dueDate).format('MM/DD/YYYY');
-  //                 let filterDate = moment(date.due).format('MM/DD/YYYY');
-  //                 if(radio.due == "==" || radio.due == true){
-  //                     if(new Date(dueDate).getTime() == new Date(filterDate).getTime()){
-  //                         localArray.push(alldataitem)
-  //                      }
-  //                 }else if(radio.due == ">"){
-  //                     if(new Date(dueDate).getTime() > new Date(filterDate).getTime()){
-  //                         localArray.push(alldataitem)
-  //                      }
-  //                 }else if(radio.due == "<"){
-  //                     if(new Date(dueDate).getTime() < new Date(filterDate).getTime()){
-  //                         localArray.push(alldataitem)
-  //                      }
-  //                 }else{
-  //                     if(new Date(dueDate).getTime() != new Date(filterDate).getTime()){
-  //                         localArray.push(alldataitem)
-  //                      }
-  //                 }
-
-  //             })
-  //             newData=localArray;
-  //         } 
-
-  //         if(date.created != null && filteringColumn.created){
-  //             let localArray:any=[];
-  //             newData?.map((alldataitem:any)=>{
-  //                 let created = moment(alldataitem.created).format('MM/DD/YYYY');
-  //                 let filterDate = moment(date.created).format('MM/DD/YYYY');
-  //                 if(radio.created == "==" || radio.created == true){
-  //                     if(new Date(created).getTime() == new Date(filterDate).getTime()){
-  //                         localArray.push(alldataitem)
-  //                      }
-  //                 }else if(radio.created == ">"){
-  //                     if(new Date(created).getTime() > new Date(filterDate).getTime()){
-  //                         localArray.push(alldataitem)
-  //                      }
-  //                 }else if(radio.created == "<"){
-  //                     if(new Date(created).getTime() < new Date(filterDate).getTime()){
-  //                         localArray.push(alldataitem)
-  //                      }
-  //                 }else{
-  //                     if(new Date(created).getTime() != new Date(filterDate).getTime()){
-  //                         localArray.push(alldataitem)
-  //                      }
-  //                 }
-
-  //             })
-  //             newData=localArray;
-  //         }
-  //         if(date.modify != null && filteringColumn.modify){
-  //             let localArray:any=[];
-  //             newData?.map((alldataitem:any)=>{
-  //                 let modify = moment(alldataitem.modified).format('MM/DD/YYYY');
-  //                 let filterDate = moment(date.modify).format('MM/DD/YYYY');
-  //                 if(radio.modify == "==" || radio.modify == true){
-  //                     if(new Date(modify).getTime() == new Date(filterDate).getTime()){
-  //                         localArray.push(alldataitem)
-  //                      }
-  //                 }else if(radio.modify == ">"){
-  //                     if(new Date(modify).getTime() > new Date(filterDate).getTime()){
-  //                         localArray.push(alldataitem)
-  //                      }
-  //                 }else if(radio.modify == "<"){
-  //                     if(new Date(modify).getTime() < new Date(filterDate).getTime()){
-  //                         localArray.push(alldataitem)
-  //                      }
-  //                 }else{
-  //                     if(new Date(modify).getTime() != new Date(filterDate).getTime()){
-  //                         localArray.push(alldataitem)
-  //                      }
-  //                 }
-
-  //             })
-  //             newData=localArray;
-  //         }
-  //    setData(newData);
-  // }
-
-
-  // const clearAllFilters=()=>{
-  //   setFilterCatogries([]);
-  //   setCheckPercentage([]);
-  //   setCheckPriority([]);
-  //   setCheckTeamMembers([]);
-  //   setCheckedValues([]);
-  //   setDate({ ...date, due: null , modify: null, created: null});
-  //   setRadio({ ...radio, percentage: true,priority: true,due: true , created: true,modify: true});
-  //   setSelectAllChecks({...selectAllChecks,idType:false,percentage: false,priority: false,catogries:false,teamMembers:false})
-  //   getTaskUserData();
-  // }
-
-  // const clearFilter = async (column: any) => {
-  //   switch (column) {
-  //     case "idType":
-  //       setCheckedValues([]);
-  //       filteringColumn = { ...filteringColumn, idType: false };
-  //       setSelectAllChecks({...selectAllChecks,idType:false})
-  //       listFilters1();
-  //       break;
-  //     case "Categories":
-  //       filteringColumn = { ...filteringColumn, catogries: false };
-  //       setSelectAllChecks({...selectAllChecks,catogries:false})
-  //       setFilterCatogries([]);
-  //       listFilters1();
-  //       break;
-
-  //     case "percentage":
-  //       filteringColumn = { ...filteringColumn, percentage: false };
-  //        setSelectAllChecks({...selectAllChecks,percentage:false})
-  //       setRadio({ ...radio, percentage: true });
-  //       setCheckPercentage([]);
-  //       listFilters1();
-  //       break;
-
-  //     case "priority":
-  //       filteringColumn = { ...filteringColumn, priority: false };
-  //       setSelectAllChecks({...selectAllChecks,priority:false})
-  //       setRadio({ ...radio, priority: true });
-  //       setCheckPriority([]);
-  //       listFilters1();
-  //       break;
-
-  //     case "newDueDate":
-  //       filteringColumn = { ...filteringColumn, due: false };
-  //       setDate({ ...date, due: null });
-  //       setRadio({ ...radio, due: true });
-  //       listFilters1();
-  //       break;
-
-  //     case "newModified":
-  //       filteringColumn = { ...filteringColumn, modify: false };
-  //       setDate({ ...date, modify: null });
-  //       setRadio({ ...radio, modify: true });
-  //       listFilters1();
-  //       break;
-
-  //     case "newCreated":
-  //       filteringColumn = { ...filteringColumn, created: false };
-  //       setDate({ ...date, created: null });
-  //       setRadio({ ...radio, created: true });
-  //       listFilters1();
-  //       break;
-  //       case "TeamMembersSearch":
-  //       filteringColumn = { ...filteringColumn, teamMembers: false };
-  //       setSelectAllChecks({...selectAllChecks,teamMembers:false})
-  //       setCheckTeamMembers([]);
-  //       listFilters1();
-  //       break;
-
-  //     default:
-  //       getTaskUserData();
-  //   }
-  // };
-
-
-  // const selectAll=(e:any)=>{
-  //   let {checked, value} = e.target;
-
-  //   switch (value) {
-  //     case "idType":
-  //       if(checked){
-  //         setSelectAllChecks({...selectAllChecks,idType:e.target.checked})
-  //         let arrayTeam:any=[];
-  //         allLists?.map((item:any)=>{
-  //           arrayTeam.push(item.Title);
-
-  //         })
-  //         setCheckedValues(arrayTeam);
-  //       }else{
-  //         setSelectAllChecks({...selectAllChecks,idType:e.target.checked})
-  //         setCheckedValues([]);
-  //       }
-  //       break;
-  //     case "Categories":
-  //       if(checked){
-  //         setSelectAllChecks({...selectAllChecks,catogries:e.target.checked})
-  //         let arrayTeam:any=[];
-  //         catogries?.map((item:any)=>{
-  //           arrayTeam.push(item);
-
-  //         })
-  //         setFilterCatogries(arrayTeam);
-  //       }else{
-  //         setSelectAllChecks({...selectAllChecks,catogries:e.target.checked})
-  //         setFilterCatogries([]);
-  //       }
-  //       break;
-
-  //     case "percentage":
-  //       if(checked){
-  //         setSelectAllChecks({...selectAllChecks,percentage:e.target.checked})
-  //         let arrayTeam:any=[];
-  //         checkPercentage?.map((item:any)=>{
-  //           arrayTeam.push(item);
-
-  //         })
-  //         setCheckPercentage(arrayTeam);
-  //       }else{
-  //         setSelectAllChecks({...selectAllChecks,percentage:e.target.checked})
-  //         setCheckPercentage([]);   
-  //       }
-  //       break;
-
-  //     case "priority":
-  //       if(checked){
-  //         setSelectAllChecks({...selectAllChecks,priority:e.target.checked})
-  //         let arrayTeam:any=[];
-  //         checkPriority?.map((item:any)=>{
-  //           arrayTeam.push(item);
-
-  //         })
-  //         setCheckPriority(arrayTeam);
-  //       }else{
-  //         setSelectAllChecks({...selectAllChecks,priority:e.target.checked})
-  //         setCheckPriority([]);
-  //       }
-  //       break;
-  //       case "TeamMembersSearch":
-  //         if(checked){
-  //           setSelectAllChecks({...selectAllChecks,teamMembers:e.target.checked})
-  //           let arrayTeam:any=[];
-  //           taskUser?.map((item:any)=>{
-  //             arrayTeam.push(item.Title);
-
-  //           })
-  //           setCheckTeamMembers(arrayTeam);
-  //         }else{
-  //           setSelectAllChecks({...selectAllChecks,teamMembers:e.target.checked})
-  //           setCheckTeamMembers([]);
-  //         }
-  //       break;
-  //   }
-
-
-  // }
-
-
-
 
 
   const getTaskUserData = async () => {
@@ -760,15 +250,17 @@ const Tabless = (props: any) => {
     const web = new Web(items.siteUrl);
     await web.lists
       .getById(items.listId)
-      .items.select("Title", "PercentComplete", "SharewebTaskType/Title", "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "Categories", "Priority_x0020_Rank", "DueDate", "Created", "Modified", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "Editor/Title", "Editor/Id", "Author/Title", "Author/Id", "AssignedTo/Id", "AssignedTo/Title")
+      .items.select("Title", "PercentComplete",'EstimatedTimeDescription',"EstimatedTime" ,"SharewebTaskType/Title", "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "Categories", "Priority_x0020_Rank", "DueDate", "Created", "Modified", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "Editor/Title", "Editor/Id", "Author/Title", "Author/Id", "AssignedTo/Id", "AssignedTo/Title")
       .expand("Team_x0020_Members", "Author", "PortfolioType", "Portfolio", "TaskType", "SharewebTaskType", "Editor", "Responsible_x0020_Team", "AssignedTo")
       .filter(`${filter}`).top(5000)
       .getAll()
       .then((data: any) => {
-        data?.map((dataItem: any) => {
+        const filteredItems = data.filter((item:any) => !item?.Categories?.includes('Draft'));
+
+        filteredItems?.map((dataItem: any) => {
+          const jsonObject = JSON.parse(dataItem?.EstimatedTimeDescription);
           userlists?.map((userItem: any) => {
             dataItem.percentage = dataItem.PercentComplete * 100 + "%";
-
             if ((dataItem.TaskType == undefined ? null : dataItem.TaskType.Title) === "Activities") {
               dataItem.idType = "A" + dataItem.Id;
             } else if ((dataItem.TaskType == undefined ? null : dataItem.TaskType.Title) === "MileStone") {
@@ -791,10 +283,12 @@ const Tabless = (props: any) => {
 
             if (userItem.AssingedToUser != undefined && userItem.AssingedToUser.Id == dataItem.Author.Id) {
               dataItem.AuthorImg = userItem?.Item_x0020_Cover?.Url;
+              dataItem.AuthorSuffix = userItem?.Suffix;
             }
             if (userItem.AssingedToUser != undefined && userItem.AssingedToUser.Id == dataItem.Editor.Id
             ) {
               dataItem.EditorImg = userItem?.Item_x0020_Cover?.Url;
+              dataItem.EditorSuffix = userItem?.Suffix;
             }
           });
 
@@ -803,13 +297,7 @@ const Tabless = (props: any) => {
             dataItem.PortfolioType = matchingTask.PortfolioType;
           }
 
-          // masterTasks?.map((tasks:any)=>{
-          //   if(dataItem.Portfolio.Id === tasks.Id){
-          //          dataItem.PortfolioType = tasks.PortfolioType;
-          //   }
-          // })
-
-          allData.push({
+           allData.push({
             idType: dataItem.idType,
             Title: dataItem.Title,
             Categories: dataItem.Categories,
@@ -818,11 +306,14 @@ const Tabless = (props: any) => {
             newModified: dataItem.newModified,
             newCreated: dataItem.newCreated,
             editorImg: dataItem.EditorImg,
+            EditorSuffix:dataItem.EditorSuffix,
+            AuthorSuffix:dataItem.AuthorSuffix,
             authorImg: dataItem.AuthorImg,
             siteIcon: items.Title == "Migration" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_migration.png" : items.ImageUrl,
             siteUrl: items.siteUrl,
             Id: dataItem.Id,
             ID: dataItem.Id,
+            EstimatedTime:(jsonObject != null && jsonObject !=undefined && jsonObject[0]?.EstimatedTime != undefined && jsonObject[0]?.EstimatedTime != null ? jsonObject[0]?.EstimatedTime : ''),
             priority: dataItem.Priority_x0020_Rank,
             Author: dataItem.Author,
             Editor: dataItem.Editor,
@@ -907,69 +398,24 @@ const Tabless = (props: any) => {
 
   };
 
-
-  //   const excelAllChecked=()=>{
-  // let array:any=[];
-  //     excelSelct.map((item:any)=>{
-  //       array.push(item.value);
-  //     })
-  //     setSelectExcelData(array);
-  //   }
-
-  // const downloadExcel = (csvData: any, fileName: any) => {
-  //    let newData:any=[];
-  //    csvData.map((items:any)=>{
-  //     let objData:any;
-  //     selectExcelData.map((item:any)=>{
-  //       Object.keys(items).map((itemss:any)=>{
-  //         if(itemss==item){
-  //           objData={...objData,[item]:items[itemss]}
-  //         }
-  //       })
-  //     })
-  //     newData.push(objData);
-  //    })
-
-  //   const ws = XLSX.utils.json_to_sheet(newData);
-  //   const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
-  //   const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-  //   const data = new Blob([excelBuffer], { type: fileType });
-  //   FileSaver.saveAs(data, fileName + fileExtension);
-  // };
-
-  // const excelSelectFunc=(e:any)=>{
-  //   let {checked, value} :any = e.target;
-  //   if (checked) {
-  //     setSelectExcelData([...selectExcelData, value]);
-  //   } else {
-  //     setSelectExcelData(
-  //       selectExcelData.filter((val: any) => val !== value)
-  //     );
-  //   }
-  // }
   const columns = React.useMemo(
     () => [
       {
-        cell: ({ row, getValue }: any) => (
-
-          <span><img style={{ width: "25px", height: '25px', borderRadius: '20px' }} src={row?.original?.siteIcon} ></img></span>
-
-        ),
+        accessorFn: (row: any) => <img style={{borderRadius:'20px',width:'30px',height:'30px'}} className="icon-sites-img ml20 me-1" src={row?.siteIcon}></img>,
         id: "siteIcon",
-        accessorKey: "",
         placeholder: "",
         header: "",
         resetColumnFilters: false,
         size: 40,
       },
       {
+        accessorFn: (row: any) => row?.idType,
         cell: ({ row, getValue }: any) => (
 
           <span style={{ color: `${row?.original?.PortfolioType?.Color}` }}>{row?.original?.idType}</span>
 
         ),
         id: "idType",
-        accessorKey: "",
         placeholder: "Task ID",
         header: "",
         resetColumnFilters: false,
@@ -981,13 +427,11 @@ const Tabless = (props: any) => {
         cell: ({ row, getValue }: any) => (
           <div>
             <a
+            target='_blank'
               style={{ textDecoration: 'none', cursor: 'pointer', color: `${row?.original?.PortfolioType?.Color}` }}
               href={`${props.Items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.site}`}
               rel='noopener noreferrer'
-              onClick={(e: any) => {
-                e.preventDefault();
-                openInNewTab(e.target.href);
-              }}
+              data-interception="off"
             >
               {row?.original?.Title}
             </a>
@@ -1043,6 +487,19 @@ const Tabless = (props: any) => {
         size: 50,
       },
       {
+        accessorFn: (row: any) => row?.EstimatedTime,
+        cell: ({ row, getValue }: any) => (
+          <div>
+            <span style={{ color: `${row?.original?.PortfolioType?.Color}` }}>{row?.original?.EstimatedTime}</span>
+          </div>
+        ),
+        id: "EstimatedTime",
+        placeholder: "EstimatedTime",
+        header: "",
+        resetColumnFilters: false,
+        size: 50,
+      },
+      {
 
         accessorFn: (row: any) => row?.dueDate,
         cell: ({ row, getValue }: any) => (
@@ -1065,7 +522,9 @@ const Tabless = (props: any) => {
           <div>
             <a style={{ textDecoration: 'none', cursor: 'pointer', color: `${row?.original?.PortfolioType?.Color}` }} target='_blank' href={`${props.Items.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}>
               {row?.original?.newModified}
-              <span><img style={{ width: "25px", height: '25px', borderRadius: '20px' }} src={row?.original?.editorImg} /></span>
+              <span>{
+                row?.original?.editorImg === undefined ? <span className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{row?.original?.EditorSuffix}</span> : <img style={{ width: "25px", height: '25px', borderRadius: '20px' }} src={row?.original?.editorImg} />}
+                </span>
             </a>
           </div>
         ),
@@ -1082,7 +541,9 @@ const Tabless = (props: any) => {
           <div>
             <a style={{ textDecoration: 'none', cursor: 'pointer', color: `${row?.original?.PortfolioType?.Color}` }} target='_blank' href={`${props.Items.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}>
               {row?.original?.newCreated}
-              <span><img style={{ width: "25px", height: '25px', borderRadius: '20px' }} src={row?.original?.authorImg} /></span>
+              <span>{
+                row?.original?.authorImg === undefined ? <span className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{row?.original?.AuthorSuffix}</span> : <img style={{ width: "25px", height: '25px', borderRadius: '20px' }} src={row?.original?.authorImg} />}
+                </span>
             </a>
           </div>
         ),
@@ -1127,11 +588,6 @@ const Tabless = (props: any) => {
     getMasterTask();
   }, []);
 
-  const openInNewTab = (url: any) => {
-    const newWindow = window.open();
-    newWindow.opener = null;
-    newWindow.location.href = url;
-  };
 
   const callBackData = React.useCallback((elem: any, ShowingData: any) => {
 
@@ -1142,18 +598,17 @@ const Tabless = (props: any) => {
     <div className='createdBy'>
 
       <div className='row'>
-        <div className='col'><h3 className="siteColor">Created By - {queryId}</h3></div>
+        {
+          queryId != null && <div className='col'><h3 className="siteColor">Created By - {queryId}</h3></div>
+        }
         <div className='col d-flex justify-content-end align-items-end'>
           <input className='me-1' type="checkbox" value={'Component'} onChange={(e: any) => filterCom(e)} /> <label className='me-2'>Component</label>
           <input className='me-1' type="checkbox" value={'Service'} onChange={(e: any) => filterCom(e)} /> <label className='me-2'>Service</label>
-          {/* <a target='_blank'  href={`${props.Items.siteUrl}/SitePages/Tasks%20View.aspx?CreatedBy=${queryId}`} className="siteColor list-unstyled fw-bold">Old Task View</a> */}
           <a
+          target='_blank'
             href={`${props.Items.siteUrl}/SitePages/Tasks%20View.aspx?CreatedBy=${queryId}`}
             rel='noopener noreferrer'
-            onClick={(e: any) => {
-              e.preventDefault();
-              openInNewTab(e.target.href);
-            }}
+            data-interception="off"
             className="siteColor list-unstyled fw-bold"
           >
             Old Task View

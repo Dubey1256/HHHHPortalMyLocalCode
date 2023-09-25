@@ -1,8 +1,5 @@
 import * as React from "react";
-import {
-  Panel,
-  PanelType
-} from "office-ui-fabric-react";
+import { Panel, PanelType } from "office-ui-fabric-react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/js/dist/modal.js";
 import "bootstrap/js/dist/tab.js";
@@ -11,7 +8,7 @@ import { Web } from "sp-pnp-js";
 import ComponentPortPolioPopup from "./ComponentPortfolioSelection";
 import CommentCard from "../../globalComponents/Comments/CommentCard";
 import { IoMdArrowDropdown, IoMdArrowDropright } from "react-icons/io";
-import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
+import { SlArrowDown, SlArrowRight } from "react-icons/sl";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { map } from "lodash";
 import "react-datepicker/dist/react-datepicker.css";
@@ -37,7 +34,7 @@ var SiteTypeBackupArray: any = [];
 var TeamMemberIds: any = [];
 var Backupdata: any = [];
 var BackupCat: any = "";
-let web: any = '';
+let web: any = "";
 let RequireData: any = {};
 var selectedClientCategoryData: any = [];
 var AllClientCategoryDataBackup: any = [];
@@ -48,12 +45,12 @@ let ShowCategoryDatabackup: any = [];
 function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
   if (SelectD != undefined && SelectD?.siteUrl != undefined) {
     web = new Web(SelectD?.siteUrl);
-    RequireData = SelectD
+    RequireData = SelectD;
   } else {
     if (item?.siteUrl != undefined) {
       web = new Web(item?.siteUrl);
     }
-    RequireData = SelectD.SelectedProp
+    RequireData = SelectD.SelectedProp;
     web = new Web(RequireData?.siteUrl);
   }
   const [CompoenetItem, setComponent] = React.useState([]);
@@ -86,12 +83,17 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
   const [editorState, setEditorState] = React.useState(
     EditorState.createEmpty()
   );
-  const [selectedClientCategory, setSelectedClientCategory] = React.useState([]);
+  const [selectedClientCategory, setSelectedClientCategory] = React.useState(
+    []
+  );
   const [ParentData, SetParentData] = React.useState([]);
   const [SiteTypes, setSiteTypes] = React.useState([]);
-  const [EnableSiteCompositionValidation, setEnableSiteCompositionValidation] = React.useState(false);
-  const [SiteCompositionSetting, setSiteCompositionSetting] = React.useState([]);
-  const [SiteTaggingData, setSiteTaggingData] = React.useState([])
+  const [EnableSiteCompositionValidation, setEnableSiteCompositionValidation] =
+    React.useState(false);
+  const [SiteCompositionSetting, setSiteCompositionSetting] = React.useState(
+    []
+  );
+  const [SiteTaggingData, setSiteTaggingData] = React.useState([]);
   // For Status
   const [PhoneStatus, setPhoneStatus] = React.useState(false);
 
@@ -101,10 +103,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
 
   const [ApprovalStatus, setApprovalStatus] = React.useState(false);
   const [AllCategoryData, setAllCategoryData] = React.useState([]);
-  const [categorySearchKey, setCategorySearchKey] = React.useState('');
+  const [categorySearchKey, setCategorySearchKey] = React.useState("");
   const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
   const [imagetab, setImagetab] = React.useState(false);
-
 
   function imageta() {
     setImagetab(true);
@@ -132,39 +133,21 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
       }
     }
     if (type == "Category-Task-Footertable") {
+      setPhoneStatus(false);
 
+      setEmailStatus(false);
 
+      setImmediateStatus(false);
 
-
-      setPhoneStatus(false)
-
-      setEmailStatus(false)
-
-      setImmediateStatus(false)
-
-      setApprovalStatus(false)
-
-
-
+      setApprovalStatus(false);
 
       if (item1 != undefined && item1.length > 0) {
-
         item1?.map((itenn: any) => {
+          selectedCategoryTrue(itenn.Title);
+        });
 
-          selectedCategoryTrue(itenn.Title)
-
-
-
-
-        })
-
-
-
-
-        setCategoriesData(item1)
-
+        setCategoriesData(item1);
       }
-
     }
     if (type == "Category") {
       if (item1 != undefined && item1.categories != "") {
@@ -185,7 +168,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
       if (type == "Service") {
         setIsService(false);
       } else {
-        setIsComponent(false)
+        setIsComponent(false);
       }
     } else {
       if (type == "Component") {
@@ -227,9 +210,11 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
     return isExists;
   };
   const GetTaskUsers = async () => {
-
     let taskUsers = [];
-    taskUsers = await web.lists.getById(RequireData.TaskUsertListID).items.top(4999).get();
+    taskUsers = await web.lists
+      .getById(RequireData.TaskUsertListID)
+      .items.top(4999)
+      .get();
     AllUsers = taskUsers;
     var UpdatedData: any = {};
     AllUsers.forEach(function (taskUser: any) {
@@ -420,7 +405,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
         "SiteCompositionSettings",
         "ResponsibleTeam/Id",
         "ResponsibleTeam/Title",
-        "Parent/Id", "Parent/Title", "Parent/ItemType"
+        "Parent/Id",
+        "Parent/Title",
+        "Parent/ItemType"
       )
       .expand(
         "ClientCategory",
@@ -434,7 +421,8 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
         "TeamMembers",
         "SharewebComponent",
         "TaskCategories",
-        "ResponsibleTeam", "Parent"
+        "ResponsibleTeam",
+        "Parent"
       )
       .filter("Id eq " + item.Id + "")
       .get();
@@ -498,29 +486,34 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
           if (item.smartComponent != undefined)
             item.smartComponent.push({
               Title: item.ComponentPortfolio.Title,
-              Id: item.ComponentPortfolio.Id,
+              Id: item.ComponentPortfolio.Id
             });
         }
       }
       let ClientCategory: any;
-      ClientCategory = item.ClientCategory
+      ClientCategory = item.ClientCategory;
       if (ClientCategory != undefined && ClientCategory.length > 0) {
         let TempArray: any = [];
         ClientCategory.map((ClientData: any) => {
-          if (AllClientCategoryDataBackup != undefined && AllClientCategoryDataBackup.length > 0) {
+          if (
+            AllClientCategoryDataBackup != undefined &&
+            AllClientCategoryDataBackup.length > 0
+          ) {
             AllClientCategoryDataBackup.map((clientCategoryData: any) => {
               if (ClientData.Id == clientCategoryData.ID) {
                 ClientData.siteName = clientCategoryData.siteName;
                 ClientData.ParentID = clientCategoryData.ParentID;
-                TempArray.push(ClientData)
+                TempArray.push(ClientData);
               }
-            })
-
+            });
           }
-        })
+        });
         setSelectedClientCategory(TempArray);
         selectedClientCategoryData = TempArray;
-        console.log("selected client category form backend ==========", TempArray)
+        console.log(
+          "selected client category form backend ==========",
+          TempArray
+        );
       }
       // if (item.Sitestagging != undefined && item.Sitestagging != null) {
       //   item.Sitestagging = JSON.parse(item.Sitestagging);
@@ -549,55 +542,69 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                 siteName = siteData?.Title?.toLowerCase();
               }
             }
-            if (siteName == "migration" || siteName == "health" || siteName == "eps" || siteName == "qa" || siteName == "ei" || siteName == "gender" || siteName == "education" || siteName == "cep" || siteName == "shareweb" || siteName == "small projects" || siteName == 'offshore tasks') {
-              siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_${siteName}.png`
+            if (
+              siteName == "migration" ||
+              siteName == "health" ||
+              siteName == "eps" ||
+              siteName == "qa" ||
+              siteName == "ei" ||
+              siteName == "gender" ||
+              siteName == "education" ||
+              siteName == "cep" ||
+              siteName == "shareweb" ||
+              siteName == "small projects" ||
+              siteName == "offshore tasks"
+            ) {
+              siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_${siteName}.png`;
             }
-            if (siteName == 'alakdigital' || siteName == 'da e+e') {
-              siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_da.png`
+            if (siteName == "alakdigital" || siteName == "da e+e") {
+              siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_da.png`;
             }
-            if (siteName == 'development-effectiveness' || siteName == 'de') {
-              siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_de.png`
+            if (siteName == "development-effectiveness" || siteName == "de") {
+              siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_de.png`;
             }
             if (siteName == "kathabeck") {
-              siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/Icon_Kathabeck.png`
+              siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/Icon_Kathabeck.png`;
             }
             if (siteName == "gruene") {
-              siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/logo-gruene.png`
+              siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/logo-gruene.png`;
             }
             if (siteName == "hhhh") {
-              siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/icon_hhhh.png`
+              siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/icon_hhhh.png`;
             }
             tempData2.push(siteData);
-          })
+          });
         }
 
         let tempArray3: any = [];
         if (tempData2 != undefined && tempData2.length > 0) {
           tempData2.map((siteData: any) => {
             siteData.ClientCategory = [];
-            if (selectedClientCategoryData != undefined && selectedClientCategoryData.length > 0) {
+            if (
+              selectedClientCategoryData != undefined &&
+              selectedClientCategoryData.length > 0
+            ) {
               selectedClientCategoryData.map((ClientCategoryData: any) => {
                 if (ClientCategoryData.siteName == siteData.SiteName) {
-                  siteData.ClientCategory.push(ClientCategoryData)
+                  siteData.ClientCategory.push(ClientCategoryData);
                 }
-              })
+              });
               tempArray3.push(siteData);
             } else {
               tempArray3.push(siteData);
             }
-
-          })
+          });
         }
         // setClientTimeData(tempArray3)
         item.siteCompositionData = tempArray3;
-      }
-      else {
+      } else {
         const object: any = {
           SiteName: "HHHH",
           ClienTimeDescription: 100,
           localSiteComposition: true,
-          siteIcons: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png"
-        }
+          siteIcons:
+            "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png"
+        };
         item.siteCompositionData = [object];
         // setClientTimeData([object]);
       }
@@ -671,15 +678,15 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
       item["SiteIcon"] =
         item.siteType == "Master Tasks"
           ? GetIconImageUrl(
-            item.siteType,
-            "https://hhhhteams.sharepoint.com/sites/HHHH/SP/",
-            undefined
-          )
+              item.siteType,
+              "https://hhhhteams.sharepoint.com/sites/HHHH/SP/",
+              undefined
+            )
           : GetIconImageUrl(
-            item.siteType,
-            "https://hhhhteams.sharepoint.com/sites/HHHH/SP/",
-            undefined
-          );
+              item.siteType,
+              "https://hhhhteams.sharepoint.com/sites/HHHH/SP/",
+              undefined
+            );
       if (item.Synonyms != undefined && item.Synonyms.length > 0) {
         item.Synonyms = JSON.parse(item.Synonyms);
       }
@@ -695,7 +702,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
           url: urln,
           method: "GET",
           headers: {
-            Accept: "application/json; odata=verbose",
+            Accept: "application/json; odata=verbose"
           },
           success: function (data) {
             ParentData = ParentData.concat(data.d.results);
@@ -707,7 +714,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
           error: function (error) {
             console.log(error);
             // error handler code goes here
-          },
+          }
         });
       }
     });
@@ -740,12 +747,11 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
   const site: any = [];
   const siteDetail: any = [];
   const GetSmartmetadata = async () => {
-
     let smartmetaDetails = [];
     smartmetaDetails = await web.lists
       //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
       .getById(RequireData.SmartMetadataListID)
-      .items//.getById(this.state.itemID)
+      .items //.getById(this.state.itemID)
       .select(
         "ID,Title,IsVisible,ParentID,Parent/Id,Parent/Title,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable"
       )
@@ -779,7 +785,6 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
     getMasterTaskListTasks();
   };
 
-
   React.useEffect(() => {
     GetTaskUsers();
     getAllSitesData();
@@ -803,7 +808,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
           { rankTitle: "(4) Background Item", rank: 4 },
           { rankTitle: "(2) to be verified", rank: 2 },
           { rankTitle: "(1) Archive", rank: 1 },
-          { rankTitle: "(0) No Show", rank: 0 },
+          { rankTitle: "(0) No Show", rank: 0 }
         ]);
         setSharewebItemRank(TaskItemRank[0]);
         loadAllClientCategoryData("Client Category");
@@ -828,12 +833,11 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
     // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
   };
   const GetComponents = async () => {
-
     let componentDetails = [];
     componentDetails = await web.lists
       //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
       .getById(RequireData.MasterTaskListID)
-      .items//.getById(this.state.itemID)
+      .items //.getById(this.state.itemID)
       .select(
         "ID",
         "Title",
@@ -1046,21 +1050,32 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
   const setPriorityNew = function (e: any, item: any) {
     item.PriorityRank = e.target.value;
     if (item.PriorityRank <= 10) {
-
-      if (item.PriorityRank == 8 || item.PriorityRank == 9 || item.PriorityRank == 10) {
+      if (
+        item.PriorityRank == 8 ||
+        item.PriorityRank == 9 ||
+        item.PriorityRank == 10
+      ) {
         item.Priority = "(1) High";
       }
-      if (item.PriorityRank == 4 || item.PriorityRank == 5 || item.PriorityRank == 6 || item.PriorityRank == 7) {
+      if (
+        item.PriorityRank == 4 ||
+        item.PriorityRank == 5 ||
+        item.PriorityRank == 6 ||
+        item.PriorityRank == 7
+      ) {
         item.Priority = "(2) Normal";
       }
-      if (item.PriorityRank == 1 || item.PriorityRank == 2 || item.PriorityRank == 3 || item.PriorityRank == 0) {
+      if (
+        item.PriorityRank == 1 ||
+        item.PriorityRank == 2 ||
+        item.PriorityRank == 3 ||
+        item.PriorityRank == 0
+      ) {
         item.Priority = "(3) Low";
       }
-
     } else {
-      item.PriorityRank = ""
+      item.PriorityRank = "";
       alert("Please Enter priority between 0 to 10");
-
     }
     // getpriority(item);
     setComponent((EditData) => [...EditData]);
@@ -1102,10 +1117,10 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
       } else item["Synonyms"] = [];
       flag
         ? item["Synonyms"].push({
-          status: true,
-          Title: item.SynonymsTitle,
-          Id: "",
-        })
+            status: true,
+            Title: item.SynonymsTitle,
+            Id: ""
+          })
         : null;
       item.SynonymsTitle = "";
     }
@@ -1131,18 +1146,24 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
     var Items = EditData;
     if (SiteTaggingData?.length > 0) {
       SiteTaggingData.map((clientData: any) => {
-        TotalCompositionsValue = TotalCompositionsValue + Number(clientData.ClienTimeDescription);
-      })
+        TotalCompositionsValue =
+          TotalCompositionsValue + Number(clientData.ClienTimeDescription);
+      });
     }
     if (EnableSiteCompositionValidation) {
       if (TotalCompositionsValue > 100) {
         TaskShuoldBeUpdate = false;
-        TotalCompositionsValue = 0
+        TotalCompositionsValue = 0;
         alert("site composition allocation should not be more than 100%");
       }
-      if (TotalCompositionsValue.toFixed(0) < 100 && TotalCompositionsValue > 0) {
-        TotalCompositionsValue = 0
-        let conformationStatus = confirm("Site composition should not be less than 100% if you still want to do it click on OK")
+      if (
+        TotalCompositionsValue.toFixed(0) < 100 &&
+        TotalCompositionsValue > 0
+      ) {
+        TotalCompositionsValue = 0;
+        let conformationStatus = confirm(
+          "Site composition should not be less than 100% if you still want to do it click on OK"
+        );
         if (conformationStatus) {
           TaskShuoldBeUpdate = true;
         } else {
@@ -1153,7 +1174,10 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
     if (TaskShuoldBeUpdate) {
       if (smartComponentData != undefined && smartComponentData.length > 0) {
         smartComponentData.map((com: any) => {
-          if (smartComponentData != undefined && smartComponentData.length >= 0) {
+          if (
+            smartComponentData != undefined &&
+            smartComponentData.length >= 0
+          ) {
             $.each(smartComponentData, function (index: any, smart: any) {
               smartComponentsIds.push(smart.Id);
             });
@@ -1161,7 +1185,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
         });
       }
       if (NewArray != undefined && NewArray.length > 0) {
-        CategoriesData = []
+        CategoriesData = [];
         NewArray.map((NeitemA: any) => {
           CategoriesData.push(NeitemA);
         });
@@ -1200,7 +1224,10 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
           });
         }
       } else {
-        if (EditData?.AssignedTo != undefined && EditData?.AssignedTo?.length > 0) {
+        if (
+          EditData?.AssignedTo != undefined &&
+          EditData?.AssignedTo?.length > 0
+        ) {
           EditData?.AssignedTo.map((taskInfo: any) => {
             AssignedToIds.push(taskInfo.Id);
           });
@@ -1257,8 +1284,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
       if (selectedClientCategory?.length > 0) {
         selectedClientCategory.map((dataItem: any) => {
           ClientCategoryIDs.push(dataItem.Id);
-        })
-
+        });
       } else {
         ClientCategoryIDs = [];
       }
@@ -1268,7 +1294,8 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
         Items.ItemRankTitle != "Select Item Rank"
       )
         var ItemRank = SharewebItemRank.filter(
-          (option: { rankTitle: any }) => option.rankTitle == Items.ItemRankTitle
+          (option: { rankTitle: any }) =>
+            option.rankTitle == Items.ItemRankTitle
         )[0].rank;
 
       await web.lists
@@ -1281,9 +1308,15 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
           PriorityRank: Items.PriorityRank,
           ComponentId: { results: smartComponentsIds },
           DeliverableSynonyms: Items.DeliverableSynonyms,
-          StartDate: EditData?.StartDate ? moment(EditData?.StartDate).format("MM-DD-YYYY") : null,
-          DueDate: EditData?.DueDate ? moment(EditData?.DueDate).format("MM-DD-YYYY") : null,
-          CompletedDate: EditData?.CompletedDate ? moment(EditData?.CompletedDate).format("MM-DD-YYYY") : null,
+          StartDate: EditData?.StartDate
+            ? moment(EditData?.StartDate).format("MM-DD-YYYY")
+            : null,
+          DueDate: EditData?.DueDate
+            ? moment(EditData?.DueDate).format("MM-DD-YYYY")
+            : null,
+          CompletedDate: EditData?.CompletedDate
+            ? moment(EditData?.CompletedDate).format("MM-DD-YYYY")
+            : null,
 
           // Categories:EditData?.smartCategories != undefined && EditData?.smartCategories != ''?EditData?.smartCategories[0].Title:EditData?.Categories,
           Categories: categoriesItem ? categoriesItem : null,
@@ -1301,23 +1334,24 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
           Background: Items.Background,
           AdminNotes: Items.AdminNotes,
           Item_x002d_Image: {
-            "__metadata": { type: "SP.FieldUrlValue" },
-            Description: EditData?.Item_x002d_Image?.Url != undefined ? EditData?.Item_x002d_Image?.Url : '',
-            Url: EditData?.Item_x002d_Image?.Url != undefined ? EditData?.Item_x002d_Image?.Url : ''
+            __metadata: { type: "SP.FieldUrlValue" },
+            Description:
+              EditData?.Item_x002d_Image?.Url != undefined
+                ? EditData?.Item_x002d_Image?.Url
+                : "",
+            Url:
+              EditData?.Item_x002d_Image?.Url != undefined
+                ? EditData?.Item_x002d_Image?.Url
+                : ""
           },
           ComponentLink: {
             Description:
-              Items.ComponentLink != undefined
-                ? Items.ComponentLink
-                : null,
-            Url:
-              Items.ComponentLink != undefined
-                ? Items.ComponentLink
-                : null,
+              Items.ComponentLink != undefined ? Items.ComponentLink : null,
+            Url: Items.ComponentLink != undefined ? Items.ComponentLink : null
           },
           TechnicalExplanations:
             PostTechnicalExplanations != undefined &&
-              PostTechnicalExplanations != ""
+            PostTechnicalExplanations != ""
               ? PostTechnicalExplanations
               : EditData?.TechnicalExplanations,
           Deliverables:
@@ -1326,7 +1360,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
               : EditData?.Deliverables,
           Short_x0020_Description_x0020_On:
             PostShort_x0020_Description_x0020_On != undefined &&
-              PostShort_x0020_Description_x0020_On != ""
+            PostShort_x0020_Description_x0020_On != ""
               ? PostShort_x0020_Description_x0020_On
               : EditData?.Short_x0020_Description_x0020_On,
           Body:
@@ -1335,23 +1369,20 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
             results:
               AssignedToIds != undefined && AssignedToIds?.length > 0
                 ? AssignedToIds
-                : [],
+                : []
           },
           ResponsibleTeamId: {
             results:
               ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0
                 ? ResponsibleTeamIds
-                : [],
+                : []
           },
           TeamMembersId: {
             results:
               TeamMemberIds != undefined && TeamMemberIds?.length > 0
                 ? TeamMemberIds
-                : [],
-          },
-          Sitestagging: SiteTaggingData?.length > 0 ? JSON.stringify(SiteTaggingData) : EditData.siteCompositionData?.length > 0 ? JSON.stringify(EditData.siteCompositionData) : '',
-          ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] },
-          SiteCompositionSettings: SiteCompositionSetting?.length > 0 ? JSON.stringify(SiteCompositionSetting) : EditData.SiteCompositionSettings?.length > 0 ? JSON.stringify(EditData.SiteCompositionSettings) : ''
+                : []
+          }
         })
         .then((res: any) => {
           console.log(res);
@@ -1360,15 +1391,10 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
     }
   };
   const EditComponentPicker = (item: any) => {
-
     setIsComponentPicker(true);
 
     setSharewebCategory(item);
-
-
-
-
-  }
+  };
   const ChangeStatus = (e: any, item: any) => {
     item.AdminStatus = e.target.value;
     setComponent((EditData) => [...EditData]);
@@ -1415,7 +1441,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
       TaxType: "Categories",
       Title: "Email Notification",
       Id: 276,
-      ParentId: 225,
+      ParentId: 225
     },
     { TaxType: "Categories", Title: "Approval", Id: 227, ParentId: 225 },
     { TaxType: "Categories", Title: "Immediate", Id: 228, parentId: 225 }
@@ -1474,11 +1500,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
       ? TeamConfigInfo?.Portfolio_x0020_Type
       : "",
     Services: TeamConfigInfo ? TeamConfigInfo?.Services : "",
-    siteUrl: TeamConfigInfo
-      ? TeamConfigInfo?.siteUrl
-      : RequireData.siteUrl,
+    siteUrl: TeamConfigInfo ? TeamConfigInfo?.siteUrl : RequireData.siteUrl,
     listName: TeamConfigInfo ? TeamConfigInfo?.siteType : "",
-    itemID: TeamConfigInfo ? TeamConfigInfo?.Id : "",
+    itemID: TeamConfigInfo ? TeamConfigInfo?.Id : ""
   };
   const deleteCategories = (id: any) => {
     CategoriesData.map((catId, index) => {
@@ -1500,36 +1524,39 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
     return (
       <>
         <div className="align-items-center d-flex full-width justify-content-between">
-          <div className="ps-4">  <ul className=" m-0 p-0 spfxbreadcrumb"
-          >
-            <li>
-              {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
-              {EditData?.Portfolio_x0020_Type != undefined && (
-                <a
-                  target="_blank"
-                  data-interception="off"
-                  href={`${RequireData.siteUrl}/SitePages/${EditData?.Portfolio_x0020_Type}-Portfolio.aspx`}
-                >
-                  {EditData?.Portfolio_x0020_Type}-Portfolio
-                </a>
-              )}
-            </li>
-            {(EditData?.Item_x0020_Type == "SubComponent" ||
-              EditData?.Item_x0020_Type == "Feature") && (
-                <> <li>
-                  {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
-                  {(EditData?.Parent != undefined && ParentData != undefined && ParentData.length != 0) && (
-
-                    <a
-                      target="_blank"
-                      data-interception="off"
-                      href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${ParentData[0].Parent.Id}`}
-                    >
-                      {ParentData[0].Parent.Title}
-                    </a>
-
-                  )}
-                </li>
+          <div className="ps-4">
+            {" "}
+            <ul className=" m-0 p-0 spfxbreadcrumb">
+              <li>
+                {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                {EditData?.Portfolio_x0020_Type != undefined && (
+                  <a
+                    target="_blank"
+                    data-interception="off"
+                    href={`${RequireData.siteUrl}/SitePages/${EditData?.Portfolio_x0020_Type}-Portfolio.aspx`}
+                  >
+                    {EditData?.Portfolio_x0020_Type}-Portfolio
+                  </a>
+                )}
+              </li>
+              {(EditData?.Item_x0020_Type == "SubComponent" ||
+                EditData?.Item_x0020_Type == "Feature") && (
+                <>
+                  {" "}
+                  <li>
+                    {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                    {EditData?.Parent != undefined &&
+                      ParentData != undefined &&
+                      ParentData.length != 0 && (
+                        <a
+                          target="_blank"
+                          data-interception="off"
+                          href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${ParentData[0].Parent.Id}`}
+                        >
+                          {ParentData[0].Parent.Title}
+                        </a>
+                      )}
+                  </li>
                   <li>
                     {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
                     {EditData?.Parent != undefined && (
@@ -1545,20 +1572,65 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                 </>
               )}
 
-            <li>
-              {EditData?.Item_x0020_Type == "Feature" && <a>
-                <><img style={{ width: "20px", marginRight: "2px" }} src={EditData?.Portfolio_x0020_Type == "Service" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/component_icon.png"} />{EditData?.Title}</>
-              </a>}
-              {EditData?.Item_x0020_Type == "SubComponent" && <a>
-                <><img style={{ width: "20px", marginRight: "2px" }} src={EditData?.Portfolio_x0020_Type == "Service" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png"} />{EditData?.Title}</>
-              </a>}
-              {EditData?.Item_x0020_Type == "Component" && <a>
-                <><img style={{ width: "20px", marginRight: "2px" }} src={EditData?.Portfolio_x0020_Type == "Service" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/component_icon.png"} />{EditData?.Title}</>
-              </a>}
-            </li>
-          </ul></div>
+              <li>
+                {EditData?.Item_x0020_Type == "Feature" && (
+                  <a>
+                    <>
+                      <img
+                        style={{ width: "20px", marginRight: "2px" }}
+                        src={
+                          EditData?.Portfolio_x0020_Type == "Service"
+                            ? "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png"
+                            : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/component_icon.png"
+                        }
+                      />
+                      {EditData?.Title}
+                    </>
+                  </a>
+                )}
+                {EditData?.Item_x0020_Type == "SubComponent" && (
+                  <a>
+                    <>
+                      <img
+                        style={{ width: "20px", marginRight: "2px" }}
+                        src={
+                          EditData?.Portfolio_x0020_Type == "Service"
+                            ? "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png"
+                            : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png"
+                        }
+                      />
+                      {EditData?.Title}
+                    </>
+                  </a>
+                )}
+                {EditData?.Item_x0020_Type == "Component" && (
+                  <a>
+                    <>
+                      <img
+                        style={{ width: "20px", marginRight: "2px" }}
+                        src={
+                          EditData?.Portfolio_x0020_Type == "Service"
+                            ? "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png"
+                            : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/component_icon.png"
+                        }
+                      />
+                      {EditData?.Title}
+                    </>
+                  </a>
+                )}
+              </li>
+            </ul>
+          </div>
 
-          <div className="feedbkicon"> <Tooltip ComponentId="1258" IsServiceTask={EditData?.Portfolio_x0020_Type == "Service" ? true : false} /> </div>
+          <div className="feedbkicon">
+            {" "}
+            <Tooltip
+              ComponentId="1258"
+              IsServiceTask={
+                EditData?.Portfolio_x0020_Type == "Service" ? true : false
+              }
+            />{" "}
+          </div>
         </div>
       </>
     );
@@ -1595,41 +1667,49 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
       setEnableSiteCompositionValidation(true);
       let tempArray: any = [];
       Data.ClientTime?.map((ClientTimeItems: any) => {
-        if (ClientTimeItems.ClientCategory != undefined || ClientTimeItems.SiteImages?.length > 0) {
+        if (
+          ClientTimeItems.ClientCategory != undefined ||
+          ClientTimeItems.SiteImages?.length > 0
+        ) {
           let newObject: any = {
             ClienTimeDescription: ClientTimeItems.ClienTimeDescription,
             Title: ClientTimeItems.Title,
             localSiteComposition: true,
             SiteImages: ClientTimeItems.SiteImages,
             Date: ClientTimeItems.Date
-          }
+          };
           tempArray.push(newObject);
         } else {
           tempArray.push(ClientTimeItems);
         }
-      })
+      });
       const finalData = tempArray.filter((val: any, id: any, array: any) => {
         return array.indexOf(val) == id;
-      })
+      });
       setSiteTaggingData(finalData);
     } else {
       if (Type == "dataDeleted") {
-        setSiteTaggingData([{}])
+        setSiteTaggingData([{}]);
       }
     }
-    if (Data.selectedClientCategory != undefined && Data.selectedClientCategory.length > 0) {
+    if (
+      Data.selectedClientCategory != undefined &&
+      Data.selectedClientCategory.length > 0
+    ) {
       setSelectedClientCategory(Data.selectedClientCategory);
     } else {
       if (Type == "dataDeleted") {
         setSelectedClientCategory([]);
       }
     }
-    if (Data.SiteCompositionSettings != undefined && Data.SiteCompositionSettings.length > 0) {
+    if (
+      Data.SiteCompositionSettings != undefined &&
+      Data.SiteCompositionSettings.length > 0
+    ) {
       setSiteCompositionSetting(Data.SiteCompositionSettings);
     }
     console.log("Site Composition final Call back Data =========", Data);
-  }, [])
-
+  }, []);
 
   //  ******************  This is All Site Details Get Data Call From Backend **************
 
@@ -1640,70 +1720,90 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
     let tempArray: any = [];
     MetaData = await web.lists
       .getById(RequireData.SmartMetadataListID)
-      .items
-      .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title")
+      .items.select(
+        "Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title"
+      )
       .top(4999)
-      .expand('Author,Editor')
-      .get()
+      .expand("Author,Editor")
+      .get();
 
-    siteConfig = getSmartMetadataItemsByTaxType(MetaData, 'Sites');
+    siteConfig = getSmartMetadataItemsByTaxType(MetaData, "Sites");
     siteConfig?.map((site: any) => {
-      if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== "SDC Sites") {
+      if (
+        site.Title !== undefined &&
+        site.Title !== "Foundation" &&
+        site.Title !== "Master Tasks" &&
+        site.Title !== "DRR" &&
+        site.Title !== "SDC Sites"
+      ) {
         site.BtnStatus = false;
         site.isSelected = false;
         tempArray.push(site);
       }
-    })
+    });
     setSiteTypes(tempArray);
     tempArray?.map((tempData: any) => {
       SiteTypeBackupArray.push(tempData);
-    })
-  }
-  var getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
+    });
+  };
+  var getSmartMetadataItemsByTaxType = function (
+    metadataItems: any,
+    taxType: any
+  ) {
     var Items: any = [];
     metadataItems.map((taxItem: any) => {
-      if (taxItem.TaxType === taxType)
-        Items.push(taxItem);
+      if (taxItem.TaxType === taxType) Items.push(taxItem);
     });
     Items.sort((a: any, b: any) => {
       return a.SortOrder - b.SortOrder;
     });
     return Items;
-  }
+  };
 
   //  ######################  This is  Client Category Get Data Call From Backend  #######################
 
   const loadAllClientCategoryData = function (SmartTaxonomy: any) {
-    var AllTaskusers = []
-    var AllMetaData: any = []
-    var TaxonomyItems: any = []
-    var url = (`${RequireData.siteUrl}/_api/web/lists/getbyid('${RequireData?.SmartMetadataListID}')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '` + SmartTaxonomy + "'")
+    var AllTaskusers = [];
+    var AllMetaData: any = [];
+    var TaxonomyItems: any = [];
+    var url =
+      `${RequireData.siteUrl}/_api/web/lists/getbyid('${RequireData?.SmartMetadataListID}')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '` +
+      SmartTaxonomy +
+      "'";
     $.ajax({
       url: url,
       method: "GET",
       headers: {
-        "Accept": "application/json; odata=verbose"
+        Accept: "application/json; odata=verbose"
       },
       success: function (data) {
         AllTaskusers = data.d.results;
         $.each(AllTaskusers, function (index: any, item: any) {
-          if (item.Title.toLowerCase() == 'pse' && item.TaxType == 'Client Category') {
-            item.newTitle = 'EPS';
-          }
-          else if (item.Title.toLowerCase() == 'e+i' && item.TaxType == 'Client Category') {
-            item.newTitle = 'EI';
-          }
-          else if (item.Title.toLowerCase() == 'education' && item.TaxType == 'Client Category') {
-            item.newTitle = 'Education';
-          }
-          else if (item.Title.toLowerCase() == 'migration' && item.TaxType == 'Client Category') {
-            item.newTitle = 'Migration';
-          }
-          else {
+          if (
+            item.Title.toLowerCase() == "pse" &&
+            item.TaxType == "Client Category"
+          ) {
+            item.newTitle = "EPS";
+          } else if (
+            item.Title.toLowerCase() == "e+i" &&
+            item.TaxType == "Client Category"
+          ) {
+            item.newTitle = "EI";
+          } else if (
+            item.Title.toLowerCase() == "education" &&
+            item.TaxType == "Client Category"
+          ) {
+            item.newTitle = "Education";
+          } else if (
+            item.Title.toLowerCase() == "migration" &&
+            item.TaxType == "Client Category"
+          ) {
+            item.newTitle = "Migration";
+          } else {
             item.newTitle = item.Title;
           }
           AllMetaData.push(item);
-        })
+        });
         if (SmartTaxonomy == "Client Category") {
           // setAllClientCategoryData(AllMetaData);
           // AllClientCategoryDataBackup = AllMetaData;
@@ -1711,9 +1811,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
         }
       },
       error: function (error: any) {
-        console.log('Error:', error)
+        console.log("Error:", error);
       }
-    })
+    });
   };
 
   const BuildClieantCategoryAllDataArray = (DataItem: any) => {
@@ -1725,7 +1825,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
           Item.Child = [];
           MainParentArray.push(Item);
         }
-      })
+      });
     }
     if (MainParentArray?.length > 0) {
       MainParentArray.map((ParentArray: any) => {
@@ -1736,10 +1836,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
               ChildArray.Child = [];
               ParentArray.Child.push(ChildArray);
             }
-          })
+          });
         }
-
-      })
+      });
     }
     if (MainParentArray?.length > 0) {
       MainParentArray.map((ParentArray: any) => {
@@ -1752,11 +1851,11 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                   ChildArray.Child = [];
                   ChildLevelFirst.Child.push(ChildArray);
                 }
-              })
+              });
             }
-          })
+          });
         }
-      })
+      });
     }
     if (MainParentArray?.length > 0) {
       MainParentArray.map((ParentArray: any) => {
@@ -1771,15 +1870,13 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                       ChildArray.Child = [];
                       lastChild.Child.push(ChildArray);
                     }
-                  })
+                  });
                 }
-              })
-
+              });
             }
-
-          })
+          });
         }
-      })
+      });
     }
     if (MainParentArray?.length > 0) {
       MainParentArray.map((ParentArray: any) => {
@@ -1796,19 +1893,15 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                           ChildArray.Child = [];
                           endChild.Child.push(ChildArray);
                         }
-                      })
+                      });
                     }
-
-                  })
+                  });
                 }
-
-              })
-
+              });
             }
-
-          })
+          });
         }
-      })
+      });
     }
     if (MainParentArray?.length > 0) {
       MainParentArray.map((finalItem: any) => {
@@ -1818,26 +1911,23 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
             FinalArray.push(FinalChild);
             if (FinalChild.Child?.length > 0) {
               FinalChild.Child.map((LastChild: any) => {
-                FinalArray.push(LastChild)
+                FinalArray.push(LastChild);
                 if (LastChild.Child?.length > 0) {
                   LastChild.Child?.map((endChild: any) => {
                     FinalArray.push(endChild);
-                  })
+                  });
                 }
-              })
-
+              });
             }
-          })
-
+          });
         }
-      })
+      });
     }
     AllClientCategoryDataBackup = FinalArray;
-  }
+  };
 
   // AutoSuggestion
   const autoSuggestionsForCategory = (e: any) => {
-
     let searchedKey: any = e.target.value;
 
     setCategorySearchKey(e.target.value);
@@ -1845,278 +1935,208 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
     let tempArray: any = [];
 
     if (searchedKey?.length > 0) {
-
       AutoCompleteItemsArray?.map((itemData: any) => {
-
-        if (itemData.Newlabel.toLowerCase().includes(searchedKey.toLowerCase())) {
-
+        if (
+          itemData.Newlabel.toLowerCase().includes(searchedKey.toLowerCase())
+        ) {
           tempArray.push(itemData);
-
         }
-
-      })
+      });
 
       setSearchedCategoryData(tempArray);
-
     } else {
-
       setSearchedCategoryData([]);
-
     }
-
-  }
+  };
   let AutoCompleteItems: any = [];
   const loadAllCategoryData = function (SmartTaxonomy: any) {
+    var AllTaskusers = [];
 
-    var AllTaskusers = []
+    var AllMetaData: any = [];
 
-    var AllMetaData: any = []
+    var TaxonomyItems: any = [];
 
-    var TaxonomyItems: any = []
-
-    var url = (`${RequireData?.siteUrl}/_api/web/lists/getbyid('${RequireData?.SmartMetadataListID}')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '` + SmartTaxonomy + "'")
+    var url =
+      `${RequireData?.siteUrl}/_api/web/lists/getbyid('${RequireData?.SmartMetadataListID}')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '` +
+      SmartTaxonomy +
+      "'";
 
     $.ajax({
-
       url: url,
 
       method: "GET",
 
       headers: {
-
-        "Accept": "application/json; odata=verbose"
-
+        Accept: "application/json; odata=verbose"
       },
 
       success: function (data) {
-
         AllTaskusers = data.d.results;
 
         $.each(AllTaskusers, function (index: any, item: any) {
-
-          if (item.Title.toLowerCase() == 'pse' && item.TaxType == 'Client Category') {
-
-            item.newTitle = 'EPS';
-
-          }
-
-          else if (item.Title.toLowerCase() == 'e+i' && item.TaxType == 'Client Category') {
-
-            item.newTitle = 'EI';
-
-          }
-
-          else if (item.Title.toLowerCase() == 'education' && item.TaxType == 'Client Category') {
-
-            item.newTitle = 'Education';
-
-          }
-
-          else {
-
+          if (
+            item.Title.toLowerCase() == "pse" &&
+            item.TaxType == "Client Category"
+          ) {
+            item.newTitle = "EPS";
+          } else if (
+            item.Title.toLowerCase() == "e+i" &&
+            item.TaxType == "Client Category"
+          ) {
+            item.newTitle = "EI";
+          } else if (
+            item.Title.toLowerCase() == "education" &&
+            item.TaxType == "Client Category"
+          ) {
+            item.newTitle = "Education";
+          } else {
             item.newTitle = item.Title;
-
           }
 
           AllMetaData.push(item);
-
-
-
-
-        })
+        });
 
         if (SmartTaxonomy == "Categories") {
+          TaxonomyItems = loadSmartTaxonomyPortfolioPopup(
+            AllMetaData,
+            SmartTaxonomy
+          );
 
-          TaxonomyItems = loadSmartTaxonomyPortfolioPopup(AllMetaData, SmartTaxonomy);
-
-          setAllCategoryData(TaxonomyItems)
+          setAllCategoryData(TaxonomyItems);
 
           TaxonomyItems?.map((items: any) => {
-
             if (items.Title == "Actions") {
-
-              ShowCategoryDatabackup = ShowCategoryDatabackup.concat(items.childs)
-
+              ShowCategoryDatabackup = ShowCategoryDatabackup.concat(
+                items.childs
+              );
             }
-
-          })
-
-
-
-
+          });
         }
-
       },
 
       error: function (error: any) {
-
-        console.log('Error:', error)
-
+        console.log("Error:", error);
       }
-
-    })
-
+    });
   };
-  var loadSmartTaxonomyPortfolioPopup = (AllTaxonomyItems: any, SmartTaxonomy: any) => {
-
+  var loadSmartTaxonomyPortfolioPopup = (
+    AllTaxonomyItems: any,
+    SmartTaxonomy: any
+  ) => {
     var TaxonomyItems: any = [];
 
     var uniqueNames: any = [];
 
     $.each(AllTaxonomyItems, function (index: any, item: any) {
-
       if (item.ParentID == 0 && SmartTaxonomy == item.TaxType) {
-
         TaxonomyItems.push(item);
 
         getChilds(item, AllTaxonomyItems);
 
         if (item.childs != undefined && item.childs.length > 0) {
-
-          TaxonomyItems.push(item)
-
+          TaxonomyItems.push(item);
         }
 
         uniqueNames = TaxonomyItems.filter((val: any, id: any, array: any) => {
-
           return array.indexOf(val) == id;
-
         });
-
       }
-
     });
 
     return uniqueNames;
-
-  }
+  };
   const getChilds = (item: any, items: any) => {
-
     item.childs = [];
 
     $.each(items, function (index: any, childItem: any) {
-
-      if (childItem.ParentID != undefined && parseInt(childItem.ParentID) == item.ID) {
-
+      if (
+        childItem.ParentID != undefined &&
+        parseInt(childItem.ParentID) == item.ID
+      ) {
         childItem.isChild = true;
 
         item.childs.push(childItem);
 
         getChilds(childItem, items);
-
       }
-
     });
-
-  }
-
-
-
+  };
 
   if (AllCategoryData?.length > 0) {
-
     AllCategoryData?.map((item: any) => {
-
       if (item.newTitle != undefined) {
+        item["Newlabel"] = item.newTitle;
 
-        item['Newlabel'] = item.newTitle;
+        AutoCompleteItems.push(item);
 
-        AutoCompleteItems.push(item)
-
-        if (item.childs != null && item.childs != undefined && item.childs.length > 0) {
-
+        if (
+          item.childs != null &&
+          item.childs != undefined &&
+          item.childs.length > 0
+        ) {
           item.childs.map((childitem: any) => {
-
             if (childitem.newTitle != undefined) {
+              childitem["Newlabel"] =
+                item["Newlabel"] + " > " + childitem.Title;
 
-              childitem['Newlabel'] = item['Newlabel'] + ' > ' + childitem.Title;
-
-              AutoCompleteItems.push(childitem)
-
+              AutoCompleteItems.push(childitem);
             }
 
             if (childitem.childs.length > 0) {
-
               childitem.childs.map((subchilditem: any) => {
-
                 if (subchilditem.newTitle != undefined) {
+                  subchilditem["Newlabel"] =
+                    childitem["Newlabel"] + " > " + subchilditem.Title;
 
-                  subchilditem['Newlabel'] = childitem['Newlabel'] + ' > ' + subchilditem.Title;
-
-                  AutoCompleteItems.push(subchilditem)
-
+                  AutoCompleteItems.push(subchilditem);
                 }
-
-              })
-
+              });
             }
-
-          })
-
+          });
         }
-
       }
-
-    })
-
+    });
   }
 
-
-
-
-  AutoCompleteItemsArray = AutoCompleteItems.reduce(function (previous: any, current: any) {
-
-    var alredyExists = previous.filter(function (item: any) {
-
-      return item.Title === current.Title
-
-    }).length > 0
+  AutoCompleteItemsArray = AutoCompleteItems.reduce(function (
+    previous: any,
+    current: any
+  ) {
+    var alredyExists =
+      previous.filter(function (item: any) {
+        return item.Title === current.Title;
+      }).length > 0;
 
     if (!alredyExists) {
-
-      previous.push(current)
-
+      previous.push(current);
     }
 
-    return previous
-
-  }, [])
+    return previous;
+  },
+  []);
   const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
-
     setCategorySearchKey("");
 
-    console.log(selectCategoryData)
+    console.log(selectCategoryData);
 
-    selectedCategoryTrue(selectCategoryData[0].Title)
-
-
-
+    selectedCategoryTrue(selectCategoryData[0].Title);
 
     setIsComponentPicker(false);
 
-    let data: any = CategoriesData
+    let data: any = CategoriesData;
 
-    data = data.concat(selectCategoryData)
+    data = data.concat(selectCategoryData);
 
-    setCategoriesData(CategoriesData => [...data])
-
-
-
-
+    setCategoriesData((CategoriesData) => [...data]);
 
     setSearchedCategoryData([]);
 
-
-
-
     // setCategoriesData(data)
-
-  }
+  };
 
   // ==============CHANGE Category function==============
 
   const CategoryChange = (e: any, typeValue: any, IdValue: any) => {
-
     let statusValue: any = e.currentTarget.checked;
 
     let type: any = typeValue;
@@ -2124,145 +2144,92 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
     let Id: any = IdValue;
 
     if (statusValue) {
+      selectedCategoryTrue(type);
 
-
-
-
-      selectedCategoryTrue(type)
-
-      console.log(ShowCategoryDatabackup)
+      console.log(ShowCategoryDatabackup);
 
       let array: any = [];
-
-
-
 
       array = array.concat(CategoriesData);
 
       ShowCategoryDatabackup.map((items: any) => {
-
         if (items.Title == type) {
-
-          array.push(items)
-
+          array.push(items);
         }
+      });
 
-      })
-
-
-
-
-      setCategoriesData(CategoriesData => [...array])
-
+      setCategoriesData((CategoriesData) => [...array]);
     }
 
     if (statusValue == false) {
+      selectedCategoryFalse(type);
 
-
-
-
-      selectedCategoryFalse(type)
-
-      console.log(ShowCategoryDatabackup)
+      console.log(ShowCategoryDatabackup);
 
       let array: any = [];
-
-
-
 
       array = array.concat(CategoriesData);
 
       array?.map((item: any, index: any) => {
-
-
-
-
         if (item.Title == type) {
-
           array.splice(index, 1);
-
         }
+      });
 
-      })
-
-      setCategoriesData(CategoriesData => [...array])
-
+      setCategoriesData((CategoriesData) => [...array]);
     }
-
-
-
-
-
-  }
-
-
-
+  };
 
   const selectedCategoryFalse = (type: any) => {
-
     if (type == "Phone") {
-
-      setPhoneStatus(false)
-
+      setPhoneStatus(false);
     }
 
     if (type == "Email Notification") {
-
-      setEmailStatus(false)
-
+      setEmailStatus(false);
     }
 
     if (type == "Immediate") {
-
-      setImmediateStatus(false)
-
+      setImmediateStatus(false);
     }
 
     if (type == "Approval") {
-
-      setApprovalStatus(false)
-
+      setApprovalStatus(false);
     }
-
-  }
+  };
 
   const selectedCategoryTrue = (type: any) => {
-
     if (type == "Phone") {
-
-      setPhoneStatus(true)
-
+      setPhoneStatus(true);
     }
 
     if (type == "Email Notification") {
-
-      setEmailStatus(true)
-
+      setEmailStatus(true);
     }
 
     if (type == "Immediate") {
-
-      setImmediateStatus(true)
-
+      setImmediateStatus(true);
     }
 
     if (type == "Approval") {
-
-      setApprovalStatus(true)
-
+      setApprovalStatus(true);
     }
-
-  }
+  };
   const imageTabCallBack = React.useCallback((data: any) => {
-    setEditData(data)
+    setEditData(data);
     console.log(EditData);
-    console.log(data)
+    console.log(data);
     // setEditdocumentsData(data);
-  }, [])
+  }, []);
   return (
     <>
       {console.log("All Done")}
-      <Panel className={`${EditData?.Portfolio_x0020_Type == "Service" ? " serviepannelgreena" : ""}`}
+      <Panel
+        className={`${
+          EditData?.Portfolio_x0020_Type == "Service"
+            ? " serviepannelgreena"
+            : ""
+        }`}
         headerText={`${EditData?.Portfolio_x0020_Type}-Portfolio > ${EditData?.Title}`}
         isOpen={modalIsOpen}
         onDismiss={setModalIsOpenToFalse}
@@ -2273,10 +2240,16 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
         {EditData != undefined && EditData?.Title != undefined && (
           <div id="EditGrueneContactSearch">
             <div className="modal-body">
-              <ul className="nav nav-tabs fixed-Header" id="myTab" role="tablist">
+              <ul
+                className="nav nav-tabs fixed-Header"
+                id="myTab"
+                role="tablist"
+              >
                 <li className="nav-item" role="presentation">
                   <button
-                    className={usedFor != "Task-Popup" ? "nav-link active" : "nav-link"}
+                    className={
+                      usedFor != "Task-Popup" ? "nav-link active" : "nav-link"
+                    }
                     id="home-tab"
                     data-bs-toggle="tab"
                     data-bs-target="#home"
@@ -2290,7 +2263,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                 </li>
                 <li className="nav-item" role="presentation">
                   <button
-                    className={usedFor == "Task-Popup" ? "nav-link active" : "nav-link"}
+                    className={
+                      usedFor == "Task-Popup" ? "nav-link active" : "nav-link"
+                    }
                     id="cncept-tab"
                     data-bs-toggle="tab"
                     data-bs-target="#concept"
@@ -2328,19 +2303,20 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                     aria-selected="false"
                     onClick={(e) => {
                       e.stopPropagation();
-                      imageta()
+                      imageta();
                     }}
                   >
                     IMAGE INFORMATION
                   </button>
                 </li>
               </ul>
-              <div
-                className="tab-content clearfix "
-                id="myTabContent"
-              >
+              <div className="tab-content clearfix " id="myTabContent">
                 <div
-                  className={usedFor != "Task-Popup" ? "tab-pane show active" : "tab-pane"}
+                  className={
+                    usedFor != "Task-Popup"
+                      ? "tab-pane show active"
+                      : "tab-pane"
+                  }
                   id="home"
                   role="tabpanel"
                   aria-labelledby="home-tab"
@@ -2356,7 +2332,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                             type="text"
                             className="form-control"
                             defaultValue={
-                              EditData?.Title != undefined ? EditData?.Title : ""
+                              EditData?.Title != undefined
+                                ? EditData?.Title
+                                : ""
                             }
                             onChange={(e) => (EditData.Title = e.target.value)}
                           />
@@ -2412,8 +2390,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                   : ""
                               }
                               onChange={(e) =>
-                              (EditData.DeliverableSynonyms =
-                                e.target.value)
+                                (EditData.DeliverableSynonyms = e.target.value)
                               }
                             />
                           </div>
@@ -2428,7 +2405,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                               <span className="input-group-text">
                                 <svg
                                   onClick={(e) =>
-                                    EditComponent(EditData, 'Component')
+                                    EditComponent(EditData, "Component")
                                   }
                                   xmlns="http://www.w3.org/2000/svg"
                                   viewBox="0 0 48 48"
@@ -2453,7 +2430,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                               <span className="input-group-text">
                                 <svg
                                   onClick={(e) =>
-                                    EditComponent(EditData, 'Service')
+                                    EditComponent(EditData, "Service")
                                   }
                                   xmlns="http://www.w3.org/2000/svg"
                                   viewBox="0 0 48 48"
@@ -2473,12 +2450,10 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                             <div className="col-sm-12  inner-tabb">
                               {linkedComponentData?.length > 0 ? (
                                 <div className="serviepannelgreena">
-
                                   {linkedComponentData?.map((com: any) => {
                                     return (
                                       <>
                                         <div className="block d-flex justify-content-between mb-1">
-
                                           <a
                                             className="hreflink service ps-2"
                                             target="_blank"
@@ -2487,12 +2462,15 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                           >
                                             {com.Title}
                                           </a>
-                                          <a className='text-end'>  <span className="bg-light svg__icon--cross svg__iconbox" onClick={() =>
-                                            setLinkedComponentData([])
-                                          }></span></a>
-
-
-
+                                          <a className="text-end">
+                                            {" "}
+                                            <span
+                                              className="bg-light svg__icon--cross svg__iconbox"
+                                              onClick={() =>
+                                                setLinkedComponentData([])
+                                              }
+                                            ></span>
+                                          </a>
                                         </div>
                                       </>
                                     );
@@ -2513,7 +2491,6 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                     return (
                                       <>
                                         <div className="colorComponentBgColor d-flex justify-content-between mb-1">
-
                                           <a
                                             className="hreflink service ps-2"
                                             target="_blank"
@@ -2522,14 +2499,14 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                           >
                                             {com.Title}
                                           </a>
-                                          <a className='text-end'>
-                                            <span className="bg-light svg__icon--cross svg__iconbox" onClick={() =>
-                                              setLinkedComponentData([])
-                                            }></span>
+                                          <a className="text-end">
+                                            <span
+                                              className="bg-light svg__icon--cross svg__iconbox"
+                                              onClick={() =>
+                                                setLinkedComponentData([])
+                                              }
+                                            ></span>
                                           </a>
-
-
-
                                         </div>
                                       </>
                                     );
@@ -2588,31 +2565,35 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                                     } */}
                               {smartComponentData
                                 ? smartComponentData?.map((com: any) => {
-                                  return (
-                                    <>
-                                      <div className="">
-                                        <div
-                                          className="d-flex Component-container-edit-task block "
-                                          style={{ width: "81%" }}
-                                        >
-                                          <a
-                                            style={{ color: "#fff !important" }}
-                                            target="_blank"
-                                            href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
+                                    return (
+                                      <>
+                                        <div className="">
+                                          <div
+                                            className="d-flex Component-container-edit-task block "
+                                            style={{ width: "81%" }}
                                           >
-                                            {com.Title}
-                                          </a>
-                                          <a>
-                                            <span className="bg-light svg__icon--cross svg__iconbox" onClick={() =>
-                                              setSmartComponentData([])
-                                            }></span>
-
-                                          </a>
+                                            <a
+                                              style={{
+                                                color: "#fff !important"
+                                              }}
+                                              target="_blank"
+                                              href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
+                                            >
+                                              {com.Title}
+                                            </a>
+                                            <a>
+                                              <span
+                                                className="bg-light svg__icon--cross svg__iconbox"
+                                                onClick={() =>
+                                                  setSmartComponentData([])
+                                                }
+                                              ></span>
+                                            </a>
+                                          </div>
                                         </div>
-                                      </div>
-                                    </>
-                                  );
-                                })
+                                      </>
+                                    );
+                                  })
                                 : null}
                             </div>
                           </div>
@@ -2624,13 +2605,20 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                             <label className="form-label  full-width">
                               Start Date
                             </label>
-                            <input type="date" className="form-control" max="9999-12-31"
-                              defaultValue={moment(EditData?.StartDate).format("YYYY-MM-DD")}
-                              onChange={(e) => setEditData({
-                                ...EditData, StartDate: e.target.value
-                              })}
+                            <input
+                              type="date"
+                              className="form-control"
+                              max="9999-12-31"
+                              defaultValue={moment(EditData?.StartDate).format(
+                                "YYYY-MM-DD"
+                              )}
+                              onChange={(e) =>
+                                setEditData({
+                                  ...EditData,
+                                  StartDate: e.target.value
+                                })
+                              }
                             />
-
                           </div>
                         </div>
                         <div className="col-sm-4 ps-0">
@@ -2638,11 +2626,23 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                             <label className="form-label  full-width">
                               Due Date
                             </label>
-                            <input type="date" className="form-control" max="9999-12-31"
-                              defaultValue={EditData?.DueDate ? moment(EditData?.DueDate).format("YYYY-MM-DD") : ''}
-                              onChange={(e) => setEditData({
-                                ...EditData, DueDate: e.target.value
-                              })}
+                            <input
+                              type="date"
+                              className="form-control"
+                              max="9999-12-31"
+                              defaultValue={
+                                EditData?.DueDate
+                                  ? moment(EditData?.DueDate).format(
+                                      "YYYY-MM-DD"
+                                    )
+                                  : ""
+                              }
+                              onChange={(e) =>
+                                setEditData({
+                                  ...EditData,
+                                  DueDate: e.target.value
+                                })
+                              }
                             />
                           </div>
                         </div>
@@ -2652,11 +2652,23 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                               {" "}
                               Completion Date{" "}
                             </label>
-                            <input type="date" className="form-control" max="9999-12-31"
-                              defaultValue={EditData?.CompletedDate ? moment(EditData?.CompletedDate).format("YYYY-MM-DD") : ''}
-                              onChange={(e) => setEditData({
-                                ...EditData, CompletedDate: e.target.value
-                              })}
+                            <input
+                              type="date"
+                              className="form-control"
+                              max="9999-12-31"
+                              defaultValue={
+                                EditData?.CompletedDate
+                                  ? moment(EditData?.CompletedDate).format(
+                                      "YYYY-MM-DD"
+                                    )
+                                  : ""
+                              }
+                              onChange={(e) =>
+                                setEditData({
+                                  ...EditData,
+                                  CompletedDate: e.target.value
+                                })
+                              }
                             />
                           </div>
                         </div>
@@ -2730,7 +2742,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                               type="text"
                               className="form-control"
                               defaultValue={
-                                EditData?.Package != null ? EditData?.Package : ""
+                                EditData?.Package != null
+                                  ? EditData?.Package
+                                  : ""
                               }
                               onChange={(e) =>
                                 (EditData.Package = e.target.value)
@@ -2820,7 +2834,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                               value="Active"
                               onChange={(e) => setStatus(EditData, "Active")}
                               checked={
-                                EditData?.AdminStatus === "Active" ? true : false
+                                EditData?.AdminStatus === "Active"
+                                  ? true
+                                  : false
                               }
                             ></input>
                             <label className="form-check-label">Active</label>
@@ -2852,7 +2868,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                               type="text"
                               className="form-control"
                               value={
-                                EditData?.Mileage != null ? EditData?.Mileage : ""
+                                EditData?.Mileage != null
+                                  ? EditData?.Mileage
+                                  : ""
                               }
                               onChange={(e) => changeTime(e, EditData)}
                             />
@@ -2863,7 +2881,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                               className="radio"
                               name="radioTime"
                               onChange={(e) => setTime(EditData, "05")}
-                              checked={EditData?.Mileage === "05" ? true : false}
+                              checked={
+                                EditData?.Mileage === "05" ? true : false
+                              }
                               type="radio"
                             ></input>
                             <label className="form-check-label">
@@ -2875,7 +2895,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                               className="radio"
                               name="radioTime"
                               onChange={(e) => setTime(EditData, "15")}
-                              checked={EditData?.Mileage === "15" ? true : false}
+                              checked={
+                                EditData?.Mileage === "15" ? true : false
+                              }
                               type="radio"
                             ></input>
 
@@ -2886,7 +2908,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                               className="radio"
                               name="radioTime"
                               onChange={(e) => setTime(EditData, "60")}
-                              checked={EditData?.Mileage === "60" ? true : false}
+                              checked={
+                                EditData?.Mileage === "60" ? true : false
+                              }
                               type="radio"
                             ></input>
                             <label className="form-check-label">Medium</label>
@@ -2908,7 +2932,10 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                     </div>
                     <div className="col-sm-2 ">
                       <div className="col">
-                        <Sitecomposition props={EditData} sitedata={RequireData}/>
+                        <Sitecomposition
+                          props={EditData}
+                          sitedata={RequireData}
+                        />
                       </div>
                       <div className="col" title="Priority">
                         <div className="input-group mb-2">
@@ -2965,7 +2992,6 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                         </div>
                         <div className="col mt-2">
                           <div className="input-group">
-
                             <div className="TaskUsers">
                               <label className="form-label full-width  mx-2">
                                 Working Member
@@ -2995,7 +3021,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                           width: "35px",
                                           height: "35px",
                                           marginLeft: "10px",
-                                          borderRadius: "50px",
+                                          borderRadius: "50px"
                                         }}
                                         src={
                                           userDtl.Item_x0020_Cover?.Url
@@ -3008,29 +3034,38 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                 }
                               )}
                             </div>
-
                           </div>
                         </div>
                       </div>
                       <div className="col">
-
-
                         <div className="col-sm-11  inner-tabb">
-
-
                           <div className="row mt-2">
-
                             <div className="col-sm-12">
-
                               <div className="col-sm-12 padding-0 input-group">
-
                                 <label className="full_width">Categories</label>
 
                                 {/* <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e)} /> */}
 
-                                <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e)} />
+                                <input
+                                  type="text"
+                                  className="ui-autocomplete-input form-control"
+                                  id="txtCategories"
+                                  value={categorySearchKey}
+                                  onChange={(e) =>
+                                    autoSuggestionsForCategory(e)
+                                  }
+                                />
 
-                                <span onClick={() => EditComponentPicker(item)} className="input-group-text" title="Status Popup"><span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span></span>
+                                <span
+                                  onClick={() => EditComponentPicker(item)}
+                                  className="input-group-text"
+                                  title="Status Popup"
+                                >
+                                  <span
+                                    title="Edit Task"
+                                    className="svg__iconbox svg__icon--editBox"
+                                  ></span>
+                                </span>
                                 {/* <span className="input-group-text">
                                   <a className="hreflink" title="Edit Categories">
                                       <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png"
@@ -3039,184 +3074,135 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                   </a>
 
                                 </span> */}
-
                               </div>
-
                             </div>
-
-
-
-
-
-
                           </div>
 
                           {SearchedCategoryData?.length > 0 ? (
-
                             <div className="SmartTableOnTaskPopup">
-
                               <ul className="list-group">
-
                                 {SearchedCategoryData.map((item: any) => {
-
                                   return (
-
-                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
-
+                                    <li
+                                      className="hreflink list-group-item rounded-0 list-group-item-action"
+                                      key={item.id}
+                                      onClick={() =>
+                                        setSelectedCategoryData(
+                                          [item],
+                                          "For-Auto-Search"
+                                        )
+                                      }
+                                    >
                                       <a>{item.Newlabel}</a>
-
                                     </li>
-
-                                  )
-
-                                }
-
-                                )}
-
+                                  );
+                                })}
                               </ul>
-
-                            </div>) : null}
-
-
-
+                            </div>
+                          ) : null}
 
                           <div className="col">
-
                             <div className="col">
-
-                              <div
-
-                                className="form-check">
-
-                                <input className="form-check-input rounded-0"
-
+                              <div className="form-check">
+                                <input
+                                  className="form-check-input rounded-0"
                                   name="Phone"
-
-                                  type="checkbox" checked={PhoneStatus}
-
+                                  type="checkbox"
+                                  checked={PhoneStatus}
                                   value={`${PhoneStatus}`}
-
-                                  onClick={(e) => CategoryChange(e, "Phone", 199)}
-
+                                  onClick={(e) =>
+                                    CategoryChange(e, "Phone", 199)
+                                  }
                                 />
 
-                                <label className="form-check-label">Phone</label>
-
+                                <label className="form-check-label">
+                                  Phone
+                                </label>
                               </div>
 
-                              <div
-
-                                className="form-check">
-
-                                <input className="form-check-input rounded-0"
-
+                              <div className="form-check">
+                                <input
+                                  className="form-check-input rounded-0"
                                   type="checkbox"
-
                                   checked={EmailStatus}
-
                                   value={`${EmailStatus}`}
-
-                                  onClick={(e) => CategoryChange(e, "Email Notification", 276)}
-
+                                  onClick={(e) =>
+                                    CategoryChange(e, "Email Notification", 276)
+                                  }
                                 />
 
                                 <label>Email Notification</label>
-
-
-
-
                               </div>
 
-                              <div
-
-                                className="form-check">
-
-                                <input className="form-check-input rounded-0"
-
+                              <div className="form-check">
+                                <input
+                                  className="form-check-input rounded-0"
                                   type="checkbox"
-
                                   checked={ImmediateStatus}
-
                                   value={`${ImmediateStatus}`}
-
-                                  onClick={(e) => CategoryChange(e, "Immediate", 228)} />
+                                  onClick={(e) =>
+                                    CategoryChange(e, "Immediate", 228)
+                                  }
+                                />
 
                                 <label>Immediate</label>
-
                               </div>
-
-
-
-
                             </div>
 
                             <div className="form-check ">
-
                               <label className="full-width">Approval</label>
 
                               <input
-
                                 type="checkbox"
-
                                 className="form-check-input rounded-0"
-
                                 name="Approval"
-
                                 checked={ApprovalStatus}
-
                                 value={`${ApprovalStatus}`}
-
-                                onClick={(e) => CategoryChange(e, "Approval", 227)}
-
-
-
-
+                                onClick={(e) =>
+                                  CategoryChange(e, "Approval", 227)
+                                }
                               />
-
                             </div>
-
                           </div>
 
-                          {CategoriesData != undefined ?
-
+                          {CategoriesData != undefined ? (
                             <div>
+                              {CategoriesData?.map(
+                                (type: any, index: number) => {
+                                  return (
+                                    <>
+                                      {type.Title != "Phone" &&
+                                        type.Title != "Email Notification" &&
+                                        type.Title != "Approval" &&
+                                        type.Title != "Immediate" && (
+                                          <div className="block d-flex full-width justify-content-between mb-1 p-2">
+                                            <a
+                                              style={{
+                                                color: "#fff !important"
+                                              }}
+                                              target="_blank"
+                                              data-interception="off"
+                                              href={`${RequireData?.siteUrl}/SitePages/Portfolio-Profile.aspx?${item?.Id}`}
+                                            >
+                                              {type.Title}
+                                            </a>
 
-                              {CategoriesData?.map((type: any, index: number) => {
+                                            <span
+                                              className="bg-light svg__iconbox svg__icon--cross"
+                                              onClick={() =>
+                                                deleteCategories(type?.Id)
+                                              }
+                                            ></span>
 
-                                return (
-
-                                  <>
-
-                                    {(type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Approval" && type.Title != "Immediate") &&
-
-
-
-
-                                      <div className="block d-flex full-width justify-content-between mb-1 p-2">
-
-                                        <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${RequireData?.siteUrl}/SitePages/Portfolio-Profile.aspx?${item?.Id}`}>
-
-                                          {type.Title}
-
-                                        </a>
-
-                                        <span className='bg-light svg__iconbox svg__icon--cross' onClick={() => deleteCategories(type?.Id)}></span>
-
-                                        {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
-
-                                      </div>
-
-                                    }
-
-                                  </>
-
-                                )
-
-                              })}
-
-                            </div> : null
-
-                          }
+                                            {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
+                                          </div>
+                                        )}
+                                    </>
+                                  );
+                                }
+                              )}
+                            </div>
+                          ) : null}
                         </div>
                       </div>
                     </div>
@@ -3231,9 +3217,10 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                       ></CommentCard>
                     </div>
                     <div className="col-sm-8 taskurl">
-
                       <div className="input-group mb-2">
-                        <label className="form-label  full-width">Relevant URL</label>
+                        <label className="form-label  full-width">
+                          Relevant URL
+                        </label>
                         <input
                           type="text"
                           className="form-control me-1"
@@ -3247,7 +3234,15 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                           }
                           placeholder="Url"
                         ></input>
-                        <span className="input-group-text"><a href={EditData.ComponentLink} target="_blank" data-interception="off"><span className="svg__iconbox svg__icon--link"></span></a></span>
+                        <span className="input-group-text">
+                          <a
+                            href={EditData.ComponentLink}
+                            target="_blank"
+                            data-interception="off"
+                          >
+                            <span className="svg__iconbox svg__icon--link"></span>
+                          </a>
+                        </span>
                         {/* <span> <a target="_blank" data-interception="off" > Open  </a></span> */}
                       </div>
                     </div>
@@ -3255,7 +3250,11 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                 </div>
 
                 <div
-                  className={usedFor == "Task-Popup" ? "tab-pane show active" : "tab-pane"}
+                  className={
+                    usedFor == "Task-Popup"
+                      ? "tab-pane show active"
+                      : "tab-pane"
+                  }
                   id="concept"
                   role="tabpanel"
                   aria-labelledby="profile-tab"
@@ -3311,12 +3310,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                     >
                                       <textarea
                                         className="full_width"
-                                        defaultValue={
-                                          EditData?.AdminNotes
-                                        }
+                                        defaultValue={EditData?.AdminNotes}
                                         onChange={(e) =>
-                                        (EditData.AdminNotes =
-                                          e.target.value)
+                                          (EditData.AdminNotes = e.target.value)
                                         }
                                       ></textarea>
                                     </div>
@@ -3430,7 +3426,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                       <HtmlEditorCard
                                         editorValue={
                                           EditData?.Short_x0020_Description_x0020_On !=
-                                            undefined
+                                          undefined
                                             ? EditData?.Short_x0020_Description_x0020_On
                                             : ""
                                         }
@@ -3482,11 +3478,12 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                         <input
                                           type="checkbox"
                                           defaultChecked={
-                                            EditData?.BackgroundVerified === true
+                                            EditData?.BackgroundVerified ===
+                                            true
                                           }
                                           onChange={(e) =>
-                                          (EditData.BackgroundVerified =
-                                            e.target.value)
+                                            (EditData.BackgroundVerified =
+                                              e.target.value)
                                           }
                                         ></input>
                                         <span className="ps-1">Verified</span>
@@ -3545,8 +3542,8 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                             EditData?.IdeaVerified === true
                                           }
                                           onChange={(e) =>
-                                          (EditData.BackgroundVerified =
-                                            e.target.value)
+                                            (EditData.BackgroundVerified =
+                                              e.target.value)
                                           }
                                         ></input>
                                         <span className="ps-1">Verified</span>
@@ -3602,11 +3599,12 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                         <input
                                           type="checkbox"
                                           defaultChecked={
-                                            EditData?.ValueAddedVerified === true
+                                            EditData?.ValueAddedVerified ===
+                                            true
                                           }
                                           onChange={(e) =>
-                                          (EditData.ValueAddedVerified =
-                                            e.target.value)
+                                            (EditData.ValueAddedVerified =
+                                              e.target.value)
                                           }
                                         ></input>
                                         <span className="ps-1">Verified</span>
@@ -3802,15 +3800,17 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                     )}
                   </div>
                 </div>
-
               </div>
             </div>
-            <footer className="bg-f4" style={{
-              position: "absolute",
-              width: "100%",
-              bottom: "0px",
-              background: "#FAFAFA"
-            }}>
+            <footer
+              className="bg-f4"
+              style={{
+                position: "absolute",
+                width: "100%",
+                bottom: "0px",
+                background: "#FAFAFA"
+              }}
+            >
               <div className="align-items-center d-flex justify-content-between me-5 py-2">
                 <div>
                   <div className="text-left">
@@ -3889,8 +3889,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_maill.png"
                       />
                       <a
-                        href={`mailto:?subject=${"Test"}&body=${EditData?.ComponentLink
-                          }`}
+                        href={`mailto:?subject=${"Test"}&body=${
+                          EditData?.ComponentLink
+                        }`}
                       >
                         {" "}
                         Share This Task ||
@@ -3938,25 +3939,30 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                 Call={Call}
               ></ComponentPortPolioPopup>
             )} */}
-            {IsComponent ?
+            {IsComponent ? (
               <ServiceComponentPortfolioPopup
                 props={SharewebComponent}
                 Dynamic={RequireData}
                 Call={Call}
                 ComponentType={"Service"}
-              ></ServiceComponentPortfolioPopup> : null
-            }
-            {IsService ?
+              ></ServiceComponentPortfolioPopup>
+            ) : null}
+            {IsService ? (
               <ServiceComponentPortfolioPopup
                 props={SharewebComponent}
                 Dynamic={RequireData}
                 Call={Call}
                 ComponentType={"Component"}
-              ></ServiceComponentPortfolioPopup> : null
-            }
+              ></ServiceComponentPortfolioPopup>
+            ) : null}
             {IsComponentPicker && (
-              <Picker props={SharewebCategory} Call={Call}
-                usedFor="Task-Footertable" selectedCategoryData={CategoriesData} AllListId={RequireData}></Picker>
+              <Picker
+                props={SharewebCategory}
+                Call={Call}
+                usedFor="Task-Footertable"
+                selectedCategoryData={CategoriesData}
+                AllListId={RequireData}
+              ></Picker>
             )}
           </div>
         )}

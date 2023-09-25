@@ -254,7 +254,7 @@ const CreateWS = (props: any) => {
         if (componentDetails.length == 0) {
             WorstreamLatestId = 1;
         } else {
-            WorstreamLatestId = componentDetails[0].TaskLevel + 1;
+            WorstreamLatestId = componentDetails.length + 1;
         }
         SelectedTasks.forEach(async (item: any, index: any) => {
             if (item.Title != "") {
@@ -887,7 +887,7 @@ return new Promise<void>((resolve, reject) => {
             DueDate: myDate.editDate = myDate.editDate ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy") : null,
             ClientCategoryId: { "results": InheritClientCategory },
             SiteCompositionSettings: props?.props?.SiteCompositionSettings != undefined ? props?.props?.SiteCompositionSettings : "",
-            ClientTime: props?.props?.ClientTime != null ? props?.props?.ClientTime : "",
+            ClientTime: props?.props?.ClientTime == 'false' ? null : props?.props?.ClientTime,
             AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
             ResponsibleTeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
             TeamMembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] },
@@ -1322,7 +1322,7 @@ return new Promise<void>((resolve, reject) => {
                             //     return (
                             //         <>
                             <ul className='spfxbreadcrumb '>
-                                <li><a>Parent</a></li>
+                                
                                 {/* <td className='list-none mx-2'>{`${pare.Title} >`}</td> */}
                                 {
                                     ParentArray?.map((childsitem: any, index: any) => {
