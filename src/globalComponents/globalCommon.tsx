@@ -2430,24 +2430,21 @@ export const getParameterByName = async (name: any) => {
 };
 export const GetTaskId = (Item: any) => {
   const { Portfolio, TaskID, ParentTask, Id, TaskType } = Item;
-
   let taskIds = "";
-
   if (Portfolio?.PortfolioStructureID) {
-    taskIds += Portfolio.PortfolioStructureID;
+      taskIds += Portfolio.PortfolioStructureID;
   }
-
-  if (ParentTask?.TaskID && TaskType?.Title === "Task") {
-    taskIds +=
-      taskIds.length > 0 ? `-${ParentTask.TaskID}` : `${ParentTask.TaskID}`;
+  if (ParentTask?.TaskID && TaskType?.Title === 'Task') {
+      taskIds += taskIds.length > 0 ? `-${TaskID}` : `${TaskID}`;
   }
-
-  if (TaskID) {
-    taskIds += taskIds.length > 0 ? `-${TaskID}` : `${TaskID}`;
-  } else {
-    taskIds += taskIds.length > 0 ? `-T${Id}` : `T${Id}`;
+  if  (ParentTask==undefined&&TaskType?.Title === "Activities") {
+      taskIds += taskIds.length > 0 ? `-${TaskID}` : `${TaskID}`;
   }
-
+  // if (TaskID) {
+  //     taskIds += taskIds.length > 0 ? `-${TaskID}` : `${TaskID}`;
+  // } else {
+  //     taskIds += taskIds.length > 0 ? `-T${Id}` : `T${Id}`;
+  // }
   return taskIds;
 };
 export const findTaskHierarchy = (
