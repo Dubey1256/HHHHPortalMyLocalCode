@@ -7,6 +7,7 @@ import ITaskUserState from "./ITaskUserState";
 import TaskTeamMembers from "./TaskTeamMembers";
 import TaskTeamGroups from "./TaskTeamGroups";
 import spservices from "../../../spservices/spservices";
+import PageLoader from "../../../globalComponents/pageLoader";
 
 export default class AllTaskUserApp extends React.Component<ITaskUserProps, ITaskUserState> {
 
@@ -121,7 +122,7 @@ export default class AllTaskUserApp extends React.Component<ITaskUserProps, ITas
           <div className={`tab-pane fade ${this.activeTab === 'TEAM GROUPS' ? 'show active' : ''}`} id="Institution" role="tabpanel" aria-labelledby="profile-tab">
             {this.tabContent['TEAM GROUPS']}
           </div>
-        </div>          
+        </div>        
       </>
     );
   
