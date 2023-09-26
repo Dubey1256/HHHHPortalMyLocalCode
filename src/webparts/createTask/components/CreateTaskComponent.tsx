@@ -373,7 +373,7 @@ function CreateTaskComponent(props: any) {
     const loadRelevantTask = async (PortfolioId: any, UrlTask: any, PageTask: any) => {
         let allData: any = [];
         let query = '';
-        query = "Categories,AssignedTo/Title,AssignedTo/Name,PriorityRank,TaskType/Id,TaskType/Title,AssignedTo/Id,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,AttachmentFiles/FileName,ComponentLink/Url,FileLeafRef,TaskLevel,TaskLevel,Title,Id,PriorityRank,PercentComplete,Company,WebpartId,StartDate,DueDate,Status,Body,WebpartId,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=AssignedTo,AttachmentFiles,TaskType,Portfolio,Author,Editor&$orderby=Modified desc"
+        query = "Categories,AssignedTo/Title,AssignedTo/Name,PriorityRank,TaskType/Id,TaskType/Title,AssignedTo/Id,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,AttachmentFiles/FileName,ComponentLink/Url,FileLeafRef,TaskLevel,TaskLevel,Title,Id,PriorityRank,PercentComplete,Company,WebpartId,StartDate,DueDate,Status,Body,WebpartId,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ParentTask/TaskID,ParentTask/Title,ParentTask/Id&$expand=AssignedTo,ParentTask,AttachmentFiles,TaskType,Portfolio,Author,Editor&$orderby=Modified desc"
         let setRelTask = relevantTasks;
         const web = new Web(AllListId?.siteUrl);
         const batch = sp.createBatch();
@@ -1455,7 +1455,7 @@ function CreateTaskComponent(props: any) {
                     }
                     if (ToEmails.length > 0) {
                         var query = '';
-                        query += "AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,ComponentLink,Categories,FeedBack,ComponentLink,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,TaskCategories/Id,TaskCategories/Title,TaskType/Id,TaskType/Title,TaskID,CompletedDate,TaskLevel,TaskLevel&$expand=AssignedTo,AttachmentFiles,Author,Editor,TaskCategories,TaskType,Portfolio&$filter=Id eq " + itemId;
+                        query += "AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,ComponentLink,Categories,FeedBack,ComponentLink,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,TaskCategories/Id,TaskCategories/Title,TaskType/Id,TaskType/Title,TaskID,CompletedDate,TaskLevel,TaskLevel,ParentTask/TaskID,ParentTask/Title,ParentTask/Id&$expand=AssignedTo,AttachmentFiles,ParentTask,Author,Editor,TaskCategories,TaskType,Portfolio&$filter=Id eq " + itemId;
                         await getData(siteUrl, listId, query)
                             .then(async (data: any) => {
                                 data?.map((item: any) => {
@@ -1921,7 +1921,7 @@ function CreateTaskComponent(props: any) {
                                             return (
                                                 <>
                                                     <div className="block d-flex justify-content-between pt-1 px-2" style={{ width: "95%" }}>
-                                                        <a style={{ color: "#fff !important" }} target="_blank" href={`${base_Url}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                                        <a style={{ color: "#fff !important" }} data-interception="off" target="_blank" href={`${base_Url}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                         <a>
                                                             <span title="Remove Component" onClick={() => setSmartComponentData([])}
                                                                 style={{ backgroundColor: 'white' }} className="svg__iconbox svg__icon--cross hreflink mx-2"></span>
