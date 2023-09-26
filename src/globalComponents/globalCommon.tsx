@@ -2428,38 +2428,23 @@ export const getParameterByName = async (name: any) => {
     ? ""
     : decodeURIComponent(results[1].replace(/\+/g, " "));
 };
-
 export const GetTaskId = (Item: any) => {
-  const { Portfolio, TaskID, ParentTask, Id } = Item;
-
+  const { Portfolio, TaskID, ParentTask, Id, TaskType } = Item;
   let taskIds = "";
-
   if (Portfolio?.PortfolioStructureID) {
-    taskIds += Portfolio.PortfolioStructureID;
+      taskIds += Portfolio.PortfolioStructureID;
   }
-
-  if (ParentTask?.TaskID) {
-    if (taskIds?.length > 0) {
-      taskIds += `-${ParentTask.TaskID}`;
-    } else {
-      taskIds += `${ParentTask.TaskID}`;
-    }
+  if (ParentTask?.TaskID && TaskType?.Title === 'Task') {
+      taskIds += taskIds.length > 0 ? `-${TaskID}` : `${TaskID}`;
   }
-
-  if (TaskID) {
-    if (taskIds?.length > 0) {
-      taskIds += `-${TaskID}`;
-    } else {
-      taskIds += `${TaskID}`;
-    }
-  } else {
-    if (taskIds?.length > 0) {
-      taskIds += `-T${Id}`;
-    } else {
-      taskIds += `T${Id}`;
-    }
+  if  (ParentTask==undefined&&TaskType?.Title === "Activities") {
+      taskIds += taskIds.length > 0 ? `-${TaskID}` : `${TaskID}`;
   }
-
+  // if (TaskID) {
+  //     taskIds += taskIds.length > 0 ? `-${TaskID}` : `${TaskID}`;
+  // } else {
+  //     taskIds += taskIds.length > 0 ? `-T${Id}` : `T${Id}`;
+  // }
   return taskIds;
 };
 export const findTaskHierarchy = (
