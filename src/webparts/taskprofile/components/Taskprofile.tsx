@@ -437,6 +437,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
 
     }, () => {
+      this.getSmartTime();
       if (tempTask.Portfolio != undefined) {
         this.getAllTaskData();
       }
@@ -896,7 +897,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     }
     let breadCrumData1WithSubRow: any = globalCommon.findTaskHierarchy(this.state.Result, this.masterTaskData)
     console.log(breadCrumData1WithSubRow)
-    this.getSmartTime();
+  
 
     let array: any = [];
     const getValueSubRow = (row: any) => {

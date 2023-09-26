@@ -695,7 +695,7 @@ const TaskDashboard = (props: any) => {
     const columns = React.useMemo(
         () => [
             {
-                internalHeader: "Task Id",
+                internalHeader: "Id",
                 accessor: "TaskID",
                 style: { width: '70px' },
                 showSortIcon: true,
@@ -804,7 +804,7 @@ const TaskDashboard = (props: any) => {
                 ),
             },
             {
-                internalHeader: "% Complete",
+                internalHeader: "%",
                 accessor: "PercentComplete",
                 style: { width: '55px' },
                 showSortIcon: true,
@@ -868,7 +868,7 @@ const TaskDashboard = (props: any) => {
     const columnTimeReport = React.useMemo(
         () => [
             {
-                internalHeader: "Task Id",
+                internalHeader: "Id",
                 accessor: "TaskID",
                 style: { width: '70px' },
                 showSortIcon: true,
@@ -969,7 +969,7 @@ const TaskDashboard = (props: any) => {
             },
 
             {
-                internalHeader: "% Complete",
+                internalHeader: "%",
                 accessor: "PercentComplete",
                 style: { width: '55px' },
                 showSortIcon: true,
@@ -1738,10 +1738,10 @@ const TaskDashboard = (props: any) => {
                     + '<thead>'
                     + '<tr>'
                     + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Site' + '</th>'
-                    + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Task ID' + '</th>'
+                    + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'ID' + '</th>'
                     + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Title' + '</th>'
                     + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Category' + '</th>'
-                    + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + '% Complete' + '</th>'
+                    + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + '%' + '</th>'
                     + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Priority' + '</th>'
                     + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Team' + '</th>'
                     + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Duedate' + '</th>'
@@ -1807,7 +1807,7 @@ const TaskDashboard = (props: any) => {
                 + 'Site'
                 + '</th>'
                 + '<th align="left" style="line-height:18px;font-size:15px;padding:15px;width:10%" bgcolor="#f5f5f5">'
-                + 'Task ID'
+                + 'ID'
                 + '</th>'
                 + '<th align="left" style="line-height:18px;font-size:15px;padding:15px;width:40%" bgcolor="#f5f5f5">'
                 + 'Title'
@@ -1932,7 +1932,7 @@ const TaskDashboard = (props: any) => {
                                     + '<thead>'
                                     + '<tr>'
                                     + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Site' + '</th>'
-                                    + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Task ID' + '</th>'
+                                    + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'ID' + '</th>'
                                     + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Title' + '</th>'
                                     + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Category' + '</th>'
                                     + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + '% Complete' + '</th>'

@@ -996,6 +996,7 @@ const CreateActivity = (props: any) => {
 
                         if(AllItems?.TaskType?.Title == 'Workstream'){
                             var PortfolioData = AllItems?.Portfolio?.Id
+                            var ParentData = AllItems?.Id
                         }
                         else{
                             var PortfolioData = AllItems?.Id
@@ -1013,7 +1014,7 @@ const CreateActivity = (props: any) => {
                             PortfolioId: PortfolioData,
                             PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
                             TaskTypeId: SharewebTasknewTypeId,
-                            ParentTaskId: AllItems.Id,
+                            ParentTaskId: ParentData != undefined?ParentData:null,
                             ClientCategoryId: { "results": ClientCategory },
                             SharewebTaskTypeId: SharewebTasknewTypeId,
                             Body: AllItems?.Description,
