@@ -47,6 +47,7 @@ const RelevantDocuments = (props: any,ref:any) => {
                     item.Description=item?.Body
                     // item.Author = item?.Author?.Title;
                     // item.Editor = item?.Editor?.Title;
+                    item.CreatedDate=moment(item?.Created).format("'DD/MM/YYYY HH:mm'");
                     item.ModifiedDate = moment(item?.ModifiedDate).format("'DD/MM/YYYY HH:mm'");
                     if(item.ItemRank===6){
                         keydoc.push(item)
