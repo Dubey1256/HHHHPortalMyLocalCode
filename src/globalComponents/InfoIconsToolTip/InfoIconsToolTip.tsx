@@ -1,10 +1,12 @@
 import * as React from "react";
 import { usePopperTooltip } from "react-popper-tooltip";
 import "react-popper-tooltip/dist/styles.css";
-
+import FeedbackGlobalInfoIcon from "../FeedbackGlobalInfoIcon";
 
 export default function InfoIconsToolTip({ Discription, row }: any) {
     const [controlledVisible, setControlledVisible] = React.useState(false);
+    const [feedbackArray, setfeedbackArray] = React.useState([]);
+    const [showHoverTitle, setshowHoverTitle] = React.useState<any>();
     const [action, setAction] = React.useState("");
 
     const {
@@ -22,11 +24,32 @@ export default function InfoIconsToolTip({ Discription, row }: any) {
         onVisibleChange: setControlledVisible,
     });
 
+   
     const handlAction = (newAction: any) => {
         if (action === "click" && newAction === "hover") return;
+        let feedback:any=[];
+        if(row!=undefined && newAction=='click'||newAction=='hover'){
+            
+           try {
+             feedback=JSON.parse(row?.FeedBack)
+           
+           } catch (error) {
+            
+           }
+           setfeedbackArray(feedback);  
+        }
+        if(newAction=="hover"&& feedback?.length>0){
+
+     let hoverdata=feedback[0]?.FeedBackDescriptions[0].Title.replace(/\n/g, "")
+     if(feedback[0]?.FeedBackDescriptions?.length>1){
+        hoverdata=hoverdata+"...."
+     }
+     setshowHoverTitle(hoverdata)
+        }
         setAction(newAction);
         setControlledVisible(true);
     };
+    
 
 
     const handleMouseLeave = () => {
@@ -61,14 +84,16 @@ export default function InfoIconsToolTip({ Discription, row }: any) {
                         <div className="tootltip-title">{row?.TaskID != undefined ? row?.TaskID : ""} :- {row?.Title}</div>
                         <button className="toolTipCross" onClick={handleCloseClick}><div className="popHoverCross">×</div></button>
                     </div>
-                    <div className="toolsbox"><span dangerouslySetInnerHTML={{ __html: tooltiphierarchy, }}></span></div>
+                    <div className="toolsbox">
+                    <FeedbackGlobalInfoIcon FeedBack={feedbackArray}/>
+                            </div>
                     <div {...getArrowProps({ className: "tooltip-arrow" })} />
 
                 </div>
             )}
             {action === "hover" && visible && (
                 <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container" })}>
-                    <span dangerouslySetInnerHTML={{ __html: Discription, }}></span>
+                    <span dangerouslySetInnerHTML={{ __html: showHoverTitle }}></span>
                     <div {...getArrowProps({ className: "tooltip-arrow" })} />
                 </div>
             )}
