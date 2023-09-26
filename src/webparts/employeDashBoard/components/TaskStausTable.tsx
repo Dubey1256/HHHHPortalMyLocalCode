@@ -356,7 +356,9 @@ const TaskStatusTbl = () => {
           <ComingBirthday />
         </div>
       </div>
-      <div className="row">{/* <MyNotes/> */}</div>
+      <div className="row">
+        <MyNotes />
+      </div>
     </div>
   );
 };
