@@ -824,8 +824,10 @@ function TeamPortlioTable(SelectedProp: any) {
       temp.subRows = AllSiteTasksData?.filter(
         (elem1: any) =>
           elem1?.TaskType?.Id != undefined &&
-          elem1?.TaskType?.Id != 1 &&
-          elem1?.ParentTask?.Id === undefined &&
+          elem1?.TaskType?.Level != 1 &&
+          elem1?.TaskType?.Level != 2 &&
+          (elem1?.ParentTask === undefined ||
+            elem1?.ParentTask?.TaskID === null) &&
           elem1?.Portfolio?.Id === SelectedProp?.props?.Id
       );
       countAllTasksData = countAllTasksData.concat(temp.subRows);
