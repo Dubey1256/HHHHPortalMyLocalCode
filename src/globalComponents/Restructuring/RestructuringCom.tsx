@@ -33,11 +33,11 @@ const RestructuringCom = (props: any, ref: any) => {
         if(obj?.original?.Item_x0020_Type === 'Task'){
           const matchingTask = props?.AllMasterTasksData?.find((task:any) => obj?.original?.Portfolio?.Id === task?.Id);
           if (matchingTask) {
-            portfolioTypeCheck = matchingTask?.PortfolioType;
-            obj.original.PortfolioType = matchingTask?.PortfolioType;
+            portfolioTypeCheck = matchingTask?.PortfolioType?.Title;
+            obj.original.PortfolioTypeCheck = matchingTask?.PortfolioType?.Title;
           }else{
             portfolioTypeCheck = '';
-            obj.original.PortfolioType = '';
+            obj.original.PortfolioTypeCheck = '';
           }
         }
         array.push(obj.original);
@@ -45,90 +45,82 @@ const RestructuringCom = (props: any, ref: any) => {
       setRestructureItem(array);
 
       props.allData?.map((obj:any)=>{
-        if(obj?.Item_x0020_Type === 'Task' || obj?.Title == "Others"){
+        obj.PortfolioTypeCheck=''
           const matchingTask = props?.AllMasterTasksData?.find((task:any) => obj?.Portfolio?.Id === task?.Id);
           if (matchingTask && portfolioTypeCheck != '') {
-            obj.PortfolioType = matchingTask.PortfolioType;
+            obj.PortfolioTypeCheck = matchingTask?.PortfolioType?.Title;
           }else{
             if(portfolioTypeCheck != '' && obj?.Title == "Others"){
-              obj.PortfolioType = portfolioTypeCheck;
+              obj.PortfolioTypeCheck = portfolioTypeCheck;
             }else{
-              obj.PortfolioType = ''
+              obj.PortfolioTypeCheck = ''
             }
            }
-        }
         if (obj?.subRows.length > 0 && obj?.subRows != undefined) {
           obj?.subRows?.map((sub: any) => {
-            if(sub?.Item_x0020_Type === 'Task'  || obj?.Title == "Others"){
+            sub.PortfolioTypeCheck=''
               const matchingTask = props?.AllMasterTasksData?.find((task:any) => sub?.Portfolio?.Id === task?.Id);
               if (matchingTask && portfolioTypeCheck != '') {
-                sub.PortfolioType = matchingTask.PortfolioType;
+                sub.PortfolioTypeCheck = matchingTask?.PortfolioType?.Title;
               }else{
                 if(portfolioTypeCheck != '' && obj?.Title == "Others"){
-                  sub.PortfolioType = portfolioTypeCheck;
+                  sub.PortfolioTypeCheck = portfolioTypeCheck;
                 }else{
-                  sub.PortfolioType = ''
+                  sub.PortfolioTypeCheck = ''
                 }
               }
-            }
             if (sub?.subRows?.length > 0 && sub?.subRows != undefined) {
               sub?.subRows?.map((feature: any) => {
-                if(feature?.Item_x0020_Type === 'Task'  || obj?.Title == "Others"){
+                feature.PortfolioTypeCheck=''
                   const matchingTask = props?.AllMasterTasksData?.find((task:any) => feature?.Portfolio?.Id === task?.Id);
                   if (matchingTask && portfolioTypeCheck != '') {
-                    feature.PortfolioType = matchingTask.PortfolioType;
+                    feature.PortfolioTypeCheck = matchingTask?.PortfolioType?.Title;
                   }else{
                     if(portfolioTypeCheck != '' && obj?.Title == "Others"){
-                      feature.PortfolioType = portfolioTypeCheck;
+                      feature.PortfolioTypeCheck = portfolioTypeCheck;
                     }else{
-                      feature.PortfolioType = ''
+                      feature.PortfolioTypeCheck = ''
                     }
                   }
-                }
-
-                  if (feature?.subRows?.length > 0 && feature?.subRows != undefined) {
+                if (feature?.subRows?.length > 0 && feature?.subRows != undefined) {
                   feature?.subRows?.map((activity: any) => {
-                  if(activity?.Item_x0020_Type === 'Task'  || obj?.Title == "Others"){
+                    activity.PortfolioTypeCheck=''
                   const matchingTask = props?.AllMasterTasksData?.find((task:any) => activity?.Portfolio?.Id === task?.Id);
                   if (matchingTask && portfolioTypeCheck != '') {
-                    activity.PortfolioType = matchingTask.PortfolioType;
+                    activity.PortfolioTypeCheck = matchingTask?.PortfolioType?.Title;
                   }else{
                     if(portfolioTypeCheck != '' && obj?.Title == "Others"){
-                      activity.PortfolioType = portfolioTypeCheck;
+                      activity.PortfolioTypeCheck = portfolioTypeCheck;
                     }else{
-                      activity.PortfolioType = ''
+                      activity.PortfolioTypeCheck = ''
                     }
                    }
-                }
                 if (activity?.subRows?.length > 0 && activity?.subRows != undefined) {
                   activity?.subRows?.map((wrkstrm: any) => {
-                    if(wrkstrm?.Item_x0020_Type === 'Task'  || obj?.Title == "Others"){
+                    wrkstrm.PortfolioTypeCheck=''
                       const matchingTask = props?.AllMasterTasksData?.find((task:any) => wrkstrm?.Portfolio?.Id === task?.Id);
                       if (matchingTask && portfolioTypeCheck != '') {
-                        wrkstrm.PortfolioType = matchingTask.PortfolioType;
+                        wrkstrm.PortfolioTypeCheck = matchingTask?.PortfolioType?.Title;
                       }else{
                         if(portfolioTypeCheck != '' && obj?.Title == "Others"){
-                          wrkstrm.PortfolioType = portfolioTypeCheck;
+                          wrkstrm.PortfolioTypeCheck = portfolioTypeCheck;
                         }else{
-                          wrkstrm.PortfolioType = ''
+                          wrkstrm.PortfolioTypeCheck = ''
                         }
                         }
-                    }
-
                     if (wrkstrm?.subRows?.length > 0 && wrkstrm?.subRows != undefined) {
                       wrkstrm?.subRows?.map((task: any) => {
-                        if(task?.Item_x0020_Type === 'Task'  || obj?.Title == "Others"){
+                        task.PortfolioTypeCheck=''
                           const matchingTask = props?.AllMasterTasksData?.find((task:any) => task?.Portfolio?.Id === task?.Id);
                           if (matchingTask && portfolioTypeCheck != '') {
-                            task.PortfolioType = matchingTask.PortfolioType;
+                            task.PortfolioTypeCheck = matchingTask?.PortfolioType?.Title;
                           }else{
                             if(portfolioTypeCheck != '' && obj?.Title == "Others"){
-                              task.PortfolioType = portfolioTypeCheck;
+                              task.PortfolioTypeCheck = portfolioTypeCheck;
                             }else{
-                              task.PortfolioType = ''
+                              task.PortfolioTypeCheck = ''
                             }
                           }
-                        }
                       })}
                   })}
                   })}
@@ -185,7 +177,7 @@ const RestructuringCom = (props: any, ref: any) => {
   const buttonRestructureCheck = () => {
     let checkItem_x0020_Type: any = restructureItem[0]?.Item_x0020_Type == "Task" ? restructureItem[0]?.TaskType?.Id : restructureItem[0]?.Item_x0020_Type;
     let checkSiteType: any = restructureItem[0]?.siteType;
-    let PortfolioType: any = restructureItem[0]?.PortfolioType?.Title;
+    let PortfolioType: any = restructureItem[0]?.PortfolioTypeCheck;
     let checkPortfolioType: boolean = true;
     let alertNotify: boolean = true;
     let alertNotifyFirst: boolean = true;
@@ -193,7 +185,7 @@ const RestructuringCom = (props: any, ref: any) => {
     if (restructureItem != undefined && restructureItem?.length > 0) {
       if (restructureItem?.length > 1) {
         restructureItem.map((items: any, length: any) => {
-          if (PortfolioType === items?.PortfolioType?.Title && checkPortfolioType) {
+          if (PortfolioType === items?.PortfolioTypeCheck && checkPortfolioType) {
             if ((checkItem_x0020_Type === items?.TaskType?.Id || checkItem_x0020_Type === items?.Item_x0020_Type) && alertNotifyFirst) {
               if (checkSiteType == items?.siteType && alertNotify) {
                 itemTypes = "SAME_TYPE"
@@ -267,10 +259,10 @@ const RestructuringCom = (props: any, ref: any) => {
               let actionsPerformed = false;
               restructureItem?.map((items: any) => {
                 let newObj: any;
-                if (items?.PortfolioType?.Id === obj.PortfolioType?.Id && !actionsPerformed) {
+                if (items?.PortfolioTypeCheck === obj.PortfolioTypeCheck && !actionsPerformed) {
                   if (items?.Id !== obj.Id && obj.Item_x0020_Type != "Task") {
                     obj.isRestructureActive = true;
-                    obj.Restructuring = obj?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                    obj.Restructuring = obj?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                   } else {
                     newObj = { Title: obj.Title, TaskType: { Id: obj.TaskType?.Id == undefined ? '' : obj.TaskType?.Id }, Id: obj.Id, Item_x0020_Type: obj.Item_x0020_Type, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle };
                     newChildarray.push(newObj);
@@ -295,10 +287,10 @@ const RestructuringCom = (props: any, ref: any) => {
               restructureItem?.map((items: any) => {
 
                 let newObj: any;
-                if (items?.PortfolioType?.Id === obj.PortfolioType?.Id && !actionsPerformed) {
+                if (items?.PortfolioTypeCheck === obj.PortfolioTypeCheck && !actionsPerformed) {
                   if (items?.Id !== obj.Id && obj.Item_x0020_Type != "Task") {
                     obj.isRestructureActive = true;
-                    obj.Restructuring = obj?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                    obj.Restructuring = obj?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                   } else {
                     newObj = { Title: obj.Title, TaskType: { Id: obj.TaskType?.Id == undefined ? '' : obj.TaskType?.Id }, Id: obj.Id, Item_x0020_Type: obj.Item_x0020_Type, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle };
                     newChildarray.push(newObj);
@@ -315,7 +307,7 @@ const RestructuringCom = (props: any, ref: any) => {
                     obj?.subRows?.map((sub: any) => {
                       if (items?.Id !== sub.Id && sub.Item_x0020_Type != "Task" && sub.Item_x0020_Type != 'Feature') {
                         sub.isRestructureActive = true;
-                        sub.Restructuring = sub?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                        sub.Restructuring = sub?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                       } else {
                         if (items?.Id === sub.Id) {
                           newObj = {
@@ -364,10 +356,10 @@ const RestructuringCom = (props: any, ref: any) => {
               let actionsPerformed = false;
               restructureItem?.map((items: any) => {
                 let newObj: any;
-                if (items?.PortfolioType?.Id === obj.PortfolioType?.Id && !actionsPerformed) {
+                if (items?.PortfolioTypeCheck === obj.PortfolioTypeCheck && !actionsPerformed) {
                   if (items?.Id !== obj.Id && obj.Item_x0020_Type != "Task") {
                     obj.isRestructureActive = true;
-                    obj.Restructuring = obj?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                    obj.Restructuring = obj?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                   } else {
                     newObj = { Title: obj.Title, TaskType: { Id: obj.TaskType?.Id == undefined ? '' : obj.TaskType?.Id }, Id: obj.Id, Item_x0020_Type: obj.Item_x0020_Type, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle };
                     newChildarray.push(newObj);
@@ -392,10 +384,10 @@ const RestructuringCom = (props: any, ref: any) => {
               let actionsPerformed = false;
               restructureItem?.map((items: any) => {
                 let newObj: any;
-                if (items?.PortfolioType?.Id === obj.PortfolioType?.Id && !actionsPerformed) {
+                if (items?.PortfolioTypeCheck === obj.PortfolioTypeCheck && !actionsPerformed) {
                   if (items?.Id !== obj.Id && obj.Item_x0020_Type != "Task") {
                     obj.isRestructureActive = true;
-                    obj.Restructuring = obj?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                    obj.Restructuring = obj?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                   } else {
                     newObj = { Title: obj.Title, TaskType: { Id: obj.TaskType?.Id == undefined ? '' : obj.TaskType?.Id }, Id: obj.Id, Item_x0020_Type: obj.Item_x0020_Type, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle };
                     newChildarray.push(newObj);
@@ -412,7 +404,7 @@ const RestructuringCom = (props: any, ref: any) => {
                     obj?.subRows?.map((sub: any) => {
                       if (items?.Id !== sub.Id && sub.Item_x0020_Type != "Task" && sub.Item_x0020_Type != 'Feature') {
                         sub.isRestructureActive = true;
-                        sub.Restructuring = sub?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                        sub.Restructuring = sub?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                       } else {
                         if (items?.Id === sub.Id) {
                           newObj = {
@@ -446,10 +438,10 @@ const RestructuringCom = (props: any, ref: any) => {
             let actionsPerformed = false;
             restructureItem?.map((items: any) => {
               let newObj: any;
-              if (items?.PortfolioType?.Id === obj.PortfolioType?.Id && !actionsPerformed) {
+              if (items?.PortfolioTypeCheck === obj.PortfolioTypeCheck && !actionsPerformed) {
                 if (items?.Id !== obj.Id && obj.Item_x0020_Type != "Task") {
                   obj.isRestructureActive = true;
-                  obj.Restructuring = obj?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                  obj.Restructuring = obj?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                 } else {
                   newObj = { Title: obj.Title, TaskType: { Id: obj.TaskType?.Id == undefined ? '' : obj.TaskType?.Id }, Id: obj.Id, Item_x0020_Type: obj.Item_x0020_Type, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle };
                   newChildarray.push(newObj);
@@ -466,7 +458,7 @@ const RestructuringCom = (props: any, ref: any) => {
                   obj?.subRows?.map((sub: any) => {
                     if (items?.Id !== sub.Id && sub.Item_x0020_Type != "Task" && sub.Item_x0020_Type != 'Feature') {
                       sub.isRestructureActive = true;
-                      sub.Restructuring = sub?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                      sub.Restructuring = sub?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                     } else {
                       if (items?.Id === sub.Id) {
                         newObj = {
@@ -498,11 +490,11 @@ const RestructuringCom = (props: any, ref: any) => {
             let actionsPerformed = false;
             restructureItem?.map((items: any) => {
               let newObj: any;
-              if (items?.PortfolioType?.Id === obj.PortfolioType?.Id && !actionsPerformed) {
+              if (items?.PortfolioTypeCheck === obj.PortfolioTypeCheck && !actionsPerformed) {
                 if (!actionsPerformed) {
                   if (items?.Id !== obj.Id && obj?.TaskType?.Id != 2) {
                     obj.isRestructureActive = true;
-                    obj.Restructuring = obj?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                    obj.Restructuring = obj?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                     if ((obj.TaskType?.Id == 1 || obj.TaskType?.Id == 3) && obj?.siteType !== items?.siteType) {
                       obj.isRestructureActive = false;
                     }
@@ -531,7 +523,7 @@ const RestructuringCom = (props: any, ref: any) => {
                   obj?.subRows?.map((sub: any) => {
                     if (items?.Id !== sub.Id && sub?.TaskType?.Id != 2) {
                       sub.isRestructureActive = true;
-                      sub.Restructuring = sub?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                      sub.Restructuring = sub?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                       if ((sub.TaskType?.Id == 1 || sub.TaskType?.Id == 3) && sub?.siteType !== items?.siteType) {
                         sub.isRestructureActive = false;
                       }
@@ -563,7 +555,7 @@ const RestructuringCom = (props: any, ref: any) => {
                       sub?.subRows?.map((feature: any) => {
                         if (items?.Id !== feature.Id && feature?.TaskType?.Id != 2) {
                           feature.isRestructureActive = true;
-                          feature.Restructuring = feature?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                          feature.Restructuring = feature?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                           if ((feature.TaskType?.Id == 1 || feature.TaskType?.Id == 3) && feature?.siteType !== items?.siteType) {
                             feature.isRestructureActive = false;
                           }
@@ -597,7 +589,7 @@ const RestructuringCom = (props: any, ref: any) => {
                           feature?.subRows?.map((activity: any) => {
                             if (items?.Id !== activity.Id && activity?.TaskType?.Id != 2) {
                               activity.isRestructureActive = true;
-                              activity.Restructuring = activity?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                              activity.Restructuring = activity?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                               if ((activity.TaskType?.Id == 1 || activity.TaskType?.Id == 3) && activity?.siteType !== items?.siteType) {
                                 activity.isRestructureActive = false;
                               }
@@ -629,7 +621,7 @@ const RestructuringCom = (props: any, ref: any) => {
                               activity?.subRows?.map((wrkstrm: any) => {
                                 if (items?.Id !== wrkstrm.Id && wrkstrm?.TaskType?.Id != 2) {
                                   wrkstrm.isRestructureActive = true;
-                                  wrkstrm.Restructuring = wrkstrm?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                                  wrkstrm.Restructuring = wrkstrm?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                                   if ((wrkstrm.TaskType?.Id == 1 || wrkstrm.TaskType?.Id == 3) && wrkstrm?.siteType !== items?.siteType) {
                                     wrkstrm.isRestructureActive = false;
                                   }
@@ -659,7 +651,7 @@ const RestructuringCom = (props: any, ref: any) => {
                                   wrkstrm?.subRows?.map((task: any) => {
                                     if (items?.Id !== task.Id && task?.TaskType?.Id != 2) {
                                       task.isRestructureActive = true;
-                                      task.Restructuring = task?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                                      task.Restructuring = task?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                                       if ((task.TaskType?.Id == 1 || task.TaskType?.Id == 3) && task?.siteType !== items?.siteType) {
                                         task.isRestructureActive = false;
                                       }
@@ -737,10 +729,10 @@ const RestructuringCom = (props: any, ref: any) => {
                   let newChildarray: any = [];
                   let newarrays: any = [];
                   let newObj: any;
-                  if (items?.PortfolioType?.Id === obj.PortfolioType?.Id) {
+                  if (items?.PortfolioTypeCheck === obj.PortfolioTypeCheck) {
                     if (items?.Id !== obj.Id && obj.Item_x0020_Type != "Task") {
                       obj.isRestructureActive = true;
-                      obj.Restructuring = obj?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                      obj.Restructuring = obj?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                     } else {
                       newObj = { Title: obj.Title, TaskType: { Id: obj.TaskType?.Id == undefined ? '' : obj.TaskType?.Id }, Id: obj.Id, Item_x0020_Type: obj.Item_x0020_Type, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle };
                       newChildarray.push(newObj);
@@ -759,10 +751,10 @@ const RestructuringCom = (props: any, ref: any) => {
                     let newChildarray: any = [];
                     let newarrays: any = [];
                     let newObj: any;
-                    if (items?.PortfolioType?.Id === obj.PortfolioType?.Id) {
+                    if (items?.PortfolioTypeCheck === obj.PortfolioTypeCheck) {
                       if (items?.Id !== obj.Id && obj.Item_x0020_Type != "Task") {
                         obj.isRestructureActive = true;
-                        obj.Restructuring = obj?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                        obj.Restructuring = obj?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                       } else {
                         newObj = { Title: obj.Title, TaskType: { Id: obj.TaskType?.Id == undefined ? '' : obj.TaskType?.Id }, Id: obj.Id, Item_x0020_Type: obj.Item_x0020_Type, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle };
                         newChildarray.push(newObj);
@@ -778,7 +770,7 @@ const RestructuringCom = (props: any, ref: any) => {
                         obj.subRows?.map((sub: any) => {
                           if (sub.Item_x0020_Type != "Task" && sub.Item_x0020_Type != "Feature") {
                             sub.isRestructureActive = true;
-                            sub.Restructuring = sub?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                            sub.Restructuring = sub?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                           }
                         })
                       }
@@ -792,10 +784,10 @@ const RestructuringCom = (props: any, ref: any) => {
               let newChildarray: any = [];
               let newarrays: any = [];
               let newObj: any;
-              if (items?.PortfolioType?.Id === obj.PortfolioType?.Id) {
+              if (items?.PortfolioTypeCheck === obj.PortfolioTypeCheck) {
                 if (items?.Id !== obj.Id && obj.Item_x0020_Type != "Task") {
                   obj.isRestructureActive = true;
-                  obj.Restructuring = obj?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                  obj.Restructuring = obj?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                 } else {
 
                   newObj = { Title: obj.Title, TaskType: { Id: obj.TaskType?.Id == undefined ? '' : obj.TaskType?.Id }, Id: obj.Id, Item_x0020_Type: obj.Item_x0020_Type, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle };
@@ -812,7 +804,7 @@ const RestructuringCom = (props: any, ref: any) => {
                   obj.subRows?.map((sub: any) => {
                     if (sub.Item_x0020_Type != "Task" && sub.Item_x0020_Type != "Feature") {
                       sub.isRestructureActive = true;
-                      sub.Restructuring = sub?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                      sub.Restructuring = sub?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                     }
                   })
                 }
@@ -830,10 +822,10 @@ const RestructuringCom = (props: any, ref: any) => {
                   let newChildarray: any = [];
                   let newarrays: any = [];
                   let newObj: any;
-                  if (items?.PortfolioType?.Id === obj.PortfolioType?.Id) {
+                  if (items?.PortfolioTypeCheck === obj.PortfolioTypeCheck) {
                     if (items?.Id !== obj.Id && obj.Item_x0020_Type != "Task" && obj.Item_x0020_Type != "SubComponent" && obj.Item_x0020_Type != "Feature") {
                       obj.isRestructureActive = true;
-                      obj.Restructuring = obj?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                      obj.Restructuring = obj?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                     } else {
                       if (items?.Id == obj.Id && obj.Item_x0020_Type != "Task") {
                         newObj = {
@@ -873,10 +865,10 @@ const RestructuringCom = (props: any, ref: any) => {
                     let newChildarray: any = [];
                     let newarrays: any = [];
                     let newObj: any;
-                    if (items?.PortfolioType?.Id === obj.PortfolioType?.Id) {
+                    if (items?.PortfolioTypeCheck === obj.PortfolioTypeCheck) {
                       if (items?.Id !== obj.Id && obj.Item_x0020_Type != "Task" && obj.Item_x0020_Type != "Feature") {
                         obj.isRestructureActive = true;
-                        obj.Restructuring = obj?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                        obj.Restructuring = obj?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                       } else {
                         if (items?.Id == obj.Id) {
                           newObj = {
@@ -885,7 +877,7 @@ const RestructuringCom = (props: any, ref: any) => {
                           newarrays.push(obj);
                           setRestructuredItemarray(newarrays);
                           setCheckSubChilds(obj);
-                          newChildarray.push(newObj)
+                          newChildarray.push(newObj);
                           setRestructureChecked(newChildarray);
                           ArrayTest.push(newObj)
                           obj.isRestructureActive = false;
@@ -895,7 +887,7 @@ const RestructuringCom = (props: any, ref: any) => {
                         obj.subRows?.map((sub: any) => {
                           if (items?.Id !== sub.Id && sub.Item_x0020_Type != "Task" && sub.Item_x0020_Type != "Feature") {
                             sub.isRestructureActive = true;
-                            sub.Restructuring = sub?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                            sub.Restructuring = sub?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                           } else {
                             if (items?.Id == sub.Id) {
                               newObj = {
@@ -924,10 +916,10 @@ const RestructuringCom = (props: any, ref: any) => {
               let newChildarray: any = [];
               let newarrays: any = [];
               let newObj: any;
-              if (items?.PortfolioType?.Id === obj.PortfolioType?.Id) {
+              if (items?.PortfolioTypeCheck === obj.PortfolioTypeCheck) {
                 if (items?.Id !== obj.Id && obj.Item_x0020_Type != "Task" && obj.Item_x0020_Type != "Feature") {
                   obj.isRestructureActive = true;
-                  obj.Restructuring = obj?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                  obj.Restructuring = obj?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                 } else {
                   if (items?.Id == obj.Id) {
                     newObj = {
@@ -946,7 +938,7 @@ const RestructuringCom = (props: any, ref: any) => {
                   obj.subRows?.map((sub: any) => {
                     if (items?.Id !== sub.Id && sub.Item_x0020_Type != "Task" && sub.Item_x0020_Type != "Feature") {
                       sub.isRestructureActive = true;
-                      sub.Restructuring = sub?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                      sub.Restructuring = sub?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                     } else {
                       if (items?.Id == sub.Id) {
                         newObj = {
@@ -974,10 +966,10 @@ const RestructuringCom = (props: any, ref: any) => {
             let newChildarray: any = [];
             let newarrays: any = [];
             let newObj: any;
-            if (items?.PortfolioType?.Id === obj.PortfolioType?.Id) {
+            if (items?.PortfolioTypeCheck === obj.PortfolioTypeCheck) {
               if (obj.Item_x0020_Type != "Task" && obj.Item_x0020_Type != "Feature") {
                 obj.isRestructureActive = true;
-                obj.Restructuring = obj?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                obj.Restructuring = obj?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
               }
               if (items?.Id == obj.Id) {
                 newObj = { Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, TaskType: { Id: obj.TaskType?.Id == undefined ? '' : obj.TaskType?.Id }, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle, };
@@ -993,7 +985,7 @@ const RestructuringCom = (props: any, ref: any) => {
                 obj.subRows?.map((sub: any) => {
                   if (sub.Item_x0020_Type != "Task" && sub.Item_x0020_Type != "Feature") {
                     sub.isRestructureActive = true;
-                    sub.Restructuring = sub?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                    sub.Restructuring = sub?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                   }
                   if (items?.Id == sub.Id) {
                     newObj = {
@@ -1038,7 +1030,7 @@ const RestructuringCom = (props: any, ref: any) => {
           let newarrays: any = [];
           array?.map((obj: any) => {
             let newObj: any;
-            if (items?.PortfolioType?.Id === obj.PortfolioType?.Id) {
+            if (items?.PortfolioTypeCheck === obj.PortfolioTypeCheck) {
               if (obj.TaskType?.Id !== 2) {
                 let checkchild: any = 0;
                 if (items.subRows != undefined) {
@@ -1059,16 +1051,16 @@ const RestructuringCom = (props: any, ref: any) => {
                 if (checkchild == 3) {
                   if (obj.Item_x0020_Type !== "Task") {
                     obj.isRestructureActive = true;
-                    obj.Restructuring = obj?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                    obj.Restructuring = obj?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                   }
                 } else if (checkchild == 2) {
                   if (obj.TaskType?.Id !== 3) {
                     obj.isRestructureActive = true;
-                    obj.Restructuring = obj?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                    obj.Restructuring = obj?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                   }
                 } else {
                   obj.isRestructureActive = true;
-                  obj.Restructuring = obj?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                  obj.Restructuring = obj?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                 }
 
 
@@ -1108,16 +1100,16 @@ const RestructuringCom = (props: any, ref: any) => {
                     if (checkchild == 3) {
                       if (sub.Item_x0020_Type !== "Task") {
                         sub.isRestructureActive = true;
-                        sub.Restructuring = sub?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                        sub.Restructuring = sub?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                       }
                     } else if (checkchild == 2) {
                       if (sub.TaskType?.Id !== 3) {
                         sub.isRestructureActive = true;
-                        sub.Restructuring = sub?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                        sub.Restructuring = sub?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                       }
                     } else {
                       sub.isRestructureActive = true;
-                      sub.Restructuring = sub?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                      sub.Restructuring = sub?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                     }
                   }
                   if (items?.Id == obj.Id) {
@@ -1163,16 +1155,16 @@ const RestructuringCom = (props: any, ref: any) => {
                         if (checkchild == 3) {
                           if (feature.Item_x0020_Type !== "Task") {
                             feature.isRestructureActive = true;
-                            feature.Restructuring = feature?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                            feature.Restructuring = feature?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                           }
                         } else if (checkchild == 2) {
                           if (feature.TaskType?.Id !== 3) {
                             feature.isRestructureActive = true;
-                            feature.Restructuring = feature?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                            feature.Restructuring = feature?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                           }
                         } else {
                           feature.isRestructureActive = true;
-                          feature.Restructuring = feature?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                          feature.Restructuring = feature?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                         }
 
                       }
@@ -1221,16 +1213,16 @@ const RestructuringCom = (props: any, ref: any) => {
                             if (checkchild == 3) {
                               if (activity.Item_x0020_Type !== "Task") {
                                 activity.isRestructureActive = true;
-                                activity.Restructuring = activity?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                                activity.Restructuring = activity?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                               }
                             } else if (checkchild == 2) {
                               if (activity.TaskType?.Id !== 3) {
                                 activity.isRestructureActive = true;
-                                activity.Restructuring = activity?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                                activity.Restructuring = activity?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                               }
                             } else {
                               activity.isRestructureActive = true;
-                              activity.Restructuring = activity?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                              activity.Restructuring = activity?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                             }
 
                           }
@@ -1283,16 +1275,16 @@ const RestructuringCom = (props: any, ref: any) => {
                                 if (checkchild == 3) {
                                   if (wrkstrm.Item_x0020_Type !== "Task") {
                                     wrkstrm.isRestructureActive = true;
-                                    wrkstrm.Restructuring = wrkstrm?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                                    wrkstrm.Restructuring = wrkstrm?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                                   }
                                 } else if (checkchild == 2) {
                                   if (wrkstrm.TaskType?.Id !== 3) {
                                     wrkstrm.isRestructureActive = true;
-                                    wrkstrm.Restructuring = wrkstrm?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                                    wrkstrm.Restructuring = wrkstrm?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                                   }
                                 } else {
                                   wrkstrm.isRestructureActive = true;
-                                  wrkstrm.Restructuring = wrkstrm?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                                  wrkstrm.Restructuring = wrkstrm?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                                 }
 
                               }
@@ -1343,16 +1335,16 @@ const RestructuringCom = (props: any, ref: any) => {
           let newarrays: any = [];
           array?.map((obj: any) => {
             let newObj: any;
-            if (items?.PortfolioType?.Id === obj.PortfolioType?.Id) {
+            if (items?.PortfolioTypeCheck === obj.PortfolioTypeCheck) {
               if (obj.TaskType?.Id !== 2) {
                 if (items.subRows != undefined && items.subRows.length > 0) {
                   if (obj.TaskType?.Id !== 3) {
                     obj.isRestructureActive = true;
-                    obj.Restructuring = obj?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                    obj.Restructuring = obj?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                   }
                 } else {
                   obj.isRestructureActive = true;
-                  obj.Restructuring = obj?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                  obj.Restructuring = obj?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                 }
 
               }
@@ -1375,11 +1367,11 @@ const RestructuringCom = (props: any, ref: any) => {
                     if (items.subRows != undefined && items.subRows.length > 0) {
                       if (sub.TaskType?.Id !== 3) {
                         sub.isRestructureActive = true;
-                        sub.Restructuring = sub?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                        sub.Restructuring = sub?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                       }
                     } else {
                       sub.isRestructureActive = true;
-                      sub.Restructuring = sub?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                      sub.Restructuring = sub?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                     }
                   }
                   if (items?.Id == obj.Id) {
@@ -1411,11 +1403,11 @@ const RestructuringCom = (props: any, ref: any) => {
                         if (items.subRows != undefined && items.subRows.length > 0) {
                           if (feature.TaskType?.Id !== 3) {
                             feature.isRestructureActive = true;
-                            feature.Restructuring = feature?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                            feature.Restructuring = feature?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                           }
                         } else {
                           feature.isRestructureActive = true;
-                          feature.Restructuring = feature?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                          feature.Restructuring = feature?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                         }
 
                       }
@@ -1451,11 +1443,11 @@ const RestructuringCom = (props: any, ref: any) => {
                             if (items.subRows != undefined && items.subRows.length > 0) {
                               if (activity.TaskType?.Id !== 3) {
                                 activity.isRestructureActive = true;
-                                activity.Restructuring = activity?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                                activity.Restructuring = activity?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                               }
                             } else {
                               activity.isRestructureActive = true;
-                              activity.Restructuring = activity?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                              activity.Restructuring = activity?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                             }
 
 
@@ -1496,11 +1488,11 @@ const RestructuringCom = (props: any, ref: any) => {
                                 if (items.subRows != undefined && items.subRows.length > 0) {
                                   if (wrkstrm.TaskType?.Id !== 3) {
                                     wrkstrm.isRestructureActive = true;
-                                    wrkstrm.Restructuring = wrkstrm?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                                    wrkstrm.Restructuring = wrkstrm?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                                   }
                                 } else {
                                   wrkstrm.isRestructureActive = true;
-                                  wrkstrm.Restructuring = wrkstrm?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                                  wrkstrm.Restructuring = wrkstrm?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                                 }
 
                               }
@@ -1554,10 +1546,10 @@ const RestructuringCom = (props: any, ref: any) => {
           let newarrays: any = [];
           array?.map((obj: any) => {
             let newObj: any;
-            if (items?.PortfolioType?.Id === obj.PortfolioType?.Id) {
+            if (items?.PortfolioTypeCheck === obj.PortfolioTypeCheck) {
               if (obj.TaskType?.Id !== 2) {
                 obj.isRestructureActive = true;
-                obj.Restructuring = obj?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                obj.Restructuring = obj?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
               }
               if (items?.Id == obj.Id) {
                 newObj = { Title: obj.Title, TaskType: { Id: obj.TaskType?.Id == undefined ? '' : obj.TaskType?.Id }, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle, };
@@ -1576,7 +1568,7 @@ const RestructuringCom = (props: any, ref: any) => {
                 obj.subRows?.map((sub: any) => {
                   if (sub.TaskType?.Id !== 2) {
                     sub.isRestructureActive = true;
-                    sub.Restructuring = sub?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                    sub.Restructuring = sub?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                   }
                   if (items?.Id == sub.Id) {
                     newObj = {
@@ -1602,7 +1594,7 @@ const RestructuringCom = (props: any, ref: any) => {
                     sub.subRows?.map((feature: any) => {
                       if (feature.TaskType?.Id !== 2) {
                         feature.isRestructureActive = true;
-                        feature.Restructuring = feature?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                        feature.Restructuring = feature?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                       }
                       if (items?.Id == feature.Id) {
                         newObj = {
@@ -1630,7 +1622,7 @@ const RestructuringCom = (props: any, ref: any) => {
                         feature.subRows?.map((activity: any) => {
                           if (activity.TaskType?.Id !== 2) {
                             activity.isRestructureActive = true;
-                            activity.Restructuring = activity?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                            activity.Restructuring = activity?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                           }
                           if (items?.Id == activity.Id) {
                             newObj = {
@@ -1662,7 +1654,7 @@ const RestructuringCom = (props: any, ref: any) => {
                             activity.subRows?.map((wrkstrm: any) => {
                               if (wrkstrm.TaskType?.Id !== 2) {
                                 wrkstrm.isRestructureActive = true;
-                                wrkstrm.Restructuring = wrkstrm?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                                wrkstrm.Restructuring = wrkstrm?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                               }
                               if (items?.Id == wrkstrm.Id) {
                                 newObj = {
@@ -1696,7 +1688,7 @@ const RestructuringCom = (props: any, ref: any) => {
                                 wrkstrm.subRows?.map((task: any) => {
                                   if (task.TaskType?.Id !== 2) {
                                     task.isRestructureActive = true;
-                                    task.Restructuring = task?.PortfolioType?.Title == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                                    task.Restructuring = task?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                                   }
                                   if (items?.Id == task.Id) {
                                     newObj = {
@@ -2330,6 +2322,15 @@ const RestructuringCom = (props: any, ref: any) => {
       let Portfolio:any;
       let TaskId = newItemBackUp?.TaskID == undefined ? newItemBackUp?.TaskID : newItemBackUp?.PortfolioStructureID
       let TaskLevel: number = 0;
+      let TaskTypeId:any;
+
+      if(newItemBackUp?.Item_x0020_Type != 'Task' && (RestructureChecked[0]?.TaskType?.Id === 3 || RestructureChecked[0]?.TaskType?.Id === 2) ){
+        TaskTypeId = 1;
+      }else{
+        TaskTypeId = RestructureChecked[0]?.TaskType?.Id;
+      }
+
+
 
       if(newItemBackUp?.Item_x0020_Type != 'Task'){
         Portfolio = newItemBackUp?.Id
@@ -2357,8 +2358,10 @@ const RestructuringCom = (props: any, ref: any) => {
         ParentTaskId: ParentTask_Id,
         PortfolioId: Portfolio,
         TaskLevel: TaskLevel,
-        TaskTypeId: RestructureChecked[0]?.TaskType?.Id,
-        TaskID: RestructureChecked[0]?.TaskType?.Id == 2 ? TaskId + '-' + 'T' + RestructureChecked[0]?.Id : (RestructureChecked[0]?.TaskType?.Id == 1 ? TaskId + '-' + 'A' + TaskLevel : (RestructureChecked[0]?.TaskType?.Id == 3 && newItemBackUp?.Item_x0020_Type == 'Task' ? TaskId + '-' + 'W' + TaskLevel : TaskId + '-' + 'A' + TaskLevel))
+        TaskTypeId: TaskTypeId,
+        TaskID: TaskTypeId == 2 ? TaskId + '-' + 'T' + RestructureChecked[0]?.Id : 
+        (TaskTypeId == 1 ? TaskId + '-' + 'A' + TaskLevel : 
+        (TaskTypeId == 3 && newItemBackUp?.Item_x0020_Type == 'Task' ? TaskId + '-' + 'W' + TaskLevel : TaskId + '-' + 'A' + TaskLevel))
       };
 
       await web.lists

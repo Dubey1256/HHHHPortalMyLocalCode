@@ -3526,7 +3526,7 @@ const EditTaskPopup = (Items: any) => {
         let TimeStamp: any = Moment(new Date().toLocaleString());
         let PresentDate: any = Moment(new Date()).format("MM-DD-YYYY");
         let TempTotalTimeData: any = 0;
-        if (EstimatedTime > 0 && EstimatedDescription?.length > 0) {
+        if (EstimatedTime > 0 && EstimatedDescriptionCategory?.length > 0) {
             let EstimatedTimeDescriptionsJSON: any = {
                 EstimatedTime: EstimatedTime,
                 EstimatedTimeDescription: EstimatedDescription,
