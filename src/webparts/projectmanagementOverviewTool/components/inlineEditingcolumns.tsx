@@ -764,7 +764,7 @@ const inlineEditingcolumns = (props: any) => {
     const onRenderCustomHeader = (columnName: any) => {
         return (
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
-                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                <div className='subheading '>
                     <img className="imgWid29 pe-1 mb-1 " src={props?.item?.SiteIcon} />
                     <span className="siteColor">
                         {`Update ${columnName} - ${props?.item?.TaskID} ${props?.item?.Title}`}
@@ -1036,24 +1036,24 @@ const inlineEditingcolumns = (props: any) => {
             >
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
                     <div className="modal-body">
-                        <table className="table table-hover" style={{ marginBottom: "0rem !important" }}>
-                            <tbody>
+                        <div>
+                            <ul className='list-none'>
                                 {StatusArray?.map((item: any, index) => {
                                     return (
-                                        <tr key={index}>
-                                            <td>
+                                        <li key={index}>
+                                         
                                                 <div className="SpfxCheckRadio">
                                                     <input className="radio"
                                                         type="radio" checked={taskStatusInNumber == item?.value}
                                                         onClick={() => PercentCompleted(item)} />
                                                     <label className="form-check-label">{item?.status}</label>
                                                 </div>
-                                            </td>
-                                        </tr>
+                                            
+                                        </li>
                                     )
                                 })}
-                            </tbody>
-                        </table>
+                            </ul>
+                        </div>
                     </div>
                     <footer className="float-end">
                         <button type="button" className="btn btn-primary px-3" onClick={() => UpdateTaskStatus()}>
@@ -1072,24 +1072,24 @@ const inlineEditingcolumns = (props: any) => {
             >
                 <div className={ServicesTaskCheck ? "serviepannelgreena inline-update-priority" : "inline-update-priority"} >
                     <div className="modal-body" >
-                        <table className="table table-hover" style={{ marginBottom: "0rem !important" }}>
-                            <tbody>
+                        <div>
+                            <ul className='list-none'>
                                 {priorityRank?.map((item: any, index) => {
                                     return (
-                                        <tr key={index}>
-                                            <td>
+                                        <li key={index}>
+                                          
                                                 <div className="SpfxCheckRadio">
                                                     <input className="radio"
                                                         type="radio" checked={taskPriority == item.Title}
                                                         onClick={() => setTaskPriority(item.Title)} />
                                                     <label className="form-check-label mx-2">{item.Title}</label>
                                                 </div>
-                                            </td>
-                                        </tr>
+                                           
+                                        </li>
                                     )
                                 })}
-                            </tbody>
-                        </table>
+                            </ul>
+                        </div>
                     </div>
                     {impTaskCategoryType?.map((option) => (
                         <div className={ServicesTaskCheck ? "serviepannelgreena d-flex" : "d-flex"} key={option.Id}>
