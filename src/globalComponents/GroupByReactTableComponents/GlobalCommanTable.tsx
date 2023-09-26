@@ -1281,6 +1281,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                   {trueRestructuring == true ? (
                     <RestructuringCom
                       AllMasterTasksData={items.AllMasterTasksData}
+                      queryItems={items.queryItems}
                       restructureFunct={restructureFunct}
                       ref={childRef}
                       taskTypeId={items.TaskUsers}
@@ -1339,18 +1340,15 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
                   {trueRestructuring == true ? (
                     <RestructuringCom
-                      restructureFunct={restructureFunct}
                       AllMasterTasksData={items.AllMasterTasksData}
+                      queryItems={items.queryItems}
+                      restructureFunct={restructureFunct}
                       ref={childRef}
                       taskTypeId={items.TaskUsers}
                       contextValue={items.AllListId}
                       allData={data}
                       restructureCallBack={items.restructureCallBack}
-                      restructureItem={
-                        table?.getSelectedRowModel()?.flatRows.length > 0
-                          ? [table?.getSelectedRowModel()?.flatRows[0].original]
-                          : []
-                      }
+                      restructureItem={table?.getSelectedRowModel()?.flatRows}
                     />
                   ) : (
                     <button
