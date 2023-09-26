@@ -2434,10 +2434,10 @@ export const GetTaskId = (Item: any) => {
   if (Portfolio?.PortfolioStructureID) {
       taskIds += Portfolio.PortfolioStructureID;
   }
-  if (ParentTask?.TaskID && TaskType?.Title === 'Task') {
+  if (ParentTask?.TaskID && (TaskType?.Title === 'Task'||TaskType?.Title==='Workstream')) {
       taskIds += taskIds.length > 0 ? `-${TaskID}` : `${TaskID}`;
   }
-  if  (ParentTask==undefined&&TaskType?.Title === "Activities") {
+  if  (ParentTask==undefined&&(TaskType?.Title === "Activities"||TaskType?.Title === 'Task'||TaskType?.Title==='Workstream')) {
       taskIds += taskIds.length > 0 ? `-${TaskID}` : `${TaskID}`;
   }
   // if (TaskID) {
