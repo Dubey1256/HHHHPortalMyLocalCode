@@ -1855,7 +1855,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                 </span>
               })
               }
-              <span className="pull-right"><a href="#">Add smart favorite</a></span>
+              {/* <span className="pull-right"><a href="#">Add smart favorite</a></span> */}
      
             </summary>
        
