@@ -2437,8 +2437,11 @@ export const GetTaskId = (Item: any) => {
   if (ParentTask?.TaskID && (TaskType?.Title === 'Task'||TaskType?.Title==='Workstream')) {
       taskIds += taskIds.length > 0 ? `-${TaskID}` : `${TaskID}`;
   }
-  if  (ParentTask==undefined&&(TaskType?.Title === "Activities"||TaskType?.Title === 'Task'||TaskType?.Title==='Workstream')) {
-      taskIds += taskIds.length > 0 ? `-${TaskID}` : `${TaskID}`;
+  if  (ParentTask==undefined && Portfolio!=undefined &&(TaskType?.Title === "Activities"||TaskType?.Title === 'Task'||TaskType?.Title==='Workstream')) {
+      taskIds += TaskID!=undefined? `-${TaskID}` : `-T${Item.Id}`;
+  }
+  if(Portfolio==undefined && ParentTask==undefined && TaskType?.Title === 'Task'){
+      taskIds += TaskID!=undefined? `${TaskID}` : `T${Item.Id}`;
   }
   // if (TaskID) {
   //     taskIds += taskIds.length > 0 ? `-${TaskID}` : `${TaskID}`;
