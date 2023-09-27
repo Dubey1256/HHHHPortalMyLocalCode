@@ -15,7 +15,7 @@ import {
     getPaginationRowModel
 } from "@tanstack/react-table";
 import { RankingInfo, rankItem, compareItems } from "@tanstack/match-sorter-utils";
-import { FaSort, FaSortDown, FaSortUp, FaChevronRight, FaChevronLeft, FaAngleDoubleRight, FaAngleDoubleLeft, FaInfoCircle, FaPlus, FaMinus } from 'react-icons/fa';
+import { FaSort, FaSortDown, FaSortUp, FaChevronRight, FaChevronLeft, FaAngleDoubleRight, FaAngleDoubleLeft, FaInfoCircle, FaPlus, FaMinus, FaListAlt } from 'react-icons/fa';
 import { HTMLProps } from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -27,7 +27,7 @@ import SelectFilterPanel from './selectFilterPannel';
 import ExpndTable from '../ExpandTable/Expandtable';
 import RestructuringCom from '../Restructuring/RestructuringCom';
 import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
-import { BsClockHistory, BsSearch } from 'react-icons/bs';
+import { BsClockHistory, BsList, BsSearch } from 'react-icons/bs';
 import Tooltip from "../../globalComponents/Tooltip";
 // ReactTable Part/////
 declare module "@tanstack/table-core" {
@@ -165,7 +165,7 @@ const getFirstColCell = ({ setExpanded, hasCheckbox, hasCustomExpanded, hasExpan
                     {row.getIsExpanded() ? <SlArrowDown title={'collapse ' + `${row.original.Title}` + ' childs'} style={{ color: `${row?.original?.PortfolioType?.Color}`, width: '12px' }} /> : <SlArrowRight title={'Expand' + `${row.original.Title}` + 'childs'} style={{ color: `${row?.original?.PortfolioType?.Color}`, width: '12px' }} />}
                 </div>
             )}{" "}
-            {hasCheckbox && (
+            {hasCheckbox && row?.original?.Title != "Others" && (
                 <span style={{ marginLeft: hasExpanded && row.getCanExpand() ? '11px' : hasExpanded !== true ? '0px' : '23px' }}> <IndeterminateCheckbox {...{ checked: row.getIsSelected(), indeterminate: row.getIsSomeSelected(), onChange: row.getToggleSelectedHandler(), }} />{" "}</span>
             )}
             {hasCustomExpanded && <div>
@@ -265,6 +265,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const [selectedFilterPanelIsOpen, setSelectedFilterPanelIsOpen] = React.useState(false);
     const [tablecontiner, settablecontiner]: any = React.useState("hundred");
     const [trueRestructuring, setTrueRestructuring] = React.useState(false);
+    // const [clickFlatView, setclickFlatView] = React.useState(false);
     const [columnVisibility, setColumnVisibility] = React.useState({ descriptionsSearch: false, commentsSearch: false });
     const [selectedFilterPannelData, setSelectedFilterPannelData] = React.useState({
         Title: { Title: 'Title', Selected: true },
@@ -347,6 +348,28 @@ const GlobalCommanTable = (items: any, ref: any) => {
         setSelectedFilterPanelIsOpen(false)
     }, []);
 
+    /****************** defult sorting  part *******************/
+    React.useEffect(() => {
+        if (columns?.length > 0 && columns != undefined) {
+            let sortingDescData: any = [];
+            columns.map((sortDec: any) => {
+                if (sortDec.isColumnDefultSortingDesc === true) {
+                    let obj = { 'id': sortDec.id, desc: true }
+                    sortingDescData.push(obj);
+                } else if (sortDec.isColumnDefultSortingAsc === true) {
+                    let obj = { 'id': sortDec.id, desc: false }
+                    sortingDescData.push(obj)
+                }
+            })
+            if (sortingDescData.length > 0) {
+                setSorting(sortingDescData);
+            } else {
+                setSorting([]);
+            }
+        }
+    }, [columns])
+    /****************** defult sorting  part end *******************/
+
     const table: any = useReactTable({
         data,
         columns: modColumns,
@@ -379,24 +402,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
         enableSubRowSelection: false,
         // filterFns: undefined
     });
-    /****************** defult sorting  part *******************/
-    React.useEffect(() => {
-        if (columns?.length > 0 && columns != undefined) {
-            let sortingDescData: any = [];
-            columns.map((sortDec: any) => {
-                if (sortDec.isColumnDefultSortingDesc === true) {
-                    let obj = { 'id': sortDec.id, desc: true }
-                    sortingDescData.push(obj);
-                } else if (sortDec.isColumnDefultSortingAsc === true) {
-                    let obj = { 'id': sortDec.id, desc: false }
-                    sortingDescData.push(obj)
-                }
-            })
-            if (sortingDescData.length > 0) {
-                setSorting(sortingDescData);
-            }
-        }
-    }, [])
+    /****************** defult Expend Other Section  part *******************/
     React.useEffect(() => {
         if (table?.getRowModel()?.rows.length > 0) {
             table?.getRowModel()?.rows.map((elem: any) => {
@@ -407,7 +413,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
             })
         }
     }, [data])
-    /****************** defult sorting  part end *******************/
+    /****************** defult Expend Other Section end *******************/
 
     React.useEffect(() => {
         CheckDataPrepre()
@@ -706,6 +712,10 @@ const GlobalCommanTable = (items: any, ref: any) => {
             items?.AddWorkstreamTask();
         } else if (eventValue === "Smart-Time") {
             items?.smartTimeTotalFunction();
+        } else if (eventValue === "Flat-View") {
+            items?.switchFlatViewData(data);
+        } else if (eventValue === "Groupby-View") {
+            items?.switchGroupbyData();
         }
     }
 
@@ -844,6 +854,10 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     <a className='excal' title='Export to excal' onClick={() => exportToExcel()}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a>
 
                     {items?.SmartTimeIconShow === true && items?.AllListId?.isShowTimeEntry === true && <a className='smartTotalTime' title="Load SmartTime of AWT" onClick={() => openCreationAllStructure("Smart-Time")} > <BsClockHistory style={{ color: `${portfolioColor}` }} /></a>}
+
+                    {items?.flatView === true && <>{items?.clickFlatView === false ? <a className='smartTotalTime' title='Switch to Flat-View' style={{ color: `${portfolioColor}` }} onClick={() => openCreationAllStructure("Flat-View")}><BsList /></a> :
+                        <a className='smartTotalTime' title='Switch to Groupby View' style={{ color: `${portfolioColor}` }} onClick={() => openCreationAllStructure("Groupby-View")}><FaListAlt /></a>}</>}
+
 
                     <a className='brush'><i className="fa fa-paint-brush hreflink" style={{ color: `${portfolioColor}` }} aria-hidden="true" title="Clear All" onClick={() => { setGlobalFilter(''); setColumnFilters([]); }}></i></a>
 
