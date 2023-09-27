@@ -2443,7 +2443,6 @@ export const GetTaskId = (Item: any) => {
   ) {
     taskIds += taskIds.length > 0 ? `-${TaskID}` : `${TaskID}`;
   }
-
   if (
     ParentTask == undefined &&
     Portfolio != undefined &&
@@ -2453,7 +2452,6 @@ export const GetTaskId = (Item: any) => {
   ) {
     taskIds += TaskID != undefined ? `-${TaskID}` : `-T${Item.Id}`;
   }
-
   if (
     Portfolio == undefined &&
     ParentTask == undefined &&
@@ -2461,7 +2459,11 @@ export const GetTaskId = (Item: any) => {
   ) {
     taskIds += TaskID != undefined ? `${TaskID}` : `T${Item.Id}`;
   }
-
+  // if (TaskID) {
+  //     taskIds += taskIds.length > 0 ? `-${TaskID}` : `${TaskID}`;
+  // } else {
+  //     taskIds += taskIds.length > 0 ? `-T${Id}` : `T${Id}`;
+  // }
   return taskIds;
 };
 export const findTaskHierarchy = (
