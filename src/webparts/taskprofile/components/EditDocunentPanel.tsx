@@ -282,7 +282,7 @@ return(
                 </div>
     
               </div>
-
+              <div className='mt-3'> <HtmlEditorCard editorValue={EditdocumentsData?.Description != null ? EditdocumentsData?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>
             </div>
           </Tab>
           <Tab eventKey="IMAGEINFORMATION" title="IMAGE INFORMATION" >
@@ -295,7 +295,7 @@ return(
         <footer className='text-end mt-2'>
           <div className='col-sm-12 row m-0'>
             
-            <div className='mt-3'> <HtmlEditorCard editorValue={EditdocumentsData?.Description != null ? EditdocumentsData?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>
+          
             <div className="col-sm-6 text-lg-start">
             <div>
                 {console.log("footerdiv")}
