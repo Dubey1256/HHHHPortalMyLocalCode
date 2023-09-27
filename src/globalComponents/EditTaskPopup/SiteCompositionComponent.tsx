@@ -31,7 +31,7 @@ const SiteCompositionComponent = (Props: any) => {
     const [selectedSiteCount, setSelectedSiteCount] = useState(Props.ClientTime.length);
     const [ProportionalStatus, setProportionalStatus] = useState(true);
     let [ClientTimeData, setClientTimeData] = useState<any>([]);
-    const [ClientCategoryPopupStatus, setClientCategoryPopupStatus] = useState(false);
+    const [ClientCategoryPopupStatus, setClientCategoryPopupStatus] = useState(false);    
     const [AllClientCategoryData, setAllClientCategoryData] = useState([]);
     const [SelectedSiteClientCategoryData, setSelectedSiteClientCategoryData] = useState([]);
     const [searchedKey, setSearchedKey] = useState('');
@@ -815,15 +815,13 @@ const SiteCompositionComponent = (Props: any) => {
                         Portfolio
                     </label>
                 </span>
-                <span><span className="svg__iconbox svg__icon--editBox" onClick={openEditComponentPanelFunction} title="Click here to edit tagged portfolio site composition."></span></span>
+                <span className="alignIcon"><span className="svg__iconbox svg__icon--editBox" onClick={openEditComponentPanelFunction} title="Click here to edit tagged portfolio site composition."></span></span>
                 <span className="d-flex justify-content-center pull-right overrid">
-                    <input
-                        type="checkbox"
-                        className="form-check-input mb-0 ms-2 mx-1 rounded-0"
+                    <input type="checkbox" className="form-check-input mx-1"
                         defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.localSiteComposition : false}
                         onChange={() => ChangeSiteCompositionSettings("Overridden")}
                     />
-                    <label data-toggle="tooltip" data-placement="bottom" className="d-flex">
+                    <label data-toggle="tooltip" data-placement="bottom" className="alignCenter">
                         Overridden
                         <span className="svg__iconbox svg__icon--info" title="If this is checked then it should consider site allocations in Time Entry from Task otherwise from tagged component."></span>
                     </label>
@@ -841,109 +839,111 @@ const SiteCompositionComponent = (Props: any) => {
                                     }
                                     return (
                                         <tr
-                                            className={siteData?.StartEndDateValidation ? "Disabled-Link bg-th" : 'hreflink'}
+                                            className={siteData?.StartEndDateValidation ? "Disabled-Link bg-th" : 'hreflink border-1'}
                                         >
-                                            <th scope="row" className="m-0 p-1 align-middle" style={{ width: "3%" }}>
-
-                                                {checkBoxStatus ? <input
-                                                    className="form-check-input rounded-0 hreflink" type="checkbox"
-                                                    checked={siteData.BtnStatus}
-                                                    value={siteData.BtnStatus}
-                                                    disabled={checkBoxStatus ? true : false}
-                                                    style={checkBoxStatus ? { cursor: "not-allowed" } : {}}
-                                                    onChange={(e) => selectSiteCompositionFunction(e, index)}
-                                                /> : <input
-                                                    className="form-check-input rounded-0 hreflink" type="checkbox"
-                                                    checked={siteData.BtnStatus}
-                                                    value={siteData.BtnStatus}
-                                                    onChange={(e) => selectSiteCompositionFunction(e, index)}
-                                                />}
-
+                                            <th scope="row" style={{ width: "3%" }}>
+                                                <div className="m-0 p-1 align-middle">
+                                                    {checkBoxStatus ? <input
+                                                        className="form-check-input" type="checkbox"
+                                                        checked={siteData.BtnStatus}
+                                                        value={siteData.BtnStatus}
+                                                        disabled={checkBoxStatus ? true : false}
+                                                        style={checkBoxStatus ? { cursor: "not-allowed" } : {}}
+                                                        onChange={(e) => selectSiteCompositionFunction(e, index)}
+                                                    /> : <input
+                                                        className="form-check-input" type="checkbox"
+                                                        checked={siteData.BtnStatus}
+                                                        value={siteData.BtnStatus}
+                                                        onChange={(e) => selectSiteCompositionFunction(e, index)}
+                                                    />}
+                                                </div>
                                             </th>
-                                            <td className="m-0 p-0 align-middle" style={{ width: "30%" }}>
-                                                <img src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} style={{ width: '25px' }} className="mx-2" />
-                                                {siteData.Title}
+                                            <td className="m-0 p-1 align-middle" style={{ width: "30%" }}>
+                                                <div className="alignCenter">
+                                                    <img src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} style={{ width: '25px' }} className="mx-2" />
+                                                    {siteData.Title}
+                                                </div>
                                             </td>
-                                            <td className="m-0 p-1" style={{ width: "12%" }}>
-                                                {ProportionalStatus ?
-                                                    <>{isPortfolioComposition ? <input
-                                                        type="number" min="1" max='100'
-                                                        value={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(2) : null}
-                                                        className="form-control p-1" readOnly={true} style={{ cursor: "not-allowed" }}
-                                                        onChange={(e) => ChangeTimeManuallyFunction(e, siteData.Title)}
-                                                    /> : <input type="number" min="1" max='100'
-                                                        style={ProportionalStatus && siteData.BtnStatus ? { cursor: "not-allowed" } : {}}
-                                                        defaultValue={siteData.BtnStatus ? (100 / selectedSiteCount).toFixed(2) : ""}
-                                                        value={siteData.BtnStatus ? (100 / selectedSiteCount).toFixed(2) : ""}
-                                                        className="form-control p-1" readOnly={ProportionalStatus}
-                                                    />}  </>
-                                                    : <> {siteData.BtnStatus ?
-                                                        <input
+                                            <td style={{ width: "12%" }}>
+                                                <div className="alignCenter">
+                                                    {ProportionalStatus ?
+                                                        <>{isPortfolioComposition ? <input
                                                             type="number" min="1" max='100'
-                                                            defaultValue={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(2) : null}
-                                                            className="form-control p-1" style={{ width: "100%" }}
+                                                            value={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(2) : null}
+                                                            className="form-control p-1" readOnly={true} style={{ cursor: "not-allowed" }}
                                                             onChange={(e) => ChangeTimeManuallyFunction(e, siteData.Title)}
-                                                        /> : <input type="number" readOnly={true} style={{ cursor: "not-allowed", width: "100%" }}
-                                                        />}</>
-                                                }
+                                                        /> : <input type="number" min="1" max='100'
+                                                            style={ProportionalStatus && siteData.BtnStatus ? { cursor: "not-allowed" } : {}}
+                                                            defaultValue={siteData.BtnStatus ? (100 / selectedSiteCount).toFixed(2) : ""}
+                                                            value={siteData.BtnStatus ? (100 / selectedSiteCount).toFixed(2) : ""}
+                                                            className="form-control p-1" readOnly={ProportionalStatus}
+                                                        />}  </>
+                                                        : <> {siteData.BtnStatus ?
+                                                            <input
+                                                                type="number" min="1" max='100'
+                                                                defaultValue={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(2) : null}
+                                                                className="form-control p-1" style={{ width: "100%" }}
+                                                                onChange={(e) => ChangeTimeManuallyFunction(e, siteData.Title)}
+                                                            /> : <input type="number" readOnly={true} style={{ cursor: "not-allowed", width: "100%" }}
+                                                            />}</>
+                                                    }
+                                                </div>
                                             </td>
-                                            <td className="m-0 p-1 align-middle" style={{ width: "3%" }}>
-                                                <span>{siteData.BtnStatus ? "%" : ''}</span>
+                                            <td style={{ width: "3%" }}>
+                                                <div className="alignCenter">{siteData.BtnStatus ? "%" : ''}</div>
                                             </td>
-                                            <td className="m-0 p-1 align-middle" style={{ width: "12%" }}>
-                                                {ProportionalStatus ? <span>{siteData.BtnStatus && TotalTime ? (TotalTime / selectedSiteCount).toFixed(2) + " h" : siteData.BtnStatus ? "0 h" : null}</span> : <span>{siteData.BtnStatus && TotalTime ? (siteData.ClienTimeDescription ? (siteData.ClienTimeDescription * TotalTime / 100).toFixed(2) + " h" : "0 h") : siteData.BtnStatus ? "0 h" : null}</span>}
+                                            <td style={{ width: "12%" }}>
+                                                <div className="alignCenter">{ProportionalStatus ? <span>{siteData.BtnStatus && TotalTime ? (TotalTime / selectedSiteCount).toFixed(2) + " h" : siteData.BtnStatus ? "0 h" : null}</span> : <span>{siteData.BtnStatus && TotalTime ? (siteData.ClienTimeDescription ? (siteData.ClienTimeDescription * TotalTime / 100).toFixed(2) + " h" : "0 h") : siteData.BtnStatus ? "0 h" : null}</span>}</div>
                                             </td>
                                             <td className="m-0 p-1 align-middle" style={{ width: "36%" }}>
                                                 {siteData.Title == "EI" ?
                                                     <>
-                                                        <div className="input-group block">
+                                                        <div className="input-group">
                                                             {EIClientCategory != undefined && EIClientCategory.length > 0 ?
                                                                 <> {EIClientCategory?.map((dataItem: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
                                                                         return (
-                                                                            <div className="bg-69 d-flex full-width justify-content-between p-1 ps-2" title={dataItem.Title ? dataItem.Title : null}>
+                                                                            <div className="block w-100 justify-content-between" title={dataItem.Title ? dataItem.Title : null}>
                                                                                 {dataItem.Title ? dataItem.Title.substring(0, 14) + "..." : null}
-                                                                                <a className=""
-                                                                                    onClick={() => removeSelectedClientCategory("EI")}
-                                                                                >
-                                                                                    <span className="bg-light svg__icon--cross svg__iconbox"></span>
-                                                                                </a>
+                                                                                
+                                                                                <span  onClick={() => removeSelectedClientCategory("EI")} className="bg-light svg__icon--cross svg__iconbox"></span>
+                                                                                
                                                                             </div>
                                                                         )
                                                                     } else {
                                                                         return (
-                                                                            <>
+                                                                            <div className="input-group">
                                                                                 <input type="text"
                                                                                     value={SearchedKeyForEI}
                                                                                     onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EI", 340)}
                                                                                     style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }}
-                                                                                    className="border-secondary border-end-0 form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
+                                                                                    className="form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
                                                                                 {
                                                                                     siteData.BtnStatus ?
-                                                                                        <a className="bg-white border border-secondary pancilicons"
+                                                                                        <span className="input-group-text"
                                                                                             onClick={() => openClientCategoryModel(340, 'EI')}
                                                                                         >
                                                                                             <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
-                                                                                        </a>
+                                                                                        </span>
                                                                                         : null
                                                                                 }
-                                                                            </>
+                                                                            </div>
                                                                         )
                                                                     }
                                                                 })}
                                                                 </> :
-                                                                <>
-                                                                    <input type="text" value={SearchedKeyForEI} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EI", 340)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary border-end-0 form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
+                                                                <div className="input-group">
+                                                                    <input type="text" value={SearchedKeyForEI} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EI", 340)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
                                                                     {
                                                                         siteData.BtnStatus ?
-                                                                            <a className="bg-white border border-secondary pancilicons"
+                                                                            <span className="input-group-text"
                                                                                 onClick={() => openClientCategoryModel(340, 'EI')}
                                                                             >
                                                                                 <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
-                                                                            </a>
+                                                                            </span>
                                                                             : null
                                                                     }
-                                                                </>}
+                                                                </div>}
 
                                                         </div>
                                                         {SearchedClientCategoryDataForInput?.length > 0 && ClientCategoryPopupSiteName == "EI" ? (
@@ -963,52 +963,48 @@ const SiteCompositionComponent = (Props: any) => {
                                                     : null}
                                                 {siteData.Title == "EPS" ?
                                                     <>
-                                                        <div className="input-group block">
+                                                        <div className="input-group">
                                                             {EPSClientCategory != undefined && EPSClientCategory.length > 0 ?
                                                                 <> {EPSClientCategory?.map((dataItem: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
                                                                         return (
-                                                                            <div className="bg-69 d-flex full-width justify-content-between p-1 ps-2" title={dataItem.Title ? dataItem.Title : null}>
+                                                                            <div className="block w-100 justify-content-between" title={dataItem.Title ? dataItem.Title : null}>
                                                                                 {dataItem.Title ? dataItem.Title.substring(0, 14) + "..." : null}
-                                                                                <a className=""
-                                                                                    onClick={() => removeSelectedClientCategory("EPS")}
-                                                                                >
-                                                                                    <span className="bg-light svg__icon--cross svg__iconbox"></span>
-                                                                                </a>
+                                                                                    <span onClick={() => removeSelectedClientCategory("EPS")} className="bg-light hreflink svg__icon--cross svg__iconbox"></span>
+                                                                                
                                                                             </div>
                                                                         )
                                                                     } else {
                                                                         return (
-                                                                            <>
-                                                                                <input type="text" value={SearchedKeyForEPS} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EPS", 341)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary border-end-0 form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
+                                                                            <div className="input-group">
+                                                                                <input type="text" value={SearchedKeyForEPS} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EPS", 341)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
                                                                                 {
                                                                                     siteData.BtnStatus ?
-                                                                                        <a className="bg-white border border-secondary"
-                                                                                            onClick={() => openClientCategoryModel(341, "EPS")}
-                                                                                        >
+                                                                                        <span className="input-group-text"
+                                                                                            onClick={() => openClientCategoryModel(341, "EPS")}>
                                                                                             <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
                                                                                             {/* <img src={require('../../Assets/ICON/edit_page.svg')} width="25" /> */}
-                                                                                        </a>
+                                                                                        </span>
                                                                                         : null
                                                                                 }
-                                                                            </>
+                                                                            </div>
                                                                         )
                                                                     }
                                                                 })}
                                                                 </> :
-                                                                <>
-                                                                    <input type="text" value={SearchedKeyForEPS} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EPS", 341)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary border-end-0 form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
+                                                                <div className="input-group">
+                                                                    <input type="text" value={SearchedKeyForEPS} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EPS", 341)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
                                                                     {
                                                                         siteData.BtnStatus ?
-                                                                            <a className="bg-white border border-secondary"
+                                                                            <span className="input-group-text"
                                                                                 onClick={() => openClientCategoryModel(341, "EPS")}
                                                                             >
                                                                                 <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
                                                                                 {/* <img src={require('../../Assets/ICON/edit_page.svg')} width="25" /> */}
-                                                                            </a>
+                                                                            </span>
                                                                             : null
                                                                     }
-                                                                </>
+                                                                </div>
                                                             }
 
                                                         </div>
@@ -1029,57 +1025,53 @@ const SiteCompositionComponent = (Props: any) => {
                                                     : null}
                                                 {siteData.Title == "Education" ?
                                                     <>
-                                                        <div className="input-group block justify-content-between">
+                                                        <div className="input-group justify-content-between">
                                                             {EducationClientCategory != undefined && EducationClientCategory.length > 0 ?
                                                                 <> {EducationClientCategory?.map((dataItem: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
                                                                         return (
-                                                                            <div className="bg-69 d-flex full-width justify-content-between p-1 ps-2" title={dataItem.Title ? dataItem.Title : null}>
+                                                                            <div className="block justify-content-between w-100" title={dataItem.Title ? dataItem.Title : null}>
                                                                                 {dataItem.Title ? dataItem.Title.substring(0, 14) + "..." : null}
-                                                                                <a className=""
-                                                                                    onClick={() => removeSelectedClientCategory("Education")}
-                                                                                >
-                                                                                    <span className="bg-light svg__icon--cross svg__iconbox"></span>
-                                                                                </a>
+                                                                                    <span onClick={() => removeSelectedClientCategory("Education")} className="bg-light svg__icon--cross svg__iconbox"></span>
+                                                                                
                                                                             </div>
                                                                         )
                                                                     } else {
                                                                         return (
-                                                                            <>
-                                                                                <input type="text" value={SearchedKeyForEducation} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Education", 344)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary border-end-0 form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
+                                                                            <div className="input-group">
+                                                                                <input type="text" value={SearchedKeyForEducation} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Education", 344)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
                                                                                 {
                                                                                     siteData.BtnStatus ?
-                                                                                        <a className="bg-white border border-secondary"
+                                                                                        <span className="input-group-text"
                                                                                             onClick={() => openClientCategoryModel(344, "Education")}
                                                                                         >
                                                                                             <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
-                                                                                        </a>
+                                                                                        </span>
                                                                                         : null
                                                                                 }
-                                                                            </>
+                                                                            </div>
                                                                         )
                                                                     }
                                                                 })}
                                                                 </> :
-                                                                <>
-                                                                    <input
-                                                                        type="text"
+                                                                <div className="input-group">
+                                                                    <input type="text"
                                                                         value={SearchedKeyForEducation}
                                                                         onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Education", 344)}
                                                                         style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }}
-                                                                        className="border-secondary border-end-0 form-control"
+                                                                        className="form-control"
                                                                         placeholder="Search Client Category Here!"
                                                                         readOnly={siteData.BtnStatus ? false : true} />
                                                                     {
                                                                         siteData.BtnStatus ?
-                                                                            <a className="bg-white border border-secondary"
+                                                                            <span className="input-group-text"
                                                                                 onClick={() => openClientCategoryModel(344, "Education")}
                                                                             >
                                                                                 <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
-                                                                            </a>
+                                                                            </span>
                                                                             : null
                                                                     }
-                                                                </>
+                                                                </div>
                                                             }
                                                         </div>
                                                         {SearchedClientCategoryDataForInput?.length > 0 && ClientCategoryPopupSiteName == "Education" ? (
@@ -1099,64 +1091,61 @@ const SiteCompositionComponent = (Props: any) => {
                                                     : null}
                                                 {siteData.Title == "Migration" ?
                                                     <>
-                                                        <div className="input-group block justify-content-between">
+                                                        <div className="input-group justify-content-between">
                                                             {MigrationClientCategory != undefined && MigrationClientCategory.length > 0 ?
                                                                 <> {MigrationClientCategory?.map((dataItem: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
                                                                         return (
-                                                                            <div className="bg-69 selected-CC d-flex full-width justify-content-between p-1 ps-2" title={dataItem.Title ? dataItem.Title : null}>
+                                                                            <div className="block justify-content-between w-100" title={dataItem.Title ? dataItem.Title : null}>
                                                                                 {dataItem.Title ? dataItem.Title.substring(0, 14) + "..." : null}
-                                                                                <a className=""
-                                                                                    onClick={() => removeSelectedClientCategory("Migration")}
-                                                                                >
-                                                                                    <span className="bg-light svg__icon--cross svg__iconbox"></span>
-                                                                                </a>
+                                                                                    <span onClick={() => removeSelectedClientCategory("Migration")} className="bg-light svg__icon--cross svg__iconbox"></span>
+                                                                                
                                                                             </div>
                                                                         )
                                                                     } else {
                                                                         return (
-                                                                            <>
+                                                                            <div className="input-group">
                                                                                 <input type="text"
                                                                                     value={SearchedKeyForMigration}
                                                                                     onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Migration", 569)}
                                                                                     style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }}
-                                                                                    className="border-secondary border-end-0 form-control"
+                                                                                    className="form-control"
                                                                                     placeholder="Search Client Category Here!"
                                                                                     readOnly={siteData.BtnStatus ? false : true}
                                                                                 />
                                                                                 {
                                                                                     siteData.BtnStatus ?
-                                                                                        <a className="bg-white border border-secondary"
+                                                                                        <span className="input-group-text"
                                                                                             onClick={() => openClientCategoryModel(569, 'Migration')}
                                                                                         >
                                                                                             <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
-                                                                                        </a>
+                                                                                        </span>
                                                                                         : null
                                                                                 }
-                                                                            </>
+                                                                            </div>
                                                                         )
                                                                     }
                                                                 })}
                                                                 </> :
-                                                                <>
+                                                                <div className="input-group">
                                                                     <input type="text"
                                                                         value={SearchedKeyForMigration}
                                                                         onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Migration", 569)}
                                                                         style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }}
-                                                                        className="border-secondary border-end-0 form-control"
+                                                                        className="form-control"
                                                                         placeholder="Search Client Category Here!"
                                                                         readOnly={siteData.BtnStatus ? false : true}
                                                                     />
                                                                     {
                                                                         siteData.BtnStatus ?
-                                                                            <a className="bg-white border border-secondary"
+                                                                            <span className="input-group-text"
                                                                                 onClick={() => openClientCategoryModel(569, 'Migration')}
                                                                             >
                                                                                 <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
-                                                                            </a>
+                                                                            </span>
                                                                             : null
                                                                     }
-                                                                </>
+                                                                </div>
                                                             }
                                                         </div>
                                                         {SearchedClientCategoryDataForInput?.length > 0 && ClientCategoryPopupSiteName == "Migration" ? (

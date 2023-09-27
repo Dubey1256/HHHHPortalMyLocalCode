@@ -805,7 +805,7 @@ function TimeEntryPopup(item: any) {
             val.TaskDates = Moment(NewDate).format("ddd, DD/MM/YYYY");
             try {
               getDateForTimeEntry(NewDate, val);
-            } catch (e) {}
+            } catch (e) { }
           }
         });
       }
@@ -932,8 +932,8 @@ function TimeEntryPopup(item: any) {
     }
   }
 
-  const callBackData = React.useCallback((elem: any, ShowingData: any) => {},
-  []);
+  const callBackData = React.useCallback((elem: any, ShowingData: any) => { },
+    []);
   function getDateForTimeEntry(newDate: any, items: any) {
     var LatestDate = [];
     var getMonth = "";
@@ -1142,7 +1142,7 @@ function TimeEntryPopup(item: any) {
                     UpdatedData["Company"] = taskUser.Company;
                     UpdatedData["AuthorImage"] =
                       taskUser.Item_x0020_Cover != undefined &&
-                      taskUser.Item_x0020_Cover.Url != undefined
+                        taskUser.Item_x0020_Cover.Url != undefined
                         ? taskUser.Item_x0020_Cover.Url
                         : "";
                   }
@@ -1222,7 +1222,7 @@ function TimeEntryPopup(item: any) {
                     item.AuthorName = taskUser.Title;
                     item.AuthorImage =
                       taskUser.Item_x0020_Cover != undefined &&
-                      taskUser.Item_x0020_Cover.Url != undefined
+                        taskUser.Item_x0020_Cover.Url != undefined
                         ? taskUser.Item_x0020_Cover.Url
                         : "";
                   }
@@ -1453,8 +1453,8 @@ function TimeEntryPopup(item: any) {
 
             updateitem.Description =
               postData != undefined &&
-              postData.Description != undefined &&
-              postData.Description != ""
+                postData.Description != undefined &&
+                postData.Description != ""
                 ? postData.Description
                 : child.Description;
             UpdatedData.push(updateitem);
@@ -1564,8 +1564,8 @@ function TimeEntryPopup(item: any) {
     let itemMetadataAdded = {
       Title:
         newData != undefined &&
-        newData.Title != undefined &&
-        newData.Title != ""
+          newData.Title != undefined &&
+          newData.Title != ""
           ? newData.Title
           : checkCategories,
       [smartTermId]: item.props.Id,
@@ -1621,8 +1621,8 @@ function TimeEntryPopup(item: any) {
           let itemMetadataAdded = {
             Title:
               newData != undefined &&
-              newData.Title != undefined &&
-              newData.Title != ""
+                newData.Title != undefined &&
+                newData.Title != ""
                 ? newData.Title
                 : checkCategories,
             [smartTermId]: item.props.Id,
@@ -1711,7 +1711,7 @@ function TimeEntryPopup(item: any) {
           UpdatedData["Company"] = taskUser.Company;
           UpdatedData["UserImage"] =
             taskUser.Item_x0020_Cover != undefined &&
-            taskUser.Item_x0020_Cover.Url != undefined
+              taskUser.Item_x0020_Cover.Url != undefined
               ? taskUser.Item_x0020_Cover.Url
               : "";
           await saveOldUserTask(UpdatedData);
@@ -1735,7 +1735,7 @@ function TimeEntryPopup(item: any) {
         UpdatedData["Company"] = taskUser.Company;
         UpdatedData["UserImage"] =
           taskUser.Item_x0020_Cover != undefined &&
-          taskUser.Item_x0020_Cover.Url != undefined
+            taskUser.Item_x0020_Cover.Url != undefined
             ? taskUser.Item_x0020_Cover.Url
             : "";
       }
@@ -1755,8 +1755,8 @@ function TimeEntryPopup(item: any) {
     let itemMetadataAdded = {
       Title:
         newData != undefined &&
-        newData.Title != undefined &&
-        newData.Title != ""
+          newData.Title != undefined &&
+          newData.Title != ""
           ? newData.Title
           : checkCategories,
       [smartTermId]: item.props.Id,
@@ -1790,7 +1790,7 @@ function TimeEntryPopup(item: any) {
         UpdatedData["Company"] = taskUser.Company;
         UpdatedData["UserImage"] =
           taskUser.Item_x0020_Cover != undefined &&
-          taskUser.Item_x0020_Cover.Url != undefined
+            taskUser.Item_x0020_Cover.Url != undefined
             ? taskUser.Item_x0020_Cover.Url
             : "";
       }
@@ -1810,8 +1810,8 @@ function TimeEntryPopup(item: any) {
     let itemMetadataAdded = {
       Title:
         newData != undefined &&
-        newData.Title != undefined &&
-        newData.Title != ""
+          newData.Title != undefined &&
+          newData.Title != ""
           ? newData.Title
           : checkCategories,
       [smartTermId]: item.props.Id,
@@ -1854,7 +1854,7 @@ function TimeEntryPopup(item: any) {
         CurrentUser["Company"] = taskUser.Company;
         CurrentUser["AuthorImage"] =
           taskUser.Item_x0020_Cover != undefined &&
-          taskUser.Item_x0020_Cover.Url != undefined
+            taskUser.Item_x0020_Cover.Url != undefined
             ? taskUser.Item_x0020_Cover.Url
             : "";
       }
@@ -1875,7 +1875,7 @@ function TimeEntryPopup(item: any) {
       .expand(`Editor,Author,Category,TimesheetTitle,${linkedSite}`)
       .filter(
         `AuthorId eq '${CurntUserId}'` &&
-          `TimesheetTitle/Id eq '${ParentId.Id}'`
+        `TimesheetTitle/Id eq '${ParentId.Id}'`
       )
       .getAll();
     CurrentUserData = CurrentAddData;
@@ -2211,8 +2211,8 @@ function TimeEntryPopup(item: any) {
         : Moment(DateFormate).format("DD/MM/YYYY");
     child.Description =
       postData != undefined &&
-      postData.Description != undefined &&
-      postData.Description != ""
+        postData.Description != undefined &&
+        postData.Description != ""
         ? postData.Description
         : child.Description;
 
@@ -2274,7 +2274,7 @@ function TimeEntryPopup(item: any) {
         CurrentUser["Company"] = taskUser.Company;
         CurrentUser["AuthorImage"] =
           taskUser.Item_x0020_Cover != undefined &&
-          taskUser.Item_x0020_Cover.Url != undefined
+            taskUser.Item_x0020_Cover.Url != undefined
             ? taskUser.Item_x0020_Cover.Url
             : "";
       }
@@ -2331,8 +2331,8 @@ function TimeEntryPopup(item: any) {
               : Moment(DateFormate).format("DD/MM/YYYY");
           update["Description"] =
             postData != undefined &&
-            postData.Description != undefined &&
-            postData.Description != ""
+              postData.Description != undefined &&
+              postData.Description != ""
               ? postData.Description
               : child.Description;
           subItem.AdditionalTime.push(update);
@@ -2630,7 +2630,9 @@ function TimeEntryPopup(item: any) {
         hasCustomExpanded: true,
         hasExpanded: true,
         size: 20,
+        margin:0,
         id: "Id"
+
       },
 
       {
@@ -2647,21 +2649,19 @@ function TimeEntryPopup(item: any) {
                   {row?.original?.show === true ? (
                     <span>
                       {row?.original?.AuthorImage != "" &&
-                      row?.original.AuthorImage != null ? (
-                        <>
+                        row?.original.AuthorImage != null ? (
                           <img
-                            className="AssignUserPhoto1 wid29 bdrbox"
+                            className="AssignUserPhoto1 bdrbox m-0 wid29"
                             title={row?.original.AuthorName}
                             data-toggle="popover"
                             data-trigger="hover"
                             src={row?.original.AuthorImage}
                           ></img>
-                        </>
                       ) : (
                         <>
                           {" "}
                           <img
-                            className="AssignUserPhoto1 wid29 bdrbox"
+                            className="AssignUserPhoto1 bdrbox m-0 wid29"
                             title={row?.original.AuthorName}
                             data-toggle="popover"
                             data-trigger="hover"
@@ -2682,7 +2682,7 @@ function TimeEntryPopup(item: any) {
                         onClick={() => Editcategorypopup(row.original)}
                       ></span>
                       <span
-                        className="svg__iconbox svg__icon--cross"
+                        className="svg__iconbox svg__icon--trash hreflink"
                         onClick={() => deleteCategory(row.original)}
                       ></span>
                     </>
@@ -2718,7 +2718,7 @@ function TimeEntryPopup(item: any) {
         canSort: false,
         placeholder: "",
         cell: ({ row }) => (
-          <div className="editicons">
+          <div className="alignCenter gap-1 pull-right">
             {row?.original?.show === false ? (
               <span style={{ width: "7.7%" }}>
                 <button
@@ -2731,42 +2731,28 @@ function TimeEntryPopup(item: any) {
                 </button>
               </span>
             ) : (
-              <span>
-                <span>
-                  {" "}
-                  <a title="Copy" className="hreflink">
-                    <img
-                      src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_copy.png"
-                      onClick={() => openCopyTaskpopup(row.original)}
-                    ></img>
-                  </a>
-                </span>
+              <>
+                {" "}
+                <img title="Copy" className="hreflink"
+                  src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_copy.png"
+                  onClick={() => openCopyTaskpopup(row.original)}
+                ></img>
 
-                <span>
-                  {" "}
-                  <a className="hreflink">
-                    <span
-                      className="svg__iconbox svg__icon--edit"
-                      onClick={() =>
-                        openTaskStatusUpdatePoup2(
-                          row?.getParentRow()?.original,
-                          row.original
-                        )
-                      }
-                    ></span>
-                  </a>
+
+                {" "}
+                <span className="svg__iconbox svg__icon--edit hreflink" onClick={() =>
+                  openTaskStatusUpdatePoup2(
+                    row?.getParentRow()?.original,
+                    row.original
+                  )
+                } >
                 </span>
-                <span>
-                  {" "}
-                  <a title="Delete" className="hreflink">
-                    <span
-                      className="svg__icon--trash  svg__iconbox"
-                      onClick={() => deleteTaskTime(row.original)}
-                    ></span>
-                  </a>
-                </span>
-                <span />
-              </span>
+                {" "}
+                <span title="Delete"
+                  className="svg__icon--trash hreflink  svg__iconbox"
+                  onClick={() => deleteTaskTime(row.original)}
+                ></span>
+              </>
             )}
           </div>
         )
@@ -2840,15 +2826,15 @@ function TimeEntryPopup(item: any) {
         <div
           className={
             PortfolioType == "Service"
-              ? "modal-body border p-1 serviepannelgreena"
-              : "modal-body border p-1"
+              ? "modal-body border px-3 py-1 serviepannelgreena"
+              : "modal-body border px-3 py-1"
           }
         >
           <div className="row">
             <div className="col-sm-9 border-end">
               <div className="mb-1">
-                <div className=" form-group">
-                  <label>Selected Category</label>
+                <div className="input-group">
+                  <label className="form-label full-width">Selected Category</label>
                   <input
                     type="text"
                     autoComplete="off"
@@ -2860,8 +2846,8 @@ function TimeEntryPopup(item: any) {
                 </div>
               </div>
               <div className="mb-1">
-                <div className=" form-group" key={checkCategories}>
-                  <label>Title</label>
+                <div className="input-group" key={checkCategories}>
+                  <label className="form-label full-width">Title</label>
                   <input
                     type="text"
                     className="form-control"
@@ -2874,7 +2860,7 @@ function TimeEntryPopup(item: any) {
                 </div>
               </div>
               <div className="mb-1">
-                <div className=" form-group">
+                <div className="form-group">
                   <div className="row">
                     <div className="col-sm-6">
                       <div className="date-div">
@@ -2923,14 +2909,15 @@ function TimeEntryPopup(item: any) {
                             Today
                           </span>
                         </div>
-                        <label className="full_width">Date</label>
+                        <div className="input-group mt-1">
+                        <label className="form-label full-width">Date</label>
 
                         <DatePicker
                           className="form-control"
                           selected={myDatee}
                           onChange={handleDatedue}
                           dateFormat="EEE, dd MMM yyyy"
-                        />
+                        /></div>
                       </div>
                     </div>
 
@@ -2996,15 +2983,15 @@ function TimeEntryPopup(item: any) {
                   </div>
                   <div className="row">
                     <div className="col-sm-3 pe-0">
-                      <label></label>
+                      <label className="form-label full-width"></label>
                       <input
-                        type="text"
+                        type="text" className="form-control"
                         value={TimeInMinutes > 0 ? TimeInMinutes : 0}
                         onChange={(e) => changeTimeFunction(e, "Add")}
                       />
                     </div>
                     <div className="col-sm-3 ps-0">
-                      <label></label>
+                      <label className="form-label full-width"></label>
                       <input
                         className="form-control bg-e9"
                         type="text"
@@ -3058,7 +3045,7 @@ function TimeEntryPopup(item: any) {
                   </div>
 
                   <div className="col-12">
-                    <label>Short Description</label>
+                    <label className="form-label full-width">Short Description</label>
                     <textarea
                       className="full-width"
                       id="AdditionalshortDescription"
@@ -3146,8 +3133,8 @@ function TimeEntryPopup(item: any) {
                 }
               >
                 <div className="col">
-                  <div className="form-group mb-2">
-                    <label>Title</label>
+                  <div className="input-group mb-2">
+                    <label className="form-label full-width">Title</label>
                     <input
                       type="text"
                       autoComplete="off"
@@ -3159,7 +3146,7 @@ function TimeEntryPopup(item: any) {
                       }
                     />
                   </div>
-                  <div className="col ">
+                  <div className="col">
                     <div className="row">
                       <div className="col-sm-6 ">
                         <div className="date-div">
@@ -3220,25 +3207,24 @@ function TimeEntryPopup(item: any) {
                               Today
                             </span>
                           </div>
-                          <label className="full_width">Date</label>
+                          <div className="input-group mt-1">
+                          <label className="form-label full-width">Date</label>
 
                           <DatePicker
                             className="form-control"
                             selected={editeddata}
                             onChange={handleDatedue}
                             dateFormat="EEE, dd MMM yyyy"
-                          />
+                          /></div>
                         </div>
                       </div>
 
                       <div className="col-sm-6 session-control-buttons">
                         <div className="row">
                           <div className="col-sm-4">
-                            <button
-                              id="DayPlus"
+                            <button id="DayPlus"
                               className="top-container plus-button plus-minus"
-                              onClick={() => changeDate("Date", "EditTime")}
-                            >
+                              onClick={() => changeDate("Date", "EditTime")}>
                               <i className="fa fa-plus" aria-hidden="true"></i>
                             </button>
                             <span className="min-input">Day</span>
@@ -3269,7 +3255,7 @@ function TimeEntryPopup(item: any) {
                             </button>
                           </div>
 
-                          <div className="col-sm-4  ">
+                          <div className="col-sm-4">
                             <button
                               id="YearPlus"
                               className="top-container plus-button plus-minus"
@@ -3291,7 +3277,7 @@ function TimeEntryPopup(item: any) {
                     </div>
                     <div className="row mb-2">
                       <div className="col-sm-3 pe-0">
-                        <label></label>
+                        <label className="form-label full-width"></label>
                         <input
                           type="text"
                           className="form-control"
@@ -3304,15 +3290,14 @@ function TimeEntryPopup(item: any) {
                         />
                       </div>
                       <div className="col-sm-3 ps-0">
-                        <label></label>
+                        <label className="form-label full-width"></label>
                         <input
                           className="form-control bg-e9"
                           type="text"
-                          value={`${
-                            TimeInHours > 0 || TimeInMinutes == undefined
-                              ? TimeInHours
-                              : child.TaskTime
-                          } Hours`}
+                          value={`${TimeInHours > 0 || TimeInMinutes == undefined
+                            ? TimeInHours
+                            : child.TaskTime
+                            } Hours`}
                         />
                       </div>
                       <div className="col-sm-6 d-flex justify-content-between align-items-center">
@@ -3363,8 +3348,8 @@ function TimeEntryPopup(item: any) {
                       </div>
                     </div>
 
-                    <div className="col-sm-12 ">
-                      <label>Short Description</label>
+                    <div className="col-sm-12">
+                      <label className="form-label full-width">Short Description</label>
                       <textarea
                         className="full_width"
                         id="AdditionalshortDescription"
@@ -3513,14 +3498,15 @@ function TimeEntryPopup(item: any) {
                                     Today
                                   </span>
                                 </div>
-                                <label className="full_width">Date</label>
+                                <div className="input-group mt-1">
+                                <label className="form-label full-width">Date</label>
 
                                 <DatePicker
                                   className="form-control"
                                   selected={editeddata}
                                   onChange={handleDatedue}
                                   dateFormat="EEE, dd MMM yyyy"
-                                />
+                                /></div>
                               </div>
                             </div>
 
@@ -3614,14 +3600,14 @@ function TimeEntryPopup(item: any) {
                           </div>
                           <div className="row mb-2">
                             <div className="col-sm-3 pe-0">
-                              <label></label>
+                              <label className="form-label full-width"></label>
                               <input
                                 type="text"
                                 className="form-control"
                                 name="timeSpent"
                                 value={
                                   TimeInMinutes > 0 ||
-                                  TimeInMinutes == undefined
+                                    TimeInMinutes == undefined
                                     ? TimeInMinutes
                                     : child.TaskTimeInMin
                                 }
@@ -3629,15 +3615,14 @@ function TimeEntryPopup(item: any) {
                               />
                             </div>
                             <div className="col-sm-3 ps-0">
-                              <label></label>
+                              <label className="form-label full-width"></label>
                               <input
                                 className="form-control bg-e9"
                                 type="text"
-                                value={`${
-                                  TimeInHours != 0
-                                    ? TimeInHours
-                                    : child.TaskTime
-                                } Hours`}
+                                value={`${TimeInHours != 0
+                                  ? TimeInHours
+                                  : child.TaskTime
+                                  } Hours`}
                                 onChange={(e) =>
                                   setPostData({
                                     ...postData,
@@ -3706,8 +3691,8 @@ function TimeEntryPopup(item: any) {
                             </div>
                           </div>
 
-                          <div className="col-sm-12 ">
-                            <label>Short Description</label>
+                          <div className="col-sm-12">
+                            <label className="form-label full-width">Short Description</label>
                             <textarea
                               className="full_width"
                               id="AdditionalshortDescription"
@@ -3833,14 +3818,15 @@ function TimeEntryPopup(item: any) {
                         Today
                       </span>
                     </div>
-                    <label className="full_width">Date</label>
+                    <div className="input-group mt-1">
+                      <label className="form-label full-width">Date</label>
 
-                    <DatePicker
-                      className="form-control"
-                      selected={myDatee}
-                      onChange={handleDatedue}
-                      dateFormat="EEE, dd MMM yyyy"
-                    />
+                      <DatePicker
+                        className="form-control"
+                        selected={myDatee}
+                        onChange={handleDatedue}
+                        dateFormat="EEE, dd MMM yyyy"
+                      /></div>
                   </div>
                 </div>
 
@@ -3904,7 +3890,7 @@ function TimeEntryPopup(item: any) {
               </div>
               <div className="row mb-2">
                 <div className="col-sm-3 pe-0">
-                  <label></label>
+                  <label className="form-label full-width"></label>
                   <input
                     type="text"
                     autoComplete="off"
@@ -3914,14 +3900,14 @@ function TimeEntryPopup(item: any) {
                   />
                 </div>
                 <div className="col-sm-3 ps-0">
-                  <label></label>
+                  <label className="form-label full-width"></label>
                   <input
                     className="form-control bg-e9"
                     type="text"
                     value={`${TimeInHours} Hours`}
                   />
                 </div>
-                <div className="col-sm-6  Time-control-buttons">
+                <div className="col-sm-6 Time-control-buttons">
                   <div className="pe-0 Quaterly-Time">
                     <label className="full_width"></label>
                     <button
@@ -3964,7 +3950,7 @@ function TimeEntryPopup(item: any) {
               </div>
 
               <div className="col-sm-12 p-0">
-                <label>Short Description</label>
+                <label className="form-label full-width">Short Description</label>
                 <textarea
                   className="full_width"
                   id="AdditionalshortDescription"
@@ -3992,7 +3978,7 @@ function TimeEntryPopup(item: any) {
                         className="siteColor"></span>
                 </div>
             </div> */}
-                <div className="col-sm-12 text-end mt-2">
+                <div className="col-sm-12 text-end">
                   <button
                     disabled={TimeInMinutes <= 0 ? true : false}
                     type="button"
