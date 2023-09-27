@@ -218,7 +218,7 @@ const CommentBoxComponent = (commentData: any) => {
 
                                         <div>
                                             <span className="mx-1">
-                                                <input className="form-check-input m-0 rounded-0 commentSectionLabel " type="checkbox"
+                                                <input className="form-check-input mt--3" type="checkbox"
                                                     checked={obj.Phone}
                                                     value={obj.Phone}
                                                     name='Phone'
@@ -227,7 +227,7 @@ const CommentBoxComponent = (commentData: any) => {
                                             </span>
                                             <span> | </span>
                                             <span className="mx-1">
-                                                <input type="checkbox" name='LowImportance' checked={obj.LowImportance} value={obj.LowImportance} className="form-check-input m-0 rounded-0 commentSectionLabel "
+                                                <input type="checkbox" name='LowImportance' checked={obj.LowImportance} value={obj.LowImportance} className="form-check-input mt--3"
                                                 />
                                                 <label className="commentSectionLabel ms-1">
                                                     Low Importance
@@ -236,7 +236,7 @@ const CommentBoxComponent = (commentData: any) => {
                                             <span> | </span>
                                             <span className="mx-1">
                                                 <input type="checkbox" name='HighImportance' checked={obj.HighImportance}
-                                                    value={obj.HighImportance} className="form-check-input m-0 rounded-0 commentSectionLabel "
+                                                    value={obj.HighImportance} className="form-check-input mt--3"
                                                 />
                                                 <label className="commentSectionLabel ms-1">
                                                     High Importance
@@ -244,7 +244,7 @@ const CommentBoxComponent = (commentData: any) => {
                                             </span>
                                             <span> | </span>
                                             <span className="mx-1">
-                                                <input type="checkbox" id="" className="form-check-input m-0 rounded-0 commentSectionLabel "
+                                                <input type="checkbox" id="" className="form-check-input mt--3"
                                                     name='Completed' checked={obj.Completed} value={obj.Completed} />
                                                 <label className="commentSectionLabel ms-1">
                                                     Mark As Completed

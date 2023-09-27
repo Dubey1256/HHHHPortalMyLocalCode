@@ -3668,7 +3668,7 @@ const EditTaskPopup = (Items: any) => {
                         </div>
                         <div>
                             <a className="hreflink siteColor">
-                                <span className="me-1 mt--5"><RiDeleteBin6Line /></span>
+                            <span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span>
                                 <span onClick={() => deleteTaskFunction(EditData.ID, "Delete-Task")}>Delete This Item</span>
                             </a>
                             <span> | </span>
@@ -4018,7 +4018,7 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="mx-0 row mt-2 taskservices">
                                             <div className="col ps-0">
                                                 <div className="input-group mb-2">
-                                                    <label className="full-width">
+                                                    <label className="form-label full-width">
                                                         Portfolio
                                                     </label>
                                                     {TaggedPortfolioData?.length > 0 ?
@@ -4026,11 +4026,10 @@ const EditTaskPopup = (Items: any) => {
                                                             {TaggedPortfolioData?.map((com: any) => {
                                                                 return (
                                                                     <>
-                                                                        <div className="d-flex justify-content-between block px-2 py-1 full-width selected-component">
-                                                                            <a title={com.Title} style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
-                                                                            <a>
-                                                                                <span onClick={() => setTaggedPortfolioData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
-                                                                            </a>
+                                                                        <div className="block w-100">
+                                                                            <a title={com.Title} style={{ color: "#fff !important" }} className="wid90" target="_blank" data-interception="off" href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
+                                                                            
+                                                                                <span onClick={() => setTaggedPortfolioData([])} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"></span>
                                                                         </div>
                                                                     </>
                                                                 )
@@ -4132,11 +4131,11 @@ const EditTaskPopup = (Items: any) => {
                                                                 {ShareWebTypeData?.map((type: any, index: number) => {
                                                                     if (type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Immediate" && type.Title != "Approval" && type.Title != "Email" && type.Title != "Only Completed") {
                                                                         return (
-                                                                            <div className="block px-2 py-2 d-flex my-1 justify-content-between">
-                                                                                <a style={{ color: "#fff !important" }}>
+                                                                            <div className="block w-100">
+                                                                                <a style={{ color: "#fff !important" }} className="wid90">
                                                                                     {type.Title}
                                                                                 </a>
-                                                                                <span onClick={() => removeCategoryItem(type.Title, type.Id)} className="bg-light svg__icon--cross svg__iconbox"></span>
+                                                                                <span onClick={() => removeCategoryItem(type.Title, type.Id)} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"></span>
 
                                                                             </div>
                                                                         )
@@ -4146,7 +4145,7 @@ const EditTaskPopup = (Items: any) => {
                                                             </div> : null
                                                         }
                                                     </div>
-                                                    <div className="form-check ">
+                                                    <div className="form-check mt-2">
                                                         <label className="full-width">Approval</label>
                                                         <input
                                                             type="checkbox"
@@ -4159,25 +4158,19 @@ const EditTaskPopup = (Items: any) => {
                                                         />
                                                     </div>
                                                     <div className="col ps-4 mb-1">
-                                                        <ul className="p-0 mt-1 list-none ">
-                                                            <li className="SpfxCheckRadio ">
-                                                                <input className="radio"
-                                                                    name="ApprovalLevel"
-                                                                    type="radio"
-                                                                />
+                                                        <ul className="p-0 mt-1 list-none">
+                                                            <li className="SpfxCheckRadio">
+                                                                <input className="radio" name="ApprovalLevel" type="radio"/>
                                                                 <label className="form-check-label">Normal Approval</label>
                                                             </li>
-                                                            <li
-                                                                className="SpfxCheckRadio ">
-                                                                <input
-                                                                    type="radio"
+                                                            <li className="SpfxCheckRadio">
+                                                                <input type="radio"
                                                                     className="radio"
                                                                     name="ApprovalLevel" />
                                                                 <label> Complex Approval</label>
                                                             </li>
                                                             <li className="SpfxCheckRadio">
-                                                                <input
-                                                                    type="radio"
+                                                                <input type="radio"
                                                                     className="radio"
                                                                     name="ApprovalLevel" />
                                                                 <label>Quick Approval</label>
@@ -4203,7 +4196,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         <ul className="list-group">
                                                                             {ApproverSearchedData.map((item: any) => {
                                                                                 return (
-                                                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectApproverFromAutoSuggestion(item)} >
+                                                                                    <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={item.id} onClick={() => SelectApproverFromAutoSuggestion(item)} >
                                                                                         <a>{item.NewLabel}</a>
                                                                                     </li>
                                                                                 )
@@ -4216,14 +4209,11 @@ const EditTaskPopup = (Items: any) => {
                                                                     <div>
                                                                         {ApproverData.map((Approver: any, index: number) => {
                                                                             return (
-                                                                                <div className="block mt-1 px-2 py-2">
-                                                                                    <div className="d-flex justify-content-between">
-                                                                                        <a className="hreflink " target="_blank" data-interception="off" >
-                                                                                            {Approver.Title}
-                                                                                        </a>
-                                                                                        <span onClick={() => setApproverData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
-
-                                                                                    </div>
+                                                                                <div className="block w-100">
+                                                                                    <a className="hreflink wid90" target="_blank" data-interception="off" >
+                                                                                        {Approver.Title}
+                                                                                    </a>
+                                                                                    <span onClick={() => setApproverData([])} className="bg-light ml-auto hreflink svg__icon--cross svg__iconbox"></span>
                                                                                 </div>
                                                                             )
                                                                         })}
@@ -4316,7 +4306,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                                 <div className="col-12 mb-2 mt-2">
                                                     <div className="input-group mb-2">
-                                                        <label className="full-width">
+                                                        <label className="form-label full-width">
                                                             Linked Portfolios
                                                         </label>
                                                         <input type="text"
@@ -4347,11 +4337,10 @@ const EditTaskPopup = (Items: any) => {
                                                             {linkedPortfolioData?.map((com: any, Index: any) => {
                                                                 return (
                                                                     <>
-                                                                        <div className="d-flex justify-content-between block px-2 py-1 border-bottom full-width selected-component">
-                                                                            <a title={com.Title} style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
-                                                                            <a>
-                                                                                <span onClick={() => RemoveLinkedPortfolio(Index)} className="bg-light svg__icon--cross svg__iconbox"></span>
-                                                                            </a>
+                                                                        <div className="block w-100">
+                                                                            <a title={com.Title} className="wid90" style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
+                                                                            
+                                                                            <span onClick={() => RemoveLinkedPortfolio(Index)} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"></span>
                                                                         </div>
                                                                     </>
                                                                 )
@@ -4396,14 +4385,11 @@ const EditTaskPopup = (Items: any) => {
                                                         <div>
                                                             {selectedProject.map((ProjectData: any) => {
                                                                 return (
-                                                                    <div className="block mt-1 px-1 py-1">
-                                                                        <div className="d-flex justify-content-between">
-                                                                            <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}>
-                                                                                {ProjectData.Title}
-                                                                            </a>
-                                                                            <span onClick={() => setSelectedProject([])} className="bg-light svg__icon--cross svg__iconbox"></span>
-
-                                                                        </div>
+                                                                    <div className="block w-100">
+                                                                        <a className="hreflink wid90" target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}>
+                                                                            {ProjectData.Title}
+                                                                        </a>
+                                                                        <span onClick={() => setSelectedProject([])} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"></span>
                                                                     </div>
                                                                 )
                                                             })}
@@ -4428,22 +4414,19 @@ const EditTaskPopup = (Items: any) => {
 
                                     <div className="col-md-3">
                                         {EditData.siteCompositionData != undefined && EditData.siteCompositionData.length > 0 && AllListIdData.isShowSiteCompostion ?
-                                            <div className="Sitecomposition">
+                                            <div className="Sitecomposition mb-2">
                                                 <div className='dropdown'>
-                                                    <a className="sitebutton bg-fxdark d-flex justify-content-between" >
+                                                    <a className="sitebutton bg-fxdark alignCenter justify-content-between" >
                                                         <div style={{ cursor: "pointer" }} onClick={() => setComposition(composition ? false : true)}>
                                                             <span>{composition ? <SlArrowDown /> : <SlArrowRight />}</span>
                                                             <span className="mx-2">Site Composition</span>
                                                         </div>
-                                                        <div>
-                                                            <span
-                                                                className="svg__iconbox svg__icon--editBox hreflink" title="Edit Site Composition"
-                                                                onClick={() => setSiteCompositionShow(true)}
-                                                            ></span>
-                                                        </div>
+                                                        <span className="svg__iconbox svg__icon--editBox hreflink" title="Edit Site Composition"
+                                                            onClick={() => setSiteCompositionShow(true)}>
+                                                        </span>
                                                     </a>
                                                     {composition ?
-                                                        <div className="mt-1 spxdropdown-menu">
+                                                        <div className="spxdropdown-menu">
                                                             <ul>
                                                                 {EditData.siteCompositionData != undefined && EditData.siteCompositionData.length > 0 ?
                                                                     <>
@@ -4485,7 +4468,7 @@ const EditTaskPopup = (Items: any) => {
                                             </div>
                                             : null}
 
-                                        <div className="col mt-2">
+                                        <div className="col mt-2 clearfix">
                                             <div className="input-group taskTime">
                                                 <label className="form-label full-width">Status</label>
                                                 <input type="text" maxLength={3} placeholder="% Complete"
@@ -4597,8 +4580,7 @@ const EditTaskPopup = (Items: any) => {
                                                         <span
                                                             className="input-group-text"
                                                             title="Status Popup"
-                                                            onClick={() => setSmartMedaDataUsedPanel("Estimated-Time")}
-                                                        >
+                                                            onClick={() => setSmartMedaDataUsedPanel("Estimated-Time")}>
                                                             <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
                                                         </span>
                                                     </div>
@@ -4627,22 +4609,20 @@ const EditTaskPopup = (Items: any) => {
                                                     <div>
                                                         {EditData?.EstimatedTimeDescriptionArray?.map((EstimatedTimeData: any, Index: any) => {
                                                             return (
-                                                                <div className="align-content-center d-flex justify-content-between py-1">
-                                                                    <div>
+                                                                <div className="align-content-center alignCenter justify-content-between py-1">
+                                                                    <div className="alignCenter">
                                                                         <span className="me-1">{EstimatedTimeData.Team != undefined ? EstimatedTimeData.Team : EstimatedTimeData.Category != undefined ? EstimatedTimeData.Category : null}</span> |
                                                                         <span className="mx-1">{EstimatedTimeData.EstimatedTime ? (EstimatedTimeData.EstimatedTime > 1 ? EstimatedTimeData.EstimatedTime + " Hours" : EstimatedTimeData.EstimatedTime + " Hour") : "0 Hour"}</span>
-                                                                        <img className="ProirityAssignedUserPhoto m-0 mx-2" title={EstimatedTimeData.UserName} src={EstimatedTimeData.UserImage != undefined && EstimatedTimeData.UserImage?.length > 0 ? EstimatedTimeData.UserImage : ''} />
+                                                                        <img className="ProirityAssignedUserPhoto m-0" title={EstimatedTimeData.UserName} src={EstimatedTimeData.UserImage != undefined && EstimatedTimeData.UserImage?.length > 0 ? EstimatedTimeData.UserImage : ''} />
                                                                     </div>
-                                                                    <div>
-                                                                        <TooltipHost
-                                                                            content={EstimatedTimeData.EstimatedTimeDescription}
-                                                                            id={buttonId + "-" + Index}
-                                                                            calloutProps={calloutProps}
-                                                                            styles={hostStyles}
-                                                                        >
-                                                                            <span className="svg__iconbox svg__icon--info" ></span>
-                                                                        </TooltipHost>
-                                                                    </div>
+                                                                    <TooltipHost
+                                                                        content={EstimatedTimeData.EstimatedTimeDescription}
+                                                                        id={buttonId + "-" + Index}
+                                                                        calloutProps={calloutProps}
+                                                                        styles={hostStyles}>
+                                                                            <div className="alignCenter"><span className="svg__iconbox svg__icon--info" ></span></div>
+                                                                        
+                                                                    </TooltipHost>
                                                                 </div>
                                                             )
                                                         })}
@@ -5084,7 +5064,7 @@ const EditTaskPopup = (Items: any) => {
                                                     <div className="mx-0 row mt-2 taskservices">
                                                         <div className="col ps-0">
                                                             <div className="input-group mb-2">
-                                                                <label className="full-width">
+                                                                <label className="form-label full-width">
                                                                     Portfolio
                                                                 </label>
                                                                 {TaggedPortfolioData?.length > 0 ?
@@ -5092,13 +5072,10 @@ const EditTaskPopup = (Items: any) => {
                                                                         {TaggedPortfolioData?.map((com: any) => {
                                                                             return (
                                                                                 <>
-                                                                                    <div
-                                                                                        className="d-flex justify-content-between block px-2 py-1 full-width selected-component"
-                                                                                    >
-                                                                                        <a title={com.Title} style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
-                                                                                        <a>
-                                                                                            <span onClick={() => setTaggedPortfolioData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
-                                                                                        </a>
+                                                                                    <div className="block w-100">
+                                                                                        <a className="wid90" title={com.Title} style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
+                                                                                        
+                                                                                        <span onClick={() => setTaggedPortfolioData([])} className="bg-light ml-auto hreflink svg__icon--cross svg__iconbox"></span>
                                                                                     </div>
                                                                                 </>
                                                                             )
@@ -5123,8 +5100,8 @@ const EditTaskPopup = (Items: any) => {
                                                                     <ul className="list-group">
                                                                         {SearchedServiceCompnentData.map((Item: any) => {
                                                                             return (
-                                                                                <li className="hreflink list-group-item rounded-0 list-group-item-action" key={Item.id} onClick={() => setSelectedServiceAndCompnentData(Item, "Single")} >
-                                                                                    <a>{Item.Path}</a>
+                                                                                <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={Item.id} onClick={() => setSelectedServiceAndCompnentData(Item, "Single")} >
+                                                                                    <a className="siteColor">{Item.Path}</a>
                                                                                 </li>
                                                                             )
                                                                         }
@@ -5200,11 +5177,11 @@ const EditTaskPopup = (Items: any) => {
                                                                             {ShareWebTypeData?.map((type: any, index: number) => {
                                                                                 if (type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Immediate" && type.Title != "Approval" && type.Title != "Email" && type.Title != "Only Completed") {
                                                                                     return (
-                                                                                        <div className="block px-2 py-2 d-flex my-1 justify-content-between">
-                                                                                            <a style={{ color: "#fff !important" }}>
+                                                                                        <div className="block w-100">
+                                                                                            <a className="wid90" style={{ color: "#fff !important" }}>
                                                                                                 {type.Title}
                                                                                             </a>
-                                                                                            <span onClick={() => removeCategoryItem(type.Title, type.Id)} className="bg-light svg__icon--cross svg__iconbox"></span>
+                                                                                            <span onClick={() => removeCategoryItem(type.Title, type.Id)} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"></span>
 
                                                                                         </div>
                                                                                     )
@@ -5214,7 +5191,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         </div> : null
                                                                     }
                                                                 </div>
-                                                                <div className="form-check ">
+                                                                <div className="form-check mt-1">
                                                                     <label className="full-width">Approval</label>
                                                                     <input
                                                                         type="checkbox"
@@ -5226,7 +5203,7 @@ const EditTaskPopup = (Items: any) => {
 
                                                                     />
                                                                 </div>
-                                                                <div className="col ps-4 mb-1">
+                                                                <div className="col ps-3 mb-1">
                                                                     <ul className="p-0 mt-1 list-none ">
                                                                         <li className="SpfxCheckRadio ">
                                                                             <input className="radio"
@@ -5235,18 +5212,14 @@ const EditTaskPopup = (Items: any) => {
                                                                             />
                                                                             <label className="form-check-label">Normal Approval</label>
                                                                         </li>
-                                                                        <li
-                                                                            className="SpfxCheckRadio ">
-                                                                            <input
-                                                                                type="radio"
+                                                                        <li className="SpfxCheckRadio ">
+                                                                            <input type="radio"
                                                                                 className="radio"
                                                                                 name="ApprovalLevel" />
                                                                             <label> Complex Approval</label>
-
                                                                         </li>
                                                                         <li className="SpfxCheckRadio">
-                                                                            <input
-                                                                                type="radio"
+                                                                            <input type="radio"
                                                                                 className="radio"
                                                                                 name="ApprovalLevel" />
                                                                             <label>Quick Approval</label>
@@ -5289,14 +5262,11 @@ const EditTaskPopup = (Items: any) => {
                                                                                 <div>
                                                                                     {ApproverData.map((Approver: any, index: number) => {
                                                                                         return (
-                                                                                            <div className="block mt-1 px-2 py-2">
-                                                                                                <div className="d-flex justify-content-between">
-                                                                                                    <a className="hreflink " target="_blank" data-interception="off" >
-                                                                                                        {Approver.Title}
-                                                                                                    </a>
-                                                                                                    <span onClick={() => setApproverData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
-
-                                                                                                </div>
+                                                                                            <div className="block w-100">
+                                                                                                <a className="hreflink wid90" target="_blank" data-interception="off" >
+                                                                                                    {Approver.Title}
+                                                                                                </a>
+                                                                                                <span onClick={() => setApproverData([])} className="bg-light ml-auto hreflink svg__icon--cross svg__iconbox"></span>
                                                                                             </div>
                                                                                         )
                                                                                     })}
@@ -5389,7 +5359,7 @@ const EditTaskPopup = (Items: any) => {
                                                             </div>
                                                             <div className="col-12 mb-2 mt-2">
                                                                 <div className="input-group mb-2">
-                                                                    <label className="full-width">
+                                                                    <label className="form-label full-width">
                                                                         Linked Portfolios
                                                                     </label>
                                                                     <input type="text"
@@ -5420,11 +5390,10 @@ const EditTaskPopup = (Items: any) => {
                                                                         {linkedPortfolioData?.map((com: any, Index: any) => {
                                                                             return (
                                                                                 <>
-                                                                                    <div className="d-flex justify-content-between block px-2 py-1 border-bottom full-width selected-component">
-                                                                                        <a title={com.Title} style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
-                                                                                        <a>
-                                                                                            <span onClick={() => RemoveLinkedPortfolio(Index)} className="bg-light svg__icon--cross svg__iconbox"></span>
-                                                                                        </a>
+                                                                                    <div className="block w-100">
+                                                                                        <a className="wid90" title={com.Title} style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
+                                                                                        
+                                                                                        <span onClick={() => RemoveLinkedPortfolio(Index)} className="bg-light ml-auto hreflink svg__icon--cross svg__iconbox"></span>
                                                                                     </div>
                                                                                 </>
                                                                             )
@@ -5468,14 +5437,11 @@ const EditTaskPopup = (Items: any) => {
                                                                     <div>
                                                                         {selectedProject.map((ProjectData: any) => {
                                                                             return (
-                                                                                <div className="block mt-1 px-1 py-1">
-                                                                                    <div className="d-flex justify-content-between">
-                                                                                        <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}>
-                                                                                            {ProjectData.Title}
-                                                                                        </a>
-                                                                                        <span onClick={() => setSelectedProject([])} className="bg-light svg__icon--cross svg__iconbox"></span>
-
-                                                                                    </div>
+                                                                                <div className="block w-100">
+                                                                                    <a className="hreflink wid90" target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}>
+                                                                                        {ProjectData.Title}
+                                                                                    </a>
+                                                                                    <span onClick={() => setSelectedProject([])} className="bg-light ml-auto hreflink svg__icon--cross svg__iconbox"></span>
                                                                                 </div>
                                                                             )
                                                                         })}
