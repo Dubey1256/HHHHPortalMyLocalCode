@@ -1855,7 +1855,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                 </span>
               })
               }
-              <span className="pull-right"><a href="#">Add smart favorite</a></span>
+              {/* <span className="pull-right"><a href="#">Add smart favorite</a></span> */}
      
             </summary>
        
@@ -2134,7 +2134,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         </details>
         </Row>
         {this.state.AllTimeEntry != undefined && this.state.AllTimeEntry.length > 0 &&
-          <div className='col'>
+          <div className='row'>
             <div className="Alltable p-0">
               <div className="wrapper">
                 <GlobalCommanTable showHeader={true} showDateTime={' | Time: ' + this.state.resultSummary.totalTime + ' | Days: (' + this.state.resultSummary.totalDays + ')'} columns={this.state.columns} data={this.state.AllTimeEntry} callBackData={this.callBackData} />

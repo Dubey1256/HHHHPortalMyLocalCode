@@ -1,14 +1,12 @@
 import * as React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import InlineEditingcolumns from "../../projectmanagementOverviewTool/components/inlineEditingcolumns";
-import {  FaSort, FaSortDown, FaSortUp, } from "react-icons/fa";
-import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
+import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
+import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 import { Web } from "sp-pnp-js";
 import EditProjectPopup from "../../projectmanagementOverviewTool/components/EditProjectPopup";
 import * as Moment from "moment";
-import {
-  ColumnDef,
-} from "@tanstack/react-table";
+import { ColumnDef } from "@tanstack/react-table";
 import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup";
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import TagTaskToProjectPopup from "./TagTaskToProjectPopup";
@@ -27,14 +25,14 @@ var siteConfig: any = [];
 let headerOptions: any = {
   openTab: true,
   teamsIcon: true
-}
+};
 var allSmartInfo: any = [];
 var AllSitesAllTasks: any = [];
 var AllListId: any = {};
 var backupAllTasks: any = [];
-var MasterListData: any = []
-let taskTaggedComponents: any = []
-let TaggedPortfoliosToProject:any=[];
+var MasterListData: any = [];
+let taskTaggedComponents: any = [];
+let TaggedPortfoliosToProject: any = [];
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
 const ProjectManagementMain = (props: any) => {
@@ -52,59 +50,84 @@ const ProjectManagementMain = (props: any) => {
   const [TaskTaggedPortfolios, setTaskTaggedPortfolios] = React.useState([]);
   const [projectTitle, setProjectTitle] = React.useState("");
   const [projectId, setProjectId] = React.useState(null);
-  const [createTaskId, setCreateTaskId] = React.useState({ portfolioData: null, portfolioType: null });
-  const [isSmartInfoAvailable, setIsSmartInfoAvailable]: any = React.useState(false);
+  const [createTaskId, setCreateTaskId] = React.useState({
+    portfolioData: null,
+    portfolioType: null
+  });
+  const [isSmartInfoAvailable, setIsSmartInfoAvailable]: any =
+    React.useState(false);
   // const[allSmartInfo,setAllSmartInfo]=React.useState([])
-  const [remark, setRemark] = React.useState(false)
-  const [remarkData, setRemarkData] = React.useState(null)
-  const [editSmartInfo, setEditSmartInfo] = React.useState(false)
+  const [remark, setRemark] = React.useState(false);
+  const [remarkData, setRemarkData] = React.useState(null);
+  const [editSmartInfo, setEditSmartInfo] = React.useState(false);
   const StatusArray = [
     { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
     { value: 2, status: "02% Follow Up", taskStatusComment: "Follow Up" },
     { value: 3, status: "03% Approved", taskStatusComment: "Approved" },
     { value: 5, status: "05% Acknowledged", taskStatusComment: "Acknowledged" },
-    { value: 10, status: "10% working on it", taskStatusComment: "working on it" },
+    {
+      value: 10,
+      status: "10% working on it",
+      taskStatusComment: "working on it"
+    },
     { value: 70, status: "70% Re-Open", taskStatusComment: "Re-Open" },
-    { value: 80, status: "80% In QA Review", taskStatusComment: "In QA Review" },
-    { value: 90, status: "90% Project completed", taskStatusComment: "Task completed" },
+    {
+      value: 80,
+      status: "80% In QA Review",
+      taskStatusComment: "In QA Review"
+    },
+    {
+      value: 90,
+      status: "90% Project completed",
+      taskStatusComment: "Task completed"
+    },
     { value: 93, status: "93% For Review", taskStatusComment: "For Review" },
-    { value: 96, status: "96% Follow-up later", taskStatusComment: "Follow-up later" },
+    {
+      value: 96,
+      status: "96% Follow-up later",
+      taskStatusComment: "Follow-up later"
+    },
     { value: 99, status: "99% Completed", taskStatusComment: "Completed" },
     { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
-  ]
+  ];
   const getPercentCompleteTitle = (percent: any) => {
-    let result = '';
+    let result = "";
     StatusArray?.map((status: any) => {
       if (status?.value == percent) {
         result = status?.status;
       }
-    })
+    });
     if (result.length <= 0) {
-      result = percent + "% Completed"
+      result = percent + "% Completed";
     }
-    return result
-  }
+    return result;
+  };
   const [expendcollapsAccordion, setExpendcollapsAccordion]: any =
     React.useState({
       description: false,
       background: false,
       deliverables: false,
-      idea: false,
+      idea: false
     });
   const [sidebarStatus, setSidebarStatus] = React.useState({
     sideBarFilter: false,
     dashboard: true,
     compoonents: true,
-    services: true,
+    services: true
   });
 
   React.useEffect(() => {
-
     try {
-      isShowTimeEntry = props?.props?.TimeEntry != "" ? JSON.parse(props?.props?.TimeEntry) : "";
-      isShowSiteCompostion = props?.props?.SiteCompostion != "" ? JSON.parse(props?.props?.SiteCompostion) : ""
+      isShowTimeEntry =
+        props?.props?.TimeEntry != ""
+          ? JSON.parse(props?.props?.TimeEntry)
+          : "";
+      isShowSiteCompostion =
+        props?.props?.SiteCompostion != ""
+          ? JSON.parse(props?.props?.SiteCompostion)
+          : "";
     } catch (error: any) {
-      console.log(error)
+      console.log(error);
     }
     AllListId = {
       MasterTaskListID: props?.props?.MasterTaskListID,
@@ -119,18 +142,20 @@ const ProjectManagementMain = (props: any) => {
       isShowTimeEntry: isShowTimeEntry,
       isShowSiteCompostion: isShowSiteCompostion,
       TaskTypeID: props?.props?.TaskTypeID
-    }
+    };
     if (props?.props?.SmartInformationListID != undefined) {
-      setIsSmartInfoAvailable(true)
+      setIsSmartInfoAvailable(true);
     }
 
     getQueryVariable((e: any) => e);
 
-    loadAllSmartInformation().then((Data: any) => {
-      LoadAllSiteAllTasks()
-    }).catch((error: any) => {
-      LoadAllSiteAllTasks()
-    })
+    loadAllSmartInformation()
+      .then((Data: any) => {
+        LoadAllSiteAllTasks();
+      })
+      .catch((error: any) => {
+        LoadAllSiteAllTasks();
+      });
 
     try {
       $("#spPageCanvasContent").removeClass();
@@ -151,27 +176,30 @@ const ProjectManagementMain = (props: any) => {
     return new Promise((resolve, reject) => {
       const web = new Web(props?.siteUrl);
       // var Data = await web.lists.getByTitle("SmartInformation")
-      web.lists.getById(AllListId?.SmartInformationListID)
-        .items.select('Id,Title,Description,SelectedFolder,URL,Acronym,InfoType/Id,InfoType/Title,Created,Modified,Author/Name,Author/Title,Author/Title,Author/Id,Editor/Name,Editor/Title,Editor/Id')
-        .expand("InfoType,Author,Editor").filter("(InfoType/Title eq 'Remarks')")
-        .get().then((Data: any) => {
-          console.log(Data)
+      web.lists
+        .getById(AllListId?.SmartInformationListID)
+        .items.select(
+          "Id,Title,Description,SelectedFolder,URL,Acronym,InfoType/Id,InfoType/Title,Created,Modified,Author/Name,Author/Title,Author/Title,Author/Id,Editor/Name,Editor/Title,Editor/Id"
+        )
+        .expand("InfoType,Author,Editor")
+        .filter("(InfoType/Title eq 'Remarks')")
+        .get()
+        .then((Data: any) => {
+          console.log(Data);
           allSmartInfo = [];
-          allSmartInfo = Data
-          resolve(Data)
-        }).catch((error: any) => {
-          reject(error)
+          allSmartInfo = Data;
+          resolve(Data);
         })
-
-    })
-
-
-  }
+        .catch((error: any) => {
+          reject(error);
+        });
+    });
+  };
   const getQueryVariable = async (variable: any) => {
     const params = new URLSearchParams(window.location.search);
     let query = params.get("ProjectId");
     QueryId = query;
-    await loadAllComponent()
+    await loadAllComponent();
     AllUser = await loadTaskUsers();
     setAllTaskUsers(AllUser);
     setProjectId(QueryId);
@@ -186,15 +214,15 @@ const ProjectManagementMain = (props: any) => {
       let web = new Web(AllListId?.siteUrl);
       taskUser = await web.lists
         .getById(AllListId?.TaskUsertListID)
-        .items
-        .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+        .items.select(
+          "Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver"
+        )
         .get();
-    }
-    catch (error) {
+    } catch (error) {
       return Promise.reject(error);
     }
     return taskUser;
-  }
+  };
 
   const GetMasterData = async () => {
     if (AllListId?.MasterTaskListID != undefined) {
@@ -202,27 +230,124 @@ const ProjectManagementMain = (props: any) => {
         let web = new Web(props?.siteUrl);
         await web.lists
           .getById(AllListId?.MasterTaskListID)
-          .items.select("ComponentCategory/Id", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "PortfoliosId","Portfolios/Id","Portfolios/Title","ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "DeliverableSynonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "AdminNotes", "AdminStatus", "Background", "Help_x0020_Information", "TaskCategories/Id", "TaskCategories/Title", "PriorityRank", "Reference_x0020_Item_x0020_Json", "TeamMembers/Title", "TeamMembers/Name", "TeamMembers/Id", "Item_x002d_Image", "ComponentLink", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
-          .expand("ClientCategory", "ComponentCategory", "AssignedTo", "AttachmentFiles", "Author", "Editor", "TeamMembers", "Portfolios", "TaskCategories", "Parent")
+          .items.select(
+            "ComponentCategory/Id",
+            "ComponentCategory/Title",
+            "DueDate",
+            "SiteCompositionSettings",
+            "PortfolioStructureID",
+            "PortfoliosId",
+            "Portfolios/Id",
+            "Portfolios/Title",
+            "ItemRank",
+            "ShortDescriptionVerified",
+            "Portfolio_x0020_Type",
+            "BackgroundVerified",
+            "descriptionVerified",
+            "Synonyms",
+            "BasicImageInfo",
+            "DeliverableSynonyms",
+            "OffshoreComments",
+            "OffshoreImageUrl",
+            "HelpInformationVerified",
+            "IdeaVerified",
+            "TechnicalExplanationsVerified",
+            "Deliverables",
+            "DeliverablesVerified",
+            "ValueAddedVerified",
+            "CompletedDate",
+            "Idea",
+            "ValueAdded",
+            "TechnicalExplanations",
+            "Item_x0020_Type",
+            "Sitestagging",
+            "Package",
+            "Parent/Id",
+            "Parent/Title",
+            "Short_x0020_Description_x0020_On",
+            "Short_x0020_Description_x0020__x",
+            "Short_x0020_description_x0020__x0",
+            "AdminNotes",
+            "AdminStatus",
+            "Background",
+            "Help_x0020_Information",
+            "TaskCategories/Id",
+            "TaskCategories/Title",
+            "PriorityRank",
+            "Reference_x0020_Item_x0020_Json",
+            "TeamMembers/Title",
+            "TeamMembers/Name",
+            "TeamMembers/Id",
+            "Item_x002d_Image",
+            "ComponentLink",
+            "IsTodaysTask",
+            "AssignedTo/Title",
+            "AssignedTo/Name",
+            "AssignedTo/Id",
+            "AttachmentFiles/FileName",
+            "FileLeafRef",
+            "FeedBack",
+            "Title",
+            "Id",
+            "PercentComplete",
+            "Company",
+            "StartDate",
+            "DueDate",
+            "Comments",
+            "Categories",
+            "Status",
+            "WebpartId",
+            "Body",
+            "Mileage",
+            "PercentComplete",
+            "Attachments",
+            "Priority",
+            "Created",
+            "Modified",
+            "Author/Id",
+            "Author/Title",
+            "Editor/Id",
+            "Editor/Title",
+            "ClientCategory/Id",
+            "ClientCategory/Title"
+          )
+          .expand(
+            "ClientCategory",
+            "ComponentCategory",
+            "AssignedTo",
+            "AttachmentFiles",
+            "Author",
+            "Editor",
+            "TeamMembers",
+            "Portfolios",
+            "TaskCategories",
+            "Parent"
+          )
           .getById(QueryId)
-          .get().then((fetchedProject: any) => {
-            if ((fetchedProject.PercentComplete != undefined)) {
-              fetchedProject.PercentComplete = (fetchedProject?.PercentComplete * 100).toFixed(0)
+          .get()
+          .then((fetchedProject: any) => {
+            if (fetchedProject.PercentComplete != undefined) {
+              fetchedProject.PercentComplete = (
+                fetchedProject?.PercentComplete * 100
+              ).toFixed(0);
             }
             // if (taskUsers.Body != undefined) {
             //   taskUsers.Body = taskUsers.Body.replace(/(<([^>]+)>)/gi, "");
             // }
 
-
             if (fetchedProject?.DueDate != undefined) {
-              fetchedProject.DisplayDueDate = fetchedProject.DueDate != null
-                ? Moment(fetchedProject.DueDate).format("DD/MM/YYYY")
-                : "";
+              fetchedProject.DisplayDueDate =
+                fetchedProject.DueDate != null
+                  ? Moment(fetchedProject.DueDate).format("DD/MM/YYYY")
+                  : "";
             } else {
-              fetchedProject.DisplayDueDate = '';
+              fetchedProject.DisplayDueDate = "";
             }
-            TaggedPortfoliosToProject = fetchedProject?.PortfoliosId?.length > 0 ? fetchedProject?.PortfoliosId : [];
-           
+            TaggedPortfoliosToProject =
+              fetchedProject?.PortfoliosId?.length > 0
+                ? fetchedProject?.PortfoliosId
+                : [];
+
             fetchedProject.taggedPortfolios = [];
             fetchedProject?.PortfoliosId?.map((item: any) => {
               MasterListData?.map((portfolio: any) => {
@@ -241,17 +366,17 @@ const ProjectManagementMain = (props: any) => {
                 fetchedProject?.TeamMembersId?.map((taskUser: any) => {
                   if (user.AssingedToUserId == taskUser) {
                     user.Id = user?.AssingedToUserId;
-                    fetchedProject?.TeamMembers?.push(user)
+                    fetchedProject?.TeamMembers?.push(user);
                   }
-                })
+                });
               }
               if (fetchedProject?.ResponsibleTeamId != undefined) {
                 fetchedProject?.ResponsibleTeamId?.map((taskUser: any) => {
                   if (user.AssingedToUserId == taskUser) {
                     user.Id = user.AssingedToUserId;
-                    fetchedProject?.ResponsibleTeam?.push(user)
+                    fetchedProject?.ResponsibleTeam?.push(user);
                   }
-                })
+                });
               }
               if (fetchedProject.AssignedToId != undefined) {
                 fetchedProject.AssignedToId.map((taskUser: any) => {
@@ -271,26 +396,21 @@ const ProjectManagementMain = (props: any) => {
             });
             setProjectTitle(fetchedProject?.Title);
             if (fetchedProject?.taggedPortfolios != undefined) {
-              smartPortfoliosData = fetchedProject.taggedPortfolios
+              smartPortfoliosData = fetchedProject.taggedPortfolios;
             }
             LoadAllSiteTasks();
             setMasterdata((prev: any) => fetchedProject);
-          })
-
-
+          });
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
     } else {
-      alert('Master Task List Id not present')
+      alert("Master Task List Id not present");
     }
   };
 
-  const callBackData = React.useCallback((elem: any, ShowingData: any) => {
-
-
-  }, []);
-
+  const callBackData = React.useCallback((elem: any, ShowingData: any) => {},
+  []);
 
   const CallBack = React.useCallback((item: any) => {
     setisOpenEditPopup(false);
@@ -304,29 +424,47 @@ const ProjectManagementMain = (props: any) => {
         let TaxonomyItems = [];
         smartmeta = await web.lists
           .getById(AllListId?.SmartMetadataListID)
-          .items.select("Id", "IsVisible", "ParentID", "Title", "SmartSuggestions", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
+          .items.select(
+            "Id",
+            "IsVisible",
+            "ParentID",
+            "Title",
+            "SmartSuggestions",
+            "TaxType",
+            "Description1",
+            "Item_x005F_x0020_Cover",
+            "listId",
+            "siteName",
+            "siteUrl",
+            "SortOrder",
+            "SmartFilters",
+            "Selectable",
+            "Parent/Id",
+            "Parent/Title"
+          )
           .top(5000)
           .filter("TaxType eq 'Sites'")
           .expand("Parent")
           .get();
         if (smartmeta.length > 0) {
           smartmeta?.map((site: any) => {
-            if (site?.Title != "Master Tasks" && site?.Title != "SDC Sites" && site?.IsVisible == true) {
-              siteConfig.push(site)
+            if (
+              site?.Title != "Master Tasks" &&
+              site?.Title != "SDC Sites" &&
+              site?.IsVisible == true
+            ) {
+              siteConfig.push(site);
             }
-          })
+          });
           GetMasterData();
-
         } else {
           siteConfig = smartmeta;
         }
-
       } catch (error) {
-        console.log(error)
-
+        console.log(error);
       }
     } else {
-      alert('Smart Metadata List Id not present')
+      alert("Smart Metadata List Id not present");
       siteConfig = [];
     }
   };
@@ -338,7 +476,9 @@ const ProjectManagementMain = (props: any) => {
 
   const untagTask = async (item: any) => {
     let confirmation = confirm(
-      "Are you sure you want to untag " + `${item?.TaskID} - ${item?.Title}` + " from this project ?"
+      "Are you sure you want to untag " +
+        `${item?.TaskID} - ${item?.Title}` +
+        " from this project ?"
     );
     if (confirmation == true) {
       const web = new Web(item?.siteUrl);
@@ -346,7 +486,7 @@ const ProjectManagementMain = (props: any) => {
         .getById(item?.listId)
         .items.getById(item?.Id)
         .update({
-          ProjectId: null,
+          ProjectId: null
         })
         .then((e: any) => {
           LoadAllSiteTasks();
@@ -370,10 +510,10 @@ const ProjectManagementMain = (props: any) => {
     LoadAllSiteTasks();
   }, []);
   const CreateTask = React.useCallback(() => {
-    setisOpenCreateTask(false)
+    setisOpenCreateTask(false);
   }, []);
   const inlineCallBack = React.useCallback((item: any) => {
-    setAllTasks(prevTasks => {
+    setAllTasks((prevTasks) => {
       const updatedTasks = prevTasks.map((task: any) => {
         if (task.Id === item.Id && task.siteType === item.siteType) {
           return { ...task, ...item };
@@ -397,13 +537,15 @@ const ProjectManagementMain = (props: any) => {
         let web = new Web(props?.siteUrl);
         var arraycount = 0;
         siteConfig.map(async (config: any) => {
-
           let smartmeta = [];
           smartmeta = await web.lists
             .getById(config.listId)
-            .items
-            .select("Id,Title,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
-            .expand('AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory')
+            .items.select(
+              "Id,Title,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title"
+            )
+            .expand(
+              "AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
+            )
             .top(4999)
             .filter("ProjectId eq " + QueryId)
             .orderBy("PriorityRank", false)
@@ -415,20 +557,26 @@ const ProjectManagementMain = (props: any) => {
                 if (smart?.Id == items?.SmartInformation[0]?.Id) {
                   // var smartdata=[]
                   // smartdata.push(smart)
-                  items.SmartInformation = [smart]
+                  items.SmartInformation = [smart];
                 }
-
-              })
+              });
             }
             items.AllTeamMember = [];
             items.HierarchyData = [];
-            items.descriptionsSearch = '';
+            items.descriptionsSearch = "";
             items.siteType = config.Title;
-            items.bodys = items.Body != null && items.Body.split('<p><br></p>').join('');
+            items.bodys =
+              items.Body != null && items.Body.split("<p><br></p>").join("");
             if (items?.Body != undefined && items?.Body != null) {
-              items.descriptionsSearch = items?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
+              items.descriptionsSearch = items?.Body.replace(
+                /(<([^>]+)>)/gi,
+                ""
+              ).replace(/\n/g, "");
             }
-            items.commentsSearch = items?.Comments != null && items?.Comments != undefined ? items.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
+            items.commentsSearch =
+              items?.Comments != null && items?.Comments != undefined
+                ? items.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, "")
+                : "";
             items.listId = config.listId;
             items.siteUrl = config.siteUrl.Url;
             items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
@@ -442,11 +590,13 @@ const ProjectManagementMain = (props: any) => {
                 : "";
             items.portfolio = {};
             if (items?.Portfolio?.Id != undefined) {
-              if (!taskComponent?.some((id: any) => id == items?.Portfolio?.Id)) {
-                let comp = items?.Portfolio
+              if (
+                !taskComponent?.some((id: any) => id == items?.Portfolio?.Id)
+              ) {
+                let comp = items?.Portfolio;
                 comp.filterActive = false;
-                taskComponent.push(comp?.Id)
-                taskTaggedComponents.push(comp)
+                taskComponent.push(comp?.Id);
+                taskTaggedComponents.push(comp);
               }
               items.portfolio = items?.Portfolio;
               items.PortfolioTitle = items?.Portfolio?.Title;
@@ -489,35 +639,118 @@ const ProjectManagementMain = (props: any) => {
             });
             AllTask.push(items);
           });
-          let setCount = siteConfig?.length
+          let setCount = siteConfig?.length;
           if (arraycount === setCount) {
             setAllTasks(AllTask);
             setData(AllTask);
-            setTaskTaggedPortfolios(taskTaggedComponents)
+            setTaskTaggedPortfolios(taskTaggedComponents);
             backupAllTasks = AllTask;
           }
-
         });
       } catch (error) {
-        console.log(error)
-
+        console.log(error);
       }
     } else {
-      alert('Site Config Length less than 0')
+      alert("Site Config Length less than 0");
     }
   };
 
   const loadAllComponent = async () => {
-
     let web = new Web(AllListId?.siteUrl);
     MasterListData = await web.lists
       .getById(AllListId?.MasterTaskListID)
-      .items.select("ComponentCategory/Id", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "DeliverableSynonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "AdminNotes", "AdminStatus", "Background", "Help_x0020_Information", "TaskCategories/Id", "TaskCategories/Title", "PriorityRank", "Reference_x0020_Item_x0020_Json", "TeamMembers/Title", "TeamMembers/Name", "TeamMembers/Id", "Item_x002d_Image", "ComponentLink", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
-      .expand("ClientCategory", "ComponentCategory", "AssignedTo", "AttachmentFiles", "Author", "Editor", "TeamMembers", "TaskCategories", "Parent")
+      .items.select(
+        "ComponentCategory/Id",
+        "ComponentCategory/Title",
+        "DueDate",
+        "SiteCompositionSettings",
+        "PortfolioStructureID",
+        "ItemRank",
+        "ShortDescriptionVerified",
+        "Portfolio_x0020_Type",
+        "BackgroundVerified",
+        "descriptionVerified",
+        "Synonyms",
+        "BasicImageInfo",
+        "DeliverableSynonyms",
+        "OffshoreComments",
+        "OffshoreImageUrl",
+        "HelpInformationVerified",
+        "IdeaVerified",
+        "TechnicalExplanationsVerified",
+        "Deliverables",
+        "DeliverablesVerified",
+        "ValueAddedVerified",
+        "CompletedDate",
+        "Idea",
+        "ValueAdded",
+        "TechnicalExplanations",
+        "Item_x0020_Type",
+        "Sitestagging",
+        "Package",
+        "Parent/Id",
+        "Parent/Title",
+        "Short_x0020_Description_x0020_On",
+        "Short_x0020_Description_x0020__x",
+        "Short_x0020_description_x0020__x0",
+        "AdminNotes",
+        "AdminStatus",
+        "Background",
+        "Help_x0020_Information",
+        "TaskCategories/Id",
+        "TaskCategories/Title",
+        "PriorityRank",
+        "Reference_x0020_Item_x0020_Json",
+        "TeamMembers/Title",
+        "TeamMembers/Name",
+        "TeamMembers/Id",
+        "Item_x002d_Image",
+        "ComponentLink",
+        "IsTodaysTask",
+        "AssignedTo/Title",
+        "AssignedTo/Name",
+        "AssignedTo/Id",
+        "AttachmentFiles/FileName",
+        "FileLeafRef",
+        "FeedBack",
+        "Title",
+        "Id",
+        "PercentComplete",
+        "Company",
+        "StartDate",
+        "DueDate",
+        "Comments",
+        "Categories",
+        "Status",
+        "WebpartId",
+        "Body",
+        "Mileage",
+        "PercentComplete",
+        "Attachments",
+        "Priority",
+        "Created",
+        "Modified",
+        "Author/Id",
+        "Author/Title",
+        "Editor/Id",
+        "Editor/Title",
+        "ClientCategory/Id",
+        "ClientCategory/Title"
+      )
+      .expand(
+        "ClientCategory",
+        "ComponentCategory",
+        "AssignedTo",
+        "AttachmentFiles",
+        "Author",
+        "Editor",
+        "TeamMembers",
+        "TaskCategories",
+        "Parent"
+      )
       .top(4999)
-      .get()
-
-  }
+      .get();
+  };
   // React.useEffect(() => {
   //   if (Masterdata?.Id != undefined) {
   //     setItem(Masterdata);
@@ -537,33 +770,93 @@ const ProjectManagementMain = (props: any) => {
     }
   };
 
-
   const LoadAllSiteAllTasks = async function () {
     let AllSiteTasks: any = [];
-    "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
+    ("&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999");
     let Counter = 0;
     let web = new Web(AllListId?.siteUrl);
     let arraycount = 0;
     try {
       if (siteConfig?.length > 0) {
-
         siteConfig.map(async (config: any) => {
           if (config.Title != "SDC Sites") {
             let smartmeta = [];
             await web.lists
               .getById(config.listId)
-              .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "ParentTask/Id", "ParentTask/Title", "ParentTask/TaskID", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Modified")
-              .expand("TeamMembers", "ParentTask", "ClientCategory", "AssignedTo", "TaskCategories", "Author", "ResponsibleTeam", "TaskType", "Portfolio")
-              .getAll().then((data: any) => {
+              .items.select(
+                "ID",
+                "Title",
+                "ClientCategory/Id",
+                "ClientCategory/Title",
+                "ClientCategory",
+                "Comments",
+                "DueDate",
+                "ClientActivityJson",
+                "EstimatedTime",
+                "ParentTask/Id",
+                "ParentTask/Title",
+                "ParentTask/TaskID",
+                "TaskID",
+                "workingThisWeek",
+                "IsTodaysTask",
+                "AssignedTo/Id",
+                "TaskLevel",
+                "TaskLevel",
+                "OffshoreComments",
+                "AssignedTo/Title",
+                "OffshoreImageUrl",
+                "TaskCategories/Id",
+                "TaskCategories/Title",
+                "Status",
+                "StartDate",
+                "CompletedDate",
+                "TeamMembers/Title",
+                "TeamMembers/Id",
+                "ItemRank",
+                "PercentComplete",
+                "Priority",
+                "Body",
+                "PriorityRank",
+                "Created",
+                "Author/Title",
+                "Author/Id",
+                "BasicImageInfo",
+                "ComponentLink",
+                "FeedBack",
+                "ResponsibleTeam/Title",
+                "ResponsibleTeam/Id",
+                "TaskType/Title",
+                "ClientTime",
+                "Portfolio/Id",
+                "Portfolio/Title",
+                "Modified"
+              )
+              .expand(
+                "TeamMembers",
+                "ParentTask",
+                "ClientCategory",
+                "AssignedTo",
+                "TaskCategories",
+                "Author",
+                "ResponsibleTeam",
+                "TaskType",
+                "Portfolio"
+              )
+              .getAll()
+              .then((data: any) => {
                 smartmeta = data;
                 smartmeta.map((task: any) => {
                   task.AllTeamMember = [];
                   task.HierarchyData = [];
                   task.siteType = config.Title;
-                  task.bodys = task.Body != null && task.Body.split('<p><br></p>').join('');
+                  task.bodys =
+                    task.Body != null &&
+                    task.Body.split("<p><br></p>").join("");
                   task.listId = config.listId;
                   task.siteUrl = config.siteUrl.Url;
-                  task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
+                  task.PercentComplete = (task.PercentComplete * 100).toFixed(
+                    0
+                  );
                   task.DisplayDueDate =
                     task.DueDate != null
                       ? Moment(task.DueDate).format("DD/MM/YYYY")
@@ -577,7 +870,7 @@ const ProjectManagementMain = (props: any) => {
                   task["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
                   task.TeamMembersSearch = "";
                   task.TaskID = globalCommon.GetTaskId(task);
-                  AllSiteTasks.push(task)
+                  AllSiteTasks.push(task);
                 });
                 arraycount++;
               });
@@ -591,7 +884,7 @@ const ProjectManagementMain = (props: any) => {
         });
       }
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
   };
 
@@ -612,43 +905,44 @@ const ProjectManagementMain = (props: any) => {
             results:
               selectedComponent !== undefined && selectedComponent?.length > 0
                 ? selectedComponent
-                : [],
+                : []
           }
-
         })
         .then((res: any) => {
           GetMasterData();
-          smartPortfoliosData = []
+          smartPortfoliosData = [];
           console.log(res);
         });
     }
   };
 
   const createOpenTask = (items: any) => {
-    setCreateTaskId({ portfolioData: items, portfolioType: 'Component' });
-    setisOpenCreateTask(true)
-  }
+    setCreateTaskId({ portfolioData: items, portfolioType: "Component" });
+    setisOpenCreateTask(true);
+  };
   const openRemark = (items: any) => {
-    setRemarkData(items)
+    setRemarkData(items);
     if (items.SmartInformation.length > 0) {
       setEditSmartInfo(true);
     } else {
       setEditSmartInfo(false);
     }
     setRemark(true);
-  }
-  const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
-    if (DataItem?.length > 0) {
-      DataItem.map((selectedData: any) => {
-        smartPortfoliosData.push(selectedData);
-      })
-      TagPotfolioToProject();
-    }
-      console.log(Masterdata)
+  };
+  const ComponentServicePopupCallBack = React.useCallback(
+    (DataItem: any, Type: any, functionType: any) => {
+      if (DataItem?.length > 0) {
+        DataItem.map((selectedData: any) => {
+          smartPortfoliosData.push(selectedData);
+        });
+        TagPotfolioToProject();
+      }
+      console.log(Masterdata);
       setIsComponent(false);
       setIsPortfolio(false);
-    
-  }, [])
+    },
+    []
+  );
 
   const column2 = React.useMemo<ColumnDef<any, unknown>[]>(
     () => [
@@ -657,7 +951,7 @@ const ProjectManagementMain = (props: any) => {
         placeholder: "",
         hasCheckbox: true,
         size: 20,
-        id: 'Id',
+        id: "Id"
       },
       {
         accessorKey: "TaskID",
@@ -669,17 +963,22 @@ const ProjectManagementMain = (props: any) => {
         cell: ({ row, getValue }) => (
           <>
             <span className="d-flex">
-              <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
+              <ReactPopperTooltipSingleLevel
+                ShareWebId={row?.original?.TaskID}
+                row={row?.original}
+                singleLevel={true}
+                masterTaskData={MasterListData}
+                AllSitesTaskData={AllSitesAllTasks}
+              />
             </span>
           </>
-        ),
+        )
       },
       {
         accessorFn: (row) => row?.Title,
         cell: ({ row, column, getValue }) => (
           <>
             <span>
-     
               <a
                 className="hreflink"
                 href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
@@ -688,7 +987,18 @@ const ProjectManagementMain = (props: any) => {
               >
                 {row?.original?.Title}
               </a>
-              {row?.original?.Body !== null && row?.original?.Body != undefined ?<span className="alignIcon"> <InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} /> </span> : ''}
+              {row?.original?.Body !== null &&
+              row?.original?.Body != undefined ? (
+                <span className="alignIcon">
+                  {" "}
+                  <InfoIconsToolTip
+                    Discription={row?.original?.bodys}
+                    row={row?.original}
+                  />{" "}
+                </span>
+              ) : (
+                ""
+              )}
             </span>
           </>
         ),
@@ -696,13 +1006,16 @@ const ProjectManagementMain = (props: any) => {
         placeholder: "Title",
         resetColumnFilters: false,
         resetSorting: false,
-        header: "",
+        header: ""
       },
       {
         accessorFn: (row) => row?.Site,
         cell: ({ row }) => (
           <span>
-            <img className='circularImage rounded-circle' src={row?.original?.SiteIcon} />
+            <img
+              className="circularImage rounded-circle"
+              src={row?.original?.SiteIcon}
+            />
           </span>
         ),
         id: "Site",
@@ -715,7 +1028,6 @@ const ProjectManagementMain = (props: any) => {
       {
         accessorFn: (row) => row?.Portfolio,
         cell: ({ row }) => (
-
           <a
             className="hreflink"
             data-interception="off"
@@ -737,17 +1049,17 @@ const ProjectManagementMain = (props: any) => {
           <span>
             <InlineEditingcolumns
               AllListId={AllListId}
-              type='Task'
+              type="Task"
               callBack={inlineCallBack}
-              columnName='Priority'
+              columnName="Priority"
               item={row?.original}
               TaskUsers={AllUser}
-              pageName={'ProjectManagment'}
+              pageName={"ProjectManagment"}
             />
           </span>
         ),
         placeholder: "Priority",
-        id: 'Priority',
+        id: "Priority",
         header: "",
         resetColumnFilters: false,
         resetSorting: false,
@@ -759,13 +1071,13 @@ const ProjectManagementMain = (props: any) => {
           <InlineEditingcolumns
             AllListId={AllListId}
             callBack={inlineCallBack}
-            columnName='DueDate'
+            columnName="DueDate"
             item={row?.original}
             TaskUsers={AllUser}
-            pageName={'ProjectManagment'}
+            pageName={"ProjectManagment"}
           />
         ),
-        id: 'DueDate',
+        id: "DueDate",
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "Due Date",
@@ -778,7 +1090,7 @@ const ProjectManagementMain = (props: any) => {
         header: "",
         resetColumnFilters: false,
         size: 100,
-        id: "descriptionsSearch",
+        id: "descriptionsSearch"
       },
       {
         accessorKey: "commentsSearch",
@@ -786,7 +1098,7 @@ const ProjectManagementMain = (props: any) => {
         header: "",
         resetColumnFilters: false,
         size: 100,
-        id: "commentsSearch",
+        id: "commentsSearch"
       },
       {
         accessorFn: (row) => row?.PercentComplete,
@@ -795,14 +1107,14 @@ const ProjectManagementMain = (props: any) => {
             <InlineEditingcolumns
               AllListId={AllListId}
               callBack={inlineCallBack}
-              columnName='PercentComplete'
+              columnName="PercentComplete"
               item={row?.original}
               TaskUsers={AllUser}
-              pageName={'ProjectManagment'}
+              pageName={"ProjectManagment"}
             />
           </span>
         ),
-        id: 'PercentComplete',
+        id: "PercentComplete",
         placeholder: "% Complete",
         resetColumnFilters: false,
         resetSorting: false,
@@ -810,20 +1122,21 @@ const ProjectManagementMain = (props: any) => {
         size: 55
       },
       {
-        accessorFn: (row) => row?.TeamMembers?.map((elem: any) => elem.Title).join('-'),
+        accessorFn: (row) =>
+          row?.TeamMembers?.map((elem: any) => elem.Title).join("-"),
         cell: ({ row }) => (
           <span>
             <InlineEditingcolumns
               AllListId={AllListId}
               callBack={inlineCallBack}
-              columnName='Team'
+              columnName="Team"
               item={row?.original}
               TaskUsers={AllUser}
-              pageName={'ProjectManagment'}
+              pageName={"ProjectManagment"}
             />
           </span>
         ),
-        id: 'TeamMembers',
+        id: "TeamMembers",
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "TeamMembers",
@@ -833,24 +1146,27 @@ const ProjectManagementMain = (props: any) => {
       {
         accessorFn: (row) => row?.SmartInformation[0]?.Title,
         cell: ({ row }) => (
-          <span style={{ display: "flex", width: "100%", height: "100%" }} className='d-flex' onClick={() => openRemark(row?.original)}>
+          <span
+            style={{ display: "flex", width: "100%", height: "100%" }}
+            className="d-flex"
+            onClick={() => openRemark(row?.original)}
+          >
             &nbsp; {row?.original?.SmartInformation[0]?.Title}
           </span>
         ),
-        id: 'SmartInformation',
+        id: "SmartInformation",
         resetSorting: false,
         resetColumnFilters: false,
         placeholder: "Remarks",
-        header: '',
+        header: "",
         size: 125
       },
-  
+
       {
         accessorFn: (row) => row?.Created,
         cell: ({ row }) => (
           <span>
-      
-            <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
+            <span className="ms-1">{row?.original?.DisplayCreateDate} </span>
 
             {row?.original?.createdImg != undefined ? (
               <>
@@ -859,15 +1175,22 @@ const ProjectManagementMain = (props: any) => {
                   target="_blank"
                   data-interception="off"
                 >
-                  <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} />
+                  <img
+                    title={row?.original?.Author?.Title}
+                    className="workmember ms-1"
+                    src={row?.original?.createdImg}
+                  />
                 </a>
               </>
             ) : (
-              <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
+              <span
+                className="svg__iconbox svg__icon--defaultUser grey"
+                title={row?.original?.Author?.Title}
+              ></span>
             )}
           </span>
         ),
-        id: 'Created',
+        id: "Created",
         canSort: false,
         resetColumnFilters: false,
         resetSorting: false,
@@ -877,49 +1200,60 @@ const ProjectManagementMain = (props: any) => {
       },
       {
         cell: ({ row }) => (
-          <span className='text-end'>
+          <span className="text-end">
             <span
-              title='Edit Task'
+              title="Edit Task"
               onClick={() => EditPopup(row?.original)}
-              className='alignIcon  svg__iconbox svg__icon--edit hreflink'
+              className="alignIcon  svg__iconbox svg__icon--edit hreflink"
             ></span>
-            <span title='Remove Task'
+            <span
+              title="Remove Task"
               onClick={() => untagTask(row?.original)}
-              className='alignIcon  svg__iconbox svg__icon--cross dark hreflink'
+              className="alignIcon  svg__iconbox svg__icon--cross dark hreflink"
             ></span>
           </span>
         ),
-        id: 'Actions',
+        id: "Actions",
         accessorKey: "",
         canSort: false,
         resetSorting: false,
         resetColumnFilters: false,
         placeholder: "",
         size: 35
-      },
+      }
     ],
     [data]
   );
   const clearPortfolioFilter = () => {
-    setCreateTaskId({ portfolioData: null, portfolioType: null })
+    setCreateTaskId({ portfolioData: null, portfolioType: null });
     setData(AllTasks);
     setSidebarStatus({ ...sidebarStatus, sideBarFilter: false });
   };
-  const filterPotfolioTasks = (portfolio: any, clickedIndex: any, type: any) => {
+  const filterPotfolioTasks = (
+    portfolio: any,
+    clickedIndex: any,
+    type: any
+  ) => {
     let projectData = Masterdata;
     let displayTasks = AllTasks;
-    if (type == 'Component' || type == 'taskComponent') {
+    if (type == "Component" || type == "taskComponent") {
       if (createTaskId?.portfolioData?.Id != portfolio?.Id) {
         displayTasks = AllTasks.filter((items: any) => {
-          if (items?.Portfolio?.Id !=undefined && items?.Portfolio?.Id == portfolio?.Id) {
+          if (
+            items?.Portfolio?.Id != undefined &&
+            items?.Portfolio?.Id == portfolio?.Id
+          ) {
             return true;
           }
           return false;
         });
-        setCreateTaskId({ portfolioData: portfolio, portfolioType: 'Component' });
+        setCreateTaskId({
+          portfolioData: portfolio,
+          portfolioType: "Component"
+        });
         setSidebarStatus({ ...sidebarStatus, sideBarFilter: true });
       } else if (createTaskId?.portfolioData?.Id == portfolio?.Id) {
-        setCreateTaskId({ portfolioData: null, portfolioType: null })
+        setCreateTaskId({ portfolioData: null, portfolioType: null });
         setSidebarStatus({ ...sidebarStatus, sideBarFilter: false });
       }
     }
@@ -947,12 +1281,12 @@ const ProjectManagementMain = (props: any) => {
       {QueryId != "" ? (
         <>
           <div className="row">
-            <div
-              className="d-flex justify-content-between p-0"
-            >
+            <div className="d-flex justify-content-between p-0">
               <ul className="spfxbreadcrumb mb-2 ms-2 p-0">
                 <li>
-                  <a href={`${props?.siteUrl}/SitePages/Project-Management-Overview.aspx`}>
+                  <a
+                    href={`${props?.siteUrl}/SitePages/Project-Management-Overview.aspx`}
+                  >
                     Project Management
                   </a>
                 </li>
@@ -1004,14 +1338,16 @@ const ProjectManagementMain = (props: any) => {
                       </li>
                       <li className="nav__item  pb-1 pt-0">
                         <div className="nav__text">
-                          {Masterdata?.taggedPortfolios?.length > 0 || TaskTaggedPortfolios?.length > 0 ? (
+                          {Masterdata?.taggedPortfolios?.length > 0 ||
+                          TaskTaggedPortfolios?.length > 0 ? (
                             <ul className="nav__subList wrapper scrollbar pt-1 ps-0">
                               {Masterdata?.taggedPortfolios?.map(
                                 (component: any, index: any) => {
                                   return (
                                     <li
                                       className={
-                                        component?.Id == createTaskId?.portfolioData?.Id
+                                        component?.Id ==
+                                        createTaskId?.portfolioData?.Id
                                           ? "nav__item bg-ee ps-1"
                                           : "nav__item ps-1"
                                       }
@@ -1019,7 +1355,8 @@ const ProjectManagementMain = (props: any) => {
                                       <span>
                                         <a
                                           className={
-                                            component?.Id == createTaskId?.portfolioData?.Id
+                                            component?.Id ==
+                                            createTaskId?.portfolioData?.Id
                                               ? "hreflink "
                                               : "text-white hreflink"
                                           }
@@ -1045,7 +1382,8 @@ const ProjectManagementMain = (props: any) => {
                                   return (
                                     <li
                                       className={
-                                        component?.Id == createTaskId?.portfolioData?.Id
+                                        component?.Id ==
+                                        createTaskId?.portfolioData?.Id
                                           ? "nav__item bg-ee ps-1"
                                           : "nav__item ps-1"
                                       }
@@ -1053,7 +1391,8 @@ const ProjectManagementMain = (props: any) => {
                                       <span>
                                         <a
                                           className={
-                                            component?.Id == createTaskId?.portfolioData?.Id
+                                            component?.Id ==
+                                            createTaskId?.portfolioData?.Id
                                               ? "hreflink "
                                               : "text-white hreflink"
                                           }
@@ -1085,7 +1424,6 @@ const ProjectManagementMain = (props: any) => {
                     </ul>
                   </nav>
                 </section>
-             
               </aside>
               <div className="dashboard-content ps-2 full-width">
                 <article className="row">
@@ -1111,16 +1449,15 @@ const ProjectManagementMain = (props: any) => {
                           </div>
                           <div>
                             <div className="d-flex">
+                              <CreateTaskFromProject
+                                projectItem={Masterdata}
+                                SelectedProp={props?.props}
+                                pageContext={props.pageContext}
+                                projectId={projectId}
+                                callBack={CreateTask}
+                                createComponent={createTaskId}
+                              />
 
-                                <CreateTaskFromProject
-                                  projectItem={Masterdata}
-                                  SelectedProp={props?.props}
-                                  pageContext={props.pageContext}
-                                  projectId={projectId}
-                                  callBack={CreateTask}
-                                  createComponent={createTaskId}
-                                />
-                            
                               {projectId && (
                                 <TagTaskToProjectPopup
                                   projectItem={Masterdata}
@@ -1146,9 +1483,7 @@ const ProjectManagementMain = (props: any) => {
                                   <dt className="bg-fxdark">Due Date</dt>
                                   <dd className="bg-light">
                                     <span>
-                                      <a>
-                                        {Masterdata?.DisplayDueDate}
-                                      </a>
+                                      <a>{Masterdata?.DisplayDueDate}</a>
                                     </span>
                                     <span
                                       className="pull-right"
@@ -1186,7 +1521,16 @@ const ProjectManagementMain = (props: any) => {
                                 <dl>
                                   <dt className="bg-fxdark">Assigned To</dt>
                                   <dd className="bg-light">
-                                    {Masterdata?.AssignedTo?.length > 0 || Masterdata?.TeamMembers?.length > 0 || Masterdata?.ResponsibleTeam?.length > 0 ? <ShowTaskTeamMembers props={Masterdata} TaskUsers={AllTaskUsers} /> : ''}
+                                    {Masterdata?.AssignedTo?.length > 0 ||
+                                    Masterdata?.TeamMembers?.length > 0 ||
+                                    Masterdata?.ResponsibleTeam?.length > 0 ? (
+                                      <ShowTaskTeamMembers
+                                        props={Masterdata}
+                                        TaskUsers={AllTaskUsers}
+                                      />
+                                    ) : (
+                                      ""
+                                    )}
                                   </dd>
                                 </dl>
                                 <dl>
@@ -1194,7 +1538,9 @@ const ProjectManagementMain = (props: any) => {
                                   <dd className="bg-light">
                                     <a>
                                       {Masterdata.PercentComplete != null
-                                        ? getPercentCompleteTitle(Masterdata.PercentComplete)
+                                        ? getPercentCompleteTitle(
+                                            Masterdata.PercentComplete
+                                          )
                                         : ""}
                                     </a>
                                     <span className="pull-right">
@@ -1215,49 +1561,75 @@ const ProjectManagementMain = (props: any) => {
                                 </dl>
                               </div>
 
-
-
-                              {
-                                Masterdata?.Body != undefined ? <div className="mt-2 row pe-0 detailsbox">
+                              {Masterdata?.Body != undefined ? (
+                                <div className="mt-2 row pe-0 detailsbox">
                                   <details className="pe-0" open>
                                     <summary>Description</summary>
-                                    <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Body }}></div>
+                                    <div
+                                      className="AccordionContent p-2"
+                                      dangerouslySetInnerHTML={{
+                                        __html: Masterdata?.Body
+                                      }}
+                                    ></div>
                                   </details>
                                 </div>
-                                  : ''
-                              }
+                              ) : (
+                                ""
+                              )}
 
-                              {
-                                Masterdata?.Background != undefined ? <div className="mt-2 row pe-0 detailsbox">
+                              {Masterdata?.Background != undefined ? (
+                                <div className="mt-2 row pe-0 detailsbox">
                                   <details className="pe-0">
                                     <summary>Background</summary>
-                                    <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Background }}></div>
+                                    <div
+                                      className="AccordionContent p-2"
+                                      dangerouslySetInnerHTML={{
+                                        __html: Masterdata?.Background
+                                      }}
+                                    ></div>
                                     {/* <div className="AccordionContent">{Masterdata?.Background}</div> */}
                                   </details>
-                                </div> : ''
-                              }
+                                </div>
+                              ) : (
+                                ""
+                              )}
 
-                              {
-                                Masterdata?.Idea != undefined ? <div className="mt-2 row pe-0 detailsbox">
+                              {Masterdata?.Idea != undefined ? (
+                                <div className="mt-2 row pe-0 detailsbox">
                                   <details className="pe-0">
                                     <summary>Idea</summary>
-                                    <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Idea }}></div>
+                                    <div
+                                      className="AccordionContent p-2"
+                                      dangerouslySetInnerHTML={{
+                                        __html: Masterdata?.Idea
+                                      }}
+                                    ></div>
                                     {/* <div className="AccordionContent">{Masterdata?.Idea}</div> */}
                                   </details>
-                                </div> : ''
-                              }
+                                </div>
+                              ) : (
+                                ""
+                              )}
 
-                              {
-                                Masterdata?.Deliverables != undefined ? <div className="mt-2 row pe-0 detailsboxp 41_
+                              {Masterdata?.Deliverables != undefined ? (
+                                <div
+                                  className="mt-2 row pe-0 detailsboxp 41_
                                 0=][9\
-                                -p/\otyty5/">
+                                -p/\otyty5/"
+                                >
                                   <details className="pe-0">
                                     <summary>Deliverables</summary>
-                                    <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Deliverables }}></div>
+                                    <div
+                                      className="AccordionContent p-2"
+                                      dangerouslySetInnerHTML={{
+                                        __html: Masterdata?.Deliverables
+                                      }}
+                                    ></div>
                                   </details>
-                                </div> : ''
-                              }
-
+                                </div>
+                              ) : (
+                                ""
+                              )}
                             </div>
                           </div>
                         </div>
@@ -1266,7 +1638,10 @@ const ProjectManagementMain = (props: any) => {
                     <div>
                       {sidebarStatus.sideBarFilter ? (
                         <div className="text-end">
-                          <a onClick={() => clearPortfolioFilter()} className="hreflink">
+                          <a
+                            onClick={() => clearPortfolioFilter()}
+                            className="hreflink"
+                          >
                             Clear Portfolio Filter
                           </a>
                         </div>
@@ -1276,10 +1651,16 @@ const ProjectManagementMain = (props: any) => {
                       <div className="Alltable">
                         <div className="section-event ps-0">
                           <div className="wrapper project-management-Table">
-
-                            <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} columns={column2} data={data} callBackData={callBackData} TaskUsers={AllUser} showHeader={true} />
+                            <GlobalCommanTable
+                              AllListId={AllListId}
+                              headerOptions={headerOptions}
+                              columns={column2}
+                              data={data}
+                              callBackData={callBackData}
+                              TaskUsers={AllUser}
+                              showHeader={true}
+                            />
                           </div>
-
                         </div>
                       </div>
                     </div>
@@ -1291,7 +1672,13 @@ const ProjectManagementMain = (props: any) => {
                       />
                     </div>
                     {isOpenEditPopup ? (
-                      <EditTaskPopup AllListId={AllListId} Items={passdata} context={props?.props?.Context} pageName="ProjectProfile" Call={CallBack} />
+                      <EditTaskPopup
+                        AllListId={AllListId}
+                        Items={passdata}
+                        context={props?.props?.Context}
+                        pageName="ProjectProfile"
+                        Call={CallBack}
+                      />
                     ) : (
                       ""
                     )}
@@ -1323,7 +1710,7 @@ const ProjectManagementMain = (props: any) => {
                   )}
                 </span>
                 <span>
-                  {(QueryId != undefined && isSmartInfoAvailable) ?
+                  {QueryId != undefined && isSmartInfoAvailable ? (
                     <SmartInformation
                       AllListId={AllListId}
                       listName={"Master Tasks"}
@@ -1331,8 +1718,10 @@ const ProjectManagementMain = (props: any) => {
                       siteurl={props?.siteUrl}
                       Id={QueryId}
                       spPageContext={props?.Context?.pageContext?._web}
-                    /> : ""
-                  }
+                    />
+                  ) : (
+                    ""
+                  )}
                 </span>
               </div>
             </div>
@@ -1347,16 +1736,19 @@ const ProjectManagementMain = (props: any) => {
               selectionType={"Multi"}
             ></ServiceComponentPortfolioPopup>
           )}
-          {remark && <SmartInformation Id={remarkData?.Id}
-            AllListId={AllListId}
-            Context={props?.Context}
-            taskTitle={remarkData?.Title}
-            listName={remarkData?.siteType}
-            showHide={"projectManagement"}
-            setRemark={setRemark}
-            editSmartInfo={editSmartInfo}
-            RemarkData={remarkData}
-          />}
+          {remark && (
+            <SmartInformation
+              Id={remarkData?.Id}
+              AllListId={AllListId}
+              Context={props?.Context}
+              taskTitle={remarkData?.Title}
+              listName={remarkData?.siteType}
+              showHide={"projectManagement"}
+              setRemark={setRemark}
+              editSmartInfo={editSmartInfo}
+              RemarkData={remarkData}
+            />
+          )}
         </>
       ) : (
         <div>Project not found</div>

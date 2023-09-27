@@ -1919,7 +1919,7 @@ function CreateTaskComponent(props: any) {
                                             <><div className='input-group'>
                                                 <input type="text" readOnly
                                                     className="form-control"
-                                                    id="{{PortfoliosID}}" autoComplete="off"
+                                                    id="{{PortfoliosID}}" autoComplete="off" style={{background:"transparent"}}
                                                 /></div>
                                             </>
                                         }
@@ -1937,7 +1937,7 @@ function CreateTaskComponent(props: any) {
                                             )
                                         }) : null}
                                         <span className="input-group-text">
-                                            <span onClick={(e) => EditPortfolio(save, 'Component')} style={{ backgroundColor: 'white' }} className="svg__iconbox svg__icon--edit"></span>
+                                            <span onClick={(e) => EditPortfolio(save, 'Component')} style={{ backgroundColor: 'white' }} className="svg__iconbox  svg__icon--editBox dark"></span>
                                             {/* <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                         onClick={(e) => EditComponent(save, 'Component')} /> */}
                                         </span>
