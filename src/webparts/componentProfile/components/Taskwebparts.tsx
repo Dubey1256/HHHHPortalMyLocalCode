@@ -692,26 +692,7 @@ function PortfolioTable(SelectedProp: any) {
   }, []);
 
   React.useEffect(() => {
-    if (isUpdated != "") {
-      if (portfolioTypeData.length > 0) {
-        portfolioTypeData?.map((elem: any) => {
-          if (
-            elem.Title === isUpdated ||
-            isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()
-          ) {
-            portfolioColor = elem.Color;
-          }
-        });
-      }
-    } else {
-      if (portfolioTypeData.length > 0) {
-        portfolioTypeData?.map((elem: any) => {
-          if (elem.Title === "Component") {
-            portfolioColor = elem.Color;
-          }
-        });
-      }
-    }
+    portfolioColor = SelectedProp?.props?.PortfolioType?.Color;
   }, [AllSiteTasksData]);
 
   React.useEffect(() => {
