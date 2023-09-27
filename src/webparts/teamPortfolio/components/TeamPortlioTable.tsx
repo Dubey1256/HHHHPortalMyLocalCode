@@ -43,6 +43,11 @@ let renderData: any = [];
 let countAllTasksData: any = [];
 let AfterFilterTaskCount: any = [];
 let allLoadeDataMasterTaskAndTask: any = [];
+let hasCustomExpanded: any = true
+let hasExpanded: any = true
+let isHeaderNotAvlable: any = false
+let isColumnDefultSortingAsc: any = false;
+let portViewIconsStyle:any = true
 function TeamPortlioTable(SelectedProp: any) {
     const childRef = React.useRef<any>();
     if (childRef != null) {
@@ -99,6 +104,8 @@ function TeamPortlioTable(SelectedProp: any) {
     const [topCompoIcon, setTopCompoIcon]: any = React.useState(false);
     const [IsTimeEntry, setIsTimeEntry] = React.useState(false);
     const [smartTimeTotalFunction, setSmartTimeTotalFunction] = React.useState(null);
+    const [groupByButtonClickData, setGroupByButtonClickData] = React.useState([]);
+    const [clickFlatView, setclickFlatView] = React.useState(false);
     // const [tableHeight, setTableHeight] = React.useState(window.innerHeight);
     const [portfolioTypeConfrigration, setPortfolioTypeConfrigration] = React.useState<any>([{ Title: 'Component', Suffix: 'C', Level: 1 }, { Title: 'SubComponent', Suffix: 'S', Level: 2 }, { Title: 'Feature', Suffix: 'F', Level: 3 }]);
     let ComponetsData: any = {};
@@ -121,6 +128,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 "Title",
                 "Item_x0020_Cover",
                 "AssingedToUser/Title",
+                "AssingedToUser/EMail",
                 "AssingedToUser/Id",
                 "AssingedToUser/Name",
                 "UserGroup/Id",
@@ -434,7 +442,8 @@ function TeamPortlioTable(SelectedProp: any) {
             if (result.DueDate == "Invalid date" || "") {
                 result.DueDate = result?.DueDate.replaceAll("Invalid date", "");
             }
-            result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
+            result.PercentComplete = (result?.PercentComplete * 100).toFixed(0) === "0" ? "" : (result?.PercentComplete * 100).toFixed(0)
+
             if (result?.Short_x0020_Description_x0020_On != undefined) {
                 result.descriptionsSearch = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
             }
@@ -674,7 +683,7 @@ function TeamPortlioTable(SelectedProp: any) {
 
 
     const smartFiltercallBackData = React.useCallback((filterData, updatedSmartFilter, smartTimeTotal) => {
-        if(filterData && smartTimeTotal){
+        if (filterData && smartTimeTotal) {
             setUpdatedSmartFilter(updatedSmartFilter);
             setAllSmartFilterOriginalData(filterData);
             let filterDataBackup = JSON.parse(JSON.stringify(filterData));
@@ -989,6 +998,56 @@ function TeamPortlioTable(SelectedProp: any) {
         }
     }
 
+
+    const switchFlatViewData = (data: any) => {
+        let groupedDataItems = JSON.parse(JSON.stringify(data));
+        const flattenedData = flattenData(groupedDataItems);
+        hasCustomExpanded = false
+        hasExpanded = false
+        isHeaderNotAvlable = true
+        isColumnDefultSortingAsc = true
+        portViewIconsStyle = false;
+        setGroupByButtonClickData(data);
+        setclickFlatView(true);
+        setData(flattenedData);
+        // setData(smartAllFilterData);
+    }
+
+    function flattenData(groupedDataItems: any) {
+        const flattenedData: any = [];
+        function flatten(item: any) {
+            if (item.Title != "Others") {
+                flattenedData.push(item);
+            }
+            if (item?.subRows) {
+                item?.subRows.forEach((subItem: any) => flatten(subItem));
+                item.subRows = []
+            }
+        }
+        groupedDataItems?.forEach((item: any) => { flatten(item) });
+        return flattenedData;
+    }
+    const switchGroupbyData = () => {
+        portViewIconsStyle = true;
+        isColumnDefultSortingAsc = false
+        hasCustomExpanded = true
+        hasExpanded = true
+        isHeaderNotAvlable = false
+        setclickFlatView(false);
+        setData(groupByButtonClickData);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
     const setTableHeight = () => {
         const table = document.getElementById('runtimeTable');
         const screenHeight = window.innerHeight;
@@ -1002,14 +1061,29 @@ function TeamPortlioTable(SelectedProp: any) {
             window.removeEventListener('resize', setTableHeight);
         };
     }, []);
+
+
+    // const sortFn = (row: any, rowb: any) => {
+    //     let datePartsA = row?.DueDate?.split('/');
+    //     let datePartsB = rowb?.DueDate?.split('/');
+    //     let newDateA:any = new Date(datePartsA[2], datePartsA[1] - 1, datePartsA[0]);
+    //     let newDateB:any = new Date(datePartsB[2], datePartsB[1] - 1, datePartsB[0]);
+    //     return new Date(newDateB).getTime() - new Date(newDateA).getTime();
+    // };
+    // const sortCreatedFn = (row: any, rowb: any) => {
+    //     return new Date(rowb.Created).getTime() - new Date(row.Created).getTime();
+    // };
+
+
     const columns: any = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
                 accessorKey: "",
                 placeholder: "",
                 hasCheckbox: true,
-                hasCustomExpanded: true,
-                hasExpanded: true,
+                hasCustomExpanded: hasCustomExpanded,
+                hasExpanded: hasExpanded,
+                isHeaderNotAvlable: isHeaderNotAvlable,
                 size: 55,
                 id: 'Id',
             },
@@ -1018,8 +1092,8 @@ function TeamPortlioTable(SelectedProp: any) {
                     <div className="alignCenter">
                         {row?.original?.SiteIcon != undefined ? (
                             <div className="alignCenter" title="Show All Child">
-                                <img title={row?.original?.TaskType?.Title} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 workmember ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 workmember ml20 me-1" :
-                                    row?.original?.TaskType?.Title == "Workstream" ? "ml-48 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Task" || row?.original?.Item_x0020_Type === "Task" && row?.original?.TaskType == undefined ? "ml-60 workmember ml20 me-1" : "workmember ml20 me-1"
+                                <img title={row?.original?.TaskType?.Title} className={row?.original?.Item_x0020_Type == "SubComponent" && portViewIconsStyle === true ? "ml-12 workmember ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" && portViewIconsStyle === true ? "ml-24 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Activities" && portViewIconsStyle === true ? "ml-36 workmember ml20 me-1" :
+                                    row?.original?.TaskType?.Title == "Workstream" && portViewIconsStyle === true ? "ml-48 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Task" && portViewIconsStyle === true || row?.original?.Item_x0020_Type === "Task" && row?.original?.TaskType == undefined && portViewIconsStyle === true ? "ml-60 workmember ml20 me-1" : "workmember me-1"
                                 }
                                     src={row?.original?.SiteIcon}>
                                 </img>
@@ -1027,8 +1101,8 @@ function TeamPortlioTable(SelectedProp: any) {
                         ) : (
                             <>
                                 {row?.original?.Title != "Others" ? (
-                                    <div title={row?.original?.Item_x0020_Type} style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 Dyicons" :
-                                        row?.original?.TaskType?.Title == "Workstream" ? "ml-48 Dyicons" : row?.original?.TaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons"
+                                    <div title={row?.original?.Item_x0020_Type} style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} className={row?.original?.Item_x0020_Type == "SubComponent" && portViewIconsStyle === true ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" && portViewIconsStyle === true ? "ml-24 Dyicons" : row?.original?.TaskType?.Title == "Activities" && portViewIconsStyle === true ? "ml-36 Dyicons" :
+                                        row?.original?.TaskType?.Title == "Workstream" && portViewIconsStyle === true ? "ml-48 Dyicons" : row?.original?.TaskType?.Title == "Task" && portViewIconsStyle === true ? "ml-60 Dyicons" : "Dyicons"
                                     }>
                                         {row?.original?.SiteIconTitle}
                                     </div>
@@ -1057,6 +1131,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "ID",
                 header: "",
                 resetColumnFilters: false,
+                isColumnDefultSortingAsc: isColumnDefultSortingAsc,
                 // isColumnDefultSortingAsc:true,
                 size: 195,
             },
@@ -1185,12 +1260,24 @@ function TeamPortlioTable(SelectedProp: any) {
                 size: 91,
                 id: "DueDate",
             },
+            // {
+            //     accessorFn: (row) => row.DueDate,
+            //     cell: ({ row, getValue }) => (
+            //         <div>{getValue()}</div>
+            //     ),
+
+            //     sortFn,
+            //     placeholder: "Due Date",
+            //     header: "",
+            //     resetColumnFilters: false,
+            //     size: 91,
+            //     id: "DueDate",
+            // },
             {
                 accessorKey: "descriptionsSearch",
                 placeholder: "descriptionsSearch",
                 header: "",
                 resetColumnFilters: false,
-                // size: 100,
                 id: "descriptionsSearch",
             },
             {
@@ -1198,14 +1285,13 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "commentsSearch",
                 header: "",
                 resetColumnFilters: false,
-                // size: 100,
                 id: "commentsSearch",
             },
             {
                 accessorFn: (row) => row?.TotalTaskTime,
-                cell: ({ row, getValue }) => (
+                cell: ({ row }) => (
                     <>
-                        {row?.original?.siteType != "Master Tasks" && (
+                        {row?.original?.siteType != "Master Tasks" && row?.original?.Title != "Others" && (
                             <a className="alignCenter justify-content-center" onClick={(e) => EditDataTimeEntryData(e, row.original)}
                                 data-bs-toggle="tooltip"
                                 data-bs-placement="auto"
@@ -1584,7 +1670,6 @@ function TeamPortlioTable(SelectedProp: any) {
             setIsOpenWorkstream(true);
         }
         if (checkedList?.TaskType?.Id == 2) {
-
             alert("You can not create ny item inside Task")
         }
 
@@ -1674,7 +1759,7 @@ function TeamPortlioTable(SelectedProp: any) {
                                                 scale={1.0}
                                                 loadedClassName="loadedContent"
                                             />
-                                            <GlobalCommanTable smartTimeTotalFunction={smartTimeTotalFunction} SmartTimeIconShow={true} AllMasterTasksData={AllMasterTasksData} ref={childRef} callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1} data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity} />
+                                            <GlobalCommanTable setLoaded={setLoaded} clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData} flatView={true} switchGroupbyData={switchGroupbyData} smartTimeTotalFunction={smartTimeTotalFunction} SmartTimeIconShow={true} AllMasterTasksData={AllMasterTasksData} ref={childRef} callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1} data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity} />
                                         </div>
                                     </div>
                                 </div>
