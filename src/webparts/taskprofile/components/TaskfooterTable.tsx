@@ -395,13 +395,48 @@ function TasksTable(props: any) {
                     if (dueDate) result.joinedData.push(`Due Date: ${dueDate}`);
                   }
                   result["Item_x0020_Type"] = "Task";
-                  TasksItem.push(result);
-                  AllTasksData.push(result);
-                });
-                setData(AllTasksData);
-                 setmaidataBackup(AllTasksData)
-                
-                
+                })
+                  let allParentTasks = $.grep(AllTasks, function (type: any) { return (type.ParentTask != undefined && type.ParentTask.Id === props.props.Id) && (type.TaskType != undefined && type.TaskType.Title != 'Workstream') });
+                  if (props.props.TaskType != undefined && props.props.TaskType != undefined && props.props.TaskType === 'Activities')
+                    allworkstreamTasks = $.grep(AllTasks, function (task: any) { return (task.TaskType != undefined && task.TaskType.Title === 'Workstream') });
+                   
+                  if (allworkstreamTasks != undefined && allworkstreamTasks?.length > 0) {
+                    allworkstreamTasks.forEach((obj: any) => {
+                      if (obj.Id != undefined) {
+                        AllTasks.forEach((task: any) => {
+                          if (task?.ParentTask != undefined && obj?.Id === task?.ParentTask?.Id) {
+                            
+                            obj.subRows = obj?.subRows != undefined ? obj?.subRows : []
+                        
+                            obj.subRows.push(task)
+                          }
+                         
+                        })
+                      }
+                      obj.Restructuring = IsUpdated != undefined && IsUpdated == 'Service' ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                      obj.childsLength = obj?.childs != undefined && obj?.childs?.length > 0 ? obj?.childs?.length : 0;
+                      obj.subRowsLength = obj?.subRows != undefined && obj?.subRows?.length > 0 ? obj.subRows?.length : 0;
+                    })
+                  }
+          
+                  var temp: any = {};
+          
+                  temp.flag = true;
+                  temp.show = true;
+                  temp.PercentComplete = '';
+                  
+                  temp.ItemRank = '';
+                  temp.DueDate = '';
+                  if (allworkstreamTasks === undefined)
+                    allworkstreamTasks = [];
+                  if (allParentTasks.length > 0)
+                    allParentTasks?.map((items) => {
+                      allworkstreamTasks.push(items);
+                    })
+             
+                  setData(allworkstreamTasks);
+                  setmaidataBackup(allworkstreamTasks)
+                 
               }
             }
           });
