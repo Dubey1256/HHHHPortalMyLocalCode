@@ -22,16 +22,21 @@ interface EditableFieldProps {
   fieldName: string;
   value: any;
   onChange: (value: string) => void;
-  type:string;
-  web:string;
+  type: string;
+  web: string;
 }
 
-
-
-export const EditableField: React.FC<EditableFieldProps> = ({ listName, itemId, fieldName, value, onChange,type,web }) => {
+export const EditableField: React.FC<EditableFieldProps> = ({
+  listName,
+  itemId,
+  fieldName,
+  value,
+  onChange,
+  type,
+  web
+}) => {
   const [editing, setEditing] = React.useState(false);
   const [fieldValue, setFieldValue] = React.useState(value);
-
 
   const handleCancel = () => {
     setEditing(false);
@@ -42,21 +47,18 @@ export const EditableField: React.FC<EditableFieldProps> = ({ listName, itemId, 
     setEditing(true);
   };
 
-
-
-  if(fieldName == "Priority"){
-
+  if (fieldName == "Priority") {
     const [selectedPriority, setSelectedPriority] = React.useState(value);
 
     const handleInputChange = (event: React.MouseEvent<HTMLButtonElement>) => {
       const priorityValue = event.currentTarget.value;
       setSelectedPriority(priorityValue);
     };
-    
+
     const handleSave = async () => {
       try {
         let priorityValue = selectedPriority;
-    
+
         if (priorityValue === "High") {
           setFieldValue(priorityValue);
         } else if (priorityValue === "Normal") {
@@ -64,64 +66,66 @@ export const EditableField: React.FC<EditableFieldProps> = ({ listName, itemId, 
         } else if (priorityValue === "Low") {
           setFieldValue(priorityValue);
         }
-    
+
         let webs = new Web(web);
-        await webs.lists.getByTitle(listName).items.getById(itemId).update({
-          [fieldName]: priorityValue,
-        });
-    
+        await webs.lists
+          .getByTitle(listName)
+          .items.getById(itemId)
+          .update({
+            [fieldName]: priorityValue
+          });
+
         setEditing(false);
         onChange(priorityValue);
       } catch (error) {
         console.log(error);
       }
     };
-    
+
     if (editing) {
       return (
-
-    <div className="priority">
-  <div>
-    <button
-    type="button"
-      value="High"
-      onClick={handleInputChange}
-      className={selectedPriority === "High" ? "secleatedBtn" : ""}
-    >
-      High
-    </button>
-    <button
-    type="button"
-      value="Normal"
-      onClick={handleInputChange}
-      className={selectedPriority === "Normal" ? "secleatedBtn" : ""}
-    >
-      Normal
-    </button>
-    <button
-    type="button"
-      value="Low"
-      onClick={handleInputChange}
-      className={selectedPriority === "Low" ? "secleatedBtn" : ""}
-    >
-      Low
-    </button>
-  </div>
-  <span className="sveBtn">
-    <a onClick={handleSave}>
-      <span className="svg__iconbox svg__icon--Save"></span>
-    </a>
-    <a onClick={handleCancel}>
-      <span className="svg__iconbox svg__icon--cross"></span>
-    </a>
-  </span>
-</div>
-      )}
-
+        <div className="priority">
+          <div>
+            <button
+              type="button"
+              value="High"
+              onClick={handleInputChange}
+              className={selectedPriority === "High" ? "secleatedBtn" : ""}
+            >
+              High
+            </button>
+            <button
+              type="button"
+              value="Normal"
+              onClick={handleInputChange}
+              className={selectedPriority === "Normal" ? "secleatedBtn" : ""}
+            >
+              Normal
+            </button>
+            <button
+              type="button"
+              value="Low"
+              onClick={handleInputChange}
+              className={selectedPriority === "Low" ? "secleatedBtn" : ""}
+            >
+              Low
+            </button>
+          </div>
+          <span className="sveBtn">
+            <a onClick={handleSave}>
+              <span className="svg__iconbox svg__icon--Save"></span>
+            </a>
+            <a onClick={handleCancel}>
+              <span className="svg__iconbox svg__icon--cross"></span>
+            </a>
+          </span>
+        </div>
+      );
+    }
   }
-  if(fieldName == "ItemRank"){
+  if (fieldName == "ItemRank") {
     const [selectedRank, setSelectedRank] = React.useState(value);
-    
+
     const handleInputChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
       setSelectedRank(event.target.value);
     };
@@ -129,32 +133,37 @@ export const EditableField: React.FC<EditableFieldProps> = ({ listName, itemId, 
       try {
         setFieldValue(selectedRank);
         let webs = new Web(web);
-        await webs.lists.getByTitle(listName).items.getById(itemId).update({
-          [fieldName]: selectedRank,
-        });
-  
+        await webs.lists
+          .getByTitle(listName)
+          .items.getById(itemId)
+          .update({
+            [fieldName]: selectedRank
+          });
+
         setEditing(false);
         onChange(selectedRank);
       } catch (error) {
         console.log(error);
       }
     };
-  
+
     // Rest of the component code...
-    let TaskItemRank = [{ rankTitle: "Select Item Rank", rank: null },
-    { rankTitle: "(8) Top Highlights", rank: 8 },
-    { rankTitle: "(7) Featured Item", rank: 7 },
-    { rankTitle: "(6) Key Item", rank: 6 },
-    { rankTitle: "(5) Relevant Item", rank: 5 },
-    { rankTitle: "(4) Background Item", rank: 4 },
-    { rankTitle: "(2) to be verified", rank: 2 },
-    { rankTitle: "(1) Archive", rank: 1 },
-    { rankTitle: "(0) No Show", rank: 0 }]
+    let TaskItemRank = [
+      { rankTitle: "Select Item Rank", rank: null },
+      { rankTitle: "(8) Top Highlights", rank: 8 },
+      { rankTitle: "(7) Featured Item", rank: 7 },
+      { rankTitle: "(6) Key Item", rank: 6 },
+      { rankTitle: "(5) Relevant Item", rank: 5 },
+      { rankTitle: "(4) Background Item", rank: 4 },
+      { rankTitle: "(2) to be verified", rank: 2 },
+      { rankTitle: "(1) Archive", rank: 1 },
+      { rankTitle: "(0) No Show", rank: 0 }
+    ];
     if (editing) {
       return (
         <div className="editcolumn">
           <select value={selectedRank} onChange={handleInputChange}>
-            {TaskItemRank.map((item:any, index:any) => (
+            {TaskItemRank.map((item: any, index: any) => (
               <option key={index} value={item.rank}>
                 {item.rankTitle}
               </option>
@@ -171,100 +180,125 @@ export const EditableField: React.FC<EditableFieldProps> = ({ listName, itemId, 
         </div>
       );
     }
-  
-    // Rest of the component code...
-  };
-  
 
+    // Rest of the component code...
+  }
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFieldValue(event.target.value);
   };
-if(fieldName =="PercentComplete"){
-
-  const handleSave = async () => {
-    try {
-      setFieldValue(parseInt(fieldValue));
-      // if(type == "Number"){
-      //   setFieldValue(fieldValue/100);
-      // }
-     let valpercent=parseInt(fieldValue);
-     let webs = new Web(web);
-      await webs.lists.getByTitle(listName).items.getById(itemId).update({
-        [fieldName]: valpercent/100,
-      });
-      
-      setEditing(false);
-      onChange(fieldValue);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
- 
-
-  if (editing) {
-    return (
-      <div className="editcolumn ">
-        <span> <input type={type} value={fieldValue} onChange={handleInputChange} /></span>
-      <span><a onClick={handleSave}><span className="svg__iconbox svg__icon--Save "></span></a>
-        <a onClick={handleCancel}><span className="svg__iconbox svg__icon--cross "></span></a></span>
-        
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      <span>{fieldValue}</span>
-      <a className="pancil-icons" onClick={handleEdit}>
-      <span className="svg__iconbox svg__icon--editBox"></span>
-      </a>
-    </div>
-  );
-}
- 
-  if(type == "Date"){
+  if (fieldName == "PercentComplete") {
     const handleSave = async () => {
       try {
-        setFieldValue(fieldValue);
+        setFieldValue(parseInt(fieldValue));
         // if(type == "Number"){
         //   setFieldValue(fieldValue/100);
         // }
-       let webs = new Web(web);
-        await webs.lists.getByTitle(listName).items.getById(itemId).update({
-          [fieldName]: fieldValue,
-        });
-        
+        let valpercent = parseInt(fieldValue);
+        let webs = new Web(web);
+        await webs.lists
+          .getByTitle(listName)
+          .items.getById(itemId)
+          .update({
+            [fieldName]: valpercent / 100
+          });
+
         setEditing(false);
         onChange(fieldValue);
       } catch (error) {
         console.log(error);
       }
     };
-  
-   
-  
+
     if (editing) {
       return (
         <div className="editcolumn ">
-          <span> <input type={type}
-          defaultValue={fieldValue != undefined ? fieldValue.split('/').reverse().join('-') : ""} 
-              // value={fieldValue}
-              style={{fontSize:"11px"}}onChange={handleInputChange} /></span>
-        <span><a onClick={handleSave}><span className="svg__iconbox svg__icon--Save "></span></a>
-          <a onClick={handleCancel}><span className="svg__iconbox svg__icon--cross "></span></a></span>
-          
+          <span>
+            {" "}
+            <input
+              type={type}
+              value={fieldValue}
+              onChange={handleInputChange}
+            />
+          </span>
+          <span>
+            <a onClick={handleSave}>
+              <span className="svg__iconbox svg__icon--Save "></span>
+            </a>
+            <a onClick={handleCancel}>
+              <span className="svg__iconbox svg__icon--cross "></span>
+            </a>
+          </span>
         </div>
       );
     }
-  
+
     return (
       <div>
         <span>{fieldValue}</span>
         <a className="pancil-icons" onClick={handleEdit}>
-          
-      <span className="svg__iconbox svg__icon--editBox"></span>
+          <span className="svg__iconbox svg__icon--editBox"></span>
+        </a>
+      </div>
+    );
+  }
+
+  if (type == "Date") {
+    const handleSave = async () => {
+      try {
+        setFieldValue(fieldValue);
+        // if(type == "Number"){
+        //   setFieldValue(fieldValue/100);
+        // }
+        let webs = new Web(web);
+        await webs.lists
+          .getByTitle(listName)
+          .items.getById(itemId)
+          .update({
+            [fieldName]: fieldValue
+          });
+
+        setEditing(false);
+        onChange(fieldValue);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    if (editing) {
+      return (
+        <div className="editcolumn ">
+          <span>
+            {" "}
+            <input
+              type={type}
+              defaultValue={
+                fieldValue != undefined
+                  ? fieldValue.split("/").reverse().join("-")
+                  : ""
+              }
+              // value={fieldValue}
+              style={{ fontSize: "11px" }}
+              onChange={handleInputChange}
+            />
+          </span>
+          <span>
+            <a onClick={handleSave}>
+              <span className="svg__iconbox svg__icon--Save "></span>
+            </a>
+            <a onClick={handleCancel}>
+              <span className="svg__iconbox svg__icon--cross "></span>
+            </a>
+          </span>
+        </div>
+      );
+    }
+
+    return (
+      <div>
+        <span>{fieldValue}</span>
+        <a className="pancil-icons" onClick={handleEdit}>
+          <span className="svg__iconbox svg__icon--editBox"></span>
         </a>
       </div>
     );
@@ -272,8 +306,8 @@ if(fieldName =="PercentComplete"){
   // if(type="text"){
 
   // } if(type="Number"){
-    
-  // } 
+
+  // }
 
   const handleSave = async () => {
     try {
@@ -281,11 +315,14 @@ if(fieldName =="PercentComplete"){
       // if(type == "Number"){
       //   setFieldValue(fieldValue/100);
       // }
-     let webs = new Web(web);
-      await webs.lists.getByTitle(listName).items.getById(itemId).update({
-        [fieldName]: fieldValue,
-      });
-      
+      let webs = new Web(web);
+      await webs.lists
+        .getByTitle(listName)
+        .items.getById(itemId)
+        .update({
+          [fieldName]: fieldValue
+        });
+
       setEditing(false);
       onChange(fieldValue);
     } catch (error) {
@@ -293,15 +330,21 @@ if(fieldName =="PercentComplete"){
     }
   };
 
- 
-
   if (editing) {
     return (
       <div className="editcolumn ">
-        <span> <input type={type} value={fieldValue} onChange={handleInputChange} /></span>
-      <span><a onClick={handleSave}><span className="svg__iconbox svg__icon--Save "></span></a>
-        <a onClick={handleCancel}><span className="svg__iconbox svg__icon--cross "></span></a></span>
-        
+        <span>
+          {" "}
+          <input type={type} value={fieldValue} onChange={handleInputChange} />
+        </span>
+        <span>
+          <a onClick={handleSave}>
+            <span className="svg__iconbox svg__icon--Save "></span>
+          </a>
+          <a onClick={handleCancel}>
+            <span className="svg__iconbox svg__icon--cross "></span>
+          </a>
+        </span>
       </div>
     );
   }
@@ -310,13 +353,11 @@ if(fieldName =="PercentComplete"){
     <div>
       <span>{fieldValue}</span>
       <a className="pancil-icons" onClick={handleEdit}>
-        
-      <span className="svg__iconbox svg__icon--editBox"></span>
+        <span className="svg__iconbox svg__icon--editBox"></span>
       </a>
     </div>
   );
 };
-
 
 // Work end the Inline Editing
 let TeamMembers: any = [];
@@ -328,30 +369,29 @@ let Folderdatas: any = [];
 let AssignTeamMember: any = [];
 let ContextValue: any = {};
 
-let Iconpps:any = []
-let componentDetails:any = [];
-let filterdata:any=[];
-let  imageArray:any=[];
-function getQueryVariable(variable:any)
-{
-        let query = window.location.search.substring(1);
-        console.log(query)//"app=article&act=news_content&aid=160990"
-        let vars = query.split("&");
-       
-        console.log(vars) 
-        for (let i=0;i<vars.length;i++) {
-                    let pair = vars[i].split("=");
-                    console.log(pair)//[ 'app', 'article' ][ 'act', 'news_content' ][ 'aid', '160990' ] 
-        if(pair[0] == variable){ return pair[1];}
-         }
-         return(false);
-         
-         
-}
-let ID:any='';
-let web:any=''
+let Iconpps: any = [];
+let componentDetails: any = [];
+let filterdata: any = [];
+let imageArray: any = [];
+function getQueryVariable(variable: any) {
+  let query = window.location.search.substring(1);
+  console.log(query); //"app=article&act=news_content&aid=160990"
+  let vars = query.split("&");
 
-function Portfolio({SelectedProp}:any) {
+  console.log(vars);
+  for (let i = 0; i < vars.length; i++) {
+    let pair = vars[i].split("=");
+    console.log(pair); //[ 'app', 'article' ][ 'act', 'news_content' ][ 'aid', '160990' ]
+    if (pair[0] == variable) {
+      return pair[1];
+    }
+  }
+  return false;
+}
+let ID: any = "";
+let web: any = "";
+
+function Portfolio({ SelectedProp }: any) {
   const [data, setTaskData] = React.useState([]);
   const [isActive, setIsActive] = React.useState(false);
   const [array, setArray] = React.useState([]);
@@ -378,14 +418,12 @@ function Portfolio({SelectedProp}:any) {
   const [ImagePopover, SetImagePopover] = React.useState({
     isModalOpen: false,
 
-      imageInfo: {ImageName:"",ImageUrl:""},
+    imageInfo: { ImageName: "", ImageUrl: "" },
 
-      showPopup: 'none'
-
+    showPopup: "none"
   });
 
-  const [portfolioTyped, setPortfolioTypeData] = React.useState([])
-
+  const [portfolioTyped, setPortfolioTypeData] = React.useState([]);
 
   // PortfolioType
 
@@ -393,29 +431,24 @@ function Portfolio({SelectedProp}:any) {
     let web = new Web(SelectedProp.siteUrl);
     let PortFolioType = [];
     PortFolioType = await web.lists
-        .getById(SelectedProp.PortFolioTypeID)
-        .items.select(
-            "Id",
-            "Title",
-            "Color",
-            "IdRange"
-        )
-        .get();
+      .getById(SelectedProp.PortFolioTypeID)
+      .items.select("Id", "Title", "Color", "IdRange")
+      .get();
     setPortfolioTypeData(PortFolioType);
-};
-  ID=getQueryVariable('taskId');
-  const handleOpen = (item:any) => {
+  };
+  ID = getQueryVariable("taskId");
+  const handleOpen = (item: any) => {
     setIsActive((current) => !current);
     item.show = !item.show;
     setArray((array) => [...array]);
   };
-  
+
   const handleOpen1 = (item: any) => {
-    item.showl = !item.showl ;
+    item.showl = !item.showl;
     setdatam((datam) => [...datam]);
   };
   const handleOpen2 = (item: any) => {
-    item.shows = !item.shows; 
+    item.shows = !item.shows;
     setdatas((datas) => [...datas]);
   };
 
@@ -428,7 +461,7 @@ function Portfolio({SelectedProp}:any) {
   const handleOpen5 = (item: any) => {
     setIsActive((current) => !current);
     setIsActive(true);
-    item.showm = !item.showm ;
+    item.showm = !item.showm;
     setdatams((datams) => [...datams]);
   };
   const handleOpen6 = (item: any) => {
@@ -461,38 +494,34 @@ function Portfolio({SelectedProp}:any) {
     item.showHelp = !item.showHelp;
     setdataHelp((dataHelp) => [...dataHelp]);
   };
-  const  showhideprojects = () =>{
-
+  const showhideprojects = () => {
     if (Projecto) {
-     setProjecto(false)
+      setProjecto(false);
     } else {
-
-      setProjecto(true)
-
+      setProjecto(true);
     }
-
-  }
+  };
   React.useEffect(() => {
     let folderId: any = "";
-    
-    let ParentId: any = "";
-     try {
 
-   var  isShowTimeEntry = SelectedProp.TimeEntry != "" ? JSON.parse(SelectedProp.TimeEntry) : "";
-      
-     var  isShowSiteCompostion = SelectedProp.SiteCompostion != "" ? JSON.parse(SelectedProp.SiteCompostion) : ""
-      
-      } catch (error: any) {
-      
-       console.log(error)
-      
-      }
-    if(SelectedProp != undefined){
-      SelectedProp.isShowSiteCompostion = isShowSiteCompostion
-      SelectedProp.isShowTimeEntry = isShowTimeEntry
+    let ParentId: any = "";
+    try {
+      var isShowTimeEntry =
+        SelectedProp.TimeEntry != "" ? JSON.parse(SelectedProp.TimeEntry) : "";
+
+      var isShowSiteCompostion =
+        SelectedProp.SiteCompostion != ""
+          ? JSON.parse(SelectedProp.SiteCompostion)
+          : "";
+    } catch (error: any) {
+      console.log(error);
+    }
+    if (SelectedProp != undefined) {
+      SelectedProp.isShowSiteCompostion = isShowSiteCompostion;
+      SelectedProp.isShowTimeEntry = isShowTimeEntry;
     }
     ContextValue = SelectedProp;
-    
+
     let web = ContextValue.siteUrl;
     let url = `${web}/_api/lists/getbyid('${ContextValue.MasterTaskListID}')/items?$select=ItemRank,Item_x0020_Type,Portfolios/Id,Portfolios/Title,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,PortfolioType/IdRange,Site,FolderID,PortfolioStructureID,ValueAdded,Idea,TaskListName,TaskListId,WorkspaceType,CompletedDate,ClientActivityJson,ClientSite,Item_x002d_Image,Sitestagging,SiteCompositionSettings,TechnicalExplanations,Deliverables,Author/Id,Author/Title,Editor/Id,Editor/Title,Package,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,BasicImageInfo,Item_x0020_Type,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,Categories,FeedBack,ComponentLink,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,TeamMembers/Id,TeamMembers/Title,Parent/Id,Parent/Title,Parent/ItemType,TaskCategories/Id,TaskCategories/Title,ClientCategory/Id,ClientCategory/Title&$expand=Author,Editor,ClientCategory,Parent,AssignedTo,TeamMembers,PortfolioType,Portfolios,TaskCategories&$filter=Id eq ${ID}&$top=4999`;
     let response: any = [];
@@ -502,29 +531,35 @@ function Portfolio({SelectedProp}:any) {
         url: url,
         method: "GET",
         headers: {
-          Accept: "application/json; odata=verbose",
+          Accept: "application/json; odata=verbose"
         },
         success: function (data) {
           response = response.concat(data.d.results);
           response.map((item: any) => {
-            item.AssignedTo = item.AssignedTo.results === undefined ? [] : item.AssignedTo.results;
+            item.AssignedTo =
+              item.AssignedTo.results === undefined
+                ? []
+                : item.AssignedTo.results;
 
-            item.TeamMembers = item.TeamMembers.results === undefined ? [] : item.TeamMembers.results;
+            item.TeamMembers =
+              item.TeamMembers.results === undefined
+                ? []
+                : item.TeamMembers.results;
 
-            item.siteUrl = ContextValue.siteUrl;;
+            item.siteUrl = ContextValue.siteUrl;
 
             item.listId = ContextValue.MasterTaskListID;
-            item.show= true
-            item.showl=true
-            item.shows=true
-            item.showj=true
-            item.showm=true
-            item.showb=true
-            item.showhelp=true
-            item.showQues=true
-            item.showtech = true
-            item.showHelp=true
-            item.showk = true
+            item.show = true;
+            item.showl = true;
+            item.shows = true;
+            item.showj = true;
+            item.showm = true;
+            item.showb = true;
+            item.showhelp = true;
+            item.showQues = true;
+            item.showtech = true;
+            item.showHelp = true;
+            item.showk = true;
             if (item.FolderID != undefined) {
               folderId = item.FolderID;
               let urln = `${web}/_api/lists/getbyid('${ContextValue.DocumentsListID}')/items?$select=Id,Title,FileDirRef,FileLeafRef,ServerUrl,FSObjType,EncodedAbsUrl&$filter=Id eq ${folderId}`;
@@ -532,7 +567,7 @@ function Portfolio({SelectedProp}:any) {
                 url: urln,
                 method: "GET",
                 headers: {
-                  Accept: "application/json; odata=verbose",
+                  Accept: "application/json; odata=verbose"
                 },
                 success: function (data) {
                   responsen = responsen.concat(data.d.results);
@@ -544,7 +579,7 @@ function Portfolio({SelectedProp}:any) {
                 error: function (error) {
                   console.log(error);
                   // error handler code goes here
-                },
+                }
               });
             }
             if (
@@ -558,7 +593,7 @@ function Portfolio({SelectedProp}:any) {
                 url: urln,
                 method: "GET",
                 headers: {
-                  Accept: "application/json; odata=verbose",
+                  Accept: "application/json; odata=verbose"
                 },
                 success: function (data) {
                   let PaData = ParentData.concat(data.d.results);
@@ -570,7 +605,7 @@ function Portfolio({SelectedProp}:any) {
                 error: function (error) {
                   console.log(error);
                   // error handler code goes here
-                },
+                }
               });
             }
             if (item?.PortfolioType?.Title != undefined) {
@@ -586,15 +621,21 @@ function Portfolio({SelectedProp}:any) {
                 url: urln,
                 method: "GET",
                 headers: {
-                  Accept: "application/json; odata=verbose",
+                  Accept: "application/json; odata=verbose"
                 },
                 success: function (data) {
                   if (data != undefined) {
                     data.d.results.forEach(function (item: any) {
-                      item.AssignedTo = item?.AssignedTo?.results === undefined ? [] : item?.AssignedTo?.results;
+                      item.AssignedTo =
+                        item?.AssignedTo?.results === undefined
+                          ? []
+                          : item?.AssignedTo?.results;
 
-                      item.TeamMembers = item?.TeamMembers?.results === undefined ? [] : item?.TeamMembers?.results;
-          
+                      item.TeamMembers =
+                        item?.TeamMembers?.results === undefined
+                          ? []
+                          : item?.TeamMembers?.results;
+
                       if (item.ItemType == "Question")
                         AllQuestion.unshift(item);
                       else if (item.ItemType == "Help") AllHelp.unshift(item);
@@ -607,10 +648,9 @@ function Portfolio({SelectedProp}:any) {
                 },
                 error: function (error) {
                   console.log(error);
-                },
+                }
               });
             }
-
           });
           if (data.d.__next) {
             url = data.d.__next;
@@ -620,45 +660,40 @@ function Portfolio({SelectedProp}:any) {
         },
         error: function (error) {
           console.log(error);
-        },
+        }
       });
     }
-  // Get Project Data 
-  let getMasterTaskListTasks = async function () {
-    let web =new Web(ContextValue?.siteUrl);
-   
-    componentDetails = await web.lists
-      .getById(ContextValue.MasterTaskListID)
-      .items.select(
-        "Item_x0020_Type",
-        "Title",
-        "Id",
-        "PercentComplete",
-      )
-      .filter("Item_x0020_Type  eq 'Project'").top(4000)
-      .get();
+    // Get Project Data
+    let getMasterTaskListTasks = async function () {
+      let web = new Web(ContextValue?.siteUrl);
 
-// Project Data for HHHH Project Management
-componentDetails.map((num:any)=> {
+      componentDetails = await web.lists
+        .getById(ContextValue.MasterTaskListID)
+        .items.select("Item_x0020_Type", "Title", "Id", "PercentComplete")
+        .filter("Item_x0020_Type  eq 'Project'")
+        .top(4000)
+        .get();
 
-let num2;
-if(num.Component != undefined){
-  num.Component.map((compID:any)=>{
-                               if(compID.Id == ID){
-                                
-                               num2=num;
-                               filterdata.push(num2)
-                               }
-                             
-});  
-}} );
-  };
+      // Project Data for HHHH Project Management
+      componentDetails.map((num: any) => {
+        let num2;
+        if (num.Component != undefined) {
+          num.Component.map((compID: any) => {
+            if (compID.Id == ID) {
+              num2 = num;
+              filterdata.push(num2);
+            }
+          });
+        }
+      });
+    };
     GetListItems();
     getTaskUser();
     getMasterTaskListTasks();
     open();
-    
-    getPortFolioType() }, []);
+
+    getPortFolioType();
+  }, []);
 
   // Make Folder data unique
 
@@ -699,7 +734,6 @@ if(num.Component != undefined){
     });
   }
 
- 
   data.map((item) => {
     if (item?.PortfolioType?.Title != undefined) {
       TypeSite = item?.PortfolioType?.Title;
@@ -716,7 +750,6 @@ if(num.Component != undefined){
           }
         });
       });
-      
     }
     if (item.AssignedTo != undefined) {
       AllTaskuser.map((users) => {
@@ -726,25 +759,19 @@ if(num.Component != undefined){
           }
         });
       });
-      
     }
   });
   //    Get Folder data
 
-
   const EditComponentPopup = (item: any) => {
-   
     item["siteUrl"] = web;
     item["listName"] = ContextValue.MasterTaskListID;
     setIsComponent(true);
     setSharewebComponent(item);
-    
   };
   const Call = React.useCallback((item1) => {
     setIsComponent(false);
     setIsTask(false);
-   
-    
   }, []);
 
   //  Remove duplicate values
@@ -785,71 +812,75 @@ if(num.Component != undefined){
     setShowBlock(false);
   }
 
-  if(ParentData[0]?.Parent?.ItemType == 'Component' && data[0].Item_x0020_Type == 'Feature'){
+  if (
+    ParentData[0]?.Parent?.ItemType == "Component" &&
+    data[0].Item_x0020_Type == "Feature"
+  ) {
     Iconpps = [
-    {
-      ItemType : 'Component',
-      Id : ParentData[0]?.Parent?.Id,
-      Title:ParentData[0]?.Parent?.Title,
-      Icon : 'C',
-      nextIcon:'>'
-    },{
-      ItemType : 'SubComponent',
-      Id : ParentData[0]?.Id,
-      Title:ParentData[0]?.Title,
-      Icon : 'S',
-      nextIcon: '>'
-    },{
-      ItemType : 'Feature',
-      Id : data[0]?.Id,
-      Title:data[0]?.Title,
-      Icon : 'F'
-    }
-   ]
-}
-if(data[0]?.Parent?.ItemType == 'Component' && data[0].Item_x0020_Type == 'SubComponent'){
- Iconpps = [
-  {
-    ItemType : 'Component',
-    Id : data[0]?.Parent.Id,
-    Title:data[0]?.Parent.Title,
-    Icon : 'C',
-    nextIcon:'>'
-  },{
-    ItemType : 'SubComponent',
-    Id : data[0]?.Id,
-    Title:data[0]?.Title,
-    Icon : 'S'
+      {
+        ItemType: "Component",
+        Id: ParentData[0]?.Parent?.Id,
+        Title: ParentData[0]?.Parent?.Title,
+        Icon: "C",
+        nextIcon: ">"
+      },
+      {
+        ItemType: "SubComponent",
+        Id: ParentData[0]?.Id,
+        Title: ParentData[0]?.Title,
+        Icon: "S",
+        nextIcon: ">"
+      },
+      {
+        ItemType: "Feature",
+        Id: data[0]?.Id,
+        Title: data[0]?.Title,
+        Icon: "F"
+      }
+    ];
   }
- ]
-}
-if(data[0]?.Item_x0020_Type == 'Component'){
-Iconpps = [
- {
-   ItemType : 'Component',
-   Id : data[0]?.Id,
-   Title:data[0]?.Title,
-   Icon : 'C',
-   
- }
-]
-}
+  if (
+    data[0]?.Parent?.ItemType == "Component" &&
+    data[0].Item_x0020_Type == "SubComponent"
+  ) {
+    Iconpps = [
+      {
+        ItemType: "Component",
+        Id: data[0]?.Parent.Id,
+        Title: data[0]?.Parent.Title,
+        Icon: "C",
+        nextIcon: ">"
+      },
+      {
+        ItemType: "SubComponent",
+        Id: data[0]?.Id,
+        Title: data[0]?.Title,
+        Icon: "S"
+      }
+    ];
+  }
+  if (data[0]?.Item_x0020_Type == "Component") {
+    Iconpps = [
+      {
+        ItemType: "Component",
+        Id: data[0]?.Id,
+        Title: data[0]?.Title,
+        Icon: "C"
+      }
+    ];
+  }
 
-// Basic Image
-if(data?.length != 0 && data[0]?.BasicImageInfo != undefined||null){
-  imageArray = JSON.parse(data[0]?.BasicImageInfo);
- 
- }
-  
-//  basic image End
+  // Basic Image
+  if ((data?.length != 0 && data[0]?.BasicImageInfo != undefined) || null) {
+    imageArray = JSON.parse(data[0]?.BasicImageInfo);
+  }
 
-  // ImagePopover 
-  const OpenModal=(e: any, item: any)=> {
+  //  basic image End
 
+  // ImagePopover
+  const OpenModal = (e: any, item: any) => {
     if (item.Url != undefined) {
-
       item.ImageUrl = item?.Url;
-
     }
 
     //debugger;
@@ -859,48 +890,35 @@ if(data?.length != 0 && data[0]?.BasicImageInfo != undefined||null){
     // console.log(item);
 
     SetImagePopover({
-
       isModalOpen: true,
 
       imageInfo: item,
 
-      showPopup: 'block'
-
+      showPopup: "block"
     });
-
-  }
-
-
-
+  };
 
   //close the model
 
-  const  CloseModal=(e: any)=> {
-
+  const CloseModal = (e: any) => {
     e.preventDefault();
 
     SetImagePopover({
-
       isModalOpen: false,
 
-      imageInfo: {ImageName:"",ImageUrl:""},
+      imageInfo: { ImageName: "", ImageUrl: "" },
 
-      showPopup: 'none'
-
+      showPopup: "none"
     });
-
-  }
-// Inline editing
-const [Item,setItem]=React.useState("")
-  const handleFieldChange = (fieldName:any) => (e:any) => {
+  };
+  // Inline editing
+  const [Item, setItem] = React.useState("");
+  const handleFieldChange = (fieldName: any) => (e: any) => {
     const updatedItem = { ...data[0], [fieldName]: e.target.value };
     setItem(updatedItem);
   };
 
-// 
-
-
-
+  //
 
   return (
     <div className={TypeSite == "Service" ? "serviepannelgreena" : ""}>
@@ -924,7 +942,11 @@ const [Item,setItem]=React.useState("")
                           <a
                             target="_blank"
                             data-interception="off"
-                            href={SelectedProp.siteUrl+"/SitePages/Team-Portfolio.aspx"}
+                            href={
+                              SelectedProp.siteUrl +
+                              "/SitePages/Team-Portfolio.aspx?PortfolioType=" +
+                              item?.PortfolioType?.Title
+                            }
                           >
                             Team-Portfolio
                           </a>
@@ -967,7 +989,6 @@ const [Item,setItem]=React.useState("")
                         </>
                       )}
 
-
                       <li>
                         <a>{item.Title}</a>
                       </li>
@@ -983,7 +1004,9 @@ const [Item,setItem]=React.useState("")
                 <>
                   <h2 className="heading d-flex justify-content-between align-items-center">
                     <span>
-                      {(item?.PortfolioType?.Id === 1 || item?.PortfolioType?.Id === 2 || item?.PortfolioType?.Id === 3) &&
+                      {(item?.PortfolioType?.Id === 1 ||
+                        item?.PortfolioType?.Id === 2 ||
+                        item?.PortfolioType?.Id === 3) &&
                         item.Item_x0020_Type == "SubComponent" && (
                           <>
                             <span className="Dyicons">S</span>{" "}
@@ -991,16 +1014,18 @@ const [Item,setItem]=React.useState("")
                             <span>
                               {" "}
                               <img
-                                src={require('../../../Assets/ICON/edit_page.svg')}
-                                width="30" height="25"
+                                src={require("../../../Assets/ICON/edit_page.svg")}
+                                width="30"
+                                height="25"
                                 onClick={(e) => EditComponentPopup(item)}
                               />
                             </span>
                           </>
                         )}
 
-                      
-                      {(item?.PortfolioType?.Id === 1 || item?.PortfolioType?.Id === 2 || item?.PortfolioType?.Id === 3) &&
+                      {(item?.PortfolioType?.Id === 1 ||
+                        item?.PortfolioType?.Id === 2 ||
+                        item?.PortfolioType?.Id === 3) &&
                         item.Item_x0020_Type == "Feature" && (
                           <>
                             <span className="Dyicons">F</span>{" "}
@@ -1008,14 +1033,17 @@ const [Item,setItem]=React.useState("")
                             <span>
                               {" "}
                               <img
-                               src={require('../../../Assets/ICON/edit_page.svg')}
-                                width="30" height="25"
+                                src={require("../../../Assets/ICON/edit_page.svg")}
+                                width="30"
+                                height="25"
                                 onClick={(e) => EditComponentPopup(item)}
                               />
                             </span>
                           </>
                         )}
-                      {(item?.PortfolioType?.Id === 1 || item?.PortfolioType?.Id === 2 || item?.PortfolioType?.Id === 3) &&
+                      {(item?.PortfolioType?.Id === 1 ||
+                        item?.PortfolioType?.Id === 2 ||
+                        item?.PortfolioType?.Id === 3) &&
                         item.Item_x0020_Type != "SubComponent" &&
                         item.Item_x0020_Type != "Feature" && (
                           <>
@@ -1024,20 +1052,24 @@ const [Item,setItem]=React.useState("")
                             <span>
                               {" "}
                               <img
-                               src={require('../../../Assets/ICON/edit_page.svg')}
-                                width="30" height="25"
+                                src={require("../../../Assets/ICON/edit_page.svg")}
+                                width="30"
+                                height="25"
                                 onClick={(e) => EditComponentPopup(item)}
                               />
                             </span>
                           </>
                         )}
-                      
                     </span>
                     <span className="text-end fs-6">
                       <a
                         target="_blank"
                         data-interception="off"
-                        href={SelectedProp.siteUrl+"/SitePages/Portfolio-Profile-Old.aspx?taskId="+ID}
+                        href={
+                          SelectedProp.siteUrl +
+                          "/SitePages/Portfolio-Profile-Old.aspx?taskId=" +
+                          ID
+                        }
                       >
                         Old Portfolio profile page
                       </a>
@@ -1060,14 +1092,25 @@ const [Item,setItem]=React.useState("")
                         <dt className="bg-fxdark">Due Date</dt>
                         <dd className="bg-light">
                           <span>
-                         
                             {data.map((item) => (
                               <a>
-                                 <EditableField listName="Master Tasks" itemId={item.Id} fieldName="DueDate" value={item?.DueDate!=undefined?Moment(item?.DueDate).format("DD/MM/YYYY"):""} onChange={handleFieldChange("DueDate")} type="Date" web={ContextValue?.siteUrl}/>
-                               
+                                <EditableField
+                                  listName="Master Tasks"
+                                  itemId={item.Id}
+                                  fieldName="DueDate"
+                                  value={
+                                    item?.DueDate != undefined
+                                      ? Moment(item?.DueDate).format(
+                                          "DD/MM/YYYY"
+                                        )
+                                      : ""
+                                  }
+                                  onChange={handleFieldChange("DueDate")}
+                                  type="Date"
+                                  web={ContextValue?.siteUrl}
+                                />
                               </a>
                             ))}
-                        
                           </span>
                         </dd>
                       </dl>
@@ -1076,8 +1119,21 @@ const [Item,setItem]=React.useState("")
                         <dd className="bg-light">
                           {data.map((item) => (
                             <a>
-                                  <EditableField listName="Master Tasks" itemId={item.Id} fieldName="StartDate" value={item?.StartDate!=undefined?Moment(item.StartDate).format("DD/MM/YYYY"):""} onChange={handleFieldChange("StartDate")} type="Date" web={ContextValue?.siteUrl}/>
-                           
+                              <EditableField
+                                listName="Master Tasks"
+                                itemId={item.Id}
+                                fieldName="StartDate"
+                                value={
+                                  item?.StartDate != undefined
+                                    ? Moment(item.StartDate).format(
+                                        "DD/MM/YYYY"
+                                      )
+                                    : ""
+                                }
+                                onChange={handleFieldChange("StartDate")}
+                                type="Date"
+                                web={ContextValue?.siteUrl}
+                              />
                             </a>
                           ))}
                         </dd>
@@ -1092,50 +1148,121 @@ const [Item,setItem]=React.useState("")
                       </dl>
                       <dl>
                         <dt className="bg-fxdark">Team Members</dt>
-                        <dd className='bg-light d-flex'>
-                                            {AssignTeamMember.length!=0?AssignTeamMember.map((item:any)=>
-                                        <>
-                                                <a  target='_blank' data-interception="off" href={SelectedProp.siteUrl+`/SitePages/TaskDashboard.aspx?UserId=${item.AssingedToUserId}&Name=${item.Title}`}>
-                                                <img className='workmember' src={item.Item_x0020_Cover?.Url} title={item.Title} />
-                                                </a>
-                                            
-                                                </>
-                                        ):""}
-                                       
-                                                {AllTeamMember != null && AllTeamMember.length > 0 &&
-                                                <>
-                                                <span>|</span>
-                    <div className="user_Member_img"><a href={SelectedProp.siteUrl+`/SitePages/TaskDashboard.aspx?UserId=${AllTeamMember[0].Id}&Name=${AllTeamMember[0].Title}`} target="_blank" data-interception="off"><img className="workmember" src={AllTeamMember[0].Item_x0020_Cover?.Url} title={AllTeamMember[0].Title}></img></a></div>                        
-                    </>}
-                    {AllTeamMember != null && AllTeamMember.length > 1 &&
-                    <div className="position-relative user_Member_img_suffix2 multimember fs13" style={{paddingTop: '2px'}} onMouseOver={(e) =>handleSuffixHover()} onMouseLeave={(e) =>handleuffixLeave()}>+{AllTeamMember.length - 1}
-                    {showBlock &&
-                        <span className="tooltiptext">
-                        <div className='bg-white border p-2'>                        
-                            { AllTeamMember.slice(1).map( (rcData:any,i:any)=> {
-                                
-                                return  <div className="team_Members_Item p-1">
-                                <div><a href={SelectedProp.siteUrl+"/SitePages/TaskDashboard.aspx?UserId="+rcData.Id+"&Name="+rcData.Title} target="_blank" data-interception="off">
-                                    <img className="workmember" src={rcData.Item_x0020_Cover?.Url}></img></a></div>
-                                <div className='m-1'>{rcData.Title}</div>
+                        <dd className="bg-light d-flex">
+                          {AssignTeamMember.length != 0
+                            ? AssignTeamMember.map((item: any) => (
+                                <>
+                                  <a
+                                    target="_blank"
+                                    data-interception="off"
+                                    href={
+                                      SelectedProp.siteUrl +
+                                      `/SitePages/TaskDashboard.aspx?UserId=${item.AssingedToUserId}&Name=${item.Title}`
+                                    }
+                                  >
+                                    <img
+                                      className="workmember"
+                                      src={item.Item_x0020_Cover?.Url}
+                                      title={item.Title}
+                                    />
+                                  </a>
+                                </>
+                              ))
+                            : ""}
+
+                          {AllTeamMember != null &&
+                            AllTeamMember.length > 0 && (
+                              <>
+                                <span>|</span>
+                                <div className="user_Member_img">
+                                  <a
+                                    href={
+                                      SelectedProp.siteUrl +
+                                      `/SitePages/TaskDashboard.aspx?UserId=${AllTeamMember[0].Id}&Name=${AllTeamMember[0].Title}`
+                                    }
+                                    target="_blank"
+                                    data-interception="off"
+                                  >
+                                    <img
+                                      className="workmember"
+                                      src={
+                                        AllTeamMember[0].Item_x0020_Cover?.Url
+                                      }
+                                      title={AllTeamMember[0].Title}
+                                    ></img>
+                                  </a>
                                 </div>
-                                                        
-                            })
-                            }
-                        
-                        </div>
-                        </span>
-                        }
-                    </div>                        
-                    }   
-                                   </dd>
+                              </>
+                            )}
+                          {AllTeamMember != null &&
+                            AllTeamMember.length > 1 && (
+                              <div
+                                className="position-relative user_Member_img_suffix2 multimember fs13"
+                                style={{ paddingTop: "2px" }}
+                                onMouseOver={(e) => handleSuffixHover()}
+                                onMouseLeave={(e) => handleuffixLeave()}
+                              >
+                                +{AllTeamMember.length - 1}
+                                {showBlock && (
+                                  <span className="tooltiptext">
+                                    <div className="bg-white border p-2">
+                                      {AllTeamMember.slice(1).map(
+                                        (rcData: any, i: any) => {
+                                          return (
+                                            <div className="team_Members_Item p-1">
+                                              <div>
+                                                <a
+                                                  href={
+                                                    SelectedProp.siteUrl +
+                                                    "/SitePages/TaskDashboard.aspx?UserId=" +
+                                                    rcData.Id +
+                                                    "&Name=" +
+                                                    rcData.Title
+                                                  }
+                                                  target="_blank"
+                                                  data-interception="off"
+                                                >
+                                                  <img
+                                                    className="workmember"
+                                                    src={
+                                                      rcData.Item_x0020_Cover
+                                                        ?.Url
+                                                    }
+                                                  ></img>
+                                                </a>
+                                              </div>
+                                              <div className="m-1">
+                                                {rcData.Title}
+                                              </div>
+                                            </div>
+                                          );
+                                        }
+                                      )}
+                                    </div>
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                        </dd>
                       </dl>
                       <dl>
                         <dt className="bg-fxdark">Item Rank</dt>
                         <dd className="bg-light">
                           {data.map((item) => (
-                             <EditableField listName="Master Tasks" itemId={item.Id} fieldName="ItemRank" value={item?.ItemRank!=undefined?item?.ItemRank:""} onChange={handleFieldChange("ItemRank")} type="" web={ContextValue?.siteUrl}/>
-                             ))}
+                            <EditableField
+                              listName="Master Tasks"
+                              itemId={item.Id}
+                              fieldName="ItemRank"
+                              value={
+                                item?.ItemRank != undefined
+                                  ? item?.ItemRank
+                                  : ""
+                              }
+                              onChange={handleFieldChange("ItemRank")}
+                              type=""
+                              web={ContextValue?.siteUrl}
+                            />
+                          ))}
                         </dd>
                       </dl>
                     </div>
@@ -1144,8 +1271,20 @@ const [Item,setItem]=React.useState("")
                         <dt className="bg-fxdark">Priority</dt>
                         <dd className="bg-light">
                           {data.map((item) => (
-                             <EditableField listName="Master Tasks" itemId={item.Id} fieldName="Priority" value={item?.Priority!=undefined?item?.Priority:""} onChange={handleFieldChange("Priority")} type="" web={ContextValue?.siteUrl}/>
-                             ))}
+                            <EditableField
+                              listName="Master Tasks"
+                              itemId={item.Id}
+                              fieldName="Priority"
+                              value={
+                                item?.Priority != undefined
+                                  ? item?.Priority
+                                  : ""
+                              }
+                              onChange={handleFieldChange("Priority")}
+                              type=""
+                              web={ContextValue?.siteUrl}
+                            />
+                          ))}
                         </dd>
                       </dl>
                       <dl>
@@ -1153,8 +1292,21 @@ const [Item,setItem]=React.useState("")
                         <dd className="bg-light">
                           {data.map((item) => (
                             <a>
-                              <EditableField listName="Master Tasks" itemId={item.Id} fieldName="CompletedDate" value={item?.CompletedDate!=undefined?Moment(item.CompletedDate).format("DD/MM/YYYY"):""} onChange={handleFieldChange("CompletedDate")} type="Date" web={ContextValue?.siteUrl}/>
-                              
+                              <EditableField
+                                listName="Master Tasks"
+                                itemId={item.Id}
+                                fieldName="CompletedDate"
+                                value={
+                                  item?.CompletedDate != undefined
+                                    ? Moment(item.CompletedDate).format(
+                                        "DD/MM/YYYY"
+                                      )
+                                    : ""
+                                }
+                                onChange={handleFieldChange("CompletedDate")}
+                                type="Date"
+                                web={ContextValue?.siteUrl}
+                              />
                             </a>
                           ))}
                         </dd>
@@ -1171,8 +1323,19 @@ const [Item,setItem]=React.useState("")
                         <dt className="bg-fxdark">% Complete</dt>
                         <dd className="bg-light">
                           {data.map((item) => (
-                              <EditableField listName="Master Tasks" itemId={item.Id} fieldName="PercentComplete" value={item?.PercentComplete!=undefined?(item.PercentComplete * 100).toFixed(0):""} onChange={handleFieldChange("PercentComplete")} type="Number" web={ContextValue?.siteUrl}/>
-                           
+                            <EditableField
+                              listName="Master Tasks"
+                              itemId={item.Id}
+                              fieldName="PercentComplete"
+                              value={
+                                item?.PercentComplete != undefined
+                                  ? (item.PercentComplete * 100).toFixed(0)
+                                  : ""
+                              }
+                              onChange={handleFieldChange("PercentComplete")}
+                              type="Number"
+                              web={ContextValue?.siteUrl}
+                            />
                           ))}
                         </dd>
                       </dl>
@@ -1182,11 +1345,15 @@ const [Item,setItem]=React.useState("")
                             {item.Parent.Title != undefined && (
                               <dl>
                                 <dt className="bg-fxdark">Parent</dt>
-                                <dd className="bg-light" >
+                                <dd className="bg-light">
                                   <a
                                     target="_blank"
                                     data-interception="off"
-                                    href={SelectedProp.siteUrl+"/SitePages/Portfolio-Profile.aspx?taskId="+item.Parent.Id}
+                                    href={
+                                      SelectedProp.siteUrl +
+                                      "/SitePages/Portfolio-Profile.aspx?taskId=" +
+                                      item.Parent.Id
+                                    }
                                   >
                                     {item.Parent.Title}
                                   </a>
@@ -1199,10 +1366,17 @@ const [Item,setItem]=React.useState("")
                                             <a
                                               target="_blank"
                                               data-interception="off"
-                                              href={SelectedProp.siteUrl+"/SitePages/Component-Portfolio.aspx?ComponentID="+item.Parent.Id}
+                                              href={
+                                                SelectedProp.siteUrl +
+                                                "/SitePages/Component-Portfolio.aspx?ComponentID=" +
+                                                item.Parent.Id
+                                              }
                                             >
-                                              <img src={require('../../../Assets/ICON/edit_page.svg')}
-                                width="30" height="25" />{" "}
+                                              <img
+                                                src={require("../../../Assets/ICON/edit_page.svg")}
+                                                width="30"
+                                                height="25"
+                                              />{" "}
                                             </a>
                                           </>
                                         )}
@@ -1212,11 +1386,18 @@ const [Item,setItem]=React.useState("")
                                             <a
                                               target="_blank"
                                               data-interception="off"
-                                              href={SelectedProp.siteUrl+"/SitePages/Service-Portfolio.aspx?ComponentID="+item.Parent.Id}
+                                              href={
+                                                SelectedProp.siteUrl +
+                                                "/SitePages/Service-Portfolio.aspx?ComponentID=" +
+                                                item.Parent.Id
+                                              }
                                             >
                                               {" "}
-                                              <img src={require('../../../Assets/ICON/edit_page.svg')}
-                                width="30" height="25" />{" "}
+                                              <img
+                                                src={require("../../../Assets/ICON/edit_page.svg")}
+                                                width="30"
+                                                height="25"
+                                              />{" "}
                                             </a>
                                           </>
                                         )}
@@ -1233,56 +1414,65 @@ const [Item,setItem]=React.useState("")
                   </div>
                   <section className="row  accordionbox">
                     <div className="accordion  pe-1 overflow-hidden">
-                   
- {/* Project Management Box */}
-                   
-                      
- {filterdata?.length !== 0 && (
-                            <div className="card shadow-none  mb-2">
-                              <div
-                                className="accordion-item border-0"
-                                id="t_draggable1"
+                      {/* Project Management Box */}
+                      {filterdata?.length !== 0 && (
+                        <div className="card shadow-none  mb-2">
+                          <div
+                            className="accordion-item border-0"
+                            id="t_draggable1"
+                          >
+                            <div
+                              className="card-header p-0 border-bottom-0 "
+                              onClick={() => showhideprojects()}
+                            >
+                              <button
+                                className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
+                                data-bs-toggle="collapse"
                               >
-                                <div
-                                  className="card-header p-0 border-bottom-0 "
-                                  onClick={() => showhideprojects()}
-                                >
-                                  <button
-                                    className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
-                                    data-bs-toggle="collapse"
-                                  >
-                                    <span className="fw-medium font-sans-serif text-900">
-                                      <span className="sign">
-                                      {Projecto ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}
-                                      </span>{" "}
-                                      HHHH Project Management
-                                    </span>
-                                  </button>
-                                </div>
-                                <div className="accordion-collapse collapse show" style={{ display: Projecto ? 'block' : 'none' }}>
-                                  {Projecto && (
-                                    <>                                
-                                         {filterdata?.map((item:any) => (
+                                <span className="fw-medium font-sans-serif text-900">
+                                  <span className="sign">
+                                    {Projecto ? (
+                                      <IoMdArrowDropdown />
+                                    ) : (
+                                      <IoMdArrowDropright />
+                                    )}
+                                  </span>{" "}
+                                  HHHH Project Management
+                                </span>
+                              </button>
+                            </div>
+                            <div
+                              className="accordion-collapse collapse show"
+                              style={{ display: Projecto ? "block" : "none" }}
+                            >
+                              {Projecto && (
+                                <>
+                                  {filterdata?.map((item: any) => (
                                     <div
                                       className="accordion-body pt-1"
                                       id="testDiv1"
                                     >
-                            
-                                     <a href={SelectedProp.siteUrl + "/SitePages/Project-Management.aspx?ProjectId=" +item?.Id }  data-interception="off"
-                      target="_blank">{item?.Title}</a>
-                      
+                                      <a
+                                        href={
+                                          SelectedProp.siteUrl +
+                                          "/SitePages/Project-Management.aspx?ProjectId=" +
+                                          item?.Id
+                                        }
+                                        data-interception="off"
+                                        target="_blank"
+                                      >
+                                        {item?.Title}
+                                      </a>
                                     </div>
-                                    ))}
-                                    </>
-
-                                  )}
-                                </div>
-                              </div>
+                                  ))}
+                                </>
+                              )}
                             </div>
-                          )}{" "}
-                       
+                          </div>
+                        </div>
+                      )}{" "}
                       {/* Project Management Box End */}
-                   {/* Description */}
+                      {/* Description */}
                       {data.map((item) => (
                         <>
                           {item.Body !== null && (
@@ -1317,16 +1507,13 @@ const [Item,setItem]=React.useState("")
                                       className="accordion-body pt-1"
                                       id="testDiv1"
                                     >
-                             
                                       {data.map((item) => (
                                         <p
                                           className="m-0"
                                           dangerouslySetInnerHTML={{
-                                            __html: item.Body,
+                                            __html: item.Body
                                           }}
-                                        >
-                                        
-                                        </p>
+                                        ></p>
                                       ))}
                                     </div>
                                   )}
@@ -1336,7 +1523,6 @@ const [Item,setItem]=React.useState("")
                           )}{" "}
                         </>
                       ))}
-
                       {/* Short description */}
                       {data.map((item) => (
                         <>
@@ -1372,17 +1558,14 @@ const [Item,setItem]=React.useState("")
                                       className="accordion-body pt-1"
                                       id="testDiv1"
                                     >
-                                    
                                       {data.map((item) => (
                                         <p
                                           className="m-0"
                                           dangerouslySetInnerHTML={{
                                             __html:
-                                              item.Short_x0020_Description_x0020_On,
+                                              item.Short_x0020_Description_x0020_On
                                           }}
-                                        >
-                                          
-                                        </p>
+                                        ></p>
                                       ))}
                                     </div>
                                   )}
@@ -1392,7 +1575,6 @@ const [Item,setItem]=React.useState("")
                           )}{" "}
                         </>
                       ))}
-
                       {/* Question description */}
                       {AllQuestion != undefined &&
                         AllQuestion.length != 0 &&
@@ -1451,16 +1633,12 @@ const [Item,setItem]=React.useState("")
                                               className="accordion-body pt-1"
                                               id="testDiv1"
                                             >
-                                 
-
                                               <p
                                                 className="m-0"
                                                 dangerouslySetInnerHTML={{
-                                                  __html: item.Body,
+                                                  __html: item.Body
                                                 }}
-                                              >
-                                                
-                                              </p>
+                                              ></p>
                                             </div>
                                           )}
                                         </div>
@@ -1530,16 +1708,12 @@ const [Item,setItem]=React.useState("")
                                               className="accordion-body pt-1"
                                               id="testDiv1"
                                             >
-                                             
-
                                               <p
                                                 className="m-0"
                                                 dangerouslySetInnerHTML={{
-                                                  __html: item.Body,
+                                                  __html: item.Body
                                                 }}
-                                              >
-                                                
-                                              </p>
+                                              ></p>
                                             </div>
                                           )}
                                         </div>
@@ -1551,7 +1725,6 @@ const [Item,setItem]=React.useState("")
                             </div>
                           </>
                         ))}
-
                       {/* Background */}
                       {data.map((item) => (
                         <>
@@ -1595,7 +1768,6 @@ const [Item,setItem]=React.useState("")
                                       </p>
                                     </div>
                                   )}
-                                   
                                 </div>
                               </div>
                             </div>
@@ -1641,7 +1813,7 @@ const [Item,setItem]=React.useState("")
                                       <p
                                         className="m-0"
                                         dangerouslySetInnerHTML={{
-                                          __html: item.Idea,
+                                          __html: item.Idea
                                         }}
                                       ></p>
                                     </div>
@@ -1691,7 +1863,7 @@ const [Item,setItem]=React.useState("")
                                       <p
                                         className="m-0"
                                         dangerouslySetInnerHTML={{
-                                          __html: item.ValueAdded,
+                                          __html: item.ValueAdded
                                         }}
                                       ></p>
                                     </div>
@@ -1741,7 +1913,7 @@ const [Item,setItem]=React.useState("")
                                       <p
                                         className="m-0"
                                         dangerouslySetInnerHTML={{
-                                          __html: item.Help_x0020_Information,
+                                          __html: item.Help_x0020_Information
                                         }}
                                       ></p>
                                     </div>
@@ -1752,7 +1924,6 @@ const [Item,setItem]=React.useState("")
                           )}
                         </>
                       ))}
-
                       {/* Technical Explanation */}
                       {data.map((item) => (
                         <>
@@ -1791,7 +1962,7 @@ const [Item,setItem]=React.useState("")
                                       <p
                                         className="m-0"
                                         dangerouslySetInnerHTML={{
-                                          __html: item.TechnicalExplanations,
+                                          __html: item.TechnicalExplanations
                                         }}
                                       ></p>
                                     </div>
@@ -1841,7 +2012,7 @@ const [Item,setItem]=React.useState("")
                                       <p
                                         className="m-0"
                                         dangerouslySetInnerHTML={{
-                                          __html: item.Deliverables,
+                                          __html: item.Deliverables
                                         }}
                                       ></p>
                                     </div>
@@ -1856,20 +2027,31 @@ const [Item,setItem]=React.useState("")
                   </section>
                 </div>
                 <div className="col-md-4 p-0">
-                {data.map((item: any) => {
+                  {data.map((item: any) => {
                     return (
                       <>
                         {item?.PortfolioType?.Title && (
                           <dl>
-                            <dt className="bg-fxdark">{`${item?.PortfolioType?.Title}`} Portfolio</dt>
+                            <dt className="bg-fxdark">
+                              {`${item?.PortfolioType?.Title}`} Portfolio
+                            </dt>
                             <dd className={`bg-light `}>
-                            <div className="ps-1" style={{backgroundColor: `${item?.PortfolioType?.Color}`,boxSizing: "border-box"}}>
+                              <div
+                                className="ps-1"
+                                style={{
+                                  backgroundColor: `${item?.PortfolioType?.Color}`,
+                                  boxSizing: "border-box"
+                                }}
+                              >
                                 <a
                                   className="text-light"
                                   style={{ border: "0px" }}
                                   target="_blank"
                                   data-interception="off"
-                                  href={SelectedProp.siteUrl+`/SitePages/Portfolio-Profile.aspx?taskId=${item?.Portfolios?.results[0]?.Id}`}
+                                  href={
+                                    SelectedProp.siteUrl +
+                                    `/SitePages/Portfolio-Profile.aspx?taskId=${item?.Portfolios?.results[0]?.Id}`
+                                  }
                                 >
                                   {item?.Portfolios?.results[0]?.Title}
                                 </a>
@@ -1877,18 +2059,19 @@ const [Item,setItem]=React.useState("")
                             </dd>
                           </dl>
                         )}
-                       
                       </>
                     );
                   })}
-                 {data.map((item: any) => {
-                    return <Sitecomposition props={item} sitedata={SelectedProp} />;
+                  {data.map((item: any) => {
+                    return (
+                      <Sitecomposition props={item} sitedata={SelectedProp} />
+                    );
                   })}
                 </div>
               </div>
             </div>
             <div className="col-md-3">
-            <aside>
+              <aside>
                 {data.map((item) => {
                   return (
                     <>
@@ -1900,131 +2083,123 @@ const [Item,setItem]=React.useState("")
                             src={item.Item_x002d_Image.Url}
                           />
                         </div>
-                      )
-                     
-                      
-                      }
-                       {(imageArray != undefined && imageArray[0]?.ImageName && item?.BasicImageInfo != undefined ) && (
-                       <div className="col">
-                        
+                      )}
+                      {imageArray != undefined &&
+                        imageArray[0]?.ImageName &&
+                        item?.BasicImageInfo != undefined && (
+                          <div className="col">
+                            <div className="Taskaddcommentrow mb-2">
+                              <div className="taskimage border mb-3">
+                                {/*  <BannerImageCard imgData={imgData}></BannerImageCard> */}
 
-<div className="Taskaddcommentrow mb-2">
+                                <a
+                                  className="images"
+                                  target="_blank"
+                                  data-interception="off"
+                                  href={imageArray[0]?.ImageUrl}
+                                >
+                                  <img
+                                    alt={imageArray[0]?.ImageName}
+                                    src={imageArray[0]?.ImageUrl}
+                                    onMouseOver={(e) =>
+                                      OpenModal(e, imageArray[0])
+                                    }
+                                    onMouseOut={(e) => CloseModal(e)}
+                                  ></img>
+                                </a>
 
- 
-    <div className="taskimage border mb-3">
+                                <div className="Footerimg d-flex align-items-center bg-fxdark justify-content-between p-2 ">
+                                  <div className="usericons">
+                                    <span>
+                                      <span>{imageArray[0]?.UploadeDate}</span>
 
-      {/*  <BannerImageCard imgData={imgData}></BannerImageCard> */}
+                                      <span className="round px-1">
+                                        <img
+                                          className="align-self-start"
+                                          title={imageArray[0]?.UserName}
+                                          src={imageArray[0]?.UserImage}
+                                        />
+                                      </span>
+                                    </span>
+                                  </div>
 
+                                  <div>
+                                    <a
+                                      className="images"
+                                      target="_blank"
+                                      data-interception="off"
+                                      href={imageArray[0]?.ImageUrl}
+                                    >
+                                      <span className="mx-2">
+                                        <svg
+                                          stroke="currentColor"
+                                          fill="currentColor"
+                                          stroke-width="0"
+                                          viewBox="0 0 448 512"
+                                          height="1em"
+                                          width="1em"
+                                          xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                          <path d="M212.686 315.314L120 408l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C10.697 480 0 469.255 0 456V344c0-21.382 25.803-32.09 40.922-16.971L72 360l92.686-92.686c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.249 6.248 6.249 16.378 0 22.627zm22.628-118.628L328 104l-32.922-31.029C279.958 57.851 290.666 32 312.048 32h112C437.303 32 448 42.745 448 56v112c0 21.382-25.803 32.09-40.922 16.971L376 152l-92.686 92.686c-6.248 6.248-16.379 6.248-22.627 0l-25.373-25.373c-6.249-6.248-6.249-16.378 0-22.627z"></path>
+                                        </svg>
+                                      </span>
+                                    </a>
 
+                                    <span>
+                                      {imageArray[0]?.ImageName?.length > 15
+                                        ? imageArray[0]?.ImageName.substring(
+                                            0,
+                                            15
+                                          ) + "..."
+                                        : imageArray[0]?.ImageName}
+                                    </span>
 
+                                    <span>|</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div
+                              className="imghover"
+                              style={{ display: ImagePopover.showPopup }}
+                            >
+                              <div className="popup">
+                                <div className="parentDiv">
+                                  <span style={{ color: "white" }}>
+                                    {ImagePopover.imageInfo.ImageName}
+                                  </span>
 
-      <a className='images' target="_blank" data-interception="off" href={imageArray[0]?.ImageUrl}>
+                                  <img
+                                    style={{ maxWidth: "100%" }}
+                                    src={ImagePopover.imageInfo["ImageUrl"]}
+                                  ></img>
+                                </div>
+                              </div>
+                            </div>
 
-        <img alt={imageArray[0]?.ImageName} src={imageArray[0]?.ImageUrl}
-
-          onMouseOver={(e) => OpenModal(e, imageArray[0])}
-
-          onMouseOut={(e) => CloseModal(e)} ></img>
-
-      </a>
-
-
-
-
-
-      <div className="Footerimg d-flex align-items-center bg-fxdark justify-content-between p-2 ">
-
-        <div className='usericons'>
-
-          <span>
-
-            <span >{imageArray[0]?.UploadeDate}</span>
-
-            <span className='round px-1'>
-
-
-                <img className='align-self-start' title={imageArray[0]?.UserName} src={imageArray[0]?.UserImage} />
-
-              
-
-            </span>
-
-
-
-
-          </span>
-
-        </div>
-
-        <div>
-
-          <a className='images' target="_blank" data-interception="off" href={imageArray[0]?.ImageUrl}><span className='mx-2'><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M212.686 315.314L120 408l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C10.697 480 0 469.255 0 456V344c0-21.382 25.803-32.09 40.922-16.971L72 360l92.686-92.686c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.249 6.248 6.249 16.378 0 22.627zm22.628-118.628L328 104l-32.922-31.029C279.958 57.851 290.666 32 312.048 32h112C437.303 32 448 42.745 448 56v112c0 21.382-25.803 32.09-40.922 16.971L376 152l-92.686 92.686c-6.248 6.248-16.379 6.248-22.627 0l-25.373-25.373c-6.249-6.248-6.249-16.378 0-22.627z"></path></svg></span></a>
-
-          <span >
-
-            {imageArray[0]?.ImageName?.length > 15 ? imageArray[0]?.ImageName.substring(0, 15) + '...' : imageArray[0]?.ImageName}
-
-          </span>
-
-          <span>|</span>
-
-        </div>
-
-
-
-
-      </div>
-
-
-
-
-    </div>
-
-
-</div>
-<div className='imghover' style={{ display: ImagePopover.showPopup }}>
-
-          <div className="popup">
-
-            <div className="parentDiv">
-
-              <span style={{ color: 'white' }}>{ImagePopover.imageInfo.ImageName}</span>
-
-              <img style={{ maxWidth: '100%' }} src={ImagePopover.imageInfo["ImageUrl"]}></img>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-                          {/* <img
+                            {/* <img
                             alt={imageArray[0]?.ImageName}
                             style={{ width: "280px", height: "145px" }}
                             src={imageArray[0]?.ImageUrl}
                           />
                           <p>{imageArray[0]?.UploadeDate} {imageArray[0]?.UserName}</p> */}
-                        </div>
-                         )
-                     
-                      
-                        }
+                          </div>
+                        )}
                     </>
                   );
                 })}
                 <div className="mb-3 card">
                   {data.map((item) => {
                     return (
-                       <SmartInformation
-                         Id={item.Id}
-                         siteurl={
-                          "${web}"
-                        }
-                         spPageContext={"/sites/HHHH/SP"}
-                         AllListId={SelectedProp} Context={SelectedProp?.Context} taskTitle={item.Title} listName={'Master Tasks'}
+                      <SmartInformation
+                        Id={item.Id}
+                        siteurl={"${web}"}
+                        spPageContext={"/sites/HHHH/SP"}
+                        AllListId={SelectedProp}
+                        Context={SelectedProp?.Context}
+                        taskTitle={item.Title}
+                        listName={"Master Tasks"}
                       />
-                    
                     );
                   })}
                 </div>
@@ -2047,7 +2222,12 @@ const [Item,setItem]=React.useState("")
                           <div className="card-header">
                             <div className="card-actions float-end">
                               {" "}
-                              <Tooltip ComponentId="1748" IsServiceTask={TypeSite == "Service" ? true : false} />
+                              <Tooltip
+                                ComponentId="1748"
+                                IsServiceTask={
+                                  TypeSite == "Service" ? true : false
+                                }
+                              />
                             </div>
                             <div className="mb-0 card-title h5">
                               Main Folder
@@ -2078,17 +2258,14 @@ const [Item,setItem]=React.useState("")
                 <div className="mb-3 card">
                   <>
                     {data.map((item) => (
-                     <CommentCard
-                     siteUrl={
-                       SelectedProp.siteUrl
-                     }
-                     AllListId={SelectedProp}
-                     userDisplayName={item.userDisplayName}
-                     itemID={item.Id}
-                     listName={"Master Tasks"}
-                     Context={SelectedProp.Context}
-                   ></CommentCard>
-                      
+                      <CommentCard
+                        siteUrl={SelectedProp.siteUrl}
+                        AllListId={SelectedProp}
+                        userDisplayName={item.userDisplayName}
+                        itemID={item.Id}
+                        listName={"Master Tasks"}
+                        Context={SelectedProp.Context}
+                      ></CommentCard>
                     ))}
                   </>
                 </div>
@@ -2101,39 +2278,46 @@ const [Item,setItem]=React.useState("")
       <section className="TableContentSection taskprofilepagegreen">
         <div className="container-fluid">
           <section className="TableSection">
-           
             {data.map((item) => (
-              <ComponentTable props={item} NextProp={ContextValue} Iconssc= {Iconpps}/>
+              <ComponentTable
+                props={item}
+                NextProp={ContextValue}
+                Iconssc={Iconpps}
+              />
             ))}
           </section>
         </div>
       </section>
       <footer className="float-start full_width mt-2 ">
-      <div className="d-flex justify-content-between me-3 p-2">
-        {data.map((item: any) => {
-          return (
-            <div>
+        <div className="d-flex justify-content-between me-3 p-2">
+          {data.map((item: any) => {
+            return (
               <div>
-                Created{" "}
-                <span>{Moment(item.Created).format("DD/MM/YYYY hh:mm")}</span>{" "}
-                by <span className="hyperlink">{item.Author.Title}</span>
+                <div>
+                  Created{" "}
+                  <span>{Moment(item.Created).format("DD/MM/YYYY hh:mm")}</span>{" "}
+                  by <span className="hyperlink">{item.Author.Title}</span>
+                </div>
+                <div>
+                  Last modified{" "}
+                  <span>
+                    {Moment(item.Modified).format("DD/MM/YYYY hh:mm")}
+                  </span>{" "}
+                  by <span className="hyperlink">{item.Editor.Title}</span>
+                </div>
               </div>
-              <div>
-                Last modified{" "}
-                <span>{Moment(item.Modified).format("DD/MM/YYYY hh:mm")}</span>{" "}
-                by <span className="hyperlink">{item.Editor.Title}</span>
-               
-              </div>
-            </div>
-  
-           
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
       </footer>
- 
+
       {IsComponent && (
-        <EditInstituton item={SharewebComponent} SelectD={SelectedProp} Calls={Call} portfolioTypeData={portfolioTyped}></EditInstituton>
+        <EditInstituton
+          item={SharewebComponent}
+          SelectD={SelectedProp}
+          Calls={Call}
+          portfolioTypeData={portfolioTyped}
+        ></EditInstituton>
       )}
     </div>
   );
