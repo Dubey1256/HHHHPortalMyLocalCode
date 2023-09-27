@@ -143,10 +143,8 @@ const EditSiteComposition = (Props: any) => {
     const onRenderEditSCCustomHeader = () => {
         return (
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"} >
-                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <span className="siteColor">
+                <div className="subheading siteColor">
                         Edit Site Composition
-                    </span>
                 </div>
                 <Tooltip ComponentId="1626" />
             </div>
@@ -173,7 +171,7 @@ const EditSiteComposition = (Props: any) => {
                 type={PanelType.custom}
                 customWidth="900px"
             >
-                <div className={ServicesTaskCheck ? "serviepannelgreena pt-3 edit-site-composition-on-task-profile" : "pt-3 edit-site-composition-on-task-profile"}>
+                <div className={ServicesTaskCheck ? "serviepannelgreena pt-2 edit-site-composition-on-task-profile" : "pt-2 edit-site-composition-on-task-profile"}>
                     {SiteTypes?.length > 0 ?
                         <>
                             <SiteCompositionComponent

@@ -222,7 +222,7 @@ return(
           onSelect={imageta}
         >
 
-          <Tab eventKey="BASICINFORMATION" title="BASIC INFORMATION">
+          <Tab eventKey="BASICINFORMATION" title="BASIC INFORMATION" className='p-0'>
 
             <div className='border border-top-0 p-2'>
               {EditdocumentsData?.Url?.Url && <div className='d-flex'>
@@ -264,7 +264,7 @@ return(
                 </div>
                 <div className="input-group mx-4">
                   <label className="form-label full-width">
-                    portfolio
+                    Portfolio
                     
                   </label>
 
@@ -285,7 +285,7 @@ return(
               <div className='mt-3'> <HtmlEditorCard editorValue={EditdocumentsData?.Description != null ? EditdocumentsData?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>
             </div>
           </Tab>
-          <Tab eventKey="IMAGEINFORMATION" title="IMAGE INFORMATION" >
+          <Tab eventKey="IMAGEINFORMATION" title="IMAGE INFORMATION" className='p-0' >
             <div className='border border-top-0 p-2'>
 
               {isOpenImageTab &&<ImageTabComponenet EditdocumentsData={EditdocumentsData} AllListId={props.AllListId} Context={props.Context} callBack={imageTabCallBack} />}
@@ -301,7 +301,7 @@ return(
                 {console.log("footerdiv")}
                 <div><span className='pe-2'>Created</span><span className='pe-2'>{EditdocumentsData?.Created !== null ? moment(EditdocumentsData?.Created).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Author?.Title}</a></span></div>
                 <div><span className='pe-2'>Last modified</span><span className='pe-2'>{EditdocumentsData?.Modified !== null ? moment(EditdocumentsData?.Modified).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Editor?.Title}</a></span></div>
-                <div><span onClick={() => deleteDocumentsData(EditdocumentsData?.Id)} className="svg__iconbox svg__icon--trash hreflink"></span>Delete this item</div>
+                <div><span onClick={() => deleteDocumentsData(EditdocumentsData?.Id)} className="alignIcon hreflink svg__icon--trash svg__iconbox"></span>Delete this item</div>
               </div>
             </div>
 

@@ -275,7 +275,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             ApproverMail: taskItem.Approver ? taskItem.Approver.map((i: { Name: string; }) => i.Name.split("|")[2]) : [],
             ApprovalType: taskItem.IsApprovalMail,
             Item_x0020_Cover: taskItem.Item_x0020_Cover ? taskItem.Item_x0020_Cover : '',
-            //CategoriesItemsJson: taskItem.CategoriesItemsJson != null ? JSON.parse(taskItem.CategoriesItemsJson) : [],
+            CategoriesItemsJson: taskItem.CategoriesItemsJson != null ? JSON.parse(taskItem.CategoriesItemsJson) : [],
             TimeCategory: taskItem.TimeCategory,
             IsActive: taskItem.IsActive,
             IsTaskNotifications: taskItem.IsTaskNotifications,
@@ -614,7 +614,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             AssignedToUserMail: taskItem.AssingedToUser ? [taskItem.AssingedToUser.Name.split("|")[2]] : [],
             ApproverMail: taskItem.Approver ? taskItem.Approver.map((i: { Name: string; }) => i.Name.split("|")[2]) : [],
             ApprovalType: taskItem.IsApprovalMail,
-            // CategoriesItemsJson: taskItem.CategoriesItemsJson ? JSON.parse(taskItem.CategoriesItemsJson) : [],
+            CategoriesItemsJson: taskItem.CategoriesItemsJson ? JSON.parse(taskItem.CategoriesItemsJson) : [],
             SortOrder: taskItem.SortOrder != null && taskItem.SortOrder != undefined ? taskItem.SortOrder : '',
             TimeCategory: taskItem.TimeCategory,
             IsActive: taskItem.IsActive,
@@ -626,7 +626,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             ModifiedBy: taskItem.Editor.Title
         }));
 
-        let listTasks = teamMembersTasks.map(({ Title, Group, Category, SortOrder, Role, Company, Approver, TaskId }) => ({ Title, Group, Category, SortOrder, Role, Company, Approver, TaskId }));
+        let listTasks = teamMembersTasks.map(({ Title, Group, Category, SortOrder, CategoriesItemsJson, Role, Company, Approver, TaskId }) => ({ Title, Group, Category, SortOrder, CategoriesItemsJson, Role, Company, Approver, TaskId }));
 
         this.setState({
             selTaskId: undefined,
@@ -992,12 +992,11 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         </Panel>);
 
         const elemApproveSelectedMenu = (<PrimaryButton menuProps={this.menuProps()}>Select Items</PrimaryButton>);
-
         const elemSelSmartMetadataItems = this.state.taskItem.selSmartMetadataItems?.map((selSmartMetadataItem) => (
-            <Label>
+            <div className="block mx-1 py-2 my-1 justify-content-between">
                 {selSmartMetadataItem.Title}
-                <Icon iconName="Delete" onClick={() => this.onRemoveSmartMetadataItem(selSmartMetadataItem.Id)}></Icon>
-            </Label>
+                <span className="bg-light svg__icon--cross svg__iconbox" onClick={() => this.onRemoveSmartMetadataItem(selSmartMetadataItem.Id)}></span>
+            </div>
         ));
 
         const elemEditTaskBasicInfo: JSX.Element = (<div className="ms-SPLegacyFabricBlock">
@@ -1109,10 +1108,11 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                 {this.state.taskItem.approvalType == "Approve Selected" && (<div className="ms-Grid-row">
                     <div className="ms-Grid-col ms-sm3 ms-md3 ms-lg3">
                         {elemApproveSelectedMenu}
+                        <div className="ms-Grid-col ms-sm9 ms-md9 ms-lg9 p-0">
+                    {elemSelSmartMetadataItems}
                     </div>
-                    <div className="ms-Grid-col ms-sm9 ms-md9 ms-lg9">
-                        {elemSelSmartMetadataItems}
                     </div>
+                   
                 </div>)}
                 <br />
             </div>
