@@ -4,11 +4,10 @@ import Tooltip from '../../../globalComponents/Tooltip';
 import { Button, Tabs, Tab, Col, Nav, Row } from 'react-bootstrap';
 import moment from 'moment';
 import { Web } from 'sp-pnp-js';
-import "bootstrap/js/dist/tab.js";
+
 import HtmlEditorCard from '../../../globalComponents/./HtmlEditor/HtmlEditor'
 import ImageTabComponenet from './ImageTabComponent'
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
-import { TfiExchangeVertical } from "react-icons/tfi";
 import Mycontext from './RelevantDocuments'
 const EditDocumentpanel=(props:any)=>{
   // const contextdata: any = React.useContext<any>(Mycontext)
@@ -157,7 +156,7 @@ const EditDocumentpanel=(props:any)=>{
         return (
           <>
     
-            <div className='siteColor subheading'>
+            <div className='ps-4 siteColor subheading'>
               {true ? `Edit Document Metadata - ${EditdocumentsData?.FileLeafRef}` : null}
             </div>
             <Tooltip ComponentId={'359'} />
@@ -207,52 +206,44 @@ return(
   <>
     <Panel onRenderHeader={onRenderCustomHeaderDocuments}
         isOpen={true}
-        type={PanelType.custom} 
+        type={PanelType.custom}
         customWidth="1091px"
         onDismiss={handleClosedoc}
         isBlocking={false}
         className={servicespopup == true ? "serviepannelgreena" : "siteColor"}
       >
         
-<nav>
-  <div className="nav nav-tabs" id="nav-tab" role="tablist">
-    <button className="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#BASICINFORMATION" type="button" role="tab" aria-controls="BASICINFORMATION" aria-selected="true">BASICINFORMATION</button>
-    <button className="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#IMAGEINFORMATION" type="button" role="tab" aria-controls="IMAGEINFORMATION" aria-selected="false">IMAGEINFORMATION</button>
 
-  </div>
-</nav>
-<div className="tab-content border border-top-0 clearfix p-3" id="nav-tabContent">
-  <div className="tab-pane fade show active" id="BASICINFORMATION" role="tabpanel" aria-labelledby="nav-home-tab">
-  <div>
+        <Tabs
+          defaultActiveKey="BASICINFORMATION"
+          transition={false}
+          id="noanim-tab-example"
+          className=""
+          onSelect={imageta}
+        >
+
+          <Tab eventKey="BASICINFORMATION" title="BASIC INFORMATION">
+
+            <div className='border border-top-0 p-2'>
               {EditdocumentsData?.Url?.Url && <div className='d-flex'>
                 <div className='input-group'><label className='form-label full-width'>URL</label>
                   <input type='text' className="from-control w-75" value={EditdocumentsData?.Url?.Url} onChange={(e => setEditdocumentsData({ ...EditdocumentsData, Url: { ...EditdocumentsData.Url, Url: e.target.value } }))}></input>
                 </div>
               </div>}
 
-              <div className='row'>
-                <div className='col-md-4'>
-                <div className="input-group"><label className="full-width ">Name </label>
-                <input type="text" className="form-control" value={EditdocumentsData?.docTitle} onChange={(e => setEditdocumentsData({ ...EditdocumentsData, docTitle: e.target.value }))} />.{EditdocumentsData?.File_x0020_Type}
-                {/* <div className='text-center'><TfiExchangeVertical></TfiExchangeVertical></div> */}
-                <label className="full-width ">Title </label>
-                  <input type="text" className="form-control" value={EditdocumentsData?.Title}
-                   onChange={(e => setallSetValue({ ...allValue, Title: e.target.value }))}
-                    />
+              <div className='d-flex'>
+                <div className="input-group"><label className=" full-width ">Name </label>
+                  <input type="text" className="form-control" value={EditdocumentsData?.docTitle} onChange={(e => setEditdocumentsData({ ...EditdocumentsData, docTitle: e.target.value }))} />.{EditdocumentsData?.File_x0020_Type}
                 </div>
-                </div>
-                <div className='col-md-8'>
-                  <div className='row'>
-                    <div className='col-md-6'>
-                    <div className="input-group"><label className="full-width ">Year </label>
+
+                <div className="input-group mx-4"><label className="full-width ">Year </label>
                   <input type="text" className="form-control" value={EditdocumentsData?.Year} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, Year: e.target.value })} />
                   {/* <span className="input-group-text" title="Linked Component Task Popup">
                     <span className="svg__iconbox svg__icon--editBox"></span>
                   </span> */}
                 </div>
-                    </div>
-                    <div className='col-md-6'>
-                    <div className="input-group">
+
+                <div className="input-group">
                   <label className="full-width">Item Rank</label>
                   <select className="form-select" defaultValue={EditdocumentsData?.ItemRank} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, ItemRank: e.target.value })}>
                     {ItemRank.map(function (h: any, i: any) {
@@ -264,11 +255,14 @@ return(
                     })}
                   </select>
                 </div>
-                    </div>
-                  </div>
-            
-             
-                <div className="input-group">
+              </div>
+              <div className='d-flex mt-3'>
+                <div className="input-group"><label className="full-width ">Title </label>
+                  <input type="text" className="form-control" value={EditdocumentsData?.Title}
+                   onChange={(e => setallSetValue({ ...allValue, Title: e.target.value }))}
+                    />
+                </div>
+                <div className="input-group mx-4">
                   <label className="form-label full-width">
                     portfolio
                     
@@ -286,63 +280,32 @@ return(
                     <span className="svg__iconbox svg__icon--editBox" onClick={(e) => opencomonentservicepopup()}></span>
                   </span>
                 </div>
-                </div>
-               
-
-              
-
-                
-              </div>
-              {/* <div className='d-flex mt-3'>
-                <div className="input-group">
-                  <label className="full-width ">Title </label>
-                  <input type="text" className="form-control" value={EditdocumentsData?.Title}
-                   onChange={(e => setallSetValue({ ...allValue, Title: e.target.value }))}
-                    />
-                </div>
-            
     
-              </div> */}
-
+              </div>
+              <div className='mt-3'> <HtmlEditorCard editorValue={EditdocumentsData?.Description != null ? EditdocumentsData?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>
             </div>
-       
-                          
-   <div className='mt-3 col'> <HtmlEditorCard editorValue={EditdocumentsData?.Description != null ? EditdocumentsData?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>
-       
+          </Tab>
+          <Tab eventKey="IMAGEINFORMATION" title="IMAGE INFORMATION" >
+            <div className='border border-top-0 p-2'>
 
-  </div>
-  <div className="tab-pane fade" id="IMAGEINFORMATION" role="tabpanel" aria-labelledby="nav-profile-tab" >
-  <div>
-{/* {isOpenImageTab && */}
-<ImageTabComponenet EditdocumentsData={EditdocumentsData} AllListId={props.AllListId} Context={props.Context} callBack={imageTabCallBack} />
-
-</div>
-
-  </div>
-
-</div>subheading
-
-{/* <script>
-  var firstTabEl = document.querySelector('#myTab li:last-child a')
-  var firstTab = new bootstrap.Tab(firstTabEl)
-
-  firstTab.show()
-</script> */}
-
-     
-        <footer className='bg-f4 fixed-bottom'>
-          <div className='align-items-center d-flex justify-content-between me-3 px-4 py-2'>
-
-            <div className="col">
+              {isOpenImageTab &&<ImageTabComponenet EditdocumentsData={EditdocumentsData} AllListId={props.AllListId} Context={props.Context} callBack={imageTabCallBack} />}
+            </div>
+          </Tab>
+        </Tabs>
+        <footer className='text-end mt-2'>
+          <div className='col-sm-12 row m-0'>
+            
+          
+            <div className="col-sm-6 text-lg-start">
             <div>
                 {console.log("footerdiv")}
-                <div><span className='pe-2'>Created</span><span className='pe-2'>{EditdocumentsData?.Created !== null ? moment(editvalue?.Created).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Author?.Title}</a></span></div>
-                <div><span className='pe-2'>Last modified</span><span className='pe-2'>{EditdocumentsData?.Modified !== null ? moment(editvalue?.Modified).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Editor?.Title}</a></span></div>
-                <div><span onClick={() => deleteDocumentsData(EditdocumentsData?.Id)} className="alignIcon  svg__iconbox svg__icon--trash hreflink"></span>Delete this item</div>
+                <div><span className='pe-2'>Created</span><span className='pe-2'>{EditdocumentsData?.Created !== null ? moment(EditdocumentsData?.Created).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Author?.Title}</a></span></div>
+                <div><span className='pe-2'>Last modified</span><span className='pe-2'>{EditdocumentsData?.Modified !== null ? moment(EditdocumentsData?.Modified).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Editor?.Title}</a></span></div>
+                <div><span onClick={() => deleteDocumentsData(EditdocumentsData?.Id)} className="svg__iconbox svg__icon--trash hreflink"></span>Delete this item</div>
               </div>
             </div>
 
-            <div className='col text-end'>
+            <div className='col-sm-6 mt-2 p-0'>
               <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/Documents/Forms/EditForm.aspx?ID=${EditdocumentsData?.Id != null ? EditdocumentsData?.Id : null}`}>Open out-of-the-box form</a></span>
 
               <Button className='btn btn-primary ms-1  mx-2' 
@@ -366,7 +329,8 @@ return(
           Call={ComponentServicePopupCallBack}
 
         />
-      } 
+      }
+      
 </>
 )
 }

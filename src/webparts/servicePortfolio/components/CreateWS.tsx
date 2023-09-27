@@ -57,8 +57,10 @@ const CreateWS = (props: any) => {
     const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
     const [SharewebCategory, setSharewebCategory] = React.useState('');
     const [SharewebTask, setSharewebTask] = React.useState<any>('');
+    const [PriorityTask, setPriorityTask] = React.useState<any>('');
     const [IsComponent, setIsComponent] = React.useState(false);
     const [date, setDate] = React.useState(undefined);
+    const [AssignMembers, setAssignMembers] = React.useState<any>([]);
     const [myDate, setMyDate] = React.useState({ editDate: null, selectDateName: '' });
     const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
     const [selectPriority, setselectPriority] = React.useState('');
@@ -70,7 +72,7 @@ const CreateWS = (props: any) => {
     const [checkedTask, setcheckedTask] = React.useState(false);
     const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
     const [showChildData, setShowChildData] = React.useState(false);
-    const [childItem, setChildItem] = React.useState(false);
+    const [ItemRank, setItemRank] = React.useState<any>();
 
 
 
@@ -79,8 +81,24 @@ const CreateWS = (props: any) => {
         props.Call(res);
 
     }
-    React.useEffect(() => {
+    React.useEffect(()=>{
+        if(selectPriority != undefined){
+            if (selectPriority == '1' || selectPriority == '2' || selectPriority == '3') {
+                setPriorityTask('(3) Low')
+               
+             }
+             if (selectPriority == '4' || selectPriority == '5' || selectPriority == '6' || selectPriority == '7') {
+                 setPriorityTask('(2) Normal')
+             }
+             if (selectPriority == '8' || selectPriority == '9' || selectPriority == '10') {
+                 setPriorityTask('(1) High')
+             }
+        }
+    },[selectPriority])
+   
 
+    React.useEffect(() => {
+       
         selectType('Workstream');
         GetParentHierarchy(props.props)
 
@@ -127,6 +145,9 @@ const CreateWS = (props: any) => {
     var ItemRankTitle: any = ''
     TaskItemRank.push([{ rankTitle: 'Select Item Rank', rank: null }, { rankTitle: '(8) Top Highlights', rank: 8 }, { rankTitle: '(7) Featured Item', rank: 7 }, { rankTitle: '(6) Key Item', rank: 6 }, { rankTitle: '(5) Relevant Item', rank: 5 }, { rankTitle: '(4) Background Item', rank: 4 }, { rankTitle: '(2) to be verified', rank: 2 }, { rankTitle: '(1) Archive', rank: 1 }, { rankTitle: '(0) No Show', rank: 0 }]);
     const DDComponentCallBack = (dt: any) => {
+        var daatta=[]
+        daatta.push(dt)
+        setAssignMembers(dt)
         // setTeamConfig(dt)
         setisDropItem(dt.isDrop)
         setisDropItemRes(dt.isDropRes)
@@ -425,7 +446,7 @@ return new Promise<void>((resolve, reject) => {
             PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
             TaskTypeId: SharewebTasknewTypeId,
             ParentTaskId: AllItems.Id,
-            Priority: item.Priority,
+            Priority: item.Priorityy,
             Body: item?.Description != undefined ? item?.Description : AllItems.Description,
             // DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
             DueDate: item.editDate != null ? Moment(item?.editDate).format("ddd, DD MMM yyyy") : null,
@@ -808,51 +829,98 @@ return new Promise<void>((resolve, reject) => {
                 CategoryID.push(category.Id)
             }
         })
-        if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length > 0) {
-            AllItems.AssignedTo.forEach((obj: any) => {
-                AssignedToIds.push(obj.Id);
-                AssignedToUser.push(obj);
-
-            })
-        }
-        if (isDropItemRes == true) {
-            if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
-                TaskAssignedTo.map((taskInfo: any) => {
-                    AssignedToIds.push(taskInfo.Id);
-                    AssignedToUser.push(taskInfo);
-                })
-            }
-        }
+        
+       if(AssignMembers?.TeamMemberUsers != undefined && AssignMembers.TeamMemberUsers.length>0){
+        AssignMembers.TeamMemberUsers.map((taskInfo: any) => {
+            TeamMemberIds.push(taskInfo.AssingedToUserId);
+            AllTeamMembers.push(taskInfo);
+        })
+       }
+       if(AssignMembers?.ResponsibleTeam != undefined && AssignMembers?.ResponsibleTeam.length>0){
+        AssignMembers.ResponsibleTeam.map((taskInfo: any) => {
+            ResponsibleTeamIds.push(taskInfo.AssingedToUserId);
+            TeamLeaderws.push(taskInfo)
+        })
+       }
+       if(AssignMembers?.AssignedTo != undefined && AssignMembers?.AssignedTo.length>0){
+        AssignMembers.AssignedTo.map((taskInfo: any) => {
+            AssignedToIds.push(taskInfo.AssingedToUserId);
+            AssignedToUser.push(taskInfo);
+        })
+       }
+       if(AssignMembers.length == 0){
         if (AllItems?.TeamMembers != undefined && AllItems?.TeamMembers?.length > 0) {
-            AllItems?.TeamMembers.forEach((obj: any) => {
-                TeamMemberIds.push(obj.Id);
-                AllTeamMembers.push(obj);
-
-            })
-        }
-        if (isDropItem == true) {
-            if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
-                TaskTeamMembers?.map((taskInfo: any) => {
-                    TeamMemberIds.push(taskInfo.Id);
-                    AllTeamMembers.push(taskInfo);
-
-                })
-            }
-        }
-        if (AllItems?.TeamLeader != undefined && AllItems?.TeamLeader?.length > 0) {
-            AllItems?.TeamLeader?.forEach((obj: any) => {
+                    AllItems?.TeamMembers.forEach((obj: any) => {
+                        TeamMemberIds.push(obj.Id);
+                        AllTeamMembers.push(obj);
+        
+                    })
+         }
+          if (AllItems?.ResponsibleTeam != undefined && AllItems?.ResponsibleTeam?.length > 0) {
+            AllItems?.ResponsibleTeam?.forEach((obj: any) => {
                 ResponsibleTeamIds.push(obj.Id);
                 TeamLeaderws.push(obj)
             })
         }
-        if (isDropItem == true) {
-            if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
-                TaskResponsibleTeam?.map((taskInfo: any) => {
-                    ResponsibleTeamIds.push(taskInfo.Id);
-                    TeamLeaderws.push(taskInfo)
-                })
-            }
-        }
+        if(AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length > 0) {
+                    AllItems.AssignedTo.forEach((obj: any) => {
+                        AssignedToIds.push(obj.Id);
+                        AssignedToUser.push(obj);
+        
+                    })
+                }
+       }
+        // if (isDropItemRes == true) {
+        //     if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
+        //         TaskAssignedTo.map((taskInfo: any) => {
+        //             AssignedToIds.push(taskInfo.Id);
+        //             AssignedToUser.push(taskInfo);
+        //         })
+        //     }
+        // }
+        // else{
+        //     if(AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length > 0) {
+        //         AllItems.AssignedTo.forEach((obj: any) => {
+        //             AssignedToIds.push(obj.Id);
+        //             AssignedToUser.push(obj);
+    
+        //         })
+        //     }
+        // } 
+       
+     
+        // if (isDropItem == true) {
+        //     if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
+        //         TaskTeamMembers?.map((taskInfo: any) => {
+        //             TeamMemberIds.push(taskInfo.Id);
+        //             AllTeamMembers.push(taskInfo);
+
+        //         })
+        //     }
+        // }
+        // else{
+        //     if (AllItems?.TeamMembers != undefined && AllItems?.TeamMembers?.length > 0) {
+        //         AllItems?.TeamMembers.forEach((obj: any) => {
+        //             TeamMemberIds.push(obj.Id);
+        //             AllTeamMembers.push(obj);
+    
+        //         })
+        //     }
+        // }
+        // if (AllItems?.TeamLeader != undefined && AllItems?.TeamLeader?.length > 0) {
+        //     AllItems?.TeamLeader?.forEach((obj: any) => {
+        //         ResponsibleTeamIds.push(obj.Id);
+        //         TeamLeaderws.push(obj)
+        //     })
+        // }
+        // if (isDropItem == true) {
+        //     if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
+        //         TaskResponsibleTeam?.map((taskInfo: any) => {
+        //             ResponsibleTeamIds.push(taskInfo.Id);
+        //             TeamLeaderws.push(taskInfo)
+        //         })
+        //     }
+        // }
         if (props?.props != undefined && props?.props?.ClientCategory?.length > 0) {
             if (props?.props?.ClientCategory2 != undefined && props?.props?.ClientCategory2?.results?.length > 0) {
                 props?.props?.ClientCategory2?.results?.map((items: any) => {
@@ -880,8 +948,9 @@ return new Promise<void>((resolve, reject) => {
             PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
             ParentTaskId: AllItems.Id,
             TaskTypeId: SharewebTasknewTypeId,
+            ItemRank:ItemRank,
             //ParentTaskId :portFolio,
-            Priority: AllItems.Priority,
+            Priority: PriorityTask != undefined && PriorityTask != ''? PriorityTask:AllItems.Priority,
             Body: AllItems.Description,
             // DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
             DueDate: myDate.editDate = myDate.editDate ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy") : null,
@@ -966,26 +1035,33 @@ return new Promise<void>((resolve, reject) => {
     const SelectPriority = (priority: any, e: any) => {
         if (priority == '(1) High') {
             setselectPriority('8')
+            setPriorityTask('(1) High')
         }
         if (priority == '(2) Normal') {
             setselectPriority("4")
+            setPriorityTask('(2) Normal')
         }
         if (priority == '(3) Low') {
             setselectPriority("1")
+            setPriorityTask('(3) Low')
+            
         }
     }
     const SelectPriorityArray = (data: any, e: any) => {
         if (e.target.value == '(1) High') {
             data.selectPriority = '8'
             data.Priorityy = e.target.value;
+            setPriorityTask('(1) High')
         }
         if (e.target.value == '(2) Normal') {
             data.selectPriority = "4"
             data.Priorityy = e.target.value;
+            setPriorityTask('(2) Normal')
         }
         if (e.target.value == '(3) Low') {
             data.selectPriority = ("1")
             data.Priorityy = e.target.value;
+            setPriorityTask('(3) Low')
         }
         setInputFields((inputFields: any) => [...inputFields]);
     }
@@ -1082,48 +1158,89 @@ return new Promise<void>((resolve, reject) => {
                 CategoryID.push(category.Id)
             }
         })
-        if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length > 0) {
-            AllItems.AssignedTo.forEach((obj: any) => {
-                AssignedToIds.push(obj.Id);
-                AssignedToUser.push(obj)
+
+        if(AssignMembers?.TeamMemberUsers != undefined && AssignMembers.TeamMemberUsers.length>0){
+            AssignMembers.TeamMemberUsers.map((taskInfo: any) => {
+                TeamMemberIds.push(taskInfo.AssingedToUserId);
+                AllTeamMembers.push(taskInfo);
             })
-        }
-        if (isDropItemRes == true) {
-            if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
-                TaskAssignedTo.map((taskInfo) => {
-                    AssignedToIds.push(taskInfo.Id);
-                    AssignedToUser.push(taskInfo);
+           }
+           if(AssignMembers?.ResponsibleTeam != undefined && AssignMembers?.ResponsibleTeam.length>0){
+            AssignMembers.ResponsibleTeam.map((taskInfo: any) => {
+                ResponsibleTeamIds.push(taskInfo.AssingedToUserId);
+                TeamLeaderws.push(taskInfo)
+            })
+           }
+           if(AssignMembers?.AssignedTo != undefined && AssignMembers?.AssignedTo.length>0){
+            AssignMembers.AssignedTo.map((taskInfo: any) => {
+                AssignedToIds.push(taskInfo.AssingedToUserId);
+                AssignedToUser.push(taskInfo);
+            })
+           }
+           if(AssignMembers.length == 0){
+            if (AllItems?.TeamMembers != undefined && AllItems?.TeamMembers?.length > 0) {
+                        AllItems?.TeamMembers.forEach((obj: any) => {
+                            TeamMemberIds.push(obj.Id);
+                            AllTeamMembers.push(obj);
+            
+                        })
+             }
+              if (AllItems?.ResponsibleTeam != undefined && AllItems?.ResponsibleTeam?.length > 0) {
+                AllItems?.ResponsibleTeam?.forEach((obj: any) => {
+                    ResponsibleTeamIds.push(obj.Id);
+                    TeamLeaderws.push(obj)
                 })
             }
-        }
-        if (AllItems?.TeamMembers != undefined && AllItems?.TeamMembers?.length > 0) {
-            AllItems.TeamMembers.forEach((obj: any) => {
-                TeamMemberIds.push(obj.Id);
-                AllTeamMembers.push(obj)
-            })
-        }
-        if (isDropItem == true) {
-            if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
-                TaskTeamMembers.map((taskInfo) => {
-                    TeamMemberIds.push(taskInfo.Id);
-                    AllTeamMembers.push(taskInfo)
-                })
-            }
-        }
-        if (AllItems?.TeamLeader != undefined && AllItems?.TeamLeader?.length > 0) {
-            AllItems.TeamLeader.forEach((obj: any) => {
-                ResponsibleTeamIds.push(obj.Id);
-                TeamLeaderws.push(obj)
-            })
-        }
-        if (isDropItem == true) {
-            if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
-                TaskResponsibleTeam.map((taskInfo) => {
-                    ResponsibleTeamIds.push(taskInfo.Id);
-                    TeamLeaderws.push(taskInfo)
-                })
-            }
-        }
+            if(AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length > 0) {
+                        AllItems.AssignedTo.forEach((obj: any) => {
+                            AssignedToIds.push(obj.Id);
+                            AssignedToUser.push(obj);
+            
+                        })
+                    }
+           }
+        // if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length > 0) {
+        //     AllItems.AssignedTo.forEach((obj: any) => {
+        //         AssignedToIds.push(obj.Id);
+        //         AssignedToUser.push(obj)
+        //     })
+        // }
+        // if (isDropItemRes == true) {
+        //     if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
+        //         TaskAssignedTo.map((taskInfo) => {
+        //             AssignedToIds.push(taskInfo.Id);
+        //             AssignedToUser.push(taskInfo);
+        //         })
+        //     }
+        // }
+        // if (AllItems?.TeamMembers != undefined && AllItems?.TeamMembers?.length > 0) {
+        //     AllItems.TeamMembers.forEach((obj: any) => {
+        //         TeamMemberIds.push(obj.Id);
+        //         AllTeamMembers.push(obj)
+        //     })
+        // }
+        // if (isDropItem == true) {
+        //     if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
+        //         TaskTeamMembers.map((taskInfo) => {
+        //             TeamMemberIds.push(taskInfo.Id);
+        //             AllTeamMembers.push(taskInfo)
+        //         })
+        //     }
+        // }
+        // if (AllItems?.TeamLeader != undefined && AllItems?.TeamLeader?.length > 0) {
+        //     AllItems.TeamLeader.forEach((obj: any) => {
+        //         ResponsibleTeamIds.push(obj.Id);
+        //         TeamLeaderws.push(obj)
+        //     })
+        // }
+        // if (isDropItem == true) {
+        //     if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
+        //         TaskResponsibleTeam.map((taskInfo) => {
+        //             ResponsibleTeamIds.push(taskInfo.Id);
+        //             TeamLeaderws.push(taskInfo)
+        //         })
+        //     }
+        // }
         if (props?.props != undefined && props?.props?.ClientCategory?.length > 0) {
             if (props?.props?.ClientCategory2 != undefined && props?.props?.ClientCategory2?.results?.length > 0) {
                 props?.props?.ClientCategory2?.results?.map((items: any) => {
@@ -1150,9 +1267,9 @@ return new Promise<void>((resolve, reject) => {
             SharewebCategoriesId: { "results": CategoryID },
             ParentTaskId: AllItems.Id,
             Body: AllItems.Description,
-
             DueDate: myDate.editDate = myDate.editDate != null ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy") : null,
-            Priority: AllItems.Priority,
+            ItemRank:ItemRank,
+            Priority: PriorityTask != undefined && PriorityTask != ''? PriorityTask:AllItems.Priority,
             AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
             ResponsibleTeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
             TeamMembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] },
@@ -1303,7 +1420,33 @@ return new Promise<void>((resolve, reject) => {
         setInputFields(rows);
     }
 
-
+    const ChangePriorityStatusFunction = (e: any) => {
+        let value = e.target.value;
+        if (Number(value) <= 10) {
+            setselectPriority(e.target.value)
+            if (e.target.value == '1' || e.target.value == '2' || e.target.value == '3') {
+               setPriorityTask('(1) Low')
+            }
+            if (e.target.value == '4' || e.target.value == '5' || e.target.value == '6' || e.target.value == '7') {
+                setPriorityTask('(2) Normal')
+            }
+            if (e.target.value == '8' || e.target.value == '9' || e.target.value == '10') {
+                setPriorityTask('(3) High')
+            }
+        } else {
+            alert("Priority Status not should be greater than 10");
+            setselectPriority('0')
+        }
+    }
+    const changePriorityRank=(e:any)=>{
+        if(TaskItemRank != undefined && TaskItemRank.length>0){
+            TaskItemRank[0]?.forEach((val:any)=>{
+                if(val.rankTitle == e){
+                    setItemRank(val?.rank)
+                }
+            })
+        }
+    }
     return (
         <>
             <Panel
@@ -1364,9 +1507,9 @@ return new Promise<void>((resolve, reject) => {
                                 <select
                                     className="full_width searchbox_height"
                                     defaultValue={AllItems?.ItemRankTitle}
-                                    onChange={(e) =>
-                                        (AllItems.ItemRankTitle = e.target.value)
-                                    }
+                                  
+                                        onChange={(e) => changePriorityRank(e.target.value)}
+                                    
                                 >
                                     <option>
                                         {AllItems?.ItemRankTitle == undefined
@@ -1411,29 +1554,33 @@ return new Promise<void>((resolve, reject) => {
 
                                 </label>
 
-                                <input type="text" className="full-width searchbox_height" placeholder="Priority" ng-model="PriorityRank"
-                                    defaultValue={selectPriority} onChange={(e: any) => Priority(e)} />
+                                <input type="text" className="full-width searchbox_height" placeholder="Priority" 
+                                  value={selectPriority ? selectPriority : ''}
+                                  onChange={(e) => ChangePriorityStatusFunction(e)}
+                                     />
                                 <dl className='mt-1'>
-                                    <dt>
-                                        <label className='SpfxCheckRadio'>
-                                            <input className="radio" name="radioPriority"
-                                                type="radio" value="(1) High"
-                                                defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(1) High', e)} />High
-                                        </label>
-                                    </dt>
-                                    <dt>
-                                        <label className='SpfxCheckRadio'>
-                                            <input className="radio" name="radioPriority"
-                                                type="radio" value="(2) Normal"
-                                                defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(2) Normal', e)} />Normal
-                                        </label>
-                                    </dt>
-                                    <dt>
-                                        <label className='SpfxCheckRadio'>
-                                            <input className="radio" name="radioPriority"
-                                                type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(3) Low', e)} />Low
-                                        </label>
-                                    </dt>
+                                <dt className="form-check l-radio">
+                                            <input className="form-check-input"
+                                                name="radioPriority" type="radio"
+                                                checked={Number(selectPriority) <= 10 && Number(selectPriority) >= 8}
+                                                onChange={() => setselectPriority('8')}
+                                            />
+                                            <label className="form-check-label">High</label>
+                                        </dt>
+                                        <dt className="form-check l-radio">
+                                            <input className="form-check-input" name="radioPriority"
+                                                type="radio" checked={Number(selectPriority) <= 7 && Number(selectPriority) >= 4}
+                                                onChange={() => setselectPriority('4')}
+                                            />
+                                            <label className="form-check-label">Normal</label>
+                                        </dt>
+                                        <dt className="form-check l-radio">
+                                            <input className="form-check-input" name="radioPriority"
+                                                type="radio" checked={Number(selectPriority) <= 3 && Number(selectPriority) > 0}
+                                                onChange={() => setselectPriority('1')}
+                                            />
+                                            <label className="form-check-label">Low</label>
+                                        </dt>
                                 </dl>
                             </div>
 
@@ -1512,11 +1659,11 @@ return new Promise<void>((resolve, reject) => {
                                             <div className="input-group">
                                                 <label className="full-width">Item Rank</label>
                                                 <select
-                                                    className="full_width searchbox_height"
-                                                    defaultValue={data?.ItemRankTitle}
-                                                    onChange={(e) =>
-                                                        (data.ItemRankTitle = e.target.value)
-                                                    }
+                                                     className="full_width searchbox_height"
+                                                     defaultValue={data?.ItemRankTitle}
+                                                     onChange={(e) =>
+                                                         (data.ItemRankTitle = e.target.value)
+                                                     }
                                                 >
                                                     <option>
                                                         {data?.ItemRankTitle == undefined
@@ -1575,6 +1722,7 @@ return new Promise<void>((resolve, reject) => {
                                                             type="radio" value="(2) Normal"
                                                             defaultChecked={data.Priorityy === "(2) Normal"} onClick={(e: any) => SelectPriorityArray(data, e)} />Normal
                                                     </label>
+
                                                 </div>
                                                 <div className="">
                                                     <label>

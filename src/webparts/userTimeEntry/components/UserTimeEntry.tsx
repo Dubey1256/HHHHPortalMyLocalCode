@@ -1249,95 +1249,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               const ids: any = CategoryItems.map(o => o.uniqueTimeId);
               CategoryItems = CategoryItems.filter(({ uniqueTimeId }, index) => !ids.includes(uniqueTimeId, index + 1))
 
-              /*
-              if (selectedFilters[i].Title != 'Other' && item.clientCategoryIds != undefined && item.clientCategoryIds != '') {
-                  let Category = item.clientCategoryIds.split(';');                                
-                  for (let j = 0; j < Category.length; j++) {
-                    let type = Category[j];
-                    if (type == selectedFilters[i].ID) {
-                      item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
-                      flag = true;
-                      item.Secondlevel = item.ParentTitle;
-                  }
-                  else if (selectedFilters[i].ID == '569' && item.siteType == "Migration") {
-                      item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
-                      flag = true;
-                      item.Secondlevel = item.ParentTitle;
-                  }
-                  else if (selectedFilters[i].ID == '572' && item.siteType == "ALAKDigital") {
-                      item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
-                      flag = true;
-                      item.Secondlevel = item.ParentTitle;
-                  }
-                  else if (selectedFilters[i].ID == '573' && item.siteType == "KathaBeck") {
-                      item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
-                      flag = true;
-                      item.Secondlevel = item.ParentTitle;
-                  }
-                  else if (selectedFilters[i].ID == '575' && item.siteType == "HHHH") {
-                      item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
-                      flag = true;
-                      item.Secondlevel = item.ParentTitle;
-                  }
-                  else if (selectedFilters[i].ID == '574' && item.siteType == "Gruene") {
-                      item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
-                      flag = true;
-                      item.Secondlevel = item.ParentTitle;
-                  }
-                    
-                  }                                       
-                  if (flag) {
-                      if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType)) {
-                          CategoryItems.push(item);
-                      }
-                      //  return false;
-                  }
-              }
-              if (selectedFilters[i].Title == 'Other' && (item.clientCategoryIds == undefined || item.clientCategoryIds == '')){
-                  let title = selectedFilters[i].ParentTitle == 'PSE' ? 'EPS' : (selectedFilters[i].ParentTitle == 'e+i' ? 'EI' : selectedFilters[i].ParentTitle);
-                  if (selectedFilters[i].Title == 'Other') {
-                      if ((item.siteType != undefined && item.siteType == title)) {
-                          CategoryItems.push(item);
-                      }
-                  }
-              }
-              else if (selectedFilters[i].ID == '569' && item.siteType == "Migration") {
-                  item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
-                  flag = true;
-                  item.Secondlevel = item.ParentTitle;
-                  if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
-                      CategoryItems.push(item);
-              }
-              else if (selectedFilters[i].ID == '572' && item.siteType == "ALAKDigital") {
-                  item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
-                  flag = true;
-                  item.Secondlevel = item.ParentTitle;
-                  if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
-                      CategoryItems.push(item);
-              }
-              else if (selectedFilters[i].ID == '574' && item.siteType == "Gruene") {
-                  item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
-                  flag = true;
-                  item.Secondlevel = item.ParentTitle;
-                  if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
-                      CategoryItems.push(item);
-              }
-              else if (selectedFilters[i].ID == '575' && item.siteType == "HHHH") {
-                  item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
-                  flag = true;
-                  item.Secondlevel = item.ParentTitle;
-                  if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
-                      CategoryItems.push(item);
-              }
-              else if (selectedFilters[i].ID == '573' && item.siteType == "KathaBeck") {
-                  item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
-                  flag = true;
-                  item.Secondlevel = item.ParentTitle;
-                  if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
-                      CategoryItems.push(item);
-              }
-              isCategorySelected = true;
-              */
               break;
 
             case 'Sites':
@@ -1937,7 +1848,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         <div className="p-0  " style={{ verticalAlign: "top" }}><h2 className="heading d-flex justify-content-between align-items-center"><span> <a>Timesheet</a> </span><span className="text-end fs-6"><a target="_blank" data-interception="off" href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/UserTimeEntry-Old.aspx`}>Old UserTimeEntry</a></span></h2></div>
         <Row className='smartFilter bg-light border mb-3 col'>
         <details className='p-0 m-0' open>
-        <summary><a className="hreflink pull-left mr-5">Task User : </a>
+        <summary className='hyperlink'><a className="hreflink pull-left mr-5">All Filters - <span>Task User :</span> </a>
               {this.state.ImageSelectedUsers != null && this.state.ImageSelectedUsers.length > 0 && this.state.ImageSelectedUsers.map((user: any, i: number) => {
                 return <span className="ng-scope">
                   <img className="AssignUserPhoto mr-5" title={user.AssingedToUser.Title} src={user?.Item_x0020_Cover?.Url} />
@@ -1945,7 +1856,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               })
               }
               <span className="pull-right"><a href="#">Add smart favorite</a></span>
-              <hr></hr>
+     
             </summary>
        
         <Col>
@@ -1966,7 +1877,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               }
               <span className="ng-binding ng-hide"> </span>
             </summary> */}
-          <summary>
+          <summary className='hyperlink'>
           Team members
           <hr></hr>
           </summary>
@@ -2015,7 +1926,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             </div>
           </details>
           <details open>
-            <summary>
+            <summary  className='hyperlink'>
               Date
               <hr></hr>
               </summary>
@@ -2069,7 +1980,8 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                 <span className='SpfxCheckRadio me-2'>
                   <input type="radio" name="dateSelection" value="Presettime" onClick={() => this.selectDate('Presettime')} ng-model="unAllTime" className="radio" />
                   <label>Pre-set</label>
-                  <img className="hreflink " title="open" ng-click="OpenPresetDatePopup('Presettime')" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" />
+                  <span className="svg__iconbox svg__icon--editBox" ng-click="OpenPresetDatePopup('Presettime')"></span>
+                  {/* <img className="hreflink " title="open" ng-click="OpenPresetDatePopup('Presettime')" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" /> */}
                 </span>
 
               </div>
@@ -2096,7 +2008,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           <div id="showFilterBox" className="col mb-2 p-0 ">
             <div className="togglebox">
               <details open>
-                <summary ng-click="filtershowHide()">
+                <summary  className='hyperlink' ng-click="filtershowHide()">
                  
                     {/* <img className="hreflink wid22" title="Filter" style={{width:'22px'}} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Filter-12-WF.png"/> */}
                     SmartSearch – Filters
@@ -2161,6 +2073,13 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                                 nativeCheckboxes={true}
                                 showNodeIcon={false}
                                 checkModel={'all'}
+                                icons={{
+                                  expandOpen: <SlArrowDown />,
+                                  expandClose: <SlArrowRight />,
+                                  parentClose: null,
+                                  parentOpen: null,
+                                  leaf: null,
+                                }}
                               />
                             </div>
                           </td>
@@ -2181,6 +2100,13 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                                 nativeCheckboxes={true}
                                 showNodeIcon={false}
                                 checkModel={'all'}
+                                icons={{
+                                  expandOpen: <SlArrowDown />,
+                                  expandClose: <SlArrowRight />,
+                                  parentClose: null,
+                                  parentOpen: null,
+                                  leaf: null,
+                                }}
                               />
                             </div>
                           </td>

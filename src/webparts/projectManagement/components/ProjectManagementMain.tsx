@@ -402,7 +402,7 @@ const ProjectManagementMain = (props: any) => {
           smartmeta = await web.lists
             .getById(config.listId)
             .items
-            .select("Id,Title,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+            .select("Id,Title,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
             .expand('AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory')
             .top(4999)
             .filter("ProjectId eq " + QueryId)
@@ -623,15 +623,7 @@ const ProjectManagementMain = (props: any) => {
         });
     }
   };
-  // const toggleSideBar = () => {
-  //   setSidebarStatus({ ...sidebarStatus, dashboard: !sidebarStatus.dashboard });
-  //   if (sidebarStatus.dashboard == false) {
-  //     $(".sidebar").attr("collapsed", "");
-  //   } else {
-  //     $(".sidebar").removeAttr("collapsed");
-  //   }
-  // };
-  //React.useEffect(() => {table.getIsAllRowsExpanded(); }, [])
+
   const createOpenTask = (items: any) => {
     setCreateTaskId({ portfolioData: items, portfolioType: 'Component' });
     setisOpenCreateTask(true)
@@ -686,26 +678,8 @@ const ProjectManagementMain = (props: any) => {
         accessorFn: (row) => row?.Title,
         cell: ({ row, column, getValue }) => (
           <>
-            <span className='d-flex'>
-              {/* {row.original.Services.length >= 1 ? (
-                <a
-                  className="hreflink text-success"
-                  href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
-                  data-interception="off"
-                  target="_blank"
-                >
-                  {row?.original?.Title}
-                </a>
-              ) : (
-                <a
-                  className="hreflink"
-                  href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
-                  data-interception="off"
-                  target="_blank"
-                >
-                  {row?.original?.Title}
-                </a>
-              )} */}
+            <span>
+     
               <a
                 className="hreflink"
                 href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
@@ -714,7 +688,7 @@ const ProjectManagementMain = (props: any) => {
               >
                 {row?.original?.Title}
               </a>
-              {row?.original?.Body !== null && row?.original?.Body != undefined ? <InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} /> : ''}
+              {row?.original?.Body !== null && row?.original?.Body != undefined ?<span className="alignIcon"> <InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} /> </span> : ''}
             </span>
           </>
         ),
@@ -741,27 +715,7 @@ const ProjectManagementMain = (props: any) => {
       {
         accessorFn: (row) => row?.Portfolio,
         cell: ({ row }) => (
-          // <span>
-          //   {row.original.Services.length >= 1 ? (
-          //     <a
-          //       className="hreflink text-success"
-          //       data-interception="off"
-          //       target="blank"
-          //       href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
-          //     >
-          //       {row?.original?.portfolio?.Title}
-          //     </a>
-          //   ) : (
-          //     <a
-          //       className="hreflink"
-          //       data-interception="off"
-          //       target="blank"
-          //       href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
-          //     >
-          //       {row?.original?.portfolio?.Title}
-          //     </a>
-          //   )}
-          // </span>
+
           <a
             className="hreflink"
             data-interception="off"
@@ -890,37 +844,12 @@ const ProjectManagementMain = (props: any) => {
         header: '',
         size: 125
       },
-      // {
-      //   accessorFn: (row) => row?.Remark,
-      //   cell: ({ row }) => (
-      //     <div   className='svg__iconbox svg__icon--edit hreflink' onClick={()=>openRemark(row?.original)}>
-      //       {/* <InlineEditingcolumns
-      //         AllListId={AllListId}
-      //         callBack={inlineCallBack}
-      //         columnName='Remark'
-      //         item={row?.original}
-      //         TaskUsers={AllUser}
-      //         pageName={'ProjectManagment'}
-      //       /> */}
-      //     </div>
-      //   ),
-      //   id: 'Remarks',
-      //   canSort: false,
-      //   resetColumnFilters: false,
-      //   resetSorting: false,
-      //   placeholder: "Remarks",
-      //   header: "",
-      //   size: 125
-      // },
+  
       {
         accessorFn: (row) => row?.Created,
         cell: ({ row }) => (
           <span>
-            {/* {row.original.Services.length >= 1 ? (
-              <span className='ms-1 text-success'>{row?.original?.DisplayCreateDate} </span>
-            ) : (
-              <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
-            )} */}
+      
             <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
 
             {row?.original?.createdImg != undefined ? (
@@ -948,17 +877,15 @@ const ProjectManagementMain = (props: any) => {
       },
       {
         cell: ({ row }) => (
-          <span className='d-flex'>
+          <span className='text-end'>
             <span
               title='Edit Task'
               onClick={() => EditPopup(row?.original)}
-              className='svg__iconbox svg__icon--edit hreflink'
+              className='alignIcon  svg__iconbox svg__icon--edit hreflink'
             ></span>
-            <span
-              style={{ marginLeft: '6px' }}
-              title='Remove Task'
+            <span title='Remove Task'
               onClick={() => untagTask(row?.original)}
-              className='svg__iconbox svg__icon--cross dark hreflink'
+              className='alignIcon  svg__iconbox svg__icon--cross dark hreflink'
             ></span>
           </span>
         ),
@@ -1039,13 +966,6 @@ const ProjectManagementMain = (props: any) => {
           <div className="ProjectManagementPage Dashboardsecrtion">
             <div className="dashboard-colm">
               <aside className="sidebar">
-                {/* <button
-              type="button"
-              onClick={() => {
-                toggleSideBar();
-              }}
-              className="collapse-toggle"
-            ></button> */}
                 <section className="sidebar__section sidebar__section--menu">
                   <nav className="nav__item">
                     <ul className="nav__list">
