@@ -29,7 +29,8 @@ import {
   FaAngleDoubleLeft,
   FaInfoCircle,
   FaPlus,
-  FaMinus
+  FaMinus,
+  FaListAlt
 } from "react-icons/fa";
 import { HTMLProps } from "react";
 import jsPDF from "jspdf";
@@ -42,7 +43,7 @@ import SelectFilterPanel from "./selectFilterPannel";
 import ExpndTable from "../ExpandTable/Expandtable";
 import RestructuringCom from "../Restructuring/RestructuringCom";
 import { SlArrowDown, SlArrowRight } from "react-icons/sl";
-import { BsClockHistory, BsSearch } from "react-icons/bs";
+import { BsClockHistory, BsList, BsSearch } from "react-icons/bs";
 import Tooltip from "../../globalComponents/Tooltip";
 // ReactTable Part/////
 declare module "@tanstack/table-core" {
@@ -242,7 +243,7 @@ const getFirstColCell = ({
           )}
         </div>
       )}{" "}
-      {hasCheckbox && (
+      {hasCheckbox && row?.original?.Title != "Others" && (
         <span
           style={{
             marginLeft:
@@ -376,6 +377,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     React.useState(false);
   const [tablecontiner, settablecontiner]: any = React.useState("hundred");
   const [trueRestructuring, setTrueRestructuring] = React.useState(false);
+  // const [clickFlatView, setclickFlatView] = React.useState(false);
   const [columnVisibility, setColumnVisibility] = React.useState({
     descriptionsSearch: false,
     commentsSearch: false
@@ -471,6 +473,28 @@ const GlobalCommanTable = (items: any, ref: any) => {
     setSelectedFilterPanelIsOpen(false);
   }, []);
 
+  /****************** defult sorting  part *******************/
+  React.useEffect(() => {
+    if (columns?.length > 0 && columns != undefined) {
+      let sortingDescData: any = [];
+      columns.map((sortDec: any) => {
+        if (sortDec.isColumnDefultSortingDesc === true) {
+          let obj = { id: sortDec.id, desc: true };
+          sortingDescData.push(obj);
+        } else if (sortDec.isColumnDefultSortingAsc === true) {
+          let obj = { id: sortDec.id, desc: false };
+          sortingDescData.push(obj);
+        }
+      });
+      if (sortingDescData.length > 0) {
+        setSorting(sortingDescData);
+      } else {
+        setSorting([]);
+      }
+    }
+  }, [columns]);
+  /****************** defult sorting  part end *******************/
+
   const table: any = useReactTable({
     data,
     columns: modColumns,
@@ -505,24 +529,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     enableSubRowSelection: false
     // filterFns: undefined
   });
-  /****************** defult sorting  part *******************/
-  React.useEffect(() => {
-    if (columns?.length > 0 && columns != undefined) {
-      let sortingDescData: any = [];
-      columns.map((sortDec: any) => {
-        if (sortDec.isColumnDefultSortingDesc === true) {
-          let obj = { id: sortDec.id, desc: true };
-          sortingDescData.push(obj);
-        } else if (sortDec.isColumnDefultSortingAsc === true) {
-          let obj = { id: sortDec.id, desc: false };
-          sortingDescData.push(obj);
-        }
-      });
-      if (sortingDescData.length > 0) {
-        setSorting(sortingDescData);
-      }
-    }
-  }, []);
+  /****************** defult Expend Other Section  part *******************/
   React.useEffect(() => {
     if (table?.getRowModel()?.rows.length > 0) {
       table?.getRowModel()?.rows.map((elem: any) => {
@@ -533,7 +540,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
       });
     }
   }, [data]);
-  /****************** defult sorting  part end *******************/
+  /****************** defult Expend Other Section end *******************/
 
   React.useEffect(() => {
     CheckDataPrepre();
@@ -861,6 +868,10 @@ const GlobalCommanTable = (items: any, ref: any) => {
       items?.AddWorkstreamTask();
     } else if (eventValue === "Smart-Time") {
       items?.smartTimeTotalFunction();
+    } else if (eventValue === "Flat-View") {
+      items?.switchFlatViewData(data);
+    } else if (eventValue === "Groupby-View") {
+      items?.switchGroupbyData();
     }
   };
 
@@ -1424,6 +1435,30 @@ const GlobalCommanTable = (items: any, ref: any) => {
                   <BsClockHistory style={{ color: `${portfolioColor}` }} />
                 </a>
               )}
+
+            {items?.flatView === true && (
+              <>
+                {items?.clickFlatView === false ? (
+                  <a
+                    className="smartTotalTime"
+                    title="Switch to Flat-View"
+                    style={{ color: `${portfolioColor}` }}
+                    onClick={() => openCreationAllStructure("Flat-View")}
+                  >
+                    <BsList />
+                  </a>
+                ) : (
+                  <a
+                    className="smartTotalTime"
+                    title="Switch to Groupby View"
+                    style={{ color: `${portfolioColor}` }}
+                    onClick={() => openCreationAllStructure("Groupby-View")}
+                  >
+                    <FaListAlt />
+                  </a>
+                )}
+              </>
+            )}
 
             <a className="brush">
               <i
