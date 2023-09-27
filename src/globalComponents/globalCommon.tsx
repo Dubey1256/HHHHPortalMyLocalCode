@@ -2430,18 +2430,34 @@ export const getParameterByName = async (name: any) => {
 };
 export const GetTaskId = (Item: any) => {
   const { Portfolio, TaskID, ParentTask, Id, TaskType } = Item;
+
   let taskIds = "";
+
   if (Portfolio?.PortfolioStructureID) {
-      taskIds += Portfolio.PortfolioStructureID;
+    taskIds += Portfolio.PortfolioStructureID;
   }
-  if (ParentTask?.TaskID && (TaskType?.Title === 'Task'||TaskType?.Title==='Workstream')) {
-      taskIds += taskIds.length > 0 ? `-${TaskID}` : `${TaskID}`;
+
+  if (
+    ParentTask?.TaskID &&
+    (TaskType?.Title === "Task" || TaskType?.Title === "Workstream")
+  ) {
+    taskIds += taskIds.length > 0 ? `-${TaskID}` : `${TaskID}`;
   }
-  if  (ParentTask==undefined && Portfolio!=undefined &&(TaskType?.Title === "Activities"||TaskType?.Title === 'Task'||TaskType?.Title==='Workstream')) {
-      taskIds += TaskID!=undefined? `-${TaskID}` : `-T${Item.Id}`;
+  if (
+    ParentTask == undefined &&
+    Portfolio != undefined &&
+    (TaskType?.Title === "Activities" ||
+      TaskType?.Title === "Task" ||
+      TaskType?.Title === "Workstream")
+  ) {
+    taskIds += TaskID != undefined ? `-${TaskID}` : `-T${Item.Id}`;
   }
-  if(Portfolio==undefined && ParentTask==undefined && TaskType?.Title === 'Task'){
-      taskIds += TaskID!=undefined? `${TaskID}` : `T${Item.Id}`;
+  if (
+    Portfolio == undefined &&
+    ParentTask == undefined &&
+    TaskType?.Title === "Task"
+  ) {
+    taskIds += TaskID != undefined ? `${TaskID}` : `T${Item.Id}`;
   }
   // if (TaskID) {
   //     taskIds += taskIds.length > 0 ? `-${TaskID}` : `${TaskID}`;

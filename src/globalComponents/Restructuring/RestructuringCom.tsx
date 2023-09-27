@@ -21,6 +21,7 @@ const RestructuringCom = (props: any, ref: any) => {
   const [restructuredItemarray, setRestructuredItemarray]: any = React.useState([]);
   const [trueTopCompo, setTrueTopCompo]: any = React.useState(false);
   const [checkItemLength, setCheckItemLength]: any = React.useState(false);
+  const [query4TopIcon, setQuery4TopIcon]:any = React.useState('');
 
 
 
@@ -50,7 +51,10 @@ const RestructuringCom = (props: any, ref: any) => {
           if (matchingTask && portfolioTypeCheck != '') {
             obj.PortfolioTypeCheck = matchingTask?.PortfolioType?.Title;
           }else{
-            if(portfolioTypeCheck != '' && obj?.Title == "Others"){
+            if(portfolioTypeCheck != '' && obj?.Item_x0020_Type !== "Task"){
+              obj.PortfolioTypeCheck = obj?.PortfolioType?.Title;
+            }
+            else if(portfolioTypeCheck != '' && obj?.Title == "Others"){
               obj.PortfolioTypeCheck = portfolioTypeCheck;
             }else{
               obj.PortfolioTypeCheck = ''
@@ -63,7 +67,10 @@ const RestructuringCom = (props: any, ref: any) => {
               if (matchingTask && portfolioTypeCheck != '') {
                 sub.PortfolioTypeCheck = matchingTask?.PortfolioType?.Title;
               }else{
-                if(portfolioTypeCheck != '' && obj?.Title == "Others"){
+                if(portfolioTypeCheck != '' && sub?.Item_x0020_Type !== "Task"){
+                  sub.PortfolioTypeCheck = sub?.PortfolioType?.Title;
+                }
+                else if(portfolioTypeCheck != '' && sub?.Title == "Others"){
                   sub.PortfolioTypeCheck = portfolioTypeCheck;
                 }else{
                   sub.PortfolioTypeCheck = ''
@@ -76,7 +83,10 @@ const RestructuringCom = (props: any, ref: any) => {
                   if (matchingTask && portfolioTypeCheck != '') {
                     feature.PortfolioTypeCheck = matchingTask?.PortfolioType?.Title;
                   }else{
-                    if(portfolioTypeCheck != '' && obj?.Title == "Others"){
+                    if(portfolioTypeCheck != '' && feature?.Item_x0020_Type !== "Task"){
+                      feature.PortfolioTypeCheck = feature?.PortfolioType?.Title;
+                    }
+                    else if(portfolioTypeCheck != '' && feature?.Title == "Others"){
                       feature.PortfolioTypeCheck = portfolioTypeCheck;
                     }else{
                       feature.PortfolioTypeCheck = ''
@@ -89,7 +99,10 @@ const RestructuringCom = (props: any, ref: any) => {
                   if (matchingTask && portfolioTypeCheck != '') {
                     activity.PortfolioTypeCheck = matchingTask?.PortfolioType?.Title;
                   }else{
-                    if(portfolioTypeCheck != '' && obj?.Title == "Others"){
+                    if(portfolioTypeCheck != '' && activity?.Item_x0020_Type !== "Task"){
+                      activity.PortfolioTypeCheck = activity?.PortfolioType?.Title;
+                    }
+                    else if(portfolioTypeCheck != '' && activity?.Title == "Others"){
                       activity.PortfolioTypeCheck = portfolioTypeCheck;
                     }else{
                       activity.PortfolioTypeCheck = ''
@@ -102,7 +115,10 @@ const RestructuringCom = (props: any, ref: any) => {
                       if (matchingTask && portfolioTypeCheck != '') {
                         wrkstrm.PortfolioTypeCheck = matchingTask?.PortfolioType?.Title;
                       }else{
-                        if(portfolioTypeCheck != '' && obj?.Title == "Others"){
+                        if(portfolioTypeCheck != '' && wrkstrm?.Item_x0020_Type !== "Task"){
+                          wrkstrm.PortfolioTypeCheck = wrkstrm?.PortfolioType?.Title;
+                        }
+                        else if(portfolioTypeCheck != '' && wrkstrm?.Title == "Others"){
                           wrkstrm.PortfolioTypeCheck = portfolioTypeCheck;
                         }else{
                           wrkstrm.PortfolioTypeCheck = ''
@@ -814,6 +830,9 @@ const RestructuringCom = (props: any, ref: any) => {
         } else if (items?.Item_x0020_Type === "SubComponent") {
           let checkFeatureCondition: boolean = true;
           topCompo = true;
+          if(props.queryItems.Item_x0020_Type === 'Component'){
+            topCompo = false;
+          }
           if (items?.subRows?.length > 0 && items?.subRows != undefined) {
             items?.subRows?.map((newItems: any) => {
               if (newItems?.Item_x0020_Type === "Feature") {
@@ -962,6 +981,9 @@ const RestructuringCom = (props: any, ref: any) => {
           }
         } else if (items?.Item_x0020_Type === "Feature") {
           topCompo = true;
+          if(props.queryItems.Item_x0020_Type === 'SubComponent'){
+            topCompo = false;
+          } 
           array?.map((obj: any) => {
             let newChildarray: any = [];
             let newarrays: any = [];
@@ -978,7 +1000,7 @@ const RestructuringCom = (props: any, ref: any) => {
                 setRestructuredItemarray(newarrays);
                 setCheckSubChilds(obj);
                 setRestructureChecked(newChildarray);
-                ArrayTest.push(newObj)
+                ArrayTest.push(newObj);
                 obj.isRestructureActive = false;
               }
               if (obj?.subRows?.length > 0 && obj?.subRows != undefined) {
@@ -1331,7 +1353,10 @@ const RestructuringCom = (props: any, ref: any) => {
             }
           })
         } else if (items?.Item_x0020_Type === "Task" && (items.TaskType?.Id === 3)) {
-          let newChildarray: any = [];
+          if(props.queryItems.Item_x0020_Type === 'Feature'){
+            topCompo = true;
+          } 
+            let newChildarray: any = [];
           let newarrays: any = [];
           array?.map((obj: any) => {
             let newObj: any;
@@ -1542,6 +1567,9 @@ const RestructuringCom = (props: any, ref: any) => {
             }
           })
         } else if (items?.Item_x0020_Type === "Task" && items.TaskType?.Id === 2) {
+          if(props.queryItems.TaskType.Title === 'Activity' && props.queryItems.Item_x0020_Type === 'Feature'){
+            topCompo = true;
+          } 
           let newChildarray: any = [];
           let newarrays: any = [];
           array?.map((obj: any) => {
@@ -2133,6 +2161,14 @@ const RestructuringCom = (props: any, ref: any) => {
   };
 
   const trueTopIcon = (items: any) => {
+    if(props.queryItems != undefined && props.queryItems != null){
+          props.queryItems.Item_x0020_Type == "Component" ? setQuery4TopIcon('SubComponent') : 
+          (props.queryItems.Item_x0020_Type == "SubComponent" ? setQuery4TopIcon('Feature') : 
+          (props.queryItems.Item_x0020_Type == "Feature" ? setQuery4TopIcon('Activity') : 
+          (props.queryItems.Item_x0020_Type == "Activity" ? setQuery4TopIcon('Workstream') : setQuery4TopIcon('Component'))))
+    }else{
+      setQuery4TopIcon('Component')
+    }
     setTrueTopCompo(items);
     setResturuningOpen(false);
   }
@@ -2353,6 +2389,37 @@ const RestructuringCom = (props: any, ref: any) => {
         TaskLevel = 1;
       }
 
+       let Tasklevel:any;
+       let TaskID:any;
+      if(RestructureChecked[0]?.TaskType?.Title === "Activity"){
+        ParentTask_Id = null;
+        let web = new Web(restructureItem[0]?.siteUrl);
+        await web.lists
+           .getById(restructureItem[0]?.listId)
+           .items
+           .select("Id,Title,TaskType/Id,TaskType/Title,TaskLevel")
+           .expand('TaskType')
+           .orderBy("Id", false)
+           .filter("TaskType/Title eq 'Activities'")
+           .top(1)
+           .get().then((componentDetails:any)=>{
+             if(componentDetails.length == 0){
+               var LatestId:any =  1;
+               Tasklevel = LatestId
+               TaskID =  'A' + LatestId
+             }
+             else{
+               var LatestId = componentDetails[0].TaskLevel + 1;
+               Tasklevel = LatestId
+               TaskID =  'A' + LatestId
+             }
+           }).catch((err:any)=>{
+            console.log(err);
+           })
+    
+           TaskID = props.queryItems.PortfolioStructureID + '-' + TaskID
+        }
+
       let web = new Web(props.contextValue.siteUrl);
       var postData: any = {
         ParentTaskId: ParentTask_Id,
@@ -2361,7 +2428,7 @@ const RestructuringCom = (props: any, ref: any) => {
         TaskTypeId: TaskTypeId,
         TaskID: TaskTypeId == 2 ? TaskId + '-' + 'T' + RestructureChecked[0]?.Id : 
         (TaskTypeId == 1 ? TaskId + '-' + 'A' + TaskLevel : 
-        (TaskTypeId == 3 && newItemBackUp?.Item_x0020_Type == 'Task' ? TaskId + '-' + 'W' + TaskLevel : TaskId + '-' + 'A' + TaskLevel))
+        (TaskTypeId == 3 && newItemBackUp?.Item_x0020_Type == 'Task' ? TaskId + '-' + 'W' + TaskLevel : TaskId + '-' + TaskID))
       };
 
       await web.lists
@@ -2383,7 +2450,7 @@ const RestructuringCom = (props: any, ref: any) => {
               items.Portfolio = { Id: Portfolio, ItemType: RestructureChecked[0]?.TaskType?.Title == undefined ? RestructureChecked[0]?.Item_x0020_Type : RestructureChecked[0]?.TaskType?.Title, Title: restructureItem[0].Title },
               items.TaskLevel = TaskLevel,
               items.TaskType = { Id: RestructureChecked[0]?.TaskType?.Id, Level: RestructureChecked[0]?.TaskType?.Level, Title: RestructureChecked[0]?.TaskType?.Title },
-              items.TaskID = RestructureChecked[0]?.TaskType?.Id == 2 ? TaskId + '-' + 'T' + RestructureChecked[0]?.Id : (RestructureChecked[0]?.TaskType?.Id == 1 ? TaskId + '-' + 'A' + TaskLevel : (RestructureChecked[0]?.TaskType?.Id == 3 && newItemBackUp?.Item_x0020_Type == 'Task' ? TaskId + '-' + 'W' + TaskLevel : TaskId + '-' + 'A' + TaskLevel))
+              items.TaskID = RestructureChecked[0]?.TaskType?.Id == 2 ? TaskId + '-' + 'T' + RestructureChecked[0]?.Id : (RestructureChecked[0]?.TaskType?.Id == 1 ? TaskId + '-' + TaskID : (RestructureChecked[0]?.TaskType?.Id == 3 && newItemBackUp?.Item_x0020_Type == 'Task' ? TaskId + '-' + 'W' + TaskLevel : TaskId + '-' + TaskID))
           })
 
           array?.map((obj: any, index: any) => {
@@ -2638,42 +2705,38 @@ const RestructuringCom = (props: any, ref: any) => {
 
 
   const makeTopComp = async () => {
-    let array: any = [...allData];
-    let ParentTask: any = null;
-    let PortfolioStructureID = restructureItem[0]?.PortfolioStructureID;
-    // let StructureID :any = restructureItem[0]?.StructureID;
-    let newStructureID: any;
+
+    
+
+if(restructureItem != undefined && restructureItem != undefined && restructureItem[0].Item_x0020_Type != 'Task'){
+  let array: any = [...allData];
+    let ParentTask: any = props.queryItems.Parent;
+    let PortfolioStructureIDs = props.queryItems.PortfolioStructureID;
     let PortfolioLevel: number = 0;
-    let SiteIconTitle: any = 'C';
-    let Item_x0020_Type: any = 'Component';
-
-
-
-    let stringPart = PortfolioStructureID.charAt(0);
-    let numericPart = PortfolioStructureID.slice(1);
-    numericPart = numericPart + 1;
-    newStructureID = stringPart + numericPart;
+    let Item_x0020_Type: any = query4TopIcon;
+    let SiteIconTitle: any = query4TopIcon[0] ;
+ 
+  if(props.queryItems === undefined && props.queryItems == null){
+    ParentTask = null;
+    PortfolioStructureIDs = 'C';
+   }
 
     if (array != undefined && array?.length > 0) {
-      array?.map((sub: any) => {
-        SiteIconTitle = sub?.SiteIconTitle;
-        if (PortfolioLevel <= sub?.PortfolioLevel) {
-          PortfolioLevel = sub.PortfolioLevel;
+      array?.map((items: any) => {
+        if (PortfolioLevel <= items?.PortfolioLevel){
+          PortfolioLevel = items.PortfolioLevel;
         }
       })
-    } else {
-      PortfolioLevel = 1;
     }
 
     PortfolioLevel = PortfolioLevel + 1;
-    PortfolioStructureID = stringPart + PortfolioLevel
 
     let web = new Web(props.contextValue.siteUrl);
     var postData: any = {
-      ParentId: ParentTask,
+      ParentId: ParentTask.Id,
       PortfolioLevel: PortfolioLevel,
       Item_x0020_Type: Item_x0020_Type,
-      PortfolioStructureID: PortfolioStructureID + '-' + SiteIconTitle + PortfolioLevel,
+      PortfolioStructureID: PortfolioStructureIDs + '-' + SiteIconTitle + PortfolioLevel,
     };
     await web.lists
       .getById(props.contextValue.MasterTaskListID)
@@ -2690,12 +2753,12 @@ const RestructuringCom = (props: any, ref: any) => {
         })
 
         latestCheckedList?.map((items: any) => {
-          items.Parent = { Id: ParentTask },
+            items.Parent = { Id: ParentTask.Id },
             items.PortfolioLevel = PortfolioLevel,
             items.Item_x0020_Type = Item_x0020_Type,
             items.SiteIconTitle = SiteIconTitle,
-            items.PortfolioStructureID = PortfolioStructureID + '-' + SiteIconTitle + PortfolioLevel,
-            items.TaskID = newStructureID
+            items.PortfolioStructureID = PortfolioStructureIDs + '-' + SiteIconTitle + PortfolioLevel,
+            items.TaskID = PortfolioStructureIDs + '-' + SiteIconTitle + PortfolioLevel
         })
 
         array?.map((obj: any, index: any) => {
@@ -2785,11 +2848,89 @@ const RestructuringCom = (props: any, ref: any) => {
 
         })
         setResturuningOpen(false);
+        setTrueTopCompo(false);
         restructureCallBack(array, false);
       })
+}else{
+  let array: any = [...allData];
+  let ParentTask: any = props.queryItems.Parent;
+  let PortfolioLevel: number = 0;
+  let TaskType: any = query4TopIcon;
+  let SiteIconTitle: any = query4TopIcon[0] ;
+  let Tasklevel:any;
+  let TaskID:any;
 
 
+  
+  if(query4TopIcon == 'Workstream'){
+    TaskType = 3
+  }else if(query4TopIcon == 'Task'){
+   TaskType = 2
   }
+          
+
+  if (array != undefined && array?.length > 0) {
+ array?.map((items: any) => {
+   if (PortfolioLevel <= items?.PortfolioLevel){
+     PortfolioLevel = items.PortfolioLevel;
+   }
+ })
+}
+
+PortfolioLevel = PortfolioLevel + 1;
+
+TaskID = props?.queryItems?.TaskID + '-' + TaskType + PortfolioLevel;
+
+if(props?.queryItems?.Item_x0020_Type === "Feature"){
+    ParentTask = null;
+    let web = new Web(restructureItem[0]?.siteUrl);
+    await web.lists
+       .getById(restructureItem[0]?.listId)
+       .items
+       .select("Id,Title,TaskType/Id,TaskType/Title,TaskLevel")
+       .expand('TaskType')
+       .orderBy("Id", false)
+       .filter("TaskType/Title eq 'Activities'")
+       .top(1)
+       .get().then((componentDetails:any)=>{
+         if(componentDetails.length == 0){
+           var LatestId:any =  1;
+           Tasklevel = LatestId
+           TaskID =  'A' + LatestId
+         }
+         else{
+           var LatestId = componentDetails[0].TaskLevel + 1;
+           Tasklevel = LatestId
+           TaskID =  'A' + LatestId
+         }
+       }).catch((err:any)=>{
+        console.log(err);
+       })
+
+       TaskID = props.queryItems.PortfolioStructureID + '-' + TaskID
+    }
+    
+
+
+
+    let web = new Web(restructureItem[0]?.siteUrl);
+    var postData: any = {
+      ParentId: ParentTask.Id,
+      PortfolioLevel: PortfolioLevel,
+      TaskType:TaskType,
+      TaskID: TaskID
+    };
+     await web.lists
+    .getById(restructureItem[0]?.listId)
+    .items.getById(RestructureChecked[0]?.Id)
+    .update(postData).then((items:any)=>{
+       
+    }).catch((err:any)=>{
+      console.log(err);
+    })
+    
+}
+}
 
 
   const setRestructure = (item: any, title: any) => {
@@ -3091,7 +3232,7 @@ const RestructuringCom = (props: any, ref: any) => {
               onDismiss={() => setTrueTopCompo(false)}
             >
               <div>
-                Selected Item will Restructure Into Component
+                Selected Item will Restructure Into {query4TopIcon}
                 <footer className="mt-2 text-end">
                   <button className="me-2 btn border-primary" onClick={() => setTrueTopCompo(false)}>Cancel</button>
                   <button className="me-2 btn btn-primary" onClick={makeTopComp} >Save</button>
