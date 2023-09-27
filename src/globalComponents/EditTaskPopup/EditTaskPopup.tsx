@@ -2,7 +2,8 @@ import * as React from "react";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import * as $ from 'jquery';
 import * as Moment from 'moment';
-import { Web } from "sp-pnp-js";
+import { Web, sp } from "sp-pnp-js";
+import * as pnp from 'sp-pnp-js';
 import Picker from "./SmartMetaDataPicker";
 import Example from "./FroalaCommnetBoxes";
 import * as globalCommon from "../globalCommon";
@@ -49,6 +50,7 @@ import { useId } from '@fluentui/react-hooks';
 import context from "react-bootstrap/esm/AccordionContext";
 
 
+
 var AllMetaData: any = []
 var taskUsers: any = []
 var IsShowFullViewImage = false;
@@ -88,6 +90,7 @@ var AddImageDescriptionsIndex: any;
 var LinkedPortfolioDataBackup: any = [];
 var userSendAttentionEmails: any = [];
 var TempSmartInformationIds: any = [];
+let StatusOptionsBackupArray: any = [];
 
 const EditTaskPopup = (Items: any) => {
     const Context = Items.context;
@@ -149,6 +152,7 @@ const EditTaskPopup = (Items: any) => {
     const [SiteTypes, setSiteTypes] = useState([]);
     const [categorySearchKey, setCategorySearchKey] = useState('');
     const [ServicesTaskCheck, setServicesTaskCheck] = useState(false);
+    const [EventTaskCheck, setEventTaskCheck] = useState(false);
     const [ComponentTaskCheck, setComponentTaskCheck] = useState(false);
     const [AllProjectData, SetAllProjectData] = useState([]);
     const [selectedProject, setSelectedProject] = useState([]);
@@ -185,6 +189,7 @@ const EditTaskPopup = (Items: any) => {
     const [SiteCompositionShow, setSiteCompositionShow] = useState(false);
     const [IsSendAttentionMsgStatus, setIsSendAttentionMsgStatus] = useState(false);
     const [SendCategoryName, setSendCategoryName] = useState('');
+    let [StatusOptions, setStatusOptions] = useState([]);
     const hostStyles: Partial<ITooltipHostStyles> = { root: { display: 'inline-block' } };
     const buttonId = useId(`callout-button`);
     const calloutProps = { gapSpace: 0 };
@@ -204,6 +209,7 @@ const EditTaskPopup = (Items: any) => {
         { value: 99, status: "99% Completed", taskStatusComment: "Completed" },
         { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
     ]
+
     let ItemRankArray = [
         { rankTitle: 'Select Item Rank', rank: null },
         { rankTitle: '(8) Top Highlights', rank: 8 },
@@ -252,6 +258,7 @@ const EditTaskPopup = (Items: any) => {
     }
     useEffect(() => {
         if (FeedBackCount == 0) {
+
             loadTaskUsers();
             GetExtraLookupColumnData();
             GetMasterData();
@@ -259,6 +266,7 @@ const EditTaskPopup = (Items: any) => {
             AddImageDescriptionsIndex = undefined;
         }
     }, [FeedBackCount])
+
 
 
     const SmartMetaDataListInformations = async () => {
@@ -626,9 +634,6 @@ const EditTaskPopup = (Items: any) => {
                         if (TempApproverHistory != undefined && TempApproverHistory.length > 0) {
                             setApproverHistoryData(TempApproverHistory);
                         }
-
-
-
                     }
                     if (extraLookupColumnData[0]?.SmartInformation?.length > 0) {
                         extraLookupColumnData[0]?.SmartInformation?.map((smartInfo: any) => {
@@ -693,6 +698,34 @@ const EditTaskPopup = (Items: any) => {
             }
         } catch (error) {
             console.log("Error:", error.message);
+        }
+
+
+    }
+
+    const getLookUpColumnListId = async (siteUrl: any, ParentListId: any, lookupColumnName: any, ComponentType: any, usedFor: any) => {
+        let LookUpListID: any;
+        const web = new Web(siteUrl);
+        try {
+            await Promise.all([
+                await web.lists.getById(ParentListId).fields.get().then((listInfo: any) => {
+                    const lookupColumn = listInfo.find((field: any) => field.InternalName === lookupColumnName);
+                    if (lookupColumn) {
+                        LookUpListID = lookupColumn?.LookupList?.replace(/[{}]/g, '');
+                        if (LookUpListID?.length > 0) {
+                            GetTaskStatusOptionData(LookUpListID, ComponentType, usedFor);
+                        }
+                    } else {
+                        console.log("Lookup column not found in the list");
+                    }
+                }
+                ).catch((error: any) => {
+                    console.log("Error: " + error);
+                })
+            ])
+
+        } catch (error) {
+            console.log("error :", error.message)
         }
     }
 
@@ -770,6 +803,10 @@ const EditTaskPopup = (Items: any) => {
                     } else {
                         setDesignStatus(false);
                     }
+                }
+                if (item.Portfolio != undefined && item.Portfolio?.Title != undefined) {
+                    let PortfolioId: any = item.Portfolio.Id;
+                    GetPortfolioSiteComposition(PortfolioId, item);
                 }
                 if (item.ClientTime != null && item.ClientTime != undefined) {
                     let tempData: any = [];
@@ -867,33 +904,7 @@ const EditTaskPopup = (Items: any) => {
 
                 }
 
-                if (item.PercentComplete != undefined) {
-                    statusValue = item.PercentComplete * 100;
-                    item.PercentComplete = statusValue;
-                    if (statusValue < 70 && statusValue > 10 || statusValue < 80 && statusValue > 70) {
-                        setTaskStatus("In Progress");
-                        setPercentCompleteStatus(`${Number(statusValue).toFixed(0)}% In Progress`);
-                        setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: `${statusValue}` })
 
-                    } else {
-                        StatusArray?.map((item: any) => {
-                            if (statusValue == item.value) {
-                                setPercentCompleteStatus(item.status);
-                                setTaskStatus(item.taskStatusComment);
-                            }
-                        })
-                    }
-                    if (statusValue == 0) {
-                        setTaskStatus('Not Started');
-                        setPercentCompleteStatus('Not Started');
-                        setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '0' })
-                    }
-                    if (statusValue <= 2 && ApprovalStatusGlobal) {
-                        ChangeTaskUserStatus = false;
-                    } else {
-                        ChangeTaskUserStatus = true;
-                    }
-                }
                 if (item.Body != undefined) {
                     item.Body = item.Body.replace(/(<([^>]+)>)/ig, '');
                 }
@@ -913,7 +924,7 @@ const EditTaskPopup = (Items: any) => {
                         }
                     }
                 }
-                item.TaskId = globalCommon.getTaskId(item);
+                item.TaskId = globalCommon.GetTaskId(item);
                 item.siteUrl = siteUrls;
                 item.siteType = Items.Items.siteType;
                 let AssignedUsers: any = [];
@@ -921,6 +932,37 @@ const EditTaskPopup = (Items: any) => {
                 // let ApproverDataTemp: any = [];
                 let TeamMemberTemp: any = [];
                 let TaskCreatorData: any = [];
+
+                if (StatusOptions?.length > 0) {
+                    if (item.PercentComplete != undefined) {
+                        statusValue = item.PercentComplete * 100;
+                        item.PercentComplete = statusValue;
+                        if (statusValue < 70 && statusValue > 10 || statusValue < 80 && statusValue > 70) {
+                            setTaskStatus("In Progress");
+                            setPercentCompleteStatus(`${Number(statusValue).toFixed(0)}% In Progress`);
+                            setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: `${statusValue}` })
+                        } else {
+                            StatusOptions?.map((item: any) => {
+                                if (statusValue == item.value) {
+                                    setPercentCompleteStatus(item.status);
+                                    setTaskStatus(item.taskStatusComment);
+                                }
+                            })
+                        }
+                        if (statusValue == 0) {
+                            setTaskStatus('Not Started');
+                            setPercentCompleteStatus('Not Started');
+                            setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '0' })
+                        }
+                        if (statusValue <= 2 && ApprovalStatusGlobal) {
+                            ChangeTaskUserStatus = false;
+                        } else {
+                            ChangeTaskUserStatus = true;
+                        }
+                    }
+                }
+
+
                 if (item.Author != undefined && item.Author != null) {
                     taskUsers.map((userData: any) => {
                         if (item.Author.Id == userData?.AssingedToUserId) {
@@ -962,7 +1004,7 @@ const EditTaskPopup = (Items: any) => {
                             })
                             setApproverData(tempArray);
                             if ((statusValue <= 1) && ApprovalStatusGlobal) {
-                                StatusArray?.map((item: any) => {
+                                StatusOptions?.map((item: any) => {
                                     if (1 == item.value) {
                                         setPercentCompleteStatus(item.status);
                                         setTaskStatus(item.taskStatusComment);
@@ -1061,9 +1103,9 @@ const EditTaskPopup = (Items: any) => {
                         item.CommentBoxText = "<p></p>"
                     }
                     if (Count >= 1) {
-                        setSendEmailStatus(true)
+                        setSendEmailStatus(true);
                     } else {
-                        setSendEmailStatus(false)
+                        setSendEmailStatus(false);
                     }
                     item.FeedBackArray = feedbackArray;
                     FeedBackBackupArray = JSON.stringify(feedbackArray);
@@ -1111,14 +1153,10 @@ const EditTaskPopup = (Items: any) => {
                     setTotalEstimatedTime(tempTimeData);
                 }
                 item.ClientCategory = selectedClientCategoryData;
-                if (item.Portfolio != undefined && item.Portfolio?.Title != undefined) {
-                    let PortfolioId: any = item.Portfolio.Id;
-                    GetPortfolioSiteComposition(PortfolioId, item)
-                }
                 setEditData(item)
                 EditDataBackup = item;
                 setPriorityStatus(item.Priority)
-                console.log("Task All Details form backend  ==================", item)
+                console.log("Task All Details from backend  ==================", item)
             })
         } catch (error) {
             console.log("Error :", error.message);
@@ -1246,10 +1284,18 @@ const EditTaskPopup = (Items: any) => {
                 }
                 if (Type == "Single") {
                     setTaggedPortfolioData(DataItem);
+                    let ComponentType: any = DataItem[0].PortfolioType.Title;
+                    getLookUpColumnListId(siteUrls, AllListIdData?.MasterTaskListID, 'PortfolioType', ComponentType, "Updated-phase");
+                    // setTimeout(() => {
+                    //     if (PortfolioTypeListId?.length > 0) {
+                    //         GetTaskStatusOptionData(PortfolioTypeListId, ComponentType);
+                    //     }
+                    // }, 2000);
+
                 }
                 setOpenTeamPortfolioPopup(false);
                 setopenLinkedPortfolioPopup(false);
-                console.log("Popup component smartComponent ", DataItem)
+                console.log("Popup component smartComponent ", DataItem);
             }
         }
     }, [])
@@ -1383,7 +1429,6 @@ const EditTaskPopup = (Items: any) => {
 
     const removeCategoryItem = (TypeCategory: any, TypeId: any) => {
         let tempString: any;
-
         let tempArray2: any = [];
         tempShareWebTypeData = [];
         ShareWebTypeData?.map((dataType: any) => {
@@ -1464,7 +1509,7 @@ const EditTaskPopup = (Items: any) => {
                 if (type == "Approval") {
                     setApprovalStatus(true);
                     setApproverData(TaskApproverBackupArray);
-                    StatusArray?.map((item: any) => {
+                    StatusOptions?.map((item: any) => {
                         if (item.value == 1) {
                             setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '1' })
                             setPercentCompleteStatus(item.status);
@@ -1483,7 +1528,6 @@ const EditTaskPopup = (Items: any) => {
     }
 
     // $$$$$$$$$$$$$$$$$$$$$$$$$ End Smart Category Section Functions $$$$$$$$$$$$$$$$
-
 
     // **************************  This is for Loading All Task Users From Back End Call Functions And validations ****************************
     var count = 0;
@@ -1556,53 +1600,103 @@ const EditTaskPopup = (Items: any) => {
         }
         setAllEmployeeData(Groups);
     }
-
-
     // ************************** this is used for getting Site Composition For Selected Portfolio which in Taaged into Task ***********************
     const GetPortfolioSiteComposition = async (ProtfolioId: any, item: any) => {
-        let DataFromCall: any;
-        let web = new Web(siteUrls);
+        const web = new Web(siteUrls);
+        let DataFromCall: any[] = [];
         try {
-            DataFromCall = await web.lists
-                .getById(AllListIdData?.MasterTaskListID).items.select("Sitestagging,SiteCompositionSettings,Title,Id,PortfolioType/Title").expand('PortfolioType').top(5000).filter(`Id eq ${ProtfolioId}`).get();
-            if (DataFromCall != undefined) {
-                let TempSiteCompositionArray: any = [];
-                if (DataFromCall[0]?.PortfolioType?.Title != undefined) {
-                    if (DataFromCall[0].PortfolioType.Title === 'Component') {
-                        setComponentTaskCheck(true);
-                    }
-                    if (DataFromCall[0].PortfolioType.Title === 'Service') {
-                        setServicesTaskCheck(true);
-                    }
-                }
-                setTaggedPortfolioData(DataFromCall);
-                if (DataFromCall[0].Sitestagging != undefined) {
-                    let tempSiteComposition: any = JSON.parse(DataFromCall[0].Sitestagging != undefined ? DataFromCall[0].Sitestagging : [{}])
-                    if (tempSiteComposition != undefined && tempSiteComposition.length > 0) {
-                        tempSiteComposition.map((SiteData: any) => {
-                            let TempObject: any = {
-                                SiteName: SiteData.Title,
-                                ClienTimeDescription: SiteData.ClienTimeDescription,
-                                localSiteComposition: true
+            DataFromCall = await Promise.all([
+                web.lists.getById(AllListIdData?.MasterTaskListID)
+                    .items
+                    .filter(`Id eq ${ProtfolioId}`)
+                    .select("Sitestagging,SiteCompositionSettings,Title,Id,PortfolioType/Title")
+                    .expand('PortfolioType')
+                    .top(5000)
+                    .get().then((res) => {
+                        if (res?.length > 0) {
+                            let TempSiteCompositionArray: any = [];
+                            if (res[0]?.PortfolioType?.Title != undefined) {
+                                if (res[0].PortfolioType?.Title === 'Component') {
+                                    setComponentTaskCheck(true);
+                                }
+                                if (res[0].PortfolioType?.Title === 'Service') {
+                                    setServicesTaskCheck(true);
+                                }
+                                if (res[0].PortfolioType?.Title === 'Event') {
+                                    setEventTaskCheck(true);
+                                }
+                                getLookUpColumnListId(siteUrls, AllListIdData?.MasterTaskListID, 'PortfolioType', res[0]?.PortfolioType.Title, "Initial-Phase")
+
                             }
-                            TempSiteCompositionArray.push(TempObject);
-                        })
-                        if (TempSiteCompositionArray != undefined && TempSiteCompositionArray.length > 0) {
-                            setSitesTaggingData(TempSiteCompositionArray);
+                            setTaggedPortfolioData(res);
+                            if (res[0]?.Sitestagging != null && res[0]?.Sitestagging != undefined) {
+                                let tempSiteComposition: any = JSON.parse(res[0].Sitestagging != undefined ? res[0].Sitestagging : [{}])
+                                if (tempSiteComposition != undefined && tempSiteComposition.length > 0) {
+                                    tempSiteComposition.map((SiteData: any) => {
+                                        let TempObject: any = {
+                                            SiteName: SiteData.Title,
+                                            ClienTimeDescription: SiteData.ClienTimeDescription,
+                                            localSiteComposition: true
+                                        }
+                                        TempSiteCompositionArray.push(TempObject);
+                                    })
+                                    if (TempSiteCompositionArray != undefined && TempSiteCompositionArray.length > 0) {
+                                        setSitesTaggingData(TempSiteCompositionArray);
+                                    }
+                                }
+                            }
                         }
-                    }
-                }
-            }
+                    })
+            ]);
+
         } catch (error) {
-            console.log("Error :", error)
+            console.error("Error:", error);
         }
     }
+
+    //  ################# this is used for getting Portfolio type informations #################
+
+    const GetTaskStatusOptionData = async (PortfolioTypeListId: any, ComponentType: any, usedFor: any) => {
+        let PortfolioTypeData: any = [];
+        const web = new Web(siteUrls);
+        try {
+            PortfolioTypeData = await Promise.all([
+                web.lists.getById(PortfolioTypeListId)
+                    .items.
+                    select("Title,ID,Color,StatusOptions")
+                    .getAll()
+                    .then((res) => {
+                        if (res?.length > 0) {
+                            res?.map((PortfolioItem: any) => {
+                                if (PortfolioItem.Title == ComponentType) {
+                                    if (PortfolioItem?.StatusOptions?.length > 0) {
+                                        let StatusOptionString = JSON.parse(PortfolioItem.StatusOptions);
+                                        StatusOptions = StatusOptionString
+                                        setStatusOptions([...StatusOptions]);
+                                        StatusOptionsBackupArray = StatusOptionString;
+                                        if (usedFor == "Initial-Phase" && FeedBackCount == 0) {
+                                            GetSelectedTaskDetails();
+                                            FeedBackCount++;
+                                        }
+                                    }
+                                }
+                            })
+                        }
+                    })
+            ]);
+        } catch (error) {
+            console.error("Error:", error);
+        }
+
+    }
+
+
 
     // ************************** this is used for getting All Projects Data From Back End ***********************
 
     const GetMasterData = async () => {
         try {
-            let web = new Web(siteUrls);
+            const web = new Web(siteUrls);
             let AllProjects: any = [];
             AllProjects = await web.lists.getById(AllListIdData?.MasterTaskListID)
                 .items
@@ -1631,14 +1725,12 @@ const EditTaskPopup = (Items: any) => {
             })
             SetAllProjectData(AllProjects);
             AllProjectBackupArray = AllProjects;
-            console.log("All Project Data ======", AllProjects);
         } catch (error) {
             console.log("Error:", error.message)
         }
     }
 
     //    ************************* This is for status section Functions **************************
-
     //   ###################### This is used for Status Auto Suggesution Function #########################
 
     const StatusAutoSuggestion = (e: any) => {
@@ -1657,7 +1749,7 @@ const EditTaskPopup = (Items: any) => {
                     setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusInput })
                     EditData.IsTodaysTask = false;
                 } else {
-                    StatusArray.map((percentStatus: any, index: number) => {
+                    StatusOptions.map((percentStatus: any, index: number) => {
                         if (percentStatus.value == StatusInput) {
                             setTaskStatus(percentStatus.taskStatusComment);
                             setPercentCompleteStatus(percentStatus.status);
@@ -1666,7 +1758,6 @@ const EditTaskPopup = (Items: any) => {
                     })
                 }
                 if (StatusInput == 80) {
-                    // let tempArray: any = [];
                     if (EditData.TeamMembers != undefined && EditData.TeamMembers?.length > 0) {
                         setWorkingMemberFromTeam(EditData.TeamMembers, "QA", 143);
                     } else {
@@ -1675,7 +1766,7 @@ const EditTaskPopup = (Items: any) => {
                     EditData.IsTodaysTask = false;
                     EditData.workingThisWeek = false;
                     EditData.CompletedDate = undefined;
-                    StatusArray?.map((item: any) => {
+                    StatusOptions?.map((item: any) => {
                         if (StatusInput == item.value) {
                             setPercentCompleteStatus(item.status);
                             setTaskStatus(item.taskStatusComment);
@@ -1685,7 +1776,7 @@ const EditTaskPopup = (Items: any) => {
                 if (StatusInput == 5) {
                     EditData.CompletedDate = undefined;
                     EditData.IsTodaysTask = false;
-                    StatusArray?.map((item: any) => {
+                    StatusOptions?.map((item: any) => {
                         if (StatusInput == item.value) {
                             setPercentCompleteStatus(item.status);
                             setTaskStatus(item.taskStatusComment);
@@ -1698,7 +1789,7 @@ const EditTaskPopup = (Items: any) => {
                         EditData.StartDate = Moment(new Date()).format("MM-DD-YYYY")
                     }
                     EditData.IsTodaysTask = true;
-                    StatusArray?.map((item: any) => {
+                    StatusOptions?.map((item: any) => {
                         if (StatusInput == item.value) {
                             setPercentCompleteStatus(item.status);
                             setTaskStatus(item.taskStatusComment);
@@ -1710,7 +1801,7 @@ const EditTaskPopup = (Items: any) => {
                     setWorkingMember(9);
                     EditData.IsTodaysTask = false;
                     EditData.workingThisWeek = false;
-                    StatusArray?.map((item: any) => {
+                    StatusOptions?.map((item: any) => {
                         if (StatusInput == item.value) {
                             setPercentCompleteStatus(item.status);
                             setTaskStatus(item.taskStatusComment);
@@ -1728,7 +1819,7 @@ const EditTaskPopup = (Items: any) => {
                         setWorkingMember(42);
                     }
                     EditData.CompletedDate = Moment(new Date()).format("MM-DD-YYYY")
-                    StatusArray?.map((item: any) => {
+                    StatusOptions?.map((item: any) => {
                         if (StatusInput == item.value) {
                             setPercentCompleteStatus(item.status);
                             setTaskStatus(item.taskStatusComment);
@@ -1737,7 +1828,7 @@ const EditTaskPopup = (Items: any) => {
                 }
                 if (StatusInput == 2) {
                     setInputFieldDisable(true)
-                    StatusArray.map((percentStatus: any, index: number) => {
+                    StatusOptions.map((percentStatus: any, index: number) => {
                         if (percentStatus.value == StatusInput) {
                             setTaskStatus(percentStatus.taskStatusComment);
                             setPercentCompleteStatus(percentStatus.status);
@@ -1824,7 +1915,7 @@ const EditTaskPopup = (Items: any) => {
                 EditData.IsTodaysTask = false;
                 EditData.workingThisWeek = false;
                 setWorkingMember(9);
-                StatusArray?.map((item: any) => {
+                StatusOptions?.map((item: any) => {
                     if (StatusData.value == item.value) {
                         setPercentCompleteStatus(item.status);
                         setTaskStatus(item.taskStatusComment);
@@ -1842,7 +1933,7 @@ const EditTaskPopup = (Items: any) => {
                     setWorkingMember(42);
                 }
                 EditData.CompletedDate = Moment(new Date()).format("MM-DD-YYYY")
-                StatusArray?.map((item: any) => {
+                StatusOptions?.map((item: any) => {
                     if (StatusData.value == item.value) {
                         setPercentCompleteStatus(item.status);
                         setTaskStatus(item.taskStatusComment);
@@ -1971,9 +2062,9 @@ const EditTaskPopup = (Items: any) => {
                 let web = new Web(siteUrls);
                 await web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id).update(DataJSONUpdate).then(async (res: any) => {
                     let web = new Web(siteUrls);
-                    let smartMetaCall: any;
+                    let TaskDetailsFromCall: any;
                     if (Items.Items.listId != undefined) {
-                        smartMetaCall = await web.lists
+                        TaskDetailsFromCall = await web.lists
                             .getById(Items.Items.listId)
                             .items
                             .select("Id,Title,PriorityRank,workingThisWeek,waitForResponse,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
@@ -1982,7 +2073,7 @@ const EditTaskPopup = (Items: any) => {
                             .expand('AssignedTo,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio')
                             .get();
                     } else {
-                        smartMetaCall = await web.lists
+                        TaskDetailsFromCall = await web.lists
                             .getById(Items.Items.listName)
                             .items
                             .select("Id,Title,PriorityRank,workingThisWeek,waitForResponse,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
@@ -1992,14 +2083,14 @@ const EditTaskPopup = (Items: any) => {
                             .get();
 
                     }
-                    if (smartMetaCall != undefined && smartMetaCall.length > 0) {
-                        smartMetaCall[0].TaskCreatorData = EditData.TaskCreatorData;
-                        smartMetaCall[0].TaskApprovers = EditData.TaskApprovers;
-                        smartMetaCall[0].FeedBack = JSON.parse(smartMetaCall[0].FeedBack)
-                        smartMetaCall[0].siteType = EditData.siteType;
-                        smartMetaCall[0].siteUrl = siteUrls;
+                    if (TaskDetailsFromCall != undefined && TaskDetailsFromCall.length > 0) {
+                        TaskDetailsFromCall[0].TaskCreatorData = EditData.TaskCreatorData;
+                        TaskDetailsFromCall[0].TaskApprovers = EditData.TaskApprovers;
+                        TaskDetailsFromCall[0].FeedBack = JSON.parse(TaskDetailsFromCall[0].FeedBack)
+                        TaskDetailsFromCall[0].siteType = EditData.siteType;
+                        TaskDetailsFromCall[0].siteUrl = siteUrls;
                     }
-                    setLastUpdateTaskData(smartMetaCall[0]);
+                    setLastUpdateTaskData(TaskDetailsFromCall[0]);
                     if (usedFor == "Image-Tab") {
                         GetExtraLookupColumnData();
                     } else {
@@ -2021,7 +2112,7 @@ const EditTaskPopup = (Items: any) => {
                         TempSmartInformationIds = []
                         userSendAttentionEmails = []
                         SiteCompositionPrecentageValue = 0
-                        let CalculateStatusPercentage: any = smartMetaCall[0].PercentComplete ? smartMetaCall[0].PercentComplete * 100 : 0;
+                        let CalculateStatusPercentage: any = TaskDetailsFromCall[0].PercentComplete ? TaskDetailsFromCall[0].PercentComplete * 100 : 0;
                         if (Items.sendApproverMail != undefined) {
                             if (Items.sendApproverMail) {
                                 setSendEmailComponentStatus(true)
@@ -2050,7 +2141,7 @@ const EditTaskPopup = (Items: any) => {
                         ) {
                             if (Items?.pageName == "TaskFooterTable") {
                                 let dataEditor: any = {}
-                                dataEditor.data = smartMetaCall[0]
+                                dataEditor.data = TaskDetailsFromCall[0]
                                 dataEditor.data.editpopup = true;
                                 dataEditor.data.TaskID = EditData.TaskId
                                 dataEditor.data.listId = Items.Items.listId
@@ -2112,7 +2203,7 @@ const EditTaskPopup = (Items: any) => {
                     })
                 }
             }
-            StatusArray?.map((item: any) => {
+            StatusOptions?.map((item: any) => {
                 if (PrecentStatus == item.value) {
                     setPercentCompleteStatus(item.status);
                     setTaskStatus(item.taskStatusComment);
@@ -2423,7 +2514,7 @@ const EditTaskPopup = (Items: any) => {
         var link = "mailTo:"
             + "?cc:"
             + "&subject=" + " [" + Items.Items.siteType + "-Task ] " + EmailData.Title
-            + "&body=" + `${siteUrls}/SitePages/Task-Profile-spfx.aspx?taskId=${EmailData.ID}`+`%26Site%3D${Items.Items.siteType}`;
+            + "&body=" + `${siteUrls}/SitePages/Task-Profile-spfx.aspx?taskId=${EmailData.ID}` + `%26Site%3D${Items.Items.siteType}`;
         window.location.href = link;
     }
 
@@ -2442,7 +2533,6 @@ const EditTaskPopup = (Items: any) => {
             if (Items.Items.listId != undefined) {
                 let web = new Web(siteUrls);
                 await web.lists.getById(Items.Items.listId).items.getById(itemId).recycle();
-
             } else {
                 let web = new Web(siteUrls);
                 await web.lists.getById(Items.Items.listName).items.getById(itemId).recycle();
@@ -2618,7 +2708,7 @@ const EditTaskPopup = (Items: any) => {
     }
 
     const setStatusOnChangeSmartLight = (StatusInput: any) => {
-        StatusArray.map((percentStatus: any, index: number) => {
+        StatusOptions.map((percentStatus: any, index: number) => {
             if (percentStatus.value == StatusInput) {
                 setTaskStatus(percentStatus.taskStatusComment);
                 setPercentCompleteStatus(percentStatus.status);
@@ -2667,7 +2757,7 @@ const EditTaskPopup = (Items: any) => {
                 let date = new Date()
                 let timeStamp = date.getTime();
                 let imageIndex = index + 1
-                fileName = EditData.TaskId + '-Image' + imageIndex + "-" + EditData.Title?.replace(/["/':]/g, '')?.slice(0, 40) + " " + timeStamp + ".jpg";
+                fileName = "T-" + EditData.Id + '-Image' + imageIndex + "-" + EditData.Title?.replace(/["/':]/g, '')?.slice(0, 40) + " " + timeStamp + ".jpg";
                 let currentUserDataObject: any;
                 if (currentUserBackupArray != null && currentUserBackupArray.length > 0) {
                     currentUserDataObject = currentUserBackupArray[0];
@@ -2677,7 +2767,7 @@ const EditTaskPopup = (Items: any) => {
                     UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
                     imageDataUrl: SiteUrl + '/Lists/' + Items.Items.siteType + '/Attachments/' + EditData?.Id + '/' + fileName,
                     ImageUrl: imgItem.data_url,
-                    UserImage: currentUserDataObject != undefined && currentUserDataObject?.Item_x0020_Cover?.Url?.length > 0 ? currentUserDataObject.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                    UserImage: currentUserDataObject != undefined && currentUserDataObject.Item_x0020_Cover?.Url?.length > 0 ? currentUserDataObject.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
                     UserName: currentUserDataObject != undefined && currentUserDataObject.Title?.length > 0 ? currentUserDataObject.Title : Items.context.pageContext._user.displayName,
                     Description: imgItem.Description != undefined ? imgItem.Description : ''
                 };
@@ -2866,20 +2956,18 @@ const EditTaskPopup = (Items: any) => {
 
     const ImageCompareFunction = (imageData: any, index: any) => {
         TaskImages[index].Checked = true;
-        // // if(TaskImages[index].Checked){
-        // //     TaskImages[index].Checked = false;
-        // // }else{
-        // //     TaskImages[index].Checked = true;
-        // // }
-
-        // if(compareImageArray.length >= 1){
-        //     if(compareImageArray[0].Title != imageData.Title){
-        //         compareImageArray.push(imageData)
-        //     }
-        // }else{
-        //     compareImageArray.push(imageData);
-        // }
-        compareImageArray.push(imageData)
+        const isExists: any = () => {
+            let count: any = 0;
+            compareImageArray?.map((ImgItem: any) => {
+                if (ImgItem.ImageName == imageData.ImageName) {
+                    count++;
+                }
+            })
+            return count;
+        }
+        if (!isExists()) {
+            compareImageArray.push(imageData);
+        }
         if (compareImageArray.length == 2) {
             setImageComparePopup(true);
         }
@@ -3376,7 +3464,7 @@ const EditTaskPopup = (Items: any) => {
         setApproverPopupStatus(false);
         setTaskAssignedTo(ApproverData);
         setTaskTeamMembers(ApproverData);
-        StatusArray?.map((item: any) => {
+        StatusOptions?.map((item: any) => {
             if (item.value == 1) {
                 setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '1' })
                 setPercentCompleteStatus(item.status);
@@ -3436,7 +3524,7 @@ const EditTaskPopup = (Items: any) => {
         setTaskAssignedTo([ApproverData]);
         setTaskTeamMembers([ApproverData]);
         TaskApproverBackupArray = [ApproverData];
-        StatusArray?.map((item: any) => {
+        StatusOptions?.map((item: any) => {
             if (item.value == 1) {
                 setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '1' })
                 setPercentCompleteStatus(item.status);
@@ -3593,7 +3681,7 @@ const EditTaskPopup = (Items: any) => {
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
                 <div className="subheading">
                     <span className="siteColor">
-                        {SmartMedaDataUsedPanel ==  "Status" ? `Update Status` : `Select Category`}
+                        {SmartMedaDataUsedPanel == "Status" ? `Update Status` : `Select Category`}
                     </span>
                 </div>
                 <Tooltip ComponentId={SmartMedaDataUsedPanel == "Status" ? "1683" : "1735"} isServiceTask={ServicesTaskCheck} />
@@ -3810,7 +3898,6 @@ const EditTaskPopup = (Items: any) => {
                 <button type="button" className="btn btn-default px-3" onClick={closeProjectManagementPopup}>
                     Cancel
                 </button>
-
             </footer>
         )
     }
@@ -3829,7 +3916,7 @@ const EditTaskPopup = (Items: any) => {
                         <div className="TaskStatus">
                             <div>
                                 {SmartMedaDataUsedPanel === "Status" ? <div>
-                                    {StatusArray?.map((item: any, index: any) => {
+                                    {StatusOptions?.map((item: any, index: any) => {
                                         return (
                                             <li key={index}>
                                                 <div className="form-check ">
@@ -3864,7 +3951,7 @@ const EditTaskPopup = (Items: any) => {
                             </div>
                         </div>
                     </div>
-                   
+
                 </div>
             </Panel>
             {/* ***************** this is Save And Time Sheet panel *********** */}
@@ -4493,7 +4580,7 @@ const EditTaskPopup = (Items: any) => {
                                                     //  disabled={InputFieldDisable}
                                                     disabled readOnly
                                                     className="form-control px-2"
-                                                    defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? Number(EditData.PercentComplete).toFixed(0) : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
+                                                    defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined && Math.floor(EditData.PercentComplete) === EditData.PercentComplete ? Number(EditData.PercentComplete).toFixed(0) : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
                                                     onChange={(e) => StatusAutoSuggestion(e)} />
                                                 <span
                                                     className="input-group-text"
@@ -4593,7 +4680,7 @@ const EditTaskPopup = (Items: any) => {
                                                             defaultValue={EstimatedDescriptionCategory}
                                                             value={EstimatedDescriptionCategory}
                                                             placeholder="Select Category"
-                                                            onChange={(e)=>setEstimatedDescriptionCategory(e.target.value)}
+                                                            onChange={(e) => setEstimatedDescriptionCategory(e.target.value)}
                                                         />
                                                         <span
                                                             className="input-group-text"
