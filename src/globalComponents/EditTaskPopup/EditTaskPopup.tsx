@@ -197,6 +197,7 @@ const EditTaskPopup = (Items: any) => {
         { value: 10, status: "10% working on it", taskStatusComment: "working on it" },
         { value: 70, status: "70% Re-Open", taskStatusComment: "Re-Open" },
         { value: 80, status: "80% In QA Review", taskStatusComment: "In QA Review" },
+        { value: 85, status: "85% Deployment Pending", taskStatusComment: "Deployment Pending" },
         { value: 90, status: "90% Task completed", taskStatusComment: "Task completed" },
         { value: 93, status: "93% For Review", taskStatusComment: "For Review" },
         { value: 96, status: "96% Follow-up later", taskStatusComment: "Follow-up later" },
@@ -2422,7 +2423,7 @@ const EditTaskPopup = (Items: any) => {
         var link = "mailTo:"
             + "?cc:"
             + "&subject=" + " [" + Items.Items.siteType + "-Task ] " + EmailData.Title
-            + "&body=" + `${siteUrls}/SitePages/Task-Profile-spfx.aspx?taskId=${EmailData.ID}` + "&" + `Site=${Items.Items.siteType}`;
+            + "&body=" + `${siteUrls}/SitePages/Task-Profile-spfx.aspx?taskId=${EmailData.ID}`+`%26Site%3D${Items.Items.siteType}`;
         window.location.href = link;
     }
 
@@ -2676,7 +2677,7 @@ const EditTaskPopup = (Items: any) => {
                     UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
                     imageDataUrl: SiteUrl + '/Lists/' + Items.Items.siteType + '/Attachments/' + EditData?.Id + '/' + fileName,
                     ImageUrl: imgItem.data_url,
-                    UserImage: currentUserDataObject != undefined && currentUserDataObject.Title?.length > 0 ? currentUserDataObject.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                    UserImage: currentUserDataObject != undefined && currentUserDataObject?.Item_x0020_Cover?.Url?.length > 0 ? currentUserDataObject.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
                     UserName: currentUserDataObject != undefined && currentUserDataObject.Title?.length > 0 ? currentUserDataObject.Title : Items.context.pageContext._user.displayName,
                     Description: imgItem.Description != undefined ? imgItem.Description : ''
                 };

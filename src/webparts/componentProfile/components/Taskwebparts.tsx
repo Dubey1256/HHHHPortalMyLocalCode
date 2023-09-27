@@ -17,10 +17,9 @@ import { ColumnDef } from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 import Loader from "react-loader";
-import { Bars } from "react-loader-spinner";
+
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
-import SmartFilterSearchGlobal from "../../../globalComponents/SmartFilterGolobalBomponents/SmartFilterGlobalComponents";
 import GlobalCommanTable, {
   IndeterminateCheckbox
 } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
@@ -44,7 +43,7 @@ let renderData: any = [];
 let countAllTasksData: any = [];
 let countAllComposubData: any = [];
 let countsrun = 0;
-function TeamPortlioTable(SelectedProp: any) {
+function PortfolioTable(SelectedProp: any) {
   const childRef = React.useRef<any>();
   if (childRef != null) {
     childRefdata = { ...childRef };
@@ -314,9 +313,12 @@ function TeamPortlioTable(SelectedProp: any) {
             "Author/Title",
             "Project/Id",
             "Project/PortfolioStructureID",
-            "Project/Title"
+            "Project/Title",
+            "AssignedTo/Title",
+            "AssignedTo/Id"
           )
           .expand(
+            "AssignedTo",
             "ParentTask",
             "Portfolio",
             "Author",
@@ -1884,6 +1886,7 @@ function TeamPortlioTable(SelectedProp: any) {
                         AddStructureFeature={
                           SelectedProp?.props?.Item_x0020_Type
                         }
+                        queryItems={SelectedProp?.props}
                         PortfolioFeature={SelectedProp?.props?.Item_x0020_Type}
                         AllMasterTasksData={AllMasterTasksData}
                         callChildFunction={callChildFunction}
@@ -2102,4 +2105,4 @@ function TeamPortlioTable(SelectedProp: any) {
     </div>
   );
 }
-export default TeamPortlioTable;
+export default PortfolioTable;

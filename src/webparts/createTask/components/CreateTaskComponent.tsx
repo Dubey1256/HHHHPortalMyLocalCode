@@ -79,9 +79,8 @@ function CreateTaskComponent(props: any) {
     const [save, setSave] = React.useState({ siteType: '', linkedServices: [], recentClick: undefined, Mileage: '', DueDate: undefined, dueDate: '', taskCategory: '', taskCategoryParent: '', rank: undefined, Time: '', taskName: '', taskUrl: undefined, portfolioType: 'Component', Component: [] })
     React.useEffect(() => {
         ContextValue = props.SelectedProp;
-        LoadTaskUsers();
-        GetComponents();
         GetSmartMetadata();
+        LoadTaskUsers();
     }, [])
     React.useEffect(() => {
 
@@ -373,7 +372,7 @@ function CreateTaskComponent(props: any) {
     const loadRelevantTask = async (PortfolioId: any, UrlTask: any, PageTask: any) => {
         let allData: any = [];
         let query = '';
-        query = "Categories,AssignedTo/Title,AssignedTo/Name,PriorityRank,TaskType/Id,TaskType/Title,AssignedTo/Id,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,AttachmentFiles/FileName,ComponentLink/Url,FileLeafRef,TaskLevel,TaskLevel,Title,Id,PriorityRank,PercentComplete,Company,WebpartId,StartDate,DueDate,Status,Body,WebpartId,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ParentTask/TaskID,ParentTask/Title,ParentTask/Id&$expand=AssignedTo,ParentTask,AttachmentFiles,TaskType,Portfolio,Author,Editor&$orderby=Modified desc"
+        query = "Categories,AssignedTo/Title,AssignedTo/Name,PriorityRank,TaskType/Id,TaskType/Title,AssignedTo/Id,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,AttachmentFiles/FileName,ComponentLink/Url,FileLeafRef,TaskLevel,TaskID,TaskLevel,Title,Id,PriorityRank,PercentComplete,Company,WebpartId,StartDate,DueDate,Status,Body,WebpartId,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ParentTask/TaskID,ParentTask/Title,ParentTask/Id&$expand=AssignedTo,ParentTask,AttachmentFiles,TaskType,Portfolio,Author,Editor&$orderby=Modified desc"
         let setRelTask = relevantTasks;
         const web = new Web(AllListId?.siteUrl);
         const batch = sp.createBatch();
@@ -476,7 +475,7 @@ function CreateTaskComponent(props: any) {
         AllMetadata = MetaData;
         siteConfig = getSmartMetadataItemsByTaxType(AllMetadata, 'Sites')
         siteConfig?.map((site: any) => {
-            if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== 'Health' && site.Title !== 'Gender' && site.Title !== 'SP Online') {
+            if (site?.Title !== undefined && site?.Title !== 'Foundation' && site?.Title !== 'Master Tasks' && site?.Title !== 'DRR' && site?.Title !== 'Health' && site?.Title !== 'Gender' && site?.Title !== 'SP Online') {
                 SitesTypes.push(site);
             }
         })
@@ -494,26 +493,33 @@ function CreateTaskComponent(props: any) {
 
 
         TaskTypes?.map((task: any) => {
-            if (task.ParentID !== undefined && task.ParentID === 0 && task.Title !== 'Phone') {
+            if (task?.ParentID !== undefined && task?.ParentID === 0 && task?.Title !== 'Phone') {
                 Task.push(task);
                 getChilds(task, TaskTypes);
             }
-            if (task.ParentID !== undefined && task.ParentID !== 0 && task.IsVisible) {
+            if (task?.ParentID !== undefined && task?.ParentID !== 0 && task?.IsVisible) {
                 subCategories.push(task);
             }
         })
         Task?.map((taskItem: any) => {
             subCategories?.map((item: any) => {
-                if (taskItem.Id === item.Parent.Id) {
+                if (taskItem?.Id === item?.Parent.Id) {
                     try {
                         item.ActiveTile = false;
-                        item.SubTaskActTile = item.Title.replace(/\s/g, "");
+                        item.SubTaskActTile = item?.Title?.replace(/\s/g, "");
                     } catch (error) {
                         console.log(error);
                     }
                 }
             })
         })
+        if(loggedInUser.IsApprovalMail.toLowerCase() == 'approve all'){
+            subCategories?.map((item: any) => {
+                if (item?.Title == "Approval") {
+                    selectSubTaskCategory(item?.Title, item?.Id, item)
+                }
+            })
+        }
         setsubCategory(subCategories);
         setTaskTypes(Task);
         await fetchBurgerMenuDetails();
@@ -526,39 +532,39 @@ function CreateTaskComponent(props: any) {
             AllTaskUsers = await web.lists
                 .getById(props?.SelectedProp?.TaskUsertListID)
                 .items
-                .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,IsTaskNotifications,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+                .select("Id,UserGroupId,Suffix,Title,IsApprovalMail,Email,SortOrder,Role,IsShowTeamLeader,IsTaskNotifications,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
                 .get();
 
             // let pageContent = await globalCommon.pageContext();
             // console.log(pageContent)
             taskUsers = AllTaskUsers;
             let UserIds;
-            AllTaskUsers?.map((item: any) => {
-                if (props?.pageContext?.user?.loginName == item.Email || props?.pageContext?.user?.loginName == item?.AssingedToUser?.EMail) {
-                    loggedInUser = item;
+            AllTaskUsers?.map((user: any) => {
+                if (props?.pageContext?.legacyPageContext?.userId == user?.AssingedToUser?.Id) {
+                    loggedInUser = user;
                 }
+                // if (user.IsApprovalMail == 0)
+                //     user.IsApprovalMail = undefined;
+                // if (user.AssingedToUserId == CurrentUserId && (user.IsApprovalMail == undefined || user.IsApprovalMail == null || user.IsApprovalMail == '')) {
+                //     Isapproval = 'decide case by case';
+                // }
+                // if (user.AssingedToUserId == CurrentUserId && user.IsApprovalMail != undefined && user.IsApprovalMail != '' && user.IsApprovalMail != null && user.IsApprovalMail.toLowerCase() == 'approve all') {
+                //     Isapproval = 'approve all';
+
+                // }
+                // if (user.AssingedToUserId == CurrentUserId && user.IsApprovalMail != undefined && user.IsApprovalMail != '' && user.IsApprovalMail != null && user.IsApprovalMail.toLowerCase() == 'approve all but selected items') {
+                //     Isapproval = 'approve all but selected items';
+                //     user.SelectedCategoriesItems = []
+                //     if (user.CategoriesItemsJson != undefined && user.CategoriesItemsJson != null && user.CategoriesItemsJson != '') {
+                //         user.SelectedCategoriesItems = JSON.parse(user.CategoriesItemsJson);
+                //     }
+                // }
+                // if (user.AssingedToUserId == CurrentUserId && user.IsApprovalMail != undefined && user.IsApprovalMail != '' && user.IsApprovalMail != null && user.IsApprovalMail.toLowerCase() == 'decide case by case') {
+                //     Isapproval = 'decide case by case';
+                // }
             })
             let CurrentUserId = loggedInUser?.AssingedToUserId;
-            AllTaskUsers?.map((user: any) => {
-                if (user.IsApprovalMail == 0)
-                    user.IsApprovalMail = undefined;
-                if (user.AssingedToUserId == CurrentUserId && (user.IsApprovalMail == undefined || user.IsApprovalMail == null || user.IsApprovalMail == '')) {
-                    Isapproval = 'decide case by case';
-                }
-                if (user.AssingedToUserId == CurrentUserId && user.IsApprovalMail != undefined && user.IsApprovalMail != '' && user.IsApprovalMail != null && user.IsApprovalMail.toLowerCase() == 'approve all') {
-                    Isapproval = 'approve all';
-                }
-                if (user.AssingedToUserId == CurrentUserId && user.IsApprovalMail != undefined && user.IsApprovalMail != '' && user.IsApprovalMail != null && user.IsApprovalMail.toLowerCase() == 'approve all but selected items') {
-                    Isapproval = 'approve all but selected items';
-                    user.SelectedCategoriesItems = []
-                    if (user.CategoriesItemsJson != undefined && user.CategoriesItemsJson != null && user.CategoriesItemsJson != '') {
-                        user.SelectedCategoriesItems = JSON.parse(user.CategoriesItemsJson);
-                    }
-                }
-                if (user.AssingedToUserId == CurrentUserId && user.IsApprovalMail != undefined && user.IsApprovalMail != '' && user.IsApprovalMail != null && user.IsApprovalMail.toLowerCase() == 'decide case by case') {
-                    Isapproval = 'decide case by case';
-                }
-            })
+          
             taskUsers = AllTaskUsers;
         }
         catch (error) {
@@ -1913,7 +1919,7 @@ function CreateTaskComponent(props: any) {
                                             <><div className='input-group'>
                                                 <input type="text" readOnly
                                                     className="form-control"
-                                                    id="{{PortfoliosID}}" autoComplete="off"
+                                                    id="{{PortfoliosID}}" autoComplete="off" style={{background:"transparent"}}
                                                 /></div>
                                             </>
                                         }
@@ -1931,7 +1937,7 @@ function CreateTaskComponent(props: any) {
                                             )
                                         }) : null}
                                         <span className="input-group-text">
-                                            <span onClick={(e) => EditPortfolio(save, 'Component')} style={{ backgroundColor: 'white' }} className="svg__iconbox svg__icon--edit"></span>
+                                            <span onClick={(e) => EditPortfolio(save, 'Component')} style={{ backgroundColor: 'white' }} className="svg__iconbox  svg__icon--editBox dark"></span>
                                             {/* <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                         onClick={(e) => EditComponent(save, 'Component')} /> */}
                                         </span>
@@ -2065,7 +2071,7 @@ function CreateTaskComponent(props: any) {
                                                 return (
                                                     <>
                                                         {Task.Id === item.ParentID &&
-                                                            <a onClick={() => selectSubTaskCategory(item.Title, item.Id, item)} id={"subcategorytasks" + item.Id} className={item.ActiveTile ? 'bg-siteColor subcategoryTask active text-center' : 'bg-siteColor subcategoryTask text-center'} >
+                                                            <a onClick={() => selectSubTaskCategory(item?.Title, item?.Id, item )} id={"subcategorytasks" + item.Id} className={item.ActiveTile ? 'bg-siteColor subcategoryTask active text-center' : 'bg-siteColor subcategoryTask text-center'} >
                                                                 <span className="tasks-label">{item.Title}</span>
                                                             </a>
                                                         }

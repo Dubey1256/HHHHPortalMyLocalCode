@@ -60,7 +60,6 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
     private _sp: any;
     private _webSerRelURL: any;
     constructor(props: ITeamMembersProps) {
-
         super(props);
         this._sp = getSP();
         this.getWebInformation();
@@ -270,7 +269,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             Approver: taskItem.Approver ? taskItem.Approver.map((i: { Title: any; }) => i.Title).join(", ") : "",
             TaskId: taskItem.Id,
             Suffix: taskItem.Suffix,
-            SortOrder:taskItem.SortOrder,
+            SortOrder: taskItem.SortOrder,
             GroupId: taskItem.UserGroup ? taskItem.UserGroup.Id.toString() : "",
             AssignedToUserMail: taskItem.AssingedToUser ? [taskItem.AssingedToUser.Name.split("|")[2]] : [],
             ApproverMail: taskItem.Approver ? taskItem.Approver.map((i: { Name: string; }) => i.Name.split("|")[2]) : [],
@@ -365,7 +364,6 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         let selTask = allTasks.filter(t => t.TaskId == this.state.selTaskId)[0];
         console.log(selTask);
         let selTaskItem = { ...this.state.taskItem };
-
         selTaskItem.userTitle = selTask.Title;
         selTaskItem.userSuffix = selTask.Suffix;
         selTaskItem.groupId = selTask.GroupId;
@@ -520,7 +518,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             Title: taskItem.userTitle,
             Suffix: taskItem.userSuffix,
             UserGroupId: taskItem.groupId ? parseInt(taskItem.groupId) : null,
-            SortOrder: taskItem.sortOrder,
+            SortOrder: taskItem.sortOrder != undefined && taskItem.sortOrder != "" && taskItem.sortOrder != undefined && taskItem.sortOrder != '' ? taskItem.sortOrder : null,
             AssingedToUserId: taskItem.userId,
             TimeCategory: taskItem.timeCategory,
             ApproverId: taskItem.approverId,
@@ -617,6 +615,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             ApproverMail: taskItem.Approver ? taskItem.Approver.map((i: { Name: string; }) => i.Name.split("|")[2]) : [],
             ApprovalType: taskItem.IsApprovalMail,
             // CategoriesItemsJson: taskItem.CategoriesItemsJson ? JSON.parse(taskItem.CategoriesItemsJson) : [],
+            SortOrder: taskItem.SortOrder != null && taskItem.SortOrder != undefined ? taskItem.SortOrder : '',
             TimeCategory: taskItem.TimeCategory,
             IsActive: taskItem.IsActive,
             IsTaskNotifications: taskItem.IsTaskNotifications,
@@ -627,7 +626,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             ModifiedBy: taskItem.Editor.Title
         }));
 
-        let listTasks = teamMembersTasks.map(({ Title, Group, Category, Role, Company, Approver, TaskId }) => ({ Title, Group, Category, Role, Company, Approver, TaskId }));
+        let listTasks = teamMembersTasks.map(({ Title, Group, Category, SortOrder, Role, Company, Approver, TaskId }) => ({ Title, Group, Category, SortOrder, Role, Company, Approver, TaskId }));
 
         this.setState({
             selTaskId: undefined,
@@ -669,7 +668,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
 
     private onSortOrderChange(_ev: any, newSortOrder: string) {
         let taskItem = { ...this.state.taskItem };
-        taskItem.sortOrder = newSortOrder;
+        taskItem.sortOrder = newSortOrder != "" && newSortOrder != undefined && newSortOrder != '' ? newSortOrder : null;
         this.setState({
             taskItem: taskItem
         });
@@ -765,7 +764,8 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             Title: item.Title,
             Id: item.Id
         };
-        let selSmartMetadataItems = [...this.state.taskItem.selSmartMetadataItems];
+
+        let selSmartMetadataItems = this.state.taskItem.selSmartMetadataItems!=undefined?[...this.state.taskItem.selSmartMetadataItems]:[];
         existingItem = selSmartMetadataItems.filter(mItem => mItem.Id == item.Id).length > 0
         if (!existingItem) {
             selSmartMetadataItems.push(selMetadataItem);

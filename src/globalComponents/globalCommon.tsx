@@ -2437,17 +2437,33 @@ export const GetTaskId = (Item: any) => {
     taskIds += Portfolio.PortfolioStructureID;
   }
 
-  if (ParentTask?.TaskID && TaskType?.Title === "Task") {
-    taskIds +=
-      taskIds.length > 0 ? `-${ParentTask.TaskID}` : `${ParentTask.TaskID}`;
-  }
-
-  if (TaskID) {
+  if (
+    ParentTask?.TaskID &&
+    (TaskType?.Title === "Task" || TaskType?.Title === "Workstream")
+  ) {
     taskIds += taskIds.length > 0 ? `-${TaskID}` : `${TaskID}`;
-  } else {
-    taskIds += taskIds.length > 0 ? `-T${Id}` : `T${Id}`;
   }
-
+  if (
+    ParentTask == undefined &&
+    Portfolio != undefined &&
+    (TaskType?.Title === "Activities" ||
+      TaskType?.Title === "Task" ||
+      TaskType?.Title === "Workstream")
+  ) {
+    taskIds += TaskID != undefined ? `-${TaskID}` : `-T${Item.Id}`;
+  }
+  if (
+    Portfolio == undefined &&
+    ParentTask == undefined &&
+    TaskType?.Title === "Task"
+  ) {
+    taskIds += TaskID != undefined ? `${TaskID}` : `T${Item.Id}`;
+  }
+  // if (TaskID) {
+  //     taskIds += taskIds.length > 0 ? `-${TaskID}` : `${TaskID}`;
+  // } else {
+  //     taskIds += taskIds.length > 0 ? `-T${Id}` : `T${Id}`;
+  // }
   return taskIds;
 };
 export const findTaskHierarchy = (
