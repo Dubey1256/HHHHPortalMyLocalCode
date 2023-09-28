@@ -512,34 +512,34 @@ const GlobalCommanTable = (items: any, ref: any) => {
             if (table?.getSelectedRowModel()?.flatRows.length > 0) {
                 restructureFunct(true)
                 table?.getSelectedRowModel()?.flatRows?.map((elem: any) => {
-                    // if (elem?.getParentRows() != undefined) {
-                    parentData = elem?.parentRow;
-                    parentDataCopy = elem?.parentRow?.original
-                    // parentDataCopy = elem?.getParentRows()[0]?.original;
-                    if (parentData != undefined && parentData?.parentRow != undefined) {
+                    if (elem?.getParentRows() != undefined) {
+                        // parentData = elem?.parentRow;
+                        // parentDataCopy = elem?.parentRow?.original
+                        parentDataCopy = elem?.getParentRows()[0]?.original;
+                        // if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                        parentData = elem?.parentRow?.parentRow
-                        parentDataCopy = elem?.parentRow?.parentRow?.original
+                        //     parentData = elem?.parentRow?.parentRow
+                        //     parentDataCopy = elem?.parentRow?.parentRow?.original
 
-                        if (parentData != undefined && parentData?.parentRow != undefined) {
+                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                            parentData = elem?.parentRow?.parentRow?.parentRow
-                            parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
-                        }
-                        if (parentData != undefined && parentData?.parentRow != undefined) {
+                        //         parentData = elem?.parentRow?.parentRow?.parentRow
+                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
+                        //     }
+                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                            parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
-                            parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                        }
-                        if (parentData != undefined && parentData?.parentRow != undefined) {
+                        //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
+                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                        //     }
+                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                            parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-                            parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                        }
-                        if (parentData != undefined && parentData?.parentRow != undefined) {
-                            parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-                            parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                        }
+                        //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                        //     }
+                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                        //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                        //     }
                         // }
                     }
                     if (parentDataCopy) {
@@ -830,7 +830,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
                         {
                             trueRestructuring == true ?
-                            <RestructuringCom AllMasterTasksData={items.AllMasterTasksData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data}restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows}/>
+                                <RestructuringCom AllMasterTasksData={items.AllMasterTasksData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
                                 : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>
                         }
                     </>
@@ -842,7 +842,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
                         {
                             trueRestructuring == true ?
-                            <RestructuringCom AllMasterTasksData={items.AllMasterTasksData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data}restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows}/>
+                                <RestructuringCom AllMasterTasksData={items.AllMasterTasksData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
                                 : <button type="button" title="Restructure" disabled={true} className="btn btn-primary"
                                 >Restructure</button>
                         }
