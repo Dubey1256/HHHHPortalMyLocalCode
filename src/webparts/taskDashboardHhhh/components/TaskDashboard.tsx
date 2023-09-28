@@ -475,6 +475,7 @@ const TaskDashboard = (props: any) => {
                 "ClientCategory/Id",
                 "Portfolio/PortfolioStructureID",
                 "ParentTask/TaskID",
+                "FeedBack",
                 "TaskID",
                 "ParentTask/Title",
                 "ParentTask/Id",

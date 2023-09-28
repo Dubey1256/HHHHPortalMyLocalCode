@@ -34,6 +34,9 @@ const AddCommentComponent = (FbData: any) => {
         isApprovalComment: false,
         ReplyMessages: []
     });
+    const [ApprovalPointUserData, setApprovalPointUserData] = useState<any>([]);
+    const [ApprovalPointCurrentIndex, setApprovalPointCurrentIndex] = useState('');
+    const [ApprovalPointHistoryStatus, setApprovalPointHistoryStatus] = useState(false);
     const ApprovalStatus = FbData.ApprovalStatus;
     const SmartLightStatus = FbData.SmartLightStatus;
     const [isCalloutVisible, { toggle: toggleIsCalloutVisible }] = useBoolean(false);
@@ -47,9 +50,12 @@ const AddCommentComponent = (FbData: any) => {
         let tempArray: any = [];
         if (FeedBackData != null && FeedBackData?.length > 0) {
             FeedBackData.map((dataItem: any) => {
+                let checkURL: any = dataItem.AuthorImage?.includes("https://www.hochhuth-consulting.de/sp");
+                if (checkURL) {
+                    dataItem.AuthorImage = dataItem.AuthorImage.replace("https://www.hochhuth-consulting.de/sp", "https://hhhhteams.sharepoint.com/sites/HHHH/SP")
+                }
                 if (dataItem.ApproverData == undefined) {
                     dataItem.ApproverData = [];
-
                 }
                 Array.push(dataItem);
                 tempArray.push(dataItem);
@@ -141,12 +147,56 @@ const AddCommentComponent = (FbData: any) => {
     const cancelCommentBtn = () => {
         FbData.CancelCallback(true);
     }
-   
-   
+    // const UpdateIsApprovalStatus = (index: any) => {
+    //     FeedBackArray[index].isApprovalComment = false;
+    //     FeedBackArray[index].isShowLight = SmartLightStatus;
+    //     FbData.callBack(true, FeedBackArray, 0);
+    //     let temObject: any = {
+    //         Title: currentUserData.Title != undefined ? currentUserData.Title : Context.pageContext._user.displayName,
+    //         Id: currentUserData.Id,
+    //         ImageUrl: currentUserData.ImageUrl != undefined ? currentUserData.ImageUrl : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+    //         ApprovalDate: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+    //         isShowLight: SmartLightStatus
+    //     }
+    //     FeedBackArray[index].ApproverData?.push(temObject);
+    //     FbData.callBack(true, FeedBackArray, 0);
+    //     let ApproverDataTemp: any = FeedBackArray[index].ApproverData;
+    //     const copy = [...FeedBackArray];
+    //     const obj = { ...FeedBackArray[index], isShowLight: SmartLightStatus, ApproverData: ApproverDataTemp };
+    //     copy[index] = obj;
+    //     setFeedBackArray(copy);
+    // }
+    // const SmartLightUpdateSubComment = (index: any, value: any) => {
+    //     let temObject: any = {
+    //         Title: currentUserData.Title != undefined ? currentUserData.Title : Context.pageContext._user.displayName,
+    //         Id: currentUserData.Id,
+    //         ImageUrl: currentUserData.ImageUrl != undefined ? currentUserData.ImageUrl : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+    //         ApprovalDate: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+    //         isShowLight: value
+    //     }
+    //     currentUserData.isShowLight = value;
+    //     FeedBackArray[index].isShowLight = value;
+    //     FeedBackArray[index].ApproverData?.push(temObject);
+    //     FbData.callBack(true, FeedBackArray, 0);
+    //     let ApproverDataTemp: any = FeedBackArray[index].ApproverData;
+    //     const copy = [...FeedBackArray];
+    //     const obj = { ...FeedBackArray[index], isShowLight: value, ApproverData: ApproverDataTemp };
+    //     copy[index] = obj;
+    //     setFeedBackArray(copy);
+    // }
 
     // ********************* this is for the Approval Point History Popup ************************
 
- 
+    const ApprovalPopupOpenHandle = (index: any, data: any) => {
+        setApprovalPointCurrentIndex(index);
+        setApprovalPointHistoryStatus(true);
+        setApprovalPointUserData(data);
+    }
+
+    const ApprovalHistoryPopupCallBack = useCallback(() => {
+        setApprovalPointHistoryStatus(false)
+    }, [])
+
     const onRenderCustomHeader = () => {
         return (
             <div className="d-flex full-width pb-1" >
@@ -330,7 +380,15 @@ const AddCommentComponent = (FbData: any) => {
                     </Panel>
                 </section>
             </div>
-          
+            {ApprovalPointHistoryStatus ?
+                <ApprovalHistoryPopup
+                    ApprovalPointUserData={ApprovalPointUserData}
+                    ApprovalPointCurrentIndex={ApprovalPointCurrentIndex}
+                    ApprovalPointHistoryStatus={ApprovalPointHistoryStatus}
+                    callBack={ApprovalHistoryPopupCallBack}
+                />
+                : null
+            }
             {isCalloutVisible ? (
                 <FocusTrapCallout
                     role="alertdialog"

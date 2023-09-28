@@ -10,50 +10,32 @@ let AllMatsterAndTaskData: any = [];
 let counterAllTaskCount: any = 0;
 let checkedData = ''
 
-// export const getTooltiphierarchyWithoutGroupByTable = (row: any) => {
-//     AllMatsterAndTaskData.map((Object: any) => {
-//         if (Object.Id === row?.ParentTask?.Id && row?.siteType === Object?.siteType) {
-//             Object.subRows = [];
-//             Object.subRows.push(row)
-//             return getTooltiphierarchyWithoutGroupByTable(Object);
-//         } else if (Object.Id === row?.Parent?.Id) {
-//             Object.subRows = [];
-//             Object.subRows.push(row);
-//             return getTooltiphierarchyWithoutGroupByTable(Object);
-//         } else if (row?.Component!=undefined &&row?.Component?.length>0 && Object.Id === row?.Component[0]?.Id) {
-//             Object.subRows = [];
-//             Object.subRows.push(row);
-//             return getTooltiphierarchyWithoutGroupByTable(Object);
-//         } else if (row?.Services!=undefined &&row?.Services?.length>0 && Object.Id === row?.Services[0]?.Id) {
-//             Object.subRows = [];
-//             Object.subRows.push(row);
-//             return getTooltiphierarchyWithoutGroupByTable(Object);
-//         } else {
-//             return row 
-
-//         }
-//     })
-//     return [row]
-// };
-export const getTooltiphierarchyWithoutGroupByTable = (row: any): any[] => {
+export const getTooltiphierarchyWithoutGroupByTable = (row: any, completeTitle: any): any => {
+    let tempTitle = '';
     for (let i = 0; i < AllMatsterAndTaskData.length; i++) {
         const Object = AllMatsterAndTaskData[i];
         if (Object.Id === row?.ParentTask?.Id && row?.siteType === Object?.siteType) {
             Object.subRows = [];
+            tempTitle = `${Object?.Title} > ${completeTitle}`
             Object.subRows.push(row);
-            return getTooltiphierarchyWithoutGroupByTable(Object);
+            return getTooltiphierarchyWithoutGroupByTable(Object, tempTitle);
         } else if (Object.Id === row?.Parent?.Id) {
             Object.subRows = [];
             Object.subRows.push(row);
-            return getTooltiphierarchyWithoutGroupByTable(Object);
-        } else if (row?.Portfolio != undefined && Object.Id === row?.Portfolio?.Id) {
+            tempTitle = `${Object?.Title} > ${completeTitle}`
+            return getTooltiphierarchyWithoutGroupByTable(Object, tempTitle);
+        } else if (row?.Portfolio != undefined && Object.Id === row?.Portfolio?.Id && row?.ParentTask?.Id == undefined) {
             Object.subRows = [];
             Object.subRows.push(row);
-            return getTooltiphierarchyWithoutGroupByTable(Object);
+            tempTitle = `${Object?.Title} > ${completeTitle}`
+            return getTooltiphierarchyWithoutGroupByTable(Object, tempTitle);
         }
 
     }
-    return [row];
+    return {
+        structureData: row,
+        structureTitle: completeTitle
+    };
 };
 
 
@@ -68,6 +50,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
 
     const [controlledVisible, setControlledVisible] = React.useState(false);
     const [action, setAction] = React.useState("");
+    const [hoverOverInfo, setHoverOverInfo] = React.useState("");
     const [openActivity, setOpenActivity] = React.useState(false);
     const [openWS, setOpenWS] = React.useState(false);
 
@@ -87,12 +70,16 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
     });
 
     const handlAction = (newAction: any) => {
-        if (action === "click") return;
+        if (newAction === "click" && newAction === "hover") return;
         setAction(newAction);
         setControlledVisible(true);
     };
 
-
+    const handleMouseLeave = () => {
+        if (action === "click") return;
+        setAction("");
+        setControlledVisible(!controlledVisible);
+    };
     const handleCloseClick = () => {
         setAction("");
         setControlledVisible(!controlledVisible);
@@ -128,8 +115,17 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
     }
     /// end////
     const tooltiphierarchy = React.useMemo(() => {
+        let completeTitle = '';
         if (action === "click") {
-            return getTooltiphierarchyWithoutGroupByTable(row);
+            let result = getTooltiphierarchyWithoutGroupByTable(row, completeTitle);
+            console.log(row?.TaskID, ' : ', result?.structureTitle + row?.Title)
+            return [result?.structureData]
+        }
+        if (action === "hover") {
+            let result = getTooltiphierarchyWithoutGroupByTable(row, completeTitle);
+            let TaskId = row?.SiteIcon != undefined ? row?.TaskID : row?.PortfolioStructureID;
+            let completedID = `${TaskId} : ${result?.structureTitle}${row?.Title}`
+            setHoverOverInfo(completedID);
         }
         return [];
     }, [action]);
@@ -182,9 +178,9 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                 id: 'plushIcon',
                 cell: ({ row }) => (
                     <div>
-                        <>
-                            <span onClick={() => openActivityPopup(row.original)}><FaPlus style={{ fontSize: '10px' }} /></span>
-                        </>
+                        {row?.original?.TaskType?.Title != 'Task' ?
+                            <span onClick={() => openActivityPopup(row.original)} className="hreflink"><FaPlus style={{ fontSize: '10px' }} /></span>
+                            : ''}
                     </div>
                 ),
             },
@@ -205,6 +201,8 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
         <>
             <span
                 ref={setTriggerRef}
+                onMouseEnter={() => handlAction("hover")}
+                onMouseLeave={() => handleMouseLeave()}
                 onClick={() => handlAction("click")}
             >
                 {ShareWebId}
@@ -220,6 +218,16 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                     <div className={scrollToolitem === true ? "tool-Wrapper toolWrapper-Th scroll-toolitem" : "tool-Wrapper toolWrapper-Th"}  >
                         <GlobalCommanTable columns={columns} data={tooltiphierarchy} callBackDataToolTip={callBackDataToolTip} callBackData={callBackData} pageName={pageName} expendedTrue={true} />
                     </div>
+                    <div {...getArrowProps({ className: "tooltip-arrow" })} />
+                </div>
+            )}
+            {action === "hover" && visible && (
+                <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container" })}>
+                    <span>
+                        <span>
+                            <a>{hoverOverInfo}</a>
+                        </span>
+                    </span>
                     <div {...getArrowProps({ className: "tooltip-arrow" })} />
                 </div>
             )}

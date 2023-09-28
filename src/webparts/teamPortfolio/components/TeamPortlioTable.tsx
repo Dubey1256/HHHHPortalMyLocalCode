@@ -47,7 +47,7 @@ let hasCustomExpanded: any = true
 let hasExpanded: any = true
 let isHeaderNotAvlable: any = false
 let isColumnDefultSortingAsc: any = false;
-let portViewIconsStyle:any = true
+let portViewIconsStyle: any = true
 function TeamPortlioTable(SelectedProp: any) {
     const childRef = React.useRef<any>();
     if (childRef != null) {
@@ -364,17 +364,20 @@ function TeamPortlioTable(SelectedProp: any) {
                             } else {
                                 result.ClientCategorySearch = ''
                             }
-                            result.TotalTaskTime = 0;
                             result["TaskID"] = globalCommon.GetTaskId(result);
                             if (result.Project) {
                                 result.ProjectTitle = result?.Project?.Title;
                                 result.ProjectId = result?.Project?.Id;
                                 result.projectStructerId = result?.Project?.PortfolioStructureID
                                 const title = result?.Project?.Title || '';
-                                const dueDate = result?.DueDate;
+                                const formattedDueDate = Moment(result?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
                                 result.joinedData = [];
-                                if (title) result.joinedData.push(`Title: ${title}`);
-                                if (dueDate) result.joinedData.push(`Due Date: ${dueDate}`);
+                                if (result?.projectStructerId && title || formattedDueDate) {
+                                    result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate}`)
+                                }
+                                // if (result?.projectStructerId) result.joinedData.push(`Project: ${result?.projectStructerId}`);
+                                // if (title) result.joinedData.push(`Title: ${title}`);
+                                // if (dueDate) result.joinedData.push(`Due Date: ${dueDate}`);
                             }
                             result["Item_x0020_Type"] = "Task";
                             TasksItem.push(result);
@@ -1289,22 +1292,31 @@ function TeamPortlioTable(SelectedProp: any) {
             },
             {
                 accessorFn: (row) => row?.TotalTaskTime,
-                cell: ({ row }) => (
-                    <>
-                        {row?.original?.siteType != "Master Tasks" && row?.original?.Title != "Others" && (
-                            <a className="alignCenter justify-content-center" onClick={(e) => EditDataTimeEntryData(e, row.original)}
-                                data-bs-toggle="tooltip"
-                                data-bs-placement="auto"
-                                title="Click To Edit Timesheet"><span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : {}} >{row?.original?.TotalTaskTime}</span><span className="svg__iconbox svg__icon--clock dark" data-bs-toggle="tooltip" data-bs-placement="bottom"></span>
-                            </a>
-                        )}
-                    </>
-                ),
+                // cell: ({ row }) => (
+                //     <>
+                //         <div className="text-center" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : {}}>{row?.original?.TotalTaskTime}</div>
+                //     </>
+                // ),
                 id: "TotalTaskTime",
                 placeholder: "Smart Time",
                 header: "",
                 resetColumnFilters: false,
-                size: 50,
+                size: 49,
+            },
+            {
+                cell: ({ row }) => (
+                    <>
+                        {row?.original?.siteType != "Master Tasks" && row?.original?.Title != "Others" && (
+                            <a className="alignCenter" onClick={(e) => EditDataTimeEntryData(e, row.original)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet">
+                                <span className="svg__iconbox svg__icon--clock dark" data-bs-toggle="tooltip" data-bs-placement="bottom"></span>
+                            </a>
+                        )}
+                    </>
+                ),
+                id: "row?.original.Id",
+                canSort: false,
+                placeholder: "",
+                size: 1,
             },
             {
                 header: ({ table }: any) => (
@@ -1649,7 +1661,7 @@ function TeamPortlioTable(SelectedProp: any) {
         }
         if (checkedList?.TaskType?.Id == 2) {
 
-            alert("You can not create ny item inside Task")
+            alert("You can not create any item inside Task")
         }
     }
     const closeActivity = () => {
@@ -1670,7 +1682,7 @@ function TeamPortlioTable(SelectedProp: any) {
             setIsOpenWorkstream(true);
         }
         if (checkedList?.TaskType?.Id == 2) {
-            alert("You can not create ny item inside Task")
+            alert("You can not create any item inside Task")
         }
 
     }
