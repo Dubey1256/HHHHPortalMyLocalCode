@@ -341,7 +341,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                             <a className="alignIcon hreflink"
                                                 target="_blank"
                                                 onClick={() => RemoveSubtexTItem(obj, index)}>
-                                                    <span className="svg__iconbox hreflink mini dark svg__icon--trash"></span>
+                                                    <span className="svg__iconbox hreflink mini svg__icon--trash"></span>
                                             </a>
                                         </div>
                                     </div>

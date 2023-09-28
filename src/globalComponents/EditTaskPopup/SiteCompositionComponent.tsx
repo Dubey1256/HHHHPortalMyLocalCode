@@ -744,10 +744,8 @@ const SiteCompositionComponent = (Props: any) => {
     const onRenderCustomClientCategoryHeader = () => {
         return (
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"} >
-                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <span>
+                <div className="subheading siteColor">
                         Select Client Category
-                    </span>
                 </div>
                 <Tooltip ComponentId="1626" isServiceTask={ServicesTaskCheck} />
             </div>
@@ -816,14 +814,19 @@ const SiteCompositionComponent = (Props: any) => {
                     </label>
                 </span>
                 <span className="alignIcon"><span className="svg__iconbox svg__icon--editBox" onClick={openEditComponentPanelFunction} title="Click here to edit tagged portfolio site composition."></span></span>
-                <span className="d-flex justify-content-center pull-right overrid">
+                <span className="alignCenter justify-content-center pull-right">
                     <input type="checkbox" className="form-check-input mx-1"
                         defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.localSiteComposition : false}
                         onChange={() => ChangeSiteCompositionSettings("Overridden")}
                     />
-                    <label data-toggle="tooltip" data-placement="bottom" className="alignCenter">
+                    <label className="alignCenter">
                         Overridden
-                        <span className="svg__iconbox svg__icon--info" title="If this is checked then it should consider site allocations in Time Entry from Task otherwise from tagged component."></span>
+                        <span className="hover-text alignIcon">
+                            <span className="svg__iconbox svg__icon--info dark"></span>
+                            <span className="tooltip-text pop-left">
+                                If this is checked then it should consider site allocations in Time Entry from Task otherwise from tagged component.
+                            </span>
+                        </span>
                     </label>
                 </span>
             </div>
@@ -1174,10 +1177,10 @@ const SiteCompositionComponent = (Props: any) => {
 
 
                 <footer className="bg-e9  d-flex justify-content-end full-width py-1">
-                    <div className="bg-body col-sm-2 p-1">
+                    <div className="bg-body col-sm-1 p-1 alignCenter">
                         <div className="">{isPortfolioComposition == true || ProportionalStatus == false ? `${TotalPercent} %` : "100%"}</div>
                     </div>
-                    <div className="bg-body col-sm-2 p-1 mx-2">
+                    <div className="bg-body col-sm-1 mx-1 p-1 alignCenter">
                         <div className="">{TotalTime ? TotalTime.toFixed(0) : 0}</div>
                     </div>
                     <div className="me-1">
@@ -1215,7 +1218,7 @@ const SiteCompositionComponent = (Props: any) => {
 
                                     </div>
                                     <div className="d-end">
-                                        <button type="button" className="btn btn-primary" onClick={saveSelectedClientCategoryData}>
+                                        <button type="button" className="btnCol btn btn-primary" onClick={saveSelectedClientCategoryData}>
                                             OK
                                         </button>
                                     </div>
