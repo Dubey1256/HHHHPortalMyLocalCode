@@ -291,7 +291,7 @@ const Picker = (item: any) => {
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <h2 className="heading">Select Category</h2>
                 </div>
-                <Tooltip ComponentId="1626" />
+                <Tooltip ComponentId="1741" />
             </div>
         )
     }
