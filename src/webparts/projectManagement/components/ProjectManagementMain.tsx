@@ -402,7 +402,7 @@ const ProjectManagementMain = (props: any) => {
           smartmeta = await web.lists
             .getById(config.listId)
             .items
-            .select("Id,Title,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+            .select("Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
             .expand('AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory')
             .top(4999)
             .filter("ProjectId eq " + QueryId)
@@ -468,7 +468,7 @@ const ProjectManagementMain = (props: any) => {
                 });
               });
             }
-            items.TaskID = globalCommon.GetTaskId(items);
+            items.TaskID = globalCommon.GetOnlyAWTId(items);
             AllUser?.map((user: any) => {
               if (user.AssingedToUserId == items.Author.Id) {
                 items.createdImg = user?.Item_x0020_Cover?.Url;
@@ -552,7 +552,7 @@ const ProjectManagementMain = (props: any) => {
             let smartmeta = [];
             await web.lists
               .getById(config.listId)
-              .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "ParentTask/Id", "ParentTask/Title", "ParentTask/TaskID", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Modified")
+              .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "ParentTask/Id", "ParentTask/Title", "ParentTask/TaskID","TaskID", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Modified")
               .expand("TeamMembers", "ParentTask", "ClientCategory", "AssignedTo", "TaskCategories", "Author", "ResponsibleTeam", "TaskType", "Portfolio")
               .getAll().then((data: any) => {
                 smartmeta = data;
@@ -623,7 +623,15 @@ const ProjectManagementMain = (props: any) => {
         });
     }
   };
-
+  // const toggleSideBar = () => {
+  //   setSidebarStatus({ ...sidebarStatus, dashboard: !sidebarStatus.dashboard });
+  //   if (sidebarStatus.dashboard == false) {
+  //     $(".sidebar").attr("collapsed", "");
+  //   } else {
+  //     $(".sidebar").removeAttr("collapsed");
+  //   }
+  // };
+  //React.useEffect(() => {table.getIsAllRowsExpanded(); }, [])
   const createOpenTask = (items: any) => {
     setCreateTaskId({ portfolioData: items, portfolioType: 'Component' });
     setisOpenCreateTask(true)
@@ -679,7 +687,6 @@ const ProjectManagementMain = (props: any) => {
         cell: ({ row, column, getValue }) => (
           <>
             <span>
-     
               <a
                 className="hreflink"
                 href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
@@ -688,7 +695,18 @@ const ProjectManagementMain = (props: any) => {
               >
                 {row?.original?.Title}
               </a>
-              {row?.original?.Body !== null && row?.original?.Body != undefined ?<span className="alignIcon"> <InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} /> </span> : ''}
+              {row?.original?.Body !== null &&
+              row?.original?.Body != undefined ? (
+                <span className="alignIcon">
+                  {" "}
+                  <InfoIconsToolTip
+                    Discription={row?.original?.bodys}
+                    row={row?.original}
+                  />{" "}
+                </span>
+              ) : (
+                ""
+              )}
             </span>
           </>
         ),
@@ -715,7 +733,6 @@ const ProjectManagementMain = (props: any) => {
       {
         accessorFn: (row) => row?.Portfolio,
         cell: ({ row }) => (
-
           <a
             className="hreflink"
             data-interception="off"
@@ -767,6 +784,7 @@ const ProjectManagementMain = (props: any) => {
         ),
         id: 'DueDate',
         resetColumnFilters: false,
+        isColumnDefultSortingDesc:true,
         resetSorting: false,
         placeholder: "Due Date",
         header: "",
@@ -844,12 +862,16 @@ const ProjectManagementMain = (props: any) => {
         header: '',
         size: 125
       },
-  
+
       {
         accessorFn: (row) => row?.Created,
         cell: ({ row }) => (
           <span>
-      
+            {/* {row.original.Services.length >= 1 ? (
+              <span className='ms-1 text-success'>{row?.original?.DisplayCreateDate} </span>
+            ) : (
+              <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
+            )} */}
             <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
 
             {row?.original?.createdImg != undefined ? (
@@ -877,15 +899,17 @@ const ProjectManagementMain = (props: any) => {
       },
       {
         cell: ({ row }) => (
-          <span className='text-end'>
+          <span className="text-end">
             <span
-              title='Edit Task'
+              title="Edit Task"
               onClick={() => EditPopup(row?.original)}
-              className='alignIcon  svg__iconbox svg__icon--edit hreflink'
+              className="alignIcon  svg__iconbox svg__icon--edit hreflink"
             ></span>
-            <span title='Remove Task'
+            <span
+              style={{ marginLeft: '6px' }}
+              title='Un-Tag Task From Project'
               onClick={() => untagTask(row?.original)}
-              className='alignIcon  svg__iconbox svg__icon--cross dark hreflink'
+              className="alignIcon  svg__iconbox svg__icon--cross dark hreflink"
             ></span>
           </span>
         ),
@@ -895,7 +919,7 @@ const ProjectManagementMain = (props: any) => {
         resetSorting: false,
         resetColumnFilters: false,
         placeholder: "",
-        size: 35
+        size: 40
       },
     ],
     [data]
@@ -958,7 +982,7 @@ const ProjectManagementMain = (props: any) => {
                 </li>
                 <li>
                   {" "}
-                  <a>{Masterdata.Title}</a>{" "}
+                  <a>{`${Masterdata?.PortfolioStructureID} - ${Masterdata?.Title}`}</a>{" "}
                 </li>
               </ul>
             </div>
@@ -966,6 +990,13 @@ const ProjectManagementMain = (props: any) => {
           <div className="ProjectManagementPage Dashboardsecrtion">
             <div className="dashboard-colm">
               <aside className="sidebar">
+                {/* <button
+              type="button"
+              onClick={() => {
+                toggleSideBar();
+              }}
+              className="collapse-toggle"
+            ></button> */}
                 <section className="sidebar__section sidebar__section--menu">
                   <nav className="nav__item">
                     <ul className="nav__list">

@@ -512,34 +512,34 @@ const GlobalCommanTable = (items: any, ref: any) => {
             if (table?.getSelectedRowModel()?.flatRows.length > 0) {
                 restructureFunct(true)
                 table?.getSelectedRowModel()?.flatRows?.map((elem: any) => {
-                    if (elem?.getParentRows() != undefined) {
-                        // parentData = elem?.parentRow;
-                        // parentDataCopy = elem?.parentRow?.original
-                        parentDataCopy = elem?.getParentRows()[0]?.original;
-                        // if (parentData != undefined && parentData?.parentRow != undefined) {
+                    // if (elem?.getParentRows() != undefined) {
+                    parentData = elem?.parentRow;
+                    parentDataCopy = elem?.parentRow?.original
+                    // parentDataCopy = elem?.getParentRows()[0]?.original;
+                    if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                        //     parentData = elem?.parentRow?.parentRow
-                        //     parentDataCopy = elem?.parentRow?.parentRow?.original
+                        parentData = elem?.parentRow?.parentRow
+                        parentDataCopy = elem?.parentRow?.parentRow?.original
 
-                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                        if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                        //         parentData = elem?.parentRow?.parentRow?.parentRow
-                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
-                        //     }
-                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                            parentData = elem?.parentRow?.parentRow?.parentRow
+                            parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
+                        }
+                        if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                        //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
-                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                        //     }
-                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                            parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
+                            parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                        }
+                        if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                        //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                        //     }
-                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
-                        //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                        //     }
+                            parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+                            parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                        }
+                        if (parentData != undefined && parentData?.parentRow != undefined) {
+                            parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+                            parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                        }
                         // }
                     }
                     if (parentDataCopy) {
@@ -811,13 +811,17 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 </span>
                 <span className="toolbox">
                     {items.taskProfile != true && items?.showCreationAllButton === true && <>
-                        {table?.getSelectedRowModel()?.flatRows?.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Feature" &&
-                            table?.getSelectedRowModel()?.flatRows[0]?.original?.SharewebTaskType?.Title != "Activities" && table?.getSelectedRowModel()?.flatRows[0]?.original?.SharewebTaskType?.Title != "Workstream" &&
-                            table?.getSelectedRowModel()?.flatRows[0]?.original?.SharewebTaskType?.Title != "Task" || table?.getSelectedRowModel()?.flatRows?.length === 0 ? (
-                            <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} title=" Add Structure" onClick={() => openCreationAllStructure("Add Structure")}> Add Structure </button>
+                        {items?.PortfolioFeature === "Feature" ? (
+                            <button type="button" disabled className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: "#fff" }} title=" Add Structure"> {" "} Add Structure{" "}</button>
+                        ) : (table?.getSelectedRowModel()?.flatRows?.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Feature" && table?.getSelectedRowModel()?.flatRows[0]?.original
+                            ?.SharewebTaskType?.Title != "Activities" && table?.getSelectedRowModel()?.flatRows[0]?.original?.SharewebTaskType?.Title != "Workstream" && table?.getSelectedRowModel()?.flatRows[0]?.original
+                                ?.SharewebTaskType?.Title != "Task") || table?.getSelectedRowModel()?.flatRows?.length === 0 ? (
+                            <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: "#fff" }} title=" Add Structure" onClick={() => openCreationAllStructure("Add Structure")}>
+                                {" "} Add Structure{" "}</button>
                         ) : (
-                            <button type="button" disabled className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} title=" Add Structure"> Add Structure </button>
+                            <button type="button" disabled className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: "#fff" }} title=" Add Structure"> {" "} Add Structure{" "}</button>
                         )}
+
                         {items?.protfolioProfileButton != true && <>{table?.getSelectedRowModel()?.flatRows.length === 1 ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
                             <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} > Add Activity-Task</button>}</>}
 
@@ -826,8 +830,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
                         {
                             trueRestructuring == true ?
-                                <RestructuringCom
-                                    AllMasterTasksData={items.AllMasterTasksData} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
+                            <RestructuringCom AllMasterTasksData={items.AllMasterTasksData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data}restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows}/>
                                 : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>
                         }
                     </>
@@ -839,7 +842,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
                         {
                             trueRestructuring == true ?
-                                <RestructuringCom restructureFunct={restructureFunct} AllMasterTasksData={items.AllMasterTasksData} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows.length > 0 ? [table?.getSelectedRowModel()?.flatRows[0].original] : []} />
+                            <RestructuringCom AllMasterTasksData={items.AllMasterTasksData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data}restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows}/>
                                 : <button type="button" title="Restructure" disabled={true} className="btn btn-primary"
                                 >Restructure</button>
                         }

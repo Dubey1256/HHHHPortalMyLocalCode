@@ -20,7 +20,6 @@ import Loader from "react-loader";
 
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
-import SmartFilterSearchGlobal from "../../../globalComponents/SmartFilterGolobalBomponents/SmartFilterGlobalComponents";
 import GlobalCommanTable, {
   IndeterminateCheckbox
 } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
@@ -44,7 +43,7 @@ let renderData: any = [];
 let countAllTasksData: any = [];
 let countAllComposubData: any = [];
 let countsrun = 0;
-function TeamPortlioTable(SelectedProp: any) {
+function PortfolioTable(SelectedProp: any) {
   const childRef = React.useRef<any>();
   if (childRef != null) {
     childRefdata = { ...childRef };
@@ -314,9 +313,12 @@ function TeamPortlioTable(SelectedProp: any) {
             "Author/Title",
             "Project/Id",
             "Project/PortfolioStructureID",
-            "Project/Title"
+            "Project/Title",
+            "AssignedTo/Title",
+            "AssignedTo/Id"
           )
           .expand(
+            "AssignedTo",
             "ParentTask",
             "Portfolio",
             "Author",
@@ -690,26 +692,7 @@ function TeamPortlioTable(SelectedProp: any) {
   }, []);
 
   React.useEffect(() => {
-    if (isUpdated != "") {
-      if (portfolioTypeData.length > 0) {
-        portfolioTypeData?.map((elem: any) => {
-          if (
-            elem.Title === isUpdated ||
-            isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()
-          ) {
-            portfolioColor = elem.Color;
-          }
-        });
-      }
-    } else {
-      if (portfolioTypeData.length > 0) {
-        portfolioTypeData?.map((elem: any) => {
-          if (elem.Title === "Component") {
-            portfolioColor = elem.Color;
-          }
-        });
-      }
-    }
+    portfolioColor = SelectedProp?.props?.PortfolioType?.Color;
   }, [AllSiteTasksData]);
 
   React.useEffect(() => {
@@ -806,6 +789,8 @@ function TeamPortlioTable(SelectedProp: any) {
           elem1?.ParentTask?.Id === undefined &&
           elem1?.Portfolio?.Id === SelectedProp?.props?.Id
       );
+
+      countAllTasksData = countAllTasksData.concat(Actatcomponent);
       Actatcomponent?.map((masterTask1: any) => {
         masterTask1.subRows = [];
         taskTypeData?.map((levelType: any) => {
@@ -821,6 +806,13 @@ function TeamPortlioTable(SelectedProp: any) {
       temp.ItemRank = "";
       temp.DueDate = "";
       temp.Project = "";
+      temp.ClientCategorySearch = "";
+      temp.Created = "";
+      temp.AllTeamName = "";
+      temp.DueDate = "";
+      temp.descriptionsSearch = "";
+      temp.ProjectTitle = "";
+      temp.Status = "";
       temp.subRows = AllSiteTasksData?.filter(
         (elem1: any) =>
           elem1?.TaskType?.Id != undefined &&
@@ -1627,6 +1619,10 @@ function TeamPortlioTable(SelectedProp: any) {
   const Call = (res: any) => {
     if (res == "Close") {
       setIsTask(false);
+      setIsComponent(false);
+      setIsOpenActivity(false);
+      setIsOpenWorkstream(false);
+      setActivityPopup(false);
     } else {
       childRef?.current?.setRowSelection({});
       setIsComponent(false);
@@ -1884,6 +1880,7 @@ function TeamPortlioTable(SelectedProp: any) {
                         AddStructureFeature={
                           SelectedProp?.props?.Item_x0020_Type
                         }
+                        queryItems={SelectedProp?.props}
                         PortfolioFeature={SelectedProp?.props?.Item_x0020_Type}
                         AllMasterTasksData={AllMasterTasksData}
                         callChildFunction={callChildFunction}
@@ -2102,4 +2099,4 @@ function TeamPortlioTable(SelectedProp: any) {
     </div>
   );
 }
-export default TeamPortlioTable;
+export default PortfolioTable;
