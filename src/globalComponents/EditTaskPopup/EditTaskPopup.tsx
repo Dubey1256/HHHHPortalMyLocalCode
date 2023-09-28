@@ -2513,11 +2513,7 @@ const EditTaskPopup = (Items: any) => {
         var link = "mailTo:"
             + "?cc:"
             + "&subject=" + " [" + Items.Items.siteType + "-Task ] " + EmailData.Title
-<<<<<<< HEAD
-            + "&body=" + `${siteUrls}/SitePages/Task-Profile-spfx.aspx?taskId=${EmailData.ID}` + "&" + `Site=${Items.Items.siteType}`;
-=======
             + "&body=" + `${siteUrls}/SitePages/Task-Profile-spfx.aspx?taskId=${EmailData.ID}` + `%26Site%3D${Items.Items.siteType}`;
->>>>>>> 327b2930b64d482874c8d481e37d03d22f0deef5
         window.location.href = link;
     }
 
@@ -2770,11 +2766,7 @@ const EditTaskPopup = (Items: any) => {
                     UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
                     imageDataUrl: SiteUrl + '/Lists/' + Items.Items.siteType + '/Attachments/' + EditData?.Id + '/' + fileName,
                     ImageUrl: imgItem.data_url,
-<<<<<<< HEAD
-                    UserImage: currentUserDataObject != undefined && currentUserDataObject.Title?.length > 0 ? currentUserDataObject.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
-=======
                     UserImage: currentUserDataObject != undefined && currentUserDataObject.Item_x0020_Cover?.Url?.length > 0 ? currentUserDataObject.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
->>>>>>> 327b2930b64d482874c8d481e37d03d22f0deef5
                     UserName: currentUserDataObject != undefined && currentUserDataObject.Title?.length > 0 ? currentUserDataObject.Title : Items.context.pageContext._user.displayName,
                     Description: imgItem.Description != undefined ? imgItem.Description : ''
                 };
