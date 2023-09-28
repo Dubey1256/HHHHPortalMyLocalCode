@@ -919,8 +919,8 @@ const ProjectManagementMain = (props: any) => {
         resetSorting: false,
         resetColumnFilters: false,
         placeholder: "",
-        size: 40
-      },
+        size: 55
+      }
     ],
     [data]
   );
