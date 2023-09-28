@@ -182,8 +182,7 @@ const CommentBoxComponent = (commentData: any) => {
                     commentArray?.map((obj, i) => {
                         return (
                             <div className="row">
-                                <div
-                                    data-id={i}
+                                <div data-id={i}
                                     className="col"
                                     onChange={handleChangeComment}
                                 >

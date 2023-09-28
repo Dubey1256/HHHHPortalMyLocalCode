@@ -5,7 +5,10 @@ var siteUrl = ''
 
 function ShowTaskTeamMembers(item: any) {
 
-  siteUrl = item.props?.siteUrl
+  siteUrl =
+ item.props?.siteUrl != undefined
+? item?.props?.siteUrl
+ : item?.Context?.Siteurl;
   const [Display, setDisplay] = React.useState("none");
   const [taskData, settaskData] = React.useState<any>()
   let TaskUsers: any = [];
@@ -83,7 +86,7 @@ function ShowTaskTeamMembers(item: any) {
 
         <div className="d-flex align-items-center">
           {taskData?.TeamLeader != null && taskData?.TeamLeader?.length > 0 && taskData?.TeamLeader?.map((rcData: any, i: any) => {
-            return <div className="user_Member_img"><a href={`${taskData["siteUrl"]}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`} target="_blank" data-interception="off" title={rcData?.Title}>
+            return <div className="user_Member_img"><a href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`} target="_blank" data-interception="off" title={rcData?.Title}>
               {rcData.userImage != null && <img className="workmember" src={rcData?.userImage}></img>}
               {rcData.userImage == null && <span className="workmember bg-fxdark" >{rcData?.Suffix}</span>}
             </a>
@@ -96,14 +99,14 @@ function ShowTaskTeamMembers(item: any) {
          </div>}
 
           {taskData?.TeamMembers != null && taskData?.TeamMembers?.length > 0 &&
-            <div className="img  "><a href={`${taskData["siteUrl"]}/SitePages/TaskDashboard.aspx?UserId=${taskData?.TeamMembers[0]?.Id}&Name=${taskData?.TeamMembers[0]?.Title}`} target="_blank" data-interception="off" title={taskData?.TeamMembers[0]?.Title}>
+            <div className="img  "><a href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${taskData?.TeamMembers[0]?.Id}&Name=${taskData?.TeamMembers[0]?.Title}`} target="_blank" data-interception="off" title={taskData?.TeamMembers[0]?.Title}>
               {taskData?.TeamMembers[0].userImage != null && <img className={`workmember ${taskData?.TeamMembers[0].activeimg2}`} src={taskData?.TeamMembers[0]?.userImage}></img>}
               {taskData?.TeamMembers[0].userImage == null && <span className={`workmember ${taskData?.TeamMembers[0].activeimg2}bg-fxdark border bg-e9 p-1 `} >{taskData?.TeamMembers[0]?.Suffix}</span>}
             </a>
             </div>
           }
 
-          {taskData?.TeamMembers != null && taskData?.TeamMembers?.length == 2 && <div className="img mx-2"><a href={`${taskData["siteUrl"]}/SitePages/TaskDashboard.aspx?UserId=${taskData?.TeamMembers[1]?.Id}&Name=${taskData?.TeamMembers[1]?.Title}`} target="_blank" data-interception="off" title={taskData?.TeamMembers[1]?.Title}>
+          {taskData?.TeamMembers != null && taskData?.TeamMembers?.length == 2 && <div className="img mx-2"><a href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${taskData?.TeamMembers[1]?.Id}&Name=${taskData?.TeamMembers[1]?.Title}`} target="_blank" data-interception="off" title={taskData?.TeamMembers[1]?.Title}>
             {taskData?.TeamMembers[1]?.userImage != null && <img className={`workmember ${taskData?.TeamMembers[1]?.activeimg2}`} src={taskData?.TeamMembers[1]?.userImage}></img>}
             {taskData?.TeamMembers[1]?.userImage == null && <span className={`workmember ${taskData?.TeamMembers[1]?.activeimg2}bg-fxdark border bg-e9 p-1`} >{taskData?.TeamMembers[1]?.Suffix}</span>}
           </a>
@@ -116,7 +119,7 @@ function ShowTaskTeamMembers(item: any) {
                   {taskData?.TeamMembers?.slice(1)?.map((rcData: any, i: any) => {
 
                     return <div className=" mb-1 team_Members_Item" style={{ padding: '2px' }}>
-                      <a href={`${taskData["siteUrl"]}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`} target="_blank" data-interception="off">
+                      <a href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`} target="_blank" data-interception="off">
 
                         {rcData?.userImage != null && <img className={`workmember ${rcData?.activeimg2}`} src={rcData?.userImage}></img>}
                         {rcData?.userImage == null && <span className={`workmember ${rcData?.activeimg2}bg-fxdark border bg-e9 p-1`}>{rcData?.Suffix}</span>}

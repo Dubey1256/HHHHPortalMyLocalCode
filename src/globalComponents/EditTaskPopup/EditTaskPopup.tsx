@@ -202,7 +202,6 @@ const EditTaskPopup = (Items: any) => {
         { value: 10, status: "10% working on it", taskStatusComment: "working on it" },
         { value: 70, status: "70% Re-Open", taskStatusComment: "Re-Open" },
         { value: 80, status: "80% In QA Review", taskStatusComment: "In QA Review" },
-        { value: 85, status: "85% Deployment Pending", taskStatusComment: "Deployment Pending" },
         { value: 90, status: "90% Task completed", taskStatusComment: "Task completed" },
         { value: 93, status: "93% For Review", taskStatusComment: "For Review" },
         { value: 96, status: "96% Follow-up later", taskStatusComment: "Follow-up later" },
@@ -4267,16 +4266,17 @@ const EditTaskPopup = (Items: any) => {
                                                     </div>
                                                     {ApprovalStatus ?
                                                         <div>
-                                                            <div className="col-12">
+                                                            <div className="col">
                                                                 <div className="input-group">
+                                                                <label className="form-label full-width"></label>
                                                                     <input type="text"
                                                                         className="form-control"
                                                                         placeholder="Search Approver's Name Here"
                                                                         value={ApproverSearchKey}
                                                                         onChange={(e) => autoSuggestionsForApprover(e, "OnTaskPopup")}
                                                                     />
-                                                                    <span className="input-group-text" onClick={OpenApproverPopupFunction} title="Approver Data Popup">
-                                                                        <span className="svg__iconbox svg__icon--editBox"></span>
+                                                                    <span className="input-group-text mt--10" onClick={OpenApproverPopupFunction} title="Approver Data Popup">
+                                                                        <span className="svg__iconbox svg__icon--editBox mt--10"></span>
                                                                     </span>
                                                                 </div>
                                                                 {ApproverSearchedData?.length > 0 ? (
@@ -4461,7 +4461,7 @@ const EditTaskPopup = (Items: any) => {
                                                             <ul className="list-group">
                                                                 {SearchedProjectData.map((item: any) => {
                                                                     return (
-                                                                        <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectProjectFromAutoSuggestion([item])} >
+                                                                        <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={item.id} onClick={() => SelectProjectFromAutoSuggestion([item])} >
                                                                             <a>{item.Title}</a>
                                                                         </li>
                                                                     )
@@ -4703,14 +4703,12 @@ const EditTaskPopup = (Items: any) => {
                                                                         <span className="mx-1">{EstimatedTimeData.EstimatedTime ? (EstimatedTimeData.EstimatedTime > 1 ? EstimatedTimeData.EstimatedTime + " Hours" : EstimatedTimeData.EstimatedTime + " Hour") : "0 Hour"}</span>
                                                                         <img className="ProirityAssignedUserPhoto m-0" title={EstimatedTimeData.UserName} src={EstimatedTimeData.UserImage != undefined && EstimatedTimeData.UserImage?.length > 0 ? EstimatedTimeData.UserImage : ''} />
                                                                     </div>
-                                                                    <TooltipHost
-                                                                        content={EstimatedTimeData.EstimatedTimeDescription}
-                                                                        id={buttonId + "-" + Index}
-                                                                        calloutProps={calloutProps}
-                                                                        styles={hostStyles}>
-                                                                            <div className="alignCenter"><span className="svg__iconbox svg__icon--info" ></span></div>
-                                                                        
-                                                                    </TooltipHost>
+                                                                    <span className="hover-text m-0 alignIcon">
+                                                                        <span className="svg__iconbox svg__icon--info"></span>
+                                                                        <span className="tooltip-text pop-right">
+                                                                             {EstimatedTimeData.EstimatedTimeDescription}
+                                                                        </span>
+                                                                    </span>
                                                                 </div>
                                                             )
                                                         })}
@@ -4787,8 +4785,11 @@ const EditTaskPopup = (Items: any) => {
                                                                             <span title="Customize the width of page" onClick={() => ImageCustomizeFunction(index)}>
                                                                                 <FaExpandAlt /> |
                                                                             </span>
-                                                                            <span title={ImageDtl.Description != undefined && ImageDtl.Description?.length > 1 ? ImageDtl.Description : "Add Image Description"} className="mx-1 img-info" onClick={() => openAddImageDescriptionFunction(index, ImageDtl, "Opne-Model")}>
-                                                                                <span className="svg__iconbox svg__icon--info "></span>
+                                                                            <span className="ms-1 m-0 img-info hover-text" onClick={() => openAddImageDescriptionFunction(index, ImageDtl, "Opne-Model")}>
+                                                                                <span className="svg__iconbox svg__icon--info dark"></span>
+                                                                                <span className="tooltip-text pop-right">
+                                                                                    {ImageDtl.Description != undefined && ImageDtl.Description?.length > 1 ? ImageDtl.Description : "Add Image Description"}
+                                                                                </span>
                                                                             </span>
                                                                         </div>
                                                                     </div>
@@ -5319,17 +5320,15 @@ const EditTaskPopup = (Items: any) => {
                                                                     <div>
                                                                         <div className="col-12">
                                                                             <div className="input-group">
+                                                                                <label className="form-label full-width"></label>
                                                                                 <input type="text"
                                                                                     className="form-control"
                                                                                     placeholder="Search Approver's Name Here"
                                                                                     value={ApproverSearchKey}
                                                                                     onChange={(e) => autoSuggestionsForApprover(e, "OnTaskPopup")}
                                                                                 />
-                                                                                <span className="input-group-text" onClick={OpenApproverPopupFunction} title="Approver Data Popup">
-                                                                                    <span className="svg__iconbox svg__icon--editBox"></span>
-
-
-
+                                                                                <span className="input-group-text mt--10" onClick={OpenApproverPopupFunction} title="Approver Data Popup">
+                                                                                    <span className="svg__iconbox svg__icon--editBox mt--10"></span>
                                                                                 </span>
                                                                             </div>
                                                                             {ApproverSearchedData?.length > 0 ? (
@@ -5513,7 +5512,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         <ul className="list-group">
                                                                             {SearchedProjectData.map((item: any) => {
                                                                                 return (
-                                                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectProjectFromAutoSuggestion([item])} >
+                                                                                    <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={item.id} onClick={() => SelectProjectFromAutoSuggestion([item])} >
                                                                                         <a>{item.Title}</a>
                                                                                     </li>
                                                                                 )
@@ -5743,14 +5742,12 @@ const EditTaskPopup = (Items: any) => {
                                                                                 <img className="ProirityAssignedUserPhoto m-0" title={EstimatedTimeData.UserName} src={EstimatedTimeData.UserImage != undefined && EstimatedTimeData.UserImage?.length > 0 ? EstimatedTimeData.UserImage : ''} />
                                                                                 <span>{EstimatedTimeData.Team ? EstimatedTimeData.Team : null}</span> |
                                                                                 <span>Time : {EstimatedTimeData.EstimatedTime ? (EstimatedTimeData.EstimatedTime > 1 ? EstimatedTimeData.EstimatedTime + " hours" : EstimatedTimeData.EstimatedTime + " hour") : "0 hour"}</span>
-                                                                                <TooltipHost
-                                                                                    content={EstimatedTimeData.EstimatedTimeDescription}
-                                                                                    id={buttonId + "-" + Index}
-                                                                                    calloutProps={calloutProps}
-                                                                                    styles={hostStyles}
-                                                                                >
-                                                                                    <span className="svg__iconbox svg__icon--info" ></span>
-                                                                                </TooltipHost>
+                                                                                <span className="hover-text m-0 alignIcon">
+                                                                                    <span className="svg__iconbox svg__icon--info"></span>
+                                                                                    <span className="tooltip-text pop-right">
+                                                                                        {EstimatedTimeData.EstimatedTimeDescription}
+                                                                                    </span>
+                                                                                </span>
                                                                                 {/* <span title="Edit" className="svg__iconbox svg__icon--editBox" onClick={() => alert("We are working on this feature. It will be live soon..")}></span> */}
                                                                             </div>
 

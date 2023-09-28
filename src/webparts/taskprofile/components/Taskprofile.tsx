@@ -1864,10 +1864,13 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                           <div>
                                             <span className='me-2'>{EstimatedTimeData?.Team != undefined ? EstimatedTimeData?.Team : EstimatedTimeData?.Category != undefined ?EstimatedTimeData?.Category : null  }</span> |
                                             <span className='mx-2'>{EstimatedTimeData.EstimatedTime ? (EstimatedTimeData.EstimatedTime > 1 ? EstimatedTimeData.EstimatedTime + " hours" : EstimatedTimeData.EstimatedTime + " hour") : "0 hour"}</span>
-                                            <img className="ProirityAssignedUserPhoto m-0 mx-2" title={EstimatedTimeData.UserName} src={EstimatedTimeData.UserImage != undefined && EstimatedTimeData.UserImage?.length > 0 ? EstimatedTimeData.UserImage : ''} />
+                                            <img className="workmember m-0 me-2" title={EstimatedTimeData.UserName} src={EstimatedTimeData.UserImage != undefined && EstimatedTimeData.UserImage?.length > 0 ? EstimatedTimeData.UserImage : ''} />
                                           </div>
-                                          <div className='alignCenter'>
-                                            <span className="svg__iconbox svg__icon--info" title={EstimatedTimeData.EstimatedTimeDescription}></span>
+                                          <div className='alignCenter hover-text m-0'>
+                                            <span className="svg__iconbox svg__icon--info"></span>
+                                            <span className='tooltip-text pop-right'>
+                                                {EstimatedTimeData.EstimatedTimeDescription}
+                                            </span>
                                           </div>
                                         </div>
                                       )
