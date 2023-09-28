@@ -1219,7 +1219,7 @@ const ProjectManagementMain = (props: any) => {
         resetSorting: false,
         resetColumnFilters: false,
         placeholder: "",
-        size: 35
+        size: 55
       }
     ],
     [data]
