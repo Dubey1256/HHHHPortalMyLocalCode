@@ -368,7 +368,7 @@ function CreateTaskComponent(props: any) {
         }
         setBurgerMenuTaskDetails(BurgerMenuData)
     }
-   
+
     const loadRelevantTask = async (PortfolioId: any, UrlTask: any, PageTask: any) => {
         let allData: any = [];
         let query = '';
@@ -378,14 +378,14 @@ function CreateTaskComponent(props: any) {
         const batch = sp.createBatch();
         let count: any = 0;
         SitesTypes?.map((site: any) => {
-       
+
             try {
-                if(site?.listId!=undefined){
+                if (site?.listId != undefined) {
                     const lists = web.lists.getById(site?.listId)
                     lists.items.inBatch(batch).select(query)
                         .getAll()
                         .then((data: any) => {
-                           
+
                             data.map((item: any) => {
                                 item.SiteIcon = site?.Item_x005F_x0020_Cover?.Url
                                 item.siteType = site?.siteName;
@@ -399,7 +399,7 @@ function CreateTaskComponent(props: any) {
                                     if (user?.AssingedToUser?.Id == item.Editor.Id) {
                                         item.EditorCover = user?.Item_x0020_Cover?.Url
                                     }
-    
+
                                 })
                                 item.PercentComplete = item?.PercentComplete * 100;
                                 item.Priority = item.PriorityRank * 1;
@@ -415,9 +415,9 @@ function CreateTaskComponent(props: any) {
                                 if (item?.Portfolio?.Id == PortfolioId) {
                                     setRelTask.ComponentRelevantTask.push(item);
                                 }
-    
+
                                 item.TaskID = globalCommon.GetTaskId(item);
-    
+
                                 item.DisplayDueDate = moment(item?.DueDate).format('DD/MM/YYYY');
                                 if (item.DisplayDueDate == "Invalid date" || item.DisplayDueDate == undefined) {
                                     item.DisplayDueDate = '';
@@ -436,20 +436,20 @@ function CreateTaskComponent(props: any) {
                                         if (item?.ComponentLink?.Url.indexOf(PageTask) > -1) {
                                             setRelTask.PageRelevantTask.push(item);
                                         }
-    
+
                                     } catch (error) {
                                         console.log(error.message)
                                     }
-                                } 
+                                }
                             })
                             count++;
-                                if (count == SitesTypes.length-1) {
-                                    console.log("inside Set Task")
-                                    setRelevantTasks(setRelTask)
-                                    setSave({ ...save, recentClick: 'PortfolioId' })
-                                }
+                            if (count == SitesTypes.length - 1) {
+                                console.log("inside Set Task")
+                                setRelevantTasks(setRelTask)
+                                setSave({ ...save, recentClick: 'PortfolioId' })
+                            }
                         })
-    
+
                 }
             } catch (error) {
                 console.log(error)
@@ -513,7 +513,7 @@ function CreateTaskComponent(props: any) {
                 }
             })
         })
-        if(loggedInUser.IsApprovalMail.toLowerCase() == 'approve all'){
+        if (loggedInUser.IsApprovalMail.toLowerCase() == 'approve all') {
             subCategories?.map((item: any) => {
                 if (item?.Title == "Approval") {
                     selectSubTaskCategory(item?.Title, item?.Id, item)
@@ -564,7 +564,7 @@ function CreateTaskComponent(props: any) {
                 // }
             })
             let CurrentUserId = loggedInUser?.AssingedToUserId;
-          
+
             taskUsers = AllTaskUsers;
         }
         catch (error) {
@@ -901,7 +901,7 @@ function CreateTaskComponent(props: any) {
                                 console.log(response);
                             });
                         }
-                       
+                      
                         data.data.siteUrl = selectedSite?.siteUrl?.Url;
                         data.data.siteType = save.siteType;
                         data.data.listId = selectedSite?.listId;
@@ -1461,11 +1461,13 @@ function CreateTaskComponent(props: any) {
                 try {
                     if (isLoadNotification == false)
                         ToEmails = [];
-                    if (RecipientMail?.Email != undefined && ToEmails?.length == 0) {
-                        ToEmails.push(RecipientMail.Email)
-                    }
-                    if(isLoadNotification=='DesignMail'){
-                        ToEmails = [RecipientMail?.Email];
+                    if (RecipientMail?.length > 0) {
+                        if (ToEmails == undefined || isLoadNotification == 'DesignMail') {
+                            ToEmails = [];
+                        }
+                        RecipientMail.map((mail: any) => {
+                            ToEmails.push(mail?.Email);
+                        })
                     }
                     if (ToEmails.length > 0) {
                         var query = '';
@@ -1814,14 +1816,7 @@ function CreateTaskComponent(props: any) {
                                 if (CC.length > 1)
                                     CC.splice(1, 1);
                                 //'<tr><td colspan="7" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;flex-basis: 100%;background-color: #fff;font-weight: normal;font-size: 13px;color: #000;margin-left: 2px;border: 1px solid #ccc;">' + UpdateItem.Description + '</td></tr>' +
-                                if (RecipientMail?.length > 0) {
-                                    if (ToEmails == undefined||isLoadNotification=='DesignMail') {
-                                        ToEmails = [];
-                                    }
-                                    RecipientMail.map((mail: any) => {
-                                        ToEmails.push(mail?.Email);
-                                    })
-                                }
+
                                 var from = '',
                                     to = ToEmails,
                                     cc = CC,
@@ -1909,8 +1904,8 @@ function CreateTaskComponent(props: any) {
                              </span>
                         </div>  : ''} */}
                     <div>
-                    {props?.projectId == undefined ?
-                        <h4 className="titleBorder">General Information</h4>: ''}
+                        {props?.projectId == undefined ?
+                            <h4 className="titleBorder">General Information</h4> : ''}
                         <div className='row p-0'>
                             <div className='col-sm-6'>
                                 <div className='input-group'>
@@ -2078,7 +2073,7 @@ function CreateTaskComponent(props: any) {
                                                 return (
                                                     <>
                                                         {Task.Id === item.ParentID &&
-                                                            <a onClick={() => selectSubTaskCategory(item?.Title, item?.Id, item )} id={"subcategorytasks" + item.Id} className={item.ActiveTile ? 'bg-siteColor subcategoryTask active text-center' : 'bg-siteColor subcategoryTask text-center'} >
+                                                            <a onClick={() => selectSubTaskCategory(item?.Title, item?.Id, item)} id={"subcategorytasks" + item.Id} className={item.ActiveTile ? 'bg-siteColor subcategoryTask active text-center' : 'bg-siteColor subcategoryTask text-center'} >
                                                                 <span className="tasks-label">{item.Title}</span>
                                                             </a>
                                                         }
