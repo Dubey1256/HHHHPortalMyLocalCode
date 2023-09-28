@@ -378,7 +378,7 @@ export default function ProjectOverview(props: any) {
                 size: 155,
             },
             {
-                accessorFn: (row) => row?.DisplayDueDate,
+                accessorFn: (row) => row?.DueDate,
                 cell: ({ row }) => (
                     <InlineEditingcolumns
                         AllListId={AllListId}
@@ -390,6 +390,9 @@ export default function ProjectOverview(props: any) {
                 ),
                 id: 'DisplayDueDate',
                 placeholder: "Due Date",
+                filterFn: (row:any, columnId:any, filterValue:any) => {
+                    return  row?.original?.DisplayDueDate?.includes(filterValue)
+                  },
                 header: "",
                 resetColumnFilters: false,
                 resetSorting: false,
@@ -625,7 +628,7 @@ export default function ProjectOverview(props: any) {
                 size: 155,
             },
             {
-                accessorFn: (row) => row?.DisplayDueDate,
+                accessorFn: (row) => row?.DueDate,
                 cell: ({ row }) => (
                     <InlineEditingcolumns
                         AllListId={AllListId}
@@ -638,6 +641,9 @@ export default function ProjectOverview(props: any) {
                 id: 'DisplayDueDate',
                 placeholder: "Due Date",
                 header: "",
+                filterFn: (row:any, columnId:any, filterValue:any) => {
+                    return  row?.original?.DisplayDueDate?.includes(filterValue)
+                  },
                 resetColumnFilters: false,
                 resetSorting: false,
                 size: 100,
@@ -830,6 +836,9 @@ export default function ProjectOverview(props: any) {
                 id: 'DueDate',
                 resetColumnFilters: false,
                 resetSorting: false,
+                filterFn: (row:any, columnId:any, filterValue:any) => {
+                    return  row?.original?.DisplayDueDate?.includes(filterValue)
+                  },
                 placeholder: "Due Date",
                 header: "",
                 size: 100,
@@ -1022,7 +1031,7 @@ export default function ProjectOverview(props: any) {
                 size: 155,
             },
             {
-                accessorFn: (row) => row?.DisplayDueDate,
+                accessorFn: (row) => row?.DueDate,
                 cell: ({ row }) => (
                     <InlineEditingcolumns
                         AllListId={AllListId}
@@ -1035,6 +1044,9 @@ export default function ProjectOverview(props: any) {
                 id: 'DisplayDueDate',
                 placeholder: "Due Date",
                 header: "",
+                filterFn: (row:any, columnId:any, filterValue:any) => {
+                    return  row?.original?.DisplayDueDate?.includes(filterValue)
+                  },
                 resetColumnFilters: false,
                 resetSorting: false,
                 size: 100,
