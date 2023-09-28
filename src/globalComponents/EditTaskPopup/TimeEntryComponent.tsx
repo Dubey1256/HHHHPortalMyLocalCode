@@ -2677,11 +2677,11 @@ function TimeEntryPopup(item: any) {
                         {row?.original?.Category?.Title} -{" "}
                         {row?.original?.Title}
                       </span>
-                      <span
+                      <span title="Edit"
                         className="svg__iconbox svg__icon--edit"
                         onClick={() => Editcategorypopup(row.original)}
                       ></span>
-                      <span
+                      <span title="Delete"
                         className="svg__iconbox svg__icon--trash hreflink"
                         onClick={() => deleteCategory(row.original)}
                       ></span>
@@ -2740,7 +2740,7 @@ function TimeEntryPopup(item: any) {
 
 
                 {" "}
-                <span className="svg__iconbox svg__icon--edit hreflink" onClick={() =>
+                <span title="Edit" className="svg__iconbox svg__icon--edit hreflink" onClick={() =>
                   openTaskStatusUpdatePoup2(
                     row?.getParentRow()?.original,
                     row.original
@@ -2767,8 +2767,7 @@ function TimeEntryPopup(item: any) {
           <span></span>
           <div className="col-sm-12 p-0 mt-10">
             <div className="col-sm-12 ps-0 pr-5 TimeTabBox mt-2">
-              <a
-                className="hreflink pull-right mt-1 mr-0"
+              <a className="hreflink pull-right mr-0"
                 onClick={openTaskStatusUpdatePoup}
               >
                 + Add Time in New Structure

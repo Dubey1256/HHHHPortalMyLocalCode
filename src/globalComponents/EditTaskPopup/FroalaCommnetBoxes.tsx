@@ -474,7 +474,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                             <a className="hreflink alignIcon"
                                                 style={{ cursor: "pointer" }} target="_blank"
                                                 onClick={() => RemoveItem(obj)}>
-                                                <span className="svg__iconbox hreflink mini dark svg__icon--trash"></span>
+                                                <span className="svg__iconbox hreflink mini svg__icon--trash"></span>
                                             </a>
                                         </div>
                                     </div>
