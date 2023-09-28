@@ -1815,13 +1815,12 @@ function CreateTaskComponent(props: any) {
                                     CC.splice(1, 1);
                                 //'<tr><td colspan="7" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;flex-basis: 100%;background-color: #fff;font-weight: normal;font-size: 13px;color: #000;margin-left: 2px;border: 1px solid #ccc;">' + UpdateItem.Description + '</td></tr>' +
                                 if (RecipientMail?.length > 0) {
-                                    if (ToEmails == undefined) {
+                                    if (ToEmails == undefined||isLoadNotification=='DesignMail') {
                                         ToEmails = [];
                                     }
                                     RecipientMail.map((mail: any) => {
-                                        ToEmails.push(mail.Email);
+                                        ToEmails.push(mail?.Email);
                                     })
-
                                 }
                                 var from = '',
                                     to = ToEmails,
