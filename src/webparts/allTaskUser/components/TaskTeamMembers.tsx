@@ -198,12 +198,18 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         let taxTypes: string[] = ["TimesheetCategories"];
         const resTimesheetCategories = await this.props.spService.getSmartMetadata(this.props.smartMetadataListId, taxTypes);
         if (resTimesheetCategories.length > 0) {
-            resTimesheetCategories.forEach((tsCategory) => timesheetCategories.push({
-                key: tsCategory.Title,
-                text: tsCategory.Title
-            }));
+            const existingTitles = new Set();
+            resTimesheetCategories.forEach((tsCategory) => {
+                const title = tsCategory.Title;
+                if (!existingTitles.has(title)) {
+                    timesheetCategories.push({
+                        key: title,
+                        text: title
+                    });
+                    existingTitles.add(title);
+                }
+            });
         }
-
         taxTypes = ["Categories", "Category", "teamSites", "Sites", "TimesheetCategories"];
         let resCategories = await this.props.spService.getSmartMetadata(this.props.smartMetadataListId, taxTypes);
         let smartMetadataItems: IContextualMenuItem[] = [];
@@ -765,7 +771,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             Id: item.Id
         };
 
-        let selSmartMetadataItems = this.state.taskItem.selSmartMetadataItems!=undefined?[...this.state.taskItem.selSmartMetadataItems]:[];
+        let selSmartMetadataItems = this.state.taskItem.selSmartMetadataItems != undefined ? [...this.state.taskItem.selSmartMetadataItems] : [];
         existingItem = selSmartMetadataItems.filter(mItem => mItem.Id == item.Id).length > 0
         if (!existingItem) {
             selSmartMetadataItems.push(selMetadataItem);
@@ -1109,10 +1115,10 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                     <div className="ms-Grid-col ms-sm3 ms-md3 ms-lg3">
                         {elemApproveSelectedMenu}
                         <div className="ms-Grid-col ms-sm9 ms-md9 ms-lg9 p-0">
-                    {elemSelSmartMetadataItems}
+                            {elemSelSmartMetadataItems}
+                        </div>
                     </div>
-                    </div>
-                   
+
                 </div>)}
                 <br />
             </div>
