@@ -308,7 +308,7 @@ const GlobalCommanTable = (items: any) => {
                     </span> : <span><a className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }} title='Web Page'></span></a></span>}
                     <a className='excal' onClick={() => downloadExcel(excelDatas, "Task-User-Management")} title='Export To Excel' ><RiFileExcel2Fill /></a>
 
-                    <a  className='brush' title="Clear All"><i className="fa fa-paint-brush hreflink" aria-hidden="true" title="Clear All"></i></a>
+                    <a className='brush' title="Clear All"><i className="fa fa-paint-brush hreflink" aria-hidden="true" title="Clear All"></i></a>
 
 
                     <a title="Print" className='Prints' onClick={() => downloadPdf()}>
@@ -430,8 +430,8 @@ const GlobalCommanTable = (items: any) => {
                     ))}
                 </select>
             </div> : ''}
-            {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} /> : ''}
-
+            {/* {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} /> : ''} */}
+            {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} portfolioTypeData={items?.portfolioTypeData} context={items?.AllListId?.Context} /> : ''}
         </>
     )
 }
