@@ -807,7 +807,7 @@ function PortfolioTable(SelectedProp: any) {
       temp.DueDate = "";
       temp.Project = "";
       temp.ClientCategorySearch = "";
-      temp.Created = "";
+      temp.Created = null;
       temp.AllTeamName = "";
       temp.DueDate = "";
       temp.descriptionsSearch = "";
