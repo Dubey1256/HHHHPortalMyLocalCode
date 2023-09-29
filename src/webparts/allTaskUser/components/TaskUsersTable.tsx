@@ -7,7 +7,6 @@ import {
 
 import { Link, PrimaryButton } from '@fluentui/react';
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
-import styles from './AllTaskUser.module.scss';
 
 interface ITaskUser {
   Sflag: boolean;
@@ -43,11 +42,11 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
   })
   const columns = React.useMemo<ColumnDef<ITaskUser, any>[]>(
     () => [{
-      cell: ({ row }: any) => (
-        <>
-          <img src={`${row.original.Item_x0020_Cover != null && row.original.Item_x0020_Cover.Url != null ? row.original.Item_x0020_Cover.Url : 'https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg'}`} className="wid22" />
-        </>
-      ),
+      // cell: ({ row }: any) => (
+      //   <>
+      //     <img src={`${row.original.Item_x0020_Cover != null && row.original.Item_x0020_Cover.Url != null ? row.original.Item_x0020_Cover.Url : 'https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg'}`} className="workmember" />
+      //   </>
+      // ),
       accessorFn: '',
       canSort: false,
       placeholder: '',
@@ -62,10 +61,8 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
       id: "Title",
       cell: info => props.GetUser(info.row.original.Title, info.row.original.TaskId),
       sortDescFirst: false
-
     },
     {
-
       accessorKey: "Group",
       header: "",
       id: "Group",
@@ -76,12 +73,14 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
       header: "",
       id: "Category",
       placeholder: "Search Category",
+      size: 80,
     },
     {
       accessorKey: "SortOrder",
       header: "",
       id: "SortOrder",
       placeholder: "SortOrder",
+      size: 42,
     },
     {
       accessorKey: "Role",
@@ -94,6 +93,7 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
       header: "",
       id: "Company",
       placeholder: "Company",
+      size: 70,
     },
     {
       accessorKey: "Approver",
@@ -105,13 +105,13 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
       id: "TaskId",
       accessorKey: "TaskId",
       header: null,
-      cell: (info) => (<div style={{ width: "60px" }}>
-        <Link href="#" onClick={() => props.EditTask(info.getValue())}><span className='svg__iconbox svg__icon--edit' title='Edit'></span></Link>
-        <Link href="#" onClick={() => props.DeleteTask(info.getValue())}><span className='svg__iconbox svg__icon--trash' title='Trash'></span></Link>
+      size: 50,
+      cell: (info) => (<div className='pull-right alignCenter'>
+        <span onClick={() => props.EditTask(info.getValue())} className='svg__iconbox svg__icon--edit' title='Edit'></span>
+        <span onClick={() => props.DeleteTask(info.getValue())} className='svg__iconbox svg__icon--trash' title='Trash'></span>
       </div>),
       enableColumnFilter: false,
       enableSorting: false,
-      minSize: 60
     }
     ],
     [data]
@@ -122,11 +122,11 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
   }, []);
   return (
 
-    <div className="border ms-Grid">
+    <div className="border Alltable ms-Grid">
       <div className='tbl-button'>
-        <span><PrimaryButton text="Add Team Member" style={{ zIndex: '9999' }} onClick={() => props.AddTask()} /></span>
+        <button className='btn btn-primary position-relative' style={{ zIndex: '9999' }} onClick={() => props.AddTask()}>Add Team Member</button>
       </div>
-      <div style={{ height: '700px', overflow: 'auto' }}>
+      <div className='wrapper'>
       <GlobalCommanTable columns={columns} data={data} callBackData={callBackData} showHeader={true} />
     </div>
     </div>
