@@ -200,10 +200,8 @@ const AddCommentComponent = (FbData: any) => {
     const onRenderCustomHeader = () => {
         return (
             <div className="d-flex full-width pb-1" >
-                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <span>
+                <div className="subheading siteColor">
                         {`Update Comment`}
-                    </span>
                 </div>
                 <Tooltip ComponentId='1683' />
             </div>
@@ -277,10 +275,10 @@ const AddCommentComponent = (FbData: any) => {
                                     <div className="FeedBack-comment">
                                         <div className={`col-12 d-flex float-end add_cmnt my-1 ${commentDtl.isShowLight}`} title={commentDtl.isShowLight}>
                                             <div className="">
-                                                <img style={{ width: "40px", borderRadius: "50%", height: "40px", margin: "5px" }} src={commentDtl.AuthorImage != undefined && commentDtl.AuthorImage != '' ?
+                                                <img className="workmember" src={commentDtl.AuthorImage != undefined && commentDtl.AuthorImage != '' ?
                                                     commentDtl.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
                                             </div>
-                                            <div className="col-11 pe-0 mt-2 ms-1" >
+                                            <div className="col-11 pe-0 ms-2" >
                                                 <div className='d-flex justify-content-between align-items-center'>
                                                     <span className="font-weight-normal">
                                                         {commentDtl.AuthorName} - {commentDtl.Created}
@@ -294,7 +292,7 @@ const AddCommentComponent = (FbData: any) => {
                                                             </div>
                                                         </a>
                                                         <a className="ps-1" title="Edit Comment" onClick={() => openEditModal(commentDtl.Title, index, FbData?.index, false, "ParentComment")}><span className="svg__iconbox svg__icon--editBox"></span></a>
-                                                        <a className="ps-1" title="Delete Comment" onClick={() => clearComment(true, index, FbData?.index)}><span className="svg__icon--cross svg__iconbox"></span></a>
+                                                        <a className="ps-1" title="Delete Comment" onClick={() => clearComment(true, index, FbData?.index)}><span className="svg__icon--trash svg__iconbox"></span></a>
                                                     </span>
                                                 </div>
                                                 <div>
@@ -306,18 +304,18 @@ const AddCommentComponent = (FbData: any) => {
                                                             return (
                                                                 <div key={ReplyIndex} className="border d-flex my-2 p-1">
                                                                     <div>
-                                                                        <img style={{ width: "40px", borderRadius: "50%", height: "40px", margin: "5px" }} src={ReplyDtl.AuthorImage != undefined && ReplyDtl.AuthorImage != '' ?
+                                                                        <img className="workmember" src={ReplyDtl.AuthorImage != undefined && ReplyDtl.AuthorImage != '' ?
                                                                             ReplyDtl.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
                                                                         />
                                                                     </div>
                                                                     <div className="full-width">
                                                                         <div className='d-flex justify-content-between align-items-center'>
-                                                                            <span className="font-weight-normal">
+                                                                            <span className="font-weight-normal ms-2">
                                                                                 {ReplyDtl.AuthorName} - {ReplyDtl.Created}
                                                                             </span>
                                                                             <span className="align-baseline d-flex">
                                                                                 <a className="ps-1" title="Edit Comment" onClick={() => openEditModal(ReplyDtl.Title, ReplyIndex, index, false, "ReplyComment")}><span className="svg__iconbox svg__icon--editBox"></span></a>
-                                                                                <a className="ps-1" title="Delete Comment" onClick={() => DeleteReplyMessageFunction(ReplyIndex, index)}><span className="svg__icon--cross svg__iconbox"></span></a>
+                                                                                <a className="ps-1" title="Delete Comment" onClick={() => DeleteReplyMessageFunction(ReplyIndex, index)}><span className="svg__icon--trash svg__iconbox"></span></a>
                                                                             </span>
                                                                         </div>
                                                                         <div>
@@ -365,22 +363,20 @@ const AddCommentComponent = (FbData: any) => {
                         type={PanelType.custom}
                         customWidth="500px"
                     >
-                        <div className="parentDiv">
-                            <div style={{ width: '99%', marginTop: '2%', padding: '2%' }}>
-                                <textarea id="txtUpdateComment" rows={6} onChange={(e) => updateCommentFunction(e, updateComment, EditModelUsedFor)} style={{ width: '100%', marginLeft: '3px' }} defaultValue={updateComment ? updateComment.Title : ''}>
+                            <div>
+                                <textarea className="full-width" id="txtUpdateComment" rows={6} onChange={(e) => updateCommentFunction(e, updateComment, EditModelUsedFor)} defaultValue={updateComment ? updateComment.Title : ''}>
                                 </textarea>
                             </div>
-                            <footer className="d-flex justify-content-between ms-3 mx-2 float-end">
+                            <footer className="d-flex justify-content-between mt-1 float-end">
                                 <div>
-                                    <button className='btn btn-default mx-1 px-2' onClick={editPostCloseFunction}>
-                                        Cancel
-                                    </button>
-                                    <button className="btn btnPrimary" onClick={editPostCloseFunction}>
+                                    <button className="btn btnPrimary mx-1" onClick={editPostCloseFunction}>
                                         Save
+                                    </button>
+                                    <button className='btn btn-default' onClick={editPostCloseFunction}>
+                                        Cancel
                                     </button>
                                 </div>
                             </footer>
-                        </div>
                     </Panel>
                 </section>
             </div>

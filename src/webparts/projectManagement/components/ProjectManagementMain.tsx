@@ -420,6 +420,9 @@ const ProjectManagementMain = (props: any) => {
 
               })
             }
+            if (items?.TaskCategories?.length > 0) {
+              items.TaskTypeValue = items?.TaskCategories?.map((val: any) => val.Title).join(",")
+          }
             items.AllTeamMember = [];
             items.HierarchyData = [];
             items.descriptionsSearch = '';
@@ -717,6 +720,19 @@ const ProjectManagementMain = (props: any) => {
         header: "",
       },
       {
+        accessorFn: (row) => row?.TaskTypeValue,
+        cell: ({ row }) => (
+            <>
+                <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content">{row?.original?.TaskTypeValue}</span></span>
+            </>
+        ),
+        placeholder: "Task Type",
+        header: "",
+        resetColumnFilters: false,
+        size: 120,
+        id: "TaskTypeValue",
+    },
+      {
         accessorFn: (row) => row?.Site,
         cell: ({ row }) => (
           <span>
@@ -786,6 +802,9 @@ const ProjectManagementMain = (props: any) => {
         resetColumnFilters: false,
         isColumnDefultSortingDesc:true,
         resetSorting: false,
+        filterFn: (row:any, columnId:any, filterValue:any) => {
+          return  row?.original?.DisplayDueDate?.includes(filterValue)
+        },
         placeholder: "Due Date",
         header: "",
         size: 80
@@ -866,13 +885,8 @@ const ProjectManagementMain = (props: any) => {
       {
         accessorFn: (row) => row?.Created,
         cell: ({ row }) => (
-          <span>
-            {/* {row.original.Services.length >= 1 ? (
-              <span className='ms-1 text-success'>{row?.original?.DisplayCreateDate} </span>
-            ) : (
-              <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
-            )} */}
-            <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
+          <span className="d-flex">
+            <span>{row?.original?.DisplayCreateDate} </span>
 
             {row?.original?.createdImg != undefined ? (
               <>
@@ -894,8 +908,15 @@ const ProjectManagementMain = (props: any) => {
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "Created",
+        filterFn: (row:any, columnId:any, filterValue:any) => {
+          if(row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase())|| row?.original?.DisplayCreateDate?.includes(filterValue)){
+            return  true
+          }else{
+            return false
+          }
+        },
         header: "",
-        size: 125
+        size: 105
       },
       {
         cell: ({ row }) => (
@@ -919,8 +940,8 @@ const ProjectManagementMain = (props: any) => {
         resetSorting: false,
         resetColumnFilters: false,
         placeholder: "",
-        size: 40
-      },
+        size: 55
+      }
     ],
     [data]
   );
@@ -1395,4 +1416,4 @@ const ProjectManagementMain = (props: any) => {
     </div>
   );
 };
-export default ProjectManagementMain;
+export default ProjectManagementMain; 

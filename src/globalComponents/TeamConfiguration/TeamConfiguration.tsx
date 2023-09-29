@@ -414,29 +414,29 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         return (
             <>
                 <div className="col">
-                    <div className="col bg-ee p-1">
-                        <div ng-if="teamUserExpanded" className="d-flex justify-content-between align-items-center commonheader" ng-click="forCollapse()">
-                            <span>
+                    <div className="col bg-ee p-1 border">
+                        <div ng-if="teamUserExpanded" className="alignCenter justify-content-between align-items-center commonheader" ng-click="forCollapse()">
+                            <span className='alignCenter'>
                                 {this.state.TeamUserExpended ?
-                                    <SlArrowRight onClick={() => this.setState({ TeamUserExpended: false })}></SlArrowRight>
+                                    <SlArrowDown onClick={() => this.setState({ TeamUserExpended: false })}></SlArrowDown>
+                                    
                                     :
-                                    <SlArrowDown onClick={() => this.setState({ TeamUserExpended: true })}></SlArrowDown>
+                                    <SlArrowRight onClick={() => this.setState({ TeamUserExpended: true })}></SlArrowRight>
                                 }
                                 <span className='mx-2'>
                                     Select Team Members
                                 </span>
                             </span>
-                            <span className='mx-1'>
-                                <a target="_blank " className="text-end siteColor mx-1" href={`${this.props.AllListId?.siteUrl}/SitePages/TaskUser-Management.aspx`} data-interception="off">
+                            <span>
+                                <a target="_blank " className="me-1" href={`${this.props.AllListId?.siteUrl}/SitePages/TaskUser-Management.aspx`} data-interception="off">
                                     Task User Management
                                 </a>
                                 <Tooltip ComponentId="1745" />
-
                             </span>
                         </div>
                     </div>
                     {this.state.TeamUserExpended ?
-                        <div className="border col p-2" ng-show="teamUserExpanded">
+                        <div className="border col p-2 border-top-0" ng-show="teamUserExpanded">
                             <div className="taskTeamBox">
                                 {this.state.taskUsers != null && this.state.taskUsers.length > 0 && this.state.taskUsers.map((user: any, index: number) => {
                                     return <div ui-on-drop="onDropRemoveTeam($event,$data,taskUsers)" className="top-assign ng-scope">
@@ -472,7 +472,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                             <div className="row ">
 
                                 <div className="col-sm-7">
-                                    <h6 className='mb-0'>Team Members</h6>
+                                    <h6 className='mb-1'>Team Members</h6>
                                     <div className="d-flex p-1  UserTimeTabGray">
                                         <div className="col-sm-5 border-end p-0" >
                                             <div className="col"
@@ -503,7 +503,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                     <div data-placeholder="Responsible Team" className='d-flex flex-wrap selectmember'>
                                                         {this.state.TeamMemberUsers != null && this.state.TeamMemberUsers.length > 0 && this.state.TeamMemberUsers.map((image: any, index: number) => {
                                                             return <img
-                                                                className="ProirityAssignedUserPhoto"
+                                                                className="ProirityAssignedUserPhoto me-1"
                                                                 // style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "24px 24px" }}
                                                                 title={image.Title}
                                                                 src={image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url}
@@ -520,7 +520,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                 </div>
 
                                 <div className='col-sm-3'>
-                                    <h6 className='mb-0'>Working Members</h6>
+                                    <h6 className='mb-1'>Working Members</h6>
                                     <div className="col"
                                         onDrop={(e) => this.onDropTeam1(e, this.state.AssignedToUsers, 'Assigned User', this.state.taskUsers, 'Assigned User')}
                                         onDragOver={(e) => e.preventDefault()}>
@@ -548,7 +548,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                     <div className='vacationpanel'>
                                         <div onDrop={(e) => this.onDropRemoveTeam(e, this.state.taskUsers)}
                                             onDragOver={(e) => e.preventDefault()}>
-                                            <img title="Drag user here to  remove user from team for this Network Activity." className="width-75 vacation"
+                                            <img title="Drag user here to  remove user from team for this Network Activity." className="width-75 mt--5 vacation"
                                                 src={this.props.ItemInfo?.Services != undefined && (this.props.ItemInfo?.Services.length > 0 || this.props?.ItemInfo?.Portfolio_x0020_Type == 'Service') ?
                                                     "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Dustbin-green.png" :
                                                     "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Dustbin.png"
