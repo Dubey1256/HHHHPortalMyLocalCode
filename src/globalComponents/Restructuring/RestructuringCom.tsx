@@ -1796,6 +1796,9 @@ const RestructuringCom = (props: any, ref: any) => {
       }
       let array: any = [...allData];
       let count: number = 0;
+      if(newItemBackUp?.Item_x0020_Type != 'Task'){
+        ParentTask_Portfolio = null;
+       }
       restructureItem?.map(async (items: any, index: any) => {
         let level: number = TaskLevel + index;
         let web = new Web(items.siteUrl);
@@ -2251,6 +2254,11 @@ const RestructuringCom = (props: any, ref: any) => {
     
            TaskID = props?.queryItems?.PortfolioStructureID + '-' + TaskID
         }
+
+
+        if(newItemBackUp?.Item_x0020_Type != 'Task'){
+          ParentTask_Id = null;
+         }
 
       let web = new Web(props?.contextValue?.siteUrl);
       var postData: any = {
