@@ -162,7 +162,7 @@ const getFirstColCell = ({ setExpanded, hasCheckbox, hasCustomExpanded, hasExpan
         <div className="alignCenter">
             {hasExpanded && row.getCanExpand() && (
                 <div className="border-0 alignCenter" {...{ onClick: row.getToggleExpandedHandler(), style: { cursor: "pointer" }, }}>
-                    {row.getIsExpanded() ? <SlArrowDown title={'collapse ' + `${row.original.Title}` + ' childs'} style={{ color: `${row?.original?.PortfolioType?.Color}`, width: '12px' }} /> : <SlArrowRight title={'Expand' + `${row.original.Title}` + 'childs'} style={{ color: `${row?.original?.PortfolioType?.Color}`, width: '12px' }} />}
+                    {row.getIsExpanded() ? <SlArrowDown title={'Collapse ' + `${row.original.Title}` + ' childs'} style={{ color: `${row?.original?.PortfolioType?.Color}`, width: '12px' }} /> : <SlArrowRight title={'Expand ' + `${row.original.Title}` + ' childs'} style={{ color: `${row?.original?.PortfolioType?.Color}`, width: '12px' }} />}
                 </div>
             )}{" "}
             {hasCheckbox && row?.original?.Title != "Others" && (
@@ -650,7 +650,14 @@ const GlobalCommanTable = (items: any, ref: any) => {
         };
         table.getRowModel().rows.forEach(flattenRowData);
         const worksheet = XLSX.utils.aoa_to_sheet([]);
-        XLSX.utils.sheet_add_json(worksheet, flattenedData, {
+        function removeDuplicates(arr: any) {
+            const uniqueArray = [];
+            const seen = new Set();
+            for (const obj of arr) { const objString = JSON.stringify(obj); if (!seen.has(objString)) { uniqueArray?.push(obj); seen.add(objString); } }
+            return uniqueArray;
+        }
+        const uniqueArray: any = removeDuplicates(flattenedData);
+        XLSX.utils.sheet_add_json(worksheet, uniqueArray, {
             skipHeader: false,
             origin: "A1",
         });
