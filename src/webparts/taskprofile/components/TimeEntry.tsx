@@ -14,7 +14,7 @@ function TimeEntry(props: any) {
     return (
       <>
 
-        <div className='ps-4' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+        <div className='ps-4 subheading siteColor' >
         {`All Time Entry -${props.data.Title}`}
         </div>
         <Tooltip ComponentId='1753' />
@@ -34,13 +34,12 @@ function TimeEntry(props: any) {
           <TimeEntryPopup props={props.data} Context={props.context}context={props.context} />
         </div>
         <footer className="mt-3 text-end">
-        <Button variant="btn btn-default " onClick={handleClose}>
-            Cancel
-          </Button>
           <Button className="ms-2" variant="primary" onClick={handleClose}>
-            OK
-          </Button>
-          
+              OK
+            </Button>
+          <Button variant="btn btn-default " onClick={handleClose}>
+              Cancel
+            </Button>
         </footer>
       </Panel>
     </>
