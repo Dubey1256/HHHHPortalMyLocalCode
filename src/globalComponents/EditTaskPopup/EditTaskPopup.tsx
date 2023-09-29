@@ -4597,7 +4597,7 @@ const EditTaskPopup = (Items: any) => {
                                                     className="input-group-text"
                                                     title="Status Popup"
                                                     // onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}
-                                                    onClick={TaggedPortfolioData?.length > 0 ? () => setSmartMedaDataUsedPanel("Status") : () => alert("Please Selecte Portfolio")}
+                                                    onClick={() => setSmartMedaDataUsedPanel("Status")}
                                                 >
                                                     <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
                                                 </span>
@@ -5654,7 +5654,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 className="input-group-text"
                                                                 title="Status Popup"
                                                                 // onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}
-                                                                onClick={TaggedPortfolioData?.length > 0 ? () => setSmartMedaDataUsedPanel("Status") : () => alert("Please Select Proftolio")}
+                                                                onClick={() => setSmartMedaDataUsedPanel("Status")}
                                                             >
                                                                 <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
 
