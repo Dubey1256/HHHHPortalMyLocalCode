@@ -77,8 +77,8 @@ var siteUrl = ''
 var listName = ''
 let ApprovalStatusGlobal: any = false;
 let SiteCompositionPrecentageValue: any = 0;
-var TaskApproverBackupArray: any = [];
-var TaskCreatorApproverBackupArray: any = [];
+
+// var TaskCreatorApproverBackupArray: any = [];
 var ReplaceImageIndex: any;
 var ReplaceImageData: any;
 var AllProjectBackupArray: any = [];
@@ -93,6 +93,8 @@ var TempSmartInformationIds: any = [];
 let StatusOptionsBackupArray: any = [];
 
 const EditTaskPopup = (Items: any) => {
+    var TaskCreatorApproverBackupArray: any = [];
+    var TaskApproverBackupArray: any = [];
     const Context = Items.context;
     const AllListIdData = Items.AllListId;
     AllListIdData.listId = Items.Items.listId;
@@ -141,7 +143,7 @@ const EditTaskPopup = (Items: any) => {
     const [OnlyCompletedStatus, setOnlyCompletedStatus] = useState(false);
     const [ImmediateStatus, setImmediateStatus] = useState(false);
     const [ApprovalStatus, setApprovalStatus] = useState(false);
-    const [ApproverData, setApproverData] = useState([]);
+    let [ApproverData, setApproverData] = useState([]);
     const [SmartLightStatus, setSmartLightStatus] = useState(false);
     const [SmartLightPercentStatus, setSmartLightPercentStatus] = useState(false);
     const [ShowTaskDetailsStatus, setShowTaskDetailsStatus] = useState(false);
@@ -189,25 +191,33 @@ const EditTaskPopup = (Items: any) => {
     const [SiteCompositionShow, setSiteCompositionShow] = useState(false);
     const [IsSendAttentionMsgStatus, setIsSendAttentionMsgStatus] = useState(false);
     const [SendCategoryName, setSendCategoryName] = useState('');
-    let [StatusOptions, setStatusOptions] = useState([]);
-    const hostStyles: Partial<ITooltipHostStyles> = { root: { display: 'inline-block' } };
-    const buttonId = useId(`callout-button`);
-    const calloutProps = { gapSpace: 0 };
-    let FeedBackCount: any = 0;
-    const StatusArray = [
+    let [StatusOptions, setStatusOptions] = useState([
+        { value: 0, status: "0% Not Started", taskStatusComment: "Not Started" },
         { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
         { value: 2, status: "2% Follow Up", taskStatusComment: "Follow Up" },
         { value: 3, status: "3% Approved", taskStatusComment: "Approved" },
         { value: 5, status: "5% Acknowledged", taskStatusComment: "Acknowledged" },
-        { value: 10, status: "10% working on it", taskStatusComment: "working on it" },
-        { value: 70, status: "70% Re-Open", taskStatusComment: "Re-Open" },
-        { value: 80, status: "80% In QA Review", taskStatusComment: "In QA Review" },
-        { value: 90, status: "90% Task completed", taskStatusComment: "Task completed" },
-        { value: 93, status: "93% For Review", taskStatusComment: "For Review" },
-        { value: 96, status: "96% Follow-up later", taskStatusComment: "Follow-up later" },
-        { value: 99, status: "99% Completed", taskStatusComment: "Completed" },
-        { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
-    ]
+        { value: 10, status: "10% working on it", taskStatusComment: "working on it" }
+    ]);
+    const hostStyles: Partial<ITooltipHostStyles> = { root: { display: 'inline-block' } };
+    const buttonId = useId(`callout-button`);
+    const calloutProps = { gapSpace: 0 };
+    let FeedBackCount: any = 0;
+    // const StatusArray = [
+    //     { value: 0, status: "0% Not Started", taskStatusComment: "Not Started" },
+    //     { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
+    //     { value: 2, status: "2% Follow Up", taskStatusComment: "Follow Up" },
+    //     { value: 3, status: "3% Approved", taskStatusComment: "Approved" },
+    //     { value: 5, status: "5% Acknowledged", taskStatusComment: "Acknowledged" },
+    //     { value: 10, status: "10% working on it", taskStatusComment: "working on it" },
+    //     { value: 70, status: "70% Re-Open", taskStatusComment: "Re-Open" },
+    //     { value: 80, status: "80% In QA Review", taskStatusComment: "In QA Review" },
+    //     { value: 90, status: "90% Task completed", taskStatusComment: "Task completed" },
+    //     { value: 93, status: "93% For Review", taskStatusComment: "For Review" },
+    //     { value: 96, status: "96% Follow-up later", taskStatusComment: "Follow-up later" },
+    //     { value: 99, status: "99% Completed", taskStatusComment: "Completed" },
+    //     { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
+    // ]
 
     let ItemRankArray = [
         { rankTitle: 'Select Item Rank', rank: null },
@@ -627,7 +637,7 @@ const EditTaskPopup = (Items: any) => {
                                     ApproverSuffix: itemData.Suffix,
                                     ApproverEmail: itemData.Email
                                 }
-                                TempApproverHistory.push(tempObject);
+                                TempApproverHistory = [tempObject];
                             })
                         }
                         if (TempApproverHistory != undefined && TempApproverHistory.length > 0) {
@@ -974,9 +984,16 @@ const EditTaskPopup = (Items: any) => {
                     })
                     if ((statusValue <= 2) && ApprovalStatusGlobal) {
                         let tempArray: any = [];
-                        if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
+                        const TaskApproverBackupTemp = TaskApproverBackupArray?.filter((val: any, id: any, array: any) => {
+                            return array.indexOf(val) == id;
+                        });
+                        const TaskCreatorApproverBackupTemp = TaskCreatorApproverBackupArray?.filter((val: any, id: any, array: any) => {
+                            return array.indexOf(val) == id;
+                        });
+
+                        if (TaskApproverBackupTemp != undefined && TaskApproverBackupTemp.length > 0) {
                             taskUsers.map((userData1: any) => {
-                                TaskApproverBackupArray.map((itemData: any) => {
+                                TaskApproverBackupTemp.map((itemData: any) => {
                                     if (itemData.Id == userData1?.AssingedToUserId) {
                                         AssignedUsers.push(userData1);
                                         TeamMemberTemp.push(userData1);
@@ -985,9 +1002,9 @@ const EditTaskPopup = (Items: any) => {
                                 })
                             })
                         } else {
-                            if (TaskCreatorApproverBackupArray?.length > 0) {
+                            if (TaskCreatorApproverBackupTemp?.length > 0) {
                                 taskUsers.map((userData1: any) => {
-                                    TaskCreatorApproverBackupArray?.map((itemData: any) => {
+                                    TaskCreatorApproverBackupTemp?.map((itemData: any) => {
                                         if (itemData.Id == userData1?.AssingedToUserId) {
                                             AssignedUsers.push(userData1);
                                             TeamMemberTemp.push(userData1);
@@ -1056,7 +1073,12 @@ const EditTaskPopup = (Items: any) => {
                 }
                 item.TaskAssignedUsers = AssignedUsers;
                 if (TaskCreatorApproverBackupArray != undefined && TaskCreatorApproverBackupArray.length > 0) {
-                    item.TaskApprovers = TaskCreatorApproverBackupArray;
+                    const finalData = TaskCreatorApproverBackupArray?.filter((val: any, id: any, array: any) => {
+                        return array.indexOf(val) == id;
+                    });
+                    TaskCreatorApproverBackupArray = finalData;
+
+                    item.TaskApprovers = finalData;
                 } else {
                     item.TaskApprovers = [];
                 }
@@ -1875,9 +1897,12 @@ const EditTaskPopup = (Items: any) => {
                         tempArray.push(dataItem);
                     })
                 }
-                setTaskAssignedTo(tempArray);
-                setTaskTeamMembers(tempArray);
-                setApproverData(tempArray);
+                const finalData = tempArray.filter((val: any, id: any, array: any) => {
+                    return array.indexOf(val) == id;
+                });
+                setTaskAssignedTo(finalData);
+                setTaskTeamMembers(finalData);
+                setApproverData(finalData);
             }
             if (StatusData.value == 2) {
                 setInputFieldDisable(true)
@@ -2208,8 +2233,13 @@ const EditTaskPopup = (Items: any) => {
                     setTaskStatus(item.taskStatusComment);
                 }
             })
-            TaskAssignedTo = tempArrayApprover;
-            TaskTeamMembers = tempArrayApprover;
+            const finalData = tempArrayApprover.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            });
+            TaskAssignedTo = finalData;
+            TaskTeamMembers = finalData;
+            ApproverData = finalData;
+
         }
 
         if (CommentBoxData?.length > 0 || SubCommentBoxData?.length > 0) {
@@ -2756,7 +2786,7 @@ const EditTaskPopup = (Items: any) => {
                 let date = new Date()
                 let timeStamp = date.getTime();
                 let imageIndex = index + 1
-                fileName = "T-" + EditData.Id + '-Image' + imageIndex + "-" + EditData.Title?.replace(/["/':]/g, '')?.slice(0, 40) + " " + timeStamp + ".jpg";
+                fileName = "T" + EditData.Id + '-Image' + imageIndex + "-" + EditData.Title?.replace(/["/':]/g, '')?.slice(0, 40) + " " + timeStamp + ".jpg";
                 let currentUserDataObject: any;
                 if (currentUserBackupArray != null && currentUserBackupArray.length > 0) {
                     currentUserDataObject = currentUserBackupArray[0];
@@ -3728,10 +3758,8 @@ const EditTaskPopup = (Items: any) => {
     const onRenderCustomApproverHeader = () => {
         return (
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
-                <div className="subheading">
-                    <span>
-                        Select Approver
-                    </span>
+                <div className="subheading siteColor">
+                    Select Approver
                 </div>
                 <Tooltip ComponentId="1683" isServiceTask={ServicesTaskCheck} />
             </div>
@@ -3756,7 +3784,7 @@ const EditTaskPopup = (Items: any) => {
                         </div>
                         <div>
                             <a className="hreflink siteColor">
-                            <span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span>
+                                <span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span>
                                 <span onClick={() => deleteTaskFunction(EditData.ID, "Delete-Task")}>Delete This Item</span>
                             </a>
                             <span> | </span>
@@ -4115,8 +4143,8 @@ const EditTaskPopup = (Items: any) => {
                                                                     <>
                                                                         <div className="block w-100">
                                                                             <a title={com.Title} style={{ color: "#fff !important" }} className="wid90" target="_blank" data-interception="off" href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
-                                                                            
-                                                                                <span onClick={() => setTaggedPortfolioData([])} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"></span>
+
+                                                                            <span onClick={() => setTaggedPortfolioData([])} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"></span>
                                                                         </div>
                                                                     </>
                                                                 )
@@ -4247,7 +4275,7 @@ const EditTaskPopup = (Items: any) => {
                                                     <div className="col ps-4 mb-1">
                                                         <ul className="p-0 mt-1 list-none">
                                                             <li className="SpfxCheckRadio">
-                                                                <input className="radio" name="ApprovalLevel" type="radio"/>
+                                                                <input className="radio" name="ApprovalLevel" type="radio" />
                                                                 <label className="form-check-label">Normal Approval</label>
                                                             </li>
                                                             <li className="SpfxCheckRadio">
@@ -4268,7 +4296,7 @@ const EditTaskPopup = (Items: any) => {
                                                         <div>
                                                             <div className="col">
                                                                 <div className="input-group">
-                                                                <label className="form-label full-width"></label>
+                                                                    <label className="form-label full-width"></label>
                                                                     <input type="text"
                                                                         className="form-control"
                                                                         placeholder="Search Approver's Name Here"
@@ -4427,7 +4455,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     <>
                                                                         <div className="block w-100">
                                                                             <a title={com.Title} className="wid90" style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
-                                                                            
+
                                                                             <span onClick={() => RemoveLinkedPortfolio(Index)} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"></span>
                                                                         </div>
                                                                     </>
@@ -4449,7 +4477,6 @@ const EditTaskPopup = (Items: any) => {
                                                             value={ProjectSearchKey}
                                                             onChange={(e) => autoSuggestionsForProject(e)}
                                                         />
-
                                                         <span className="input-group-text" onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" >
                                                             <span className="svg__iconbox svg__icon--editBox">
 
@@ -4473,7 +4500,7 @@ const EditTaskPopup = (Items: any) => {
                                                         <div>
                                                             {selectedProject.map((ProjectData: any) => {
                                                                 return (
-                                                                    <div className="block w-100">
+                                                                    <div className="block">
                                                                         <a className="hreflink wid90" target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}>
                                                                             {ProjectData.Title}
                                                                         </a>
@@ -4565,11 +4592,12 @@ const EditTaskPopup = (Items: any) => {
                                                     className="form-control px-2"
                                                     defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined && Math.floor(EditData.PercentComplete) === EditData.PercentComplete ? Number(EditData.PercentComplete).toFixed(0) : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
                                                     onChange={(e) => StatusAutoSuggestion(e)} />
+
                                                 <span
                                                     className="input-group-text"
                                                     title="Status Popup"
                                                     // onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}
-                                                    onClick={() => setSmartMedaDataUsedPanel("Status")}
+                                                    onClick={TaggedPortfolioData?.length > 0 ? () => setSmartMedaDataUsedPanel("Status") : () => alert("Please Selecte Portfolio")}
                                                 >
                                                     <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
                                                 </span>
@@ -4699,16 +4727,18 @@ const EditTaskPopup = (Items: any) => {
                                                             return (
                                                                 <div className="align-content-center alignCenter justify-content-between py-1">
                                                                     <div className="alignCenter">
-                                                                        <span className="me-1">{EstimatedTimeData.Team != undefined ? EstimatedTimeData.Team : EstimatedTimeData.Category != undefined ? EstimatedTimeData.Category : null}</span> |
-                                                                        <span className="mx-1">{EstimatedTimeData.EstimatedTime ? (EstimatedTimeData.EstimatedTime > 1 ? EstimatedTimeData.EstimatedTime + " Hours" : EstimatedTimeData.EstimatedTime + " Hour") : "0 Hour"}</span>
+                                                                        <span className="me-1">{EstimatedTimeData?.Team != undefined ? EstimatedTimeData.Team : EstimatedTimeData.Category != undefined ? EstimatedTimeData.Category : null}</span> |
+                                                                        <span className="mx-1">{EstimatedTimeData?.EstimatedTime ? (EstimatedTimeData.EstimatedTime > 1 ? EstimatedTimeData.EstimatedTime + " Hours" : EstimatedTimeData.EstimatedTime + " Hour") : "0 Hour"}</span>
                                                                         <img className="ProirityAssignedUserPhoto m-0" title={EstimatedTimeData.UserName} src={EstimatedTimeData.UserImage != undefined && EstimatedTimeData.UserImage?.length > 0 ? EstimatedTimeData.UserImage : ''} />
                                                                     </div>
-                                                                    <span className="hover-text m-0 alignIcon">
-                                                                        <span className="svg__iconbox svg__icon--info"></span>
-                                                                        <span className="tooltip-text pop-right">
-                                                                             {EstimatedTimeData.EstimatedTimeDescription}
-                                                                        </span>
-                                                                    </span>
+                                                                    {EstimatedTimeData?.EstimatedTimeDescription?.length > 0 ?
+                                                                        <span className="hover-text m-0 alignIcon">
+                                                                            <span className="svg__iconbox svg__icon--info"></span>
+                                                                            <span className="tooltip-text pop-right">
+                                                                                {EstimatedTimeData?.EstimatedTimeDescription}
+                                                                            </span>
+                                                                        </span> : null
+                                                                    }
                                                                 </div>
                                                             )
                                                         })}
@@ -5163,7 +5193,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 <>
                                                                                     <div className="block w-100">
                                                                                         <a className="wid90" title={com.Title} style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
-                                                                                        
+
                                                                                         <span onClick={() => setTaggedPortfolioData([])} className="bg-light ml-auto hreflink svg__icon--cross svg__iconbox"></span>
                                                                                     </div>
                                                                                 </>
@@ -5350,7 +5380,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                     {ApproverData.map((Approver: any, index: number) => {
                                                                                         return (
                                                                                             <div className="block w-100">
-                                                                                                <a className="hreflink wid90" target="_blank" data-interception="off" >
+                                                                                                <a className="hreflink w-90" target="_blank" data-interception="off" >
                                                                                                     {Approver.Title}
                                                                                                 </a>
                                                                                                 <span onClick={() => setApproverData([])} className="bg-light ml-auto hreflink svg__icon--cross svg__iconbox"></span>
@@ -5479,7 +5509,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 <>
                                                                                     <div className="block w-100">
                                                                                         <a className="wid90" title={com.Title} style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
-                                                                                        
+
                                                                                         <span onClick={() => RemoveLinkedPortfolio(Index)} className="bg-light ml-auto hreflink svg__icon--cross svg__iconbox"></span>
                                                                                     </div>
                                                                                 </>
@@ -5619,11 +5649,12 @@ const EditTaskPopup = (Items: any) => {
                                                                 className="form-control px-2"
                                                                 defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? Number(EditData.PercentComplete).toFixed(0) : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
                                                                 onChange={(e) => StatusAutoSuggestion(e)} />
+
                                                             <span
                                                                 className="input-group-text"
                                                                 title="Status Popup"
                                                                 // onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}
-                                                                onClick={() => setSmartMedaDataUsedPanel("Status")}
+                                                                onClick={TaggedPortfolioData?.length > 0 ? () => setSmartMedaDataUsedPanel("Status") : () => alert("Please Select Proftolio")}
                                                             >
                                                                 <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
 
@@ -6102,20 +6133,16 @@ const EditTaskPopup = (Items: any) => {
                                         )}
                                     </ul>
                                 </div>) : null}
-
-                            <div className="border full-width my-2 p-2">
+                            {ApproverData?.length > 0 ? <div className="border full-width my-1 p-1">
                                 {ApproverData?.map((val: any) => {
                                     return (
-                                        <>
-                                            <span>
-                                                <a className="hreflink block p-1 px-2 mx-1" > {val.Title}
-                                                    <svg onClick={() => setApproverData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg>
-                                                </a>
-                                            </span>
-                                        </>
+                                        <a className="hreflink block"> {val.Title}
+                                            <span onClick={() => setApproverData([])} className="bg-light hreflink ms-1 svg__icon--cross svg__iconbox"></span>
+                                        </a>
                                     )
                                 })}
-                            </div>
+                            </div> : null}
+
                             <ul className="categories-menu p-0">
                                 {AllEmployeeData.map(function (item: any) {
                                     return (
