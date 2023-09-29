@@ -1003,7 +1003,7 @@ const ProjectManagementMain = (props: any) => {
                 </li>
                 <li>
                   {" "}
-                  <a>{`${Masterdata?.PortfolioStructureID} - ${Masterdata?.Title}`}</a>{" "}
+                  <a>{Masterdata?.Title}</a>{" "}
                 </li>
               </ul>
             </div>
@@ -1152,7 +1152,7 @@ const ProjectManagementMain = (props: any) => {
                                 src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Icon_Project.png"
                               />
                               <>
-                                <a>{Masterdata?.Title} </a>
+                                <a>{`${Masterdata?.PortfolioStructureID} - ${Masterdata?.Title}`} </a>
                               </>
                             </h2>
                             <span
