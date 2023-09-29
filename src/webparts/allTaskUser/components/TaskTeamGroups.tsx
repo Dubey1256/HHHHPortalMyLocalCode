@@ -365,7 +365,7 @@ export default class TaskTeamGroups extends Component<ITeamGroupsProps, ITeamGro
         return (
           <>
       
-            <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+            <div className='siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
             Create New Group
             </div>
             <Tooltip ComponentId='1757' />
@@ -377,7 +377,7 @@ export default class TaskTeamGroups extends Component<ITeamGroupsProps, ITeamGro
         return (
           <>
       
-            <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+            <div className='siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
             Update Group
             </div>
             <Tooltip ComponentId='1768' />
