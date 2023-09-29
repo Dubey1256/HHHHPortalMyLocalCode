@@ -597,185 +597,31 @@ const Tabless = (props: any) => {
 
     <div className='createdBy'>
 
-      <div className='row'>
+      <section className='ContentSection'><div className='row'>
         {
           queryId != null && <div className='col'><h3 className="siteColor">Created By - {queryId}</h3></div>
         }
-        <div className='col d-flex justify-content-end align-items-end'>
-          <input className='me-1' type="checkbox" value={'Component'} onChange={(e: any) => filterCom(e)} /> <label className='me-2'>Component</label>
-          <input className='me-1' type="checkbox" value={'Service'} onChange={(e: any) => filterCom(e)} /> <label className='me-2'>Service</label>
+        <div className='col alignCenter justify-content-end'>
+          <input className='form-check-input me-1' type="checkbox" value={'Component'} onChange={(e: any) => filterCom(e)} /> Component
+          <input className='form-check-input me-1' type="checkbox" value={'Service'} onChange={(e: any) => filterCom(e)} /> Service
           <a
           target='_blank'
             href={`${props.Items.siteUrl}/SitePages/Tasks%20View.aspx?CreatedBy=${queryId}`}
             rel='noopener noreferrer'
             data-interception="off"
-            className="siteColor list-unstyled fw-bold"
+            className="siteColor list-unstyled fw-bold ms-2"
           >
             Old Task View
           </a>
 
+        </div></div>
+      </section>
+
+      <section className="TableContentSection">
+        <div className='Alltable'>
+          <GlobalCommanTable expandIcon={true} showHeader={true} showPagination={true} columns={columns} data={data} callBackData={callBackData} />
         </div>
-      </div>
-
-      <div>
-
-
-
-        {/*        
-            <Table className="SortingTable filtertable" bordered hover {...getTableProps()}>
-                <thead className="fixed-Header">
-                    {headerGroups?.map((headerGroup: any) => (
-                        <tr  {...headerGroup.getHeaderGroupProps()}>
-                            {headerGroup.headers?.map((column: any) => (
-                                <th {...column.getHeaderProps()} style={column?.style}>                                                  
-                                    <Filter column={column} />
-
-                                    {    
-                                        column?.id !=='Title' && column.id !== 'ID' ?
-                                        <div className="dropdown filtericons">
-                                        <span data-bs-toggle="dropdown" aria-expanded="false">
-                                            <FaFilter />
-                                        </span>
-
-                                       {column?.id == "idType" && 
-                                       <div className="dropdown-menu p-2 ">
-                                        <li><span><input type='checkbox' checked={selectAllChecks.idType} onChange={(e:any)=>selectAll(e)}   value={'idType'} /> <label>Select All</label> </span></li>
-                                       <ul className='dropitem'>
-                                            {allLists?.map((item: any) => <li><span><input type='checkbox' checked={checkedValues.includes(item.Title)} onChange={(e: any) => getSelectedSite(e,column?.id)} value={item.Title} /> <label>{item.Title}</label> </span></li>)}
-                                                 </ul>
-                                                 <li className='d-flex justify-content-end'><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
-                                  </div> }
-
-
-                                        {column?.id == 'percentage' && 
-                                        <div className="dropdown-menu p-2 ">
-                                        <li><span><input type='checkbox' checked={selectAllChecks.percentage} onChange={(e:any)=>selectAll(e)}  value={'percentage'} /> <label>Select All</label> </span></li>
-                                       <ul className='dropitem'>
-                                        {checkPercentage?.map((item: any) => <li><span><input type='checkbox' checked={checkPercentages.some((x:any)=>x==item)}  onChange={(e: any) => getSelectedSite(e,column?.id)} value={item} /> <label> {item}</label></span> </li>)}
-                                          </ul>
-                                          <div className='filterbox'>
-                                            <li>
-                                                <span><input type='radio' name='percentage' checked={radio.percentage=='=='} value={'=='} onChange={(e:any)=>setRadio({...radio, percentage:e.target.value})} /> <label>{'='}</label> </span>
-                                                <span><input type='radio' name='percentage' checked={radio.percentage=='>'} value={'>'} onChange={(e:any)=>setRadio({...radio, percentage:e.target.value})}/> <label>{'>'}</label></span>
-                                                <span><input type='radio' name='percentage' checked={radio.percentage=='<'} value={'<'} onChange={(e:any)=>setRadio({...radio, percentage:e.target.value})}/> <label>{'<'}</label> </span>
-                                                <span><input type='radio' name='percentage' checked={radio.percentage=='!='} value={'!='} onChange={(e:any)=>setRadio({...radio, percentage:e.target.value})}/> <label>{'!='}</label> </span>
-                                            </li>
-                                            <span><input type='number' value={priorAndPerc.percentage}  onChange={(e:any)=>setPriorAndPerc({...priorAndPerc,percentage:e.target.value})}  /></span>
-                                            </div>
-                                          <li className='d-flex justify-content-end'><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn  btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
-                                          </div>}
-
-
-                                            {column?.id == 'Categories' && 
-                                           <div className="dropdown-menu p-2 ">
-                                        <li><span><input type='checkbox' checked={selectAllChecks.catogries} onChange={(e:any)=>selectAll(e)}  value={'Categories'} /> <label>Select All</label> </span></li>
-                                       <ul className='dropitem'>
-                                        {catogries?.map((item: any,index:any) => <li><span><input type='checkbox' checked={filterCatogries.includes(item)} onChange={(e: any) => getSelectedSite(e,column?.id)} value={item} /> <label>{item}</label> </span></li>)}                                        
-                                            </ul> 
-                                            <li className='d-flex justify-content-end'><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
-                                            </div>}
-
-
-                                            {column?.id == 'priority' && 
-                                           <div className="dropdown-menu p-2 ">
-                                           <li><span><input type='checkbox' checked={selectAllChecks.priority} onChange={(e:any)=>selectAll(e)}  value={'priority'} /> <label>Select All</label> </span></li>
-                                          <ul className='dropitem'>
-                                        {checkPriority?.map((item: any) => <li><span><input type='checkbox' checked={checkPrioritys.some((x:any)=>x==item)} onChange={(e: any) => getSelectedSite(e,column?.id)} value={item} /> <label>{item}</label> </span></li>)}                                        
-                                            </ul>
-                                            <div className='filterbox'>
-                                            <li>
-                                                <span><input type='radio' name='priority' value={'=='} checked={radio.priority=='=='} onChange={(e:any)=>setRadio({...radio, priority:e.target.value})}  /> <label>{'='}</label> </span>
-                                                <span><input type='radio' name='priority' value={'>'} checked={radio.priority=='>'} onChange={(e:any)=>setRadio({...radio, priority:e.target.value})} /> <label>{'>'}</label></span>
-                                                <span><input type='radio' name='priority' value={'<'} checked={radio.priority=='<'} onChange={(e:any)=>setRadio({...radio, priority:e.target.value})} /> <label>{'<'}</label> </span>
-                                                <span><input type='radio' name='priority' value={'!='} checked={radio.priority=='!='} onChange={(e:any)=>setRadio({...radio, priority:e.target.value})} /> <label>{'!='}</label> </span>
-                                            </li>
-                                            <span><input type='number' value={priorAndPerc.priority}  onChange={(e:any)=>setPriorAndPerc({...priorAndPerc,priority:e.target.value})}  /></span>
-                                            </div>
-                                            <li className='d-flex justify-content-end'><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
-                                            </div>}
-
-
-                                            {column?.id == 'dueDate' && 
-                                           <div className="dropdown-menu p-2 ">
-                                            <div className='filterbox'>
-                                            <li>
-                                                <span><input type='radio' name='newDueDate' value={'=='} checked={radio.due=='=='}  onChange={(e:any)=>setRadio({...radio, due:e.target.value})} /> <label>{'='}</label> </span>
-                                                <span><input type='radio' name='newDueDate' value={'>'}  checked={radio.due=='>'} onChange={(e:any)=>setRadio({...radio, due:e.target.value})} /> <label>{'>'}</label></span>
-                                                <span><input type='radio' name='newDueDate' value={'<'}  checked={radio.due=='<'} onChange={(e:any)=>setRadio({...radio, due:e.target.value})} /> <label>{'<'}</label> </span>
-                                                <span><input type='radio' name='newDueDate' value={'!='} checked={radio.due=='!='}  onChange={(e:any)=>setRadio({...radio, due:e.target.value})} /> <label>{'!='}</label> </span>
-                                            </li>
-                                            <input type='date' value={date.due !== null ? date.due : ''} onChange={(e:any)=>setDate({...date, due:e.target.value})} />
-                                            </div>
-                                           
-                                            <li className='d-flex justify-content-end'><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
-                                           </div>}
-
-
-                                            {column?.id == 'modified' && 
-                                            <div className="dropdown-menu p-2 ">
-                                                 <div className='filterbox'>
-                                            <li>
-                                                <span><input type='radio' name='newModified' value={'=='}  checked={radio.modify=='=='} onChange={(e:any)=>setRadio({...radio, modify:e.target.value})} /> <label>{'='}</label> </span>
-                                                <span><input type='radio' name='newModified' value={'>'}  checked={radio.modify=='>'} onChange={(e:any)=>setRadio({...radio, modify:e.target.value})}  /> <label>{'>'}</label></span>
-                                                <span><input type='radio' name='newModified' value={'<'}  checked={radio.modify=='<'} onChange={(e:any)=>setRadio({...radio, modify:e.target.value})} /> <label>{'<'}</label> </span>
-                                                <span><input type='radio' name='newModified' value={'!='} checked={radio.modify=='!='} onChange={(e:any)=>setRadio({...radio, modify:e.target.value})}  /> <label>{'!='}</label> </span>
-                                            </li>
-                                            <input type='date' value={date.modify !== null ? date.modify : '' } onChange={(e:any)=>setDate({...date, modify:e.target.value})} />
-                                            </div>
-                                           
-                                            <li className='d-flex justify-content-end'><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn  btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
-                                           </div>}
-                                           
-                                            {column?.id == 'created' && 
-                                       <div className="dropdown-menu p-2 ">
-                                         <div className='filterbox'>
-                                            <li>
-                                                <span><input type='radio' name='newCreated' checked={radio.created=='=='} value={'=='} onChange={(e:any)=>setRadio({...radio, created:e.target.value})}  /> <label>{'='}</label> </span>
-                                                <span><input type='radio' name='newCreated'  checked={radio.created=='>'} value={'>'} onChange={(e:any)=>setRadio({...radio, created:e.target.value})} /> <label>{'>'}</label></span>
-                                                <span><input type='radio' name='newCreated' checked={radio.created=='<'} value={'<'} onChange={(e:any)=>setRadio({...radio, created:e.target.value})} /> <label>{'<'}</label> </span>
-                                                <span><input type='radio' name='newCreated' checked={radio.created=='!='} value={'!='} onChange={(e:any)=>setRadio({...radio, created:e.target.value})} /> <label>{'!='}</label> </span>
-                                            </li>
-                                            <input type='date' value={date.created !== null ? date.created : ''} onChange={(e:any)=>setDate({...date, created:e.target.value})}  />
-                                            </div>
-                                           
-                                            <li className='d-flex justify-content-end'><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn  btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
-                                           </div>}
-
-                                           {column?.id == 'TeamMembersSearch' && 
-                                           <div className="dropdown-menu p-2 ">
-                                        <li><span><input type='checkbox' checked={selectAllChecks.teamMembers} onChange={(e:any)=>selectAll(e)}  value={'TeamMembersSearch'} /> <label>Select All</label> </span></li>
-                                       <ul className='dropitem'>
-                                        {taskUser?.map((item: any) => <li><span><input type='checkbox' checked={checkTeamMembers.includes(item.Title)} onChange={(e: any) => getSelectedSite(e,column?.id)} value={item.Title} /> <label>{item.Title}</label> </span></li>)}                                        
-                                            </ul> 
-                                            <li className='d-flex justify-content-end'><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn  btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
-                                            </div>}
-                                          
-                                    </div> : ''
-                                    }
-                                   
-                                </th>
-                            ))}
-                        </tr>
-                    ))}
-                </thead>
-
-                <tbody {...getTableBodyProps()}>
-                    {page?.map((row: any) => {
-                        prepareRow(row)
-                        return (
-                            <tr {...row.getRowProps()}  >
-                                {row.cells?.map((cell: { getCellProps: () => JSX.IntrinsicAttributes & React.ClassAttributes<HTMLTableDataCellElement> & React.TdHTMLAttributes<HTMLTableDataCellElement>; render: (arg0: string) => boolean | React.ReactChild | React.ReactFragment | React.ReactPortal; }) => {
-                                    return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                                })}
-                            </tr>
-                        )
-
-                    })}
-                </tbody>
-            </Table> */}
-        <GlobalCommanTable showHeader={true} showPagination={true} columns={columns} data={data} callBackData={callBackData} />
-
-      </div>
+      </section>
       <span>
         {editPopup && <EditTaskPopup Items={result} context={props.Items.Context} AllListId={AllListId} Call={() => { CallBack() }} />}
 

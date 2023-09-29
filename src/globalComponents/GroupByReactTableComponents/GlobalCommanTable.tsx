@@ -802,7 +802,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     <span className="svg__iconbox svg__icon--setting" style={{ backgroundColor: `${portfolioColor}` }} onClick={() => setSelectedFilterPanelIsOpen(true)}></span>
                     <span className='ms-1'>
                         <select style={{ height: "30px", color: `${portfolioColor}` }}
-                            className="w80"
+                            className="w-100"
                             aria-label="Default select example"
                             value={globalSearchType}
                             onChange={(e) => {
@@ -992,7 +992,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     ))}
                 </select>
             </div> : ''}
-            {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} /> : ''}
+            {/* {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} /> : ''} */}
+            {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} portfolioTypeData={items?.portfolioTypeData} context={items?.AllListId?.Context} /> : ''}
             {selectedFilterPanelIsOpen && <SelectFilterPanel isOpen={selectedFilterPanelIsOpen} selectedFilterCallBack={selectedFilterCallBack} setSelectedFilterPannelData={setSelectedFilterPannelData} selectedFilterPannelData={selectedFilterPannelData} portfolioColor={portfolioColor} />}
         </>
     )

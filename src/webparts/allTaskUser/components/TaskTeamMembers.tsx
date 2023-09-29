@@ -365,11 +365,15 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         }, this.onEditTask);
     }
 
-    private onEditTask() {
+    private async onEditTask() {
         let allTasks = [...this.state.tasks];
         let selTask = allTasks.filter(t => t.TaskId == this.state.selTaskId)[0];
         console.log(selTask);
         let selTaskItem = { ...this.state.taskItem };
+        if(selTask.ApproverMail!=undefined && selTask.ApproverMail[0]!=undefined){
+            let userInfo = await this.getUserInfo(selTask.ApproverMail[0]);
+            selTaskItem.approverId = [userInfo.Id]
+        }
         selTaskItem.userTitle = selTask.Title;
         selTaskItem.userSuffix = selTask.Suffix;
         selTaskItem.groupId = selTask.GroupId;
@@ -446,17 +450,18 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
     }
 
     private async getApproverDetails(approvers: any[]) {
-
         let approverId: number = undefined;
-
         if (approvers.length > 0) {
             let approverMail = approvers[0].id.split("|")[2];
             let userInfo = await this.getUserInfo(approverMail);
             approverId = userInfo.Id;
         }
-
         let taskItem = { ...this.state.taskItem };
-        taskItem.approverId = [approverId];
+        if(approverId!=undefined){
+            taskItem.approverId = [approverId];
+        }else{
+            taskItem.approverId = []
+        }
         this.setState({
             taskItem: taskItem
         })
@@ -903,7 +908,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         return (
             <>
 
-                <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+                <div className='siteColor subheading'>
                     Create New User
                 </div>
                 <Tooltip ComponentId='1757' />
@@ -914,7 +919,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         return (
             <>
 
-                <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+                <div className='siteColor subheading'>
                     {`Task-User Management - ${this.state.taskItem.userTitle}`}
                 </div>
                 <Tooltip ComponentId='1767' />
@@ -1006,7 +1011,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             onRenderHeader={this.onRenderCustomHeaderCreateNewUser}
             isOpen={this.state.showCreatePanel}
             onDismiss={this.onCancelTask}
-            isFooterAtBottom={true}
+            isFooterAtBottom={false}
             onRenderFooterContent={elemTaskMemberFooter}
         >
             <div className="ms-SPLegacyFabricBlock">
@@ -1281,7 +1286,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                     {this.getUserPersona({ UserName: userName, ImageUrl: this.getImageUrl(taskId) })}
                 </Stack.Item>
                 <Stack.Item>
-                    <div style={{ fontSize: "12px", fontWeight: 400 }}>{userName}</div>
+                    <div>{userName}</div>
                 </Stack.Item>
             </Stack>
         );
