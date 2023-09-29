@@ -11,6 +11,7 @@ import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup
 import * as Moment from 'moment'
 import Tooltip from '../../../globalComponents/Tooltip';
 import { data } from 'jquery';
+import moment from 'moment';
 
 const TaskItemRank: any = [];
 var TaskTypeItems: any = [];
@@ -964,6 +965,7 @@ return new Promise<void>((resolve, reject) => {
             TaskLevel: Tasklevel
 
         }).then((res: any) => {
+            // var  CreateDate:any
             console.log(res);
             if (PopupType == 'CreatePopup') {
                 res.data['SiteIcon'] = AllItems.SiteIcon
@@ -978,7 +980,8 @@ return new Promise<void>((resolve, reject) => {
                     res.data['siteType'] = AllItems.siteType
 
                 res.data.ClientCategory = clientcaterogiesdata2,
-                    res.data.Created = new Date();
+                // CreateDate= new Date()
+                // res.data.Created = moment(CreateDate).format("DD/MM/YYYY");
                 res.data.Author = {
                     Id: res?.data?.AuthorId
                 }
@@ -993,6 +996,7 @@ return new Promise<void>((resolve, reject) => {
                 
             }
             else {
+            
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
@@ -1003,7 +1007,8 @@ return new Promise<void>((resolve, reject) => {
                 res.data['siteType'] = AllItems.siteType
 
                 res.data.ClientCategory = clientcaterogiesdata2,
-                    res.data.Created = new Date();
+            //    CreateDate= new Date()
+            //     res.data.Created = moment(CreateDate).format("DD/MM/YYYY");
                 res.data.Author = {
                     Id: res?.data?.AuthorId
                 }
@@ -1289,8 +1294,8 @@ return new Promise<void>((resolve, reject) => {
             // res.DueDate = NewDate != '' && NewDate != undefined ? NewDate : undefined,
             res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : null,
                 res.data['siteType'] = AllItems.siteType
-
-            res.data.Created = new Date();
+        // let createDate= new Date()
+        //     res.data.Created = moment(createDate).format("DD/MM/YYYY");
             res.data.Author = {
                 Id: res?.data?.AuthorId
             }

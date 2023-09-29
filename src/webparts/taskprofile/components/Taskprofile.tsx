@@ -585,7 +585,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     if (ClientTimeArray != undefined && ClientTimeArray.length > 0) {
       ClientTimeArray?.map((item: any) => {
         array2?.map((items: any) => {
-          if (item?.SiteName == items?.SiteName) {
+          if ((item?.SiteName == items?.SiteName)||(item?.Title == items?.SiteName)) {
             if (item.ClientCategory == undefined) {
               item.ClientCategory = [];
               item.ClientCategory.push(items);

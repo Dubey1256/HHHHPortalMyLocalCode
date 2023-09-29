@@ -122,7 +122,7 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
   }, []);
   return (
 
-    <div className="border Alltable ms-Grid">
+    <div className="border Alltable p-0 ms-Grid">
       <div className='tbl-button'>
         <button className='btn btn-primary position-relative' style={{ zIndex: '9999' }} onClick={() => props.AddTask()}>Add Team Member</button>
       </div>

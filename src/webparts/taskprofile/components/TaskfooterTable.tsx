@@ -237,7 +237,7 @@ function TasksTable(props: any) {
       const batch = sp.createBatch();
       for (let i = 0; i < siteConfig?.length; i++) {
         const config = siteConfig[i];
-        var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,TaskLevel,ItemRank,Project/Id,Project/PortfolioStructureID, Project/Title,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Project,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,PortfolioType,ResponsibleTeam,TaskCategories&$filter=" + filter + ""
+        var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,SiteCompositionSettings,TaskLevel,ItemRank,Project/Id,Project/PortfolioStructureID, Project/Title,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Project,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,PortfolioType,ResponsibleTeam,TaskCategories&$filter=" + filter + ""
         
         const web = new Web(props?.AllListId?.siteUrl);
         const list = web.lists.getById(config.listId);
@@ -279,13 +279,20 @@ function TasksTable(props: any) {
                   result.descriptionsSearch = "";
                   result.commentsSearch = "";
                   result.DueDate = moment(result.DueDate).format("DD/MM/YYYY");
-
-                  if (result.DueDate == "Invalid date" || "") {
-                    result.DueDate = result.DueDate.replaceAll(
+                  result.DisplayDueDate = moment(result.DueDate).format("DD/MM/YYYY");
+                  if (result.DisplayDueDate == "Invalid date" || "") {
+                    result.DisplayDueDate = result.DisplayDueDate.replaceAll(
                       "Invalid date",
                       ""
                     );
                   }
+                  if (result.DisplayCreateDate == "Invalid date" || "") {
+                    result.DisplayCreateDate = result.DisplayCreateDate.replaceAll(
+                      "Invalid date",
+                      ""
+                    );
+                  }
+                  result.DisplayCreateDate = moment(result.Created).format("DD/MM/YYYY");
                   result.PercentComplete = (
                     result.PercentComplete * 100
                   ).toFixed(0);
@@ -497,9 +504,74 @@ function TasksTable(props: any) {
     var MainId: any = ''
     let ParentTaskId: any;
     if (childItem != undefined && childItem.data?.ItmesDelete == undefined) {
-
+      // let  TeamLeaderUser2:any=[];
+      // TeamLeaderUser2=TeamLeaderUser2.concat(childItem?.data?.ResponsibleTeam)
+      // TeamLeaderUser2=TeamLeaderUser2.concat(childItem?.data?.TeamMembers)
+      // TeamLeaderUser2=TeamLeaderUser2.concat(childItem?.data?.AssignedTo)
+      // childItem.data.TeamLeaderUser=TeamLeaderUser2
+      childItem.data.DisplayCreateDate= moment(childItem?.data?.Created).format("DD/MM/YYYY")
+      childItem.data.DisplayDueDate=childItem?.data?.DueDate
       childItem.data.Item_x0020_Type = "Task";
-
+      if (
+        childItem?.data?.AssignedTo != undefined &&
+        childItem?.data?.AssignedTo > 0
+      ) {
+        $.map(childItem?.data?.AssignedTo, (Assig: any) => {
+          if (Assig.Id != undefined) {
+            $.map(taskUsers, (users: any) => {
+              if (
+                Assig.Id != undefined &&
+                users.AssingedToUser != undefined &&
+                Assig.Id == users.AssingedToUser.Id
+              ) {
+                users.ItemCover = users.Item_x0020_Cover;
+                childItem?.data?.TeamLeaderUser.push(users);
+                childItem.data.AllTeamName += users.Title + ";";
+              }
+            });
+          }
+        });
+      }
+      if (
+        childItem?.data?.ResponsibleTeam!= undefined &&
+        childItem?.data?.ResponsibleTeam?.length > 0
+      ) {
+        $.map(childItem?.data?.ResponsibleTeam, (Assig: any) => {
+          if (Assig.Id != undefined) {
+            $.map(taskUsers, (users: any) => {
+              if (
+                Assig.Id != undefined &&
+                users.AssingedToUser != undefined &&
+                Assig.Id == users.AssingedToUser.Id
+              ) {
+                users.ItemCover = users.Item_x0020_Cover;
+                childItem?.data?.TeamLeaderUser.push(users);
+                childItem.data.AllTeamName += users.Title + ";";
+              }
+            });
+          }
+        });
+      }
+      if (
+        childItem?.data?.TeamMembers != undefined &&
+        childItem?.data?.TeamMembers?.length > 0
+      ) {
+        $.map(childItem?.data?.TeamMembers, (Assig: any) => {
+          if (Assig.Id != undefined) {
+            $.map(taskUsers, (users: any) => {
+              if (
+                Assig.Id != undefined &&
+                users.AssingedToUser != undefined &&
+                Assig.Id == users.AssingedToUser.Id
+              ) {
+                users.ItemCover = users.Item_x0020_Cover;
+                childItem?.data?.TeamLeaderUser.push(users);
+                childItem.data.AllTeamName += users.Title + ";";
+              }
+            });
+          }
+        });
+      }
 
 
       childItem.data['flag'] = true;
@@ -793,48 +865,109 @@ function TasksTable(props: any) {
         size: 42,
       },
       {
-        accessorKey: "DueDate",
-        placeholder: "Due Date",
-        header: "",
+        accessorFn: (row) => row?.DueDate,
+        cell: ({ row }) => (
+          <span className='ms-1'>{row?.original?.DisplayDueDate} </span>
+
+        ),
+        id: 'DueDate',
+        filterFn: (row: any,columnName:any, filterValue: any) => {
+          if (row?.original?.DisplayDueDate?.includes(filterValue)) {
+            return true
+          } else {
+            return false
+          }
+        },
         resetColumnFilters: false,
-        size: 100,
-        id: "DueDate"
+        resetSorting: false,
+        placeholder: "DueDate",
+        header: "",
+        size: 100
       },
       {
-        accessorFn: (row) =>
-          row?.Created ? moment(row?.Created).format("DD/MM/YYYY") : "",
-        cell: ({ row, getValue }) => (
-          <>
+        accessorFn: (row) => row?.Created,
+        cell: ({ row }) => (
+          <span>
             {row?.original?.Created == null ? (
               ""
             ) : (
               <>
+                <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
+
                 {row?.original?.Author != undefined ? (
                   <>
-                    <span>
-                      {moment(row?.original?.Created).format("DD/MM/YYYY")}{" "}
-                    </span>
-                    <img
-                      className="workmember"
-                      title={row?.original?.Author?.Title}
-                      src={findUserByName(row?.original?.Author?.Id)}
-                    />
+                    <a
+                      href={`${props?.AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                      target="_blank"
+                      data-interception="off"
+                    >
+                      <img title={row?.original?.Author?.Title} className="workmember ms-1" src={findUserByName(row?.original?.Author?.Id)} />
+                    </a>
                   </>
                 ) : (
-                  <img
-                    className="workmember"
-                    src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"
-                  />
+                  <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
                 )}
               </>
             )}
-          </>
+          </span>
         ),
-        id: "Created",
-        placeholder: "Created Date",
+        id: 'Created',
+        resetColumnFilters: false,
+        resetSorting: false,
+        placeholder: "Created",
+        filterFn: (row: any, columnName:any, filterValue: any) => {
+          if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+            return true
+          } else {
+            return false
+          }
+        },
         header: "",
         size: 109
       },
+      // {
+      //   accessorKey: "DueDate",
+      //   placeholder: "Due Date",
+      //   header: "",
+      //   resetColumnFilters: false,
+      //   size: 100,
+      //   id: "DueDate"
+      // },
+      // {
+      //   accessorFn: (row) =>
+      //     row?.Created ? moment(row?.Created).format("DD/MM/YYYY") : "",
+      //   cell: ({ row, getValue }) => (
+      //     <>
+      //       {row?.original?.Created == null ? (
+      //         ""
+      //       ) : (
+      //         <>
+      //           {row?.original?.Author != undefined ? (
+      //             <>
+      //               <span>
+      //                 {moment(row?.original?.Created).format("DD/MM/YYYY")}{" "}
+      //               </span>
+      //               <img
+      //                 className="workmember"
+      //                 title={row?.original?.Author?.Title}
+      //                 src={findUserByName(row?.original?.Author?.Id)}
+      //               />
+      //             </>
+      //           ) : (
+      //             <img
+      //               className="workmember"
+      //               src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"
+      //             />
+      //           )}
+      //         </>
+      //       )}
+      //     </>
+      //   ),
+      //   id: "Created",
+      //   placeholder: "Created Date",
+      //   header: "",
+      //   size: 109
+      // },
       {
         cell: ({ row, getValue }) => (
           <>
