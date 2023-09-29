@@ -13,9 +13,8 @@ var AllData:any=[];
  var currentUserData:any
 const EmployeProfile = (props:any) => {
   let allData: any = [];
-//  const [configurations, setConfigurations] = useState();
+
  const [AllSite, setAllSite] = useState([]);
-//  const [currentUserData,setCurrentUserData]=useState<any>()
  const[data,setData]=React.useState({DraftCatogary:[],TodaysTask:[],BottleneckTask:[],ThisWeekTask:[],ImmediateTask:[],ApprovalTask:[]});
  const [currentTime, setCurrentTime]:any = useState([]);
  const [annouceMents, setAnnouceMents]:any = useState([]);
@@ -29,7 +28,7 @@ const EmployeProfile = (props:any) => {
  const annouceMent=async ()=>{
   const web = new Web(props.props?.siteUrl);
   await web.lists
- .getById('F3CAD36C-EEF6-492D-B81F-9B441FDF218E')
+ .getById(props?.props?.Announcements)
  .items.select("Title", "ID", "Body")
  .getAll().then(async (data:any)=>{
   setAnnouceMents(data)
@@ -43,7 +42,7 @@ console.log(err);
 
     const web = new Web(props.props?.siteUrl);
          await web.lists
-        .getById('01a34938-8c7e-4ea6-a003-cee649e8c67a')
+        .getById(props?.props?.SmartMetadataListID)
         .items.select("Configurations", "ID", "Title", "TaxType", "listId")
         .filter("TaxType eq 'Sites'or TaxType eq 'timesheetListConfigrations'")
         .getAll().then(async (data:any)=>{
@@ -83,11 +82,10 @@ console.log(err);
   const loadTaskUsers = async () => {
     // setPageLoader(true)
     let taskUser;
-    
-        try {
+    try {
             let web = new Web(props.props?.siteUrl);
             taskUsers = await web.lists
-                .getById("b318ba84-e21d-4876-8851-88b94b9dc300")
+                .getById(props?.props?.TaskUsertListID)
                 .items
                 .select("Id,UserGroupId,Suffix,Title,Email,TeamLeader/Id,TeamLeader/Title,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=TeamLeader,AssingedToUser,Approver")
                 .get();
@@ -112,13 +110,33 @@ console.log(err);
     const web = new Web(itemsssssss.siteUrl);
     await web.lists
         .getById(itemsssssss.listId)
-        .items.select("Title","PercentComplete","Categories", "workingThisWeek",'TaskID' ,"IsTodaysTask","Priority","Priority_x0020_Rank","DueDate","Created","Modified","Team_x0020_Members/Id","Team_x0020_Members/Title","ID","Responsible_x0020_Team/Id","Responsible_x0020_Team/Title","Editor/Title","Editor/Id","Author/Title","Author/Id","AssignedTo/Id","AssignedTo/Title")
-        .expand("Team_x0020_Members","Author","Editor","Responsible_x0020_Team","AssignedTo")
+        .items.select("Title","PercentComplete","Categories", "Approver/Id" , "Approver/Title" , "Portfolio/Id", "Portfolio/ItemType", "Portfolio/PortfolioStructureID", "Portfolio/Title", "TaskType/Id", "TaskType/Title", "TaskType/Level", "workingThisWeek",'TaskID' ,"IsTodaysTask","Priority","PriorityRank","DueDate","Created","Modified","Team_x0020_Members/Id","Team_x0020_Members/Title","ID","Responsible_x0020_Team/Id","Responsible_x0020_Team/Title","Editor/Title","Editor/Id","Author/Title","Author/Id","AssignedTo/Id","AssignedTo/Title")
+        .expand("Team_x0020_Members", "Portfolio","Approver", "TaskType","Author","Editor","Responsible_x0020_Team","AssignedTo")
         .top(5000)
         .getAll()
         .then((data: any) => {
                count++;
               data?.map((items:any)=>{
+                items.listId = itemsssssss.listId;
+                items.site = itemsssssss.Title;
+                items.siteType = itemsssssss.Title;
+                items.siteUrl = itemsssssss.siteUrl;
+                items.percentage = items.PercentComplete * 100 + "%";
+                if ((items.TaskType == undefined ? null : items.TaskType.Title) === "Activities") {
+                  items.TaskID = "A" + items.Id;
+                } else if ((items.TaskType == undefined ? null : items.TaskType.Title) === "MileStone") {
+                  items.TaskID = "M" + items.Id;
+                } else if ((items.TaskType == undefined ? null : items.TaskType.Title) === "Project") {
+                  items.TaskID = "P" + items.Id;
+                } else if ((items.TaskType == undefined ? null : items.TaskType.Title) === "Step") {
+                  items.TaskID = "S" + items.Id;
+                } else if ((items.TaskType == undefined ? null : items.TaskType.Title) === "Task") {
+                  items.TaskID = "T" + items.Id;
+                } else if ((items.TaskType == undefined ? null : items.TaskType.Title) === "Workstream") {
+                  items.TaskID = "W" + items.Id;
+                } else {
+                  items.TaskID = "T" + items.Id;
+                }
 
                 items.Team_x0020_Members?.map((itemsss:any)=>{
                   if(itemsss.Id === currentUserData.AssingedToUser.Id){
@@ -172,10 +190,9 @@ console.log(err);
                 }else if(items.PercentComplete == 1){
                   ApprovalTask.push(items);
                 }
-                
               })
               // setCurrentTaskUser(currentUserData);
-                setData({...data, DraftCatogary:DraftArray,TodaysTask:TodaysTask,BottleneckTask:BottleneckTask,ApprovalTask:ApprovalTask,ImmediateTask:ImmediateTask,ThisWeekTask:ThisWeekTask});
+                setData({DraftCatogary:DraftArray,TodaysTask:TodaysTask,BottleneckTask:BottleneckTask,ApprovalTask:ApprovalTask,ImmediateTask:ImmediateTask,ThisWeekTask:ThisWeekTask});
            }
         })
         .catch((err: any) => {
@@ -184,7 +201,7 @@ console.log(err);
 };
 
  return (
-    <myContextValue.Provider value={{ ...myContextValue,annouceMents:annouceMents, siteUrl:props?.props?.siteUrl,AllSite:AllSite,currentUserData:currentUserData,AlltaskData:data,timesheetListConfig:timesheetListConfig}}>
+    <myContextValue.Provider value={{ ...myContextValue,propsValue:props.props ,annouceMents:annouceMents, siteUrl:props?.props?.siteUrl,AllSite:AllSite,currentUserData:currentUserData,AlltaskData:data,timesheetListConfig:timesheetListConfig}}>
      <div> <Header/></div>
       
       {/* <div><WorldClock/></div> */}

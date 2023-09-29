@@ -1349,7 +1349,7 @@ function PortfolioTable(SelectedProp: any) {
           }
         },
         header: "",
-        size: 109
+        size: 125
       },
       {
         accessorKey: "descriptionsSearch",
