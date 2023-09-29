@@ -81,10 +81,10 @@ function Tooltip(props: any) {
           }
         
         if (ComponentData?.Id != undefined) {
-          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?ComponentID=${ComponentData?.Id}` + "&ComponentTitle=" + ComponentData?.Title + "&Siteurl=" + Href+"&TaskType=Bug");
+          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?ComponentID=${ComponentData?.Id}` + "&ComponentTitle=" + ComponentData?.Title +"&TaskType=Bug"+ "&Siteurl=" + Href);
         }
         else {
-          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?ComponentTitle=${ComponentData?.Title}`+ "&Siteurl=" + Href+"&TaskType=Bug");
+          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?ComponentTitle=${ComponentData?.Title}`+"&TaskType=Bug"+ "&Siteurl=" + Href);
         }
 
       }
@@ -109,10 +109,10 @@ function Tooltip(props: any) {
           }
       
         if (ComponentData?.Id != undefined) {
-          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?ComponentID=${ComponentData?.Id}` + "&ComponentTitle=" + ComponentData?.Title + "&Siteurl=" + Href+"&TaskType=Design");
+          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?ComponentID=${ComponentData?.Id}` + "&ComponentTitle=" + ComponentData?.Title+"&TaskType=Design" + "&Siteurl=" + Href);
         }
         else {
-          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?ComponentTitle=${ComponentData?.Title}`+ "&Siteurl=" + Href+"&TaskType=Design");
+          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?ComponentTitle=${ComponentData?.Title}`+"&TaskType=Design"+ "&Siteurl=" + Href);
         }
       }
     }
