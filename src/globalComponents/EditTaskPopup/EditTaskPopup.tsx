@@ -3012,7 +3012,8 @@ const EditTaskPopup = (Items: any) => {
         setTaskImages(tempArray);
 
     }
-    const ImageCustomizeFunction = (currentImagIndex: any) => {
+    const ImageCustomizeFunction = async(currentImagIndex: any) => {
+        UpdateTaskInfoFunction("Image-Tab");
         setImageCustomizePopup(true);
         setModalIsOpen(false);
     }
@@ -3734,10 +3735,8 @@ const EditTaskPopup = (Items: any) => {
     const onRenderCustomReplaceImageHeader = () => {
         return (
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
-                <div className="subheading">
-                    <span>
-                        Replace Image
-                    </span>
+                <div className="subheading siteColor">
+                    Replace Image
                 </div>
                 <Tooltip ComponentId="6776" isServiceTask={ServicesTaskCheck} />
             </div>
@@ -3746,10 +3745,7 @@ const EditTaskPopup = (Items: any) => {
     const onRenderCustomProjectManagementHeader = () => {
         return (
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
-                <div className="subheading">
-                    <span>
-                        Select Project
-                    </span>
+                <div className="subheading SiteColor">
                 </div>
                 <Tooltip ComponentId="1608" isServiceTask={ServicesTaskCheck} />
             </div>

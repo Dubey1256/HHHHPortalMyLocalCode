@@ -466,7 +466,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                             </span>
                                             <span> | </span>
                                             <span className="mx-1">
-                                                <span className="siteColor hreflink" onClick={() => CreateSeperateTaskFunction(obj, i)}>
+                                                <span className="siteColor hreflink commentSectionLabel" onClick={() => CreateSeperateTaskFunction(obj, i)}>
                                                     Create Task
                                                 </span>
                                             </span>
