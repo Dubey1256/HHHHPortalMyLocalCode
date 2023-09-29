@@ -908,7 +908,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         return (
             <>
 
-                <div className='ps-4 siteColor subheading'>
+                <div className='siteColor subheading'>
                     Create New User
                 </div>
                 <Tooltip ComponentId='1757' />
@@ -919,7 +919,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         return (
             <>
 
-                <div className='ps-4 siteColor subheading'>
+                <div className='siteColor subheading'>
                     {`Task-User Management - ${this.state.taskItem.userTitle}`}
                 </div>
                 <Tooltip ComponentId='1767' />
@@ -1011,7 +1011,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             onRenderHeader={this.onRenderCustomHeaderCreateNewUser}
             isOpen={this.state.showCreatePanel}
             onDismiss={this.onCancelTask}
-            isFooterAtBottom={true}
+            isFooterAtBottom={false}
             onRenderFooterContent={elemTaskMemberFooter}
         >
             <div className="ms-SPLegacyFabricBlock">
@@ -1286,7 +1286,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                     {this.getUserPersona({ UserName: userName, ImageUrl: this.getImageUrl(taskId) })}
                 </Stack.Item>
                 <Stack.Item>
-                    <div style={{ fontSize: "12px", fontWeight: 400 }}>{userName}</div>
+                    <div>{userName}</div>
                 </Stack.Item>
             </Stack>
         );
