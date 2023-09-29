@@ -1598,18 +1598,17 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           <div className="heading">Timesheet</div>
         </div>
 
-        <div className="smartFilter bg-light border mb-3 col row">
+        <div className="smartFilter bg-light border mb-3 col">
           <div className="report-taskuser ps-0 pe-1">
             <details className='pt-1 m-0' open>
               <summary>
-                <a className="hreflink pull-left mr-5">All filters :<span className='text-dark'>Task User :</span><span>
+                <a className="hreflink pull-left mr-5">All filters :<span className='text-dark ms-2'>Task User :</span><span>
                   {this.state.SelectGroupName}
                 </span> </a>
                 {this.state.ImageSelectedUsers.length <= 3 ? (
                   this.state.ImageSelectedUsers.map(function (obj: any) {
-                    return (<span className="marginR41">
-                      <img
-                        className="icon-sites-img me-1 ml20"
+                    return (<span className="me-1">
+                      <img className="workmember"
                         src={obj.Item_x0020_Cover.Url}
                       ></img>
                     </span>
@@ -1621,7 +1620,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
 
               </summary>
-              <div className="BdrBoxBlue ps-30 mb-3">
+              <div className="BdrBoxBlue mb-3">
                 <div className="taskTeamBox mt-10">
                   <details className='p-0 m-0' open>
                     <summary>
@@ -1721,30 +1720,36 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                             <input type="radio" name="dateSelection" value="Presettime" onClick={() => this.selectDate('Presettime')} className="radio" />
                             <label>Pre-set I</label>
                             {/* <img className="hreflink wid11 mr-5" title="open" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" /> */}
-                            <span title="open" className='svg__iconbox svg__icon--editBox light'></span>
+                            <span title="open" className='ms-1 svg__iconbox svg__icon--editBox'></span>
                           </span>
                           <span className='SpfxCheckRadio me-2 alignCenter'>
                             <input type="radio" id="Presettime1" name="dateSelection" value="Presettime1" onClick={() => this.selectDate('Presettime1')} className="radio" />
                             <label>Pre-set II</label>
                             {/* <img className="hreflink wid11 mr-5" title="open" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" /> */}
-                            <span title="open" className='svg__iconbox svg__icon--editBox light'></span>
+                            <span title="open" className='ms-1 svg__iconbox svg__icon--editBox'></span>
                           </span>
                         </div>
                         <div className='row mt-2'>
-                          <div className='col-sm-3'>
-                            <label className="full_width">Start Date</label>
-                            <DatePicker selected={this.state.startdate} dateFormat="dd/MM/yyyy" onChange={(date) => this.setStartDate(date)} className="form-control" />
+                          <div className='col-sm-3 ps-0'>
+                            <div className='input-group'>
+                              <label className="form-label full-width">Start Date</label>
+                              <input type="date" className='form-control' onChange={(date) => this.setStartDate(date)} />
+                            </div>
+                            {/* <DatePicker selected={this.state.startdate} dateFormat="dd/MM/yyyy" onChange={(date) => this.setStartDate(date)} className="form-control" /> */}
                           </div>
-                          <div className='col-sm-3'>
-                            <label className="full_width">End Date</label>
-                            <DatePicker selected={this.state.enddate} dateFormat="dd/MM/yyyy" onChange={(date) => this.setEndDate(date)} className="form-control" />
+                          <div className='col-sm-3 ps-0'>
+                            <div className='input-group'>
+                              <label className="form-label full-width">End Date</label>
+                              <input type="date" className='form-control' onChange={(date) => this.setEndDate(date)} />
+                            </div>
+                            {/* <DatePicker selected={this.state.enddate} dateFormat="dd/MM/yyyy" onChange={(date) => this.setEndDate(date)} className="form-control" /> */}
                           </div>
                           <div className='col-sm-6 alignCenter'>
                             <label className='alignCenter me-2'>
-                              <input type="checkbox" className='form-check-input me-1' /> Components
+                              <input type="checkbox" className='form-check-input me-1 mt-1' /> Components
                             </label>
                             <label className='alignCenter'>
-                              <input type="checkbox" className='form-check-input me-1' /> Services
+                              <input type="checkbox" className='form-check-input me-1 mt-1' /> Services
                             </label>
                           </div>
                         </div>
@@ -1772,7 +1777,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                     </summary>
                     <div className=" BdrBoxBlue ps-30 mb-3">
                       <div className="taskTeamBox mt-10">
-                        <div className="container p0 mt-10 smartSearch-Filter-Section">
+                        <div className="container p-0 mt-10 smartSearch-Filter-Section">
                           <CheckboxTree
                             nodes={this.state.filterItems}
                             checked={this.state.checked}
@@ -1792,17 +1797,18 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                           />
                         </div>
 
-                        <div className="col-sm-12 mt-10 pe-1 text-end">
-                          <button type="button" className="btnCol btn btn-primary" onClick={() => this.updatefilter()}>
-                            Update Filters
-                          </button>
-                          <button type="button" className="btn btn-default ms-2" onClick={() => this.ClearFilters()}>
-                            Clear Filters
-                          </button>
-                        </div>
+                        
                       </div>
                     </div>
                   </details>
+                  <div className="col-sm-12 mt-10 pe-1 text-end">
+                    <button type="button" className="btnCol btn btn-primary" onClick={() => this.updatefilter()}>
+                      Update Filters
+                    </button>
+                    <button type="button" className="btn btn-default ms-2" onClick={() => this.ClearFilters()}>
+                      Clear Filters
+                    </button>
+                  </div>
                 </div>
               </div>
             </details>
@@ -1882,9 +1888,6 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
         <div id="showSearchBox" className="col-sm-12 padL-0 PadR0 mb-10">
           <div className='Alltable mt-5'>
-            <div className='tbl-headings'>
-
-            </div>
 
             {this.state.AllTimeEntry == undefined && this.state.AllTimeEntry.length == 0 &&
               <div id="contact" className="col-sm-12 padL-0 PadR0">
@@ -1894,7 +1897,6 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
             {this.state.AllTimeEntry != undefined && this.state.AllTimeEntry.length > 0 &&
               <div id="contact" className="col-sm-12 padL-0 PadR0">
-                <div className='table-responsive fortablee'>
                   <GlobalCommanTable columns={this.columns} data={this.state.AllTimeEntry} showHeader={true} callBackData={this?.callBackData} fixedWidth={true} />
                   {/* <div className='dash-wrapper'>
                     <ul id='tasks'>
@@ -2090,7 +2092,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
                     </ul>
                   </div> */}
-                </div>
+                
               </div>
             }
 
