@@ -11,7 +11,13 @@ const ApprovalHistoryPopup = (ApprovalData: any) => {
     useEffect(() => {
         if (ApprovalData != undefined) {
             if (ApprovalData.ApprovalPointUserData != undefined) {
-                setApprovalPointUserData(ApprovalData.ApprovalPointUserData)
+                let data=[];
+                try{
+                    data = JSON.parse(JSON.stringify(ApprovalData.ApprovalPointUserData))
+                }catch(e){
+                    console.log(e,' error Parsing History JSON')
+                }
+                setApprovalPointUserData(data)
             }
             if (ApprovalData.ApprovalPointCurrentIndex != undefined) {
                 setApprovalPointCurrentIndex(ApprovalData.ApprovalPointCurrentIndex);
@@ -48,7 +54,7 @@ const ApprovalHistoryPopup = (ApprovalData: any) => {
                                                     {UserData.isShowLight == "Approve" ?
                                                         <div className="d-flex full-width justify-content-between">
                                                             <div className="d-flex">
-                                                                <span className="circlelight green br_green mx-1 mt-1"></span> Approved by-
+                                                                <span className="circlelight green br_green mx-1 mt-1"></span> {Index===0?"Approved by-":'Pre Approved by-'}
                                                                 <h6 className="siteColor">{UserData.Title != undefined ? UserData.Title : ""}</h6>
                                                             </div>
                                                             <div>
@@ -61,7 +67,7 @@ const ApprovalHistoryPopup = (ApprovalData: any) => {
                                                     {UserData.isShowLight == "Maybe" ?
                                                         <div className="d-flex full-width justify-content-between">
                                                             <div className="d-flex">
-                                                                <span className="circlelight yellow br_yellow mx-1 mt-1"></span> Set to Maybe by-
+                                                                <span className="circlelight yellow br_yellow mx-1 mt-1"></span> {Index===0?"Set to Maybe by-":'Pre Set to Maybe by-'}
                                                                 <h6 className="siteColor">{UserData.Title != undefined ? UserData.Title : ""}</h6>
                                                             </div>
                                                             <div>
@@ -74,7 +80,7 @@ const ApprovalHistoryPopup = (ApprovalData: any) => {
                                                     {UserData.isShowLight == "Reject" ?
                                                         <div className="d-flex full-width justify-content-between">
                                                             <div className="d-flex">
-                                                                <span className="circlelight red br_red mx-1 mt-1"></span> Rejected by-
+                                                                <span className="circlelight red br_red mx-1 mt-1"></span> {Index===0?'Rejected by-':"Pre Rejected by-"}
                                                                 <h6 className="siteColor">{UserData.Title != undefined ? UserData.Title : ""}</h6>
                                                             </div>
                                                             <div>

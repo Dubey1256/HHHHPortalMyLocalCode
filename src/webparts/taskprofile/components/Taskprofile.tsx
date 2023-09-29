@@ -1747,7 +1747,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                         <dt className='bg-Fa'>Status</dt>
                         <dd className='bg-Ff'>{this.state.Result["Status"]}<br></br>
                           {this.state.Result["ApproverHistory"] != undefined && this.state.Result["ApproverHistory"].length > 1 && this.state.Result["Categories"].includes("Approval") ?
-                            <span style={{ fontSize: "smaller" }}>Pre-Approved by
+                            <span style={{ fontSize: "smaller" }}>Approved by
                               <img className="workmember" title={this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length - 2]?.ApproverName} src={(this.state.Result?.ApproverHistory[this.state.Result?.ApproverHistory?.length - 2]?.ApproverImage != null) ? (this.state.Result.ApproverHistory[this.state.Result.ApproverHistory.length - 2]?.ApproverImage) : (this.state.Result?.ApproverHistory[this.state.Result.ApproverHistory.length - 2]?.ApproverSuffix)}></img></span>
                             // {this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length-1].Title}
                             : null}</dd>
@@ -1864,13 +1864,10 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                           <div>
                                             <span className='me-2'>{EstimatedTimeData?.Team != undefined ? EstimatedTimeData?.Team : EstimatedTimeData?.Category != undefined ?EstimatedTimeData?.Category : null  }</span> |
                                             <span className='mx-2'>{EstimatedTimeData.EstimatedTime ? (EstimatedTimeData.EstimatedTime > 1 ? EstimatedTimeData.EstimatedTime + " hours" : EstimatedTimeData.EstimatedTime + " hour") : "0 hour"}</span>
-                                            <img className="workmember m-0 me-2" title={EstimatedTimeData.UserName} src={EstimatedTimeData.UserImage != undefined && EstimatedTimeData.UserImage?.length > 0 ? EstimatedTimeData.UserImage : ''} />
+                                            <img className="ProirityAssignedUserPhoto m-0 mx-2" title={EstimatedTimeData.UserName} src={EstimatedTimeData.UserImage != undefined && EstimatedTimeData.UserImage?.length > 0 ? EstimatedTimeData.UserImage : ''} />
                                           </div>
-                                          <div className='alignCenter hover-text m-0'>
-                                            <span className="svg__iconbox svg__icon--info"></span>
-                                            <span className='tooltip-text pop-right'>
-                                                {EstimatedTimeData.EstimatedTimeDescription}
-                                            </span>
+                                          <div className='alignCenter'>
+                                            <span className="svg__iconbox svg__icon--info" title={EstimatedTimeData.EstimatedTimeDescription}></span>
                                           </div>
                                         </div>
                                       )
@@ -1993,7 +1990,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                   {fbData['ApproverData'] != undefined && fbData?.ApproverData.length > 0 && <span className='px-3'>
                                                     <a
                                                       onClick={() => this.ShowApprovalHistory(fbData, i, null)}
-                                                    >Pre-approved by -</a>
+                                                    >Approved by -</a>
                                                     <img className="workmember" src={fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.ImageUrl}></img>
                                                   </span>}
                                                 </span>
@@ -2157,7 +2154,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                     {fbSubData.ApproverData != undefined && fbSubData.ApproverData.length > 0 && <span className='px-3'>
                                                       <a
                                                         onClick={() => this.ShowApprovalHistory(fbSubData, i, j)}
-                                                      >Pre-approved by -</a>
+                                                      >Approved by -</a>
                                                       <img className="workmember" src={fbSubData?.ApproverData[fbSubData?.ApproverData?.length - 1]?.ImageUrl}></img>
                                                     </span>}
                                                   </span>
