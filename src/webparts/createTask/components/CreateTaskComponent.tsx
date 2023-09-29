@@ -247,10 +247,12 @@ function CreateTaskComponent(props: any) {
         let setComponent: any = [];
         let BurgerMenuData = burgerMenuTaskDetails;
         if (props?.projectId == undefined) {
+            let CompleteUrl = window.location.href;
             const params = new URLSearchParams(window.location.search);
-
-
-            let paramSiteUrl = params.get("Siteurl");
+            let siteUrlData = CompleteUrl?.split("Siteurl")[1];
+            siteUrlData = siteUrlData?.split('&OR')[0]
+            siteUrlData = siteUrlData.slice(1, siteUrlData.length)
+            let paramSiteUrl = siteUrlData;
             let paramComponentId = params.get('ComponentID');
             let paramType = params.get('Type');
             let paramTaskType = params.get('TaskType');
@@ -503,7 +505,7 @@ function CreateTaskComponent(props: any) {
         })
         Task?.map((taskItem: any) => {
             subCategories?.map((item: any) => {
-                if (taskItem?.Id === item?.Parent.Id) {
+                if (taskItem?.Id === item?.Parent?.Id) {
                     try {
                         item.ActiveTile = false;
                         item.SubTaskActTile = item?.Title?.replace(/\s/g, "");
@@ -901,7 +903,7 @@ function CreateTaskComponent(props: any) {
                                 console.log(response);
                             });
                         }
-                      
+
                         data.data.siteUrl = selectedSite?.siteUrl?.Url;
                         data.data.siteType = save.siteType;
                         data.data.listId = selectedSite?.listId;
@@ -1031,7 +1033,7 @@ function CreateTaskComponent(props: any) {
             // TestUrl = $scope.ComponentLink;
             var item = '';
             if (TestUrl !== undefined) {
-                for (let index = 0; index < SitesTypes.length; index++) {
+                for (let index = 0; index < SitesTypes?.length; index++) {
                     let site = SitesTypes[index];
                     if (TestUrl.toLowerCase().indexOf('.com') > -1)
                         TestUrl = TestUrl.split('.com')[1];
@@ -1041,7 +1043,7 @@ function CreateTaskComponent(props: any) {
                         TestUrl = TestUrl.split('.de')[1];
 
                     let Isfound = false;
-                    if (TestUrl !== undefined && ((TestUrl.toLowerCase().indexOf('/' + site.Title.toLowerCase() + '/')) > -1 || (site.AlternativeTitle != null && (TestUrl.toLowerCase().indexOf(site.AlternativeTitle.toLowerCase())) > -1))) {
+                    if (TestUrl !== undefined && ((TestUrl?.toLowerCase()?.indexOf('/' + site?.Title?.toLowerCase())) > -1 || (site?.AlternativeTitle != null && (TestUrl?.toLowerCase()?.indexOf(site?.AlternativeTitle?.toLowerCase())) > -1))) {
                         item = site.Title;
                         selectedSiteTitle = site.Title;
                         Isfound = true;
