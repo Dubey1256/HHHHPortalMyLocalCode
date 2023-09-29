@@ -1290,14 +1290,6 @@ function PortfolioTable(SelectedProp: any) {
         size: 42,
         id: "ItemRank"
       },
-      // {
-      //   accessorKey: "DueDate",
-      //   placeholder: "Due Date",
-      //   header: "",
-      //   resetColumnFilters: false,
-      //   size: 100,
-      //   id: "DueDate"
-      // },
       {
         accessorFn: (row) => row?.DueDate,
         cell: ({ row }) => (
@@ -1359,41 +1351,6 @@ function PortfolioTable(SelectedProp: any) {
         header: "",
         size: 109
       },
-      // {
-      //   accessorFn: (row) =>
-      //     row?.Created ? Moment(row?.Created).format("DD/MM/YYYY") : "",
-      //   cell: ({ row, getValue }) => (
-      //     <>
-      //       {row?.original?.Created == null ? (
-      //         ""
-      //       ) : (
-      //         <>
-      //           {row?.original?.Author != undefined ? (
-      //             <>
-      //               <span>
-      //                 {Moment(row?.original?.Created).format("DD/MM/YYYY")}{" "}
-      //               </span>
-      //               <img
-      //                 className="workmember"
-      //                 title={row?.original?.Author?.Title}
-      //                 src={findUserByName(row?.original?.Author?.Id)}
-      //               />
-      //             </>
-      //           ) : (
-      //             <img
-      //               className="workmember"
-      //               src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"
-      //             />
-      //           )}
-      //         </>
-      //       )}
-      //     </>
-      //   ),
-      //   id: "Created",
-      //   placeholder: "Created Date",
-      //   header: "",
-      //   size: 109
-      // },
       {
         accessorKey: "descriptionsSearch",
         placeholder: "descriptionsSearch",
