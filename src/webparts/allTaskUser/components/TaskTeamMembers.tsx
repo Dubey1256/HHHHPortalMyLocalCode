@@ -365,11 +365,15 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         }, this.onEditTask);
     }
 
-    private onEditTask() {
+    private async onEditTask() {
         let allTasks = [...this.state.tasks];
         let selTask = allTasks.filter(t => t.TaskId == this.state.selTaskId)[0];
         console.log(selTask);
         let selTaskItem = { ...this.state.taskItem };
+        if(selTask.ApproverMail!=undefined && selTask.ApproverMail[0]!=undefined){
+            let userInfo = await this.getUserInfo(selTask.ApproverMail[0]);
+            selTaskItem.approverId = [userInfo.Id]
+        }
         selTaskItem.userTitle = selTask.Title;
         selTaskItem.userSuffix = selTask.Suffix;
         selTaskItem.groupId = selTask.GroupId;
@@ -446,17 +450,18 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
     }
 
     private async getApproverDetails(approvers: any[]) {
-
         let approverId: number = undefined;
-
         if (approvers.length > 0) {
             let approverMail = approvers[0].id.split("|")[2];
             let userInfo = await this.getUserInfo(approverMail);
             approverId = userInfo.Id;
         }
-
         let taskItem = { ...this.state.taskItem };
-        taskItem.approverId = [approverId];
+        if(approverId!=undefined){
+            taskItem.approverId = [approverId];
+        }else{
+            taskItem.approverId = []
+        }
         this.setState({
             taskItem: taskItem
         })
