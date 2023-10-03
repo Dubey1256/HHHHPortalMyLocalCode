@@ -834,39 +834,39 @@ return new Promise<void>((resolve, reject) => {
        if(AssignMembers?.TeamMemberUsers != undefined && AssignMembers.TeamMemberUsers.length>0){
         AssignMembers.TeamMemberUsers.map((taskInfo: any) => {
             TeamMemberIds.push(taskInfo.AssingedToUserId);
-            AllTeamMembers.push(taskInfo);
+            AllTeamMembers.push(taskInfo.AssingedToUser);
         })
        }
        if(AssignMembers?.ResponsibleTeam != undefined && AssignMembers?.ResponsibleTeam.length>0){
         AssignMembers.ResponsibleTeam.map((taskInfo: any) => {
             ResponsibleTeamIds.push(taskInfo.AssingedToUserId);
-            TeamLeaderws.push(taskInfo)
+            TeamLeaderws.push(taskInfo.AssingedToUser)
         })
        }
        if(AssignMembers?.AssignedTo != undefined && AssignMembers?.AssignedTo.length>0){
         AssignMembers.AssignedTo.map((taskInfo: any) => {
             AssignedToIds.push(taskInfo.AssingedToUserId);
-            AssignedToUser.push(taskInfo);
+            AssignedToUser.push(taskInfo.AssingedToUser);
         })
        }
-       if(AssignMembers.length == 0){
+       if(AssignMembers?.length == 0){
         if (AllItems?.TeamMembers != undefined && AllItems?.TeamMembers?.length > 0) {
                     AllItems?.TeamMembers.forEach((obj: any) => {
                         TeamMemberIds.push(obj.Id);
-                        AllTeamMembers.push(obj);
+                        AllTeamMembers.push(obj.AssingedToUser);
         
                     })
          }
           if (AllItems?.ResponsibleTeam != undefined && AllItems?.ResponsibleTeam?.length > 0) {
             AllItems?.ResponsibleTeam?.forEach((obj: any) => {
                 ResponsibleTeamIds.push(obj.Id);
-                TeamLeaderws.push(obj)
+                TeamLeaderws.push(obj.AssingedToUser)
             })
         }
         if(AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length > 0) {
                     AllItems.AssignedTo.forEach((obj: any) => {
                         AssignedToIds.push(obj.Id);
-                        AssignedToUser.push(obj);
+                        AssignedToUser.push(obj.AssingedToUser);
         
                     })
                 }
