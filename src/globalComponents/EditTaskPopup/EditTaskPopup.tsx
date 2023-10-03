@@ -3,7 +3,6 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import * as $ from 'jquery';
 import * as Moment from 'moment';
 import { Web, sp } from "sp-pnp-js";
-import * as pnp from 'sp-pnp-js';
 import Picker from "./SmartMetaDataPicker";
 import Example from "./FroalaCommnetBoxes";
 import * as globalCommon from "../globalCommon";
@@ -910,10 +909,7 @@ const EditTaskPopup = (Items: any) => {
                         item.siteCompositionData = [object];
                         setClientTimeData([object]);
                     }
-
                 }
-
-
                 if (item.Body != undefined) {
                     item.Body = item.Body.replace(/(<([^>]+)>)/ig, '');
                 }
@@ -970,7 +966,6 @@ const EditTaskPopup = (Items: any) => {
                         }
                     }
                 }
-
 
                 if (item.Author != undefined && item.Author != null) {
                     taskUsers.map((userData: any) => {
@@ -2428,7 +2423,7 @@ const EditTaskPopup = (Items: any) => {
                 Description: EditData.Relevant_Url ? EditData.Relevant_Url : '',
                 Url: EditData.Relevant_Url ? EditData.Relevant_Url : ''
             },
-            BasicImageInfo: UploadImageArray != undefined && UploadImageArray.length > 0 ? JSON.stringify(UploadImageArray) : JSON.stringify(UploadImageArray),
+            // BasicImageInfo: UploadImageArray != undefined && UploadImageArray.length > 0 ? JSON.stringify(UploadImageArray) : JSON.stringify(UploadImageArray),
             ProjectId: (selectedProject.length > 0 ? selectedProject[0].Id : null),
             ApproverId: { "results": (ApproverIds != undefined && ApproverIds.length > 0) ? ApproverIds : [] },
             ClientTime: JSON.stringify(ClientCategoryData),
@@ -2846,6 +2841,7 @@ const EditTaskPopup = (Items: any) => {
                     item.attachmentFiles.add(imageName, data).then(() => {
                         console.log("Attachment added");
                         UpdateBasicImageInfoJSON(DataJson, "Upload", 0);
+                        EditData.UploadedImage = DataJson;
                     });
                     setUploadBtnStatus(false);
                 })().catch(console.log)
@@ -2856,6 +2852,7 @@ const EditTaskPopup = (Items: any) => {
                     item.attachmentFiles.add(imageName, data).then(() => {
                         console.log("Attachment added");
                         UpdateBasicImageInfoJSON(DataJson, "Upload", 0);
+                        EditData.UploadedImage = DataJson;
                     });
                     setUploadBtnStatus(false);
                 })().catch(console.log)
@@ -2926,6 +2923,7 @@ const EditTaskPopup = (Items: any) => {
                 let item = web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id);
                 item.attachmentFiles.getByName(imageName).recycle();
                 UpdateBasicImageInfoJSON(tempArray, "Upload", 0);
+                EditData.UploadedImage = tempArray;
                 console.log("Attachment deleted");
 
             })().catch(console.log)
@@ -2935,13 +2933,14 @@ const EditTaskPopup = (Items: any) => {
                 let item = web.lists.getByTitle(Items.Items.listName).items.getById(Items.Items.Id);
                 item.attachmentFiles.getByName(imageName).recycle();
                 UpdateBasicImageInfoJSON(tempArray, "Upload", 0);
+                EditData.UploadedImage = tempArray;
                 console.log("Attachment deleted");
 
             })().catch(console.log)
         }
     }
     const ReplaceImageFunction = (Data: any, ImageIndex: any) => {
-        let ImageName = EditData.UploadedImage[ImageIndex].ImageName
+        let ImageName = EditData?.UploadedImage[ImageIndex]?.ImageName
         var src = Data?.data_url?.split(",")[1];
         var byteArray = new Uint8Array(atob(src)?.split("")?.map(function (c) {
             return c.charCodeAt(0);
