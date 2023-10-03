@@ -1509,7 +1509,7 @@ const App = (props: any) => {
         </a>
       </div>
       <div style={{ height: "500pt" }}>
-        <a className="mailBtn me-4 mt-4" href="#" onClick={emailComp}>
+        <a className="mailBtn me-4" href="#" onClick={emailComp}>
           <FaPaperPlane></FaPaperPlane> <span>Send Leave Summary</span>
         </a>
         {/* <button type="button" className="mailBtn" >

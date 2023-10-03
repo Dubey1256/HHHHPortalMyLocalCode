@@ -11,6 +11,7 @@ import MyNotes from "./MyNotes";
 import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup";
 import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 // import GlobalCommanTable from '../../../globalComponents/GlobalCommanTable';
 
 const TaskStatusTbl = () => {
@@ -43,8 +44,8 @@ const TaskStatusTbl = () => {
         accessorKey: "",
         placeholder: "",
         hasCheckbox: true,
-        hasCustomExpanded: true,
-        hasExpanded: true,
+        hasCustomExpanded: false,
+        hasExpanded: false,
         size: 55,
         id: "Id"
       },
@@ -69,7 +70,7 @@ const TaskStatusTbl = () => {
         accessorFn: (row: any) => row?.TaskID,
         cell: ({ row, getValue }: any) => (
           <>
-            <ReactPopperTooltip ShareWebId={getValue()} row={row} />
+            <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={ContextData?.propsValue?.Context} />
           </>
         ),
         id: "TaskID",
@@ -142,8 +143,8 @@ const TaskStatusTbl = () => {
         accessorKey: "",
         placeholder: "",
         hasCheckbox: true,
-        hasCustomExpanded: true,
-        hasExpanded: true,
+        hasCustomExpanded: false,
+        hasExpanded: false,
         size: 55,
         id: "Id"
       },
@@ -168,7 +169,7 @@ const TaskStatusTbl = () => {
         accessorFn: (row: any) => row?.TaskID,
         cell: ({ row, getValue }: any) => (
           <>
-            <ReactPopperTooltip ShareWebId={getValue()} row={row} />
+            <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={ContextData?.propsValue?.Context} />
           </>
         ),
         id: "TaskID",
@@ -240,8 +241,8 @@ const TaskStatusTbl = () => {
         accessorKey: "",
         placeholder: "",
         hasCheckbox: true,
-        hasCustomExpanded: true,
-        hasExpanded: true,
+        hasCustomExpanded: false,
+        hasExpanded: false,
         size: 55,
         id: "Id"
       },
@@ -266,7 +267,7 @@ const TaskStatusTbl = () => {
         accessorFn: (row: any) => row?.TaskID,
         cell: ({ row, getValue }: any) => (
           <>
-            <ReactPopperTooltip ShareWebId={getValue()} row={row} />
+            <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={ContextData?.propsValue?.Context} />
           </>
         ),
         id: "TaskID",
@@ -289,6 +290,13 @@ const TaskStatusTbl = () => {
             >
               {row?.original?.Title}
             </a>
+            {row?.original?.descriptionsSearch != null &&
+              row?.original?.descriptionsSearch != "" && (
+                <InfoIconsToolTip
+                  Discription={row?.original?.descriptionsSearch}
+                  row={row?.original}
+                />
+              )}
           </div>
         ),
         id: "Title",
@@ -349,9 +357,7 @@ const TaskStatusTbl = () => {
 
 
   const sendAllWorkingTodayTasks = async (sharingTasks:any) => {
-    let AllTimeEntries: any = [];
-    
-    let to: any = ["abhishek.tiwari@hochhuth-consulting.de"];
+    let to: any = [ContextData.approverEmail];
     let body: any = '';
     let confirmation = confirm("Are you sure you want to share the working today task of all team members?")
     if (confirmation) {
@@ -364,11 +370,7 @@ const TaskStatusTbl = () => {
 
                 tasksCopy?.map(async (item: any) => {
                     try {
-
                         item.smartTime = 0;
-
-                        let EstimatedDesc: any = []
-
                         item.showDesc = '';
                        let memberOnLeave = false;
                        
@@ -549,7 +551,7 @@ const SendEmailFinal = async (to: any, subject: any, body: any) => {
                   <path d="M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-4H9c-.086 0-.17.01-.25.031A2 2 0 0 1 7 10.5H4a2 2 0 1 1 0-4h1.535c.218-.376.495-.714.82-1z" />
                   <path d="M9 5.5a3 3 0 0 0-2.83 4h1.098A2 2 0 0 1 9 6.5h3a2 2 0 1 1 0 4h-1.535a4.02 4.02 0 0 1-.82 1H12a3 3 0 1 0 0-6H9z" />
                 </svg>
-                <span className="ms-5">Appraisal Portal</span>
+                <a data-interception="off" target="_blank" href="https://smalsusinfolabs.sharepoint.com/sites/HHHH/HR/SitePages/Appraisal-Portal.aspx" className="ms-5">Appraisal Portal</a>
               </a>
             </li>
             <li className="list-group-item">
@@ -565,7 +567,7 @@ const SendEmailFinal = async (to: any, subject: any, body: any) => {
                   <path d="M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-4H9c-.086 0-.17.01-.25.031A2 2 0 0 1 7 10.5H4a2 2 0 1 1 0-4h1.535c.218-.376.495-.714.82-1z" />
                   <path d="M9 5.5a3 3 0 0 0-2.83 4h1.098A2 2 0 0 1 9 6.5h3a2 2 0 1 1 0 4h-1.535a4.02 4.02 0 0 1-.82 1H12a3 3 0 1 0 0-6H9z" />
                 </svg>
-                <span className="ms-5">Reimbursement Portal</span>
+                <a data-interception="off" target="_blank" href="" className="ms-5">Reimbursement Portal</a>
               </a>
             </li>
 
@@ -582,7 +584,7 @@ const SendEmailFinal = async (to: any, subject: any, body: any) => {
                   <path d="M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-4H9c-.086 0-.17.01-.25.031A2 2 0 0 1 7 10.5H4a2 2 0 1 1 0-4h1.535c.218-.376.495-.714.82-1z" />
                   <path d="M9 5.5a3 3 0 0 0-2.83 4h1.098A2 2 0 0 1 9 6.5h3a2 2 0 1 1 0 4h-1.535a4.02 4.02 0 0 1-.82 1H12a3 3 0 1 0 0-6H9z" />
                 </svg>
-                <span className="ms-5">Leave Calender</span>
+                <a target="_blank" data-interception="off"  href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmalsusLeaveCalendar.aspx" className="ms-5">Leave Calender</a>
               </a>
             </li>
             <li className="list-group-item">
@@ -598,7 +600,7 @@ const SendEmailFinal = async (to: any, subject: any, body: any) => {
                   <path d="M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-4H9c-.086 0-.17.01-.25.031A2 2 0 0 1 7 10.5H4a2 2 0 1 1 0-4h1.535c.218-.376.495-.714.82-1z" />
                   <path d="M9 5.5a3 3 0 0 0-2.83 4h1.098A2 2 0 0 1 9 6.5h3a2 2 0 1 1 0 4h-1.535a4.02 4.02 0 0 1-.82 1H12a3 3 0 1 0 0-6H9z" />
                 </svg>
-                <span className="ms-5">Time Report</span>
+                <a data-interception="off" target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TimeReport.aspx" className="ms-5">Time Report</a>
               </a>
             </li>
           </ul>
