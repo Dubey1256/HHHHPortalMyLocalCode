@@ -508,13 +508,13 @@ function TasksTable(props: any) {
       // TeamLeaderUser2=TeamLeaderUser2.concat(childItem?.data?.ResponsibleTeam)
       // TeamLeaderUser2=TeamLeaderUser2.concat(childItem?.data?.TeamMembers)
       // TeamLeaderUser2=TeamLeaderUser2.concat(childItem?.data?.AssignedTo)
-      // childItem.data.TeamLeaderUser=TeamLeaderUser2
+      childItem.data.TeamLeaderUser=[];
       childItem.data.DisplayCreateDate= moment(childItem?.data?.Created).format("DD/MM/YYYY")
       childItem.data.DisplayDueDate=childItem?.data?.DueDate
       childItem.data.Item_x0020_Type = "Task";
       if (
         childItem?.data?.AssignedTo != undefined &&
-        childItem?.data?.AssignedTo > 0
+        childItem?.data?.AssignedTo?.length > 0
       ) {
         $.map(childItem?.data?.AssignedTo, (Assig: any) => {
           if (Assig.Id != undefined) {
