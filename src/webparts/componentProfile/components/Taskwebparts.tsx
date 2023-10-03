@@ -1568,6 +1568,7 @@ function PortfolioTable(SelectedProp: any) {
   const AddStructureCallBackCall = React.useCallback((item) => {
     childRef?.current?.setRowSelection({});
     if (!isOpenPopup && item.CreatedItem != undefined) {
+    if(item?.CreatedItem[0]?.data?.ItemType == "SubComponent"){
       item.CreatedItem.forEach((obj: any) => {
         obj.data.childs = [];
         obj.data.subRows = [];
@@ -1579,15 +1580,38 @@ function PortfolioTable(SelectedProp: any) {
         if (
           item.props != undefined &&
           item.props.SelectedItem != undefined &&
-          item.props.SelectedItem.subRows != undefined
+          (item.props.SelectedItem.subRows == undefined || item.props.SelectedItem.subRows != undefined)
         ) {
           item.props.SelectedItem.subRows =
             item.props.SelectedItem.subRows == undefined
               ? []
               : item.props.SelectedItem.subRows;
           item.props.SelectedItem.subRows.unshift(obj.data);
+          copyDtaArray = copyDtaArray.concat(item.props.SelectedItem.subRows)
         }
       });
+    }
+    item.CreatedItem.forEach((obj: any) => {
+      obj.data.childs = [];
+      obj.data.subRows = [];
+      obj.data.flag = true;
+      obj.data.TitleNew = obj.data.Title;
+      obj.data.siteType = "Master Tasks";
+      obj.data.SiteIconTitle = obj?.data?.Item_x0020_Type?.charAt(0);
+      obj.data["TaskID"] = obj.data.PortfolioStructureID;
+      if (
+        item.props != undefined &&
+        item.props.SelectedItem != undefined &&
+        (item.props.SelectedItem.subRows == undefined || item.props.SelectedItem.subRows != undefined)
+      ) {
+        item.props.SelectedItem.subRows =
+          item.props.SelectedItem.subRows == undefined
+            ? []
+            : item.props.SelectedItem.subRows;
+        item.props.SelectedItem.subRows.unshift(obj.data);
+      }
+    });
+      
       if (copyDtaArray != undefined && copyDtaArray.length > 0) {
         copyDtaArray.forEach((compnew: any, index: any) => {
           if (compnew.subRows != undefined && compnew.subRows.length > 0) {
@@ -1654,7 +1678,6 @@ function PortfolioTable(SelectedProp: any) {
     }
     setOpenAddStructurePopup(false);
   }, []);
-
   const CreateOpenCall = React.useCallback((item) => { }, []);
   /// END ////
 
