@@ -198,12 +198,18 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         let taxTypes: string[] = ["TimesheetCategories"];
         const resTimesheetCategories = await this.props.spService.getSmartMetadata(this.props.smartMetadataListId, taxTypes);
         if (resTimesheetCategories.length > 0) {
-            resTimesheetCategories.forEach((tsCategory) => timesheetCategories.push({
-                key: tsCategory.Title,
-                text: tsCategory.Title
-            }));
+            const existingTitles = new Set();
+            resTimesheetCategories.forEach((tsCategory) => {
+                const title = tsCategory.Title;
+                if (!existingTitles.has(title)) {
+                    timesheetCategories.push({
+                        key: title,
+                        text: title
+                    });
+                    existingTitles.add(title);
+                }
+            });
         }
-
         taxTypes = ["Categories", "Category", "teamSites", "Sites", "TimesheetCategories"];
         let resCategories = await this.props.spService.getSmartMetadata(this.props.smartMetadataListId, taxTypes);
         let smartMetadataItems: IContextualMenuItem[] = [];
@@ -359,11 +365,15 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         }, this.onEditTask);
     }
 
-    private onEditTask() {
+    private async onEditTask() {
         let allTasks = [...this.state.tasks];
         let selTask = allTasks.filter(t => t.TaskId == this.state.selTaskId)[0];
         console.log(selTask);
         let selTaskItem = { ...this.state.taskItem };
+        if(selTask.ApproverMail!=undefined && selTask.ApproverMail[0]!=undefined){
+            let userInfo = await this.getUserInfo(selTask.ApproverMail[0]);
+            selTaskItem.approverId = [userInfo.Id]
+        }
         selTaskItem.userTitle = selTask.Title;
         selTaskItem.userSuffix = selTask.Suffix;
         selTaskItem.groupId = selTask.GroupId;
@@ -440,17 +450,18 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
     }
 
     private async getApproverDetails(approvers: any[]) {
-
         let approverId: number = undefined;
-
         if (approvers.length > 0) {
             let approverMail = approvers[0].id.split("|")[2];
             let userInfo = await this.getUserInfo(approverMail);
             approverId = userInfo.Id;
         }
-
         let taskItem = { ...this.state.taskItem };
-        taskItem.approverId = [approverId];
+        if(approverId!=undefined){
+            taskItem.approverId = [approverId];
+        }else{
+            taskItem.approverId = []
+        }
         this.setState({
             taskItem: taskItem
         })
@@ -658,13 +669,14 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         });
     }
 
-    private onGroupChange(ev: any, tgOpt: IDropdownOption) {
-        let taskItem = { ...this.state.taskItem };
-        taskItem.groupId = tgOpt.key as string;
-        this.setState({
-            taskItem: taskItem
-        });
-    }
+
+    // private onGroupChange(ev: any, tgOpt: IDropdownOption) {
+    //     let taskItem = { ...this.state.taskItem };
+    //     taskItem.groupId = tgOpt.key as string;
+    //     this.setState({
+    //         taskItem: taskItem
+    //     });
+    // }
 
     private onSortOrderChange(_ev: any, newSortOrder: string) {
         let taskItem = { ...this.state.taskItem };
@@ -674,13 +686,32 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         });
     }
 
-    private onManageTimeCategory(ev: any, tCatOpt: IDropdownOption) {
-        let taskItem = { ...this.state.taskItem };
-        taskItem.timeCategory = tCatOpt.key.toString();
+    onGroupChange = (event: any) => {
+        const selectedGroupId = event.target.value;
         this.setState({
-            taskItem: taskItem
+            taskItem: {
+                ...this.state.taskItem,
+                groupId: selectedGroupId,
+            },
         });
-    }
+    };
+    onManageTimeCategory = (event: any) => {
+        const selectedtimeCategoryId = event.target.value.toString();;
+        this.setState({
+            taskItem: {
+                ...this.state.taskItem,
+                timeCategory: selectedtimeCategoryId,
+            },
+        });
+    };
+
+    // private onManageTimeCategory(ev: any, tCatOpt: IDropdownOption) {
+    //     let taskItem = { ...this.state.taskItem };
+    //     taskItem.timeCategory = tCatOpt.key.toString();
+    //     this.setState({
+    //         taskItem: taskItem
+    //     });
+    // }
 
     private onApprovalTypeChange(ev: any, appTypeOpt: IChoiceGroupOption) {
         let taskItem = { ...this.state.taskItem };
@@ -765,7 +796,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             Id: item.Id
         };
 
-        let selSmartMetadataItems = this.state.taskItem.selSmartMetadataItems!=undefined?[...this.state.taskItem.selSmartMetadataItems]:[];
+        let selSmartMetadataItems = this.state.taskItem.selSmartMetadataItems != undefined ? [...this.state.taskItem.selSmartMetadataItems] : [];
         existingItem = selSmartMetadataItems.filter(mItem => mItem.Id == item.Id).length > 0
         if (!existingItem) {
             selSmartMetadataItems.push(selMetadataItem);
@@ -877,7 +908,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         return (
             <>
 
-                <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+                <div className='siteColor subheading'>
                     Create New User
                 </div>
                 <Tooltip ComponentId='1757' />
@@ -888,7 +919,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         return (
             <>
 
-                <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+                <div className='siteColor subheading'>
                     {`Task-User Management - ${this.state.taskItem.userTitle}`}
                 </div>
                 <Tooltip ComponentId='1767' />
@@ -980,7 +1011,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             onRenderHeader={this.onRenderCustomHeaderCreateNewUser}
             isOpen={this.state.showCreatePanel}
             onDismiss={this.onCancelTask}
-            isFooterAtBottom={true}
+            isFooterAtBottom={false}
             onRenderFooterContent={elemTaskMemberFooter}
         >
             <div className="ms-SPLegacyFabricBlock">
@@ -1019,14 +1050,14 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                         />
                     </div>
                     <div className="ms-Grid-col ms-sm3 ms-md3 ms-lg3">
-                        <Dropdown
-                            label="Group"
-                            options={this.state.teamGroups}
-                            defaultSelectedKey={this.state.taskItem.groupId}
-                            selectedKey={this.state.taskItem.groupId}
-                            onChange={this.onGroupChange}
-                            calloutProps={{ doNotLayer: false }}
-                        />
+                        <label className="ms-Label root-321">Group</label>
+                        <select onChange={(event) => this.onGroupChange(event)} value={this.state.taskItem.groupId} className="fieldGroup-311 ms-sm12 ms-md12 ms-lg12">
+                            {this.state.teamGroups.map((item: any) => (
+                                <option key={item.key} value={item.key}>
+                                    {item.text}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                     <div className="ms-Grid-col ms-sm3 ms-md3 ms-lg3">
                         <TextField
@@ -1041,14 +1072,14 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                 <div className="ms-Grid-row">
                     <div className="ms-Grid-col ms-sm4 ms-md4 ms-lg4">{elemUser}</div>
                     <div className="ms-Grid-col ms-sm4 ms-md4 ms-lg4">
-                        <Dropdown
-                            label="Manage Categories"
-                            options={this.state.timesheetCategories}
-                            defaultSelectedKey={this.state.taskItem.timeCategory}
-                            selectedKey={this.state.taskItem.timeCategory}
-                            onChange={this.onManageTimeCategory}
-                            calloutProps={{ doNotLayer: false }}
-                        />
+                        <label className="ms-Label root-321">Manage Categories</label>
+                        <select onChange={(event) => this.onManageTimeCategory(event)} value={this.state.taskItem.timeCategory} className="fieldGroup-311 ms-sm12 ms-md12 ms-lg12">
+                            {this.state.timesheetCategories.map((item: any) => (
+                                <option key={item.key} value={item.key}>
+                                    {item.text}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                     <div className="ms-Grid-col ms-sm4 ms-md4 ms-lg4">{elemApprover}</div>
                 </div>
@@ -1109,10 +1140,10 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                     <div className="ms-Grid-col ms-sm3 ms-md3 ms-lg3">
                         {elemApproveSelectedMenu}
                         <div className="ms-Grid-col ms-sm9 ms-md9 ms-lg9 p-0">
-                    {elemSelSmartMetadataItems}
+                            {elemSelSmartMetadataItems}
+                        </div>
                     </div>
-                    </div>
-                   
+
                 </div>)}
                 <br />
             </div>
@@ -1255,7 +1286,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                     {this.getUserPersona({ UserName: userName, ImageUrl: this.getImageUrl(taskId) })}
                 </Stack.Item>
                 <Stack.Item>
-                    <div style={{ fontSize: "12px", fontWeight: 400 }}>{userName}</div>
+                    <div>{userName}</div>
                 </Stack.Item>
             </Stack>
         );

@@ -47,7 +47,6 @@ let hasCustomExpanded: any = true
 let hasExpanded: any = true
 let isHeaderNotAvlable: any = false
 let isColumnDefultSortingAsc: any = false;
-let portViewIconsStyle: any = true
 function TeamPortlioTable(SelectedProp: any) {
     const childRef = React.useRef<any>();
     if (childRef != null) {
@@ -307,8 +306,16 @@ function TeamPortlioTable(SelectedProp: any) {
                             if (result?.Body != undefined) {
                                 result.descriptionsSearch = result?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
                             }
-                            if (result?.Comments != null) {
-                                result.commentsSearch = result?.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
+                            try {
+                                if (result?.Comments != null && result?.Comments != undefined) {
+                                    const cleanedComments = result?.Comments?.replace(/[^\x20-\x7E]/g, '');
+                                    const commentsFormData = JSON?.parse(cleanedComments);
+                                    result.commentsSearch = commentsFormData?.reduce((accumulator: any, comment: any) => {
+                                        return (accumulator + comment.Title + " " + comment?.ReplyMessages?.map((reply: any) => reply?.Title).join(" ") + " ");
+                                    }, "").trim();
+                                }
+                            } catch (error) {
+                                console.error("An error occurred:", error);
                             }
                             if (
                                 result.AssignedTo != undefined &&
@@ -373,7 +380,7 @@ function TeamPortlioTable(SelectedProp: any) {
                                 const formattedDueDate = Moment(result?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
                                 result.joinedData = [];
                                 if (result?.projectStructerId && title || formattedDueDate) {
-                                    result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate}`)
+                                    result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
                                 }
                                 // if (result?.projectStructerId) result.joinedData.push(`Project: ${result?.projectStructerId}`);
                                 // if (title) result.joinedData.push(`Title: ${title}`);
@@ -450,8 +457,16 @@ function TeamPortlioTable(SelectedProp: any) {
             if (result?.Short_x0020_Description_x0020_On != undefined) {
                 result.descriptionsSearch = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
             }
-            if (result?.Comments != null) {
-                result.commentsSearch = result?.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
+            try {
+                if (result?.Comments != null && result?.Comments != undefined) {
+                    const cleanedComments = result?.Comments?.replace(/[^\x20-\x7E]/g, '');
+                    const commentsFormData = JSON?.parse(cleanedComments);
+                    result.commentsSearch = commentsFormData?.reduce((accumulator: any, comment: any) => {
+                        return (accumulator + comment.Title + " " + comment?.ReplyMessages?.map((reply: any) => reply?.Title).join(" ") + " ");
+                    }, "").trim();
+                }
+            } catch (error) {
+                console.error("An error occurred:", error);
             }
             result.Id = result.Id != undefined ? result.Id : result.ID;
             if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
@@ -1009,7 +1024,6 @@ function TeamPortlioTable(SelectedProp: any) {
         hasExpanded = false
         isHeaderNotAvlable = true
         isColumnDefultSortingAsc = true
-        portViewIconsStyle = false;
         setGroupByButtonClickData(data);
         setclickFlatView(true);
         setData(flattenedData);
@@ -1031,7 +1045,6 @@ function TeamPortlioTable(SelectedProp: any) {
         return flattenedData;
     }
     const switchGroupbyData = () => {
-        portViewIconsStyle = true;
         isColumnDefultSortingAsc = false
         hasCustomExpanded = true
         hasExpanded = true
@@ -1095,8 +1108,8 @@ function TeamPortlioTable(SelectedProp: any) {
                     <div className="alignCenter">
                         {row?.original?.SiteIcon != undefined ? (
                             <div className="alignCenter" title="Show All Child">
-                                <img title={row?.original?.TaskType?.Title} className={row?.original?.Item_x0020_Type == "SubComponent" && portViewIconsStyle === true ? "ml-12 workmember ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" && portViewIconsStyle === true ? "ml-24 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Activities" && portViewIconsStyle === true ? "ml-36 workmember ml20 me-1" :
-                                    row?.original?.TaskType?.Title == "Workstream" && portViewIconsStyle === true ? "ml-48 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Task" && portViewIconsStyle === true || row?.original?.Item_x0020_Type === "Task" && row?.original?.TaskType == undefined && portViewIconsStyle === true ? "ml-60 workmember ml20 me-1" : "workmember me-1"
+                                <img title={row?.original?.TaskType?.Title} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 workmember ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 workmember ml20 me-1" :
+                                    row?.original?.TaskType?.Title == "Workstream" ? "ml-48 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Task" || row?.original?.Item_x0020_Type === "Task" && row?.original?.TaskType == undefined ? "ml-60 workmember ml20 me-1" : "workmember me-1"
                                 }
                                     src={row?.original?.SiteIcon}>
                                 </img>
@@ -1104,8 +1117,8 @@ function TeamPortlioTable(SelectedProp: any) {
                         ) : (
                             <>
                                 {row?.original?.Title != "Others" ? (
-                                    <div title={row?.original?.Item_x0020_Type} style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} className={row?.original?.Item_x0020_Type == "SubComponent" && portViewIconsStyle === true ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" && portViewIconsStyle === true ? "ml-24 Dyicons" : row?.original?.TaskType?.Title == "Activities" && portViewIconsStyle === true ? "ml-36 Dyicons" :
-                                        row?.original?.TaskType?.Title == "Workstream" && portViewIconsStyle === true ? "ml-48 Dyicons" : row?.original?.TaskType?.Title == "Task" && portViewIconsStyle === true ? "ml-60 Dyicons" : "Dyicons"
+                                    <div title={row?.original?.Item_x0020_Type} style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 Dyicons" :
+                                        row?.original?.TaskType?.Title == "Workstream" ? "ml-48 Dyicons" : row?.original?.TaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons"
                                     }>
                                         {row?.original?.SiteIconTitle}
                                     </div>
@@ -1583,61 +1596,67 @@ function TeamPortlioTable(SelectedProp: any) {
 
     //----------------------------Code By Santosh---------------------------------------------------------------------------
     const Call = (res: any) => {
-        childRef?.current?.setRowSelection({});
-        setIsComponent(false);
-        setIsTask(false);
-        setIsOpenActivity(false)
-        setIsOpenWorkstream(false)
-        setActivityPopup(false)
-        copyDtaArray?.forEach((val: any) => {
-            if (res?.data?.PortfolioId == val.Id) {
-                val.subRows = val.subRows === undefined ? [] : val.subRows;
+        if (res === "Close") {
+            setIsComponent(false);
+            setIsTask(false);
+            setIsOpenActivity(false)
+            setIsOpenWorkstream(false)
+            setActivityPopup(false)
+        } else {
+            childRef?.current?.setRowSelection({});
+            setIsComponent(false);
+            setIsTask(false);
+            setIsOpenActivity(false)
+            setIsOpenWorkstream(false)
+            setActivityPopup(false)
+            copyDtaArray?.forEach((val: any) => {
+                if (res?.data?.PortfolioId == val.Id) {
+                    val.subRows = val.subRows === undefined ? [] : val.subRows;
 
-                val.subRows.push(res.data)
-            }
-            else if (val?.subRows != undefined && val?.subRows.length > 0) {
-                val.subRows?.forEach((ele: any) => {
-                    if (res?.data?.PortfolioId == ele?.Id) {
-                        ele.subRows = ele.subRows === undefined ? [] : ele.subRows;
-                        ele.subRows.push(res.data)
+                    val.subRows.push(res.data)
+                }
+                else if (val?.subRows != undefined && val?.subRows.length > 0) {
+                    val.subRows?.forEach((ele: any) => {
+                        if (res?.data?.PortfolioId == ele?.Id) {
+                            ele.subRows = ele.subRows === undefined ? [] : ele.subRows;
+                            ele.subRows.push(res.data)
 
-                    }
-                    else {
-                        ele.subRows?.forEach((elev: any) => {
-                            if (res?.data?.PortfolioId == elev.Id) {
-                                elev.subRows = elev.subRows === undefined ? [] : elev.subRows;
-                                elev.subRows.push(res.data)
+                        }
+                        else {
+                            ele.subRows?.forEach((elev: any) => {
+                                if (res?.data?.PortfolioId == elev.Id) {
+                                    elev.subRows = elev.subRows === undefined ? [] : elev.subRows;
+                                    elev.subRows.push(res.data)
 
-                            }
-                            else {
-                                elev.subRows?.forEach((child: any) => {
-                                    if (res?.data?.PortfolioId == child?.Id) {
-                                        child.subRows = child.subRows === undefined ? [] : child.subRows;
+                                }
+                                else {
+                                    elev.subRows?.forEach((child: any) => {
+                                        if (res?.data?.PortfolioId == child?.Id) {
+                                            child.subRows = child.subRows === undefined ? [] : child.subRows;
 
-                                        child.subRows.push(res.data)
+                                            child.subRows.push(res.data)
 
-                                    }
-                                    else {
-                                        {
-                                            child.subRows?.forEach((Sub: any) => {
-                                                if (res?.data?.PortfolioId == Sub.Id) {
-                                                    Sub.subRows = Sub.subRows === undefined ? [] : Sub.subRows;
-
-                                                    Sub.subRows.push(res.data)
-
-                                                }
-                                            })
                                         }
-                                    }
-                                })
-                            }
-                        })
-                    }
-                })
-            }
+                                        else {
+                                            {
+                                                child.subRows?.forEach((Sub: any) => {
+                                                    if (res?.data?.PortfolioId == Sub.Id) {
+                                                        Sub.subRows = Sub.subRows === undefined ? [] : Sub.subRows;
 
-        })
-        if (res?.data != undefined) {
+                                                        Sub.subRows.push(res.data)
+
+                                                    }
+                                                })
+                                            }
+                                        }
+                                    })
+                                }
+                            })
+                        }
+                    })
+                }
+
+            })
             renderData = [];
             renderData = renderData.concat(copyDtaArray)
             refreshData();

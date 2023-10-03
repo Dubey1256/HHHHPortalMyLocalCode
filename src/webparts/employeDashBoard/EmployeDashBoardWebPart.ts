@@ -13,18 +13,12 @@ import EmployeDashBoard from './components/EmployeDashBoard';
 import { IEmployeDashBoardProps } from './components/IEmployeDashBoardProps';
 
 export interface IEmployeDashBoardWebPartProps {
+  Announcements: 'F3CAD36C-EEF6-492D-B81F-9B441FDF218E';
   description: string;
   siteUrl : any;
   Context:any;
-  MasterTaskListID: 'ec34b38f-0669-480a-910c-f84e92e58adf';
   TaskUsertListID: 'b318ba84-e21d-4876-8851-88b94b9dc300';
   SmartMetadataListID: '01a34938-8c7e-4ea6-a003-cee649e8c67a';
-  SmartInformationListID: 'edf0a6fb-f80e-4772-ab1e-666af03f7ccd';
-  DocumentsListID: 'd0f88b8f-d96d-4e12-b612-2706ba40fb08';
-  TaskTimeSheetListID: '464fb776-e4b3-404c-8261-7d3c50ff343f';
-  AdminConfigrationListID:'e968902a-3021-4af2-a30a-174ea95cf8fa';
-  TimeEntry: any;
-  SiteCompostion: any;
 }
 
 export default class EmployeDashBoardWebPart extends BaseClientSideWebPart<IEmployeDashBoardWebPartProps> {
@@ -44,15 +38,9 @@ export default class EmployeDashBoardWebPart extends BaseClientSideWebPart<IEmpl
         pageContext: this.context.pageContext,
         Context: this.context,
         siteUrl: this.context.pageContext.web.absoluteUrl,
-        MasterTaskListID: this.properties.MasterTaskListID,
         TaskUsertListID: this.properties.TaskUsertListID,
         SmartMetadataListID: this.properties.SmartMetadataListID,
-        SmartInformationListID: this.properties.SmartInformationListID,
-        DocumentsListID: this.properties.DocumentsListID,
-        TaskTimeSheetListID: this.properties.TaskTimeSheetListID,
-        AdminConfigrationListID: this.properties.AdminConfigrationListID,
-        isShowTimeEntry: this.properties.TimeEntry,
-        isShowSiteCompostion: this.properties.SiteCompostion
+        Announcements: this.properties.Announcements
        }
     );
 
@@ -139,24 +127,27 @@ export default class EmployeDashBoardWebPart extends BaseClientSideWebPart<IEmpl
                 PropertyPaneTextField("TaskUsertListID", {
                   label: "Task User List"
                 }),
-                PropertyPaneTextField('MasterTaskListID', {
-                  label: "MasterTaskListID"
+                PropertyPaneTextField("Announcements", {
+                  label: "Announcements"
                 }),
-                PropertyPaneTextField('SmartInformationListID', {
-                  label: 'SmartInformationListID'
-                }),
-                PropertyPaneTextField('DocumentsListID', {
-                  label: "DocumentsListID"
-                }),
-                PropertyPaneTextField('TaskTimeSheetListID', {
-                  label: "TaskTimeSheetListID"
-                }),
-                PropertyPaneTextField('TimeEntry', {
-                  label: "TimeEntry"
-                }),
-                PropertyPaneTextField('SiteCompostion', {
-                  label: "SiteCompostion"
-                }),
+                // PropertyPaneTextField('MasterTaskListID', {
+                //   label: "MasterTaskListID"
+                // }),
+                // PropertyPaneTextField('SmartInformationListID', {
+                //   label: 'SmartInformationListID'
+                // }),
+                // PropertyPaneTextField('DocumentsListID', {
+                //   label: "DocumentsListID"
+                // }),
+                // PropertyPaneTextField('TaskTimeSheetListID', {
+                //   label: "TaskTimeSheetListID"
+                // }),
+                // PropertyPaneTextField('TimeEntry', {
+                //   label: "TimeEntry"
+                // }),
+                // PropertyPaneTextField('SiteCompostion', {
+                //   label: "SiteCompostion"
+                // }),
               ]
             }
           ]

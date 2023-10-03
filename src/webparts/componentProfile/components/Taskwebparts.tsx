@@ -26,6 +26,7 @@ import GlobalCommanTable, {
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import PageLoader from "../../../globalComponents/pageLoader";
 
+
 import CreateActivity from "../../servicePortfolio/components/CreateActivity";
 
 import CreateWS from "../../servicePortfolio/components/CreateWS";
@@ -376,14 +377,22 @@ function PortfolioTable(SelectedProp: any) {
                   result.chekbox = false;
                   result.descriptionsSearch = "";
                   result.commentsSearch = "";
+                  
                   result.DueDate = Moment(result.DueDate).format("DD/MM/YYYY");
-
-                  if (result.DueDate == "Invalid date" || "") {
-                    result.DueDate = result.DueDate.replaceAll(
+                  result.DisplayDueDate = Moment(result.DueDate).format("DD/MM/YYYY");
+                  if (result.DisplayDueDate == "Invalid date" || "") {
+                    result.DisplayDueDate = result.DisplayDueDate.replaceAll(
                       "Invalid date",
                       ""
                     );
                   }
+                  if (result.DisplayCreateDate == "Invalid date" || "") {
+                    result.DisplayCreateDate = result.DisplayCreateDate.replaceAll(
+                      "Invalid date",
+                      ""
+                    );
+                  }
+                  result.DisplayCreateDate = Moment(result.Created).format("DD/MM/YYYY");
                   result.PercentComplete = (
                     result.PercentComplete * 100
                   ).toFixed(0);
@@ -586,10 +595,22 @@ function PortfolioTable(SelectedProp: any) {
       }
       result["TaskID"] = result?.PortfolioStructureID;
 
-      result.DueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
-      if (result.DueDate == "Invalid date" || "") {
-        result.DueDate = result?.DueDate.replaceAll("Invalid date", "");
+      result.DueDate = Moment(result.DueDate).format("DD/MM/YYYY");
+      result.DisplayDueDate = Moment(result.DueDate).format("DD/MM/YYYY");
+      if (result.DisplayDueDate == "Invalid date" || "") {
+        result.DisplayDueDate = result.DisplayDueDate.replaceAll(
+          "Invalid date",
+          ""
+        );
       }
+      if (result.DisplayCreateDate == "Invalid date" || "") {
+        result.DisplayCreateDate = result.DisplayCreateDate.replaceAll(
+          "Invalid date",
+          ""
+        );
+      }
+      result.DisplayCreateDate = Moment(result.Created).format("DD/MM/YYYY");
+
       result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
       if (result?.Short_x0020_Description_x0020_On != undefined) {
         result.descriptionsSearch =
@@ -789,7 +810,6 @@ function PortfolioTable(SelectedProp: any) {
           elem1?.ParentTask?.Id === undefined &&
           elem1?.Portfolio?.Id === SelectedProp?.props?.Id
       );
-
       countAllTasksData = countAllTasksData.concat(Actatcomponent);
       Actatcomponent?.map((masterTask1: any) => {
         masterTask1.subRows = [];
@@ -804,15 +824,18 @@ function PortfolioTable(SelectedProp: any) {
       temp.subRows = [];
       temp.PercentComplete = "";
       temp.ItemRank = "";
-      temp.DueDate = "";
+      temp.DueDate = null;
       temp.Project = "";
       temp.ClientCategorySearch = "";
-      temp.Created = "";
+      temp.Created = null;
+      temp.DisplayCreateDate = null;
+      temp.DisplayDueDate = null;
       temp.AllTeamName = "";
       temp.DueDate = "";
       temp.descriptionsSearch = "";
       temp.ProjectTitle = "";
       temp.Status = "";
+      temp.Author = "";
       temp.subRows = AllSiteTasksData?.filter(
         (elem1: any) =>
           elem1?.TaskType?.Id != undefined &&
@@ -1001,16 +1024,16 @@ function PortfolioTable(SelectedProp: any) {
                     row?.original?.Item_x0020_Type == "SubComponent"
                       ? "ml-12 workmember ml20 me-1"
                       : row?.original?.Item_x0020_Type == "Feature"
-                      ? "ml-24 workmember ml20 me-1"
-                      : row?.original?.TaskType?.Title == "Activities"
-                      ? "ml-36 workmember ml20 me-1"
-                      : row?.original?.TaskType?.Title == "Workstream"
-                      ? "ml-48 workmember ml20 me-1"
-                      : row?.original?.TaskType?.Title == "Task" ||
-                        (row?.original?.Item_x0020_Type === "Task" &&
-                          row?.original?.TaskType == undefined)
-                      ? "ml-60 workmember ml20 me-1"
-                      : "workmember ml20 me-1"
+                        ? "ml-24 workmember ml20 me-1"
+                        : row?.original?.TaskType?.Title == "Activities"
+                          ? "ml-36 workmember ml20 me-1"
+                          : row?.original?.TaskType?.Title == "Workstream"
+                            ? "ml-48 workmember ml20 me-1"
+                            : row?.original?.TaskType?.Title == "Task" ||
+                              (row?.original?.Item_x0020_Type === "Task" &&
+                                row?.original?.TaskType == undefined)
+                              ? "ml-60 workmember ml20 me-1"
+                              : "workmember ml20 me-1"
                   }
                   src={row?.original?.SiteIcon}
                 ></img>
@@ -1027,14 +1050,14 @@ function PortfolioTable(SelectedProp: any) {
                       row?.original?.Item_x0020_Type == "SubComponent"
                         ? "ml-12 Dyicons"
                         : row?.original?.Item_x0020_Type == "Feature"
-                        ? "ml-24 Dyicons"
-                        : row?.original?.TaskType?.Title == "Activities"
-                        ? "ml-36 Dyicons"
-                        : row?.original?.TaskType?.Title == "Workstream"
-                        ? "ml-48 Dyicons"
-                        : row?.original?.TaskType?.Title == "Task"
-                        ? "ml-60 Dyicons"
-                        : "Dyicons"
+                          ? "ml-24 Dyicons"
+                          : row?.original?.TaskType?.Title == "Activities"
+                            ? "ml-36 Dyicons"
+                            : row?.original?.TaskType?.Title == "Workstream"
+                              ? "ml-48 Dyicons"
+                              : row?.original?.TaskType?.Title == "Task"
+                                ? "ml-60 Dyicons"
+                                : "Dyicons"
                     }
                   >
                     {row?.original?.SiteIconTitle}
@@ -1268,47 +1291,65 @@ function PortfolioTable(SelectedProp: any) {
         id: "ItemRank"
       },
       {
-        accessorKey: "DueDate",
-        placeholder: "Due Date",
-        header: "",
+        accessorFn: (row) => row?.DueDate,
+        cell: ({ row }) => (
+          <span className='ms-1'>{row?.original?.DisplayDueDate} </span>
+
+        ),
+        id: 'DueDate',
+        filterFn: (row: any,columnName:any, filterValue: any) => {
+          if (row?.original?.DisplayDueDate?.includes(filterValue)) {
+            return true
+          } else {
+            return false
+          }
+        },
         resetColumnFilters: false,
-        size: 100,
-        id: "DueDate"
+        resetSorting: false,
+        placeholder: "DueDate",
+        header: "",
+        size: 100
       },
       {
-        accessorFn: (row) =>
-          row?.Created ? Moment(row?.Created).format("DD/MM/YYYY") : "",
-        cell: ({ row, getValue }) => (
-          <>
+        accessorFn: (row) => row?.Created,
+        cell: ({ row }) => (
+          <span>
             {row?.original?.Created == null ? (
               ""
             ) : (
               <>
+                <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
+
                 {row?.original?.Author != undefined ? (
                   <>
-                    <span>
-                      {Moment(row?.original?.Created).format("DD/MM/YYYY")}{" "}
-                    </span>
-                    <img
-                      className="workmember"
-                      title={row?.original?.Author?.Title}
-                      src={findUserByName(row?.original?.Author?.Id)}
-                    />
+                    <a
+                      href={`${ContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                      target="_blank"
+                      data-interception="off"
+                    >
+                      <img title={row?.original?.Author?.Title} className="workmember ms-1" src={findUserByName(row?.original?.Author?.Id)} />
+                    </a>
                   </>
                 ) : (
-                  <img
-                    className="workmember"
-                    src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"
-                  />
+                  <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
                 )}
               </>
             )}
-          </>
+          </span>
         ),
-        id: "Created",
-        placeholder: "Created Date",
+        id: 'Created',
+        resetColumnFilters: false,
+        resetSorting: false,
+        placeholder: "Created",
+        filterFn: (row: any, columnName:any, filterValue: any) => {
+          if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+            return true
+          } else {
+            return false
+          }
+        },
         header: "",
-        size: 109
+        size: 125
       },
       {
         accessorKey: "descriptionsSearch",
@@ -1612,17 +1653,17 @@ function PortfolioTable(SelectedProp: any) {
     setOpenAddStructurePopup(false);
   }, []);
 
-  const CreateOpenCall = React.useCallback((item) => {}, []);
+  const CreateOpenCall = React.useCallback((item) => { }, []);
   /// END ////
 
   //----------------------------Code By Santosh---------------------------------------------------------------------------
   const Call = (res: any) => {
     if (res == "Close") {
       setIsTask(false);
-      setIsComponent(false);
       setIsOpenActivity(false);
       setIsOpenWorkstream(false);
       setActivityPopup(false);
+      setIsComponent(false);
     } else {
       childRef?.current?.setRowSelection({});
       setIsComponent(false);
@@ -1810,7 +1851,7 @@ function PortfolioTable(SelectedProp: any) {
                       <div className="text-end fs-6">
                         {ContextValue?.siteUrl?.toLowerCase().indexOf("ksl") >
                           -1 ||
-                        ContextValue?.siteUrl?.toLowerCase().indexOf("gmbh") >
+                          ContextValue?.siteUrl?.toLowerCase().indexOf("gmbh") >
                           -1 ? (
                           <a
                             data-interception="off"
@@ -1943,13 +1984,13 @@ function PortfolioTable(SelectedProp: any) {
               IsUpdated == "Events Portfolio"
                 ? "app component clearfix eventpannelorange"
                 : IsUpdated == "Service Portfolio"
-                ? "app component clearfix serviepannelgreena"
-                : "app component clearfix"
+                  ? "app component clearfix serviepannelgreena"
+                  : "app component clearfix"
             }
           >
             <div id="portfolio" className="section-event pt-0">
               {checkedList != undefined &&
-              checkedList?.TaskType?.Title == "Workstream" ? (
+                checkedList?.TaskType?.Title == "Workstream" ? (
                 <ul className="quick-actions">
                   <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
                     <div onClick={(e) => CreateActivityPopup("Task")}>

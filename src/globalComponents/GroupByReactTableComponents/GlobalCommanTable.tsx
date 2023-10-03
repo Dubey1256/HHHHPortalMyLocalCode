@@ -162,7 +162,7 @@ const getFirstColCell = ({ setExpanded, hasCheckbox, hasCustomExpanded, hasExpan
         <div className="alignCenter">
             {hasExpanded && row.getCanExpand() && (
                 <div className="border-0 alignCenter" {...{ onClick: row.getToggleExpandedHandler(), style: { cursor: "pointer" }, }}>
-                    {row.getIsExpanded() ? <SlArrowDown title={'collapse ' + `${row.original.Title}` + ' childs'} style={{ color: `${row?.original?.PortfolioType?.Color}`, width: '12px' }} /> : <SlArrowRight title={'Expand' + `${row.original.Title}` + 'childs'} style={{ color: `${row?.original?.PortfolioType?.Color}`, width: '12px' }} />}
+                    {row.getIsExpanded() ? <SlArrowDown title={'Collapse ' + `${row.original.Title}` + ' childs'} style={{ color: `${row?.original?.PortfolioType?.Color}`, width: '12px' }} /> : <SlArrowRight title={'Expand ' + `${row.original.Title}` + ' childs'} style={{ color: `${row?.original?.PortfolioType?.Color}`, width: '12px' }} />}
                 </div>
             )}{" "}
             {hasCheckbox && row?.original?.Title != "Others" && (
@@ -512,34 +512,34 @@ const GlobalCommanTable = (items: any, ref: any) => {
             if (table?.getSelectedRowModel()?.flatRows.length > 0) {
                 restructureFunct(true)
                 table?.getSelectedRowModel()?.flatRows?.map((elem: any) => {
-                    // if (elem?.getParentRows() != undefined) {
-                    parentData = elem?.parentRow;
-                    parentDataCopy = elem?.parentRow?.original
-                    // parentDataCopy = elem?.getParentRows()[0]?.original;
-                    if (parentData != undefined && parentData?.parentRow != undefined) {
+                    if (elem?.getParentRows() != undefined) {
+                        // parentData = elem?.parentRow;
+                        // parentDataCopy = elem?.parentRow?.original
+                        parentDataCopy = elem?.getParentRows()[0]?.original;
+                        // if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                        parentData = elem?.parentRow?.parentRow
-                        parentDataCopy = elem?.parentRow?.parentRow?.original
+                        //     parentData = elem?.parentRow?.parentRow
+                        //     parentDataCopy = elem?.parentRow?.parentRow?.original
 
-                        if (parentData != undefined && parentData?.parentRow != undefined) {
+                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                            parentData = elem?.parentRow?.parentRow?.parentRow
-                            parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
-                        }
-                        if (parentData != undefined && parentData?.parentRow != undefined) {
+                        //         parentData = elem?.parentRow?.parentRow?.parentRow
+                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
+                        //     }
+                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                            parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
-                            parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                        }
-                        if (parentData != undefined && parentData?.parentRow != undefined) {
+                        //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
+                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                        //     }
+                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                            parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-                            parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                        }
-                        if (parentData != undefined && parentData?.parentRow != undefined) {
-                            parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-                            parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                        }
+                        //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                        //     }
+                        //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                        //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+                        //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                        //     }
                         // }
                     }
                     if (parentDataCopy) {
@@ -650,7 +650,14 @@ const GlobalCommanTable = (items: any, ref: any) => {
         };
         table.getRowModel().rows.forEach(flattenRowData);
         const worksheet = XLSX.utils.aoa_to_sheet([]);
-        XLSX.utils.sheet_add_json(worksheet, flattenedData, {
+        function removeDuplicates(arr: any) {
+            const uniqueArray = [];
+            const seen = new Set();
+            for (const obj of arr) { const objString = JSON.stringify(obj); if (!seen.has(objString)) { uniqueArray?.push(obj); seen.add(objString); } }
+            return uniqueArray;
+        }
+        const uniqueArray: any = removeDuplicates(flattenedData);
+        XLSX.utils.sheet_add_json(worksheet, uniqueArray, {
             skipHeader: false,
             origin: "A1",
         });
@@ -795,7 +802,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     <span className="svg__iconbox svg__icon--setting" style={{ backgroundColor: `${portfolioColor}` }} onClick={() => setSelectedFilterPanelIsOpen(true)}></span>
                     <span className='ms-1'>
                         <select style={{ height: "30px", color: `${portfolioColor}` }}
-                            className="w80"
+                            className="w-100"
                             aria-label="Default select example"
                             value={globalSearchType}
                             onChange={(e) => {
@@ -830,7 +837,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
                         {
                             trueRestructuring == true ?
-                            <RestructuringCom AllMasterTasksData={items.AllMasterTasksData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data}restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows}/>
+                                <RestructuringCom AllMasterTasksData={items.AllMasterTasksData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
                                 : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>
                         }
                     </>
@@ -842,7 +849,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
                         {
                             trueRestructuring == true ?
-                            <RestructuringCom AllMasterTasksData={items.AllMasterTasksData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data}restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows}/>
+                                <RestructuringCom AllMasterTasksData={items.AllMasterTasksData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
                                 : <button type="button" title="Restructure" disabled={true} className="btn btn-primary"
                                 >Restructure</button>
                         }
@@ -985,7 +992,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     ))}
                 </select>
             </div> : ''}
-            {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} /> : ''}
+            {/* {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} /> : ''} */}
+            {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} portfolioTypeData={items?.portfolioTypeData} context={items?.AllListId?.Context} /> : ''}
             {selectedFilterPanelIsOpen && <SelectFilterPanel isOpen={selectedFilterPanelIsOpen} selectedFilterCallBack={selectedFilterCallBack} setSelectedFilterPannelData={setSelectedFilterPannelData} selectedFilterPannelData={selectedFilterPannelData} portfolioColor={portfolioColor} />}
         </>
     )

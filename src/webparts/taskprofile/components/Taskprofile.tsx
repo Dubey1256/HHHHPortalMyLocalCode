@@ -585,7 +585,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     if (ClientTimeArray != undefined && ClientTimeArray.length > 0) {
       ClientTimeArray?.map((item: any) => {
         array2?.map((items: any) => {
-          if (item?.SiteName == items?.SiteName) {
+          if ((item?.SiteName == items?.SiteName)||(item?.Title == items?.SiteName)) {
             if (item.ClientCategory == undefined) {
               item.ClientCategory = [];
               item.ClientCategory.push(items);
@@ -1747,7 +1747,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                         <dt className='bg-Fa'>Status</dt>
                         <dd className='bg-Ff'>{this.state.Result["Status"]}<br></br>
                           {this.state.Result["ApproverHistory"] != undefined && this.state.Result["ApproverHistory"].length > 1 && this.state.Result["Categories"].includes("Approval") ?
-                            <span style={{ fontSize: "smaller" }}>Pre-Approved by
+                            <span style={{ fontSize: "smaller" }}>Approved by
                               <img className="workmember" title={this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length - 2]?.ApproverName} src={(this.state.Result?.ApproverHistory[this.state.Result?.ApproverHistory?.length - 2]?.ApproverImage != null) ? (this.state.Result.ApproverHistory[this.state.Result.ApproverHistory.length - 2]?.ApproverImage) : (this.state.Result?.ApproverHistory[this.state.Result.ApproverHistory.length - 2]?.ApproverSuffix)}></img></span>
                             // {this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length-1].Title}
                             : null}</dd>
@@ -1990,7 +1990,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                   {fbData['ApproverData'] != undefined && fbData?.ApproverData.length > 0 && <span className='px-3'>
                                                     <a
                                                       onClick={() => this.ShowApprovalHistory(fbData, i, null)}
-                                                    >Pre-approved by -</a>
+                                                    >Approved by -</a>
                                                     <img className="workmember" src={fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.ImageUrl}></img>
                                                   </span>}
                                                 </span>
@@ -2154,7 +2154,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                     {fbSubData.ApproverData != undefined && fbSubData.ApproverData.length > 0 && <span className='px-3'>
                                                       <a
                                                         onClick={() => this.ShowApprovalHistory(fbSubData, i, j)}
-                                                      >Pre-approved by -</a>
+                                                      >Approved by -</a>
                                                       <img className="workmember" src={fbSubData?.ApproverData[fbSubData?.ApproverData?.length - 1]?.ImageUrl}></img>
                                                     </span>}
                                                   </span>

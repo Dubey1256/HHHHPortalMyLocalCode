@@ -378,7 +378,7 @@ export default function ProjectOverview(props: any) {
                 size: 155,
             },
             {
-                accessorFn: (row) => row?.DisplayDueDate,
+                accessorFn: (row) => row?.DueDate,
                 cell: ({ row }) => (
                     <InlineEditingcolumns
                         AllListId={AllListId}
@@ -390,6 +390,9 @@ export default function ProjectOverview(props: any) {
                 ),
                 id: 'DisplayDueDate',
                 placeholder: "Due Date",
+                filterFn: (row:any, columnId:any, filterValue:any) => {
+                    return  row?.original?.DisplayDueDate?.includes(filterValue)
+                  },
                 header: "",
                 resetColumnFilters: false,
                 resetSorting: false,
@@ -625,7 +628,7 @@ export default function ProjectOverview(props: any) {
                 size: 155,
             },
             {
-                accessorFn: (row) => row?.DisplayDueDate,
+                accessorFn: (row) => row?.DueDate,
                 cell: ({ row }) => (
                     <InlineEditingcolumns
                         AllListId={AllListId}
@@ -638,6 +641,9 @@ export default function ProjectOverview(props: any) {
                 id: 'DisplayDueDate',
                 placeholder: "Due Date",
                 header: "",
+                filterFn: (row:any, columnId:any, filterValue:any) => {
+                    return  row?.original?.DisplayDueDate?.includes(filterValue)
+                  },
                 resetColumnFilters: false,
                 resetSorting: false,
                 size: 100,
@@ -830,6 +836,9 @@ export default function ProjectOverview(props: any) {
                 id: 'DueDate',
                 resetColumnFilters: false,
                 resetSorting: false,
+                filterFn: (row:any, columnId:any, filterValue:any) => {
+                    return  row?.original?.DisplayDueDate?.includes(filterValue)
+                  },
                 placeholder: "Due Date",
                 header: "",
                 size: 100,
@@ -1022,7 +1031,7 @@ export default function ProjectOverview(props: any) {
                 size: 155,
             },
             {
-                accessorFn: (row) => row?.DisplayDueDate,
+                accessorFn: (row) => row?.DueDate,
                 cell: ({ row }) => (
                     <InlineEditingcolumns
                         AllListId={AllListId}
@@ -1035,6 +1044,9 @@ export default function ProjectOverview(props: any) {
                 id: 'DisplayDueDate',
                 placeholder: "Due Date",
                 header: "",
+                filterFn: (row:any, columnId:any, filterValue:any) => {
+                    return  row?.original?.DisplayDueDate?.includes(filterValue)
+                  },
                 resetColumnFilters: false,
                 resetSorting: false,
                 size: 100,
@@ -1322,8 +1334,8 @@ export default function ProjectOverview(props: any) {
             let Alltask: any = [];
             // var AllUsers: any = []
             Alltask = await web.lists.getById(AllListId?.MasterTaskListID).items
-                .select("Deliverables,TechnicalExplanations,PortfolioLevel,PortfolioStructureID,ValueAdded,Categories,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title")
-                .expand("ComponentCategory,AssignedTo,AttachmentFiles,Author,Editor,TeamMembers,TaskCategories,Parent")
+                .select("Deliverables,TechnicalExplanations,ResponsibleTeam/Id,ResponsibleTeam/Title,PortfolioLevel,PortfolioStructureID,ValueAdded,Categories,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title")
+                .expand("ComponentCategory,AssignedTo,AttachmentFiles,ResponsibleTeam,Author,Editor,TeamMembers,TaskCategories,Parent")
                 .top(4999).filter("Item_x0020_Type eq 'Project'")
                 .getAll();
 
@@ -1442,7 +1454,7 @@ export default function ProjectOverview(props: any) {
                     smartmeta = await web.lists
                         .getById(config.listId)
                         .items
-                        .select("Id,Title,FeedBack,PriorityRank,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,ParentTask/TaskID,TaskID,ParentTask/Title,ParentTask/Id,EstimatedTime,EstimatedTimeDescription,Project/PriorityRank,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+                        .select("Id,Title,PriorityRank,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,ParentTask/TaskID,ParentTask/Title,ParentTask/Id,EstimatedTime,EstimatedTimeDescription,Project/PriorityRank,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
                         .expand('AssignedTo,Project,Author,Editor,Portfolio,TaskType,ParentTask,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory')
                         .filter("IsTodaysTask eq 1")
                         .top(4999)

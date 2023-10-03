@@ -14,8 +14,29 @@ function ShowTaskTeamMembers(item: any) {
   let TaskUsers: any = [];
 //  let  taskDetails = item?.props;
   TaskUsers = item?.TaskUsers;
+  const GetUserObjectFromCollection = (UsersValues: any) => {
+    let userDeatails = [];
+    for (let index = 0; index < UsersValues?.length; index++) {
+      let senderObject:any = TaskUsers?.filter(function (user: any, i: any) {
+        if (user?.AssingedToUser != undefined) {
+          return user?.AssingedToUser["Id"] == UsersValues[index]?.Id
+        }
+      });
+      if (senderObject.length > 0) {
+        userDeatails.push({
+          'Id': senderObject[0]?.AssingedToUser.Id,
+          'Name': senderObject[0]?.Email,
+          'Suffix': senderObject[0]?.Suffix,
+          'Title': senderObject[0]?.Title,
+          'userImage': senderObject[0]?.Item_x0020_Cover?.Url,
+          'activeimg2': UsersValues[index]?.workingMember ? UsersValues[index]?.workingMember : "",
+        })
+      }
 
-  React.useEffect(() => {
+    }
+    return userDeatails;
+  }
+  React.useMemo(() => {
     if(item?.props!=undefined){
       let  taskDetails = item?.props;
       if (taskDetails["AssignedTo"] != undefined) {
@@ -40,35 +61,14 @@ function ShowTaskTeamMembers(item: any) {
         taskDetails.array = array2;
       }
   
-      taskDetails.TeamLeader = taskDetails["ResponsibleTeam"] != null ? GetUserObjectFromCollection(taskDetails["ResponsibleTeam"]) : null;
+      taskDetails.TeamLeader = taskDetails["ResponsibleTeam"] != null && taskDetails["ResponsibleTeam"].length>0? GetUserObjectFromCollection(taskDetails["ResponsibleTeam"]) : null;
   
-      taskDetails.TeamMembers = taskDetails?.array != null ? GetUserObjectFromCollection(taskDetails.array) : null;
+      taskDetails.TeamMembers = taskDetails?.array != null &&  taskDetails?.array.length>0? GetUserObjectFromCollection(taskDetails.array) : null;
       settaskData(taskDetails)
     }
     
-  }, [])
-  const GetUserObjectFromCollection = (UsersValues: any) => {
-    let userDeatails = [];
-    for (let index = 0; index < UsersValues?.length; index++) {
-      let senderObject:any = TaskUsers?.filter(function (user: any, i: any) {
-        if (user?.AssingedToUser != undefined) {
-          return user?.AssingedToUser["Id"] == UsersValues[index]?.Id
-        }
-      });
-      if (senderObject.length > 0) {
-        userDeatails.push({
-          'Id': senderObject[0]?.AssingedToUser.Id,
-          'Name': senderObject[0]?.Email,
-          'Suffix': senderObject[0]?.Suffix,
-          'Title': senderObject[0]?.Title,
-          'userImage': senderObject[0]?.Item_x0020_Cover?.Url,
-          'activeimg2': UsersValues[index]?.workingMember ? UsersValues[index]?.workingMember : "",
-        })
-      }
-
-    }
-    return userDeatails;
-  }
+  }, [item?.props!=undefined])
+ 
   const handleSuffixHover = () => {
     //e.preventDefault();
     setDisplay("block")
