@@ -1846,9 +1846,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     return (
       <div>
         <div className="p-0  " style={{ verticalAlign: "top" }}><h2 className="heading d-flex justify-content-between align-items-center"><span> <a>Timesheet</a> </span><span className="text-end fs-6"><a target="_blank" data-interception="off" href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/UserTimeEntry-Old.aspx`}>Old UserTimeEntry</a></span></h2></div>
-        <Row className='smartFilter bg-light border mb-3 col'>
+        <Col className='smartFilter bg-light border mb-3 '>
         <details className='p-0 m-0' open>
-        <summary className='hyperlink'><a className="hreflink pull-left mr-5">All Filters - <span>Task User :</span> </a>
+        <summary className='hyperlink'><a className="hreflink pull-left mr-5 pe-2 ">All Filters - <span className='me-1'>Task User :</span> </a>
               {this.state.ImageSelectedUsers != null && this.state.ImageSelectedUsers.length > 0 && this.state.ImageSelectedUsers.map((user: any, i: number) => {
                 return <span className="ng-scope">
                   <img className="AssignUserPhoto mr-5" title={user.AssingedToUser.Title} src={user?.Item_x0020_Cover?.Url} />
@@ -2132,9 +2132,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           </div>
         </Col>
         </details>
-        </Row>
+        </Col>
         {this.state.AllTimeEntry != undefined && this.state.AllTimeEntry.length > 0 &&
-          <div className='row'>
+          <div className='col'>
             <div className="Alltable p-0">
               <div className="wrapper">
                 <GlobalCommanTable showHeader={true} showDateTime={' | Time: ' + this.state.resultSummary.totalTime + ' | Days: (' + this.state.resultSummary.totalDays + ')'} columns={this.state.columns} data={this.state.AllTimeEntry} callBackData={this.callBackData} />

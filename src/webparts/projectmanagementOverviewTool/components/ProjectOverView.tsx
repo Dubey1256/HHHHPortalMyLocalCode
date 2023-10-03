@@ -306,7 +306,7 @@ export default function ProjectOverview(props: any) {
                     <div className='alignCenter'>
                         {row?.original?.siteType === "Project" ? <>
                             <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
-                            {row?.original?.Body !== null &&  <span className='alignIcon '><InfoIconsToolTip Discription={row?.original?.Body} row={row?.original} /></span>}
+                            {row?.original?.Body !== null &&  <span className='alignIcon  mt--5 '><InfoIconsToolTip Discription={row?.original?.Body} row={row?.original} /></span>}
                         </> : ''}
                         {row?.original?.Item_x0020_Type === "tasks" ? <>
                             <a className='hreflink'
@@ -316,7 +316,7 @@ export default function ProjectOverview(props: any) {
                             >
                                 {row?.original?.Title}
                             </a>
-                            {row?.original?.Body !== null && <span className='alignIcon '><InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} /></span> }
+                            {row?.original?.Body !== null && <span className='alignIcon  mt--5 '><InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} /></span> }
 
 
                         </> : ''}
@@ -514,7 +514,7 @@ export default function ProjectOverview(props: any) {
                                 >
                                     {row?.original?.Title}
                                 </a>
-                                {row?.original?.Body !== null && <span className='alignIcon '><InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} /></span>}
+                                {row?.original?.Body !== null && <span className='alignIcon  mt--5 '><InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} /></span>}
                             </span> : ''}
                     </div>
 
@@ -737,7 +737,7 @@ export default function ProjectOverview(props: any) {
                 cell: ({ row, getValue }) => (
                     <div  className='alignCenter'>
                         <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
-                        {row?.original?.Body !== null && <span className='alignIcon '><InfoIconsToolTip Discription={row?.original?.Body} row={row?.original} /></span>}
+                        {row?.original?.Body !== null && <span className='alignIcon  mt--5'><InfoIconsToolTip Discription={row?.original?.Body} row={row?.original} /></span>}
                     </div>
 
                 ),
@@ -908,7 +908,7 @@ export default function ProjectOverview(props: any) {
                             >
                                 {row?.original?.Title}
                             </a>
-                            {row?.original?.Body !== null && <span className='alignIcon '><InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} /></span>}
+                            {row?.original?.Body !== null && <span className='alignIcon  mt--5 '><InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} /></span>}
 
                         </span>
                     </div>
@@ -1628,7 +1628,7 @@ export default function ProjectOverview(props: any) {
                         <div >
                             <div className='align-items-center d-flex justify-content-between'>
                                     <h2 className='heading'>Project Management Overview</h2>
-                                    <AddProject CallBack={CallBack} AllListId={AllListId} />
+                                   
                                     {/* {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a></span> : ''} */}
                                
                             </div>
@@ -1650,6 +1650,7 @@ export default function ProjectOverview(props: any) {
 
                                     </dl>
                                     <div className="text-end">
+                                        <AddProject CallBack={CallBack} AllListId={AllListId} />
                                         {currentUserData?.Title == "Deepak Trivedi" || currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" ?
                                             <>
                                                 <a className="hreflink" onClick={() => { sendAllWorkingTodayTasks() }}>Share Working Todays's Task</a></>
