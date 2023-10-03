@@ -91,10 +91,10 @@ var LinkedPortfolioDataBackup: any = [];
 var userSendAttentionEmails: any = [];
 var TempSmartInformationIds: any = [];
 let StatusOptionsBackupArray: any = [];
+var TaskCreatorApproverBackupArray: any = [];
+var TaskApproverBackupArray: any = [];
 
 const EditTaskPopup = (Items: any) => {
-    var TaskCreatorApproverBackupArray: any = [];
-    var TaskApproverBackupArray: any = [];
     const Context = Items.context;
     const AllListIdData = Items.AllListId;
     AllListIdData.listId = Items.Items.listId;
@@ -1721,8 +1721,8 @@ const EditTaskPopup = (Items: any) => {
             let AllProjects: any = [];
             AllProjects = await web.lists.getById(AllListIdData?.MasterTaskListID)
                 .items
-                .select("Id,Title,DueDate,TeamMembers/Id,TeamMembers/Title,Parent/Id,Parent/Title,PercentComplete,Status,PriorityRank")
-                .expand("TeamMembers,Parent")
+                .select("Id,Title,DueDate,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,AssignedTo/Id,AssignedTo/Title,Parent/Id,Parent/Title,PercentComplete,Status,PriorityRank")
+                .expand("TeamMembers,Parent,ResponsibleTeam,AssignedTo")
                 .top(4999)
                 .filter("Item_x0020_Type eq 'Project'")
                 .getAll();
@@ -3012,7 +3012,7 @@ const EditTaskPopup = (Items: any) => {
         setTaskImages(tempArray);
 
     }
-    const ImageCustomizeFunction = async(currentImagIndex: any) => {
+    const ImageCustomizeFunction = async (currentImagIndex: any) => {
         UpdateTaskInfoFunction("Image-Tab");
         setImageCustomizePopup(true);
         setModalIsOpen(false);
@@ -3724,7 +3724,7 @@ const EditTaskPopup = (Items: any) => {
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
                 <div className="subheading">
                     <img className="imgWid29 pe-1 mb-1 " src={Items.Items.SiteIcon} />
-                    <span>
+                    <span className="siteCOlor">
                         Select Site
                     </span>
                 </div>
@@ -3745,7 +3745,8 @@ const EditTaskPopup = (Items: any) => {
     const onRenderCustomProjectManagementHeader = () => {
         return (
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
-                <div className="subheading SiteColor">
+                <div className="subheading siteColor">
+                    Select Project
                 </div>
                 <Tooltip ComponentId="1608" isServiceTask={ServicesTaskCheck} />
             </div>
@@ -3908,7 +3909,7 @@ const EditTaskPopup = (Items: any) => {
 
     const customFooterForProjectManagement = () => {
         return (
-            <footer className={ServicesTaskCheck ? "serviepannelgreena text-end me-4" : "text-end me-4"}>
+            <footer className={ServicesTaskCheck ? "serviepannelgreena bg-f4 me-4 pe-2 py-3 text-end" : "bg-f4 me-4 pe-2 py-3 text-end"}>
                 <button type="button" className="btn btn-primary">
                     <a target="_blank" className="text-light" data-interception="off"
                         href={`${siteUrls}/SitePages/Project-Management-Overview.aspx`}>
@@ -4333,14 +4334,14 @@ const EditTaskPopup = (Items: any) => {
                                                             </div>
                                                             <div className="Approval-History-section my-2">
                                                                 {ApproverHistoryData != undefined && ApproverHistoryData.length > 1 ?
-                                                                    <div>
+                                                                    <div className="border p-1">
                                                                         {ApproverHistoryData.map((HistoryData: any, index: any) => {
                                                                             if (index < ApproverHistoryData.length - 1) {
                                                                                 return (
-                                                                                    <div className="d-flex full-width justify-content-between">
-                                                                                        <div className="d-flex">
-                                                                                            Approved by-
-                                                                                            <span className="siteColor mx-1">{HistoryData.ApproverName}</span>
+                                                                                    <div className={index + 1 == ApproverHistoryData.length - 1 ? "alignCenter full-width justify-content-between py-1" : "alignCenter  border-bottom full-width justify-content-between py-1"}>
+                                                                                        <div className="alignCenter">
+                                                                                            Pre-Approver |
+                                                                                            <img title={HistoryData.ApproverName} className="workmember ms-1" src={HistoryData?.ApproverImage?.length > 0 ? HistoryData?.ApproverImage : ""} />
                                                                                         </div>
                                                                                         <div>
                                                                                             <span>{HistoryData.ApprovedDate}</span>
@@ -4475,7 +4476,6 @@ const EditTaskPopup = (Items: any) => {
                                                         />
                                                         <span className="input-group-text" onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" >
                                                             <span className="svg__iconbox svg__icon--editBox">
-
                                                             </span>
                                                         </span>
                                                     </div>
@@ -4496,12 +4496,18 @@ const EditTaskPopup = (Items: any) => {
                                                         <div>
                                                             {selectedProject.map((ProjectData: any) => {
                                                                 return (
-                                                                    <div className="block">
-                                                                        <a className="hreflink wid90" target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}>
-                                                                            {ProjectData.Title}
-                                                                        </a>
-                                                                        <span onClick={() => setSelectedProject([])} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"></span>
+                                                                    <div>
+                                                                        {ProjectData.Title != undefined ?
+                                                                            <div className="block w-100">
+                                                                                <a className="hreflink wid90" target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}>
+                                                                                    {ProjectData.Title}
+                                                                                </a>
+                                                                                <span onClick={() => setSelectedProject([])} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"></span>
+                                                                            </div> :
+                                                                            null
+                                                                        }
                                                                     </div>
+
                                                                 )
                                                             })}
                                                         </div> : null}
@@ -5387,14 +5393,14 @@ const EditTaskPopup = (Items: any) => {
                                                                         </div>
                                                                         <div className="Approval-History-section my-2">
                                                                             {ApproverHistoryData != undefined && ApproverHistoryData.length > 1 ?
-                                                                                <div>
+                                                                                <div className="border p-1">
                                                                                     {ApproverHistoryData.map((HistoryData: any, index: any) => {
                                                                                         if (index < ApproverHistoryData.length - 1) {
                                                                                             return (
-                                                                                                <div className="d-flex full-width justify-content-between">
-                                                                                                    <div className="d-flex">
-                                                                                                        Approved by-
-                                                                                                        <span className="siteColor mx-1">{HistoryData.ApproverName}</span>
+                                                                                                <div className={index + 1 == ApproverHistoryData.length - 1 ? "alignCenter full-width justify-content-between py-1" : "alignCenter border-bottom full-width justify-content-between py-1"}>
+                                                                                                    <div className="alignCenter">
+                                                                                                        Pre-Approver |
+                                                                                                        <img title={HistoryData.ApproverName} className="workmember ms-1" src={HistoryData?.ApproverImage?.length > 0 ? HistoryData?.ApproverImage : ""} />
                                                                                                     </div>
                                                                                                     <div>
                                                                                                         <span>{HistoryData.ApprovedDate}</span>
@@ -5550,11 +5556,16 @@ const EditTaskPopup = (Items: any) => {
                                                                     <div>
                                                                         {selectedProject.map((ProjectData: any) => {
                                                                             return (
-                                                                                <div className="block w-100">
-                                                                                    <a className="hreflink wid90" target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}>
-                                                                                        {ProjectData.Title}
-                                                                                    </a>
-                                                                                    <span onClick={() => setSelectedProject([])} className="bg-light ml-auto hreflink svg__icon--cross svg__iconbox"></span>
+                                                                                <div>
+                                                                                    {ProjectData.Title != undefined ?
+                                                                                        <div className="block w-100">
+                                                                                            <a className="hreflink wid90" target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}>
+                                                                                                {ProjectData.Title}
+                                                                                            </a>
+                                                                                            <span onClick={() => setSelectedProject([])} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"></span>
+                                                                                        </div> :
+                                                                                        null
+                                                                                    }
                                                                                 </div>
                                                                             )
                                                                         })}
