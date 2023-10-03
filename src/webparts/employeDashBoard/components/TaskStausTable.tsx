@@ -641,7 +641,7 @@ const SendEmailFinal = async (to: any, subject: any, body: any) => {
           <ComingBirthday />
         </div>
       </div>
-      <div className="row">{/* <MyNotes/> */}</div>
+      <div className="row"><MyNotes/></div>
       <span>   
         {editPopup && <EditTaskPopup Items={result} context={ContextData?.propsValue?.Context} AllListId={AllListId} Call={() => { CallBack() }} />}
 

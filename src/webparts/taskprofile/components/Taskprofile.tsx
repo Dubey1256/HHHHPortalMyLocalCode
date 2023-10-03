@@ -475,8 +475,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         var regex = items?.FileName?.substring(0, 20);
         items.newFileName = regex;
       })
-      AttachmentFiles?.sort(this.sortAlphaNumericAscending)
-
+      // AttachmentFiles?.sort(this.sortAlphaNumericAscending)
+     
       AttachmentFiles?.forEach(function (Attach: any) {
         let attachdata: any = [];
         if (BasicImageInfo != null || BasicImageInfo != undefined) {
@@ -1861,13 +1861,14 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                     {this.state.Result?.EstimatedTimeDescriptionArray?.map((EstimatedTimeData: any, Index: any) => {
                                       return (
                                         <div className={this.state.Result?.EstimatedTimeDescriptionArray?.length == Index + 1 ? "align-content-center alignCenter justify-content-between p-1 px-2" : "align-content-center justify-content-between border-bottom alignCenter p-1 px-2"}>
-                                          <div>
+                                          <div className='alignCenter'>
                                             <span className='me-2'>{EstimatedTimeData?.Team != undefined ? EstimatedTimeData?.Team : EstimatedTimeData?.Category != undefined ?EstimatedTimeData?.Category : null  }</span> |
                                             <span className='mx-2'>{EstimatedTimeData.EstimatedTime ? (EstimatedTimeData.EstimatedTime > 1 ? EstimatedTimeData.EstimatedTime + " hours" : EstimatedTimeData.EstimatedTime + " hour") : "0 hour"}</span>
                                             <img className="ProirityAssignedUserPhoto m-0 mx-2" title={EstimatedTimeData.UserName} src={EstimatedTimeData.UserImage != undefined && EstimatedTimeData.UserImage?.length > 0 ? EstimatedTimeData.UserImage : ''} />
                                           </div>
-                                          <div className='alignCenter'>
-                                            <span className="svg__iconbox svg__icon--info" title={EstimatedTimeData.EstimatedTimeDescription}></span>
+                                          <div className='alignCenter hover-text'>
+                                            <span className="svg__iconbox svg__icon--info"></span>
+                                            <span className='tooltip-text pop-right'>{EstimatedTimeData.EstimatedTimeDescription} </span>
                                           </div>
                                         </div>
                                       )
