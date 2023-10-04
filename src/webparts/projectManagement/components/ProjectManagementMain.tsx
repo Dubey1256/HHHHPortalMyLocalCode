@@ -1055,9 +1055,9 @@ const ProjectManagementMain = (props: any) => {
                         </a>
                       </li>
                       <li className="nav__item  pb-1 pt-0">
-                        <div className="dashboard-content nav__text w-100">
+                        <div className="nav__text">
                           {Masterdata?.taggedPortfolios?.length > 0 || TaskTaggedPortfolios?.length > 0 ? (
-                            <ul className="mt-2 nav__subList ps-0 pt-1 wrapper">
+                            <ul className="nav__subList wrapper scrollbar pt-1 ps-0">
                               {Masterdata?.taggedPortfolios?.map(
                                 (component: any, index: any) => {
                                   return (
@@ -1137,34 +1137,9 @@ const ProjectManagementMain = (props: any) => {
                     </ul>
                   </nav>
                 </section>
-                <div>
-                <span>
-                  {QueryId && (
-                    <CommentCard
-                      AllListId={AllListId}
-                      Context={props.Context}
-                      siteUrl={props.siteUrl}
-                      listName={"Master Tasks"}
-                      itemID={QueryId}
-                    />
-                  )}
-                </span>
-                <span>
-                  {(QueryId != undefined && isSmartInfoAvailable) ?
-                    <SmartInformation
-                      AllListId={AllListId}
-                      listName={"Master Tasks"}
-                      Context={props?.Context}
-                      siteurl={props?.siteUrl}
-                      Id={QueryId}
-                      spPageContext={props?.Context?.pageContext?._web}
-                    /> : ""
-                  }
-                </span>
-              </div>
+             
               </aside>
-              {/* Dashboard content */}
-              <div className="ps-2 full-width">
+              <div className="dashboard-content ps-2 full-width">
                 <article className="row">
                   <div className="col-md-12">
                     <section>
@@ -1387,7 +1362,31 @@ const ProjectManagementMain = (props: any) => {
                   </div>
                 </article>
               </div>
-          
+              <div>
+                <span>
+                  {QueryId && (
+                    <CommentCard
+                      AllListId={AllListId}
+                      Context={props.Context}
+                      siteUrl={props.siteUrl}
+                      listName={"Master Tasks"}
+                      itemID={QueryId}
+                    />
+                  )}
+                </span>
+                <span>
+                  {(QueryId != undefined && isSmartInfoAvailable) ?
+                    <SmartInformation
+                      AllListId={AllListId}
+                      listName={"Master Tasks"}
+                      Context={props?.Context}
+                      siteurl={props?.siteUrl}
+                      Id={QueryId}
+                      spPageContext={props?.Context?.pageContext?._web}
+                    /> : ""
+                  }
+                </span>
+              </div>
             </div>
           </div>
 
