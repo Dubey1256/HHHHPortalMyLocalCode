@@ -14,22 +14,22 @@ const Header = () => {
   
   return (
     <div>
-      <div className="container shadow-sm p-3 mb-3 bg-white rounded">
-        <div className="row">
-          <div className="col fw-bold">
+      <section className="NameTopSec">
+        <div className="d-flex shadow-sm p-3 mb-3 bg-white rounded">
+          <div className="col fw-bold f-18 alignCenter">
             Welcome,
-            <span className="ms-1" style={{ color: "#3a75cc" }}>
+            <span className="ms-1 empCol">
               {userName?.Title}
             </span>
           </div>
-          <div className="col d-flex justify-content-end">
-            <input placeholder="Search" className="me-2" />
-            <span className="me-2">
+          <div className="col alignCenter justify-content-end">
+            <input placeholder="Search" className="me-2 rounded" />
+            <span className="me-2 mt--5">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"
                 height="16"
-                fill="currentColor"
+                fill="#333333"
                 className="bi bi-bell"
                 viewBox="0 0 16 16"
               >
@@ -38,120 +38,78 @@ const Header = () => {
             </span>
            <WorldClock/>
 
-            <img
-              className="rounded-circle"
-              width={"30px"}
-              height={"30px"}
-              src={userName?.Item_x0020_Cover?.Url}
-            />
+            <img className="rounded-circle" width={"30px"} height={"30px"} src={userName?.Item_x0020_Cover?.Url} />
+
           </div>
         </div>
-      </div>
-      
-      <div
-        style={{ backgroundColor: "#3a75cc" }}
-        className="shadow-none p-3 mb-3 rounded"
-      >
-         {
-        annouceMents?.map((items:any)=>
-          <span>{items.Title}</span>
-        )}
-      </div>
-      <div className="contianer">
-        <div className="m-0 row  d-flex justify-content-center">
-          <div
-            style={{ backgroundColor: "#3a75cc" }}
-            className="col d-flex align-items-center shadow-none me-3 p-3 mb-3 rounded"
-          >
-            <span className="p-2 bg-white rounded-circle">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="25"
-                height="25"
-                fill="currentColor"
-                className="bi bi-calendar4-event"
-                viewBox="0 0 16 16"
-              >
+      </section>
+      <section className='annocumentSec'>
+        <div className="alignCenter p-2 mb-3 rounded empBg">
+            <span className="svg__iconbox svg__icon--annocument light me-2"></span>
+            {
+            annouceMents?.map((items:any)=>
+              <span>{items.Title}</span>
+            )}
+        </div> 
+      </section>
+      <section className="tabSec">
+        <div className="d-flex justify-content-center">
+          <div className="col alignCenter me-3 p-3 mb-3 rounded active empBg shadow-sm">
+            <span className="iconSec">
+              <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#057BD0" className="bi bi-calendar4-event" viewBox="0 0 16 16" >
                 <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1H2zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z" />
                 <path d="M11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z" />
               </svg>
             </span>
-            <span className="ms-2">
+            <span className="ms-2 tabText">
               <div className="text white">Working Today Task </div>
-              <div className="fw-bold text-white">
-                <span className="me-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    className="bi bi-check2-circle"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0z" />
-                    <path d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7z" />
-                  </svg>
-                  {todaysTask.length}
-                </span>
-                <span className="me-2">|</span>
-                <span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    className="bi bi-clock"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z" />
-                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z" />
-                  </svg>
+              <div className="tabResultText f-18">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16"  height="16" fill="#fff" className="bi bi-check2-circle" viewBox="0 0 16 16">
+                  <path d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0z" />
+                  <path d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7z" />
+                </svg>
+                {todaysTask.length}
+                <span className="mx-2">|</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#fff" className="bi bi-clock" viewBox="0 0 16 16">
+                  <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z" />
+                  <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z" />
+                </svg>
                 {currentTime}
-                </span>
               </div>
             </span>
           </div>
-          <div className="col align-items-center d-flex shadow-none me-3 p-3 bg-white mb-3 rounded">
-            <span className="p-2 bg-light rounded-circle">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="25"
-                height="25"
-                fill="currentColor"
-                className="bi bi-calendar4-event"
-                viewBox="0 0 16 16"
-              >
-                <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1H2zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z" />
-                <path d="M11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z" />
-              </svg>
+          <div className="col alignCenter me-3 p-3 bg-white mb-3 rounded shadow-sm">
+            <span className="iconSec">
+              <span className="svg__iconbox svg__icon--calendar"></span>
             </span>
             <span className='ms-2'>
               <div>Working This Week</div>
-              <div className="fw-bold text-primary">{thisWeekTask.length}</div>
+              <div className="fw-bold f-18 tabResultText tabText">{thisWeekTask.length}</div>
             </span>
           </div>
-          <div className="col align-items-center d-flex shadow-none me-3 p-3 bg-white mb-3 rounded">
-            <span className="p-2 bg-light rounded-circle">
+          <div className="col alignCenter me-3 mb-3 p-3 rounded shadow-sm">
+            <span className="iconSec">
             <span className=" svg__iconbox svg__icon--bottleneck"></span>
             </span>
-            <span>
+            <span className='ms-2'>
               <div>Bottelneck Task </div>
-              <div className="fw-bold text-primary">
+              <div className="fw-bold f-18 tabResultText tabText">
                 {bottleneckTask.length}
               </div>
             </span>
           </div>
-          <div className="col align-items-center d-flex shadow-none p-3 bg-white mb-3 rounded">
-            <span className="p-2 bg-light rounded-circle">   <span className=" svg__iconbox svg__icon--alert "></span></span>
-         <span>
+          <div className="col alignCenter p-3 mb-3 rounded shadow-sm">
+            <span className="iconSec">
+              <span className=" svg__iconbox svg__icon--alert"></span>
+            </span>
+            <span className='ms-2'>
               <div>Immediate Task</div>
-              <div className="fw-bold text-primary">{immediateTask.length}</div>
+              <div className="fw-bold f-18 tabResultText tabText">{immediateTask.length}</div>
             </span>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* <TaskStatusTbl Items={props.items}/> */}
     </div>
   );
 }

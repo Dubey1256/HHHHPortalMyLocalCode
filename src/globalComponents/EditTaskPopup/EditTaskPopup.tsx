@@ -1332,8 +1332,11 @@ const EditTaskPopup = (Items: any) => {
 
         selectCategoryData.map((existingData: any) => {
             let elementFoundCount: any = 0;
-            if (tempShareWebTypeData != undefined && tempShareWebTypeData.length > 0) {
-                tempShareWebTypeData.map((currentData: any) => {
+            const finalData = tempShareWebTypeData?.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            });
+            if (finalData != undefined && finalData.length > 0) {
+                finalData.map((currentData: any) => {
                     if (existingData.Title == currentData.Title) {
                         elementFoundCount++;
                     }
@@ -1407,9 +1410,13 @@ const EditTaskPopup = (Items: any) => {
             }
         })
 
+        const finalData = selectCategoryData?.filter((val: any, id: any, array: any) => {
+            return array.indexOf(val) == id;
+        });
+
         if (usedFor == "For-Panel") {
-            setShareWebTypeData(selectCategoryData);
-            tempShareWebTypeData = selectCategoryData;
+            setShareWebTypeData(finalData);
+            tempShareWebTypeData = finalData;
         }
         if (usedFor == "For-Auto-Search") {
             setShareWebTypeData(tempShareWebTypeData);
@@ -1561,7 +1568,7 @@ const EditTaskPopup = (Items: any) => {
             .orderBy("Title", true)
             .getAll()
         getAllEmployeeData();
-        taskUsers?.map((index: any, user: any) => {
+        taskUsers?.map((user: any, index: any) => {
             var ApproverUserItem = '';
             var UserApproverMail: any = []
             if (user.Title != undefined && user.IsShowTeamLeader === true) {
