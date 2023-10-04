@@ -86,9 +86,9 @@ export default function ComingBirthday() {
 
     return (
         <>
-            <div className="border p-3">
+            <div className="">
                 <div className='alignCenter'>
-                    <div className='boldClable headign text-body'>Upcoming Birthday's</div>
+                    <div className=' text-body'>Upcoming Birthday's</div>
                     <div className='boldClable f-17 mt-1 mx-2 text-black-50'>This Week</div>
                     <div className='boldClable f-16 siteColor' style={{ marginLeft: "auto" }}>{AllHrContactDetails.length} People</div>
                 </div>
