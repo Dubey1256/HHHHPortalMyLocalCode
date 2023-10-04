@@ -1805,7 +1805,7 @@ export const getParameterByName = async (name: any) => {
     return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 
 }
-export const GetTaskId = (Item: any) => {
+export const GetCompleteTaskId = (Item: any) => {
     const { Portfolio, TaskID, ParentTask, Id, TaskType } = Item;
     let taskIds = "";
     if (Portfolio?.PortfolioStructureID) {
@@ -1821,7 +1821,7 @@ export const GetTaskId = (Item: any) => {
     }
     return taskIds;
 };
-export const GetOnlyAWTId = (Item: any) => {
+export const GetTaskId = (Item: any) => {
     const { TaskID, ParentTask, Id, TaskType } = Item;
     let taskIds = "";
     if (TaskType?.Title === 'Activities' || TaskType?.Title === 'Workstream') {
