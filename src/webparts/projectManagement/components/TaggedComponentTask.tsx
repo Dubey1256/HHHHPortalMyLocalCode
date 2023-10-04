@@ -370,7 +370,7 @@ const TaggedComponentTask = (props: any) => {
                                             });
                                         });
                                     }
-                                    items.TaskID = globalCommon.GetOnlyAWTId(items);
+                                    items.TaskID = globalCommon.GetTaskId(items);
                                     if (items.Project) {
                                         items.ProjectTitle = items?.Project?.Title;
                                         items.ProjectId = items?.Project?.Id;
