@@ -1078,7 +1078,7 @@ const CreateActivity = (props: any) => {
 
             if (
               AllItems?.TaskType?.Title == "Workstream" ||
-              AllItems?.SharewebTaskType?.Title == "Workstream"
+              AllItems?.SharewebTaskType?.Title == "Workstream"||AllItems?.TaskType === "Workstream"
             ) {
               TaskID = props?.props?.TaskID + "-T" + LatestId;
             } else {
@@ -1090,7 +1090,7 @@ const CreateActivity = (props: any) => {
               TaskprofileId = SelectedTasks[0].Id;
             }
 
-            if (AllItems?.TaskType?.Title == "Workstream") {
+            if (AllItems?.TaskType?.Title == "Workstream"||AllItems?.TaskType === "Workstream") {
               var PortfolioData = AllItems?.Portfolio?.Id;
               var ParentData = AllItems?.Id;
             } else {

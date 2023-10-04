@@ -1329,7 +1329,6 @@ const EditTaskPopup = (Items: any) => {
     const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
         setIsComponentPicker(false);
         let TempArray: any = [];
-
         selectCategoryData.map((existingData: any) => {
             let elementFoundCount: any = 0;
             if (tempShareWebTypeData != undefined && tempShareWebTypeData.length > 0) {
@@ -1359,6 +1358,7 @@ const EditTaskPopup = (Items: any) => {
                     selectCategoryData.map((categoryData: any) => {
                         if (usedFor == "For-Auto-Search") {
                             tempShareWebTypeData.push(categoryData);
+
                         }
                         TempArray.push(categoryData)
                         let isExists: any = 0;
@@ -1407,12 +1407,23 @@ const EditTaskPopup = (Items: any) => {
             }
         })
 
+        let uniqueIds: any = {};
+        const result: any = tempShareWebTypeData.filter((item: any) => {
+            if (!uniqueIds[item.Id]) {
+                uniqueIds[item.Id] = true;
+                return true;
+            }
+            return false;
+        });
+
+        tempShareWebTypeData = result
+
         if (usedFor == "For-Panel") {
             setShareWebTypeData(selectCategoryData);
             tempShareWebTypeData = selectCategoryData;
         }
         if (usedFor == "For-Auto-Search") {
-            setShareWebTypeData(tempShareWebTypeData);
+            setShareWebTypeData(result);
             setSearchedCategoryData([])
             setCategorySearchKey("");
         }
@@ -1554,14 +1565,14 @@ const EditTaskPopup = (Items: any) => {
         taskUsers = await web.lists
             .getById(AllListIdData?.TaskUsertListID)
             .items
-            .select('Id', 'IsActive', 'UserGroupId', 'Suffix', 'Title', 'Email', 'SortOrder', 'Role', 'Company', 'ParentID1', 'TaskStatusNotification', 'Status', 'Item_x0020_Cover', 'AssingedToUserId', 'isDeleted', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail', 'ItemType')
+            .select("Id,UserGroupId,TimeCategory,IsActive,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name")
             .filter('IsActive eq 1')
-            .expand('AssingedToUser')
+            .expand('AssingedToUser,Approver')
             .orderBy('SortOrder', true)
             .orderBy("Title", true)
             .getAll()
         getAllEmployeeData();
-        taskUsers?.map((index: any, user: any) => {
+        taskUsers?.map((user: any, index: any) => {
             var ApproverUserItem = '';
             var UserApproverMail: any = []
             if (user.Title != undefined && user.IsShowTeamLeader === true) {
@@ -1817,7 +1828,7 @@ const EditTaskPopup = (Items: any) => {
 
                 }
                 if (StatusInput == 93 || StatusInput == 96 || StatusInput == 99) {
-                    setWorkingMember(9);
+                    setWorkingMember(32);
                     EditData.IsTodaysTask = false;
                     EditData.workingThisWeek = false;
                     StatusOptions?.map((item: any) => {
@@ -1936,7 +1947,7 @@ const EditTaskPopup = (Items: any) => {
             if (StatusData.value == 93 || StatusData.value == 96 || StatusData.value == 99) {
                 EditData.IsTodaysTask = false;
                 EditData.workingThisWeek = false;
-                setWorkingMember(9);
+                setWorkingMember(32);
                 StatusOptions?.map((item: any) => {
                     if (StatusData.value == item.value) {
                         setPercentCompleteStatus(item.status);
@@ -4594,7 +4605,8 @@ const EditTaskPopup = (Items: any) => {
                                                     //  disabled={InputFieldDisable}
                                                     disabled readOnly
                                                     className="form-control px-2"
-                                                    defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined && Math.floor(EditData.PercentComplete) === EditData.PercentComplete ? Number(EditData.PercentComplete).toFixed(0) : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
+                                                    // defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined && Math.floor(EditData.PercentComplete) === EditData.PercentComplete ? Number(EditData.PercentComplete).toFixed(0) : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
+                                                    value={PercentCompleteStatus}
                                                     onChange={(e) => StatusAutoSuggestion(e)} />
 
                                                 <span
@@ -4605,14 +4617,14 @@ const EditTaskPopup = (Items: any) => {
                                                 >
                                                     <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
                                                 </span>
-                                                {PercentCompleteStatus?.length > 0 ?
+                                                {/* {PercentCompleteStatus?.length > 0 ?
                                                     <span className="full-width ">
                                                         <label className="SpfxCheckRadio">
                                                             <input type='radio' className="my-2 radio" checked />
 
                                                             {PercentCompleteStatus}
                                                         </label>
-                                                    </span> : null}
+                                                    </span> : null} */}
                                             </div>
                                         </div>
                                         <div className="row">
@@ -5649,14 +5661,15 @@ const EditTaskPopup = (Items: any) => {
                                                         </div>
                                                         : null}
 
-                                                    <div className="col mt-2">
+                                                    <div className="col mt-2 clearfix">
                                                         <div className="input-group taskTime">
                                                             <label className="form-label full-width">Status</label>
                                                             <input type="text" maxLength={3} placeholder="% Complete"
-                                                                //  disabled={InputFieldDisable} 
+                                                                //  disabled={InputFieldDisable}
                                                                 disabled readOnly
                                                                 className="form-control px-2"
-                                                                defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? Number(EditData.PercentComplete).toFixed(0) : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
+                                                                // defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined && Math.floor(EditData.PercentComplete) === EditData.PercentComplete ? Number(EditData.PercentComplete).toFixed(0) : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
+                                                                value={PercentCompleteStatus}
                                                                 onChange={(e) => StatusAutoSuggestion(e)} />
 
                                                             <span
@@ -5666,16 +5679,15 @@ const EditTaskPopup = (Items: any) => {
                                                                 onClick={() => setSmartMedaDataUsedPanel("Status")}
                                                             >
                                                                 <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
-
                                                             </span>
-                                                            {PercentCompleteStatus?.length > 0 ?
-                                                                <span className="full-width ">
-                                                                    <label className="SpfxCheckRadio">
-                                                                        <input type='radio' className="my-2 radio" checked />
+                                                            {/* {PercentCompleteStatus?.length > 0 ?
+                                                    <span className="full-width ">
+                                                        <label className="SpfxCheckRadio">
+                                                            <input type='radio' className="my-2 radio" checked />
 
-                                                                        {PercentCompleteStatus}
-                                                                    </label>
-                                                                </span> : null}
+                                                            {PercentCompleteStatus}
+                                                        </label>
+                                                    </span> : null} */}
                                                         </div>
                                                     </div>
                                                     <div className="row">
