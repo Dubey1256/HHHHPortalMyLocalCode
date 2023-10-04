@@ -28,6 +28,7 @@ let AllComponents: any = []
 let taskUsers: any = [];
 // let taskCreated = false;
 let createdTask: any = {}
+let IsapprovalTask = false
 let QueryPortfolioId: any = null;
 let loggedInUser: any;
 let oldTaskIrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx";
@@ -251,7 +252,7 @@ function CreateTaskComponent(props: any) {
             const params = new URLSearchParams(window.location.search);
             let siteUrlData = CompleteUrl?.split("Siteurl")[1];
             siteUrlData = siteUrlData?.split('&OR')[0]
-            siteUrlData = siteUrlData.slice(1, siteUrlData.length)
+            siteUrlData = siteUrlData?.slice(1, siteUrlData?.length)
             let paramSiteUrl = siteUrlData;
             let paramComponentId = params.get('ComponentID');
             let paramType = params.get('Type');
@@ -516,8 +517,11 @@ function CreateTaskComponent(props: any) {
             })
         })
         if (loggedInUser.IsApprovalMail.toLowerCase() == 'approve all') {
+            IsapprovalTask = true
+        }
+        if (IsapprovalTask == true) {
             subCategories?.map((item: any) => {
-                if (item?.Title == "Approval") {
+                if (item?.Title == "Approval" && !item.ActiveTile) {
                     selectSubTaskCategory(item?.Title, item?.Id, item)
                 }
             })
@@ -534,7 +538,7 @@ function CreateTaskComponent(props: any) {
             AllTaskUsers = await web.lists
                 .getById(props?.SelectedProp?.TaskUsertListID)
                 .items
-                .select("Id,UserGroupId,Suffix,Title,IsApprovalMail,Email,SortOrder,Role,IsShowTeamLeader,IsTaskNotifications,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+                .select("Id,UserGroupId,Suffix,Title,IsApprovalMail,Email,SortOrder,Role,IsShowTeamLeader,CategoriesItemsJson,IsTaskNotifications,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
                 .get();
 
             // let pageContent = await globalCommon.pageContext();
@@ -545,25 +549,7 @@ function CreateTaskComponent(props: any) {
                 if (props?.pageContext?.legacyPageContext?.userId == user?.AssingedToUser?.Id) {
                     loggedInUser = user;
                 }
-                // if (user.IsApprovalMail == 0)
-                //     user.IsApprovalMail = undefined;
-                // if (user.AssingedToUserId == CurrentUserId && (user.IsApprovalMail == undefined || user.IsApprovalMail == null || user.IsApprovalMail == '')) {
-                //     Isapproval = 'decide case by case';
-                // }
-                // if (user.AssingedToUserId == CurrentUserId && user.IsApprovalMail != undefined && user.IsApprovalMail != '' && user.IsApprovalMail != null && user.IsApprovalMail.toLowerCase() == 'approve all') {
-                //     Isapproval = 'approve all';
 
-                // }
-                // if (user.AssingedToUserId == CurrentUserId && user.IsApprovalMail != undefined && user.IsApprovalMail != '' && user.IsApprovalMail != null && user.IsApprovalMail.toLowerCase() == 'approve all but selected items') {
-                //     Isapproval = 'approve all but selected items';
-                //     user.SelectedCategoriesItems = []
-                //     if (user.CategoriesItemsJson != undefined && user.CategoriesItemsJson != null && user.CategoriesItemsJson != '') {
-                //         user.SelectedCategoriesItems = JSON.parse(user.CategoriesItemsJson);
-                //     }
-                // }
-                // if (user.AssingedToUserId == CurrentUserId && user.IsApprovalMail != undefined && user.IsApprovalMail != '' && user.IsApprovalMail != null && user.IsApprovalMail.toLowerCase() == 'decide case by case') {
-                //     Isapproval = 'decide case by case';
-                // }
             })
             let CurrentUserId = loggedInUser?.AssingedToUserId;
 
@@ -624,6 +610,8 @@ function CreateTaskComponent(props: any) {
         else {
             let CategoryTitle: any;
             let TeamMembersIds: any[] = [];
+
+
             subCategories?.map((item: any) => {
                 taskCat?.map((cat: any) => {
                     if (cat === item.Id) {
@@ -656,8 +644,11 @@ function CreateTaskComponent(props: any) {
                             }
                         })
                     }
+
                 })
             }
+
+
 
             AssignedToUsers?.map((user: any) => {
                 AssignedToIds.push(user.AssingedToUserId);
@@ -903,7 +894,9 @@ function CreateTaskComponent(props: any) {
                                 console.log(response);
                             });
                         }
+                        if (RecipientMail?.length > 0) {
 
+                        }
                         data.data.siteUrl = selectedSite?.siteUrl?.Url;
                         data.data.siteType = save.siteType;
                         data.data.listId = selectedSite?.listId;
@@ -1119,14 +1112,45 @@ function CreateTaskComponent(props: any) {
     }
 
     const selectSubTaskCategory = (title: any, Id: any, item: any) => {
-
+        if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve all but selected items' && !IsapprovalTask ) {
+            try {
+                let selectedApprovalCat = JSON.parse(loggedInUser?.CategoriesItemsJson)
+                IsapprovalTask = selectedApprovalCat?.some((selectiveApproval: any) => selectiveApproval?.Title == title)
+                if (IsapprovalTask == true) {
+                    subCategories?.map((item: any) => {
+                        if (item?.Title == "Approval" && !item.ActiveTile) {
+                            selectSubTaskCategory(item?.Title, item?.Id, item)
+                        }
+                    })
+                }
+            } catch (error: any) {
+                console.log(error, "Can't Parse Selected Approval Categories")
+            }
+        }
 
         let activeCategoryArray = activeCategory;
         let TaskCategories: any[] = taskCat;
         if (item.ActiveTile) {
-            item.ActiveTile = !item.ActiveTile;
-            activeCategoryArray = activeCategoryArray.filter((category: any) => category !== title);
-            TaskCategories = TaskCategories.filter((category: any) => category !== Id);
+            if(IsapprovalTask && title == 'Approval'){
+                console.log('')
+            }else{
+                item.ActiveTile = !item.ActiveTile;
+                activeCategoryArray = activeCategoryArray.filter((category: any) => category !== title);
+                TaskCategories = TaskCategories.filter((category: any) => category !== Id);
+                if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve all but selected items' && IsapprovalTask ) {
+                    try {
+                        let selectedApprovalCat = JSON.parse(loggedInUser?.CategoriesItemsJson)
+                        IsapprovalTask = !selectedApprovalCat?.some((selectiveApproval: any) => selectiveApproval?.Title == title)  
+                            subCategories?.map((item: any) => {
+                                if (item?.Title == "Approval" && item.ActiveTile) {
+                                    selectSubTaskCategory(item?.Title, item?.Id, item)
+                                }
+                            })
+                    } catch (error: any) {
+                        console.log(error, "Can't Parse Selected Approval Categories")
+                    }
+                }
+            }
 
         } else if (!item.ActiveTile) {
             if (title === 'Email Notification' || title === 'Immediate' || title === 'Bug') {
