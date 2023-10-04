@@ -11,6 +11,7 @@ import MyNotes from "./MyNotes";
 import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup";
 import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 // import GlobalCommanTable from '../../../globalComponents/GlobalCommanTable';
 
 const TaskStatusTbl = () => {
@@ -60,7 +61,7 @@ const TaskStatusTbl = () => {
         accessorFn: (row: any) => row?.TaskID,
         cell: ({ row, getValue }: any) => (
           <>
-            <ReactPopperTooltip ShareWebId={getValue()} row={row} />
+            <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={ContextData?.propsValue?.Context} />
           </>
         ),
         id: "TaskID",
@@ -133,8 +134,8 @@ const TaskStatusTbl = () => {
         accessorKey: "",
         placeholder: "",
         hasCheckbox: true,
-        hasCustomExpanded: true,
-        hasExpanded: true,
+        hasCustomExpanded: false,
+        hasExpanded: false,
         size: 55,
         id: "Id"
       },
@@ -159,7 +160,7 @@ const TaskStatusTbl = () => {
         accessorFn: (row: any) => row?.TaskID,
         cell: ({ row, getValue }: any) => (
           <>
-            <ReactPopperTooltip ShareWebId={getValue()} row={row} />
+            <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={ContextData?.propsValue?.Context} />
           </>
         ),
         id: "TaskID",
@@ -231,8 +232,8 @@ const TaskStatusTbl = () => {
         accessorKey: "",
         placeholder: "",
         hasCheckbox: true,
-        hasCustomExpanded: true,
-        hasExpanded: true,
+        hasCustomExpanded: false,
+        hasExpanded: false,
         size: 55,
         id: "Id"
       },
@@ -257,7 +258,7 @@ const TaskStatusTbl = () => {
         accessorFn: (row: any) => row?.TaskID,
         cell: ({ row, getValue }: any) => (
           <>
-            <ReactPopperTooltip ShareWebId={getValue()} row={row} />
+            <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={ContextData?.propsValue?.Context} />
           </>
         ),
         id: "TaskID",
@@ -280,6 +281,13 @@ const TaskStatusTbl = () => {
             >
               {row?.original?.Title}
             </a>
+            {row?.original?.descriptionsSearch != null &&
+              row?.original?.descriptionsSearch != "" && (
+                <InfoIconsToolTip
+                  Discription={row?.original?.descriptionsSearch}
+                  row={row?.original}
+                />
+              )}
           </div>
         ),
         id: "Title",
@@ -340,9 +348,7 @@ const TaskStatusTbl = () => {
 
 
   const sendAllWorkingTodayTasks = async (sharingTasks:any) => {
-    let AllTimeEntries: any = [];
-    
-    let to: any = ["abhishek.tiwari@hochhuth-consulting.de"];
+    let to: any = [ContextData.approverEmail];
     let body: any = '';
     let confirmation = confirm("Are you sure you want to share the working today task of all team members?")
     if (confirmation) {
@@ -355,11 +361,7 @@ const TaskStatusTbl = () => {
 
                 tasksCopy?.map(async (item: any) => {
                     try {
-
                         item.smartTime = 0;
-
-                        let EstimatedDesc: any = []
-
                         item.showDesc = '';
                        let memberOnLeave = false;
                        

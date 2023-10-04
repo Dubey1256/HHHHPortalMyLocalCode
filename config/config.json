@@ -301,6 +301,14 @@
         }
       ]
     },
+    "parent-portfolio-view-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/parentPortfolioView/ParentPortfolioViewWebPart.js",
+          "manifest": "./src/webparts/parentPortfolioView/ParentPortfolioViewWebPart.manifest.json"
+        }
+      ]
+    },
     "user-time-entry-web-part": {
       "components": [
         {
@@ -372,6 +380,7 @@
     "FeedbackWebPartStrings": "lib/webparts/TimeReport/loc/{locale}.js",
     "TaskStepsWebPartStrings": "lib/webparts/taskSteps/loc/{locale}.js",
     "HrToolWebPartStrings": "lib/webparts/hrTool/loc/{locale}.js",
+    "ParentPortfolioViewWebPartStrings": "lib/webparts/parentPortfolioView/loc/{locale}.js",
     "EmployeDashBoardWebPartStrings": "lib/webparts/employeDashBoard/loc/{locale}.js",
     "TestProjectWebPartStrings": "lib/webparts/BackupData/loc/{locale}.js",
     "ProjectManagementWebPartStrings": "lib/webparts/projectManagement/loc/{locale}.js",
