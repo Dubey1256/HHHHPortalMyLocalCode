@@ -854,20 +854,20 @@ return new Promise<void>((resolve, reject) => {
         if (AllItems?.TeamMembers != undefined && AllItems?.TeamMembers?.length > 0) {
                     AllItems?.TeamMembers.forEach((obj: any) => {
                         TeamMemberIds.push(obj.Id);
-                        AllTeamMembers.push(obj.AssingedToUser);
+                        AllTeamMembers.push(obj);
         
                     })
          }
           if (AllItems?.ResponsibleTeam != undefined && AllItems?.ResponsibleTeam?.length > 0) {
             AllItems?.ResponsibleTeam?.forEach((obj: any) => {
                 ResponsibleTeamIds.push(obj.Id);
-                TeamLeaderws.push(obj.AssingedToUser)
+                TeamLeaderws.push(obj)
             })
         }
         if(AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length > 0) {
                     AllItems.AssignedTo.forEach((obj: any) => {
                         AssignedToIds.push(obj.Id);
-                        AssignedToUser.push(obj.AssingedToUser);
+                        AssignedToUser.push(obj);
         
                     })
                 }
