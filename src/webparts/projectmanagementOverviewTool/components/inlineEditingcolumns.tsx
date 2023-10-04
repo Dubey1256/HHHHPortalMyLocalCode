@@ -796,7 +796,7 @@ const inlineEditingcolumns = (props: any) => {
             {
                 props?.columnName == 'Priority' ?
                     <>
-                        <span className={ServicesTaskCheck && props?.pageName !== 'ProjectOverView' ? "serviepannelgreena hreflink" : "hreflink"} style={{ display: "flex", width: "100%", height: "100%" }} onClick={() => setTaskPriorityPopup(true)} >
+                        <span className={ServicesTaskCheck && props?.pageName !== 'ProjectOverView' ? "serviepannelgreena hreflink" : "hreflink"} style={{ display: "flex", width: "100%", height: "100%", gap:"1px" }} onClick={() => setTaskPriorityPopup(true)} >
                             &nbsp;
                             {props?.item?.PriorityRank}
                             {
