@@ -1661,9 +1661,9 @@ export default function ProjectOverview(props: any) {
                                         </dt>
 
                                     </dl>
-                                    <div className="text-end">
+                                    <div className="m-0 text-end">
                                         <AddProject CallBack={CallBack} AllListId={AllListId} />
-                                        {currentUserData?.Title == "Deepak Trivedi" || currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" ?
+                                        {currentUserData?.Title == "Deepak Trivedi" || currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Satyendra Kumar" ||currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" ?
                                             <>
                                                 <a className="hreflink" onClick={() => { sendAllWorkingTodayTasks() }}>Share Working Todays's Task</a></>
                                             : ''}
