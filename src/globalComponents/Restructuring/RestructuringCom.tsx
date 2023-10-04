@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef, forwardRef } from 'react'
 import { Web } from 'sp-pnp-js';
 import { Modal, Panel, PanelType } from "office-ui-fabric-react";
+import { GetTaskId } from '../globalCommon';
+import Tooltip from '../Tooltip';
 // import { restructureCallBack } from '../../webparts/teamPortfolio/components/TeamPortlioTable';
 
 const RestructuringCom = (props: any, ref: any) => {
@@ -2187,7 +2189,7 @@ const RestructuringCom = (props: any, ref: any) => {
     if (restructureItem[0]?.Item_x0020_Type == 'Task') {
       let ParentTask_Id: any = newItemBackUp?.Id;
       let Portfolio:any;
-      let TaskId = newItemBackUp?.TaskID !== undefined ? newItemBackUp?.TaskID : newItemBackUp?.PortfolioStructureID
+      let TaskId = newItemBackUp?.TaskID !== undefined ? newItemBackUp?.TaskID : ''
       let TaskLevel: number = 0;
       let TaskTypeId:any;
 
@@ -2201,15 +2203,7 @@ const RestructuringCom = (props: any, ref: any) => {
         }
       }
 
-
-
-      if(newItemBackUp?.Item_x0020_Type != 'Task'){
-        Portfolio = newItemBackUp?.Id
-      }else{
-        Portfolio = newItemBackUp?.Portfolio?.Id;
-      }
-
-      if (newItemBackUp?.subRows != undefined && newItemBackUp?.subRows?.length > 0) {
+     if (newItemBackUp?.subRows != undefined && newItemBackUp?.subRows?.length > 0) {
         newItemBackUp?.subRows?.map((sub: any) => {
           if (RestructureChecked[0]?.TaskType?.Id === sub?.TaskType?.Id) {
             if (TaskLevel <= sub.TaskLevel) {
@@ -2223,6 +2217,9 @@ const RestructuringCom = (props: any, ref: any) => {
       } else {
         TaskLevel = 1;
       }
+
+
+
 
        let Tasklevel:any;
        let TaskID:any;
@@ -2252,13 +2249,16 @@ const RestructuringCom = (props: any, ref: any) => {
             console.log(err);
            })
     
-           TaskID = props?.queryItems?.PortfolioStructureID + '-' + TaskID
+          //  TaskID = props?.queryItems?.PortfolioStructureID + '-' + TaskID
         }
-
 
         if(newItemBackUp?.Item_x0020_Type != 'Task'){
           ParentTask_Id = null;
-         }
+          Portfolio = newItemBackUp?.Id
+        }else{
+          Portfolio = newItemBackUp?.Portfolio?.Id;
+        }
+        
 
       let web = new Web(props?.contextValue?.siteUrl);
       var postData: any = {
@@ -2266,8 +2266,8 @@ const RestructuringCom = (props: any, ref: any) => {
         PortfolioId: Portfolio,
         TaskLevel: TaskLevel,
         TaskTypeId: TaskTypeId,
-        TaskID: TaskTypeId == 2 ? TaskId + '-' + 'T' + RestructureChecked[0]?.Id : 
-        (TaskTypeId == 1 ? TaskId + '-' + 'A' + TaskLevel :  TaskId + '-' + 'W' + TaskLevel)
+        TaskID: TaskTypeId == 2 ? 'T' + RestructureChecked[0]?.Id : 
+        (TaskTypeId == 1 ? TaskID :  TaskId + '-' + 'W' + TaskLevel)
       };
 
       await web.lists
@@ -2289,8 +2289,7 @@ const RestructuringCom = (props: any, ref: any) => {
               items.Portfolio = { Id: Portfolio, ItemType: RestructureChecked[0]?.TaskType?.Title == undefined ? RestructureChecked[0]?.Item_x0020_Type : RestructureChecked[0]?.TaskType?.Title, Title: restructureItem[0]?.Title },
               items.TaskLevel = TaskLevel,
               items.TaskType = { Id: RestructureChecked[0]?.TaskType?.Id, Level: RestructureChecked[0]?.TaskType?.Level, Title: RestructureChecked[0]?.TaskType?.Title },
-              items.TaskID = RestructureChecked[0]?.TaskType?.Id == 2 ? TaskId + '-' + 'T' + RestructureChecked[0]?.Id : (RestructureChecked[0]?.TaskType?.Id == 1 ? TaskId + '-' + TaskID : (RestructureChecked[0]?.TaskType?.Id == 3 && newItemBackUp?.Item_x0020_Type == 'Task' ? TaskId + '-' + 'W' + TaskLevel : TaskId + '-' + TaskID))
-          })
+              items.TaskID = GetTaskId(newItemBackUp) })
 
           array?.map((obj: any, index: any) => {
             obj.isRestructureActive = false;
@@ -2549,16 +2548,13 @@ const RestructuringCom = (props: any, ref: any) => {
 
 if(restructureItem != undefined && restructureItem != undefined && restructureItem[0].Item_x0020_Type != 'Task'){
   let array: any = [...allData];
-    let ParentTask: any = props?.queryItems?.Parent;
-    let PortfolioStructureIDs = props?.queryItems?.PortfolioStructureID;
+    let ParentTask: any ;
+    let PortfolioStructureIDs :any ;
     let PortfolioLevel: number = 0;
-    let Item_x0020_Type: any = query4TopIcon;
-    let SiteIconTitle: any = query4TopIcon[0] ;
+    let Item_x0020_Type: any ;
+    let SiteIconTitle: any ;
+    let PortfolioId : any
  
-  if(props?.queryItems === undefined && props?.queryItems == null){
-    ParentTask = null;
-    PortfolioStructureIDs = 'C';
-   }
 
     if (array != undefined && array?.length > 0) {
       array?.map((items: any) => {
@@ -2570,12 +2566,32 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
 
     PortfolioLevel = PortfolioLevel + 1;
 
+
+    if(props?.queryItems === undefined && props?.queryItems == null){
+      ParentTask = null;
+      PortfolioStructureIDs = 'C' + PortfolioLevel;
+      SiteIconTitle = 'C'
+      Item_x0020_Type = 'Component'
+     }else if(props?.queryItems != undefined && props?.queryItems != null && props?.queryItems?.Item_x0020_Type == 'Component'){
+      ParentTask = props?.queryItems?.Id;
+      PortfolioId = props?.queryItems?.Id;
+      PortfolioStructureIDs = props?.queryItems?.PortfolioStructureID + '-' + 'S' + PortfolioLevel;
+      SiteIconTitle = 'S';
+      Item_x0020_Type = 'SubComponent';
+     }else if(props?.queryItems != undefined && props?.queryItems != null && props?.queryItems?.Item_x0020_Type == 'SubComponent'){
+      ParentTask = props?.queryItems?.Id;
+      PortfolioId = props?.queryItems?.Id;
+      PortfolioStructureIDs = props?.queryItems?.PortfolioStructureID + '-' + 'F' + PortfolioLevel;
+      SiteIconTitle = 'F';
+      Item_x0020_Type = 'Feature';
+     }
+
     let web = new Web(props?.contextValue?.siteUrl);
     var postData: any = {
-      ParentId: ParentTask.Id,
+      ParentId: ParentTask,
       PortfolioLevel: PortfolioLevel,
       Item_x0020_Type: Item_x0020_Type,
-      PortfolioStructureID: PortfolioStructureIDs + '-' + SiteIconTitle + PortfolioLevel,
+      PortfolioStructureID: PortfolioStructureIDs,
     };
     await web.lists
       .getById(props?.contextValue?.MasterTaskListID)
@@ -2592,7 +2608,7 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
         })
 
         latestCheckedList?.map((items: any) => {
-            items.Parent = { Id: ParentTask.Id },
+            items.Parent = { Id: ParentTask},
             items.PortfolioLevel = PortfolioLevel,
             items.Item_x0020_Type = Item_x0020_Type,
             items.SiteIconTitle = SiteIconTitle,
@@ -2692,35 +2708,43 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
       })
 }else{
   let array: any = [...allData];
-  let ParentTask: any = props?.queryItems?.Parent;
+  let ParentTask: any ;
   let PortfolioLevel: number = 0;
-  let TaskType: any = query4TopIcon;
-  let SiteIconTitle: any = query4TopIcon[0] ;
+  let TaskType: any ;
+  let SiteIconTitle: any ;
   let Tasklevel:any;
   let TaskID:any;
+  let PortfolioId : any;
 
-
-  
-  if(query4TopIcon == 'Workstream'){
-    TaskType = 3
-  }else if(query4TopIcon == 'Task'){
-   TaskType = 2
-  }
-          
-
-  if (array != undefined && array?.length > 0) {
- array?.map((items: any) => {
-   if (PortfolioLevel <= items?.PortfolioLevel){
-     PortfolioLevel = items.PortfolioLevel;
+   if(props?.queryItems != undefined && props?.queryItems != null && props?.queryItems?.Item_x0020_Type !== "Task" ){
+    PortfolioId = props?.queryItems?.Id;
+    TaskType = 1;
+    SiteIconTitle = 'A';
+   }else if(props?.queryItems != undefined && props?.queryItems != null && props?.queryItems?.TaskType?.Title == 'Activity'){
+    PortfolioId = props?.queryItems?.Id;
+    ParentTask = props?.queryItems?.Id;
+    SiteIconTitle = 'W';
+    TaskType = 3;
    }
- })
-}
+  
+   if (array != undefined && array?.length > 0) {
+    array?.map((items: any) => {
+      if(items?.TaskType?.Id == TaskType){
+        if (PortfolioLevel <= items?.PortfolioLevel){
+          PortfolioLevel = items.PortfolioLevel;
+        }
+      }
+      
+    })
+   }
+   
+   PortfolioLevel = PortfolioLevel + 1;
 
-PortfolioLevel = PortfolioLevel + 1;
-
-TaskID = props?.queryItems?.TaskID + '-' + TaskType + PortfolioLevel;
-
-if(props?.queryItems?.Item_x0020_Type === "Feature"){
+   TaskID = props?.queryItems?.TaskID != undefined ?  props?.queryItems?.TaskID : ''
+   
+          
+  
+   if(TaskType == 1){
     ParentTask = null;
     let web = new Web(restructureItem[0]?.siteUrl);
     await web.lists
@@ -2745,10 +2769,11 @@ if(props?.queryItems?.Item_x0020_Type === "Feature"){
        }).catch((err:any)=>{
         console.log(err);
        })
-
-       TaskID = props?.queryItems?.PortfolioStructureID + '-' + TaskID
-    }
+     }
     
+
+     
+
 
 
 
@@ -2794,6 +2819,14 @@ if(props?.queryItems?.Item_x0020_Type === "Feature"){
   };
 
 
+  const onRenderCustomCalculateSC = () => {
+    return (
+      <span>
+       <Tooltip ComponentId="1626" />
+      </span>
+    )
+  }
+
   return (
     <>
 
@@ -2809,6 +2842,7 @@ if(props?.queryItems?.Item_x0020_Type === "Feature"){
       {
         ResturuningOpen === true && restructureItem?.length == 1 ?
           <Panel
+          onRenderHeader={onRenderCustomCalculateSC}
             type={PanelType.medium}
             isOpen={ResturuningOpen}
             isBlocking={false}

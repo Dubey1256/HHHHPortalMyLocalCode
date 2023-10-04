@@ -1805,22 +1805,22 @@ export const getParameterByName = async (name: any) => {
     return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 
 }
-export const GetCompleteTaskId = (Item: any) => {
-    const { Portfolio, TaskID, ParentTask, Id, TaskType } = Item;
-    let taskIds = "";
-    if (Portfolio?.PortfolioStructureID) {
-        taskIds += Portfolio.PortfolioStructureID;
-    }
-    if (TaskType?.Title === 'Activities' || TaskType?.Title === 'Workstream') {
-        taskIds += taskIds.length > 0 ? `-${TaskID}` : `${TaskID}`;
-    }
-    if ( ParentTask?.TaskID && TaskType?.Title === 'Task' ) {
-        taskIds += taskIds.length > 0 ? `-${ParentTask?.TaskID}-T${Id}` : `${ParentTask?.TaskID}-T${Id}`;
-    } else if(ParentTask?.TaskID ==undefined && TaskType?.Title === 'Task') {
-        taskIds += taskIds.length > 0 ? `-T${Id}` : `T${Id}`;
-    }
-    return taskIds;
-};
+// export const GetTaskId = (Item: any) => {
+//     const { Portfolio, TaskID, ParentTask, Id, TaskType } = Item;
+//     let taskIds = "";
+//     if (Portfolio?.PortfolioStructureID) {
+//         taskIds += Portfolio.PortfolioStructureID;
+//     }
+//     if (TaskType?.Title === 'Activities' || TaskType?.Title === 'Workstream') {
+//         taskIds += taskIds.length > 0 ? `-${TaskID}` : `${TaskID}`;
+//     }
+//     if ( ParentTask?.TaskID && TaskType?.Title === 'Task' ) {
+//         taskIds += taskIds.length > 0 ? `-${ParentTask?.TaskID}-T${Id}` : `${ParentTask?.TaskID}-T${Id}`;
+//     } else if(ParentTask?.TaskID ==undefined && TaskType?.Title === 'Task') {
+//         taskIds += taskIds.length > 0 ? `-T${Id}` : `T${Id}`;
+//     }
+//     return taskIds;
+// };
 export const GetTaskId = (Item: any) => {
     const { TaskID, ParentTask, Id, TaskType } = Item;
     let taskIds = "";

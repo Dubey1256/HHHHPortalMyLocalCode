@@ -923,7 +923,7 @@ function TasksTable(props: any) {
           }
         },
         header: "",
-        size: 109
+        size: 125
       },
      
       {

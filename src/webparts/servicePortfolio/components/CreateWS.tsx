@@ -466,7 +466,7 @@ return new Promise<void>((resolve, reject) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon;
                 res.data['listId'] = AllItems.listId;
                 res.data['SharewebTaskType'] = { Title: 'Workstream' };
-                res.data['TaskType'] = { 'Id': res.data?.TaskTypeId };
+                res.data['TaskType'] = { 'Id': res.data?.TaskTypeId,'Title': 'Workstream'  };
                 res.data['listId'] = AllItems.listId;
                 res.data['Shareweb_x0020_ID'] = SharewebID;
                 res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0] : null;
@@ -517,6 +517,7 @@ return new Promise<void>((resolve, reject) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon;
                 res.data['listId'] = AllItems.listId;
                 res.data['SharewebTaskType'] = { Title: 'Workstream' };
+                res.data['TaskType'] = { 'Id': res.data?.TaskTypeId,'Title': 'Workstream'  };
                 res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : null,
                     res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0] : null;
                 res.data['siteType'] = AllItems.siteType;
@@ -971,7 +972,7 @@ return new Promise<void>((resolve, reject) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
-                res.data['TaskType'] = { 'Id': res.data?.TaskTypeId };
+                res.data['TaskType'] = { 'Id': res.data?.TaskTypeId,'Title': 'Workstream'  };
                 res.data['listId'] = AllItems.listId
                 res.data['Shareweb_x0020_ID'] = SharewebID;
                 res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0] : null
@@ -1000,6 +1001,7 @@ return new Promise<void>((resolve, reject) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
+                res.data['TaskType'] = { 'Id': res.data?.TaskTypeId,'Title': 'Workstream'  };
                 res.data['Shareweb_x0020_ID'] = SharewebID;
                 res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0] : null
                 res.data['Portfolio'] = { 'Id': portFolio };
