@@ -478,7 +478,7 @@ const ProjectManagementMain = (props: any) => {
                 });
               });
             }
-            items.TaskID = globalCommon.GetOnlyAWTId(items);
+            items.TaskID = globalCommon.GetTaskId(items);
             AllUser?.map((user: any) => {
               if (user.AssingedToUserId == items.Author.Id) {
                 items.createdImg = user?.Item_x0020_Cover?.Url;
