@@ -1550,41 +1550,44 @@ const EditTaskPopup = (Items: any) => {
     const loadTaskUsers = async () => {
         var AllTaskUsers: any = []
         let currentUserId = Context.pageContext._legacyPageContext.userId
-        axios.get(`${siteUrls}/_api/web/lists/getbyid('${AllListIdData?.TaskUsertListID}')/items?$select=Id,UserGroupId,TimeCategory,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver&$orderby=SortOrder asc,Title asc`)
-            .then((response: AxiosResponse) => {
-                taskUsers = response.data.value;
-                getAllEmployeeData();
-                $.each(taskUsers, function (index: any, user: any) {
-                    var ApproverUserItem = '';
-                    var UserApproverMail: any = []
-                    if (user.Title != undefined && user.IsShowTeamLeader === true) {
-                        if (user.Approver != undefined) {
-                            $.each(user.Approver.results, function (ApproverUser: any, index) {
-                                ApproverUserItem += ApproverUser.Title + (index === user.Approver.results?.length - 1 ? '' : ',');
-                                UserApproverMail.push(ApproverUser.Name.split('|')[2]);
-                            })
-                            user['UserManagerName'] = ApproverUserItem;
-                            user['UserManagerMail'] = UserApproverMail;
-                        }
-                        AllTaskUsers.push(user);
-                    }
-                    if (user.AssingedToUserId == currentUserId) {
-                        let temp: any = [];
-                        temp.push(user)
-                        setCurrentUserData(temp);
-                        currentUserBackupArray.push(user);
-                        if (user.UserGroupId == 7) {
-                            setIsUserFromHHHHTeam(true);
-                        }
-                    }
-
-                });
-                if (AllMetaData != undefined && AllMetaData?.length > 0) {
-                    GetSelectedTaskDetails();
+        const web = new Web(siteUrls);
+        taskUsers = await web.lists
+            .getById(AllListIdData?.TaskUsertListID)
+            .items
+            .select('Id', 'IsActive', 'UserGroupId', 'Suffix', 'Title', 'Email', 'SortOrder', 'Role', 'Company', 'ParentID1', 'TaskStatusNotification', 'Status', 'Item_x0020_Cover', 'AssingedToUserId', 'isDeleted', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail', 'ItemType')
+            .filter('IsActive eq 1')
+            .expand('AssingedToUser')
+            .orderBy('SortOrder', true)
+            .orderBy("Title", true)
+            .getAll()
+        getAllEmployeeData();
+        taskUsers?.map((index: any, user: any) => {
+            var ApproverUserItem = '';
+            var UserApproverMail: any = []
+            if (user.Title != undefined && user.IsShowTeamLeader === true) {
+                if (user.Approver != undefined) {
+                    $.each(user.Approver.results, function (ApproverUser: any, index) {
+                        ApproverUserItem += ApproverUser.Title + (index === user.Approver.results?.length - 1 ? '' : ',');
+                        UserApproverMail.push(ApproverUser.Name.split('|')[2]);
+                    })
+                    user['UserManagerName'] = ApproverUserItem;
+                    user['UserManagerMail'] = UserApproverMail;
                 }
-            },
-                function (data) {
-                });
+                AllTaskUsers.push(user);
+            }
+            if (user.AssingedToUserId == currentUserId) {
+                let temp: any = [];
+                temp.push(user)
+                setCurrentUserData(temp);
+                currentUserBackupArray.push(user);
+                if (user.UserGroupId == 7) {
+                    setIsUserFromHHHHTeam(true);
+                }
+            }
+        });
+        if (AllMetaData != undefined && AllMetaData?.length > 0) {
+            GetSelectedTaskDetails();
+        }
     }
 
 
@@ -4680,7 +4683,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="border p-2">
+                                        <div className="border p-2 mb-3">
                                             <div>Estimated Task Time Details</div>
                                             <div className="col-12">
                                                 <div onChange={UpdateEstimatedTimeDescriptions} className="full-width">
