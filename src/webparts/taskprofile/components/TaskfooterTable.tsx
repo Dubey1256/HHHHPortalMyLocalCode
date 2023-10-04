@@ -517,7 +517,7 @@ function TasksTable(props: any) {
         childItem?.data?.AssignedTo?.length > 0
       ) {
         $.map(childItem?.data?.AssignedTo, (Assig: any) => {
-          if (Assig.Id != undefined) {
+          if (Assig?.Id != undefined) {
             $.map(taskUsers, (users: any) => {
               if (
                 Assig.Id != undefined &&
@@ -537,7 +537,7 @@ function TasksTable(props: any) {
         childItem?.data?.ResponsibleTeam?.length > 0
       ) {
         $.map(childItem?.data?.ResponsibleTeam, (Assig: any) => {
-          if (Assig.Id != undefined) {
+          if (Assig?.Id != undefined) {
             $.map(taskUsers, (users: any) => {
               if (
                 Assig.Id != undefined &&
@@ -557,12 +557,12 @@ function TasksTable(props: any) {
         childItem?.data?.TeamMembers?.length > 0
       ) {
         $.map(childItem?.data?.TeamMembers, (Assig: any) => {
-          if (Assig.Id != undefined) {
+          if (Assig?.Id != undefined) {
             $.map(taskUsers, (users: any) => {
               if (
-                Assig.Id != undefined &&
-                users.AssingedToUser != undefined &&
-                Assig.Id == users.AssingedToUser.Id
+                Assig?.Id != undefined &&
+                users?.AssingedToUser != undefined &&
+                Assig?.Id == users.AssingedToUser.Id
               ) {
                 users.ItemCover = users.Item_x0020_Cover;
                 childItem?.data?.TeamLeaderUser.push(users);
@@ -923,7 +923,7 @@ function TasksTable(props: any) {
           }
         },
         header: "",
-        size: 109
+        size: 125
       },
       // {
       //   accessorKey: "DueDate",
