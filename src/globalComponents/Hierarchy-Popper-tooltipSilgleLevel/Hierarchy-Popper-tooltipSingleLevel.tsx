@@ -5,6 +5,7 @@ import { ColumnDef, } from "@tanstack/react-table";
 import { FaChevronDown, FaChevronRight, FaPlus } from "react-icons/fa";
 import GlobalCommanTable from "../GroupByReactTableComponents/GlobalCommanTable";
 import CreateActivity from "../../webparts/servicePortfolio/components/CreateActivity";
+import * as globalCommon from "../globalCommon"
 import CreateWS from '../../webparts/servicePortfolio/components/CreateWS'
 let AllMatsterAndTaskData: any = [];
 let counterAllTaskCount: any = 0;
@@ -123,7 +124,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
         }
         if (action === "hover") {
             let result = getTooltiphierarchyWithoutGroupByTable(row, completeTitle);
-            let TaskId = row?.SiteIcon != undefined ? row?.TaskID : row?.PortfolioStructureID;
+            let TaskId = row?.SiteIcon != undefined ? globalCommon.GetCompleteTaskId(row) : row?.PortfolioStructureID;
             let completedID = `${TaskId} : ${result?.structureTitle}${row?.Title}`
             setHoverOverInfo(completedID);
         }
