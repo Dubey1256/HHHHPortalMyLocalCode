@@ -921,10 +921,10 @@ const CreateActivity = (props: any) => {
                       ? TeamMemberIds
                       : []
                 },
-                SiteCompositionSettings: JSON.stringify(
-                  AllItems.SiteCompositionSettingsbackup
-                ),
-                ClientTime: JSON.stringify(AllItems.Sitestaggingbackup),
+                SiteCompositionSettings: 
+                  AllItems.SiteCompositionSettings,
+                
+                ClientTime: AllItems.Sitestagging,
                 TaskID: TaskID,
                 TaskLevel: Tasklevel
               })
@@ -1163,7 +1163,9 @@ const CreateActivity = (props: any) => {
                   ? Moment(date).format("MM-DD-YYYY")
                   : null),
                   (res.data["siteType"] = value.siteName);
-
+                  res.data.Author = {
+                    Id: res?.data?.AuthorId
+                }
                 res.data.ParentTaskId = AllItems.Id;
                 res.data.ClientCategory = [];
                 res.data.AssignedTo = [];
@@ -1208,7 +1210,7 @@ const CreateActivity = (props: any) => {
                   });
                 }
                 res.data.Clientcategories = res.data.ClientCategory;
-
+               
                 let fileName: any = "";
                 let tempArray: any = [];
                 // let SiteUrl = SiteUrl;

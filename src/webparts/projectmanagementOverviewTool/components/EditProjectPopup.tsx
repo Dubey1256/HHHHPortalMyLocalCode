@@ -14,7 +14,7 @@ import "bootstrap/js/dist/tab.js";
 import * as moment from "moment";
 import { Web } from "sp-pnp-js";
 import CommentCard from "../../../globalComponents/Comments/CommentCard";
-import { IoMdArrowDropdown, IoMdArrowDropright } from "react-icons/io";
+import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { map } from "lodash";
@@ -112,7 +112,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
             <a onClick={handleCancel}>
               <span
                 title="cancel"
-                className="svg__iconbox svg__icon--cross "
+                className="svg__iconbox svg__icon--cross"
               ></span>
             </a>
           </span>
@@ -1477,50 +1477,45 @@ function EditProjectPopup(item: any) {
                             <div className="col-sm-12 mt-2 p-0">
                               <div className="row">
                                 <div className="col-sm-6">
+                                  <div className="input-group">
                                   <label className="form-label full-width">Status</label>
                                   <input type="text" maxLength={3} placeholder="% Complete" className="form-control px-2"
                                     defaultValue={EditData?.PercentComplete != undefined ? Number(EditData.PercentComplete).toFixed(0) : null}
                                     value={EditData?.PercentComplete != undefined ? Number(EditData.PercentComplete).toFixed(0) : null}
                                     onChange={(e) => StatusAutoSuggestion(e.target.value)} />
-                                  <span className="input-group-text" title="Status Popup" onClick={() => setTaskStatusPopup(true)}>
+                                     <span className="input-group-text" title="Status Popup" onClick={() => setTaskStatusPopup(true)}>
                                     <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
-
-                                  </span>
+                                     </span>
+                                    </div>
+                               
                                   {PercentCompleteStatus?.length > 0 ?
-                                    <span className="full-width l-radio">
-                                      <input type='radio' className="form-check-input my-2" checked />
-                                      <label className="ps-2 pt-1">
+                                    <span className="full-width SpfxCheckRadio">
+                                      <input type='radio' className="radio" checked />
+                                      <label className="pt-1">
                                         {PercentCompleteStatus}
                                       </label>
                                     </span> : null}
 
                                 </div>
                                 <div className="col-sm-6">
-                                  <div className="TaskUsers">
+                                  <div className="input-group">
                                     <label className="form-label full-width  mx-2">
                                       Working Member
                                     </label>
                                     {EditData.AssignedUsers?.map(
                                       (userDtl: any, index: any) => {
                                         return (
-                                          <a
-                                            target="_blank"
-
+                                          <div className="TaskUsers">
+                                          <a target="_blank"
                                           >
-                                            <img
-                                              style={{
-                                                width: "35px",
-                                                height: "35px",
-                                                marginLeft: "10px",
-                                                borderRadius: "50px",
-                                              }}
-                                              src={
+                                            <img className="ProirityAssignedUserPhoto ms-2" src={
                                                 userDtl?.Item_x0020_Cover?.Url
                                                   ? userDtl?.Item_x0020_Cover?.Url
                                                   : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"
                                               }
                                             />
                                           </a>
+                                          </div>
                                         );
                                       }
                                     )}
@@ -1609,7 +1604,7 @@ function EditProjectPopup(item: any) {
                           </div>
                         </div>
                         <div className="mx-0 row mt-2 ">
-                          <div className="col-sm-6 ps-0">
+                          <div className="col-sm-6 ps-0 time-status">
                             <div className="input-group mb-2">
                               <label className="form-label  full-width">
                                 Status
@@ -1621,10 +1616,12 @@ function EditProjectPopup(item: any) {
                                 onChange={(e) => ChangeStatus(e, EditData)}
                               />
                             </div>
+                            <ul className="p-0 mt-1 mb-0">
 
-                            <div className="form-check">
+                            <li className="form-check">
+                              <label className="SpfxCheckRadio">
                               <input
-                                className="form-check-input"
+                                className="radio"
                                 name="NotStarted"
                                 type="radio"
                                 value="Not Started"
@@ -1637,13 +1634,14 @@ function EditProjectPopup(item: any) {
                                   setStatus(EditData, "Not Started")
                                 }
                               ></input>
-                              <label className="form-check-label">
-                                Not Started{" "}
+                                 Not Started{" "}
                               </label>
-                            </div>
-                            <div className="form-check">
+
+                            </li>
+                            <li className="form-check"> 
+                            <label className="SpfxCheckRadio">
                               <input
-                                className="form-check-input"
+                                className="radio"
                                 name="NotStarted"
                                 type="radio"
                                 value="In Preparation"
@@ -1656,14 +1654,15 @@ function EditProjectPopup(item: any) {
                                     : false
                                 }
                               ></input>
-                              <label className="form-check-label">
+                             
                                 {" "}
                                 In Preparation
                               </label>
-                            </div>
-                            <div className="form-check">
+                            </li>
+                            <li className="form-check">  
+                            <label className="SpfxCheckRadio">
                               <input
-                                className="form-check-input"
+                                className="radio"
                                 name="NotStarted"
                                 type="radio"
                                 value="In Development"
@@ -1676,14 +1675,15 @@ function EditProjectPopup(item: any) {
                                     : false
                                 }
                               ></input>
-                              <label className="form-check-label">
+                            
                                 {" "}
                                 In Development{" "}
                               </label>
-                            </div>
-                            <div className="form-check">
+                            </li>
+                            <li className="form-check"> 
+                            <label className="SpfxCheckRadio">
                               <input
-                                className="form-check-input"
+                                className="radio"
                                 name="NotStarted"
                                 type="radio"
                                 value="Active"
@@ -1694,11 +1694,12 @@ function EditProjectPopup(item: any) {
                                     : false
                                 }
                               ></input>
-                              <label className="form-check-label">Active</label>
-                            </div>
-                            <div className="form-check">
+                             Active</label>
+                            </li>
+                            <li className="form-check">  
+                            <label className="SpfxCheckRadio">
                               <input
-                                className="form-check-input"
+                                className="radio"
                                 name="NotStarted"
                                 type="radio"
                                 value="Archived"
@@ -1711,13 +1712,14 @@ function EditProjectPopup(item: any) {
                                     : false
                                 }
                               ></input>
-                              <label className="form-check-label">
+                            
                                 Archived{" "}
                               </label>
-                            </div>
+                            </li>
+                            </ul>
                           </div>
                           <div className="col-sm-6 pe-0">
-                            <div className="input-group position-relative">
+                            <div className="input-group position-relative mb-2">
                               <label className="form-label  full-width">
                                 Categories{" "}
                               </label>
@@ -1814,12 +1816,10 @@ function EditProjectPopup(item: any) {
                           </div>
 
                         </div>
-                        <div className="row mb-2 mt-2 ">
-
-                        </div>
+                       
                       </div>
                       <div className="col-sm-3 ">
-                        <div className="col">
+                        <div className="col time-status">
                           <div className="input-group mb-2">
                             <label className="form-label  full-width">
                               Priority
@@ -1832,10 +1832,11 @@ function EditProjectPopup(item: any) {
                               maxLength={2}
                             />
                           </div>
-
-                          <div className="form-check">
+                          <ul className="p-0 mt-1 mb-0">
+                              <li className="form-check">
+                          <label className="SpfxCheckRadio">
                             <input
-                              className="form-check-input"
+                              className="radio"
                               name="radioPriority"
                               type="radio"
                               value="(1) High"
@@ -1844,11 +1845,12 @@ function EditProjectPopup(item: any) {
                                 EditData.Priority === "(1) High" ? true : false
                               }
                             ></input>
-                            <label> High</label>
-                          </div>
-                          <div className="form-check">
+                            High</label>
+                              </li>
+                              <li className="form-check">
+                          <label className="SpfxCheckRadio">
                             <input
-                              className="form-check-input"
+                              className="radio"
                               name="radioPriority"
                               type="radio"
                               value="(2) Normal"
@@ -1859,11 +1861,12 @@ function EditProjectPopup(item: any) {
                                   : false
                               }
                             ></input>
-                            <label> Normal</label>
-                          </div>
-                          <div className="form-check">
+                            Normal</label>
+                              </li>
+                              <li className="form-check">
+                          <label className="SpfxCheckRadio">
                             <input
-                              className="form-check-input"
+                              className="radio"
                               name="radioPriority"
                               type="radio"
                               value="(3) Low"
@@ -1872,8 +1875,9 @@ function EditProjectPopup(item: any) {
                                 EditData.Priority === "(3) Low" ? true : false
                               }
                             ></input>
-                            <label> Low</label>
-                          </div>
+                           Low</label>
+                             </li>
+                          </ul>
                           <div className="col mt-2">
                             <div className="input-group full-width">
                               <label className="form-label full-width">
@@ -1895,11 +1899,10 @@ function EditProjectPopup(item: any) {
                                     projectTaggedPortfolios?.map((com: any, index: any) => {
                                       return (
                                         <>
-                                          <span style={{ backgroundColor: com?.PortfolioType?.Color }} className="Component-container-edit-task mt-1 d-flex justify-content-between" >
-                                            <a className='light' target="_blank" href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
-                                            <a>
-                                              <span style={{ marginLeft: "6px" }} onClick={() => RemoveSelectedServiceComponent(com.Id, "Portfolios")} className="bg-light svg__icon--cross svg__iconbox"></span>
-                                            </a>
+                                          <span style={{ backgroundColor: com?.PortfolioType?.Color }} className="block w-100" >
+                                            <a className='hreflink wid90' target="_blank" href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>                                     
+                                              <span  onClick={() => RemoveSelectedServiceComponent(com.Id, "Portfolios")} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"></span>
+      
                                           </span>
                                         </>
                                       )
@@ -1931,7 +1934,7 @@ function EditProjectPopup(item: any) {
                       </div>
                       <div className="col-sm-8">
                         <div className="input-group mb-2">
-                          <label className="form-label  full-width">Url</label>
+                          <label className="form-label  full-width">Relevant URL</label>
                           <input
                             type="text"
                             className="form-control"
@@ -1964,9 +1967,9 @@ function EditProjectPopup(item: any) {
                                 <span className="fw-medium font-sans-serif text-900">
                                   <span className="sign">
                                     {EditData.showdes ? (
-                                      <IoMdArrowDropdown />
+                                      <SlArrowDown />
                                     ) : (
-                                      <IoMdArrowDropright />
+                                      <SlArrowRight />
                                     )}
                                   </span>{" "}
                                   Description
@@ -1979,8 +1982,9 @@ function EditProjectPopup(item: any) {
                                   className="accordion-body pt-1"
                                   id="testDiv1"
                                 >
-                                  <span className="form-check text-end">
+                                  <span className="text-end pull-right">
                                     <input
+                                      className="form-check-input"
                                       type="checkbox"
                                       defaultChecked={
                                         EditData.descriptionVerified === true
@@ -2014,7 +2018,7 @@ function EditProjectPopup(item: any) {
                   aria-labelledby="profile-tab"
                 >
                   <div className="row">
-                    <div className="col-sm-7">
+                    <div className="col-sm-12">
                       <div className="row">
                         <TeamConfigurationCard
                           AllListId={AllListId}
@@ -2042,9 +2046,9 @@ function EditProjectPopup(item: any) {
                                   >
                                     <span className="sign">
                                       {EditData.showl ? (
-                                        <IoMdArrowDropdown />
+                                        <SlArrowDown />
                                       ) : (
-                                        <IoMdArrowDropright />
+                                        <SlArrowRight />
                                       )}
                                     </span>
                                     <span className="fw-medium font-sans-serif text-900">
@@ -2056,11 +2060,12 @@ function EditProjectPopup(item: any) {
                                 <div className="accordion-collapse collapse show">
                                   {EditData.showl && (
                                     <div
-                                      className="accordion-body pt-1"
+                                      className="accordion-body pt-1 p-1"
                                       id="testDiv1"
                                     >
-                                      <span className="form-check text-end">
+                                      <span className="pull-right">
                                         <input
+                                        className="form-check-input"
                                           type="checkbox"
                                           defaultChecked={
                                             EditData.BackgroundVerified === true
@@ -2102,9 +2107,9 @@ function EditProjectPopup(item: any) {
                                   >
                                     <span className="sign">
                                       {EditData.shows ? (
-                                        <IoMdArrowDropdown />
+                                        <SlArrowDown />
                                       ) : (
-                                        <IoMdArrowDropright />
+                                        <SlArrowRight />
                                       )}
                                     </span>
                                     <span className="fw-medium font-sans-serif text-900">
@@ -2116,11 +2121,12 @@ function EditProjectPopup(item: any) {
                                 <div className="accordion-collapse collapse show">
                                   {EditData.shows && (
                                     <div
-                                      className="accordion-body pt-1"
+                                      className="accordion-body pt-1 p-1"
                                       id="testDiv1"
                                     >
-                                      <span className="form-check text-end">
+                                      <span className="pull-right">
                                         <input
+                                        className="form-check-input"
                                           type="checkbox"
                                           defaultChecked={
                                             EditData.IdeaVerified === true
@@ -2162,9 +2168,9 @@ function EditProjectPopup(item: any) {
                                   >
                                     <span className="sign">
                                       {EditData.showm ? (
-                                        <IoMdArrowDropdown />
+                                        <SlArrowDown />
                                       ) : (
-                                        <IoMdArrowDropright />
+                                        <SlArrowRight />
                                       )}
                                     </span>
                                     <span className="fw-medium font-sans-serif text-900">
@@ -2176,11 +2182,12 @@ function EditProjectPopup(item: any) {
                                 <div className="accordion-collapse collapse show">
                                   {EditData.showm && (
                                     <div
-                                      className="accordion-body pt-1"
+                                      className="accordion-body pt-1 p-1"
                                       id="testDiv1"
                                     >
-                                      <span className="form-check text-end">
+                                      <span className="pull-right">
                                         <input
+                                        className="form-check-input"
                                           type="checkbox"
                                           defaultChecked={
                                             EditData.DeliverablesVerified ===
@@ -2208,60 +2215,49 @@ function EditProjectPopup(item: any) {
                         </section>
                       </div>
                     </div>
-                    <div className="col-sm-5"></div>
+                    {/* <div className="col-sm-5"></div> */}
                   </div>
                 </div>
               </div>
             </div>
 
-            <footer className="mt-2">
-              <div className="d-flex justify-content-between align-items-center">
+            <footer className="bg-f4" style={{position:"absolute", bottom:"0", width:"100%", zIndex:"9"}}>
+              <div className="align-items-center d-flex justify-content-between me-3 px-4 py-2">
                 <div>
-                  <div className="text-left">
+                  <div>
                     Created{" "}
-                    <span ng-bind="EditData.Created | date:'dd/MM/yyyy'">
+                    <span className="font-weight-normal siteColor" ng-bind="EditData.Created | date:'dd/MM/yyyy'">
                       {" "}
                       {EditData.Created != null
                         ? moment(EditData.Created).format("DD/MM/YYYY MM:SS")
                         : ""}
                     </span>{" "}
                     by
-                    <span className="panel-title ps-1">
+                    <span className="font-weight-normal siteColor">
                       {EditData.Author?.Title != undefined
                         ? EditData.Author?.Title
                         : ""}
                     </span>
                   </div>
-                  <div className="text-left">
+                  <div>
                     Last modified{" "}
-                    <span>
+                    <span className="font-weight-normal siteColor">
                       {EditData.Modified != null
                         ? moment(EditData.Modified).format("DD/MM/YYYY MM:SS")
                         : ""}
                     </span>{" "}
                     by{" "}
-                    <span className="panel-title">
+                    <span className="font-weight-normal siteColor">
                       {EditData.Editor.Title != undefined
                         ? EditData.Editor.Title
                         : ""}
                     </span>
                   </div>
-                  <div className="text-left">
-                    <a onClick={() => deleteTask()}>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        viewBox="0 0 48 48"
-                        fill="none"
-                      >
-                        <path
-                          fill-rule="evenodd"
-                          clip-rule="evenodd"
-                          d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z"
-                          fill="#333333"
-                        />
-                      </svg>{" "}
-                      Delete this item
+                  <div>
+                    <a className="hreflink siteColor" onClick={() => deleteTask()}>
+                    <span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span>
+                     {" "}
+                     <span> Delete this item</span>
                     </a>
                     <span>
                       {" "}
@@ -2278,21 +2274,17 @@ function EditProjectPopup(item: any) {
                   </div>
                 </div>
                 <div>
-                  <div>
+                  <div className="footer-right">
                     <span>
-                      <a
+                      <a  className="mx-2 siteColor"
                         target="_blank"
                         data-interception="off"
-                        href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${EditData.Id}`}
-                      >
+                        href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${EditData.Id}`}                     >
                         <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" />{" "}
                         Go to Profile page
                       </a>
                       ||
-                      <img
-                        className="mail-width mx-2"
-                        src={`${AllListId?.siteUrl}/SiteCollectionImages/ICONS/32/icon_maill.png`}
-                      />
+                      <span className="hreflink mx-2 siteColor f-mailicons"><span title="Edit Task" className="svg__iconbox svg__icon--mail"></span>Share This Task</span>                    
                       <a
                         target="_blank"
                         data-interception="off"
@@ -2322,7 +2314,7 @@ function EditProjectPopup(item: any) {
                     </button>
                     <button
                       type="button"
-                      className="btn btn-default btn-default ms-1"
+                      className="btn btn-default btn-default mx-1 me-4"
                       onClick={setModalIsOpenToFalse}
                     >
                       Cancel
@@ -2381,11 +2373,7 @@ function EditProjectPopup(item: any) {
               </tbody>
             </table>
           </div>
-          {/* <footer className="float-end">
-                        <button type="button" className="btn btn-primary px-3" onClick={() => setTaskStatusPopup(false)}>
-                            OK
-                        </button>
-                    </footer> */}
+       
         </div>
       </Panel>
     </>

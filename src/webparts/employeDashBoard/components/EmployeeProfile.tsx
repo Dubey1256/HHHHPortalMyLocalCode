@@ -18,6 +18,7 @@ const EmployeProfile = (props:any) => {
  const[data,setData]=React.useState({DraftCatogary:[],TodaysTask:[],BottleneckTask:[],ThisWeekTask:[],ImmediateTask:[],ApprovalTask:[]});
  const [currentTime, setCurrentTime]:any = useState([]);
  const [annouceMents, setAnnouceMents]:any = useState([]);
+ const [approverEmail, setApproverEmail]:any = useState([]);
  const [timesheetListConfig,setTimesheetListConfig]=React.useState<any>()
   useEffect(() => {
    loadTaskUsers();
@@ -89,13 +90,30 @@ console.log(err);
                 .items
                 .select("Id,UserGroupId,Suffix,Title,Email,TeamLeader/Id,TeamLeader/Title,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=TeamLeader,AssingedToUser,Approver")
                 .get();
+                let mailApprover:any;
                 taskUsers?.map((item: any) => {
                   let  currentUserId:any = props?.props?.Context?.pageContext?.legacyPageContext?.userId
                    if (currentUserId == item?.AssingedToUser?.Id &&currentUserId!=undefined) {
                     currentUserData = item;
                       //  setCurrentUserData(item);
+                      if(item?.Approver?.length > 0 && item?.Approver?.length != undefined && item?.Approver?.length != null){
+                        mailApprover = item?.Approver[0];
+                      }else{
+                        mailApprover = null;
+                      }
+                  
                        smartMetaData()
              
+                   }
+                   if(mailApprover != undefined && mailApprover != null){
+                    if(mailApprover.Id == item.AssingedToUserId && item.Email != undefined && item.Email != null){
+                      setApproverEmail(item.Email);
+                    }else{
+                      setApproverEmail("");
+                    }
+                    
+                   }else{
+                    setApproverEmail("");
                    }
                    item.expanded = false;
                })
@@ -110,13 +128,19 @@ console.log(err);
     const web = new Web(itemsssssss.siteUrl);
     await web.lists
         .getById(itemsssssss.listId)
-        .items.select("Title","PercentComplete","Categories", "Approver/Id" , "Approver/Title" , "Portfolio/Id", "Portfolio/ItemType", "Portfolio/PortfolioStructureID", "Portfolio/Title", "TaskType/Id", "TaskType/Title", "TaskType/Level", "workingThisWeek",'TaskID' ,"IsTodaysTask","Priority","PriorityRank","DueDate","Created","Modified","Team_x0020_Members/Id","Team_x0020_Members/Title","ID","Responsible_x0020_Team/Id","Responsible_x0020_Team/Title","Editor/Title","Editor/Id","Author/Title","Author/Id","AssignedTo/Id","AssignedTo/Title")
-        .expand("Team_x0020_Members", "Portfolio","Approver", "TaskType","Author","Editor","Responsible_x0020_Team","AssignedTo")
+        .items.select("Title","PercentComplete","Categories",  "Portfolio/Id", "Portfolio/ItemType","Body", "Portfolio/PortfolioStructureID", "Portfolio/Title", "TaskType/Id", "TaskType/Title", "TaskType/Level", "workingThisWeek",'TaskID' ,"IsTodaysTask","Priority","PriorityRank","DueDate","Created","Modified","Team_x0020_Members/Id","Team_x0020_Members/Title","ID","Responsible_x0020_Team/Id","Responsible_x0020_Team/Title","Editor/Title","Editor/Id","Author/Title","Author/Id","AssignedTo/Id","AssignedTo/Title")
+        .expand("Team_x0020_Members", "Portfolio", "TaskType","Author","Editor","Responsible_x0020_Team","AssignedTo")
         .top(5000)
         .getAll()
         .then((data: any) => {
                count++;
               data?.map((items:any)=>{
+                if (items?.Body != undefined) {
+                  items.descriptionsSearch = items?.Body.replace(
+                    /(<([^>]+)>)/gi,
+                    ""
+                  ).replace(/\n/g, "");
+                }
                 items.listId = itemsssssss.listId;
                 items.site = itemsssssss.Title;
                 items.siteType = itemsssssss.Title;
@@ -201,13 +225,9 @@ console.log(err);
 };
 
  return (
-    <myContextValue.Provider value={{ ...myContextValue,propsValue:props.props ,annouceMents:annouceMents, siteUrl:props?.props?.siteUrl,AllSite:AllSite,currentUserData:currentUserData,AlltaskData:data,timesheetListConfig:timesheetListConfig}}>
+    <myContextValue.Provider value={{ ...myContextValue,approverEmail:approverEmail,  propsValue:props.props ,annouceMents:annouceMents, siteUrl:props?.props?.siteUrl,AllSite:AllSite,currentUserData:currentUserData,AlltaskData:data,timesheetListConfig:timesheetListConfig}}>
      <div> <Header/></div>
-      
-      {/* <div><WorldClock/></div> */}
-      {/* <WorldClock/> */}
       <TaskStatusTbl/>
-      {/* {timesheetListConfig!=undefined &&timesheetListConfig.length>0 &&<EmployeePieChart />} */}
     </myContextValue.Provider>
   );
 };

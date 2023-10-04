@@ -11,6 +11,7 @@ import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup
 import * as Moment from 'moment'
 import Tooltip from '../../../globalComponents/Tooltip';
 import { data } from 'jquery';
+import moment from 'moment';
 
 const TaskItemRank: any = [];
 var TaskTypeItems: any = [];
@@ -465,7 +466,7 @@ return new Promise<void>((resolve, reject) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon;
                 res.data['listId'] = AllItems.listId;
                 res.data['SharewebTaskType'] = { Title: 'Workstream' };
-                res.data['TaskType'] = { 'Id': res.data?.TaskTypeId };
+                res.data['TaskType'] = { 'Id': res.data?.TaskTypeId,'Title': 'Workstream'  };
                 res.data['listId'] = AllItems.listId;
                 res.data['Shareweb_x0020_ID'] = SharewebID;
                 res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0] : null;
@@ -516,6 +517,7 @@ return new Promise<void>((resolve, reject) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon;
                 res.data['listId'] = AllItems.listId;
                 res.data['SharewebTaskType'] = { Title: 'Workstream' };
+                res.data['TaskType'] = { 'Id': res.data?.TaskTypeId,'Title': 'Workstream'  };
                 res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : null,
                     res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0] : null;
                 res.data['siteType'] = AllItems.siteType;
@@ -833,22 +835,22 @@ return new Promise<void>((resolve, reject) => {
        if(AssignMembers?.TeamMemberUsers != undefined && AssignMembers.TeamMemberUsers.length>0){
         AssignMembers.TeamMemberUsers.map((taskInfo: any) => {
             TeamMemberIds.push(taskInfo.AssingedToUserId);
-            AllTeamMembers.push(taskInfo);
+            AllTeamMembers.push(taskInfo.AssingedToUser);
         })
        }
        if(AssignMembers?.ResponsibleTeam != undefined && AssignMembers?.ResponsibleTeam.length>0){
         AssignMembers.ResponsibleTeam.map((taskInfo: any) => {
             ResponsibleTeamIds.push(taskInfo.AssingedToUserId);
-            TeamLeaderws.push(taskInfo)
+            TeamLeaderws.push(taskInfo.AssingedToUser)
         })
        }
        if(AssignMembers?.AssignedTo != undefined && AssignMembers?.AssignedTo.length>0){
         AssignMembers.AssignedTo.map((taskInfo: any) => {
             AssignedToIds.push(taskInfo.AssingedToUserId);
-            AssignedToUser.push(taskInfo);
+            AssignedToUser.push(taskInfo.AssingedToUser);
         })
        }
-       if(AssignMembers.length == 0){
+       if(AssignMembers?.length == 0){
         if (AllItems?.TeamMembers != undefined && AllItems?.TeamMembers?.length > 0) {
                     AllItems?.TeamMembers.forEach((obj: any) => {
                         TeamMemberIds.push(obj.Id);
@@ -964,12 +966,13 @@ return new Promise<void>((resolve, reject) => {
             TaskLevel: Tasklevel
 
         }).then((res: any) => {
+            // var  CreateDate:any
             console.log(res);
             if (PopupType == 'CreatePopup') {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
-                res.data['TaskType'] = { 'Id': res.data?.TaskTypeId };
+                res.data['TaskType'] = { 'Id': res.data?.TaskTypeId,'Title': 'Workstream'  };
                 res.data['listId'] = AllItems.listId
                 res.data['Shareweb_x0020_ID'] = SharewebID;
                 res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0] : null
@@ -978,7 +981,8 @@ return new Promise<void>((resolve, reject) => {
                     res.data['siteType'] = AllItems.siteType
 
                 res.data.ClientCategory = clientcaterogiesdata2,
-                    res.data.Created = new Date();
+                // CreateDate= new Date()
+                // res.data.Created = moment(CreateDate).format("DD/MM/YYYY");
                 res.data.Author = {
                     Id: res?.data?.AuthorId
                 }
@@ -993,9 +997,11 @@ return new Promise<void>((resolve, reject) => {
                 
             }
             else {
+            
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
+                res.data['TaskType'] = { 'Id': res.data?.TaskTypeId,'Title': 'Workstream'  };
                 res.data['Shareweb_x0020_ID'] = SharewebID;
                 res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0] : null
                 res.data['Portfolio'] = { 'Id': portFolio };
@@ -1003,7 +1009,8 @@ return new Promise<void>((resolve, reject) => {
                 res.data['siteType'] = AllItems.siteType
 
                 res.data.ClientCategory = clientcaterogiesdata2,
-                    res.data.Created = new Date();
+            //    CreateDate= new Date()
+            //     res.data.Created = moment(CreateDate).format("DD/MM/YYYY");
                 res.data.Author = {
                     Id: res?.data?.AuthorId
                 }
@@ -1289,8 +1296,8 @@ return new Promise<void>((resolve, reject) => {
             // res.DueDate = NewDate != '' && NewDate != undefined ? NewDate : undefined,
             res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : null,
                 res.data['siteType'] = AllItems.siteType
-
-            res.data.Created = new Date();
+        // let createDate= new Date()
+        //     res.data.Created = moment(createDate).format("DD/MM/YYYY");
             res.data.Author = {
                 Id: res?.data?.AuthorId
             }

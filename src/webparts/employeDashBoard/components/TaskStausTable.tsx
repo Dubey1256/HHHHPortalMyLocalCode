@@ -11,6 +11,7 @@ import MyNotes from "./MyNotes";
 import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup";
 import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 // import GlobalCommanTable from '../../../globalComponents/GlobalCommanTable';
 
 const TaskStatusTbl = () => {
@@ -40,15 +41,6 @@ const TaskStatusTbl = () => {
   const draftColumns: any = React.useMemo<ColumnDef<any, unknown>[]>(
     () => [
       {
-        accessorKey: "",
-        placeholder: "",
-        hasCheckbox: true,
-        hasCustomExpanded: true,
-        hasExpanded: true,
-        size: 55,
-        id: "Id"
-      },
-      {
         cell: ({ row, getValue }: any) => (
           <div>
             <img
@@ -69,7 +61,7 @@ const TaskStatusTbl = () => {
         accessorFn: (row: any) => row?.TaskID,
         cell: ({ row, getValue }: any) => (
           <>
-            <ReactPopperTooltip ShareWebId={getValue()} row={row} />
+            <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={ContextData?.propsValue?.Context} />
           </>
         ),
         id: "TaskID",
@@ -142,8 +134,8 @@ const TaskStatusTbl = () => {
         accessorKey: "",
         placeholder: "",
         hasCheckbox: true,
-        hasCustomExpanded: true,
-        hasExpanded: true,
+        hasCustomExpanded: false,
+        hasExpanded: false,
         size: 55,
         id: "Id"
       },
@@ -151,8 +143,8 @@ const TaskStatusTbl = () => {
         cell: ({ row, getValue }: any) => (
           <div>
             <img
-              width={"25px"}
-              height={"25px"}
+              width={"20px"}
+              height={"20px"}
               className="rounded-circle"
               src={row?.original?.siteIcon}
             />
@@ -168,7 +160,7 @@ const TaskStatusTbl = () => {
         accessorFn: (row: any) => row?.TaskID,
         cell: ({ row, getValue }: any) => (
           <>
-            <ReactPopperTooltip ShareWebId={getValue()} row={row} />
+            <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={ContextData?.propsValue?.Context} />
           </>
         ),
         id: "TaskID",
@@ -240,8 +232,8 @@ const TaskStatusTbl = () => {
         accessorKey: "",
         placeholder: "",
         hasCheckbox: true,
-        hasCustomExpanded: true,
-        hasExpanded: true,
+        hasCustomExpanded: false,
+        hasExpanded: false,
         size: 55,
         id: "Id"
       },
@@ -249,8 +241,8 @@ const TaskStatusTbl = () => {
         cell: ({ row, getValue }: any) => (
           <div>
             <img
-              width={"25px"}
-              height={"25px"}
+              width={"20px"}
+              height={"20px"}
               className="rounded-circle"
               src={row?.original?.siteIcon}
             />
@@ -266,7 +258,7 @@ const TaskStatusTbl = () => {
         accessorFn: (row: any) => row?.TaskID,
         cell: ({ row, getValue }: any) => (
           <>
-            <ReactPopperTooltip ShareWebId={getValue()} row={row} />
+            <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={ContextData?.propsValue?.Context} />
           </>
         ),
         id: "TaskID",
@@ -289,6 +281,13 @@ const TaskStatusTbl = () => {
             >
               {row?.original?.Title}
             </a>
+            {row?.original?.descriptionsSearch != null &&
+              row?.original?.descriptionsSearch != "" && (
+                <InfoIconsToolTip
+                  Discription={row?.original?.descriptionsSearch}
+                  row={row?.original}
+                />
+              )}
           </div>
         ),
         id: "Title",
@@ -349,9 +348,7 @@ const TaskStatusTbl = () => {
 
 
   const sendAllWorkingTodayTasks = async (sharingTasks:any) => {
-    let AllTimeEntries: any = [];
-    
-    let to: any = ["abhishek.tiwari@hochhuth-consulting.de"];
+    let to: any = [ContextData.approverEmail];
     let body: any = '';
     let confirmation = confirm("Are you sure you want to share the working today task of all team members?")
     if (confirmation) {
@@ -364,11 +361,7 @@ const TaskStatusTbl = () => {
 
                 tasksCopy?.map(async (item: any) => {
                     try {
-
                         item.smartTime = 0;
-
-                        let EstimatedDesc: any = []
-
                         item.showDesc = '';
                        let memberOnLeave = false;
                        
@@ -458,193 +451,169 @@ const SendEmailFinal = async (to: any, subject: any, body: any) => {
 
   return (
     <div>
-      <div className="row m-0 mt-3">
-        <div className="bg-white col-7 ps-0 pt-3">
-          <div className="d-flex mb-2 justify-content-between">
-            <span className="fw-bold">
-              Working on Today {`(${todaysTask.length})`}
-            </span>
-            <a className="text-primary" onClick={()=>sendAllWorkingTodayTasks(todaysTask)}>Share Ongoing Task</a>
-          </div>
-          <div className="d-flex mb-2 justify-content-between">
-            <span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                className="bi bi-filter"
-                viewBox="0 0 16 16"
+      <div className="row m-0 mb-3 empMainSec">
+        <div className="col-7 p-0">
+          <div className="workingSec empAllSec clearfix">
+            <div className="alignCenter mb-2 justify-content-between">
+              <span className="fw-bold">
+                Working on Today {`(${todaysTask.length})`}
+              </span>
+              <a className="empCol hreflink" onClick={()=>sendAllWorkingTodayTasks(todaysTask)}>Share Ongoing Task</a>
+            </div>
+            <div className="alignCenter mb-2 justify-content-between">
+              <span className="alignCenter">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                  width="16" height="16"fill="currentColor" className="bi bi-filter" viewBox="0 0 16 16">
+                  <path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z" />
+                </svg>
+                <span className="ms-1">Filter</span>
+              </span>
+              <a
+                className="empCol hreflink"
+                target="_blank"
+                href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx"
               >
-                <path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z" />
-              </svg>
-              <span className="ms-1">Filter</span>
-            </span>
-            <a
-              className="text-primary"
-              target="_blank"
-              href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx"
-            >
-              Create New Task
-            </a>
+                Create New Task
+              </a>
+            </div>
+            <div className="Alltable maXh-300 scrollbar">
+              {todaysTask && (
+                <GlobalCommanTable
+                  showHeader={true}
+                  columns={columnss}
+                  data={todaysTask}
+                  callBackData={callBackData}
+                />
+              )}
+            </div>
           </div>
-          {todaysTask && (
-            <GlobalCommanTable
-              showHeader={true}
-              columns={columnss}
-              data={todaysTask}
-              callBackData={callBackData}
-            />
-          )}
         </div>
-        <div className="bg-white col-5 pe-0 pt-2">
-          <EmployeePieChart />
+        <div className="col-5 pe-0">
+          <div className="chartSec empAllSec clearfix">
+              <EmployeePieChart />
+          </div>
         </div>
       </div>
-      <div className="row m-0 mt-2">
-        <div className="bg-white col-7 ps-0 pt-3">
-          <div className="d-flex mb-2 justify-content-between">
-            <span className="fw-bold">
-              My Draft Tasks {`(${draftCatogary.length})`}
-            </span>
-            <a className="text-primary" onClick={()=>sendAllWorkingTodayTasks(draftCatogary)} >Share Draft Task</a>
+      <div className="row m-0 mb-3 empMainSec">
+        <div className="col-7 p-0">
+          <div className="chartSec empAllSec clearfix">
+            <div className="alignCenter mb-2 justify-content-between">
+              <span className="fw-bold">
+                My Draft Tasks {`(${draftCatogary.length})`}
+              </span>
+              <a className="empCol hreflink" onClick={()=>sendAllWorkingTodayTasks(draftCatogary)} >Share Draft Task</a>
+            </div>
+            <div className="alignCenter mb-2 justify-content-between">
+              <span className="alignCenter">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  className="bi bi-filter"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z" />
+                </svg>
+                <span className="ms-1">Filter</span>
+              </span>
+              <span>Approve</span>
+            </div>
+            <div className="Alltable maXh-300 scrollbar">
+              {draftCatogary && (
+                <GlobalCommanTable
+                  showHeader={true}
+                  columns={draftColumns}
+                  data={draftCatogary}
+                  callBackData={callBackData}
+                />
+              )}
+            </div>
           </div>
-          <div className="d-flex mb-2 justify-content-between">
-            <span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                className="bi bi-filter"
-                viewBox="0 0 16 16"
-              >
-                <path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z" />
-              </svg>
-              <span className="ms-1">Filter</span>
-            </span>
-            <span>Approve</span>
-          </div>
-          {draftCatogary && (
-            <GlobalCommanTable
-              showHeader={true}
-              columns={draftColumns}
-              data={draftCatogary}
-              callBackData={callBackData}
-            />
-          )}
         </div>
-        <div className="bg-white col-5 pe-0 pt-2">
-          <ul className="list-group">
-            <li className="list-group-item">
-              <a>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  className="bi bi-link"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-4H9c-.086 0-.17.01-.25.031A2 2 0 0 1 7 10.5H4a2 2 0 1 1 0-4h1.535c.218-.376.495-.714.82-1z" />
-                  <path d="M9 5.5a3 3 0 0 0-2.83 4h1.098A2 2 0 0 1 9 6.5h3a2 2 0 1 1 0 4h-1.535a4.02 4.02 0 0 1-.82 1H12a3 3 0 1 0 0-6H9z" />
-                </svg>
-                <span className="ms-5">Appraisal Portal</span>
-              </a>
-            </li>
-            <li className="list-group-item">
-              <a>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  className="bi bi-link"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-4H9c-.086 0-.17.01-.25.031A2 2 0 0 1 7 10.5H4a2 2 0 1 1 0-4h1.535c.218-.376.495-.714.82-1z" />
-                  <path d="M9 5.5a3 3 0 0 0-2.83 4h1.098A2 2 0 0 1 9 6.5h3a2 2 0 1 1 0 4h-1.535a4.02 4.02 0 0 1-.82 1H12a3 3 0 1 0 0-6H9z" />
-                </svg>
-                <span className="ms-5">Reimbursement Portal</span>
-              </a>
-            </li>
+        <div className="col-5 pe-0">
+          <div className="empAllSec linkSec clearfix">
+          <div className="alignCenter mb-2 justify-content-between"><span className="fw-bold">Relevant Links</span></div>
+              <div className="py-2 border-bottom">
+                <a className="alignCenter">
+                  <span className="svg__iconbox svg__icon--link empBg"></span>
+                  <span className="ms-2 empCol hreflink ">Appraisal Portal</span>
+                </a>
+              </div>
+              <div className="py-2 border-bottom">
+                <a className="alignCenter">
+                <span className="svg__iconbox svg__icon--link empBg"></span>
+                  <span className="ms-2 empCol hreflink">Reimbursement Portal</span>
+                </a>
+              </div>
 
-            <li className="list-group-item">
-              <a>
+              <div className="py-2 border-bottom">
+                <a className="alignCenter">
+                <span className="svg__iconbox svg__icon--link empBg"></span>
+                  <span className="ms-2 empCol hreflink">Leave Calender</span>
+                </a>
+              </div>
+              <div className="py-2">
+                <a className="alignCenter">
+                <span className="svg__iconbox svg__icon--link empBg"></span>
+                  <span className="ms-2 empCol hreflink">Time Report</span>
+                </a>
+              </div>
+          </div>
+        </div>
+      </div>
+      <div className="row m-0 mb-3 empMainSec">
+        <div className="col-7 p-0">
+          <div className="empAllSec approvalSec clearfix">
+            <div className="d-flex mb-2 justify-content-between">
+              <span className="fw-bold">
+                Waiting for Approval {`(${draftCatogary.length})`}
+              </span>
+              <a className="empCol" onClick={()=>sendAllWorkingTodayTasks(approvalTask)}>Share Approver Task</a>
+            </div>
+            <div className="d-flex mb-2 justify-content-between">
+              <span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
                   height="16"
                   fill="currentColor"
-                  className="bi bi-link"
+                  className="bi bi-filter"
                   viewBox="0 0 16 16"
                 >
-                  <path d="M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-4H9c-.086 0-.17.01-.25.031A2 2 0 0 1 7 10.5H4a2 2 0 1 1 0-4h1.535c.218-.376.495-.714.82-1z" />
-                  <path d="M9 5.5a3 3 0 0 0-2.83 4h1.098A2 2 0 0 1 9 6.5h3a2 2 0 1 1 0 4h-1.535a4.02 4.02 0 0 1-.82 1H12a3 3 0 1 0 0-6H9z" />
+                  <path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z" />
                 </svg>
-                <span className="ms-5">Leave Calender</span>
-              </a>
-            </li>
-            <li className="list-group-item">
-              <a>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  className="bi bi-link"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-4H9c-.086 0-.17.01-.25.031A2 2 0 0 1 7 10.5H4a2 2 0 1 1 0-4h1.535c.218-.376.495-.714.82-1z" />
-                  <path d="M9 5.5a3 3 0 0 0-2.83 4h1.098A2 2 0 0 1 9 6.5h3a2 2 0 1 1 0 4h-1.535a4.02 4.02 0 0 1-.82 1H12a3 3 0 1 0 0-6H9z" />
-                </svg>
-                <span className="ms-5">Time Report</span>
-              </a>
-            </li>
-          </ul>
+                <span className="ms-1">Filter</span>
+              </span>
+              <span>Approve</span>
+            </div>
+            <div className="Alltable maXh-300 scrollbar">
+              {approvalTask && (
+                <GlobalCommanTable
+                  showHeader={true}
+                  columns={aprovlColumn}
+                  data={approvalTask}
+                  callBackData={callBackData}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="col-5 pe-0">
+          <div className="empAllSec birthSec clearfix">
+            <ComingBirthday />
+          </div>
         </div>
       </div>
-      <div className="row m-0 mt-3">
-        <div className="bg-white col-7 ps-0 pt-3">
-          <div className="d-flex mb-2 justify-content-between">
-            <span className="fw-bold">
-              Waitnig for Approval {`(${draftCatogary.length})`}
-            </span>
-            <a className="text-primary" onClick={()=>sendAllWorkingTodayTasks(approvalTask)}>Share Approver Task</a>
+      <div className="row m-0 empMainSec">
+        <div className="col-7 p-0">
+          <div className="empAllSec notesSec clearfix">
+            <MyNotes/>
           </div>
-          <div className="d-flex mb-2 justify-content-between">
-            <span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                className="bi bi-filter"
-                viewBox="0 0 16 16"
-              >
-                <path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z" />
-              </svg>
-              <span className="ms-1">Filter</span>
-            </span>
-            <span>Approve</span>
-          </div>
-          {approvalTask && (
-            <GlobalCommanTable
-              showHeader={true}
-              columns={aprovlColumn}
-              data={approvalTask}
-              callBackData={callBackData}
-            />
-          )}
-        </div>
-        <div className="bg-white col-5 pe-0 pt-2">
-          <ComingBirthday />
         </div>
       </div>
-      <div className="row">{/* <MyNotes/> */}</div>
       <span>   
         {editPopup && <EditTaskPopup Items={result} context={ContextData?.propsValue?.Context} AllListId={AllListId} Call={() => { CallBack() }} />}
-
       </span>
     </div>
   );

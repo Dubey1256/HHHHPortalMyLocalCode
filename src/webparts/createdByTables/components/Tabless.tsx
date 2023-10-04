@@ -237,15 +237,15 @@ const Tabless = (props: any) => {
   const getAllData = async (items: any) => {
     let filter: any;
     if (CreatedByQueryId != null) {
-      filter = `substringof('${CreatedByQueryId}', Author/Title) and PercentComplete le 0.96`
+      filter = `substringof('${CreatedByQueryId}', Author/Title) and PercentComplete le 0.91`
     } else if (PriorityQueryId != null) {
-      filter = `Priority_x0020_Rank eq ${PriorityQueryId} and PercentComplete le 0.96`
+      filter = `Priority_x0020_Rank eq ${PriorityQueryId} and PercentComplete le 0.91`
     } else if (CategoriesQueryId != null) {
-      filter = `substringof('${CategoriesQueryId}', Categories) and PercentComplete le 0.96`
+      filter = `substringof('${CategoriesQueryId}', Categories) and PercentComplete le 0.91`
     } else if (AssignedToQueryId != null) {
-      filter = `substringof('${AssignedToQueryId}', AssignedTo/Title) or substringof('${AssignedToQueryId}', Responsible_x0020_Team/Title) or substringof('${AssignedToQueryId}', Team_x0020_Members/Title) and PercentComplete le 0.96`
+      filter = `substringof('${AssignedToQueryId}', AssignedTo/Title) or substringof('${AssignedToQueryId}', Responsible_x0020_Team/Title) or substringof('${AssignedToQueryId}', Team_x0020_Members/Title) and PercentComplete le 0.91`
     } else {
-      filter = `PercentComplete le 0.96`
+      filter = `PercentComplete le 0.91`
     }
     const web = new Web(items.siteUrl);
     await web.lists
@@ -550,6 +550,7 @@ const Tabless = (props: any) => {
         id: "created",
         placeholder: "Created",
         header: "",
+        isColumnDefultSortingDesc: true ,
         resetColumnFilters: false,
         size: 110,
       },
@@ -567,7 +568,6 @@ const Tabless = (props: any) => {
         size: 75,
       },
       {
-        accessorFn: (row: any) => row?.TeamMembersSearch,
         cell: ({ row, getValue }: any) => (
           <span>
             <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink ms-1" onClick={() => editPopFunc(row.original)} ></span>
