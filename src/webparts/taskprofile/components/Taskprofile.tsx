@@ -1971,9 +1971,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                         {/* { this.state?.emailcomponentopen && countemailbutton==0 &&<EmailComponenet approvalcallback={() => { this.approvalcallback() }}  Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus}  currentUser={this.props?.CurrentUser} items={this.props?.Result} />} */}
                                         <div className="col mb-2">
                                           <div className='justify-content-between d-flex'>
-                                            <div className="pt-1 m-0">
+                                            <div className="alignCenter m-0">
                                               {this.state.ApprovalStatus ?
-                                                <span className="MR5">
+                                                <span className="alignCenter">
                                                   <span title="Rejected"
                                                     onClick={() => this.changeTrafficLigth(i, "Reject")}
                                                     className={fbData['isShowLight'] == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
@@ -1988,12 +1988,13 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                     className={fbData['isShowLight'] == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
 
                                                   </span>
-                                                  {fbData['ApproverData'] != undefined && fbData?.ApproverData.length > 0 && <span className='px-3'>
-                                                    <a
+                                                  {fbData['ApproverData'] != undefined && fbData?.ApproverData.length > 0 && 
+                                                  <>
+                                                    <a className='hreflink mt--2 mx-2'
                                                       onClick={() => this.ShowApprovalHistory(fbData, i, null)}
                                                     >Approved by -</a>
                                                     <img className="workmember" src={fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.ImageUrl}></img>
-                                                  </span>}
+                                                  </>}
                                                 </span>
 
                                                 : null
@@ -2135,9 +2136,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                         {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext']?.map((fbSubData: any, j: any) => {
                                           return <div className="col-sm-12 p-0 mb-2" style={{ width: '100%' }}>
                                             <div className='justify-content-between d-flex'>
-                                              <div className='m-0 pt-1'>
+                                              <div className='alignCenter m-0'>
                                                 {this.state.ApprovalStatus ?
-                                                  <span className="MR5">
+                                                  <span className="alignCenter">
                                                     <span title="Rejected"
                                                       onClick={() => this.changeTrafficLigthsubtext(i, j, "Reject")}
                                                       className={fbSubData.isShowLight == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
@@ -2152,12 +2153,12 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                       className={fbSubData?.isShowLight == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
 
                                                     </span>
-                                                    {fbSubData.ApproverData != undefined && fbSubData.ApproverData.length > 0 && <span className='px-3'>
-                                                      <a
+                                                    {fbSubData.ApproverData != undefined && fbSubData.ApproverData.length > 0 && <>
+                                                      <a className='hreflink mt--2 mx-2'
                                                         onClick={() => this.ShowApprovalHistory(fbSubData, i, j)}
                                                       >Approved by -</a>
                                                       <img className="workmember" src={fbSubData?.ApproverData[fbSubData?.ApproverData?.length - 1]?.ImageUrl}></img>
-                                                    </span>}
+                                                    </>}
                                                   </span>
                                                   : null
                                                 }
