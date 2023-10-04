@@ -3727,7 +3727,7 @@ const EditTaskPopup = (Items: any) => {
                         {SmartMedaDataUsedPanel == "Status" ? `Update Status` : `Select Category`}
                     </span>
                 </div>
-                <Tooltip ComponentId={SmartMedaDataUsedPanel == "Status" ? "1683" : "1735"} isServiceTask={ServicesTaskCheck} />
+                <Tooltip ComponentId={SmartMedaDataUsedPanel == "Status" ? "6840" : "1735"} isServiceTask={ServicesTaskCheck} />
             </div>
         );
     };
