@@ -1139,10 +1139,12 @@ const ProjectManagementMain = (props: any) => {
                 </section>
              
               </aside>
-              <div className="dashboard-content ps-2 full-width">
+              <div className="dashboard-contentbox ps-2 full-width">
                 <article className="row">
                   <div className="col-md-12">
-                    <section>
+                    <div className="row">
+                      <div className="col-md-9">
+                      <section>
                       <div>
                         <div className="align-items-center d-flex justify-content-between">
                           <div className="align-items-center d-flex">
@@ -1186,8 +1188,8 @@ const ProjectManagementMain = (props: any) => {
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </section>
+                         </div>
+                       </section>
                     <section>
                       <div>
                         <div className="row">
@@ -1315,6 +1317,38 @@ const ProjectManagementMain = (props: any) => {
                         </div>
                       </div>
                     </section>
+                      </div>
+                      <div className="col-md-3">
+                      <div>
+                <span>
+                  {QueryId && (
+                    <CommentCard
+                      AllListId={AllListId}
+                      Context={props.Context}
+                      siteUrl={props.siteUrl}
+                      listName={"Master Tasks"}
+                      itemID={QueryId}
+                    />
+                  )}
+                </span>
+                <span>
+                  {(QueryId != undefined && isSmartInfoAvailable) ?
+                    <SmartInformation
+                      AllListId={AllListId}
+                      listName={"Master Tasks"}
+                      Context={props?.Context}
+                      siteurl={props?.siteUrl}
+                      Id={QueryId}
+                      spPageContext={props?.Context?.pageContext?._web}
+                    /> : ""
+                  }
+                </span>
+              </div>
+
+
+                      </div>
+                
+                      </div>
                     <div>
                       {sidebarStatus.sideBarFilter ? (
                         <div className="text-end">
@@ -1362,31 +1396,7 @@ const ProjectManagementMain = (props: any) => {
                   </div>
                 </article>
               </div>
-              <div>
-                <span>
-                  {QueryId && (
-                    <CommentCard
-                      AllListId={AllListId}
-                      Context={props.Context}
-                      siteUrl={props.siteUrl}
-                      listName={"Master Tasks"}
-                      itemID={QueryId}
-                    />
-                  )}
-                </span>
-                <span>
-                  {(QueryId != undefined && isSmartInfoAvailable) ?
-                    <SmartInformation
-                      AllListId={AllListId}
-                      listName={"Master Tasks"}
-                      Context={props?.Context}
-                      siteurl={props?.siteUrl}
-                      Id={QueryId}
-                      spPageContext={props?.Context?.pageContext?._web}
-                    /> : ""
-                  }
-                </span>
-              </div>
+           
             </div>
           </div>
 
