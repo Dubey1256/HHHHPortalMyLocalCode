@@ -58,7 +58,7 @@ export default function ParentportfolioPage(props: any) {
             },
             {
                 accessorKey: "Item_x0020_Type",
-                placeholder: "Item_x0020_Type",
+                placeholder: "Item Type",
                 id:"Item_x0020_Type",
                 header: "",
                 size: 90,
