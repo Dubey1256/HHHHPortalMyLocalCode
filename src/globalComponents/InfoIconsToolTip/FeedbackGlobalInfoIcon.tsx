@@ -3,15 +3,15 @@ import { useEffect, useState } from 'react';
 const FeedbackGlobalInfoIcon = (props: any) => {
     const [resultData, setResultData] = React.useState<any>()
     useEffect(() => {
-        if (props != undefined) {
-            setResultData(props)
+        if (props?.FeedBack != undefined && props?.FeedBack.length > 0) {
+            setResultData(props?.FeedBack)
         }
     }, [props != undefined])
     return (
         <>
 
             <div className={"Addcomment " + "manage_gap"}>
-                {resultData?.FeedBack[0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
+                {resultData?.length > 0 && resultData?.map((fbData: any, i: any) => {
                     let userdisplay: any = [];
                     // userdisplay.push({ Title: props?.props?.userDisplayName })
 
@@ -27,12 +27,9 @@ const FeedbackGlobalInfoIcon = (props: any) => {
                         }
                         return (
                             <>
-                                <div>
+                                {props?.taskInfo ? <div>
 
                                     <div className="col mb-2">
-
-
-
                                         <div className="d-flex p-0 FeedBack-comment ">
                                             <div className="border p-1 me-1">
                                                 <span>{i + 1}.</span>
@@ -92,8 +89,7 @@ const FeedbackGlobalInfoIcon = (props: any) => {
                                                                                     <div><span dangerouslySetInnerHTML={{ __html: replymessage?.Title.replace(/\n/g, "<br />") }}></span></div>
                                                                                 </div>
                                                                             </div>
-
-                                                                        )
+                                                                         )
                                                                     })}
                                                                 </div>
                                                             </div>
@@ -187,10 +183,18 @@ const FeedbackGlobalInfoIcon = (props: any) => {
 
                                         </div>
                                     })}
+                                    </div> :
+                                    <div>
+                                        <div className='f-15 fw-bold'>
+                                            {fbData?.heading}
+                                        </div>
+                                        <div className='border p-1'>
+                                            <span dangerouslySetInnerHTML={{ __html: fbData?.Title?.replace(/\n/g, "<br />") }}></span>
+                                        </div>
 
+                                    </div>
 
-
-                                </div>
+                                }
 
 
                             </>

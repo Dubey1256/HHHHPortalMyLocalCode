@@ -385,6 +385,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       TaskId: taskDetails["TaskId"],
       TaskID: taskDetails["TaskID"],
       Title: taskDetails["Title"],
+      Item_x0020_Type: 'Task',
       DueDate: taskDetails["DueDate"],
       Categories: taskDetails["Categories"],
       Status: taskDetails["Status"],

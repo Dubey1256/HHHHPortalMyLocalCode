@@ -29,7 +29,7 @@ const TaggedComponentTask = (props: any) => {
             <div className="d-flex full-width pb-1">
                 <div className="subheading">
                     <span className="siteColor">
-                        Tagged Task - {props?.SelectedItem?.Title}
+                        Portfolio Task Tagging - {props?.SelectedItem?.Title}
                     </span>
                 </div>
             </div>
@@ -370,7 +370,7 @@ const TaggedComponentTask = (props: any) => {
                                             });
                                         });
                                     }
-                                    items.TaskID = globalCommon.GetOnlyAWTId(items);
+                                    items.TaskID = globalCommon.GetTaskId(items);
                                     if (items.Project) {
                                         items.ProjectTitle = items?.Project?.Title;
                                         items.ProjectId = items?.Project?.Id;

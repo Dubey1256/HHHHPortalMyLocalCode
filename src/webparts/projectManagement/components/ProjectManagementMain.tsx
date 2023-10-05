@@ -1,7 +1,7 @@
 import * as React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import InlineEditingcolumns from "../../projectmanagementOverviewTool/components/inlineEditingcolumns";
-import { FaSort, FaSortDown, FaSortUp, } from "react-icons/fa";
+import {  FaSort, FaSortDown, FaSortUp, } from "react-icons/fa";
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import { Web } from "sp-pnp-js";
 import EditProjectPopup from "../../projectmanagementOverviewTool/components/EditProjectPopup";
@@ -35,7 +35,7 @@ var AllListId: any = {};
 var backupAllTasks: any = [];
 var MasterListData: any = []
 let taskTaggedComponents: any = []
-let TaggedPortfoliosToProject: any = [];
+let TaggedPortfoliosToProject:any=[];
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
 const ProjectManagementMain = (props: any) => {
@@ -227,7 +227,7 @@ const ProjectManagementMain = (props: any) => {
               fetchedProject.DisplayDueDate = '';
             }
             TaggedPortfoliosToProject = fetchedProject?.PortfoliosId?.length > 0 ? fetchedProject?.PortfoliosId : [];
-
+           
             fetchedProject.taggedPortfolios = [];
             fetchedProject?.PortfoliosId?.map((item: any) => {
               MasterListData?.map((portfolio: any) => {
@@ -429,7 +429,7 @@ const ProjectManagementMain = (props: any) => {
             }
             if (items?.TaskCategories?.length > 0) {
               items.TaskTypeValue = items?.TaskCategories?.map((val: any) => val.Title).join(",")
-            }
+          }
             items.AllTeamMember = [];
             items.HierarchyData = [];
             items.descriptionsSearch = '';
@@ -478,7 +478,7 @@ const ProjectManagementMain = (props: any) => {
                 });
               });
             }
-            items.TaskID = globalCommon.GetOnlyAWTId(items);
+            items.TaskID = globalCommon.GetTaskId(items);
             AllUser?.map((user: any) => {
               if (user.AssingedToUserId == items.Author.Id) {
                 items.createdImg = user?.Item_x0020_Cover?.Url;
@@ -662,10 +662,10 @@ const ProjectManagementMain = (props: any) => {
       })
       TagPotfolioToProject();
     }
-    console.log(Masterdata)
-    setIsComponent(false);
-    setIsPortfolio(false);
-
+      console.log(Masterdata)
+      setIsComponent(false);
+      setIsPortfolio(false);
+    
   }, [])
 
   const column2 = React.useMemo<ColumnDef<any, unknown>[]>(
@@ -706,7 +706,7 @@ const ProjectManagementMain = (props: any) => {
                 {row?.original?.Title}
               </a>
               {row?.original?.Body !== null &&
-                row?.original?.Body != undefined ? (
+              row?.original?.Body != undefined ? (
                 <span className="alignIcon">
                   {" "}
                   <InfoIconsToolTip
@@ -729,16 +729,16 @@ const ProjectManagementMain = (props: any) => {
       {
         accessorFn: (row) => row?.TaskTypeValue,
         cell: ({ row }) => (
-          <>
-            <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content">{row?.original?.TaskTypeValue}</span></span>
-          </>
+            <>
+                <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content">{row?.original?.TaskTypeValue}</span></span>
+            </>
         ),
         placeholder: "Task Type",
         header: "",
         resetColumnFilters: false,
         size: 120,
         id: "TaskTypeValue",
-      },
+    },
       {
         accessorFn: (row) => row?.Site,
         cell: ({ row }) => (
@@ -807,10 +807,10 @@ const ProjectManagementMain = (props: any) => {
         ),
         id: 'DueDate',
         resetColumnFilters: false,
-        isColumnDefultSortingDesc: true,
+        isColumnDefultSortingDesc:true,
         resetSorting: false,
-        filterFn: (row: any, columnId: any, filterValue: any) => {
-          return row?.original?.DisplayDueDate?.includes(filterValue)
+        filterFn: (row:any, columnId:any, filterValue:any) => {
+          return  row?.original?.DisplayDueDate?.includes(filterValue)
         },
         placeholder: "Due Date",
         header: "",
@@ -915,10 +915,10 @@ const ProjectManagementMain = (props: any) => {
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "Created",
-        filterFn: (row: any, columnId: any, filterValue: any) => {
-          if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
-            return true
-          } else {
+        filterFn: (row:any, columnId:any, filterValue:any) => {
+          if(row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase())|| row?.original?.DisplayCreateDate?.includes(filterValue)){
+            return  true
+          }else{
             return false
           }
         },
@@ -1239,46 +1239,46 @@ const ProjectManagementMain = (props: any) => {
 
 
 
-                                  {
-                                    Masterdata?.Body != undefined ? <div className="mt-2 row pe-0 detailsbox">
-                                      <details className="pe-0" open>
-                                        <summary>Description</summary>
-                                        <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Body }}></div>
-                                      </details>
-                                    </div>
-                                      : ''
-                                  }
+                              {
+                                Masterdata?.Body != undefined ? <div className="mt-2 row pe-0 detailsbox">
+                                  <details className="pe-0" open>
+                                    <summary>Description</summary>
+                                    <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Body }}></div>
+                                  </details>
+                                </div>
+                                  : ''
+                              }
 
-                                  {
-                                    Masterdata?.Background != undefined ? <div className="mt-2 row pe-0 detailsbox">
-                                      <details className="pe-0">
-                                        <summary>Background</summary>
-                                        <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Background }}></div>
-                                        {/* <div className="AccordionContent">{Masterdata?.Background}</div> */}
-                                      </details>
-                                    </div> : ''
-                                  }
+                              {
+                                Masterdata?.Background != undefined ? <div className="mt-2 row pe-0 detailsbox">
+                                  <details className="pe-0">
+                                    <summary>Background</summary>
+                                    <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Background }}></div>
+                                    {/* <div className="AccordionContent">{Masterdata?.Background}</div> */}
+                                  </details>
+                                </div> : ''
+                              }
 
-                                  {
-                                    Masterdata?.Idea != undefined ? <div className="mt-2 row pe-0 detailsbox">
-                                      <details className="pe-0">
-                                        <summary>Idea</summary>
-                                        <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Idea }}></div>
-                                        {/* <div className="AccordionContent">{Masterdata?.Idea}</div> */}
-                                      </details>
-                                    </div> : ''
-                                  }
+                              {
+                                Masterdata?.Idea != undefined ? <div className="mt-2 row pe-0 detailsbox">
+                                  <details className="pe-0">
+                                    <summary>Idea</summary>
+                                    <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Idea }}></div>
+                                    {/* <div className="AccordionContent">{Masterdata?.Idea}</div> */}
+                                  </details>
+                                </div> : ''
+                              }
 
-                                  {
-                                    Masterdata?.Deliverables != undefined ? <div className="mt-2 row pe-0 detailsboxp 41_
+                              {
+                                Masterdata?.Deliverables != undefined ? <div className="mt-2 row pe-0 detailsboxp 41_
                                 0=][9\
                                 -p/\otyty5/">
-                                      <details className="pe-0">
-                                        <summary>Deliverables</summary>
-                                        <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Deliverables }}></div>
-                                      </details>
-                                    </div> : ''
-                                  }
+                                  <details className="pe-0">
+                                    <summary>Deliverables</summary>
+                                    <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Deliverables }}></div>
+                                  </details>
+                                </div> : ''
+                              }
 
                                 </div>
                               </div>
