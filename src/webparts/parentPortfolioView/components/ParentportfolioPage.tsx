@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Web } from "sp-pnp-js";
-import GlobalCommanTable from '../../../globalComponents/GlobalCommanTable';
+import GlobalCommanTable from "../../../globalComponents/GlobalCommanTable";
 import { ColumnDef } from "@tanstack/react-table"
 export default function ParentportfolioPage(props: any) {
     const [listData, setListData] = useState([])
@@ -46,7 +46,7 @@ export default function ParentportfolioPage(props: any) {
             },
             {
                 cell: (({ row }) => (
-                    <a target='_blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP//SitePages/Task-Profile.aspx?taskId=${row.original.Id}`}>
+                    <a data-interception="off" target='_blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP//SitePages/Portfolio-Profile.aspx?taskId=${row.original.Id}`}>
                         {row.original.Title}
                     </a>
                 )),
@@ -58,7 +58,7 @@ export default function ParentportfolioPage(props: any) {
             },
             {
                 accessorKey: "Item_x0020_Type",
-                placeholder: "Item_x0020_Type",
+                placeholder: "Item Type",
                 id:"Item_x0020_Type",
                 header: "",
                 size: 90,

@@ -205,11 +205,7 @@ function PortfolioTable(SelectedProp: any) {
       )
     );
     smartmetaDetails?.map((newtest: any) => {
-      if (
-        newtest.Title == "SDC Sites" ||
-        newtest.Title == "DRR" ||
-        newtest.Title == "Master Tasks"
-      )
+      if (newtest.Title == "SDC Sites" || newtest.Title == "DRR" || newtest.Title == "Offshore Tasks"  || newtest.Title == "Small Projects" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks" )
         newtest.DataLoadNew = false;
       else if (newtest.TaxType == "Sites") siteConfigSites.push(newtest);
     });
@@ -540,6 +536,9 @@ function PortfolioTable(SelectedProp: any) {
         "Item_x0020_Type",
         "Categories",
         "Short_x0020_Description_x0020_On",
+        "AdminNotes",
+        "TechnicalExplanations",
+        "Deliverables",
         "PriorityRank",
         "Priority",
         "AssignedTo/Title",
