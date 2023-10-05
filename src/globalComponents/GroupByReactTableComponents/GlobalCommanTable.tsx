@@ -105,7 +105,7 @@ export function Filter({
     const columnFilterValue = column.getFilterValue();
     // style={{ width: placeholder?.size }}
     return (
-        <input style={{ width: "100%" }} className="me-1 my-1 mx-1 on-search-cross"
+        <input style={{ width: "100%" }} className="m-1 ps-10 on-search-cross"
             // type="text"
             title={placeholder?.placeholder}
             type="search"
@@ -753,9 +753,10 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
     return (
         <>
-            {showHeader === true && <div className='tbl-headings justify-content-between mb-1 fixed-Header top-0' style={{ background: '#e9e9e9' }}>
+            {showHeader === true && <div className='tbl-headings justify-content-between fixed-Header top-0' style={{ background: '#e9e9e9' }}>
                 <span className='leftsec'>
-                    {showingAllPortFolioCount === true ? <div className='mb-1'>
+                    {showingAllPortFolioCount === true ? <div className='alignCenter mt--2'>
+                        <label>
                         <label style={{ color: `${portfolioColor}` }}>
                             Showing
                         </label>
@@ -767,8 +768,9 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                 </>
                             )
                         })}
-                        <span className="popover__wrapper ms-1" style={{ position: "unset" }} data-bs-toggle="tooltip" data-bs-placement="auto">
-                            <span className='svg__iconbox svg__icon--info alignIcon dark'></span>
+                        </label>
+                        <span className="popover__wrapper ms-1 mt--5" style={{ position: "unset" }} data-bs-toggle="tooltip" data-bs-placement="auto">
+                            <span className='svg__iconbox svg__icon--info alignIcon dark mt--2'></span>
                             <span className="popover__content mt-3 m-3 mx-3" style={{ zIndex: 100 }}>
                                 <label style={{ color: `${portfolioColor}` }}>
                                     Showing

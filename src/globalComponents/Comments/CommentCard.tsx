@@ -137,6 +137,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     Title = taskDetails["Title"];
     let tempTask = {
       ID: 'T' + taskDetails["ID"],
+      TaskId: globalCommon.GetTaskId(taskDetails),
       Title: taskDetails["Title"],
       DueDate: taskDetails["DueDate"] != null ? (new Date(taskDetails["DueDate"])).toLocaleDateString() : '',
       Categories: taskDetails["Categories"],
