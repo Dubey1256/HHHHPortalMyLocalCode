@@ -1262,7 +1262,7 @@ const ProjectManagementMain = (props: any) => {
                                             {Masterdata?.DisplayDueDate}
                                           </a>
                                         </span>
->>>>>>> d607d477256dc5bd18f14ea7c13dbb1f48daaf92
+
                                         <span
                                           className="pull-right"
                                           title="Edit Inline"
@@ -1472,11 +1472,11 @@ const ProjectManagementMain = (props: any) => {
                   </div>
                 </article>
               </div>
-<<<<<<< HEAD
+< HEAD
            
 =======
 
->>>>>>> d607d477256dc5bd18f14ea7c13dbb1f48daaf92
+>
             </div>
           </div>
           {IsPortfolio && (
