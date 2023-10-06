@@ -11,4 +11,6 @@ export interface IUserTimeEntryProps {
   TaskTimeSheet2ListID : "9ed5c649-3b4e-42db-a186-778ba43c5c93";
   siteUrl:any,
   MasterTaskListID: 'ec34b38f-0669-480a-910c-f84e92e58adf';
+  TimeEntry:any;
+  SiteCompostion:any;
 }
