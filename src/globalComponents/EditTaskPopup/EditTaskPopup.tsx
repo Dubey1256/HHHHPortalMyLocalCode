@@ -93,10 +93,10 @@ var TaskCreatorApproverBackupArray: any = [];
 var TaskApproverBackupArray: any = [];
 
 const EditTaskPopup = (Items: any) => {
-    const Context = Items.context;
-    const AllListIdData = Items.AllListId;
-    AllListIdData.listId = Items.Items.listId;
-    Items.Items.Id = Items.Items.ID;
+    const Context = Items?.context;
+    const AllListIdData = Items?.AllListId;
+    AllListIdData.listId = Items?.Items?.listId;
+    Items.Items.Id = Items?.Items?.ID;
     let ShareWebConfigData: any = [];
     const [TaskImages, setTaskImages] = useState([]);
     const [SmartMetaDataAllItems, setSmartMetaDataAllItems] = useState<any>([]);
