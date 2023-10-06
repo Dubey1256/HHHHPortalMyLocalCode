@@ -19,7 +19,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 import Loader from "react-loader";
-import { Bars } from 'react-loader-spinner'
+// import { Bars } from 'react-loader-spinner'
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 import SmartFilterSearchGlobal from "../../../globalComponents/SmartFilterGolobalBomponents/SmartFilterGlobalComponents";
@@ -257,7 +257,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 let AllTasksMatches: any = [];
                 AllTasksMatches = await web.lists
                     .getById(config.listId)
-                    .items.select("ParentTask/Title", "ParentTask/Id", "ItemRank","SiteCompositionSettings","TaskLevel", "OffshoreComments", "TeamMembers/Id", "ClientCategory/Id", "ClientCategory/Title",
+                    .items.select("ParentTask/Title", "ParentTask/Id","ClientTime", "ItemRank","SiteCompositionSettings","TaskLevel", "OffshoreComments", "TeamMembers/Id", "ClientCategory/Id", "ClientCategory/Title",
                         "TaskID", "ResponsibleTeam/Id", "ResponsibleTeam/Title", "ParentTask/TaskID", "TaskType/Level", "PriorityRank", "TeamMembers/Title", "FeedBack", "Title", "Id", "ID", "DueDate", "Comments", "Categories", "Status", "Body",
                         "PercentComplete", "ClientCategory", "Priority", "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/PortfolioStructureID", "Portfolio/Title",
                         "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId",
@@ -303,9 +303,9 @@ function TeamPortlioTable(SelectedProp: any) {
                             }
                             result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
                             result.chekbox = false;
-                            if (result?.Body != undefined) {
-                                result.descriptionsSearch = result?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
-                            }
+                           if (result?.FeedBack != undefined) {
+                    result.descriptionsSearch = JSON.parse(result?.FeedBack)
+                  }
                             try {
                                 if (result?.Comments != null && result?.Comments != undefined) {
                                     const cleanedComments = result?.Comments?.replace(/[^\x20-\x7E]/g, '');
