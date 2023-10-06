@@ -43,8 +43,6 @@ import EditSiteComposition from "./EditSiteComposition";
 import SmartTotalTime from './SmartTimeTotal';
 import "react-datepicker/dist/react-datepicker.css";
 import BackgroundCommentComponent from "./BackgroundCommentComponent";
-import { TooltipHost, ITooltipHostStyles } from '@fluentui/react/lib/Tooltip';
-import { useId } from '@fluentui/react-hooks';
 import context from "react-bootstrap/esm/AccordionContext";
 
 
@@ -2437,9 +2435,9 @@ const EditTaskPopup = (Items: any) => {
             // BasicImageInfo: UploadImageArray != undefined && UploadImageArray.length > 0 ? JSON.stringify(UploadImageArray) : JSON.stringify(UploadImageArray),
             ProjectId: (selectedProject.length > 0 ? selectedProject[0].Id : null),
             ApproverId: { "results": (ApproverIds != undefined && ApproverIds.length > 0) ? ApproverIds : [] },
-            ClientTime: JSON.stringify(ClientCategoryData),
-            ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] },
-            SiteCompositionSettings: (SiteCompositionSetting != undefined && SiteCompositionSetting.length > 0) ? JSON.stringify(SiteCompositionSetting) : EditData.SiteCompositionSettings,
+            // ClientTime: JSON.stringify(ClientCategoryData),
+            // ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] },
+            // SiteCompositionSettings: (SiteCompositionSetting != undefined && SiteCompositionSetting.length > 0) ? JSON.stringify(SiteCompositionSetting) : EditData.SiteCompositionSettings,
             ApproverHistory: ApproverHistoryData?.length > 0 ? JSON.stringify(ApproverHistoryData) : null,
             EstimatedTime: EditData.EstimatedTime ? EditData.EstimatedTime : null,
             EstimatedTimeDescription: EditData.EstimatedTimeDescriptionArray ? JSON.stringify(EditData.EstimatedTimeDescriptionArray) : null,
@@ -4540,7 +4538,7 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
 
                                     <div className="col-md-3">
-                                        {EditData.siteCompositionData != undefined && EditData.siteCompositionData.length > 0 && AllListIdData.isShowSiteCompostion ?
+                                        {AllListIdData.isShowSiteCompostion ?
                                             <div className="Sitecomposition mb-2">
                                                 <div className='dropdown'>
                                                     <a className="sitebutton bg-fxdark alignCenter justify-content-between" >
@@ -4552,10 +4550,10 @@ const EditTaskPopup = (Items: any) => {
                                                             onClick={() => setSiteCompositionShow(true)}>
                                                         </span>
                                                     </a>
-                                                    {composition ?
+                                                    {composition && EditData.siteCompositionData?.length > 0 ?
                                                         <div className="spxdropdown-menu">
                                                             <ul>
-                                                                {EditData.siteCompositionData != undefined && EditData.siteCompositionData.length > 0 ?
+                                                                {EditData.siteCompositionData != undefined && EditData.siteCompositionData?.length > 0 ?
                                                                     <>
                                                                         {EditData.siteCompositionData?.map((SiteDtls: any, i: any) => {
                                                                             return <li className="Sitelist">
@@ -5600,7 +5598,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
 
                                                 <div className="col-md-3">
-                                                    {EditData.siteCompositionData != undefined && EditData.siteCompositionData.length > 0 && AllListIdData.isShowSiteCompostion ?
+                                                    {AllListIdData.isShowSiteCompostion ?
                                                         <div className="Sitecomposition">
                                                             <div className='dropdown'>
                                                                 <a className="sitebutton bg-fxdark d-flex justify-content-between" >
@@ -5615,10 +5613,11 @@ const EditTaskPopup = (Items: any) => {
                                                                         ></span>
                                                                     </div>
                                                                 </a>
-                                                                {composition ?
+                                                                {composition && EditData.siteCompositionData?.length > 0 
+                                                                ?
                                                                     <div className="mt-1 spxdropdown-menu">
                                                                         <ul>
-                                                                            {EditData.siteCompositionData != undefined && EditData.siteCompositionData.length > 0 ?
+                                                                            {EditData.siteCompositionData != undefined && EditData.siteCompositionData?.length > 0 ?
                                                                                 <>
                                                                                     {EditData.siteCompositionData?.map((SiteDtls: any, i: any) => {
                                                                                         return <li className="Sitelist">
