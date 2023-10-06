@@ -413,7 +413,7 @@ function TeamPortlioTable(SelectedProp: any) {
         componentDetails = await web.lists
             .getById(ContextValue.MasterTaskListID)
             .items
-            .select("ID", "Id", "Title", "PortfolioLevel", "Sitestagging","PortfolioStructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title",
+            .select("ID", "Id", "Title", "PortfolioLevel", "Sitestagging","PortfolioStructureID",  "AdminNotes","TechnicalExplanations","Deliverables","Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title",
                 "DueDate", "Body", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
                 "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete",
                 "ResponsibleTeam/Id", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId",

@@ -35,7 +35,7 @@ export default function InfoIconsToolTip({ Discription, row }: any) {
             
            try {
                 let addToFeedbackArray=( value:any, heading:any)=> {
-                    if (value !== undefined) {
+                    if (value !== undefined && value != null) {
                       const obj = {
                         Title: value,
                         heading,
