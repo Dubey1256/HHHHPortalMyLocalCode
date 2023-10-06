@@ -216,10 +216,7 @@ const SmartTimeTotalFunction = (item: any) => {
                         <>
                           <tr className="for-c0l">
                             <td style={{ width: "20%" }}>
-                              <img
-                                className="workmember "
-                                src={items.AuthorImage}
-                              ></img>
+                              <img className='workmember ' src={items?.AuthorImage != undefined ? items?.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}></img>
                             </td>
                             <td style={{ width: "80%" }} colSpan={2}>
                               <span className="px-2">Total Time</span>
