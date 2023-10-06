@@ -76,7 +76,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       IsTask: '',
       IsMasterTask: '',
     }
-    this.GetResult();  
+    this.GetResult();
   }
   private SelectedProp = this.props;
   private BackupAllTimeEntry: any = [];
@@ -889,7 +889,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       if (confi['Sitee' + confi.Title].length > 7) {
         let objgre = {
           ListName: confi.CopyTitle,
-          ListId:confi.listId,
+          ListId: confi.listId,
           Query: this.SpiltQueryString(confi['Sitee' + confi.Title].slice(0, confi['Sitee' + confi.Title].length - 2))
           //requestcounter += objgre.Query.length;
         }
@@ -934,6 +934,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     return '';
   }
   private Call = (res: any) => {
+    this.updatefilter();
     this.setState({
       IsTask: '',
       IsMasterTask: ''
@@ -1029,7 +1030,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             filterItem.Created = getItem.Created;
             //filterItem.ListId = getItem.ListId
             filterItem.listId = getItem.listId
-            
+
             if (getItem.Portfolio != undefined) {
 
               filterItem.ComponentTitle = getItem.Portfolio?.Title;
@@ -1810,6 +1811,8 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     });
   };
   private EditPopup = (item: any) => {
+    item.Id = item?.TaskItemID;
+    item.ID = item?.TaskItemID
     this.setState({
       IsTask: item
     });

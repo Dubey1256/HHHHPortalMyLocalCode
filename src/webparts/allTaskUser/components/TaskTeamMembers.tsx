@@ -870,7 +870,10 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             taskItem: taskItem
         });
     }
-
+    private openOOTBFormInNewTab = () => {
+        const url = `${this.props.context.pageContext.web.absoluteUrl}/Lists/Task%20Users/DispForm.aspx?ID=${this.state.selTaskId}`;
+        window.open(url, '_blank');
+      };
     private onImageAdded(ev: React.ChangeEvent<HTMLInputElement>) {
 
         if (!ev.target.files || ev.target.files.length < 1) {
@@ -959,8 +962,16 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
 
         const elemSaveButton = (<PrimaryButton styles={controlStyles} onClick={this.onSaveTask} disabled={!this.state.enableSave}>Save</PrimaryButton>);
         const elemCancelButton = (<DefaultButton styles={controlStyles} onClick={this.onCancelTask}>Cancel</DefaultButton>);
-
-        const elemOOTBFormLink = (<Link href={`${this.props.context.pageContext.web.absoluteUrl}/Lists/Task%20Users/DispForm.aspx?ID=${this.state.selTaskId}`} target="_blank" className="openlink">Open out-of-the-box form</Link>);
+        const elemOOTBFormLink = (
+            <span
+              className="openlink"
+              onClick={this.openOOTBFormInNewTab}
+              style={{ cursor: 'pointer' }}
+            >
+              Open out-of-the-box form
+            </span>
+          );
+        //const elemOOTBFormLink = (<Link href={`${this.props.context.pageContext.web.absoluteUrl}/Lists/Task%20Users/DispForm.aspx?ID=${this.state.selTaskId}`} target="_blank" className="openlink">Open out-of-the-box form</Link>);
         const elemActionButons = (<div>
             <div className="text-end c-footer">
                 {this.state.selTaskId && elemOOTBFormLink}
