@@ -195,7 +195,7 @@ const EditTaskPopup = (Items: any) => {
         { value: 5, status: "5% Acknowledged", taskStatusComment: "Acknowledged" },
         { value: 10, status: "10% working on it", taskStatusComment: "working on it" }
     ]);
-    
+
     let FeedBackCount: any = 0;
     // const StatusArray = [
     //     { value: 0, status: "0% Not Started", taskStatusComment: "Not Started" },
@@ -4585,10 +4585,13 @@ const EditTaskPopup = (Items: any) => {
                                                             </ul>
                                                         </div> : null
                                                     }
-                                                    <div className="bg-e9 border-1 p-1 total-time">
-                                                        <label className="siteColor">Total Time</label>
-                                                        {EditData.Id != null ? <span className="pull-right siteColor"><SmartTotalTime props={EditData} callBack={SmartTotalTimeCallBack} /> h</span> : null}
-                                                    </div>
+                                                    {EditData.siteCompositionData?.length > 0 ?
+                                                        <div className="bg-e9 border-1 p-1 total-time">
+                                                            <label className="siteColor">Total Time</label>
+                                                            {EditData.Id != null ? <span className="pull-right siteColor"><SmartTotalTime props={EditData} callBack={SmartTotalTimeCallBack} /> h</span> : null}
+                                                        </div> : null
+                                                    }
+
                                                 </div>
                                             </div>
                                             : null}
@@ -5613,8 +5616,8 @@ const EditTaskPopup = (Items: any) => {
                                                                         ></span>
                                                                     </div>
                                                                 </a>
-                                                                {composition && EditData.siteCompositionData?.length > 0 
-                                                                ?
+                                                                {composition && EditData.siteCompositionData?.length > 0
+                                                                    ?
                                                                     <div className="mt-1 spxdropdown-menu">
                                                                         <ul>
                                                                             {EditData.siteCompositionData != undefined && EditData.siteCompositionData?.length > 0 ?
@@ -5649,10 +5652,12 @@ const EditTaskPopup = (Items: any) => {
                                                                         </ul>
                                                                     </div> : null
                                                                 }
-                                                                <div className="bg-e9 border-1 p-1 total-time">
-                                                                    <label className="siteColor">Total Time</label>
-                                                                    {EditData.Id != null ? <span className="pull-right siteColor"><SmartTotalTime props={EditData} callBack={SmartTotalTimeCallBack} /> h</span> : null}
-                                                                </div>
+                                                                {EditData.siteCompositionData?.length > 0 ?
+                                                                    <div className="bg-e9 border-1 p-1 total-time">
+                                                                        <label className="siteColor">Total Time</label>
+                                                                        {EditData.Id != null ? <span className="pull-right siteColor"><SmartTotalTime props={EditData} callBack={SmartTotalTimeCallBack} /> h</span> : null}
+                                                                    </div> : null
+                                                                }
                                                             </div>
                                                         </div>
                                                         : null}
