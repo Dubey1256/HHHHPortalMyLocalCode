@@ -1066,11 +1066,12 @@ const ProjectManagementMain = (props: any) => {
                       <li className="nav__item  pb-1 pt-0">
                         <div className="nav__text">
                           {Masterdata?.taggedPortfolios?.length > 0 || TaskTaggedPortfolios?.length > 0 ? (
-                            <ul className="nav__subList wrapper scrollbar pt-1 ps-0">
+                            <ul className="nav__subList wrapper mt-2 ps-0 pe-1">
                               {Masterdata?.taggedPortfolios?.map(
                                 (component: any, index: any) => {
                                   return (
-                                    <li className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "nav__item ps-1"}>
+                                    // <li className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1 bg-shade" : "nav__item ps-1"}>
+                                    <li className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1 mb-1 " : "nav__item ps-1 mb-1 bg-shade hreflink"}>
                                       <span>
                                         <a className={component?.Id == createTaskId?.portfolioData?.Id ? "hreflink " : "text-white hreflink"} data-interception="off" target="blank"
                                           onClick={() => filterPotfolioTasks(component, index, "Component")}>{component?.Title}</a>
@@ -1082,7 +1083,7 @@ const ProjectManagementMain = (props: any) => {
                               {TaskTaggedPortfolios?.map(
                                 (component: any, index: any) => {
                                   return (
-                                    <li className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "nav__item ps-1"} >
+                                    <li className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1 mb-1" : "nav__item ps-1 mb-1 bg-shade hreflink"} >
                                       <span>
                                         <a className={component?.Id == createTaskId?.portfolioData?.Id ? "hreflink " : "text-white hreflink"} data-interception="off" target="blank"
                                           onClick={() => filterPotfolioTasks(component, index, "taskComponent")}>{component?.Title}</a>
@@ -1109,46 +1110,24 @@ const ProjectManagementMain = (props: any) => {
                   <div className="col-md-12">
                     <div className="row">
                       <div className="col-md-9">
-<<<<<<< HEAD
-                      <section>
-                      <div>
-                        <div className="align-items-center d-flex justify-content-between">
-                          <div className="align-items-center d-flex">
-                            <h2 className="heading">
-                              <img
-                                className="circularImage rounded-circle "
-                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Icon_Project.png"
-                              />
-                              <>
-                                <a>{`${Masterdata?.PortfolioStructureID} - ${Masterdata?.Title}`} </a>
-                              </>
-                            </h2>
-                            <span
-                              onClick={() => EditComponentPopup(Masterdata)}
-                              className="mx-2 svg__iconbox svg__icon--edit"
-                              title="Edit Project"
-                            ></span>
-                          </div>
-=======
                         <section>
->>>>>>> d607d477256dc5bd18f14ea7c13dbb1f48daaf92
                           <div>
                             <div className="align-items-center d-flex justify-content-between">
-                              <div className="align-items-center d-flex">
+                              <div className="align-items-center">
                                 <h2 className="heading">
                                   <img
                                     className="circularImage rounded-circle "
                                     src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Icon_Project.png"
                                   />
                                   <>
-                                    <a>{`${Masterdata?.PortfolioStructureID} - ${Masterdata?.Title}`} </a>
-                                  </>
-                                </h2>
-                                <span
+                                    <a>{`${Masterdata?.PortfolioStructureID} - ${Masterdata?.Title}`} </a>   <span
                                   onClick={() => EditComponentPopup(Masterdata)}
                                   className="mx-2 svg__iconbox svg__icon--edit"
                                   title="Edit Project"
                                 ></span>
+                                  </>
+                                </h2>
+                              
                               </div>
                               <div>
                                 <div className="d-flex">
@@ -1179,74 +1158,6 @@ const ProjectManagementMain = (props: any) => {
                               </div>
                             </div>
                           </div>
-<<<<<<< HEAD
-                        </div>
-                         </div>
-                       </section>
-                    <section>
-                      <div>
-                        <div className="row">
-                          <div className="col-md-12 bg-white">
-                            <div className="team_member row  py-2">
-                              <div className="col-md-6  pe-0">
-                                <dl>
-                                  <dt className="bg-fxdark">Due Date</dt>
-                                  <dd className="bg-light">
-                                    <span>
-                                      <a>
-                                        {Masterdata?.DisplayDueDate}
-                                      </a>
-                                    </span>
-                                    <span
-                                      className="pull-right"
-                                      title="Edit Inline"
-                                      ng-click="EditContents(Task,'editableDueDate')"
-                                    >
-                                      <i
-                                        className="fa fa-pencil siteColor"
-                                        aria-hidden="true"
-                                      ></i>
-                                    </span>
-                                  </dd>
-                                </dl>
-                                <dl>
-                                  <dt className="bg-fxdark">Priority</dt>
-                                  <dd className="bg-light">
-                                    <a>
-                                      {Masterdata.Priority != null
-                                        ? Masterdata.Priority
-                                        : ""}
-                                    </a>
-                                    <span
-                                      className="hreflink pull-right"
-                                      title="Edit Inline"
-                                    >
-                                      <i
-                                        className="fa fa-pencil siteColor"
-                                        aria-hidden="true"
-                                      ></i>
-                                    </span>
-                                  </dd>
-                                </dl>
-                              </div>
-                              <div className="col-md-6 p-0">
-                                <dl>
-                                  <dt className="bg-fxdark">Assigned To</dt>
-                                  <dd className="bg-light">
-                                    {Masterdata?.AssignedTo?.length > 0 || Masterdata?.TeamMembers?.length > 0 || Masterdata?.ResponsibleTeam?.length > 0 ? <ShowTaskTeamMembers props={Masterdata} TaskUsers={AllTaskUsers} /> : ''}
-                                  </dd>
-                                </dl>
-                                <dl>
-                                  <dt className="bg-fxdark">Status</dt>
-                                  <dd className="bg-light">
-                                    <a>
-                                      {Masterdata.PercentComplete != null
-                                        ? getPercentCompleteTitle(Masterdata.PercentComplete)
-                                        : ""}
-                                    </a>
-                                    <span className="pull-right">
-                                      <span className="pencil_icon">
-=======
                         </section>
                         <section>
                           <div>
@@ -1262,7 +1173,6 @@ const ProjectManagementMain = (props: any) => {
                                             {Masterdata?.DisplayDueDate}
                                           </a>
                                         </span>
-
                                         <span
                                           className="pull-right"
                                           title="Edit Inline"
@@ -1404,44 +1314,8 @@ const ProjectManagementMain = (props: any) => {
                           </span> */}
                         </div>
                       </div>
-<<<<<<< HEAD
-                    </section>
-                      </div>
-                      <div className="col-md-3">
-                      <div>
-                <span>
-                  {QueryId && (
-                    <CommentCard
-                      AllListId={AllListId}
-                      Context={props.Context}
-                      siteUrl={props.siteUrl}
-                      listName={"Master Tasks"}
-                      itemID={QueryId}
-                    />
-                  )}
-                </span>
-                <span>
-                  {(QueryId != undefined && isSmartInfoAvailable) ?
-                    <SmartInformation
-                      AllListId={AllListId}
-                      listName={"Master Tasks"}
-                      Context={props?.Context}
-                      siteurl={props?.siteUrl}
-                      Id={QueryId}
-                      spPageContext={props?.Context?.pageContext?._web}
-                    /> : ""
-                  }
-                </span>
-              </div>
-
-
-                      </div>
-                
-                      </div>
-=======
                     </div>
 
->>>>>>> d607d477256dc5bd18f14ea7c13dbb1f48daaf92
                     <div>
                       {/* {sidebarStatus.sideBarFilter ? (
                         <div className="text-end">
@@ -1472,11 +1346,7 @@ const ProjectManagementMain = (props: any) => {
                   </div>
                 </article>
               </div>
-< HEAD
-           
-=======
 
->
             </div>
           </div>
           {IsPortfolio && (
