@@ -57,7 +57,7 @@ const CreateWS = (props: any) => {
     const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
     const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
     const [SharewebCategory, setSharewebCategory] = React.useState('');
-    const [SharewebTask, setSharewebTask] = React.useState<any>('');
+    const [SharewebTask, setSharewebTask] = React.useState<any>();
     const [PriorityTask, setPriorityTask] = React.useState<any>('');
     const [IsComponent, setIsComponent] = React.useState(false);
     const [date, setDate] = React.useState(undefined);
@@ -466,7 +466,7 @@ return new Promise<void>((resolve, reject) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon;
                 res.data['listId'] = AllItems.listId;
                 res.data['SharewebTaskType'] = { Title: 'Workstream' };
-                res.data['TaskType'] = { 'Id': res.data?.TaskTypeId,'Title': 'Workstream'  };
+                res.data['TaskType'] = { 'Id': res.data?.TaskTypeId };
                 res.data['listId'] = AllItems.listId;
                 res.data['Shareweb_x0020_ID'] = SharewebID;
                 res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0] : null;
@@ -509,15 +509,16 @@ return new Promise<void>((resolve, reject) => {
                 res.data['Shareweb_x0020_ID'] = SharewebID;
                 if (SelectedTasks != undefined && SelectedTasks.length > 0)
                     setIsPopupComponent(true);
+                    setSharewebTask(res.data);
+                    closeTaskStatusUpdatePoup(res);
                 resolve(res)
-                setSharewebTask(res.data);
-                closeTaskStatusUpdatePoup(res);
+              
+               
             }
             else {
                 res.data['SiteIcon'] = AllItems.SiteIcon;
                 res.data['listId'] = AllItems.listId;
                 res.data['SharewebTaskType'] = { Title: 'Workstream' };
-                res.data['TaskType'] = { 'Id': res.data?.TaskTypeId,'Title': 'Workstream'  };
                 res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : null,
                     res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0] : null;
                 res.data['siteType'] = AllItems.siteType;
@@ -872,57 +873,7 @@ return new Promise<void>((resolve, reject) => {
                     })
                 }
        }
-        // if (isDropItemRes == true) {
-        //     if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
-        //         TaskAssignedTo.map((taskInfo: any) => {
-        //             AssignedToIds.push(taskInfo.Id);
-        //             AssignedToUser.push(taskInfo);
-        //         })
-        //     }
-        // }
-        // else{
-        //     if(AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length > 0) {
-        //         AllItems.AssignedTo.forEach((obj: any) => {
-        //             AssignedToIds.push(obj.Id);
-        //             AssignedToUser.push(obj);
-    
-        //         })
-        //     }
-        // } 
-       
-     
-        // if (isDropItem == true) {
-        //     if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
-        //         TaskTeamMembers?.map((taskInfo: any) => {
-        //             TeamMemberIds.push(taskInfo.Id);
-        //             AllTeamMembers.push(taskInfo);
-
-        //         })
-        //     }
-        // }
-        // else{
-        //     if (AllItems?.TeamMembers != undefined && AllItems?.TeamMembers?.length > 0) {
-        //         AllItems?.TeamMembers.forEach((obj: any) => {
-        //             TeamMemberIds.push(obj.Id);
-        //             AllTeamMembers.push(obj);
-    
-        //         })
-        //     }
-        // }
-        // if (AllItems?.TeamLeader != undefined && AllItems?.TeamLeader?.length > 0) {
-        //     AllItems?.TeamLeader?.forEach((obj: any) => {
-        //         ResponsibleTeamIds.push(obj.Id);
-        //         TeamLeaderws.push(obj)
-        //     })
-        // }
-        // if (isDropItem == true) {
-        //     if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
-        //         TaskResponsibleTeam?.map((taskInfo: any) => {
-        //             ResponsibleTeamIds.push(taskInfo.Id);
-        //             TeamLeaderws.push(taskInfo)
-        //         })
-        //     }
-        // }
+        
         if (props?.props != undefined && props?.props?.ClientCategory?.length > 0) {
             if (props?.props?.ClientCategory2 != undefined && props?.props?.ClientCategory2?.results?.length > 0) {
                 props?.props?.ClientCategory2?.results?.map((items: any) => {
@@ -938,8 +889,20 @@ return new Promise<void>((resolve, reject) => {
 
 
         }
-
-
+       let FeedBackItemArrayNew:any=[];
+        if (item.Description != undefined) {
+            let param: any = Moment(new Date().toLocaleString())
+            let FeedBackItem: any = {};
+            FeedBackItem['Title'] = "FeedBackPicture" + param;
+            FeedBackItem['FeedBackDescriptions'] = [];
+            FeedBackItem.FeedBackDescriptions = [{
+                'Title': item.Description
+            }]
+            FeedBackItem['ImageDate'] = "" + param;
+            FeedBackItem['Completed'] = '';
+            if (FeedBackItem != undefined && FeedBackItem.length > 1)
+                FeedBackItemArrayNew.push(FeedBackItem)
+        }
 
         await web.lists.getById(AllItems.listId).items.add({
             Title: postData.Title != '' && postData.Title != undefined ? postData.Title : AllItems.Title,
@@ -951,9 +914,10 @@ return new Promise<void>((resolve, reject) => {
             ParentTaskId: AllItems.Id,
             TaskTypeId: SharewebTasknewTypeId,
             ItemRank:ItemRank,
+            Body:item.Description,
             //ParentTaskId :portFolio,
             Priority: PriorityTask != undefined && PriorityTask != ''? PriorityTask:AllItems.Priority,
-            Body: AllItems.Description,
+            FeedBack:FeedBackItemArrayNew!=null?JSON.stringify(FeedBackItemArrayNew):null ,
             // DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
             DueDate: myDate.editDate = myDate.editDate ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy") : null,
             ClientCategoryId: { "results": InheritClientCategory },
@@ -972,7 +936,7 @@ return new Promise<void>((resolve, reject) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
-                res.data['TaskType'] = { 'Id': res.data?.TaskTypeId,'Title': 'Workstream'  };
+                res.data['TaskType'] = { 'Id': res.data?.TaskTypeId };
                 res.data['listId'] = AllItems.listId
                 res.data['Shareweb_x0020_ID'] = SharewebID;
                 res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0] : null
@@ -1001,7 +965,6 @@ return new Promise<void>((resolve, reject) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
-                res.data['TaskType'] = { 'Id': res.data?.TaskTypeId,'Title': 'Workstream'  };
                 res.data['Shareweb_x0020_ID'] = SharewebID;
                 res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0] : null
                 res.data['Portfolio'] = { 'Id': portFolio };
@@ -1169,22 +1132,22 @@ return new Promise<void>((resolve, reject) => {
         if(AssignMembers?.TeamMemberUsers != undefined && AssignMembers.TeamMemberUsers.length>0){
             AssignMembers.TeamMemberUsers.map((taskInfo: any) => {
                 TeamMemberIds.push(taskInfo.AssingedToUserId);
-                AllTeamMembers.push(taskInfo);
+                AllTeamMembers.push(taskInfo.AssingedToUser);
             })
            }
            if(AssignMembers?.ResponsibleTeam != undefined && AssignMembers?.ResponsibleTeam.length>0){
             AssignMembers.ResponsibleTeam.map((taskInfo: any) => {
                 ResponsibleTeamIds.push(taskInfo.AssingedToUserId);
-                TeamLeaderws.push(taskInfo)
+                TeamLeaderws.push(taskInfo.AssingedToUser)
             })
            }
            if(AssignMembers?.AssignedTo != undefined && AssignMembers?.AssignedTo.length>0){
             AssignMembers.AssignedTo.map((taskInfo: any) => {
                 AssignedToIds.push(taskInfo.AssingedToUserId);
-                AssignedToUser.push(taskInfo);
+                AssignedToUser.push(taskInfo.AssingedToUser);
             })
            }
-           if(AssignMembers.length == 0){
+           if(AssignMembers?.length == 0){
             if (AllItems?.TeamMembers != undefined && AllItems?.TeamMembers?.length > 0) {
                         AllItems?.TeamMembers.forEach((obj: any) => {
                             TeamMemberIds.push(obj.Id);
