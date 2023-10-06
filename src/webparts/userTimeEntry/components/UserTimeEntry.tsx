@@ -1014,7 +1014,15 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             getItem['siteType'] = filterItem.siteType;
 
             filterItem.CategoryParentId = 0;
-            filterItem.ClientCategory = getItem.ClientCategory;
+            let cate = '';
+            if (getItem?.ClientCategory != undefined && getItem?.ClientCategory?.length > 0) {
+              getItem?.ClientCategory.forEach(function (category: any) {
+                if (category != undefined && category?.Title != undefined)
+                  cate += category?.Title + '; ';
+              })
+            }
+            filterItem.ClientCategory = cate
+            //  filterItem.ClientCategory = getItem.ClientCategory;
             // getItem?.ClientCategory.forEach(function (client: any, index: any) {
             //   if (!this.isExistsclient(filterItem?.ClientCategory, client?.Id))
             //     filterItem.clientCategory += client.Title + '; ';
@@ -2140,13 +2148,13 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                 </Row>
                 <Row className='ps-30 mt-2'>
                   <div className="col">
-                    <label ng-required="true" className="full_width ng-binding" ng-bind-html="GetColumnDetails('StartDate') | trustedHTML">Start Date</label>
+                    <label>Start Date</label>
                     <span style={{ display: 'inline-block' }}>
                       <DatePicker selected={this.state.startdate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setStartDate(date)} className="full-width" />
                     </span>
                   </div>
                   <div className="col">
-                    <label ng-required="true" className="full_width ng-binding" ng-bind-html="GetColumnDetails('EndDate') | trustedHTML" >End Date</label>
+                    <label>End Date</label>
                     <span style={{ display: 'inline-block' }}>
                       <DatePicker selected={this.state.enddate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setEndDate(date)} className="full-width" />
                     </span>
