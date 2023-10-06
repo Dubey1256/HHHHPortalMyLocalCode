@@ -284,7 +284,7 @@ const TaggedComponentTask = (props: any) => {
                 resetSorting: false,
                 resetColumnFilters: false,
                 placeholder: "",
-                size: 55
+                size: 30
             }
         ],
         [data]
@@ -493,6 +493,7 @@ const TaggedComponentTask = (props: any) => {
                 isOpen={true}
                 onDismiss={() => callBack()}
                 isBlocking={false}>
+              
                 <CreateTaskFromProject
                     projectItem={props?.projectItem}
                     SelectedProp={props?.SelectedProp}
@@ -500,11 +501,12 @@ const TaggedComponentTask = (props: any) => {
                     projectId={props?.projectItem?.Id}
                     callBack={CreateTask}
                     createComponent={props?.createComponent}
-                />
-
+                />     
+                 <div className="Alltable">
                 {AllSiteTasks && <GlobalCommanTable AllListId={props?.AllListId} headerOptions={headerOptions} columns={column2} data={AllSiteTasks} callBackData={callBackData} TaskUsers={props?.AllUser} showHeader={true} />}
                 <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1} color={portfolioColor ? portfolioColor : "#000066"}
                     speed={2} trail={60} shadow={false} hwaccel={false} className="spinner" zIndex={2e9} top="28%" left="50%" scale={1.0} loadedClassName="loadedContent" />
+                    </div>
                 <div className="text-end mt-3">
                     <button className="btn btn-default" onClick={() => callBack()}>Cancel</button>
                 </div>
