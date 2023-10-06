@@ -945,18 +945,22 @@ return new Promise<void>((resolve, reject) => {
                     res.data['siteType'] = AllItems.siteType
 
                 res.data.ClientCategory = clientcaterogiesdata2,
+                res.data.listName=AllItems.siteType,
+                res.data.listId= AllItems?.listId,
                 // CreateDate= new Date()
                 // res.data.Created = moment(CreateDate).format("DD/MM/YYYY");
                 res.data.Author = {
                     Id: res?.data?.AuthorId
                 }
+                res.data['AllListId']=dynamicList 
                 res.data.TeamMembers = AllTeamMembers?.length > 0 ? AllTeamMembers : []
                 res.data.ResponsibleTeam = TeamLeaderws?.length > 0 ? TeamLeaderws : []
                 res.data.AssignedTo = AssignedToUser?.length > 0 ? AssignedToUser : []
                 res.Item_x0020_Type = ""
-               
-                setIsPopupComponent(true)
+              
                 setSharewebTask(res.data)
+                setIsPopupComponent(true)
+                
                 closeTaskStatusUpdatePoup(res);
                 
             }
