@@ -10,7 +10,6 @@ import ImageUploading, { ImageListType } from "react-images-uploading";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/js/dist/modal.js";
 import ServiceComponentPortfolioPopup from './ServiceComponentPortfolioPopup';
-import axios, { AxiosResponse } from 'axios';
 import "bootstrap/js/dist/tab.js";
 import "bootstrap/js/dist/carousel.js";
 import CommentCard from "../../globalComponents/Comments/CommentCard";
@@ -94,10 +93,10 @@ var TaskCreatorApproverBackupArray: any = [];
 var TaskApproverBackupArray: any = [];
 
 const EditTaskPopup = (Items: any) => {
-    const Context = Items.context;
-    const AllListIdData = Items.AllListId;
-    AllListIdData.listId = Items.Items.listId;
-    Items.Items.Id = Items.Items.ID;
+    const Context = Items?.context;
+    const AllListIdData = Items?.AllListId;
+    AllListIdData.listId = Items?.Items?.listId;
+    Items.Items.Id = Items?.Items?.ID;
     let ShareWebConfigData: any = [];
     const [TaskImages, setTaskImages] = useState([]);
     const [SmartMetaDataAllItems, setSmartMetaDataAllItems] = useState<any>([]);
@@ -198,9 +197,7 @@ const EditTaskPopup = (Items: any) => {
         { value: 5, status: "5% Acknowledged", taskStatusComment: "Acknowledged" },
         { value: 10, status: "10% working on it", taskStatusComment: "working on it" }
     ]);
-    const hostStyles: Partial<ITooltipHostStyles> = { root: { display: 'inline-block' } };
-    const buttonId = useId(`callout-button`);
-    const calloutProps = { gapSpace: 0 };
+    
     let FeedBackCount: any = 0;
     // const StatusArray = [
     //     { value: 0, status: "0% Not Started", taskStatusComment: "Not Started" },
@@ -3727,7 +3724,7 @@ const EditTaskPopup = (Items: any) => {
                         {SmartMedaDataUsedPanel == "Status" ? `Update Status` : `Select Category`}
                     </span>
                 </div>
-                <Tooltip ComponentId={SmartMedaDataUsedPanel == "Status" ? "1683" : "1735"} isServiceTask={ServicesTaskCheck} />
+                <Tooltip ComponentId={SmartMedaDataUsedPanel == "Status" ? "6840" : "1735"} isServiceTask={ServicesTaskCheck} />
             </div>
         );
     };
@@ -4353,7 +4350,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 return (
                                                                                     <div className={index + 1 == ApproverHistoryData.length - 1 ? "alignCenter full-width justify-content-between py-1" : "alignCenter  border-bottom full-width justify-content-between py-1"}>
                                                                                         <div className="alignCenter">
-                                                                                            Pre-Approver |
+                                                                                            Prev-Approver |
                                                                                             <img title={HistoryData.ApproverName} className="workmember ms-1" src={HistoryData?.ApproverImage?.length > 0 ? HistoryData?.ApproverImage : ""} />
                                                                                         </div>
                                                                                         <div>
@@ -5413,7 +5410,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                             return (
                                                                                                 <div className={index + 1 == ApproverHistoryData.length - 1 ? "alignCenter full-width justify-content-between py-1" : "alignCenter border-bottom full-width justify-content-between py-1"}>
                                                                                                     <div className="alignCenter">
-                                                                                                        Pre-Approver |
+                                                                                                        Prev-Approver |
                                                                                                         <img title={HistoryData.ApproverName} className="workmember ms-1" src={HistoryData?.ApproverImage?.length > 0 ? HistoryData?.ApproverImage : ""} />
                                                                                                     </div>
                                                                                                     <div>

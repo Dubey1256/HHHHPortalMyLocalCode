@@ -1066,11 +1066,12 @@ const ProjectManagementMain = (props: any) => {
                       <li className="nav__item  pb-1 pt-0">
                         <div className="nav__text">
                           {Masterdata?.taggedPortfolios?.length > 0 || TaskTaggedPortfolios?.length > 0 ? (
-                            <ul className="nav__subList wrapper scrollbar pt-1 ps-0">
+                            <ul className="nav__subList wrapper mt-2 ps-0 pe-1">
                               {Masterdata?.taggedPortfolios?.map(
                                 (component: any, index: any) => {
                                   return (
-                                    <li className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "nav__item ps-1"}>
+                                    // <li className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1 bg-shade" : "nav__item ps-1"}>
+                                    <li className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1 mb-1 " : "nav__item ps-1 mb-1 bg-shade hreflink"}>
                                       <span>
                                         <a className={component?.Id == createTaskId?.portfolioData?.Id ? "hreflink " : "text-white hreflink"} data-interception="off" target="blank"
                                           onClick={() => filterPotfolioTasks(component, index, "Component")}>{component?.Title}</a>
@@ -1082,7 +1083,7 @@ const ProjectManagementMain = (props: any) => {
                               {TaskTaggedPortfolios?.map(
                                 (component: any, index: any) => {
                                   return (
-                                    <li className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "nav__item ps-1"} >
+                                    <li className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1 mb-1" : "nav__item ps-1 mb-1 bg-shade hreflink"} >
                                       <span>
                                         <a className={component?.Id == createTaskId?.portfolioData?.Id ? "hreflink " : "text-white hreflink"} data-interception="off" target="blank"
                                           onClick={() => filterPotfolioTasks(component, index, "taskComponent")}>{component?.Title}</a>
@@ -1112,21 +1113,21 @@ const ProjectManagementMain = (props: any) => {
                         <section>
                           <div>
                             <div className="align-items-center d-flex justify-content-between">
-                              <div className="align-items-center d-flex">
+                              <div className="align-items-center">
                                 <h2 className="heading">
                                   <img
                                     className="circularImage rounded-circle "
                                     src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Icon_Project.png"
                                   />
                                   <>
-                                    <a>{`${Masterdata?.PortfolioStructureID} - ${Masterdata?.Title}`} </a>
-                                  </>
-                                </h2>
-                                <span
+                                    <a>{`${Masterdata?.PortfolioStructureID} - ${Masterdata?.Title}`} </a>   <span
                                   onClick={() => EditComponentPopup(Masterdata)}
                                   className="mx-2 svg__iconbox svg__icon--edit"
                                   title="Edit Project"
                                 ></span>
+                                  </>
+                                </h2>
+                              
                               </div>
                               <div>
                                 <div className="d-flex">

@@ -25,18 +25,17 @@ import GlobalCommanTable, {
 } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import PageLoader from "../../../globalComponents/pageLoader";
-
-
 import CreateActivity from "../../servicePortfolio/components/CreateActivity";
-
-import CreateWS from "../../servicePortfolio/components/CreateWS";
+import CreateWS from '../../servicePortfolio/components/CreateWS';
 //import RestructuringCom from "../../../globalComponents/Restructuring/RestructuringCom";
 var filt: any = "";
 var ContextValue: any = {};
 let globalFilterHighlited: any;
+let AllSiteTasksData: any = [];
 let isUpdated: any = "";
 let componentData: any = [];
 let childRefdata: any;
+let timeSheetConfig: any = {}
 let portfolioColor: any = "";
 let ProjectData: any = [];
 let copyDtaArray: any = [];
@@ -44,6 +43,7 @@ let renderData: any = [];
 let countAllTasksData: any = [];
 let countAllComposubData: any = [];
 let countsrun = 0;
+let TimesheetData: any = [];
 function PortfolioTable(SelectedProp: any) {
   const childRef = React.useRef<any>();
   if (childRef != null) {
@@ -104,10 +104,18 @@ function PortfolioTable(SelectedProp: any) {
   let props = undefined;
   let AllTasks: any = [];
   let AllComponetsData: any = [];
-  let AllSiteTasksData: any = [];
+
   let TaskUsers: any = [];
   let TasksItem: any = [];
-  //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  // Load all time entry for smart time 
+
+
+
+
+  // load all time entry end  
+
   const getTaskUsers = async () => {
     let web = new Web(ContextValue.siteUrl);
     let taskUsers = [];
@@ -185,6 +193,7 @@ function PortfolioTable(SelectedProp: any) {
         "SmartSuggestions",
         "TaxType",
         "Description1",
+        "Configurations",
         "Item_x005F_x0020_Cover",
         "listId",
         "siteName",
@@ -212,6 +221,9 @@ function PortfolioTable(SelectedProp: any) {
       )
         newtest.DataLoadNew = false;
       else if (newtest.TaxType == "Sites") siteConfigSites.push(newtest);
+      if (newtest?.TaxType == 'timesheetListConfigrations') {
+        timeSheetConfig = newtest;
+      }
     });
     if (siteConfigSites?.length > 0) {
       setSiteConfig(siteConfigSites);
@@ -261,6 +273,7 @@ function PortfolioTable(SelectedProp: any) {
       console.error("Error fetching portfolio icons:", error);
     }
   };
+
   const LoadAllSiteTasks = async function () {
     let AllTasksData: any = [];
     let Counter = 0;
@@ -282,7 +295,6 @@ function PortfolioTable(SelectedProp: any) {
             "ClientCategory/Id",
             "ClientCategory/Title",
             "TaskID",
-           "SiteCompositionSettings",
             "Created",
             "ResponsibleTeam/Id",
             "ResponsibleTeam/Title",
@@ -294,11 +306,13 @@ function PortfolioTable(SelectedProp: any) {
             "Title",
             "Id",
             "ID",
+            "ClientTime",
             "DueDate",
             "Comments",
             "Categories",
             "Status",
             "Body",
+            "SiteCompositionSettings",
             "PercentComplete",
             "ClientCategory",
             "Priority",
@@ -378,7 +392,7 @@ function PortfolioTable(SelectedProp: any) {
                   result.chekbox = false;
                   result.descriptionsSearch = "";
                   result.commentsSearch = "";
-                  
+
                   result.DueDate = Moment(result.DueDate).format("DD/MM/YYYY");
                   result.DisplayDueDate = Moment(result.DueDate).format("DD/MM/YYYY");
                   if (result.DisplayDueDate == "Invalid date" || "") {
@@ -398,11 +412,8 @@ function PortfolioTable(SelectedProp: any) {
                     result.PercentComplete * 100
                   ).toFixed(0);
                   result.chekbox = false;
-                  if (result?.Body != undefined) {
-                    result.descriptionsSearch = result?.Body.replace(
-                      /(<([^>]+)>)/gi,
-                      ""
-                    ).replace(/\n/g, "");
+                  if (result?.FeedBack != undefined) {
+                    result.descriptionsSearch = JSON.parse(result?.FeedBack)
                   }
                   if (result?.Comments != null) {
                     result.commentsSearch = result?.Comments.replace(
@@ -504,6 +515,56 @@ function PortfolioTable(SelectedProp: any) {
       }
     }
   };
+  const timeEntryIndex: any = {};
+  const smartTimeTotal = async () => {
+    let AllTimeEntries = [];
+    if (timeSheetConfig?.Id !== undefined) {
+      AllTimeEntries = await globalCommon.loadAllTimeEntry(timeSheetConfig);
+    }
+    AllTimeEntries?.forEach((entry: any) => {
+      siteConfig.forEach((site) => {
+        const taskTitle = `Task${site.Title}`;
+        const key = taskTitle + entry[taskTitle]?.Id
+        if (entry.hasOwnProperty(taskTitle) && entry.AdditionalTimeEntry !== null && entry.AdditionalTimeEntry !== undefined) {
+          if (entry[taskTitle].Id === 168) {
+            console.log(entry[taskTitle].Id);
+
+          }
+          const additionalTimeEntry = JSON.parse(entry.AdditionalTimeEntry);
+          let totalTaskTime = additionalTimeEntry?.reduce((total: any, time: any) => total + parseFloat(time.TaskTime), 0);
+
+          if (timeEntryIndex.hasOwnProperty(key)) {
+            timeEntryIndex[key].TotalTaskTime += totalTaskTime
+          } else {
+            timeEntryIndex[`${taskTitle}${entry[taskTitle]?.Id}`] = {
+              ...entry[taskTitle],
+              TotalTaskTime: totalTaskTime,
+              siteType: site.Title,
+            };
+          }
+        }
+      });
+    });
+    AllSiteTasksData?.map((task: any) => {
+      task.TotalTaskTime = 0;
+      const key = `Task${task?.siteType + task.Id}`;
+      if (timeEntryIndex.hasOwnProperty(key) && timeEntryIndex[key]?.Id === task.Id && timeEntryIndex[key]?.siteType === task.siteType) {
+        task.TotalTaskTime = timeEntryIndex[key]?.TotalTaskTime;
+      }
+    })
+    if (timeEntryIndex) {
+      const dataString = JSON.stringify(timeEntryIndex);
+      localStorage.setItem('timeEntryIndex', dataString);
+    }
+    console.log("timeEntryIndex", timeEntryIndex)
+    if (AllSiteTasksData?.length > 0) {
+      portfolioTypeData.forEach((port, index) => {
+        componentGrouping(port?.Id, index);
+        countsrun++;
+      });
+    }
+    return AllSiteTasksData;
+  };
 
   const GetComponents = async () => {
     if (portfolioTypeData.length > 0) {
@@ -551,9 +612,9 @@ function PortfolioTable(SelectedProp: any) {
         "ResponsibleTeam/Id",
         "Author/Id",
         "Author/Title",
+        "Sitestagging",
         "ResponsibleTeam/Title",
         "PortfolioType/Id",
-        "Sitestagging",
         "PortfolioType/Color",
         "PortfolioType/IdRange",
         "PortfolioType/Title",
@@ -705,6 +766,8 @@ function PortfolioTable(SelectedProp: any) {
       executeOnce();
     }
   };
+
+
   React.useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     let query = params.get("PortfolioType");
@@ -838,6 +901,7 @@ function PortfolioTable(SelectedProp: any) {
       temp.ProjectTitle = "";
       temp.Status = "";
       temp.Author = "";
+      temp.TitleNew = "";
       temp.subRows = AllSiteTasksData?.filter(
         (elem1: any) =>
           elem1?.TaskType?.Id != undefined &&
@@ -1120,7 +1184,7 @@ function PortfolioTable(SelectedProp: any) {
                       searchTerm={
                         column.getFilterValue() != undefined
                           ? column.getFilterValue()
-                          : globalFilterHighlited
+                          : childRef?.current?.globalFilter
                       }
                     />
                   </a>
@@ -1150,7 +1214,7 @@ function PortfolioTable(SelectedProp: any) {
                       searchTerm={
                         column.getFilterValue() != undefined
                           ? column.getFilterValue()
-                          : globalFilterHighlited
+                          : childRef?.current?.globalFilter
                       }
                     />
                   </a>
@@ -1292,6 +1356,14 @@ function PortfolioTable(SelectedProp: any) {
         size: 42,
         id: "ItemRank"
       },
+      // {
+      //   accessorKey: "DueDate",
+      //   placeholder: "Due Date",
+      //   header: "",
+      //   resetColumnFilters: false,
+      //   size: 100,
+      //   id: "DueDate"
+      // },
       {
         accessorFn: (row) => row?.DueDate,
         cell: ({ row }) => (
@@ -1299,7 +1371,7 @@ function PortfolioTable(SelectedProp: any) {
 
         ),
         id: 'DueDate',
-        filterFn: (row: any,columnName:any, filterValue: any) => {
+        filterFn: (row: any, columnName: any, filterValue: any) => {
           if (row?.original?.DisplayDueDate?.includes(filterValue)) {
             return true
           } else {
@@ -1343,7 +1415,7 @@ function PortfolioTable(SelectedProp: any) {
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "Created",
-        filterFn: (row: any, columnName:any, filterValue: any) => {
+        filterFn: (row: any, columnName: any, filterValue: any) => {
           if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
             return true
           } else {
@@ -1351,8 +1423,43 @@ function PortfolioTable(SelectedProp: any) {
           }
         },
         header: "",
-        size: 125
+        size: 109
       },
+      // {
+      //   accessorFn: (row) =>
+      //     row?.Created ? Moment(row?.Created).format("DD/MM/YYYY") : "",
+      //   cell: ({ row, getValue }) => (
+      //     <>
+      //       {row?.original?.Created == null ? (
+      //         ""
+      //       ) : (
+      //         <>
+      //           {row?.original?.Author != undefined ? (
+      //             <>
+      //               <span>
+      //                 {Moment(row?.original?.Created).format("DD/MM/YYYY")}{" "}
+      //               </span>
+      //               <img
+      //                 className="workmember"
+      //                 title={row?.original?.Author?.Title}
+      //                 src={findUserByName(row?.original?.Author?.Id)}
+      //               />
+      //             </>
+      //           ) : (
+      //             <img
+      //               className="workmember"
+      //               src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"
+      //             />
+      //           )}
+      //         </>
+      //       )}
+      //     </>
+      //   ),
+      //   id: "Created",
+      //   placeholder: "Created Date",
+      //   header: "",
+      //   size: 109
+      // },
       {
         accessorKey: "descriptionsSearch",
         placeholder: "descriptionsSearch",
@@ -1368,6 +1475,17 @@ function PortfolioTable(SelectedProp: any) {
         resetColumnFilters: false,
         size: 100,
         id: "commentsSearch"
+      },
+      {
+        accessorFn: (row) => row?.TotalTaskTime,
+        cell: ({ row }) => (
+          <span> {row?.original?.TotalTaskTime}</span>
+        ),
+        id: "TotalTaskTime",
+        placeholder: "Smart Time",
+        header: "",
+        resetColumnFilters: false,
+        size: 49,
       },
       {
         cell: ({ row, getValue }) => (
@@ -1568,7 +1686,29 @@ function PortfolioTable(SelectedProp: any) {
   const AddStructureCallBackCall = React.useCallback((item) => {
     childRef?.current?.setRowSelection({});
     if (!isOpenPopup && item.CreatedItem != undefined) {
-    if(item?.CreatedItem[0]?.data?.ItemType == "SubComponent"){
+      if (item?.CreatedItem[0]?.data?.ItemType == "SubComponent") {
+        item.CreatedItem.forEach((obj: any) => {
+          obj.data.childs = [];
+          obj.data.subRows = [];
+          obj.data.flag = true;
+          obj.data.TitleNew = obj.data.Title;
+          obj.data.siteType = "Master Tasks";
+          obj.data.SiteIconTitle = obj?.data?.Item_x0020_Type?.charAt(0);
+          obj.data["TaskID"] = obj.data.PortfolioStructureID;
+          if (
+            item.props != undefined &&
+            item.props.SelectedItem != undefined &&
+            (item.props.SelectedItem.subRows == undefined || item.props.SelectedItem.subRows != undefined)
+          ) {
+            item.props.SelectedItem.subRows =
+              item.props.SelectedItem.subRows == undefined
+                ? []
+                : item.props.SelectedItem.subRows;
+            item.props.SelectedItem.subRows.unshift(obj.data);
+            copyDtaArray = copyDtaArray.concat(item.props.SelectedItem.subRows)
+          }
+        });
+      }
       item.CreatedItem.forEach((obj: any) => {
         obj.data.childs = [];
         obj.data.subRows = [];
@@ -1587,31 +1727,9 @@ function PortfolioTable(SelectedProp: any) {
               ? []
               : item.props.SelectedItem.subRows;
           item.props.SelectedItem.subRows.unshift(obj.data);
-          copyDtaArray = copyDtaArray.concat(item.props.SelectedItem.subRows)
         }
       });
-    }
-    item.CreatedItem.forEach((obj: any) => {
-      obj.data.childs = [];
-      obj.data.subRows = [];
-      obj.data.flag = true;
-      obj.data.TitleNew = obj.data.Title;
-      obj.data.siteType = "Master Tasks";
-      obj.data.SiteIconTitle = obj?.data?.Item_x0020_Type?.charAt(0);
-      obj.data["TaskID"] = obj.data.PortfolioStructureID;
-      if (
-        item.props != undefined &&
-        item.props.SelectedItem != undefined &&
-        (item.props.SelectedItem.subRows == undefined || item.props.SelectedItem.subRows != undefined)
-      ) {
-        item.props.SelectedItem.subRows =
-          item.props.SelectedItem.subRows == undefined
-            ? []
-            : item.props.SelectedItem.subRows;
-        item.props.SelectedItem.subRows.unshift(obj.data);
-      }
-    });
-      
+
       if (copyDtaArray != undefined && copyDtaArray.length > 0) {
         copyDtaArray.forEach((compnew: any, index: any) => {
           if (compnew.subRows != undefined && compnew.subRows.length > 0) {
@@ -1678,11 +1796,29 @@ function PortfolioTable(SelectedProp: any) {
     }
     setOpenAddStructurePopup(false);
   }, []);
+
   const CreateOpenCall = React.useCallback((item) => { }, []);
   /// END ////
 
   //----------------------------Code By Santosh---------------------------------------------------------------------------
   const Call = (res: any) => {
+    if (res?.data?.ItmesDelete == true) {
+      copyDtaArray?.map((ele: any, index: any) => {
+        if (ele.subRows != undefined && ele.subRows?.length > 0) {
+          ele.subRows?.map((sub: any, subindex: any) => {
+            if (sub.Id == res.data.Id) {
+              copyDtaArray[index].subRows.splice(subindex, 1);
+            }
+          })
+        }
+        if (ele.Id == res.data.Id) {
+          copyDtaArray.splice(index, 1);
+        }
+      })
+      renderData = [];
+      renderData = renderData.concat(copyDtaArray);
+      refreshData();
+    }
     if (res == "Close") {
       setIsTask(false);
       setIsOpenActivity(false);
@@ -1696,7 +1832,61 @@ function PortfolioTable(SelectedProp: any) {
       setIsOpenActivity(false);
       setIsOpenWorkstream(false);
       setActivityPopup(false);
+      if (res.data.Portfolio.Id != null && res?.data?.Portfolio?.Id === SelectedProp?.props?.Id && res.data.TaskTypeId === 2 && (res.data.PortfolioType.Id === 1 || res.data.PortfolioType.Id === 2 || res.data.PortfolioType.Id === 3)) {
+        const checkother = copyDtaArray.filter((item: any) => item.Title === "Others");
+        if (checkother?.length === 0) {
+          let temp: any = {};
+          temp.Title = "Others";
+          temp.TaskID = "";
+          temp.subRows = [];
+          temp.PercentComplete = "";
+          temp.ItemRank = "";
+          temp.DueDate = null;
+          temp.Project = "";
+          temp.ClientCategorySearch = "";
+          temp.Created = null;
+          temp.DisplayCreateDate = null;
+          temp.DisplayDueDate = null;
+          temp.AllTeamName = "";
+          temp.DueDate = "";
+          temp.descriptionsSearch = "";
+          temp.ProjectTitle = "";
+          temp.Status = "";
+          temp.Author = "";
+          temp?.subRows?.push(res.data);
+          copyDtaArray = copyDtaArray.concat(temp)
+        } else {
+          checkother[0]?.subRows?.push(res.data)
+        }
+      }
+      if (res?.data?.PortfolioId === SelectedProp?.props?.Id) {
+        copyDtaArray.forEach((val: any) => {
+          if (res?.data?.TaskType?.Id === 1) {
+            val.subRows = val.subRows ?? [];
+            val.subRows.push(res.data);
+          }
+
+          if (val?.subRows) {
+            val?.subRows?.forEach((ele: any) => {
+              if (res?.data?.TaskType?.Id === 3 && (res?.data?.ParentTask?.Id === ele?.Id || res?.data?.ParentTaskId === ele?.Id)) {
+                ele.subRows = ele.subRows ?? [];
+                ele?.subRows?.push(res.data);
+              }
+              if (ele?.subRows) {
+                ele?.subRows?.forEach((elev: any) => {
+                  if (res?.data?.TaskType?.Id === 2 && (res?.data?.ParentTask?.Id === elev?.Id || res?.data?.ParentTaskId === elev?.Id)) {
+                    elev.subRows = elev.subRows ?? [];
+                    elev?.subRows?.push(res.data);
+                  }
+                });
+              }
+
+            });
+          }
+        });
+      }
       copyDtaArray?.forEach((val: any) => {
+
         if (res?.data?.PortfolioId == val.Id) {
           val.subRows = val.subRows === undefined ? [] : val.subRows;
 
@@ -1737,6 +1927,7 @@ function PortfolioTable(SelectedProp: any) {
           });
         }
       });
+
       renderData = [];
       renderData = renderData.concat(copyDtaArray);
       refreshData();
@@ -1942,6 +2133,7 @@ function PortfolioTable(SelectedProp: any) {
                         loadedClassName="loadedContent"
                       />
                       <GlobalCommanTable
+                        smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
                         ref={childRef}
                         AddStructureFeature={
                           SelectedProp?.props?.Item_x0020_Type
@@ -2143,6 +2335,7 @@ function PortfolioTable(SelectedProp: any) {
           Call={Call}
           AllListId={SelectedProp?.NextProp}
           context={SelectedProp?.NextProp.Context}
+          pageName="TaskFooterTable"
         ></EditTaskPopup>
       )}
       {IsComponent && (

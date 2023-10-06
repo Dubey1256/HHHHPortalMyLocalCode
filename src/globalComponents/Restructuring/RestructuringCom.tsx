@@ -3302,9 +3302,13 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
           </span>
           : ''
       }
+
+
+
+
     </>
   )
 };
 
 
-export default forwardRef(RestructuringCom); 
+export default forwardRef(RestructuringCom);    

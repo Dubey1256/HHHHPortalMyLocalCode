@@ -129,7 +129,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
             }, {
                 accessorKey: "PortfolioStructureID",
                 placeholder: "ID",
-                size: 100,
+                size: 136,
 
                 cell: ({ row, getValue }) => (
                     <div className="alignCenter">
@@ -144,8 +144,8 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                         ) : (
                             <>
                                 {row?.original?.Title != "Others" ? (
-                                    <div title={row?.original?.Item_x0020_Type} style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 Dyicons" :
-                                        row?.original?.TaskType?.Title == "Workstream" ? "ml-48 Dyicons" : row?.original?.TaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons"
+                                    <div title={row?.original?.Item_x0020_Type} style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons me-1" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons me-1" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 Dyicons me-1" :
+                                        row?.original?.TaskType?.Title == "Workstream" ? "ml-48 Dyicons me-1" : row?.original?.TaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons me-1"
                                     }>
                                         {row?.original?.SiteIconTitle}
                                     </div>
