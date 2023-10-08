@@ -5,7 +5,7 @@ import { Web } from "sp-pnp-js";
 import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import 'react-datepicker/dist/react-datepicker.css';
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import {
   ColumnDef,
@@ -15,6 +15,7 @@ import { Col, Row } from 'react-bootstrap';
 import Loader from "react-loader";
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import EditInstituton from "../../EditPopupFiles/EditComponent";
+var AllListId: any;
 export interface IUserTimeEntryState {
   Result: any;
   taskUsers: any;
@@ -78,6 +79,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     }
     this.GetResult();
   }
+
   private SelectedProp = this.props;
   private BackupAllTimeEntry: any = [];
   private AllTimeEntry: any = [];
@@ -100,6 +102,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     await this.GetTaskUsers();
     await this.LoadAllMetaDataFilter();
     await this.DefaultValues()
+    AllListId = this.props;
+    AllListId.isShowTimeEntry = this.props.TimeEntry;
+    AllListId.isShowSiteCompostion = this.props.SiteCompostion
   }
 
   private async DefaultValues() {
@@ -130,13 +135,16 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     document.getElementById('rdThisWeek').click();
 
     this.setState({ ImageSelectedUsers }, () => {
-      this.updatefilter();
+      this.updatefilter(true);
     });
 
   }
 
 
   private async GetTaskUsers() {
+    this.setState({
+      loaded: false,
+    })
     let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
     let taskUsers = [];
     let results = [];
@@ -690,21 +698,23 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     })
   }
 
-  private updatefilter() {
-
+  private updatefilter(IsLoader: any) {
     if (this.state.ImageSelectedUsers == undefined || this.state.ImageSelectedUsers.length == 0) {
       alert('Please Select User');
       return false;
     }
     else {
+      if (IsLoader == true) {
+        this.setState({
+          loaded: false,
+        })
+      }
       this.generateTimeEntry();
     }
   }
 
   private async generateTimeEntry() {
-    this.setState({
-      loaded: false,
-    })
+
     //Create filter Creteria based on Dates and Selected users
     //let filters = '(('; //use when with date filter
     let filters = '('; //use when without date filter
@@ -832,6 +842,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               let hours = addtime.TaskTime;
               let minutes = hours * 60;
               addtime.TaskItemID = time.TaskItemID;
+
               addtime.SiteUrl = time.SiteUrl;
               totletimeparent = minutes;
               addtime.MileageJson = totletimeparent;
@@ -934,7 +945,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     return '';
   }
   private Call = (res: any) => {
-    this.updatefilter();
+    this.updatefilter(false);
     this.setState({
       IsTask: '',
       IsMasterTask: ''
@@ -1003,7 +1014,15 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             getItem['siteType'] = filterItem.siteType;
 
             filterItem.CategoryParentId = 0;
-            filterItem.ClientCategory = getItem.ClientCategory;
+            let cate = '';
+            if (getItem?.ClientCategory != undefined && getItem?.ClientCategory?.length > 0) {
+              getItem?.ClientCategory.forEach(function (category: any) {
+                if (category != undefined && category?.Title != undefined)
+                  cate += category?.Title + '; ';
+              })
+            }
+            filterItem.ClientCategory = cate
+            //  filterItem.ClientCategory = getItem.ClientCategory;
             // getItem?.ClientCategory.forEach(function (client: any, index: any) {
             //   if (!this.isExistsclient(filterItem?.ClientCategory, client?.Id))
             //     filterItem.clientCategory += client.Title + '; ';
@@ -2041,11 +2060,11 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                               return <div className="alignCenter">
                                 {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined ?
                                   <span>
-                                    <img id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg ProirityAssignedUserPhoto' : 'ProirityAssignedUserPhoto'} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
+                                    <img id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg seclected-Image ProirityAssignedUserPhoto' : 'ProirityAssignedUserPhoto'} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
                                       title={item.AssingedToUser.Title}
                                       src={item.Item_x0020_Cover.Url} />
                                   </span> :
-                                  <span className={item?.AssingedToUserId == user?.Id ? 'activeimg suffix_Usericon' : 'suffix_Usericon'} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
+                                  <span className={item?.AssingedToUserId == user?.Id ? 'activeimg seclected-Image suffix_Usericon' : 'suffix_Usericon'} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
                                     title={item?.AssingedToUser?.Title}
                                   >{item?.Suffix}</span>
                                 }
@@ -2119,7 +2138,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                       <span className='SpfxCheckRadio me-2'>
                         <input type="radio" name="dateSelection" value="Presettime" onClick={() => this.selectDate('Presettime')} ng-model="unAllTime" className="radio" />
                         <label>Pre-set</label>
-                        <span className="svg__iconbox svg__icon--editBox" ng-click="OpenPresetDatePopup('Presettime')"></span>
+                        <span className="svg__iconbox svg__icon--editBox alignIcon" ng-click="OpenPresetDatePopup('Presettime')"></span>
                         {/* <img className="hreflink " title="open" ng-click="OpenPresetDatePopup('Presettime')" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" /> */}
                       </span>
 
@@ -2129,12 +2148,16 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                 </Row>
                 <Row className='ps-30 mt-2'>
                   <div className="col">
-                    <label ng-required="true" className="full_width ng-binding" ng-bind-html="GetColumnDetails('StartDate') | trustedHTML">Start Date</label>
-                    <DatePicker selected={this.state.startdate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setStartDate(date)} className=" full-width searchbox_height ng-pristine ng-valid ng-touched ng-not-empty" />
+                    <label>Start Date</label>
+                    <span style={{ display: 'inline-block' }}>
+                      <DatePicker selected={this.state.startdate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setStartDate(date)} className="full-width" />
+                    </span>
                   </div>
                   <div className="col">
-                    <label ng-required="true" className="full_width ng-binding" ng-bind-html="GetColumnDetails('EndDate') | trustedHTML" >End Date</label>
-                    <DatePicker selected={this.state.enddate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setEndDate(date)} className=" full-width searchbox_height  ng-pristine ng-valid ng-touched ng-not-empty" />
+                    <label>End Date</label>
+                    <span style={{ display: 'inline-block' }}>
+                      <DatePicker selected={this.state.enddate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setEndDate(date)} className="full-width" />
+                    </span>
                   </div>
                   <div className='col'>
                     <label></label>
@@ -2252,7 +2275,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                       </div>
                       <div className="col text-end mb-2 ">
 
-                        <button type="button" className="btnCol btn btn-primary me-1" onClick={(e) => this.updatefilter()}>
+                        <button type="button" className="btnCol btn btn-primary me-1" onClick={(e) => this.updatefilter(true)}>
                           Update Filters
                         </button>
                         <button type="button" className="btn btn-default me-1" onClick={() => this.ClearFilters()}>
@@ -2283,7 +2306,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           <EditTaskPopup
             Items={this.state.IsTask}
             Call={this.Call}
-            AllListId={this?.props}
+            AllListId={AllListId}
             context={this?.props?.Context}
           ></EditTaskPopup>
         )}
