@@ -1416,7 +1416,7 @@ const RestructuringCom = (props: any, ref: any) => {
             }
           })
         } else if (items?.Item_x0020_Type === "Task" && (items.TaskType?.Id === 3)) {
-          if(props?.queryItems?.Item_x0020_Type !== 'Task'){
+          if(props?.queryItems?.Item_x0020_Type !== 'Task' && props?.queryItems != undefined && props?.queryItems != null){
             topCompo = true;
             setQuery4TopIcon('Activity')
           } 
@@ -1655,7 +1655,7 @@ const RestructuringCom = (props: any, ref: any) => {
             }
           })
         } else if (items?.Item_x0020_Type === "Task" && items.TaskType?.Id === 2) {
-          if(props?.queryItems?.Item_x0020_Type !== 'Task'){
+          if(props?.queryItems?.Item_x0020_Type !== 'Task' && props?.queryItems != undefined && props?.queryItems != null){
             topCompo = true;
             setQuery4TopIcon('Activity')
           } 
@@ -2814,7 +2814,7 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
     ParentTask = null;
     TaskType = 1;
     SiteIconTitle = 'A';
-   }else if(props?.queryItems != undefined && props?.queryItems != null && props?.queryItems?.TaskType?.Title == 'Activity'){
+   }else if(props?.queryItems != undefined && props?.queryItems != null && props?.queryItems?.TaskType == 'Activity'){
     PortfolioId = props?.queryItems?.Id;
     ParentTask = props?.queryItems?.Id;
     SiteIconTitle = 'W';
