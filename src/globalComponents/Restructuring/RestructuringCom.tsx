@@ -2512,14 +2512,12 @@ const RestructuringCom = (props: any, ref: any) => {
 
       
       PortfolioLevel = PortfolioLevel +1;
-      Portfolio = { Id: newItemBackUp?.Id, ItemType:newItemBackUp?.Item_x0020_Type, PortfolioStructureID:newItemBackUp?.PortfolioStructureID, Title:newItemBackUp?.Title}
       ParentTask = {Id:newItemBackUp?.Id, Title : newItemBackUp?.Title, TaskID : newItemBackUp?.TaskID};
       
 
       let web = new Web(props?.contextValue?.siteUrl);
       var postData: any = {
         ParentId: ParentTask == null ? null : ParentTask.Id,
-        PortfolioId: Portfolio == null ? null : Portfolio.Id,
         PortfolioLevel: PortfolioLevel,
         Item_x0020_Type: Item_x0020_Type,
         PortfolioStructureID: PortfolioStructureID + '-' + SiteIconTitle + PortfolioLevel,
@@ -2673,13 +2671,11 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
       SiteIconTitle = 'C'
       Item_x0020_Type = 'Component'
      }else if(props?.queryItems != undefined && props?.queryItems != null && props?.queryItems?.Item_x0020_Type == 'Component'){
-      Portfolio = { Id: props?.queryItems?.Id, ItemType:props?.queryItems?.Item_x0020_Type, PortfolioStructureID:props?.queryItems?.PortfolioStructureID, Title:props?.queryItems?.Title},
       ParentTask = {Id:props?.queryItems?.Id, Title : props?.queryItems?.Title, TaskID : props?.queryItems?.TaskID};
       PortfolioStructureIDs = props?.queryItems?.PortfolioStructureID + '-' + 'S' + PortfolioLevel;
       SiteIconTitle = 'S';
       Item_x0020_Type = 'SubComponent';
      }else if(props?.queryItems != undefined && props?.queryItems != null && props?.queryItems?.Item_x0020_Type == 'SubComponent'){
-      Portfolio = { Id: props?.queryItems?.Id, ItemType:props?.queryItems?.Item_x0020_Type, PortfolioStructureID:props?.queryItems?.PortfolioStructureID, Title:props?.queryItems?.Title},
       ParentTask = {Id:props?.queryItems?.Id, Title : props?.queryItems?.Title, TaskID : props?.queryItems?.TaskID};
       PortfolioStructureIDs = props?.queryItems?.PortfolioStructureID + '-' + 'F' + PortfolioLevel;
       SiteIconTitle = 'F';
@@ -2688,7 +2684,6 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
 
     let web = new Web(props?.contextValue?.siteUrl);
     var postData: any = {
-      Portfolio : Portfolio == null ? null : Portfolio.Id,
       ParentId: ParentTask == null ? null : ParentTask.Id,
       PortfolioLevel: PortfolioLevel,
       Item_x0020_Type: Item_x0020_Type,
@@ -2710,7 +2705,6 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
 
         latestCheckedList?.map((items: any) => {
             items.Parent = ParentTask,
-            items.Portfolio = Portfolio,
             items.PortfolioLevel = PortfolioLevel,
             items.Item_x0020_Type = Item_x0020_Type,
             items.SiteIconTitle = SiteIconTitle,
