@@ -1096,7 +1096,14 @@ const CreateActivity = (props: any) => {
             } else {
               var PortfolioData = AllItems?.Id;
             }
-
+     let clientTime:any;
+     if(AllItems?.ClientTime!=undefined){
+      if(typeof AllItems?.ClientTime=="object"){
+        clientTime= JSON.stringify(AllItems?.ClientTime);
+      }else{
+        clientTime=AllItems?.ClientTime
+      }
+     }
             var arrayy = [];
             web = new Web(dynamicList.siteUrl);
             await web.lists
@@ -1148,7 +1155,7 @@ const CreateActivity = (props: any) => {
                 SiteCompositionSettings: JSON.stringify(
                   AllItems.SiteCompositionSettingsbackup
                 ),
-                ClientTime: JSON.stringify(AllItems?.ClientTime),
+                ClientTime: clientTime!=undefined?clientTime:AllItems.Sitestagging,
                 TaskID: TaskID
               })
               .then((res: any) => {
