@@ -575,8 +575,8 @@ function PortfolioTable(SelectedProp: any) {
           isUpdated === elem.Title ||
           isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()
         ) {
-          filt =
-            "(Item_x0020_Type eq 'SubComponent' and Item_x0020_Type eq 'Feature' )";
+        //   filt =
+        //     "(Item_x0020_Type eq 'SubComponent' and Item_x0020_Type eq 'Feature' )";
         }
       });
     }
@@ -630,7 +630,7 @@ function PortfolioTable(SelectedProp: any) {
         "ResponsibleTeam"
       )
       .top(4999)
-      .filter(filt)
+      // .filter(filt)
       .get();
 
     console.log(componentDetails);
@@ -1423,7 +1423,7 @@ function PortfolioTable(SelectedProp: any) {
           }
         },
         header: "",
-        size: 109
+        size: 125
       },
       // {
       //   accessorFn: (row) =>

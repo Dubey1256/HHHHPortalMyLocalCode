@@ -10,6 +10,14 @@
         }
       ]
     },
+    "alert-management-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/alertManagement/AlertManagementWebPart.js",
+          "manifest": "./src/webparts/alertManagement/AlertManagementWebPart.manifest.json"
+        }
+      ]
+    },
     "smart-connect-web-part": {
       "components": [
         {
@@ -371,6 +379,7 @@
   "localizedResources": {
     "MeetingOverViewPageWebPartStrings": "lib/webparts/meetingOverViewPage/loc/{locale}.js",
     "ServicePortfolioWebPartStrings": "lib/webparts/servicePortfolio/loc/{locale}.js",
+    "AlertManagementWebPartStrings": "lib/webparts/alertManagement/loc/{locale}.js",
     "SmartConnectWebPartStrings": "lib/webparts/smartConnect/loc/{locale}.js",
     "ComponentPortfolioWebPartStrings": "lib/webparts/componentPortfolio/loc/{locale}.js",
     "ComponentProfileWebPartStrings": "lib/webparts/componentProfile/loc/{locale}.js",
