@@ -691,10 +691,13 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
 
     startdt.setHours(0, 0, 0, 0);
     enddt.setHours(0, 0, 0, 0);
-
+    let StartDate: any
+    StartDate = Moment(startdt).format("YYYY/MM/DD");
+    let EndDate: any
+    EndDate = Moment(enddt).format("YYYY/MM/DD");
     this.setState({
-      startdate: startdt,
-      enddate: enddt
+      startdate: StartDate,
+      enddate: EndDate
     })
   }
 
@@ -739,9 +742,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     let resultsOfTimeSheet2 = await web.lists
       .getById(this.props.TaskTimeSheet2ListID)
       .items
-      .select('Id', 'Title', 'TaskDate', 'TaskTime', 'AdditionalTimeEntry', 'Description', 'Modified', 'TaskMigration/Id', 'TaskMigration/Title', 'TaskMigration/Created', 'AuthorId')
+      .select('Id', 'Title', 'TaskDate', 'TaskTime', 'AdditionalTimeEntry', 'Description', 'Modified', 'TaskMigration/Id', 'TaskMigration/Title', 'TaskMigration/Created', 'TaskALAKDigital/Id', 'TaskALAKDigital/Title', 'TaskALAKDigital/Created', 'AuthorId')
       .filter(filters)
-      .expand('TaskMigration')
+      .expand('TaskMigration', 'TaskALAKDigital')
       .getAll(4999);
     console.log(resultsOfTimeSheet2);
 
@@ -838,7 +841,17 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           if (addtime.TaskDate != undefined) {
             let TaskDateConvert = addtime.TaskDate.split("/");
             let TaskDate = new Date(TaskDateConvert[2] + '/' + TaskDateConvert[1] + '/' + TaskDateConvert[0]);
-            if (TaskDate >= this.state.startdate && TaskDate <= this.state.enddate) {
+
+            let startDateConvert: any = this.state.startdate;
+            startDateConvert = startDateConvert.split("/");
+            let startdate = new Date(startDateConvert[0] + '/' + startDateConvert[1] + '/' + startDateConvert[2]);
+
+            let endDateConvert: any = this.state.enddate;
+            endDateConvert = endDateConvert.split("/");
+            let enddate = new Date(endDateConvert[0] + '/' + endDateConvert[1] + '/' + endDateConvert[2]);
+
+
+            if (TaskDate >= startdate && TaskDate <= enddate) {
               let hours = addtime.TaskTime;
               let minutes = hours * 60;
               addtime.TaskItemID = time.TaskItemID;
@@ -1749,6 +1762,39 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
   }
 
   private ClearFilters() {
+    this.AllTimeEntry = this.BackupAllTimeEntry;
+    console.log('All Time Entry');
+    console.log(this.AllTimeEntry);
+    this.TotalTimeEntry = 0;
+    for (let index = 0; index < this.AllTimeEntry.length; index++) {
+      let timeitem = this.AllTimeEntry[index];
+      this.TotalTimeEntry += timeitem.Effort;
+
+    }
+    this.TotalTimeEntry = (this.TotalTimeEntry).toFixed(2);
+    this.TotalDays = this.TotalTimeEntry / 8;
+    this.TotalDays = (this.TotalDays).toFixed(2);
+    let resultSummary = {}
+    let TotalValue = 0, SmartHoursTotal = 0, AdjustedTime = 0, RoundAdjustedTime = 0, totalEntries = 0;
+    if (this.AllTimeEntry.length > 0) {
+      for (let index = 0; index < this.AllTimeEntry.length; index++) {
+        let element = this.AllTimeEntry[index];
+        TotalValue += parseFloat(element.TotalValue);
+        SmartHoursTotal += parseFloat(element.SmartHoursTotal);
+        AdjustedTime += parseFloat(element.AdjustedTime);
+        RoundAdjustedTime += parseFloat(element.RoundAdjustedTime);
+      }
+      resultSummary = {
+        totalTime: this.TotalTimeEntry,
+        totalDays: this.TotalDays,
+        totalEntries: this.AllTimeEntry.length
+      }
+    }
+    console.log(resultSummary);
+    this.setState({
+      AllTimeEntry: this.AllTimeEntry,
+      resultSummary,
+    }, () => this.createTableColumns())
     this.setState({
       AllTimeEntry: this.BackupAllTimeEntry,
       checked: [],
@@ -2149,14 +2195,20 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                 <Row className='ps-30 mt-2'>
                   <div className="col">
                     <label>Start Date</label>
-                    <span style={{ display: 'inline-block' }}>
-                      <DatePicker selected={this.state.startdate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setStartDate(date)} className="full-width" />
+                    <span>
+                      {/* <DatePicker selected={this.state.startdate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setStartDate(date)} className="full-width" /> */}
+                      <input type="date" className="form-control" max="9999-12-31" min={this.state.startdate ? Moment(this.state.startdate).format("YYYY-MM-DD") : ""}
+                        value={this.state.startdate ? Moment(this.state.startdate).format("YYYY-MM-DD") : ''}
+                        onChange={(date: any) => this.setStartDate(date)} />
                     </span>
                   </div>
                   <div className="col">
                     <label>End Date</label>
-                    <span style={{ display: 'inline-block' }}>
-                      <DatePicker selected={this.state.enddate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setEndDate(date)} className="full-width" />
+                    <span>
+                      {/* <DatePicker selected={this.state.enddate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setEndDate(date)} className="full-width" /> */}
+                      <input type="date" className="form-control" max="9999-12-31" min={this.state.enddate ? Moment(this.state.enddate).format("YYYY-MM-DD") : ""}
+                        value={this.state.enddate ? Moment(this.state.enddate).format("YYYY-MM-DD") : ''}
+                        onChange={(date: any) => this.setEndDate(date)} />
                     </span>
                   </div>
                   <div className='col'>
