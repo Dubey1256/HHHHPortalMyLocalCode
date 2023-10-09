@@ -15,6 +15,7 @@ import { Col, Row } from 'react-bootstrap';
 import Loader from "react-loader";
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import EditInstituton from "../../EditPopupFiles/EditComponent";
+import * as globalCommon from "../../../globalComponents/globalCommon";
 var AllListId: any;
 export interface IUserTimeEntryState {
   Result: any;
@@ -788,6 +789,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           timeTab.Site = config.Title;
           timeTab.ImageUrl = config.ImageUrl;
           timeTab.TaskItemID = timeTab[ColumnName].Id;
+          timeTab.DisplayTaskId = timeTab[ColumnName].DisplayTaskId;
           timeTab.TaskTitle = timeTab[ColumnName].Title;
           timeTab.TaskCreated = timeTab[ColumnName].Created;
           timeTab.NewTimeEntryDate = timeTab[ColumnName].TaskDate;
@@ -855,6 +857,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               let hours = addtime.TaskTime;
               let minutes = hours * 60;
               addtime.TaskItemID = time.TaskItemID;
+              addtime.DisplayTaskId = time.DisplayTaskId;
 
               addtime.SiteUrl = time.SiteUrl;
               totletimeparent = minutes;
@@ -993,6 +996,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           let self = this;
           results.forEach(function (Item) {
             Item.siteName = itemtype.ListName;
+            Item.DisplayTaskId = globalCommon.GetTaskId(Item)
             Item.listId = itemtype.ListId;
             Item.ClientTime = JSON.parse(Item.ClientTime);
             Item.PercentComplete = Item.PercentComplete <= 1 ? Item.PercentComplete * 100 : Item.PercentComplete;
@@ -1053,7 +1057,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             })
             filterItem.clientTimeInfo = clientTimeArr;
             filterItem.flag = true;
-
+            filterItem.DisplayTaskId = getItem?.DisplayTaskId;
             filterItem.PercentComplete = getItem.PercentComplete;
             filterItem.ItemRank = getItem.ItemRank;
             filterItem.PriorityRank = getItem?.PriorityRank;
@@ -1123,6 +1127,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
 
     }
     else {
+      this.setState({
+        loaded: true,
+      })
       //SharewebCommonFactoryService.hideProgressBar();
       //$scope.TotalTimeEntry = 0;
       //$('#showSearchBox').show();
@@ -1926,9 +1933,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         size: 90
       },
       {
-        accessorKey: "TaskItemID",
+        accessorKey: "DisplayTaskId",
         placeholder: "Task",
-        id: "TaskItemID",
+        id: "DisplayTaskId",
         header: "",
         size: 90,
       },
@@ -2054,7 +2061,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           <details className='p-0 m-0' open>
             <summary className='hyperlink'><a className="hreflink pull-left mr-5 pe-2 ">All Filters - <span className='me-1'>Task User :</span> </a>
               {this.state.ImageSelectedUsers != null && this.state.ImageSelectedUsers.length > 0 && this.state.ImageSelectedUsers.map((user: any, i: number) => {
-                return <span className="ng-scope">
+                return <span>
                   <img className="AssignUserPhoto mr-5" title={user.AssingedToUser.Title} src={user?.Item_x0020_Cover?.Url} />
                 </span>
               })
@@ -2069,17 +2076,17 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                   <input type="checkbox" className="" onClick={(e) => this.SelectAllGroupMember(e)} />
                   <label>Select All </label>
                 </span>
-                {/* <span className="plus-icon hreflink pl-10 pull-left ng-scope" >
+                {/* <span className="plus-icon hreflink pl-10 pull-left" >
                 <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/24/list-icon.png" />
             </span> */}
                 {/* <summary><a className="hreflink pull-left mr-5">Task User : </a>
               {this.state.ImageSelectedUsers != null && this.state.ImageSelectedUsers.length > 0 && this.state.ImageSelectedUsers.map((user: any, i: number) => {
-                return <span className="ng-scope">
+                return <span>
                   <img className="AssignUserPhoto mr-5" title={user.AssingedToUser.Title} src={user?.Item_x0020_Cover?.Url} />
                 </span>
               })
               }
-              <span className="ng-binding ng-hide"> </span>
+              <span> </span>
             </summary> */}
                 <summary className='hyperlink'>
                   Team members
@@ -2138,51 +2145,51 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                   <div>
                     <div className="col TimeReportDays">
                       <span className='SpfxCheckRadio me-2'>
-                        <input type="radio" className="radio" name="dateSelection" id="rdCustom" value="Custom" ng-checked="unSelectToday=='Custom'" onClick={() => this.selectDate('Custom')} ng-model="radio" />
+                        <input type="radio" className="radio" name="dateSelection" id="rdCustom" value="Custom" onClick={() => this.selectDate('Custom')} />
                         <label>Custom</label>
                       </span>
                       <span className='SpfxCheckRadio me-2'>
-                        <input type="radio" name="dateSelection" id="rdToday" value="Today" onClick={() => this.selectDate('today')} ng-model="unSelectToday" className="radio" />
+                        <input type="radio" name="dateSelection" id="rdToday" value="Today" onClick={() => this.selectDate('today')} className="radio" />
                         <label>Today</label>
                       </span>
                       <span className='SpfxCheckRadio me-2'>
-                        <input type="radio" name="dateSelection" id="rdYesterday" value="Yesterday" onClick={() => this.selectDate('yesterday')} ng-model="unSelectYesterday" className="radio" />
+                        <input type="radio" name="dateSelection" id="rdYesterday" value="Yesterday" onClick={() => this.selectDate('yesterday')} className="radio" />
                         <label> Yesterday </label>
                       </span>
                       <span className='SpfxCheckRadio me-2'>
-                        <input type="radio" name="dateSelection" defaultChecked={true} id="rdThisWeek" value="ThisWeek" onClick={() => this.selectDate('ThisWeek')} ng-model="unThisWeek" className="radio" />
+                        <input type="radio" name="dateSelection" defaultChecked={true} id="rdThisWeek" value="ThisWeek" onClick={() => this.selectDate('ThisWeek')} className="radio" />
                         <label> This Week</label>
                       </span>
                       <span className='SpfxCheckRadio me-2'>
-                        <input type="radio" name="dateSelection" id="rdLastWeek" value="LastWeek" onClick={() => this.selectDate('LastWeek')} ng-model="unLastWeek" className="radio" />
+                        <input type="radio" name="dateSelection" id="rdLastWeek" value="LastWeek" onClick={() => this.selectDate('LastWeek')} className="radio" />
                         <label> Last Week</label>
                       </span>
                       <span className='SpfxCheckRadio me-2'>
-                        <input type="radio" name="dateSelection" id="rdThisMonth" value="EntrieMonth" onClick={() => this.selectDate('EntrieMonth')} ng-model="unEntrieMonth" className="radio" />
+                        <input type="radio" name="dateSelection" id="rdThisMonth" value="EntrieMonth" onClick={() => this.selectDate('EntrieMonth')} className="radio" />
                         <label>This Month</label>
                       </span>
                       <span className='SpfxCheckRadio me-2'>
-                        <input type="radio" name="dateSelection" id="rdLastMonth" value="LastMonth" onClick={() => this.selectDate('LastMonth')} ng-model="unLastMonth" className="radio" />
+                        <input type="radio" name="dateSelection" id="rdLastMonth" value="LastMonth" onClick={() => this.selectDate('LastMonth')} className="radio" />
                         <label>Last Month</label>
                       </span>
                       <span className='SpfxCheckRadio me-2'>
-                        <input type="radio" name="dateSelection" value="rdLast3Month" onClick={() => this.selectDate('Last3Month')} ng-model="unLast3Month" className="radio" />
+                        <input type="radio" name="dateSelection" value="rdLast3Month" onClick={() => this.selectDate('Last3Month')} className="radio" />
                         <label>Last 3 Months</label>
                       </span>
                       <span className='SpfxCheckRadio me-2'>
-                        <input type="radio" name="dateSelection" value="rdEntrieYear" onClick={() => this.selectDate('EntrieYear')} ng-model="unEntrieYear" className="radio" />
+                        <input type="radio" name="dateSelection" value="rdEntrieYear" onClick={() => this.selectDate('EntrieYear')} className="radio" />
                         <label>This Year</label>
                       </span>
                       <span className='SpfxCheckRadio me-2'>
-                        <input type="radio" name="dateSelection" value="rdLastYear" onClick={() => this.selectDate('LastYear')} ng-model="unLastYear" className="radio" />
+                        <input type="radio" name="dateSelection" value="rdLastYear" onClick={() => this.selectDate('LastYear')} className="radio" />
                         <label>Last Year</label>
                       </span>
                       <span className='SpfxCheckRadio me-2'>
-                        <input type="radio" name="dateSelection" value="rdAllTime" onClick={() => this.selectDate('AllTime')} ng-model="unAllTime" className="radio" />
+                        <input type="radio" name="dateSelection" value="rdAllTime" onClick={() => this.selectDate('AllTime')} className="radio" />
                         <label>All Time</label>
                       </span>
                       <span className='SpfxCheckRadio me-2'>
-                        <input type="radio" name="dateSelection" value="Presettime" onClick={() => this.selectDate('Presettime')} ng-model="unAllTime" className="radio" />
+                        <input type="radio" name="dateSelection" value="Presettime" onClick={() => this.selectDate('Presettime')} className="radio" />
                         <label>Pre-set</label>
                         <span className="svg__iconbox svg__icon--editBox alignIcon" ng-click="OpenPresetDatePopup('Presettime')"></span>
                         {/* <img className="hreflink " title="open" ng-click="OpenPresetDatePopup('Presettime')" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" /> */}
@@ -2225,7 +2232,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               <div id="showFilterBox" className="col mb-2 p-0 ">
                 <div className="togglebox">
                   <details open>
-                    <summary className='hyperlink' ng-click="filtershowHide()">
+                    <summary className='hyperlink'>
 
                       {/* <img className="hreflink wid22" title="Filter" style={{width:'22px'}} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Filter-12-WF.png"/> */}
                       SmartSearch – Filters
@@ -2261,23 +2268,19 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                           })
                         }
                       </span>
-
-                      {/* <span className="pull-right">
-                    <span className="hreflink ng-scope" ng-if="!smartfilter2.expanded">
-                      <img className="hreflink wid10" style={{width:'10px'}} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/sub_icon.png"/>
-                    </span>
-                  </span> */}
                     </summary>
 
                     <div className="togglecontent ps-30" style={{ display: "block" }}>
                       <div className="smartSearch-Filter-Section">
                         <table width="100%" className="indicator_search">
+                          <Loader loaded={this.state.loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1} color={portfolioColor ? portfolioColor : "#000066"}
+                            speed={2} trail={60} shadow={false} hwaccel={false} className="spinner" zIndex={2e9} top="28%" left="50%" scale={1.0} loadedClassName="loadedContent" />
                           <tbody>
                             <tr>
                               <td valign="top">
                                 <div>
                                   <label className='border-bottom full-width pb-1'>
-                                    <input id='chkAllCategory' defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} type="checkbox" ng-model="item.Selected" className="form-check-input me-1" />
+                                    <input id='chkAllCategory' defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} type="checkbox" className="form-check-input me-1" />
                                     Client Category
                                   </label>
 
@@ -2294,10 +2297,11 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                                   />
                                 </div>
                               </td>
+
                               <td valign="top">
                                 <div>
                                   <label className='border-bottom full-width pb-1'>
-                                    <input type="checkbox" id='chkAllSites' defaultChecked={this.state.checkedAllSites} onClick={(e) => this.SelectAllSits(e)} ng-model="item.Selected" className="form-check-input me-1" />
+                                    <input type="checkbox" id='chkAllSites' defaultChecked={this.state.checkedAllSites} onClick={(e) => this.SelectAllSits(e)} className="form-check-input me-1" />
                                     Sites
                                   </label>
 
@@ -2347,8 +2351,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           <div className='col'>
             <div className="Alltable p-0">
               <div className="wrapper">
-                <Loader loaded={this.state.loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1} color={portfolioColor ? portfolioColor : "#000066"}
-                  speed={2} trail={60} shadow={false} hwaccel={false} className="spinner" zIndex={2e9} top="28%" left="50%" scale={1.0} loadedClassName="loadedContent" />
                 <GlobalCommanTable showHeader={true} showDateTime={' | Time: ' + this.state.resultSummary.totalTime + ' | Days: (' + this.state.resultSummary.totalDays + ')'} columns={this.state.columns} data={this.state.AllTimeEntry} callBackData={this.callBackData} />
               </div>
             </div>

@@ -1607,7 +1607,6 @@ const TeamSmartFilter = (item: any) => {
                 <div className="bg-wihite border p-2">
                     <div className="togglebox">
                         <div className="togglebox">
-                            <div>
                                 <div className='d-flex justify-content-between'>
                                     <span>
                                         <span className="ml20" style={{ color: `${portfolioColor}` }} >{filterInfo}</span>
@@ -1617,8 +1616,6 @@ const TeamSmartFilter = (item: any) => {
                                         <button className='btn  btn-default' onClick={ClearFilter}> Clear Filters</button>
                                     </div>
                                 </div>
-
-                            </div>
                         </div>
                     </div>
                 </div >

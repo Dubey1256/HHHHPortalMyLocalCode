@@ -1,10 +1,9 @@
-export interface ISmartMetaSearchProps {
+export interface ISmartmetadataportfolioProps {
   description: string;
   isDarkTheme: boolean;
   environmentMessage: string;
   hasTeamsContext: boolean;
   userDisplayName: string;
-  SmartMetadataListId:string;
-  ContextValue:any;
-  TaskUserListId:string;   
+  SPBackupConfigListID: string;
+  SPBackupConfigListUrl: string;
 }
