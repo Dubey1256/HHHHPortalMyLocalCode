@@ -550,7 +550,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 });
                 callBackData(item)
             } else {
-                restructureFunct(false)
+                // restructureFunct(false)
                 callBackData(item)
             }
             console.log("itrm", item)
@@ -653,7 +653,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
         function removeDuplicates(arr: any) {
             const uniqueArray = [];
             const seen = new Set();
-            for (const obj of arr) { const objString = JSON.stringify(obj); if (!seen.has(objString)) { uniqueArray?.push(obj); seen.add(objString); } }
+            for (const obj of arr) { const objString = JSON.stringify(obj); if (!seen.has(objString)) { uniqueArray.push(obj); seen.add(objString); } }
             return uniqueArray;
         }
         const uniqueArray: any = removeDuplicates(flattenedData);
