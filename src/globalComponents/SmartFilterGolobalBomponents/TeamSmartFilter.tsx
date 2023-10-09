@@ -80,7 +80,11 @@ const TeamSmartFilter = (item: any) => {
     const [selectedKeyDefultTitle, setSelectedKeyDefultTitle] = React.useState("Title");
     const [keyWordSearchTearm, setKeyWordSearchTearm] = React.useState("");
     //*******************************************************Key Word Section End********************************************************************/
-
+    //*************************************************** Portfolio Items & Task Items selected ***************************************************************** */
+    // const [isPortfolioItems, setIsPortfolioItems] = React.useState(true);
+    // const [isTaskItems, setIsTaskItems] = React.useState(true);
+    //*************************************************** Portfolio Items & Task Items End ***************************************************************** */
+    
 
 
     let finalArrayData: any = [];
@@ -1092,6 +1096,58 @@ const TeamSmartFilter = (item: any) => {
         <AiOutlineUp style={{ color: `${portfolioColor}`, width: '12px' }} />,
     ];
 
+    //*************************************************** Portfolio Items & Task Items selected ***************************************************************** */
+    // React.useEffect(()=>{
+    //     if(isPortfolioItems === true){
+    //         filterGroups?.map((elem:any)=>{
+    //             if(elem?.Title === "Portfolio"){
+    //                 smartmetaDataDetails.forEach((element: any) => {
+    //                     if (element.TaxType == 'Task Types') {
+    //                         filterGroups[0].values.push(element);
+    //                         filterGroups[0].checked.push(element.Id)
+    //                     }
+    //                     filterGroups[0].checkedObj = GetCheckedObject(filterGroups[0].values, filterGroups[0].checked);
+    //                     AllSites?.forEach((element: any, index: any) => {
+    //                         element.checkedObj = GetCheckedObject(element.values, element.checked)
+    //                     });
+    //                     if (element.TaxType == 'Type') {
+    //                         filterGroups[1].values.push(element);
+    //                         filterGroups[1].checked.push(element.Id)
+    //                     }
+    //                     filterGroups[0].checkedObj = GetCheckedObject(filterGroups[0].values, filterGroups[0].checked);
+    //                 })
+    //             }
+    //         }) 
+    //     }else{
+
+    //     }
+    //     if(isTaskItems === true){
+    //         filterGroups?.map((elem:any)=>{
+    //             if(elem?.Title === "Type"){
+    //                 smartmetaDataDetails.forEach((element: any) => {
+    //                     if (element.TaxType == 'Task Types') {
+    //                         filterGroups[0].values.push(element);
+    //                         filterGroups[0].checked.push(element.Id)
+    //                     }
+    //                     filterGroups[0].checkedObj = GetCheckedObject(filterGroups[0].values, filterGroups[0].checked);
+    //                     AllSites?.forEach((element: any, index: any) => {
+    //                         element.checkedObj = GetCheckedObject(element.values, element.checked)
+    //                     });
+    //                     if (element.TaxType == 'Type') {
+    //                         filterGroups[1].values.push(element);
+    //                         filterGroups[1].checked.push(element.Id)
+    //                     }
+    //                     filterGroups[0].checkedObj = GetCheckedObject(filterGroups[0].values, filterGroups[0].checked);
+    //                 })
+    //             }
+    //         }) 
+    //     }
+    //     filterGroupsData
+    //     setFilterGroups
+    // },[isPortfolioItems,isTaskItems])
+    //*************************************************** Portfolio Items & Task Items End ***************************************************************** */
+
+
 
     // const checkBoxColor = () => {
     //     setTimeout(() => {
@@ -1604,11 +1660,11 @@ const TeamSmartFilter = (item: any) => {
                                         </label> */}
                                         <span className='m-2'>|</span>
                                         <label className='SpfxCheckRadio  me-2 '>
-                                            <input className='form-check-input' type='checkbox' id='Component' value='Component' /> Portfolio Items
+                                            <input className='form-check-input' type='checkbox' id='Component' value='Component' disabled/> Portfolio Items
                                         </label>
                                         <span className='m-2'>|</span>
                                         <label className='SpfxCheckRadio '>
-                                            <input className='form-check-input' type='checkbox' id='Task' value='Task' /> Task Items
+                                            <input className='form-check-input' type='checkbox' id='Task' value='Task' disabled/>Task Items
                                         </label>
                                     </div>
                                 </div>
