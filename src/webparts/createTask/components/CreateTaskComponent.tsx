@@ -276,14 +276,7 @@ function CreateTaskComponent(props: any) {
                 SDCDescription=null
             }
             let previousTaggedTaskToComp: any[] = []
-            if (paramComponentId == undefined && paramType == undefined) {
-                paramComponentId = "756";
-                QueryPortfolioId = '756';
-            }
-            else if (paramComponentId == undefined && paramServiceId == undefined && paramSiteUrl != undefined && paramType == 'Service') {
-                paramServiceId = "4497";
-                QueryPortfolioId = '4497';
-            }
+            
             BurgerMenuData.ComponentID = paramComponentId;
             BurgerMenuData.Siteurl = paramSiteUrl;
             BurgerMenuData.TaskType = paramTaskType;
@@ -291,15 +284,17 @@ function CreateTaskComponent(props: any) {
             let PageName = '';
 
             if (paramSiteUrl != undefined) {
-                let baseUrl = window.location.href;
-
                 PageName = paramSiteUrl?.split('aspx')[0].split("").reverse().join("").split('/')[0].split("").reverse().join("");
                 PageName = PageName + 'aspx'
-                // await loadRelevantTask(PageName, "PageTask")
-                // await loadRelevantTask(paramSiteUrl, "UrlTask")
             }
-
-
+            if (paramComponentId == undefined && paramType == undefined && (paramSiteUrl!=undefined ||SDCTaskId!=undefined )) {
+                paramComponentId = "756";
+                QueryPortfolioId = '756';
+            }
+            else if (paramComponentId == undefined && paramServiceId == undefined && paramSiteUrl != undefined && paramType == 'Service') {
+                paramServiceId = "4497";
+                QueryPortfolioId = '4497';
+            }
             if (paramComponentId != undefined) {
                 QueryPortfolioId = paramComponentId;
                 AllComponents?.map((item: any) => {
