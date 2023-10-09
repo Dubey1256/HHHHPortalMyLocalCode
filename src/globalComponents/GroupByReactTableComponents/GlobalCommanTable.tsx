@@ -795,7 +795,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         </span>
                     </div> :
                         <span style={{ color: `${portfolioColor}` }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} of ${data?.length} `}</span>}
-                    <span>{items?.showDateTime}</span>
+                    <span className="mx-1">{items?.showDateTime}</span>
                     <DebouncedInput
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}
