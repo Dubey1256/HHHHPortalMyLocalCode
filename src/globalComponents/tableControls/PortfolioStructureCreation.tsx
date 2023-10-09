@@ -484,10 +484,17 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                         }
                     }
                     let ClientCategoryIds: any = []
-                    if (self.state.SelectedItem != undefined && self.state.SelectedItem.ClientCategory != undefined && self.state.SelectedItem.ClientCategory != undefined && self.state.SelectedItem.ClientCategory.length > 0) {
-                        self.state.SelectedItem.ClientCategory.forEach(function (clientCategory: any) {
-                            ClientCategoryIds.push(clientCategory.Id);
-                        })
+                    if (self.state.SelectedItem != undefined && self.state.SelectedItem.ClientCategory != undefined ) {
+                        if(  self.state.SelectedItem?.ClientCategory?.length>0){
+                            self.state.SelectedItem?.ClientCategory?.forEach(function (clientCategory: any) {
+                                ClientCategoryIds.push(clientCategory.Id);
+                            })
+                        }else{
+                            self.state.SelectedItem?.ClientCategory?.results?.forEach(function (clientCategory: any) {
+                                ClientCategoryIds.push(clientCategory.Id);
+                            })
+                        }
+                       
                     }
                     let AssignedToIds: any = []
                     let TeamMembersIds: any = []

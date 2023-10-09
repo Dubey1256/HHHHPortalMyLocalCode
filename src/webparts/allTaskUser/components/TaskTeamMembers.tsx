@@ -365,11 +365,15 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         }, this.onEditTask);
     }
 
-    private onEditTask() {
+    private async onEditTask() {
         let allTasks = [...this.state.tasks];
         let selTask = allTasks.filter(t => t.TaskId == this.state.selTaskId)[0];
         console.log(selTask);
         let selTaskItem = { ...this.state.taskItem };
+        if(selTask.ApproverMail!=undefined && selTask.ApproverMail[0]!=undefined){
+            let userInfo = await this.getUserInfo(selTask.ApproverMail[0]);
+            selTaskItem.approverId = [userInfo.Id]
+        }
         selTaskItem.userTitle = selTask.Title;
         selTaskItem.userSuffix = selTask.Suffix;
         selTaskItem.groupId = selTask.GroupId;
@@ -446,17 +450,18 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
     }
 
     private async getApproverDetails(approvers: any[]) {
-
         let approverId: number = undefined;
-
         if (approvers.length > 0) {
             let approverMail = approvers[0].id.split("|")[2];
             let userInfo = await this.getUserInfo(approverMail);
             approverId = userInfo.Id;
         }
-
         let taskItem = { ...this.state.taskItem };
-        taskItem.approverId = [approverId];
+        if(approverId!=undefined){
+            taskItem.approverId = [approverId];
+        }else{
+            taskItem.approverId = []
+        }
         this.setState({
             taskItem: taskItem
         })
@@ -865,7 +870,10 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             taskItem: taskItem
         });
     }
-
+    private openOOTBFormInNewTab = () => {
+        const url = `${this.props.context.pageContext.web.absoluteUrl}/Lists/Task%20Users/DispForm.aspx?ID=${this.state.selTaskId}`;
+        window.open(url, '_blank');
+      };
     private onImageAdded(ev: React.ChangeEvent<HTMLInputElement>) {
 
         if (!ev.target.files || ev.target.files.length < 1) {
@@ -903,7 +911,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         return (
             <>
 
-                <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+                <div className='siteColor subheading'>
                     Create New User
                 </div>
                 <Tooltip ComponentId='1757' />
@@ -914,7 +922,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         return (
             <>
 
-                <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+                <div className='siteColor subheading'>
                     {`Task-User Management - ${this.state.taskItem.userTitle}`}
                 </div>
                 <Tooltip ComponentId='1767' />
@@ -954,8 +962,16 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
 
         const elemSaveButton = (<PrimaryButton styles={controlStyles} onClick={this.onSaveTask} disabled={!this.state.enableSave}>Save</PrimaryButton>);
         const elemCancelButton = (<DefaultButton styles={controlStyles} onClick={this.onCancelTask}>Cancel</DefaultButton>);
-
-        const elemOOTBFormLink = (<Link href={`${this.props.context.pageContext.web.absoluteUrl}/Lists/Task%20Users/DispForm.aspx?ID=${this.state.selTaskId}`} target="_blank" className="openlink">Open out-of-the-box form</Link>);
+        const elemOOTBFormLink = (
+            <span
+              className="openlink"
+              onClick={this.openOOTBFormInNewTab}
+              style={{ cursor: 'pointer' }}
+            >
+              Open out-of-the-box form
+            </span>
+          );
+        //const elemOOTBFormLink = (<Link href={`${this.props.context.pageContext.web.absoluteUrl}/Lists/Task%20Users/DispForm.aspx?ID=${this.state.selTaskId}`} target="_blank" className="openlink">Open out-of-the-box form</Link>);
         const elemActionButons = (<div>
             <div className="text-end c-footer">
                 {this.state.selTaskId && elemOOTBFormLink}
@@ -1006,7 +1022,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             onRenderHeader={this.onRenderCustomHeaderCreateNewUser}
             isOpen={this.state.showCreatePanel}
             onDismiss={this.onCancelTask}
-            isFooterAtBottom={true}
+            isFooterAtBottom={false}
             onRenderFooterContent={elemTaskMemberFooter}
         >
             <div className="ms-SPLegacyFabricBlock">
@@ -1281,7 +1297,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                     {this.getUserPersona({ UserName: userName, ImageUrl: this.getImageUrl(taskId) })}
                 </Stack.Item>
                 <Stack.Item>
-                    <div style={{ fontSize: "12px", fontWeight: 400 }}>{userName}</div>
+                    <div>{userName}</div>
                 </Stack.Item>
             </Stack>
         );

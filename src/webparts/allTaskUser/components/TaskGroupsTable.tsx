@@ -43,13 +43,13 @@ function TableTaskGroups(props: ITableTaskUsersProps) {
       {
         accessorKey: "TaskId",
         header: null,
-        cell: (info)=>(<div>
-          <Link href="#" onClick={()=>props.EditTask(info.getValue())}><span className='svg__iconbox svg__icon--edit' title='Edit'></span></Link>
-          <Link href="#" onClick={()=>props.DeleteTask(info.getValue())}><span className='svg__iconbox svg__icon--trash' title='Trash'></span></Link>
+        cell: (info)=>(<div className='pull-right alignCenter'>
+          <span onClick={()=>props.EditTask(info.getValue())} className='svg__iconbox svg__icon--edit' title='Edit'></span>
+          <span onClick={()=>props.DeleteTask(info.getValue())} className='svg__iconbox svg__icon--trash' title='Trash'></span>
         </div>),
         enableColumnFilter: false,
         enableSorting: false,
-        minSize:60
+        Size:60
       }
     ],
     [data]
@@ -60,12 +60,13 @@ function TableTaskGroups(props: ITableTaskUsersProps) {
   }, []);
 
   return (
-    <div className="border ms-Grid">
+    <div className="border Alltable p-0 ms-Grid">
           <div className='tbl-button'>
-        <span><PrimaryButton  text="Add Team Group" style={{zIndex:'9999'}} onClick={()=>props.AddTask()} /></span>
+        <button type='button' className='btn btn-primary position-relative' style={{zIndex:'9999'}} onClick={()=>props.AddTask()}>Add Team Group</button>
       </div>
+      <div className='wrapper'>
       { <GlobalCommanTable columns={columns} showPagination={true} data={data} callBackData={callBackData} excelDatas={data} showHeader={true} />}
-    </div>
+      </div></div>
   )
 }
 export default TableTaskGroups;

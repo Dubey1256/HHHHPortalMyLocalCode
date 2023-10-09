@@ -105,7 +105,7 @@ export function Filter({
     const columnFilterValue = column.getFilterValue();
     // style={{ width: placeholder?.size }}
     return (
-        <input style={{ width: "100%" }} className="me-1 my-1 mx-1 on-search-cross"
+        <input style={{ width: "100%" }} className="m-1 ps-10 on-search-cross"
             // type="text"
             title={placeholder?.placeholder}
             type="search"
@@ -753,22 +753,24 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
     return (
         <>
-            {showHeader === true && <div className='tbl-headings justify-content-between mb-1 fixed-Header top-0' style={{ background: '#e9e9e9' }}>
+            {showHeader === true && <div className='tbl-headings justify-content-between fixed-Header top-0' style={{ background: '#e9e9e9' }}>
                 <span className='leftsec'>
-                    {showingAllPortFolioCount === true ? <div className='mb-1'>
-                        <label style={{ color: `${portfolioColor}` }}>
-                            Showing
+                    {showingAllPortFolioCount === true ? <div className='alignCenter mt--2'>
+                        <label>
+                            <label style={{ color: `${portfolioColor}` }}>
+                                Showing
+                            </label>
+                            {portfolioTypeData.map((type: any, index: any) => {
+                                return (
+                                    <>
+                                        {isShowingDataAll === true ? <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</> :
+                                            <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</>}
+                                    </>
+                                )
+                            })}
                         </label>
-                        {portfolioTypeData.map((type: any, index: any) => {
-                            return (
-                                <>
-                                    {isShowingDataAll === true ? <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</> :
-                                        <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</>}
-                                </>
-                            )
-                        })}
-                        <span className="popover__wrapper ms-1" style={{ position: "unset" }} data-bs-toggle="tooltip" data-bs-placement="auto">
-                            <span className='svg__iconbox svg__icon--info alignIcon dark'></span>
+                        <span className="popover__wrapper ms-1 mt--5" style={{ position: "unset" }} data-bs-toggle="tooltip" data-bs-placement="auto">
+                            <span className='svg__iconbox svg__icon--info alignIcon dark mt--2'></span>
                             <span className="popover__content mt-3 m-3 mx-3" style={{ zIndex: 100 }}>
                                 <label style={{ color: `${portfolioColor}` }}>
                                     Showing
@@ -792,7 +794,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
                             </span>
                         </span>
                     </div> :
-                        <span style={{ color: `${portfolioColor}` }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} of ${data?.length}`}</span>}
+                        <span style={{ color: `${portfolioColor}` }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} of ${data?.length} `}</span>}
+                    <span>{items?.showDateTime}</span>
                     <DebouncedInput
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}
@@ -802,7 +805,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     <span className="svg__iconbox svg__icon--setting" style={{ backgroundColor: `${portfolioColor}` }} onClick={() => setSelectedFilterPanelIsOpen(true)}></span>
                     <span className='ms-1'>
                         <select style={{ height: "30px", color: `${portfolioColor}` }}
-                            className="w80"
+                            className="w-100"
                             aria-label="Default select example"
                             value={globalSearchType}
                             onChange={(e) => {
@@ -992,7 +995,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     ))}
                 </select>
             </div> : ''}
-            {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} /> : ''}
+            {/* {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} /> : ''} */}
+            {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} portfolioTypeData={items?.portfolioTypeData} context={items?.AllListId?.Context} /> : ''}
             {selectedFilterPanelIsOpen && <SelectFilterPanel isOpen={selectedFilterPanelIsOpen} selectedFilterCallBack={selectedFilterCallBack} setSelectedFilterPannelData={setSelectedFilterPannelData} selectedFilterPannelData={selectedFilterPannelData} portfolioColor={portfolioColor} />}
         </>
     )

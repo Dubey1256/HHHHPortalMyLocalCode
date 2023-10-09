@@ -133,7 +133,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     let taskUsers = [];
     let results = [];
     results = await web.lists
-      .getById(this.props.TaskUserListID)
+      .getById(this.props.TaskUsertListID)
       .items
       .select('Id', 'IsShowReportPage', 'UserGroupId', 'Suffix', 'SmartTime', 'Title', 'Email', 'SortOrder', 'Role', 'Company', 'ParentID1', 'TaskStatusNotification', 'Status', 'Item_x0020_Cover', 'AssingedToUserId', 'isDeleted', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail', 'ItemType')
       //.filter("ItemType eq 'User'")
@@ -890,7 +890,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     if (filterItemTimeTab.length > 0) {
       for (let index = 0; index < filterItemTimeTab.length; index++) {
         let itemtype = filterItemTimeTab[index];
-        if(itemtype.ListName == 'OffshoreTasks'){
+        if (itemtype.ListName == 'OffshoreTasks') {
           itemtype.ListName = 'Offshore Tasks'
         }
         for (let j = 0; j < itemtype.Query.length; j++) {
@@ -898,7 +898,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           let results = await web.lists
             .getByTitle(itemtype.ListName)
             .items
-            .select('ParentTask/Title', 'ParentTask/Id',  'ClientTime', 'ItemRank', 'Portfolio/Id','Portfolio/Title', 'SiteCompositionSettings', 'TaskLevel', 'TaskLevel', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'TaskID', 'ResponsibleTeam/Id', 'ResponsibleTeam/Title', 'ClientCategory/Id', 'ClientCategory/Title', 'TaskCategories/Id', 'TaskCategories/Title', 'ParentTask/TaskID', 'TaskType/Id', 'TaskType/Title', 'TaskType/Level', 'TaskType/Prefix', 'PriorityRank', 'Reference_x0020_Item_x0020_Json', 'TeamMembers/Title', 'TeamMembers/Name', 'Component/Id', 'Component/Title', 'Component/ItemType', 'TeamMembers/Id', 'Item_x002d_Image', 'ComponentLink', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id', 'AttachmentFiles/FileName', 'FileLeafRef', 'FeedBack', 'Title', 'Id', 'PercentComplete', 'Company', 'StartDate', 'DueDate', 'Comments', 'Categories', 'Status', 'WebpartId', 'Body', 'Mileage', 'PercentComplete', 'Attachments', 'Priority', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
+            .select('ParentTask/Title', 'ParentTask/Id', 'ClientTime', 'ItemRank', 'Portfolio/Id', 'Portfolio/Title', 'SiteCompositionSettings', 'TaskLevel', 'TaskLevel', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'TaskID', 'ResponsibleTeam/Id', 'ResponsibleTeam/Title', 'ClientCategory/Id', 'ClientCategory/Title', 'TaskCategories/Id', 'TaskCategories/Title', 'ParentTask/TaskID', 'TaskType/Id', 'TaskType/Title', 'TaskType/Level', 'TaskType/Prefix', 'PriorityRank', 'Reference_x0020_Item_x0020_Json', 'TeamMembers/Title', 'TeamMembers/Name', 'Component/Id', 'Component/Title', 'Component/ItemType', 'TeamMembers/Id', 'Item_x002d_Image', 'ComponentLink', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id', 'AttachmentFiles/FileName', 'FileLeafRef', 'FeedBack', 'Title', 'Id', 'PercentComplete', 'Company', 'StartDate', 'DueDate', 'Comments', 'Categories', 'Status', 'WebpartId', 'Body', 'Mileage', 'PercentComplete', 'Attachments', 'Priority', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
             .filter(queryType.replace('filter=', '').trim())
             .expand('ParentTask', 'TaskType', 'AssignedTo', 'Component', 'AttachmentFiles', 'Author', 'Editor', 'TeamMembers', 'ResponsibleTeam', 'ClientCategory', 'TaskCategories', 'Portfolio')
             .orderBy('Id', false)
@@ -960,10 +960,10 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             filterItem.Created = getItem.Created;
             filterItem.ListId = getItem.ListId
             if (getItem.Portfolio != undefined) {
-            
-                filterItem.ComponentTitle = getItem.Portfolio?.Title;
-                filterItem.ComponentIDs = getItem.Portfolio?.Id;
-            
+
+              filterItem.ComponentTitle = getItem.Portfolio?.Title;
+              filterItem.ComponentIDs = getItem.Portfolio?.Id;
+
               filterItem.Portfolio = getItem?.Portfolio?.Title
             }
 
@@ -1681,10 +1681,16 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
 
     let dt = [
       {
-        accessorKey: "siteType",
+        accessorFn: (info: any) => info?.Site,
+        cell: (info: any) => <span>
+          <img className='circularImage rounded-circle' src={info?.row?.original?.SiteIcon} />
+        </span>,
+        id: "Site",
         placeholder: "Site",
         header: "",
-        size: 90,
+        resetSorting: false,
+        resetColumnFilters: false,
+        size: 90
       },
       {
         accessorKey: "TaskItemID",
@@ -1800,13 +1806,13 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           }
         }
       }, 200);
-    } 
+    }
     return (
       <div>
         <div className="p-0  " style={{ verticalAlign: "top" }}><h2 className="heading d-flex justify-content-between align-items-center"><span> <a>Timesheet</a> </span><span className="text-end fs-6"><a target="_blank" data-interception="off" href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/UserTimeEntry-Old.aspx`}>Old UserTimeEntry</a></span></h2></div>
         <Row className='smartFilter bg-light border mb-3 col'>
-        <details className='p-0 m-0' open>
-        <summary className='hyperlink'><a className="hreflink pull-left mr-5">All Filters - <span>Task User :</span> </a>
+          <details className='p-0 m-0' open>
+            <summary className='hyperlink'><a className="hreflink pull-left mr-5">All Filters - <span>Task User :</span> </a>
               {this.state.ImageSelectedUsers != null && this.state.ImageSelectedUsers.length > 0 && this.state.ImageSelectedUsers.map((user: any, i: number) => {
                 return <span className="ng-scope">
                   <img className="AssignUserPhoto mr-5" title={user.AssingedToUser.Title} src={user?.Item_x0020_Cover?.Url} />
@@ -1814,19 +1820,19 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               })
               }
               <span className="pull-right"><a href="#">Add smart favorite</a></span>
-     
+
             </summary>
-       
-        <Col>
-          <details open className='p-0'>
-            <span className="pull-right" style={{ display: 'none' }}>
-              <input type="checkbox" className="" onClick={(e) => this.SelectAllGroupMember(e)} />
-              <label>Select All </label>
-            </span>
-            {/* <span className="plus-icon hreflink pl-10 pull-left ng-scope" >
+
+            <Col>
+              <details open className='p-0'>
+                <span className="pull-right" style={{ display: 'none' }}>
+                  <input type="checkbox" className="" onClick={(e) => this.SelectAllGroupMember(e)} />
+                  <label>Select All </label>
+                </span>
+                {/* <span className="plus-icon hreflink pl-10 pull-left ng-scope" >
                 <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/24/list-icon.png" />
             </span> */}
-            {/* <summary><a className="hreflink pull-left mr-5">Task User : </a>
+                {/* <summary><a className="hreflink pull-left mr-5">Task User : </a>
               {this.state.ImageSelectedUsers != null && this.state.ImageSelectedUsers.length > 0 && this.state.ImageSelectedUsers.map((user: any, i: number) => {
                 return <span className="ng-scope">
                   <img className="AssignUserPhoto mr-5" title={user.AssingedToUser.Title} src={user?.Item_x0020_Cover?.Url} />
@@ -1835,194 +1841,194 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               }
               <span className="ng-binding ng-hide"> </span>
             </summary> */}
-          <summary className='hyperlink'>
-          Team members
-          <hr></hr>
-          </summary>
+                <summary className='hyperlink'>
+                  Team members
+                  <hr></hr>
+                </summary>
 
-            <div style={{ display: "block" }}>
-              <div className="taskTeamBox ps-40 ">
-                {this.state.taskUsers != null && this.state.taskUsers.length > 0 && this.state.taskUsers.map((users: any, i: number) => {
-                  return <div className="top-assign">
-                    <div className="team ">
-                      <label className="BdrBtm">
-                        <input style={{ display: 'none' }} className="" type="checkbox"  onClick={(e) => this.SelectedGroup(e, users)} />
-                        {users.childs.length > 0 &&
-                          <>
-                            {users.Title}
-                          </>
+                <div style={{ display: "block" }}>
+                  <div className="taskTeamBox ps-40 ">
+                    {this.state.taskUsers != null && this.state.taskUsers.length > 0 && this.state.taskUsers.map((users: any, i: number) => {
+                      return <div className="top-assign">
+                        <div className="team ">
+                          <label className="BdrBtm">
+                            <input style={{ display: 'none' }} className="" type="checkbox" onClick={(e) => this.SelectedGroup(e, users)} />
+                            {users.childs.length > 0 &&
+                              <>
+                                {users.Title}
+                              </>
 
-                        }
-
-                      </label>
-                      <div className='d-flex'>
-                        {users.childs.length > 0 && users.childs.map((item: any, i: number) => {
-                          return <div className="alignCenter">
-                            {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined ?
-                              <span>
-                                <img id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg ProirityAssignedUserPhoto' : 'ProirityAssignedUserPhoto'} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
-                                  title={item.AssingedToUser.Title}
-                                  src={item.Item_x0020_Cover.Url} />
-                              </span>:
-                                <span className={item?.AssingedToUserId == user?.Id ? 'activeimg suffix_Usericon' : 'suffix_Usericon'} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
-                                title={item?.AssingedToUser?.Title}
-                               >{item?.Suffix}</span>
                             }
+
+                          </label>
+                          <div className='d-flex'>
+                            {users.childs.length > 0 && users.childs.map((item: any, i: number) => {
+                              return <div className="alignCenter">
+                                {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined ?
+                                  <span>
+                                    <img id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg ProirityAssignedUserPhoto' : 'ProirityAssignedUserPhoto'} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
+                                      title={item.AssingedToUser.Title}
+                                      src={item.Item_x0020_Cover.Url} />
+                                  </span> :
+                                  <span className={item?.AssingedToUserId == user?.Id ? 'activeimg suffix_Usericon' : 'suffix_Usericon'} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
+                                    title={item?.AssingedToUser?.Title}
+                                  >{item?.Suffix}</span>
+                                }
+                              </div>
+                            })}
                           </div>
-                        })}
+
+                        </div>
                       </div>
+                    })
+
+                    }
+
+
+                  </div>
+
+                </div>
+              </details>
+              <details open>
+                <summary className='hyperlink'>
+                  Date
+                  <hr></hr>
+                </summary>
+                <Row className="ps-30">
+                  <div>
+                    <div className="col TimeReportDays">
+                      <span className='SpfxCheckRadio me-2'>
+                        <input type="radio" className="radio" name="dateSelection" id="rdCustom" value="Custom" ng-checked="unSelectToday=='Custom'" onClick={() => this.selectDate('Custom')} ng-model="radio" />
+                        <label>Custom</label>
+                      </span>
+                      <span className='SpfxCheckRadio me-2'>
+                        <input type="radio" name="dateSelection" id="rdToday" value="Today" onClick={() => this.selectDate('today')} ng-model="unSelectToday" className="radio" />
+                        <label>Today</label>
+                      </span>
+                      <span className='SpfxCheckRadio me-2'>
+                        <input type="radio" name="dateSelection" id="rdYesterday" value="Yesterday" onClick={() => this.selectDate('yesterday')} ng-model="unSelectYesterday" className="radio" />
+                        <label> Yesterday </label>
+                      </span>
+                      <span className='SpfxCheckRadio me-2'>
+                        <input type="radio" name="dateSelection" defaultChecked={true} id="rdThisWeek" value="ThisWeek" onClick={() => this.selectDate('ThisWeek')} ng-model="unThisWeek" className="radio" />
+                        <label> This Week</label>
+                      </span>
+                      <span className='SpfxCheckRadio me-2'>
+                        <input type="radio" name="dateSelection" id="rdLastWeek" value="LastWeek" onClick={() => this.selectDate('LastWeek')} ng-model="unLastWeek" className="radio" />
+                        <label> Last Week</label>
+                      </span>
+                      <span className='SpfxCheckRadio me-2'>
+                        <input type="radio" name="dateSelection" id="rdThisMonth" value="EntrieMonth" onClick={() => this.selectDate('EntrieMonth')} ng-model="unEntrieMonth" className="radio" />
+                        <label>This Month</label>
+                      </span>
+                      <span className='SpfxCheckRadio me-2'>
+                        <input type="radio" name="dateSelection" id="rdLastMonth" value="LastMonth" onClick={() => this.selectDate('LastMonth')} ng-model="unLastMonth" className="radio" />
+                        <label>Last Month</label>
+                      </span>
+                      <span className='SpfxCheckRadio me-2'>
+                        <input type="radio" name="dateSelection" value="rdLast3Month" onClick={() => this.selectDate('Last3Month')} ng-model="unLast3Month" className="radio" />
+                        <label>Last 3 Months</label>
+                      </span>
+                      <span className='SpfxCheckRadio me-2'>
+                        <input type="radio" name="dateSelection" value="rdEntrieYear" onClick={() => this.selectDate('EntrieYear')} ng-model="unEntrieYear" className="radio" />
+                        <label>This Year</label>
+                      </span>
+                      <span className='SpfxCheckRadio me-2'>
+                        <input type="radio" name="dateSelection" value="rdLastYear" onClick={() => this.selectDate('LastYear')} ng-model="unLastYear" className="radio" />
+                        <label>Last Year</label>
+                      </span>
+                      <span className='SpfxCheckRadio me-2'>
+                        <input type="radio" name="dateSelection" value="rdAllTime" onClick={() => this.selectDate('AllTime')} ng-model="unAllTime" className="radio" />
+                        <label>All Time</label>
+                      </span>
+                      <span className='SpfxCheckRadio me-2'>
+                        <input type="radio" name="dateSelection" value="Presettime" onClick={() => this.selectDate('Presettime')} ng-model="unAllTime" className="radio" />
+                        <label>Pre-set</label>
+                        <img className="hreflink " title="open" ng-click="OpenPresetDatePopup('Presettime')" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" />
+                      </span>
 
                     </div>
                   </div>
-                })
 
-                }
+                </Row>
+                <Row className='ps-30 mt-2'>
+                  <div className="col">
+                    <label ng-required="true" className="full_width ng-binding" ng-bind-html="GetColumnDetails('StartDate') | trustedHTML">Start Date</label>
+                    <DatePicker selected={this.state.startdate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setStartDate(date)} className=" full-width searchbox_height ng-pristine ng-valid ng-touched ng-not-empty" />
+                  </div>
+                  <div className="col">
+                    <label ng-required="true" className="full_width ng-binding" ng-bind-html="GetColumnDetails('EndDate') | trustedHTML" >End Date</label>
+                    <DatePicker selected={this.state.enddate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setEndDate(date)} className=" full-width searchbox_height  ng-pristine ng-valid ng-touched ng-not-empty" />
+                  </div>
+                  <div className='col'>
+                    <label></label>
+                    <div className='mt-1'> <label> <input type="checkbox" className="form-check-input" ng-click="SelectedPortfolio('Component',PortfolioComponent)" /> Component</label>  <label><input type="checkbox" className="form-check-input" ng-click="SelectedPortfolio('Component',PortfolioComponent)" /> Component</label></div>
+                  </div>
+                </Row>
+              </details>
 
 
-              </div>
+              <div id="showFilterBox" className="col mb-2 p-0 ">
+                <div className="togglebox">
+                  <details open>
+                    <summary className='hyperlink' ng-click="filtershowHide()">
 
-            </div>
-          </details>
-          <details open>
-            <summary  className='hyperlink'>
-              Date
-              <hr></hr>
-              </summary>
-              <Row className="ps-30">
-            <div>
-              <div className="col TimeReportDays">
-                <span className='SpfxCheckRadio me-2'>
-                  <input type="radio" className="radio" name="dateSelection" id="rdCustom" value="Custom" ng-checked="unSelectToday=='Custom'" onClick={() => this.selectDate('Custom')} ng-model="radio" />
-                  <label>Custom</label>
-                </span>
-                <span className='SpfxCheckRadio me-2'>
-                  <input type="radio" name="dateSelection" id="rdToday" value="Today" onClick={() => this.selectDate('today')} ng-model="unSelectToday" className="radio" />
-                  <label>Today</label>
-                </span>
-                <span className='SpfxCheckRadio me-2'>
-                  <input type="radio" name="dateSelection" id="rdYesterday" value="Yesterday" onClick={() => this.selectDate('yesterday')} ng-model="unSelectYesterday" className="radio" />
-                  <label> Yesterday </label>
-                </span>
-                <span className='SpfxCheckRadio me-2'>
-                  <input type="radio" name="dateSelection" defaultChecked={true} id="rdThisWeek" value="ThisWeek" onClick={() => this.selectDate('ThisWeek')} ng-model="unThisWeek" className="radio" />
-                  <label> This Week</label>
-                </span>
-                <span className='SpfxCheckRadio me-2'>
-                  <input type="radio" name="dateSelection" id="rdLastWeek" value="LastWeek" onClick={() => this.selectDate('LastWeek')} ng-model="unLastWeek" className="radio" />
-                  <label> Last Week</label>
-                </span>
-                <span className='SpfxCheckRadio me-2'>
-                  <input type="radio" name="dateSelection" id="rdThisMonth" value="EntrieMonth" onClick={() => this.selectDate('EntrieMonth')} ng-model="unEntrieMonth" className="radio" />
-                  <label>This Month</label>
-                </span>
-                <span className='SpfxCheckRadio me-2'>
-                  <input type="radio" name="dateSelection" id="rdLastMonth" value="LastMonth" onClick={() => this.selectDate('LastMonth')} ng-model="unLastMonth" className="radio" />
-                  <label>Last Month</label>
-                </span>
-                <span className='SpfxCheckRadio me-2'>
-                  <input type="radio" name="dateSelection" value="rdLast3Month" onClick={() => this.selectDate('Last3Month')} ng-model="unLast3Month" className="radio" />
-                  <label>Last 3 Months</label>
-                </span>
-                <span className='SpfxCheckRadio me-2'>
-                  <input type="radio" name="dateSelection" value="rdEntrieYear" onClick={() => this.selectDate('EntrieYear')} ng-model="unEntrieYear" className="radio" />
-                  <label>This Year</label>
-                </span>
-                <span className='SpfxCheckRadio me-2'>
-                  <input type="radio" name="dateSelection" value="rdLastYear" onClick={() => this.selectDate('LastYear')} ng-model="unLastYear" className="radio" />
-                  <label>Last Year</label>
-                </span>
-                <span className='SpfxCheckRadio me-2'>
-                  <input type="radio" name="dateSelection" value="rdAllTime" onClick={() => this.selectDate('AllTime')} ng-model="unAllTime" className="radio" />
-                  <label>All Time</label>
-                </span>
-                <span className='SpfxCheckRadio me-2'>
-                  <input type="radio" name="dateSelection" value="Presettime" onClick={() => this.selectDate('Presettime')} ng-model="unAllTime" className="radio" />
-                  <label>Pre-set</label>
-                  <img className="hreflink " title="open" ng-click="OpenPresetDatePopup('Presettime')" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" />
-                </span>
+                      {/* <img className="hreflink wid22" title="Filter" style={{width:'22px'}} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Filter-12-WF.png"/> */}
+                      SmartSearch – Filters
+                      <hr></hr>
 
-              </div>
-            </div>
-           
-          </Row>
-          <Row className='ps-30 mt-2'>
-          <div className="col">
-              <label ng-required="true" className="full_width ng-binding" ng-bind-html="GetColumnDetails('StartDate') | trustedHTML">Start Date</label>
-              <DatePicker selected={this.state.startdate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setStartDate(date)} className=" full-width searchbox_height ng-pristine ng-valid ng-touched ng-not-empty" />
-            </div>
-            <div className="col">
-              <label ng-required="true" className="full_width ng-binding" ng-bind-html="GetColumnDetails('EndDate') | trustedHTML" >End Date</label>
-              <DatePicker selected={this.state.enddate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setEndDate(date)} className=" full-width searchbox_height  ng-pristine ng-valid ng-touched ng-not-empty" />
-            </div>
-            <div className='col'>
-              <label></label>
-            <div className='mt-1'> <label> <input type="checkbox" className="form-check-input" ng-click="SelectedPortfolio('Component',PortfolioComponent)" /> Component</label>  <label><input type="checkbox" className="form-check-input" ng-click="SelectedPortfolio('Component',PortfolioComponent)" /> Component</label></div>
-            </div>
-          </Row>
-          </details>
-        
 
-          <div id="showFilterBox" className="col mb-2 p-0 ">
-            <div className="togglebox">
-              <details open>
-                <summary  className='hyperlink' ng-click="filtershowHide()">
-                 
-                    {/* <img className="hreflink wid22" title="Filter" style={{width:'22px'}} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Filter-12-WF.png"/> */}
-                    SmartSearch – Filters
-                    <hr></hr>
-                 
+                      <span>
+                        {this.state.checkedAll && this.state.filterItems != null && this.state.filterItems.length > 0 &&
+                          this.state.filterItems.map((obj: any) => {
+                            return <span> {obj.Title}
+                              <span>
+                                : ({this.getAllSubChildenCount(obj)})
+                              </span>
+                            </span>
+                          })
+                        }
+                        {this.state.checkedAllSites && this.state.filterSites != null && this.state.filterSites.length > 0 &&
+                          this.state.filterSites.map((obj: any) => {
+                            return <span> {obj.Title}
+                              <span>
+                                : ({this.getAllSubChildenCount(obj)})
+                              </span>
+                            </span>
+                          })
+                        }
+                        {this.state.checkedParentNode != null && !this.state.checkedAll && this.state.checkedParentNode.length > 0 &&
+                          this.state.checkedParentNode.map((obj: any) => {
+                            return <span> {obj.Title}
+                              <span>
+                                : ({this.getAllSubChildenCount(obj)})
+                              </span>
+                            </span>
+                          })
+                        }
+                      </span>
 
-                  <span>
-                    {this.state.checkedAll && this.state.filterItems != null && this.state.filterItems.length > 0 &&
-                      this.state.filterItems.map((obj: any) => {
-                        return <span> {obj.Title}
-                          <span>
-                            : ({this.getAllSubChildenCount(obj)})
-                          </span>
-                        </span>
-                      })
-                    }
-                    {this.state.checkedAllSites && this.state.filterSites != null && this.state.filterSites.length > 0 &&
-                      this.state.filterSites.map((obj: any) => {
-                        return <span> {obj.Title}
-                          <span>
-                            : ({this.getAllSubChildenCount(obj)})
-                          </span>
-                        </span>
-                      })
-                    }
-                    {this.state.checkedParentNode != null && !this.state.checkedAll && this.state.checkedParentNode.length > 0 &&
-                      this.state.checkedParentNode.map((obj: any) => {
-                        return <span> {obj.Title}
-                          <span>
-                            : ({this.getAllSubChildenCount(obj)})
-                          </span>
-                        </span>
-                      })
-                    }
-                  </span>
-
-                  {/* <span className="pull-right">
+                      {/* <span className="pull-right">
                     <span className="hreflink ng-scope" ng-if="!smartfilter2.expanded">
                       <img className="hreflink wid10" style={{width:'10px'}} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/sub_icon.png"/>
                     </span>
                   </span> */}
-                </summary>
+                    </summary>
 
-                <div className="togglecontent ps-30" style={{ display: "block" }}>
-                  <div className="smartSearch-Filter-Section">
-                    <table width="100%" className="indicator_search">
-                      <tbody>
-                        <tr>
-                          <td valign="top" ng-repeat="item in filterGroups">
-                            <div>
-                                <label className='border-bottom full-width pb-1'>
-                                  <input id='chkAllCategory' defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} type="checkbox" ng-model="item.Selected" className="form-check-input me-1" />
-                                  Client Category
-                                </label>
-                                               
-                                <div className="custom-checkbox-tree">
-                                <CheckboxTree
+                    <div className="togglecontent ps-30" style={{ display: "block" }}>
+                      <div className="smartSearch-Filter-Section">
+                        <table width="100%" className="indicator_search">
+                          <tbody>
+                            <tr>
+                              <td valign="top" ng-repeat="item in filterGroups">
+                                <div>
+                                  <label className='border-bottom full-width pb-1'>
+                                    <input id='chkAllCategory' defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} type="checkbox" ng-model="item.Selected" className="form-check-input me-1" />
+                                    Client Category
+                                  </label>
+
+                                  <div className="custom-checkbox-tree">
+                                    <CheckboxTree
                                       nodes={this.state.filterSites}
                                       checked={this.state.checkedSites}
                                       expanded={this.state.expandedSites}
@@ -2039,18 +2045,18 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                                         leaf: null,
                                       }}
                                     />
+                                  </div>
                                 </div>
-                            </div>
-                          </td>
-                          <td valign="top" ng-repeat="item in filterGroups" className="ng-scope">
-                            <div>
-                           
-                                <label className='border-bottom full-width pb-1'>
-                                  <input type="checkbox" id='chkAllSites' defaultChecked={this.state.checkedAllSites} onClick={(e) => this.SelectAllSits(e)} ng-model="item.Selected" className="form-check-input me-1" />
-                                  Sites
-                                </label>
-                                <div className="custom-checkbox-tree">
-                                <CheckboxTree
+                              </td>
+                              <td valign="top" ng-repeat="item in filterGroups" className="ng-scope">
+                                <div>
+
+                                  <label className='border-bottom full-width pb-1'>
+                                    <input type="checkbox" id='chkAllSites' defaultChecked={this.state.checkedAllSites} onClick={(e) => this.SelectAllSits(e)} ng-model="item.Selected" className="form-check-input me-1" />
+                                    Sites
+                                  </label>
+                                  <div className="custom-checkbox-tree">
+                                    <CheckboxTree
                                       nodes={this.state.filterSites}
                                       checked={this.state.checkedSites}
                                       expanded={this.state.expandedSites}
@@ -2067,31 +2073,31 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                                         leaf: null,
                                       }}
                                     />
+                                  </div>
                                 </div>
-                            </div>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
 
-                  </div>
-                  <div className="col text-end mb-2 ">
-                  
-                    <button type="button" className="btnCol btn btn-primary me-1" onClick={(e) => this.updatefilter()}>
-                      Update Filters
-                    </button>
-                    <button type="button" className="btn btn-default me-1" onClick={() => this.ClearFilters()}>
-                      Clear Filters
-                    </button>
-                  </div>
+                      </div>
+                      <div className="col text-end mb-2 ">
 
+                        <button type="button" className="btnCol btn btn-primary me-1" onClick={(e) => this.updatefilter()}>
+                          Update Filters
+                        </button>
+                        <button type="button" className="btn btn-default me-1" onClick={() => this.ClearFilters()}>
+                          Clear Filters
+                        </button>
+                      </div>
+
+                    </div>
+
+                  </details>
                 </div>
-
-              </details>
-            </div>
-          </div>
-        </Col>
-        </details>
+              </div>
+            </Col>
+          </details>
         </Row>
         {this.state.AllTimeEntry != undefined && this.state.AllTimeEntry.length > 0 &&
           <div className='col'>

@@ -113,8 +113,7 @@ const GetMyNotesData=async()=>{
 
     return(
         <>
-      <div className='bg-white col-7 ps-2 pt-3'>
-        <div className='bg-white border p-1'>
+      <div>
           <div className='alignCenter justify-content-between p-1'>
               <span className='fw-bold'>My Notes({myNoteData.length>0?myNoteData.length:0})</span>
             <span>
@@ -146,7 +145,6 @@ const GetMyNotesData=async()=>{
           </div>
             
           </div>
-        </div>
       </div>
        <Panel
         //  onRenderHeader={onRenderCustomHeadereditcomment}

@@ -69,6 +69,14 @@ export default function ProjectOverview(props: any) {
             $("#workbenchPageContent").addClass("hundred");
             isShowTimeEntry = props?.props?.TimeEntry != "" ? JSON.parse(props?.props?.TimeEntry) : "";
             isShowSiteCompostion = props?.props?.SiteCompostion != "" ? JSON.parse(props?.props?.SiteCompostion) : ""
+            const params = new URLSearchParams(window.location.search);
+            let query = params.get("SelectedView");
+            if(query=='ProjectsTask'){
+                setSelectedView('grouped')
+            }
+            if(query=='TodaysTask'){
+                setSelectedView('flat')
+            }
         } catch (error: any) {
             console.log(error)
         }
@@ -306,7 +314,7 @@ export default function ProjectOverview(props: any) {
                     <div className='alignCenter'>
                         {row?.original?.siteType === "Project" ? <>
                             <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
-                            {row?.original?.Body !== null &&  <span className='alignIcon '><InfoIconsToolTip Discription={row?.original?.Body} row={row?.original} /></span>}
+                            {row?.original?.Body !== null &&  <span className='alignIcon  mt--5 '><InfoIconsToolTip Discription={row?.original?.Body} row={row?.original} /></span>}
                         </> : ''}
                         {row?.original?.Item_x0020_Type === "tasks" ? <>
                             <a className='hreflink'
@@ -316,7 +324,7 @@ export default function ProjectOverview(props: any) {
                             >
                                 {row?.original?.Title}
                             </a>
-                            {row?.original?.Body !== null && <span className='alignIcon '><InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} /></span> }
+                            {row?.original?.Body !== null && <span className='alignIcon  mt--5 '><InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} /></span> }
 
 
                         </> : ''}
@@ -355,6 +363,7 @@ export default function ProjectOverview(props: any) {
                 ),
                 id: 'PriorityRank',
                 placeholder: "Priority",
+                isColumnDefultSortingDesc:true,
                 resetColumnFilters: false,
                 sortDescFirst: true,
                 resetSorting: false,
@@ -390,11 +399,11 @@ export default function ProjectOverview(props: any) {
                 ),
                 id: 'DisplayDueDate',
                 placeholder: "Due Date",
+                header: "",
+                resetColumnFilters: false,
                 filterFn: (row:any, columnId:any, filterValue:any) => {
                     return  row?.original?.DisplayDueDate?.includes(filterValue)
                   },
-                header: "",
-                resetColumnFilters: false,
                 resetSorting: false,
                 size: 100,
             },
@@ -517,7 +526,7 @@ export default function ProjectOverview(props: any) {
                                 >
                                     {row?.original?.Title}
                                 </a>
-                                {row?.original?.Body !== null && <span className='alignIcon '><InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} /></span>}
+                                {row?.original?.Body !== null && <span className='alignIcon  mt--5 '><InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} /></span>}
                             </span> : ''}
                     </div>
 
@@ -559,8 +568,7 @@ export default function ProjectOverview(props: any) {
                 placeholder: "Project Priority",
                 resetColumnFilters: false,
                 enableMultiSort: true,
-                sortDescFirst: true,
-                defaultSortDirection: 'desc',
+                isColumnDefultSortingDesc:true,
                 resetSorting: false,
                 header: "",
                 size: 100,
@@ -591,8 +599,8 @@ export default function ProjectOverview(props: any) {
                 id: 'PriorityRank',
                 placeholder: "Priority",
                 resetColumnFilters: false,
-                sortDescFirst: true,
-                resetSorting: false,
+                isColumnDefultSortingDesc:true,
+                enableMultiSort: true,
                 header: "",
                 size: 100,
             },
@@ -641,10 +649,10 @@ export default function ProjectOverview(props: any) {
                 id: 'DisplayDueDate',
                 placeholder: "Due Date",
                 header: "",
+                resetColumnFilters: false,
                 filterFn: (row:any, columnId:any, filterValue:any) => {
                     return  row?.original?.DisplayDueDate?.includes(filterValue)
                   },
-                resetColumnFilters: false,
                 resetSorting: false,
                 size: 100,
             },
@@ -743,7 +751,7 @@ export default function ProjectOverview(props: any) {
                 cell: ({ row, getValue }) => (
                     <div  className='alignCenter'>
                         <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
-                        {row?.original?.Body !== null && <span className='alignIcon '><InfoIconsToolTip Discription={row?.original?.Body} row={row?.original} /></span>}
+                        {row?.original?.Body !== null && <span className='alignIcon  mt--5'><InfoIconsToolTip Discription={row?.original?.Body} row={row?.original} /></span>}
                     </div>
 
                 ),
@@ -779,7 +787,7 @@ export default function ProjectOverview(props: any) {
                 placeholder: "Priority",
                 resetColumnFilters: false,
                 size: 100,
-                sortDescFirst: true,
+                isColumnDefultSortingDesc:true,
                 resetSorting: false,
                 header: ""
             },
@@ -836,10 +844,10 @@ export default function ProjectOverview(props: any) {
                 id: 'DueDate',
                 resetColumnFilters: false,
                 resetSorting: false,
+                placeholder: "Due Date",
                 filterFn: (row:any, columnId:any, filterValue:any) => {
                     return  row?.original?.DisplayDueDate?.includes(filterValue)
                   },
-                placeholder: "Due Date",
                 header: "",
                 size: 100,
             },
@@ -917,7 +925,7 @@ export default function ProjectOverview(props: any) {
                             >
                                 {row?.original?.Title}
                             </a>
-                            {row?.original?.Body !== null && <span className='alignIcon '><InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} /></span>}
+                            {row?.original?.Body !== null && <span className='alignIcon  mt--5 '><InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} /></span>}
 
                         </span>
                     </div>
@@ -976,8 +984,7 @@ export default function ProjectOverview(props: any) {
                 placeholder: "Project Priority",
                 resetColumnFilters: false,
                 enableMultiSort: true,
-                sortDescFirst: true,
-                defaultSortDirection: 'desc',
+                isColumnDefultSortingDesc:true,
                 resetSorting: false,
                 header: "",
                 size: 100,
@@ -1009,8 +1016,7 @@ export default function ProjectOverview(props: any) {
                 placeholder: "Priority",
                 resetColumnFilters: false,
                 resetSorting: false,
-                enableMultiSort: true,
-                defaultSortDirection: 'desc',
+                isColumnDefultSortingDesc:true,
                 sortDescFirst: true,
                 header: "",
                 size: 100,
@@ -1191,7 +1197,7 @@ export default function ProjectOverview(props: any) {
                                     `<tr>
                                     <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item?.siteType} </td>
                                     <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.TaskID} </td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"><p style="margin:0px; color:#333;"><a style="text-decoration: none;" href =${item?.siteUrl}/SitePages/Task-Profile.aspx?taskId= ${item?.Id}&Site=${item?.siteType}> ${item?.Title} </a></p></td>
+                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"><p style="margin:0px; color:#333;"><a style="text-decoration: none;" href =${item?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}> ${item?.Title} </a></p></td>
                                     <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item?.showDesc} </td>
                                     <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.Categories} </td>
                                     <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.PercentComplete} </td>
@@ -1261,7 +1267,7 @@ export default function ProjectOverview(props: any) {
                 `<span style="font-size: 18px;margin-bottom: 10px;">
                 Hi there, <br><br>
                 Below is the working today task of all the team members <strong>(Project Wise):</strong>
-                <p><a href =${AllListId?.siteUrl}/SitePages/Project-Management-Overview.aspx>Click here for flat overview of the today's tasks</a></p>
+                <p><a href =${AllListId?.siteUrl}/SitePages/Project-Management-Overview.aspx?SelectedView=ProjectsTask>Click here for flat overview of the today's tasks</a></p>
                 </span>
                 ${body}
                 <h3>
@@ -1640,9 +1646,9 @@ export default function ProjectOverview(props: any) {
                         <div >
                             <div className='align-items-center d-flex justify-content-between'>
                                     <h2 className='heading'>Project Management Overview</h2>
-                                    <AddProject CallBack={CallBack} AllListId={AllListId} />
+                                    
                                     {/* {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a></span> : ''} */}
-                               
+                            
                             </div>
                             <>
                                 <div className='ProjectOverViewRadioFlat  d-flex justify-content-between SpfxCheckRadio mb-2 mt-1'>
@@ -1661,10 +1667,11 @@ export default function ProjectOverview(props: any) {
                                         </dt>
 
                                     </dl>
-                                    <div className="text-end">
+                                    <div className="m-0 text-end">
+                                       <AddProject CallBack={CallBack} AllListId={AllListId} />
                                         {currentUserData?.Title == "Deepak Trivedi" || currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" ?
                                             <>
-                                                <a className="hreflink" onClick={() => { sendAllWorkingTodayTasks() }}>Share Working Todays's Task</a></>
+                                                <a className="hreflink  ms-1" onClick={() => { sendAllWorkingTodayTasks() }}>Share Working Todays's Task</a></>
                                             : ''}
                                     </div>
                                 </div>
@@ -1686,7 +1693,7 @@ export default function ProjectOverview(props: any) {
                 {IsComponent && <EditProjectPopup props={SharewebComponent} AllListId={AllListId} Call={Call} showProgressBar={showProgressBar}> </EditProjectPopup>}
                 {ShowTeamPopup === true ? <ShowTeamMembers props={checkData} callBack={showTaskTeamCAllBack} TaskUsers={AllTaskUser} /> : ''}
                 {openTimeEntryPopup && <TimeEntryPopup props={taskTimeDetails} CallBackTimeEntry={TimeEntryCallBack} Context={props?.props?.Context} />}
-               
+            
             </div>
             {pageLoaderActive ? <PageLoader /> : ''}
         </>

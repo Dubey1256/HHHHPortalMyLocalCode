@@ -1,26 +1,21 @@
 import * as React from 'react';
 import * as Moment from 'moment';
-// import styles from './CategoriesWeeklyMultipleReport.module.scss';
 import { IUserTimeEntryProps } from './IUserTimeEntryProps';
-import { escape } from '@microsoft/sp-lodash-subset';
-// import '../../cssFolder/foundation.scss';
-// import '../../cssFolder/foundationmin.scss';
-//import './SPfoudationSupport.scss';
-
 import { Web } from "sp-pnp-js";
 import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
-import { SPComponentLoader } from '@microsoft/sp-loader';
-
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import 'react-datepicker/dist/react-datepicker.css';
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import {
   ColumnDef,
 } from "@tanstack/react-table";
 import { SlArrowRight, SlArrowDown } from "react-icons/sl";
 import { Col, Row } from 'react-bootstrap';
-
+import Loader from "react-loader";
+import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
+import EditInstituton from "../../EditPopupFiles/EditComponent";
+var AllListId: any;
 export interface IUserTimeEntryState {
   Result: any;
   taskUsers: any;
@@ -35,21 +30,26 @@ export interface IUserTimeEntryState {
   enddate: Date;
   SitesConfig: any;
   AllTimeEntry: any;
+  BackupAllTimeEntry: any;
   SelectGroupName: string;
   checkedAll: boolean;
   checkedAllSites: boolean;
   checkedParentNode: any;
   resultSummary: any;
   ShowingAllData: any;
+  loaded: any;
   expandIcons: boolean;
   columns: ColumnDef<any, unknown>[];
+  IsTask: any;
+  IsMasterTask: any;
 }
 var user: any = ''
 var userIdByQuery: any = ''
+let portfolioColor: any = '';
+
 export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, IUserTimeEntryState> {
   public constructor(props: IUserTimeEntryProps, state: IUserTimeEntryState) {
     super(props);
-
     this.state = {
       Result: {},
       taskUsers: [],
@@ -64,6 +64,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       enddate: new Date(),
       SitesConfig: [],
       AllTimeEntry: [],
+      BackupAllTimeEntry: [],
       SelectGroupName: '',
       checkedAll: false,
       expandIcons: false,
@@ -71,10 +72,16 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       checkedParentNode: [],
       resultSummary: {},
       ShowingAllData: [],
-      columns: []
+      loaded: false,
+      columns: [],
+      IsTask: '',
+      IsMasterTask: '',
     }
     this.GetResult();
   }
+
+  private SelectedProp = this.props;
+  private BackupAllTimeEntry: any = [];
   private AllTimeEntry: any = [];
   private TotalTimeEntry: any;
   private TotalDays: any;
@@ -95,6 +102,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     await this.GetTaskUsers();
     await this.LoadAllMetaDataFilter();
     await this.DefaultValues()
+    AllListId = this.props;
+    AllListId.isShowTimeEntry = this.props.TimeEntry;
+    AllListId.isShowSiteCompostion = this.props.SiteCompostion
   }
 
   private async DefaultValues() {
@@ -125,18 +135,21 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     document.getElementById('rdThisWeek').click();
 
     this.setState({ ImageSelectedUsers }, () => {
-      this.updatefilter();
+      this.updatefilter(true);
     });
 
   }
 
 
   private async GetTaskUsers() {
+    this.setState({
+      loaded: false,
+    })
     let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
     let taskUsers = [];
     let results = [];
     results = await web.lists
-      .getById(this.props.TaskUserListID)
+      .getById(this.props.TaskUsertListID)
       .items
       .select('Id', 'IsShowReportPage', 'UserGroupId', 'Suffix', 'SmartTime', 'Title', 'Email', 'SortOrder', 'Role', 'Company', 'ParentID1', 'TaskStatusNotification', 'Status', 'Item_x0020_Cover', 'AssingedToUserId', 'isDeleted', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail', 'ItemType')
       //.filter("ItemType eq 'User'")
@@ -385,7 +398,10 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         item.children.push(childItem);
         this.getChildsOfFilter(childItem, items);
       }
+
     }
+    if (item.children == undefined || item.children.length === 0)
+      delete item.children;
   }
 
   private SelectAllGroupMember(ev: any) {
@@ -457,6 +473,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     }
     if (ev.currentTarget.className.indexOf('seclected-Image') > -1) {
       ev.currentTarget.classList.remove('seclected-Image');
+      document.getElementById('UserImg' + item.Id).classList.remove('activeimg');
       item.IsSelected = false;
       //uncheck the group checkbox if any one child is unchecked
       // if (ev.currentTarget.closest('.ng-binding').children[0].checked) {
@@ -474,8 +491,10 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     }
     else {
       ev.currentTarget.classList.add('seclected-Image'); //add element
+      document.getElementById('UserImg' + item.Id).classList.add('activeimg');
       item.IsSelected = true;
-      ImageSelectedUsers = [];
+      if (ImageSelectedUsers == undefined)
+        ImageSelectedUsers = [];
       ImageSelectedUsers.push(item);
     }
 
@@ -672,25 +691,33 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
 
     startdt.setHours(0, 0, 0, 0);
     enddt.setHours(0, 0, 0, 0);
-
+    let StartDate: any
+    StartDate = Moment(startdt).format("YYYY/MM/DD");
+    let EndDate: any
+    EndDate = Moment(enddt).format("YYYY/MM/DD");
     this.setState({
-      startdate: startdt,
-      enddate: enddt
+      startdate: StartDate,
+      enddate: EndDate
     })
   }
 
-  private updatefilter() {
-
+  private updatefilter(IsLoader: any) {
     if (this.state.ImageSelectedUsers == undefined || this.state.ImageSelectedUsers.length == 0) {
       alert('Please Select User');
       return false;
     }
     else {
+      if (IsLoader == true) {
+        this.setState({
+          loaded: false,
+        })
+      }
       this.generateTimeEntry();
     }
   }
 
   private async generateTimeEntry() {
+
     //Create filter Creteria based on Dates and Selected users
     //let filters = '(('; //use when with date filter
     let filters = '('; //use when without date filter
@@ -715,9 +742,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     let resultsOfTimeSheet2 = await web.lists
       .getById(this.props.TaskTimeSheet2ListID)
       .items
-      .select('Id', 'Title', 'TaskDate', 'TaskTime', 'AdditionalTimeEntry', 'Description', 'Modified', 'TaskMigration/Id', 'TaskMigration/Title', 'TaskMigration/Created', 'AuthorId')
+      .select('Id', 'Title', 'TaskDate', 'TaskTime', 'AdditionalTimeEntry', 'Description', 'Modified', 'TaskMigration/Id', 'TaskMigration/Title', 'TaskMigration/Created', 'TaskALAKDigital/Id', 'TaskALAKDigital/Title', 'TaskALAKDigital/Created', 'AuthorId')
       .filter(filters)
-      .expand('TaskMigration')
+      .expand('TaskMigration', 'TaskALAKDigital')
       .getAll(4999);
     console.log(resultsOfTimeSheet2);
 
@@ -754,9 +781,11 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           timeTab.selectedSiteType = config.Title;
           timeTab.siteType = config.Title;
           //timeTab.getUserName = '';
-          timeTab.newSiteUrl = ''; //timeTab.__metadata.uri.split('/_api')[0]
+          timeTab.newSiteUrl = config?.siteUrl?.Url; //timeTab.__metadata.uri.split('/_api')[0]
           timeTab.SiteUrl = timeTab.newSiteUrl;
-          timeTab.SiteIcon = '';
+          timeTab.SiteIcon = config?.Item_x005F_x0020_Cover?.Url;
+          timeTab.listId = config?.listId;
+          timeTab.Site = config.Title;
           timeTab.ImageUrl = config.ImageUrl;
           timeTab.TaskItemID = timeTab[ColumnName].Id;
           timeTab.TaskTitle = timeTab[ColumnName].Title;
@@ -812,10 +841,21 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           if (addtime.TaskDate != undefined) {
             let TaskDateConvert = addtime.TaskDate.split("/");
             let TaskDate = new Date(TaskDateConvert[2] + '/' + TaskDateConvert[1] + '/' + TaskDateConvert[0]);
-            if (TaskDate >= this.state.startdate && TaskDate <= this.state.enddate) {
+
+            let startDateConvert: any = this.state.startdate;
+            startDateConvert = startDateConvert.split("/");
+            let startdate = new Date(startDateConvert[0] + '/' + startDateConvert[1] + '/' + startDateConvert[2]);
+
+            let endDateConvert: any = this.state.enddate;
+            endDateConvert = endDateConvert.split("/");
+            let enddate = new Date(endDateConvert[0] + '/' + endDateConvert[1] + '/' + endDateConvert[2]);
+
+
+            if (TaskDate >= startdate && TaskDate <= enddate) {
               let hours = addtime.TaskTime;
               let minutes = hours * 60;
               addtime.TaskItemID = time.TaskItemID;
+
               addtime.SiteUrl = time.SiteUrl;
               totletimeparent = minutes;
               addtime.MileageJson = totletimeparent;
@@ -833,7 +873,8 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               addtime.Title = time.Title;
               addtime.selectedSiteType = time.selectedSiteType;
               addtime.siteType = time.siteType;
-              addtime.SiteIcon = ''//SharewebCommonFactoryService.GetIconImageUrl(addtime.selectedSiteType, _spPageContextInfo.webAbsoluteUrl);
+              addtime.Site = time?.siteType;
+              addtime.SiteIcon = time?.SiteIcon;//SharewebCommonFactoryService.GetIconImageUrl(addtime.selectedSiteType, _spPageContextInfo.webAbsoluteUrl);
               addtime.ImageUrl = time.ImageUrl;
               if (time.TaskCreated != undefined)
                 addtime.TaskCreatednew = this.ConvertLocalTOServerDate(time.TaskCreated, 'DD/MM/YYYY');
@@ -872,6 +913,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       if (confi['Sitee' + confi.Title].length > 7) {
         let objgre = {
           ListName: confi.CopyTitle,
+          ListId: confi.listId,
           Query: this.SpiltQueryString(confi['Sitee' + confi.Title].slice(0, confi['Sitee' + confi.Title].length - 2))
           //requestcounter += objgre.Query.length;
         }
@@ -915,7 +957,13 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     }
     return '';
   }
-
+  private Call = (res: any) => {
+    this.updatefilter(false);
+    this.setState({
+      IsTask: '',
+      IsMasterTask: ''
+    })
+  }
   private async GetAllSiteTaskData(filterItemTimeTab: any, getAllTimeEntry: any) {
     let callcount = 0;
     let AllSharewebSiteTasks: any = [];
@@ -927,7 +975,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     if (filterItemTimeTab.length > 0) {
       for (let index = 0; index < filterItemTimeTab.length; index++) {
         let itemtype = filterItemTimeTab[index];
-        if(itemtype.ListName == 'OffshoreTasks'){
+        if (itemtype.ListName == 'OffshoreTasks') {
           itemtype.ListName = 'Offshore Tasks'
         }
         for (let j = 0; j < itemtype.Query.length; j++) {
@@ -935,7 +983,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           let results = await web.lists
             .getByTitle(itemtype.ListName)
             .items
-            .select('ParentTask/Title', 'ParentTask/Id',  'ClientTime', 'ItemRank', 'Portfolio/Id','Portfolio/Title', 'SiteCompositionSettings', 'TaskLevel', 'TaskLevel', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'TaskID', 'ResponsibleTeam/Id', 'ResponsibleTeam/Title', 'ClientCategory/Id', 'ClientCategory/Title', 'TaskCategories/Id', 'TaskCategories/Title', 'ParentTask/TaskID', 'TaskType/Id', 'TaskType/Title', 'TaskType/Level', 'TaskType/Prefix', 'PriorityRank', 'Reference_x0020_Item_x0020_Json', 'TeamMembers/Title', 'TeamMembers/Name', 'Component/Id', 'Component/Title', 'Component/ItemType', 'TeamMembers/Id', 'Item_x002d_Image', 'ComponentLink', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id', 'AttachmentFiles/FileName', 'FileLeafRef', 'FeedBack', 'Title', 'Id', 'PercentComplete', 'Company', 'StartDate', 'DueDate', 'Comments', 'Categories', 'Status', 'WebpartId', 'Body', 'Mileage', 'PercentComplete', 'Attachments', 'Priority', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
+            .select('ParentTask/Title', 'ParentTask/Id', 'ClientTime', 'ItemRank', 'Portfolio/Id', 'Portfolio/Title', 'SiteCompositionSettings', 'TaskLevel', 'TaskLevel', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'TaskID', 'ResponsibleTeam/Id', 'ResponsibleTeam/Title', 'ClientCategory/Id', 'ClientCategory/Title', 'TaskCategories/Id', 'TaskCategories/Title', 'ParentTask/TaskID', 'TaskType/Id', 'TaskType/Title', 'TaskType/Level', 'TaskType/Prefix', 'PriorityRank', 'Reference_x0020_Item_x0020_Json', 'TeamMembers/Title', 'TeamMembers/Name', 'Component/Id', 'Component/Title', 'Component/ItemType', 'TeamMembers/Id', 'Item_x002d_Image', 'ComponentLink', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id', 'AttachmentFiles/FileName', 'FileLeafRef', 'FeedBack', 'Title', 'Id', 'PercentComplete', 'Company', 'StartDate', 'DueDate', 'Comments', 'Categories', 'Status', 'WebpartId', 'Body', 'Mileage', 'PercentComplete', 'Attachments', 'Priority', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
             .filter(queryType.replace('filter=', '').trim())
             .expand('ParentTask', 'TaskType', 'AssignedTo', 'Component', 'AttachmentFiles', 'Author', 'Editor', 'TeamMembers', 'ResponsibleTeam', 'ClientCategory', 'TaskCategories', 'Portfolio')
             .orderBy('Id', false)
@@ -945,6 +993,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           let self = this;
           results.forEach(function (Item) {
             Item.siteName = itemtype.ListName;
+            Item.listId = itemtype.ListId;
             Item.ClientTime = JSON.parse(Item.ClientTime);
             Item.PercentComplete = Item.PercentComplete <= 1 ? Item.PercentComplete * 100 : Item.PercentComplete;
             if (Item.PercentComplete != undefined) {
@@ -952,7 +1001,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             }
             Item.NewCompletedDate = Item.CompletedDate;
             Item.NewCreated = Item.Created;
-            Item.ListId = '';//Item.__metadata.uri.split("(guid'")[1].split("')/Items")[0];
+            //Item.listId = '';//Item.__metadata.uri.split("(guid'")[1].split("')/Items")[0];
 
             if (Item.Created != undefined)
               Item.FiltercreatedDate = self.ConvertLocalTOServerDate(Item.Created, "DD/MM/YYYY");
@@ -978,7 +1027,15 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             getItem['siteType'] = filterItem.siteType;
 
             filterItem.CategoryParentId = 0;
-            filterItem.ClientCategory = getItem.ClientCategory;
+            let cate = '';
+            if (getItem?.ClientCategory != undefined && getItem?.ClientCategory?.length > 0) {
+              getItem?.ClientCategory.forEach(function (category: any) {
+                if (category != undefined && category?.Title != undefined)
+                  cate += category?.Title + '; ';
+              })
+            }
+            filterItem.ClientCategory = cate
+            //  filterItem.ClientCategory = getItem.ClientCategory;
             // getItem?.ClientCategory.forEach(function (client: any, index: any) {
             //   if (!this.isExistsclient(filterItem?.ClientCategory, client?.Id))
             //     filterItem.clientCategory += client.Title + '; ';
@@ -1003,13 +1060,16 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             filterItem.TaskID = ''//SharewebCommonFactoryService.getSharewebId(getItem);
             filterItem.Portfolio = getItem?.Portfolio?.Title;
             filterItem.Created = getItem.Created;
-            filterItem.ListId = getItem.ListId
+            //filterItem.ListId = getItem.ListId
+            filterItem.listId = getItem.listId
+
             if (getItem.Portfolio != undefined) {
-            
-                filterItem.ComponentTitle = getItem.Portfolio?.Title;
-                filterItem.ComponentIDs = getItem.Portfolio?.Id;
-            
+
+              filterItem.ComponentTitle = getItem.Portfolio?.Title;
+              filterItem.ComponentIDs = getItem.Portfolio?.Id;
+              filterItem.PortfolioItem = getItem?.Portfolio
               filterItem.Portfolio = getItem?.Portfolio?.Title
+
             }
             // if (getItem.Services != undefined && getItem.Services.length > 0) {
             //   getItem.Services.forEach(function (sItem: any) {
@@ -1036,6 +1096,8 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         item['uniqueTimeId'] = index + 1;
       })
       AllTimeEntryItem = getAllTimeEntry;
+      let CopyAllTimeEntry = [...AllTimeEntryItem]
+      this.BackupAllTimeEntry = CopyAllTimeEntry;
       console.log('All Time Entry');
       console.log(AllTimeEntryItem);
       this.TotalTimeEntry = 0;
@@ -1074,98 +1136,99 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     let filterCheckedSites = this.state.checkedSites;
     let filterSites = this.state.filterSites;
 
-    if (this.state.checked.length == 0) {
-      filterCheckedItem = [];
-      //set All values in filterCheckedItem
-      if (filterItems.length > 0) {
-        filterItems.forEach((child: any) => {
-          filterCheckedItem.push(child.ID);
-          if (child.children.length > 0) {
-            child.children.forEach((subchild: any) => {
-              filterCheckedItem.push(subchild.Id);
-              if (subchild.children.length > 0) {
-                subchild.children.forEach((subchild2: any) => {
-                  filterCheckedItem.push(subchild2.Id);
-                  if (subchild2.children.length > 0) {
-                    subchild2.children.forEach((subchild3: any) => {
-                      filterCheckedItem.push(subchild3.Id);
-                    });
-                  }
-                });
-              }
-            });
-          }
-        });
-      }
-    }
-    if (this.state.checkedSites.length == 0) {
-      filterCheckedSites = [];
-      //set All values in filterSites
-      if (filterSites.length > 0) {
-        filterSites.forEach((child: any) => {
-          filterCheckedSites.push(child.ID);
-          if (child.children.length > 0) {
-            child.children.forEach((subchild: any) => {
-              filterCheckedSites.push(subchild.Id);
-              if (subchild.children.length > 0) {
-                subchild.children.forEach((subchild2: any) => {
-                  filterCheckedSites.push(subchild2.Id);
-                  if (subchild2.children.length > 0) {
-                    subchild2.children.forEach((subchild3: any) => {
-                      filterCheckedSites.push(subchild3.Id);
-                    });
-                  }
-                });
-              }
-            });
-          }
-        });
-      }
+    // if (this.state.checked.length == 0) {
+    //   filterCheckedItem = [];
+    //   //set All values in filterCheckedItem
+    //   if (filterItems.length > 0) {
+    //     filterItems.forEach((child: any) => {
+    //       filterCheckedItem.push(child.ID);
+    //       if (child.children.length > 0) {
+    //         child.children.forEach((subchild: any) => {
+    //           filterCheckedItem.push(subchild.Id);
+    //           if (subchild.children.length > 0) {
+    //             subchild.children.forEach((subchild2: any) => {
+    //               filterCheckedItem.push(subchild2.Id);
+    //               if (subchild2.children.length > 0) {
+    //                 subchild2.children.forEach((subchild3: any) => {
+    //                   filterCheckedItem.push(subchild3.Id);
+    //                 });
+    //               }
+    //             });
+    //           }
+    //         });
+    //       }
+    //     });
+    //   }
+    // }
+    // if (this.state.checkedSites.length == 0) {
+    //   filterCheckedSites = [];
+    //   //set All values in filterSites
+    //   if (filterSites.length > 0) {
+    //     filterSites.forEach((child: any) => {
+    //       filterCheckedSites.push(child.ID);
+    //       if (child.children.length > 0) {
+    //         child.children.forEach((subchild: any) => {
+    //           filterCheckedSites.push(subchild.Id);
+    //           if (subchild.children.length > 0) {
+    //             subchild.children.forEach((subchild2: any) => {
+    //               filterCheckedSites.push(subchild2.Id);
+    //               if (subchild2.children.length > 0) {
+    //                 subchild2.children.forEach((subchild3: any) => {
+    //                   filterCheckedSites.push(subchild3.Id);
+    //                 });
+    //               }
+    //             });
+    //           }
+    //         });
+    //       }
+    //     });
+    //   }
 
-    }
+    // }
     //Get Selected filters of category
-    for (let index = 0; index < filterCheckedItem.length; index++) {
-      let id = filterCheckedItem[index];
-      filterItems.forEach(function (filterItem: any) {
-        if (filterItem.value == id)
-          selectedFilters.push(filterItem);
-        if (filterItem.children != undefined && filterItem.children.length > 0) {
-          filterItem.children.forEach(function (child: any) {
-            if (child.value == id)
-              selectedFilters.push(child);
-            if (child.children != undefined && child.children.length > 0) {
-              child.children.forEach(function (subchild: any) {
-                if (subchild.value == id)
-                  selectedFilters.push(subchild);
-              });
-            }
-          });
-        }
-      });
+    if (filterCheckedSites != undefined && filterCheckedItem?.length > 0) {
+      for (let index = 0; index < filterCheckedItem?.length; index++) {
+        let id = filterCheckedItem[index];
+        filterItems.forEach(function (filterItem: any) {
+          if (filterItem.value == id)
+            selectedFilters.push(filterItem);
+          if (filterItem.children != undefined && filterItem.children.length > 0) {
+            filterItem.children.forEach(function (child: any) {
+              if (child.value == id)
+                selectedFilters.push(child);
+              if (child.children != undefined && child.children.length > 0) {
+                child.children.forEach(function (subchild: any) {
+                  if (subchild.value == id)
+                    selectedFilters.push(subchild);
+                });
+              }
+            });
+          }
+        });
+      }
     }
-
     //Get Selected filters of sites
-
-    for (let index = 0; index < filterCheckedSites.length; index++) {
-      let id = filterCheckedSites[index];
-      filterSites.forEach(function (filterItem: any) {
-        if (filterItem.value == id)
-          selectedFilters.push(filterItem);
-        if (filterItem.children != undefined && filterItem.children.length > 0) {
-          filterItem.children.forEach(function (child: any) {
-            if (child.value == id)
-              selectedFilters.push(child);
-            if (child.children != undefined && child.children.length > 0) {
-              child.children.forEach(function (subchild: any) {
-                if (subchild.value == id)
-                  selectedFilters.push(subchild);
-              });
-            }
-          });
-        }
-      });
+    if (filterCheckedSites != undefined && filterCheckedSites?.length > 0) {
+      for (let index = 0; index < filterCheckedSites?.length; index++) {
+        let id = filterCheckedSites[index];
+        filterSites.forEach(function (filterItem: any) {
+          if (filterItem.value == id)
+            selectedFilters.push(filterItem);
+          if (filterItem.children != undefined && filterItem.children.length > 0) {
+            filterItem.children.forEach(function (child: any) {
+              if (child.value == id)
+                selectedFilters.push(child);
+              if (child.children != undefined && child.children.length > 0) {
+                child.children.forEach(function (subchild: any) {
+                  if (subchild.value == id)
+                    selectedFilters.push(subchild);
+                });
+              }
+            });
+          }
+        });
+      }
     }
-
     console.log('Selected Filter checkbox');
     console.log(selectedFilters);
 
@@ -1277,7 +1340,18 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         else
           commonItems = CategoryItems;
       }
-
+      if (isSitesSelected) {
+        isOtherselected = true;
+        if (commonItems.length > 0) {
+          commonItems = this.getAllowCommonItems(commonItems, SitesItems);
+          if (commonItems.length == 0) {
+            CategoryItems = null;
+            SitesItems = null;
+          }
+        }
+        else
+          commonItems = SitesItems;
+      }
       console.log('Common Items');
       console.log(commonItems);
 
@@ -1294,6 +1368,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
 
       console.log('All Time Entry');
       console.log(this.AllTimeEntry);
+
       this.TotalTimeEntry = 0;
       for (let index = 0; index < this.AllTimeEntry.length; index++) {
         let timeitem = this.AllTimeEntry[index];
@@ -1335,6 +1410,44 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       //$scope.CopyAllTimeEntry = SharewebCommonFactoryService.ArrayCopy($scope.AllTimeEntry);
 
     }
+    else {
+      this.AllTimeEntry = filterTask;
+      console.log('All Time Entry');
+      console.log(this.AllTimeEntry);
+      this.TotalTimeEntry = 0;
+      for (let index = 0; index < this.AllTimeEntry.length; index++) {
+        let timeitem = this.AllTimeEntry[index];
+        this.TotalTimeEntry += timeitem.Effort;
+
+      }
+      this.TotalTimeEntry = (this.TotalTimeEntry).toFixed(2);
+      this.TotalDays = this.TotalTimeEntry / 8;
+      this.TotalDays = (this.TotalDays).toFixed(2);
+      let resultSummary = {}
+      let TotalValue = 0, SmartHoursTotal = 0, AdjustedTime = 0, RoundAdjustedTime = 0, totalEntries = 0;
+      if (this.AllTimeEntry.length > 0) {
+        for (let index = 0; index < this.AllTimeEntry.length; index++) {
+          let element = this.AllTimeEntry[index];
+          TotalValue += parseFloat(element.TotalValue);
+          SmartHoursTotal += parseFloat(element.SmartHoursTotal);
+          AdjustedTime += parseFloat(element.AdjustedTime);
+          RoundAdjustedTime += parseFloat(element.RoundAdjustedTime);
+        }
+        resultSummary = {
+          totalTime: this.TotalTimeEntry,
+          totalDays: this.TotalDays,
+          totalEntries: this.AllTimeEntry.length
+        }
+      }
+      console.log(resultSummary);
+      this.setState({
+        AllTimeEntry: this.AllTimeEntry,
+        resultSummary,
+      }, () => this.createTableColumns())
+    }
+    this.setState({
+      loaded: true,
+    }, () => this.createTableColumns())
   }
 
   private issmartExistsIds(array: any[], Ids: { TaskItemID: any; ID: any; TimeEntryId: any; }) {
@@ -1649,9 +1762,44 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
   }
 
   private ClearFilters() {
+    this.AllTimeEntry = this.BackupAllTimeEntry;
+    console.log('All Time Entry');
+    console.log(this.AllTimeEntry);
+    this.TotalTimeEntry = 0;
+    for (let index = 0; index < this.AllTimeEntry.length; index++) {
+      let timeitem = this.AllTimeEntry[index];
+      this.TotalTimeEntry += timeitem.Effort;
+
+    }
+    this.TotalTimeEntry = (this.TotalTimeEntry).toFixed(2);
+    this.TotalDays = this.TotalTimeEntry / 8;
+    this.TotalDays = (this.TotalDays).toFixed(2);
+    let resultSummary = {}
+    let TotalValue = 0, SmartHoursTotal = 0, AdjustedTime = 0, RoundAdjustedTime = 0, totalEntries = 0;
+    if (this.AllTimeEntry.length > 0) {
+      for (let index = 0; index < this.AllTimeEntry.length; index++) {
+        let element = this.AllTimeEntry[index];
+        TotalValue += parseFloat(element.TotalValue);
+        SmartHoursTotal += parseFloat(element.SmartHoursTotal);
+        AdjustedTime += parseFloat(element.AdjustedTime);
+        RoundAdjustedTime += parseFloat(element.RoundAdjustedTime);
+      }
+      resultSummary = {
+        totalTime: this.TotalTimeEntry,
+        totalDays: this.TotalDays,
+        totalEntries: this.AllTimeEntry.length
+      }
+    }
+    console.log(resultSummary);
     this.setState({
-      checked: []
-    })
+      AllTimeEntry: this.AllTimeEntry,
+      resultSummary,
+    }, () => this.createTableColumns())
+    this.setState({
+      AllTimeEntry: this.BackupAllTimeEntry,
+      checked: [],
+      checkedSites: []
+    }, () => this.createTableColumns())
   }
 
   private getAllSubChildenCount(item: any) {
@@ -1720,6 +1868,20 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       AllTimeEntry
     })
   }
+  private EditComponentPopup = (item: any) => {
+    item["siteUrl"] = this.props?.Context?.pageContext?.web?.absoluteUrl;
+    item["listName"] = "Master Tasks";
+    this.setState({
+      IsMasterTask: item
+    });
+  };
+  private EditPopup = (item: any) => {
+    item.Id = item?.TaskItemID;
+    item.ID = item?.TaskItemID
+    this.setState({
+      IsTask: item
+    });
+  };
 
   private sortByChild(propertyName: any, order: any) {
     let AllTimeEntry = this.state.AllTimeEntry;
@@ -1742,23 +1904,41 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
 
     let dt = [
       {
-        accessorKey: "siteType",
+        accessorKey: "",
+        placeholder: "",
+        hasCheckbox: false,
+        hasCustomExpanded: false,
+        hasExpanded: false,
+        isHeaderNotAvlable: true,
+        size: 55,
+        id: 'Id',
+      },
+      {
+        accessorFn: (info: any) => info?.Site,
+        cell: (info: any) => <span>
+          <img className='circularImage rounded-circle' src={info?.row?.original?.SiteIcon} />
+        </span>,
+        id: "Site",
         placeholder: "Site",
         header: "",
-        size: 90,
+        resetSorting: false,
+        resetColumnFilters: false,
+        size: 90
       },
       {
         accessorKey: "TaskItemID",
         placeholder: "Task",
+        id: "TaskItemID",
         header: "",
         size: 90,
       },
 
       {
         accessorKey: 'TaskTitle',
+        id: "TaskTitle",
         header: "",
         placeholder: "Task Title",
-        cell: (info: any) => <a className="hreflink serviceColor_Active" target="_blank"
+        cell: (info: any) => <a data-interception="off" className="hreflink serviceColor_Active" target="_blank"
           href={this.props.Context.pageContext.web.absoluteUrl + "/SitePages/Task-Profile.aspx?taskId=" + info.row.original.TaskItemID + "&Site=" + info.row.original.siteType}>
           {info.row.original.TaskTitle}
         </a>,
@@ -1774,12 +1954,14 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
      },*/
       {
         accessorKey: "ClientCategory",
+        id: "ClientCategory",
         placeholder: "Client Category",
         header: "",
         size: 90,
       },
       {
         accessorKey: "PercentComplete",
+        id: "PercentComplete",
         placeholder: "%",
         header: "",
         size: 90,
@@ -1787,32 +1969,54 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
 
       {
         accessorKey: 'ComponentTitle',
+        id: "ComponentTitle",
         header: "",
         placeholder: "Component",
-        cell: (info: any) => <a className="hreflink serviceColor_Active" target="_blank"
+        cell: (info: any) => <><a data-interception="off" className="hreflink serviceColor_Active" target="_blank"
           href={this.props.Context.pageContext.web.absoluteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + info.row?.original?.ComponentIDs}>
           {info.row?.original?.ComponentTitle}
-        </a>,
+        </a><span
+          className="svg__iconbox svg__icon--edit alignIcon"
+          onClick={(e) => this.EditComponentPopup(info.row?.original?.PortfolioItem)}>
+          </span></>,
         size: 100,
       },
 
       {
         accessorKey: "Description",
+        id: "Description",
         placeholder: "Time Description",
         header: "",
         size: 175,
       },
       {
         accessorKey: "TimeEntryDate",
+        id: "TimeEntryDate",
         placeholder: "Time Entry",
         header: "",
         size: 175,
       },
       {
         accessorKey: "TaskTime",
+        id: "TaskTime",
         placeholder: "Time",
         header: "",
         size: 90,
+      }, {
+        cell: (info: any) => (
+          <span
+            title="Edit Task"
+            onClick={() => this.EditPopup(info?.row?.original)}
+            className="alignIcon  svg__iconbox svg__icon--edit hreflink"
+          ></span>
+        ),
+        id: 'Actions',
+        accessorKey: "",
+        canSort: false,
+        resetSorting: false,
+        resetColumnFilters: false,
+        placeholder: "",
+        size: 55
       }
 
     ]
@@ -1846,9 +2050,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     return (
       <div>
         <div className="p-0  " style={{ verticalAlign: "top" }}><h2 className="heading d-flex justify-content-between align-items-center"><span> <a>Timesheet</a> </span><span className="text-end fs-6"><a target="_blank" data-interception="off" href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/UserTimeEntry-Old.aspx`}>Old UserTimeEntry</a></span></h2></div>
-        <Row className='smartFilter bg-light border mb-3 col'>
-        <details className='p-0 m-0' open>
-        <summary className='hyperlink'><a className="hreflink pull-left mr-5">All Filters - <span>Task User :</span> </a>
+        <Col className='smartFilter bg-light border mb-3 '>
+          <details className='p-0 m-0' open>
+            <summary className='hyperlink'><a className="hreflink pull-left mr-5 pe-2 ">All Filters - <span className='me-1'>Task User :</span> </a>
               {this.state.ImageSelectedUsers != null && this.state.ImageSelectedUsers.length > 0 && this.state.ImageSelectedUsers.map((user: any, i: number) => {
                 return <span className="ng-scope">
                   <img className="AssignUserPhoto mr-5" title={user.AssingedToUser.Title} src={user?.Item_x0020_Cover?.Url} />
@@ -1856,19 +2060,19 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               })
               }
               {/* <span className="pull-right"><a href="#">Add smart favorite</a></span> */}
-     
+
             </summary>
-       
-        <Col>
-          <details open className='p-0'>
-            <span className="pull-right" style={{ display: 'none' }}>
-              <input type="checkbox" className="" onClick={(e) => this.SelectAllGroupMember(e)} />
-              <label>Select All </label>
-            </span>
-            {/* <span className="plus-icon hreflink pl-10 pull-left ng-scope" >
+
+            <Col>
+              <details open className='p-0'>
+                <span className="pull-right" style={{ display: 'none' }}>
+                  <input type="checkbox" className="" onClick={(e) => this.SelectAllGroupMember(e)} />
+                  <label>Select All </label>
+                </span>
+                {/* <span className="plus-icon hreflink pl-10 pull-left ng-scope" >
                 <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/24/list-icon.png" />
             </span> */}
-            {/* <summary><a className="hreflink pull-left mr-5">Task User : </a>
+                {/* <summary><a className="hreflink pull-left mr-5">Task User : </a>
               {this.state.ImageSelectedUsers != null && this.state.ImageSelectedUsers.length > 0 && this.state.ImageSelectedUsers.map((user: any, i: number) => {
                 return <span className="ng-scope">
                   <img className="AssignUserPhoto mr-5" title={user.AssingedToUser.Title} src={user?.Item_x0020_Cover?.Url} />
@@ -1877,271 +2081,297 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               }
               <span className="ng-binding ng-hide"> </span>
             </summary> */}
-          <summary className='hyperlink'>
-          Team members
-          <hr></hr>
-          </summary>
+                <summary className='hyperlink'>
+                  Team members
+                  <hr></hr>
+                </summary>
 
-            <div style={{ display: "block" }}>
-              <div className="taskTeamBox ps-40 ">
-                {this.state.taskUsers != null && this.state.taskUsers.length > 0 && this.state.taskUsers.map((users: any, i: number) => {
-                  return <div className="top-assign">
-                    <div className="team ">
-                      <label className="BdrBtm">
-                        <input style={{ display: 'none' }} className="" type="checkbox"  onClick={(e) => this.SelectedGroup(e, users)} />
-                        {users.childs.length > 0 &&
-                          <>
-                            {users.Title}
-                          </>
+                <div style={{ display: "block" }}>
+                  <div className="taskTeamBox ps-40 ">
+                    {this.state.taskUsers != null && this.state.taskUsers.length > 0 && this.state.taskUsers.map((users: any, i: number) => {
+                      return <div className="top-assign">
+                        <div className="team ">
+                          <label className="BdrBtm">
+                            <input style={{ display: 'none' }} className="" type="checkbox" onClick={(e) => this.SelectedGroup(e, users)} />
+                            {users.childs.length > 0 &&
+                              <>
+                                {users.Title}
+                              </>
 
-                        }
-
-                      </label>
-                      <div className='d-flex'>
-                        {users.childs.length > 0 && users.childs.map((item: any, i: number) => {
-                          return <div className="alignCenter">
-                            {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined ?
-                              <span>
-                                <img id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg ProirityAssignedUserPhoto' : 'ProirityAssignedUserPhoto'} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
-                                  title={item.AssingedToUser.Title}
-                                  src={item.Item_x0020_Cover.Url} />
-                              </span>:
-                                <span className={item?.AssingedToUserId == user?.Id ? 'activeimg suffix_Usericon' : 'suffix_Usericon'} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
-                                title={item?.AssingedToUser?.Title}
-                               >{item?.Suffix}</span>
                             }
+
+                          </label>
+                          <div className='d-flex'>
+                            {users.childs.length > 0 && users.childs.map((item: any, i: number) => {
+                              return <div className="alignCenter">
+                                {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined ?
+                                  <span>
+                                    <img id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg seclected-Image ProirityAssignedUserPhoto' : 'ProirityAssignedUserPhoto'} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
+                                      title={item.AssingedToUser.Title}
+                                      src={item.Item_x0020_Cover.Url} />
+                                  </span> :
+                                  <span className={item?.AssingedToUserId == user?.Id ? 'activeimg seclected-Image suffix_Usericon' : 'suffix_Usericon'} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
+                                    title={item?.AssingedToUser?.Title}
+                                  >{item?.Suffix}</span>
+                                }
+                              </div>
+                            })}
                           </div>
-                        })}
+
+                        </div>
                       </div>
+                    })
+
+                    }
+
+
+                  </div>
+
+                </div>
+              </details>
+              <details open>
+                <summary className='hyperlink'>
+                  Date
+                  <hr></hr>
+                </summary>
+                <Row className="ps-30">
+                  <div>
+                    <div className="col TimeReportDays">
+                      <span className='SpfxCheckRadio me-2'>
+                        <input type="radio" className="radio" name="dateSelection" id="rdCustom" value="Custom" ng-checked="unSelectToday=='Custom'" onClick={() => this.selectDate('Custom')} ng-model="radio" />
+                        <label>Custom</label>
+                      </span>
+                      <span className='SpfxCheckRadio me-2'>
+                        <input type="radio" name="dateSelection" id="rdToday" value="Today" onClick={() => this.selectDate('today')} ng-model="unSelectToday" className="radio" />
+                        <label>Today</label>
+                      </span>
+                      <span className='SpfxCheckRadio me-2'>
+                        <input type="radio" name="dateSelection" id="rdYesterday" value="Yesterday" onClick={() => this.selectDate('yesterday')} ng-model="unSelectYesterday" className="radio" />
+                        <label> Yesterday </label>
+                      </span>
+                      <span className='SpfxCheckRadio me-2'>
+                        <input type="radio" name="dateSelection" defaultChecked={true} id="rdThisWeek" value="ThisWeek" onClick={() => this.selectDate('ThisWeek')} ng-model="unThisWeek" className="radio" />
+                        <label> This Week</label>
+                      </span>
+                      <span className='SpfxCheckRadio me-2'>
+                        <input type="radio" name="dateSelection" id="rdLastWeek" value="LastWeek" onClick={() => this.selectDate('LastWeek')} ng-model="unLastWeek" className="radio" />
+                        <label> Last Week</label>
+                      </span>
+                      <span className='SpfxCheckRadio me-2'>
+                        <input type="radio" name="dateSelection" id="rdThisMonth" value="EntrieMonth" onClick={() => this.selectDate('EntrieMonth')} ng-model="unEntrieMonth" className="radio" />
+                        <label>This Month</label>
+                      </span>
+                      <span className='SpfxCheckRadio me-2'>
+                        <input type="radio" name="dateSelection" id="rdLastMonth" value="LastMonth" onClick={() => this.selectDate('LastMonth')} ng-model="unLastMonth" className="radio" />
+                        <label>Last Month</label>
+                      </span>
+                      <span className='SpfxCheckRadio me-2'>
+                        <input type="radio" name="dateSelection" value="rdLast3Month" onClick={() => this.selectDate('Last3Month')} ng-model="unLast3Month" className="radio" />
+                        <label>Last 3 Months</label>
+                      </span>
+                      <span className='SpfxCheckRadio me-2'>
+                        <input type="radio" name="dateSelection" value="rdEntrieYear" onClick={() => this.selectDate('EntrieYear')} ng-model="unEntrieYear" className="radio" />
+                        <label>This Year</label>
+                      </span>
+                      <span className='SpfxCheckRadio me-2'>
+                        <input type="radio" name="dateSelection" value="rdLastYear" onClick={() => this.selectDate('LastYear')} ng-model="unLastYear" className="radio" />
+                        <label>Last Year</label>
+                      </span>
+                      <span className='SpfxCheckRadio me-2'>
+                        <input type="radio" name="dateSelection" value="rdAllTime" onClick={() => this.selectDate('AllTime')} ng-model="unAllTime" className="radio" />
+                        <label>All Time</label>
+                      </span>
+                      <span className='SpfxCheckRadio me-2'>
+                        <input type="radio" name="dateSelection" value="Presettime" onClick={() => this.selectDate('Presettime')} ng-model="unAllTime" className="radio" />
+                        <label>Pre-set</label>
+                        <span className="svg__iconbox svg__icon--editBox alignIcon" ng-click="OpenPresetDatePopup('Presettime')"></span>
+                        {/* <img className="hreflink " title="open" ng-click="OpenPresetDatePopup('Presettime')" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" /> */}
+                      </span>
 
                     </div>
                   </div>
-                })
 
-                }
+                </Row>
+                <Row className='ps-30 mt-2'>
+                  <div className="col">
+                    <label>Start Date</label>
+                    <span>
+                      {/* <DatePicker selected={this.state.startdate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setStartDate(date)} className="full-width" /> */}
+                      <input type="date" className="form-control" max="9999-12-31" min={this.state.startdate ? Moment(this.state.startdate).format("YYYY-MM-DD") : ""}
+                        value={this.state.startdate ? Moment(this.state.startdate).format("YYYY-MM-DD") : ''}
+                        onChange={(date: any) => this.setStartDate(date)} />
+                    </span>
+                  </div>
+                  <div className="col">
+                    <label>End Date</label>
+                    <span>
+                      {/* <DatePicker selected={this.state.enddate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setEndDate(date)} className="full-width" /> */}
+                      <input type="date" className="form-control" max="9999-12-31" min={this.state.enddate ? Moment(this.state.enddate).format("YYYY-MM-DD") : ""}
+                        value={this.state.enddate ? Moment(this.state.enddate).format("YYYY-MM-DD") : ''}
+                        onChange={(date: any) => this.setEndDate(date)} />
+                    </span>
+                  </div>
+                  <div className='col'>
+                    <label></label>
+                    <div className='mt-1'>
+                      <label> <input type="checkbox" className="form-check-input" ng-click="SelectedPortfolio('Component',PortfolioComponent)" /> Component</label>
+                      <label><input type="checkbox" className="form-check-input" ng-click="SelectedPortfolio('Service',PortfolioComponent)" /> Service</label>
+                    </div>
+                  </div>
+                </Row>
+              </details>
 
 
-              </div>
+              <div id="showFilterBox" className="col mb-2 p-0 ">
+                <div className="togglebox">
+                  <details open>
+                    <summary className='hyperlink' ng-click="filtershowHide()">
 
-            </div>
-          </details>
-          <details open>
-            <summary  className='hyperlink'>
-              Date
-              <hr></hr>
-              </summary>
-              <Row className="ps-30">
-            <div>
-              <div className="col TimeReportDays">
-                <span className='SpfxCheckRadio me-2'>
-                  <input type="radio" className="radio" name="dateSelection" id="rdCustom" value="Custom" ng-checked="unSelectToday=='Custom'" onClick={() => this.selectDate('Custom')} ng-model="radio" />
-                  <label>Custom</label>
-                </span>
-                <span className='SpfxCheckRadio me-2'>
-                  <input type="radio" name="dateSelection" id="rdToday" value="Today" onClick={() => this.selectDate('today')} ng-model="unSelectToday" className="radio" />
-                  <label>Today</label>
-                </span>
-                <span className='SpfxCheckRadio me-2'>
-                  <input type="radio" name="dateSelection" id="rdYesterday" value="Yesterday" onClick={() => this.selectDate('yesterday')} ng-model="unSelectYesterday" className="radio" />
-                  <label> Yesterday </label>
-                </span>
-                <span className='SpfxCheckRadio me-2'>
-                  <input type="radio" name="dateSelection" defaultChecked={true} id="rdThisWeek" value="ThisWeek" onClick={() => this.selectDate('ThisWeek')} ng-model="unThisWeek" className="radio" />
-                  <label> This Week</label>
-                </span>
-                <span className='SpfxCheckRadio me-2'>
-                  <input type="radio" name="dateSelection" id="rdLastWeek" value="LastWeek" onClick={() => this.selectDate('LastWeek')} ng-model="unLastWeek" className="radio" />
-                  <label> Last Week</label>
-                </span>
-                <span className='SpfxCheckRadio me-2'>
-                  <input type="radio" name="dateSelection" id="rdThisMonth" value="EntrieMonth" onClick={() => this.selectDate('EntrieMonth')} ng-model="unEntrieMonth" className="radio" />
-                  <label>This Month</label>
-                </span>
-                <span className='SpfxCheckRadio me-2'>
-                  <input type="radio" name="dateSelection" id="rdLastMonth" value="LastMonth" onClick={() => this.selectDate('LastMonth')} ng-model="unLastMonth" className="radio" />
-                  <label>Last Month</label>
-                </span>
-                <span className='SpfxCheckRadio me-2'>
-                  <input type="radio" name="dateSelection" value="rdLast3Month" onClick={() => this.selectDate('Last3Month')} ng-model="unLast3Month" className="radio" />
-                  <label>Last 3 Months</label>
-                </span>
-                <span className='SpfxCheckRadio me-2'>
-                  <input type="radio" name="dateSelection" value="rdEntrieYear" onClick={() => this.selectDate('EntrieYear')} ng-model="unEntrieYear" className="radio" />
-                  <label>This Year</label>
-                </span>
-                <span className='SpfxCheckRadio me-2'>
-                  <input type="radio" name="dateSelection" value="rdLastYear" onClick={() => this.selectDate('LastYear')} ng-model="unLastYear" className="radio" />
-                  <label>Last Year</label>
-                </span>
-                <span className='SpfxCheckRadio me-2'>
-                  <input type="radio" name="dateSelection" value="rdAllTime" onClick={() => this.selectDate('AllTime')} ng-model="unAllTime" className="radio" />
-                  <label>All Time</label>
-                </span>
-                <span className='SpfxCheckRadio me-2'>
-                  <input type="radio" name="dateSelection" value="Presettime" onClick={() => this.selectDate('Presettime')} ng-model="unAllTime" className="radio" />
-                  <label>Pre-set</label>
-                  <span className="svg__iconbox svg__icon--editBox" ng-click="OpenPresetDatePopup('Presettime')"></span>
-                  {/* <img className="hreflink " title="open" ng-click="OpenPresetDatePopup('Presettime')" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" /> */}
-                </span>
+                      {/* <img className="hreflink wid22" title="Filter" style={{width:'22px'}} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Filter-12-WF.png"/> */}
+                      SmartSearch – Filters
+                      <hr></hr>
 
-              </div>
-            </div>
-           
-          </Row>
-          <Row className='ps-30 mt-2'>
-          <div className="col">
-              <label ng-required="true" className="full_width ng-binding" ng-bind-html="GetColumnDetails('StartDate') | trustedHTML">Start Date</label>
-              <DatePicker selected={this.state.startdate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setStartDate(date)} className=" full-width searchbox_height ng-pristine ng-valid ng-touched ng-not-empty" />
-            </div>
-            <div className="col">
-              <label ng-required="true" className="full_width ng-binding" ng-bind-html="GetColumnDetails('EndDate') | trustedHTML" >End Date</label>
-              <DatePicker selected={this.state.enddate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setEndDate(date)} className=" full-width searchbox_height  ng-pristine ng-valid ng-touched ng-not-empty" />
-            </div>
-            <div className='col'>
-              <label></label>
-            <div className='mt-1'> <label> <input type="checkbox" className="form-check-input" ng-click="SelectedPortfolio('Component',PortfolioComponent)" /> Component</label>  <label><input type="checkbox" className="form-check-input" ng-click="SelectedPortfolio('Component',PortfolioComponent)" /> Component</label></div>
-            </div>
-          </Row>
-          </details>
-        
 
-          <div id="showFilterBox" className="col mb-2 p-0 ">
-            <div className="togglebox">
-              <details open>
-                <summary  className='hyperlink' ng-click="filtershowHide()">
-                 
-                    {/* <img className="hreflink wid22" title="Filter" style={{width:'22px'}} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Filter-12-WF.png"/> */}
-                    SmartSearch – Filters
-                    <hr></hr>
-                 
+                      <span>
+                        {this.state.checkedAll && this.state.filterItems != null && this.state.filterItems.length > 0 &&
+                          this.state.filterItems.map((obj: any) => {
+                            return <span> {obj.Title}
+                              <span>
+                                : ({this.getAllSubChildenCount(obj)})
+                              </span>
+                            </span>
+                          })
+                        }
+                        {this.state.checkedAllSites && this.state.filterSites != null && this.state.filterSites.length > 0 &&
+                          this.state.filterSites.map((obj: any) => {
+                            return <span> {obj.Title}
+                              <span>
+                                : ({this.getAllSubChildenCount(obj)})
+                              </span>
+                            </span>
+                          })
+                        }
+                        {this.state.checkedParentNode != null && !this.state.checkedAll && this.state.checkedParentNode.length > 0 &&
+                          this.state.checkedParentNode.map((obj: any) => {
+                            return <span> {obj.Title}
+                              <span>
+                                : ({this.getAllSubChildenCount(obj)})
+                              </span>
+                            </span>
+                          })
+                        }
+                      </span>
 
-                  <span>
-                    {this.state.checkedAll && this.state.filterItems != null && this.state.filterItems.length > 0 &&
-                      this.state.filterItems.map((obj: any) => {
-                        return <span> {obj.Title}
-                          <span>
-                            : ({this.getAllSubChildenCount(obj)})
-                          </span>
-                        </span>
-                      })
-                    }
-                    {this.state.checkedAllSites && this.state.filterSites != null && this.state.filterSites.length > 0 &&
-                      this.state.filterSites.map((obj: any) => {
-                        return <span> {obj.Title}
-                          <span>
-                            : ({this.getAllSubChildenCount(obj)})
-                          </span>
-                        </span>
-                      })
-                    }
-                    {this.state.checkedParentNode != null && !this.state.checkedAll && this.state.checkedParentNode.length > 0 &&
-                      this.state.checkedParentNode.map((obj: any) => {
-                        return <span> {obj.Title}
-                          <span>
-                            : ({this.getAllSubChildenCount(obj)})
-                          </span>
-                        </span>
-                      })
-                    }
-                  </span>
-
-                  {/* <span className="pull-right">
+                      {/* <span className="pull-right">
                     <span className="hreflink ng-scope" ng-if="!smartfilter2.expanded">
                       <img className="hreflink wid10" style={{width:'10px'}} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/sub_icon.png"/>
                     </span>
                   </span> */}
-                </summary>
+                    </summary>
 
-                <div className="togglecontent ps-30" style={{ display: "block" }}>
-                  <div className="smartSearch-Filter-Section">
-                    <table width="100%" className="indicator_search">
-                      <tbody>
-                        <tr>
-                          <td valign="top" ng-repeat="item in filterGroups">
-                            <div>
-                                <label className='border-bottom full-width pb-1'>
-                                  <input id='chkAllCategory' defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} type="checkbox" ng-model="item.Selected" className="form-check-input me-1" />
-                                  Client Category
-                                </label>
-                                               
-                              <CheckboxTree
-                                nodes={this.state.filterItems}
-                                checked={this.state.checked}
-                                expanded={this.state.expanded}
-                                onCheck={checked => this.setState({ checked })}
-                                onExpand={expanded => this.setState({ expanded })}
-                                nativeCheckboxes={true}
-                                showNodeIcon={false}
-                                checkModel={'all'}
-                                icons={{
-                                  expandOpen: <SlArrowDown />,
-                                  expandClose: <SlArrowRight />,
-                                  parentClose: null,
-                                  parentOpen: null,
-                                  leaf: null,
-                                }}
-                              />
-                            </div>
-                          </td>
-                          <td valign="top" ng-repeat="item in filterGroups" className="ng-scope">
-                            <div>
-                           
-                                <label className='border-bottom full-width pb-1'>
-                                  <input type="checkbox" id='chkAllSites' defaultChecked={this.state.checkedAllSites} onClick={(e) => this.SelectAllSits(e)} ng-model="item.Selected" className="form-check-input me-1" />
-                                  Sites
-                                </label>
-                               
-                              <CheckboxTree
-                                nodes={this.state.filterSites}
-                                checked={this.state.checkedSites}
-                                expanded={this.state.expandedSites}
-                                onCheck={checkedSites => this.setState({ checkedSites })}
-                                onExpand={expandedSites => this.setState({ expandedSites })}
-                                nativeCheckboxes={true}
-                                showNodeIcon={false}
-                                checkModel={'all'}
-                                icons={{
-                                  expandOpen: <SlArrowDown />,
-                                  expandClose: <SlArrowRight />,
-                                  parentClose: null,
-                                  parentOpen: null,
-                                  leaf: null,
-                                }}
-                              />
-                            </div>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+                    <div className="togglecontent ps-30" style={{ display: "block" }}>
+                      <div className="smartSearch-Filter-Section">
+                        <table width="100%" className="indicator_search">
+                          <tbody>
+                            <tr>
+                              <td valign="top">
+                                <div>
+                                  <label className='border-bottom full-width pb-1'>
+                                    <input id='chkAllCategory' defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} type="checkbox" ng-model="item.Selected" className="form-check-input me-1" />
+                                    Client Category
+                                  </label>
 
-                  </div>
-                  <div className="col text-end mb-2 ">
-                  
-                    <button type="button" className="btnCol btn btn-primary me-1" onClick={(e) => this.updatefilter()}>
-                      Update Filters
-                    </button>
-                    <button type="button" className="btn btn-default me-1" onClick={() => this.ClearFilters()}>
-                      Clear Filters
-                    </button>
-                  </div>
+                                  <CheckboxTree
+                                    nodes={this.state.filterItems}
+                                    checked={this.state.checked}
+                                    expanded={this.state.expanded}
+                                    onCheck={checked => this.setState({ checked })}
+                                    onExpand={expanded => this.setState({ expanded })}
+                                    nativeCheckboxes={true}
+                                    showNodeIcon={false}
+                                    checkModel={'all'}
+                                    icons={{ expandOpen: <SlArrowDown />, expandClose: <SlArrowRight />, parentClose: null, parentOpen: null, leaf: null, }}
+                                  />
+                                </div>
+                              </td>
+                              <td valign="top">
+                                <div>
+                                  <label className='border-bottom full-width pb-1'>
+                                    <input type="checkbox" id='chkAllSites' defaultChecked={this.state.checkedAllSites} onClick={(e) => this.SelectAllSits(e)} ng-model="item.Selected" className="form-check-input me-1" />
+                                    Sites
+                                  </label>
 
+                                  <CheckboxTree
+                                    nodes={this.state.filterSites}
+                                    checked={this.state.checkedSites}
+                                    expanded={this.state.expandedSites}
+                                    onCheck={checkedSites => this.setState({ checkedSites })}
+                                    onExpand={expandedSites => this.setState({ expandedSites })}
+                                    nativeCheckboxes={true}
+                                    showNodeIcon={false}
+                                    checkModel={'all'}
+                                    icons={{
+                                      expandOpen: <SlArrowDown />,
+                                      expandClose: <SlArrowRight />,
+                                      parentClose: null,
+                                      parentOpen: null,
+                                      leaf: null,
+                                    }}
+                                  />
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+
+                      </div>
+                      <div className="col text-end mb-2 ">
+
+                        <button type="button" className="btnCol btn btn-primary me-1" onClick={(e) => this.updatefilter(true)}>
+                          Update Filters
+                        </button>
+                        <button type="button" className="btn btn-default me-1" onClick={() => this.ClearFilters()}>
+                          Clear Filters
+                        </button>
+                      </div>
+
+                    </div>
+
+                  </details>
                 </div>
-
-              </details>
-            </div>
-          </div>
+              </div>
+            </Col>
+          </details>
         </Col>
-        </details>
-        </Row>
         {this.state.AllTimeEntry != undefined && this.state.AllTimeEntry.length > 0 &&
-          <div className='row'>
+          <div className='col'>
             <div className="Alltable p-0">
               <div className="wrapper">
+                <Loader loaded={this.state.loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1} color={portfolioColor ? portfolioColor : "#000066"}
+                  speed={2} trail={60} shadow={false} hwaccel={false} className="spinner" zIndex={2e9} top="28%" left="50%" scale={1.0} loadedClassName="loadedContent" />
                 <GlobalCommanTable showHeader={true} showDateTime={' | Time: ' + this.state.resultSummary.totalTime + ' | Days: (' + this.state.resultSummary.totalDays + ')'} columns={this.state.columns} data={this.state.AllTimeEntry} callBackData={this.callBackData} />
               </div>
             </div>
           </div>
         }
+        {this.state.IsTask && (
+          <EditTaskPopup
+            Items={this.state.IsTask}
+            Call={this.Call}
+            AllListId={AllListId}
+            context={this?.props?.Context}
+          ></EditTaskPopup>
+        )}
+        {this.state?.IsMasterTask && (
+          <EditInstituton
+            item={this.state.IsMasterTask}
+            Calls={this.Call}
+            SelectD={this?.props}
+          >
+            {" "}
+          </EditInstituton>
+        )}
+
       </div>
     );
   }

@@ -8,40 +8,31 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as strings from 'EmployeDashBoardWebPartStrings';
-import EmployeDashBoard from './components/EmployeDashBoard';
-import { IEmployeDashBoardProps } from './components/IEmployeDashBoardProps';
+import * as strings from 'ParentPortfolioViewWebPartStrings';
+import ParentPortfolioView from './components/ParentPortfolioView';
+import { IParentPortfolioViewProps } from './components/IParentPortfolioViewProps';
 
-export interface IEmployeDashBoardWebPartProps {
-  Announcements: 'F3CAD36C-EEF6-492D-B81F-9B441FDF218E';
+export interface IParentPortfolioViewWebPartProps {
   description: string;
-  siteUrl : any;
-  Context:any;
-  TaskUsertListID: 'b318ba84-e21d-4876-8851-88b94b9dc300';
-  SmartMetadataListID: '01a34938-8c7e-4ea6-a003-cee649e8c67a';
+  MasterTaskListID:any;
 }
 
-export default class EmployeDashBoardWebPart extends BaseClientSideWebPart<IEmployeDashBoardWebPartProps> {
+export default class ParentPortfolioViewWebPart extends BaseClientSideWebPart<IParentPortfolioViewWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<IEmployeDashBoardProps> = React.createElement(
-      EmployeDashBoard,
+    const element: React.ReactElement<IParentPortfolioViewProps> = React.createElement(
+      ParentPortfolioView,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        pageContext: this.context.pageContext,
-        Context: this.context,
-        siteUrl: this.context.pageContext.web.absoluteUrl,
-        TaskUsertListID: this.properties.TaskUsertListID,
-        SmartMetadataListID: this.properties.SmartMetadataListID,
-        Announcements: this.properties.Announcements
-       }
+        MasterTaskListID: this.properties.MasterTaskListID,
+      }
     );
 
     ReactDom.render(element, this.domElement);
@@ -98,7 +89,6 @@ export default class EmployeDashBoardWebPart extends BaseClientSideWebPart<IEmpl
     }
 
   }
-
   protected onDispose(): void {
     ReactDom.unmountComponentAtNode(this.domElement);
   }
@@ -121,33 +111,9 @@ export default class EmployeDashBoardWebPart extends BaseClientSideWebPart<IEmpl
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
                 }),
-                PropertyPaneTextField('SmartMetadataListID', {
-                  label: "SmartMetadataListID"
-                }),
-                PropertyPaneTextField("TaskUsertListID", {
-                  label: "Task User List"
-                }),
-                PropertyPaneTextField("Announcements", {
-                  label: "Announcements"
-                }),
-                // PropertyPaneTextField('MasterTaskListID', {
-                //   label: "MasterTaskListID"
-                // }),
-                // PropertyPaneTextField('SmartInformationListID', {
-                //   label: 'SmartInformationListID'
-                // }),
-                // PropertyPaneTextField('DocumentsListID', {
-                //   label: "DocumentsListID"
-                // }),
-                // PropertyPaneTextField('TaskTimeSheetListID', {
-                //   label: "TaskTimeSheetListID"
-                // }),
-                // PropertyPaneTextField('TimeEntry', {
-                //   label: "TimeEntry"
-                // }),
-                // PropertyPaneTextField('SiteCompostion', {
-                //   label: "SiteCompostion"
-                // }),
+                PropertyPaneTextField('MasterTaskListID',{
+                  label:'MasterTaskListID'
+                })
               ]
             }
           ]
