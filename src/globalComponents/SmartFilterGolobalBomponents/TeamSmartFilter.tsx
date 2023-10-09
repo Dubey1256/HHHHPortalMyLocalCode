@@ -1551,7 +1551,6 @@ const TeamSmartFilter = (item: any) => {
                 <div className="bg-wihite border p-2">
                     <div className="togglebox">
                         <div className="togglebox">
-                            <div>
                                 <div className='d-flex justify-content-between'>
                                     <span>
                                         <span className="ml20" style={{ color: `${portfolioColor}` }} >{filterInfo}</span>
@@ -1561,8 +1560,6 @@ const TeamSmartFilter = (item: any) => {
                                         <button className='btn  btn-default' onClick={ClearFilter}> Clear Filters</button>
                                     </div>
                                 </div>
-
-                            </div>
                         </div>
                     </div>
                 </div >
@@ -1580,14 +1577,14 @@ const TeamSmartFilter = (item: any) => {
                                 </span>
                             </label>
                             {collapseAll == false ? <div>
-                                <div className='d-flex justify-content-between'>
+                                <div className=''>
                                     <div className='col-md-12'><input className='full-width' placeholder='Keywords' type='text' value={keyWordSearchTearm} onChange={handleInputChange}></input> </div>
                                     {/* <div>
                                         <button className='btn btn-primary me-1' onClick={UpdateFilterData}>Update Filter</button>
                                         <button className='btn  btn-default' onClick={ClearFilter}> Clear Filters</button>
                                     </div> */}
                                 </div>
-                                <div className='d-flex justify-content-between'>
+                                <div className=''>
                                     <div className='mt-2'>
                                         <label className='SpfxCheckRadio  me-2'>
                                             <input className='radio' type='radio' value="Allwords" checked={selectedKeyWordFilter === "Allwords"} onChange={() => setKeyWordSelected("Allwords")} /> All words
