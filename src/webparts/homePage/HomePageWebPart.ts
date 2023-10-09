@@ -8,34 +8,36 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as strings from 'SmartMetaSearchWebPartStrings';
-import SmartMetaSearch from './components/SmartMetaSearch';
-import { ISmartMetaSearchProps } from './components/ISmartMetaSearchProps';
+import * as strings from 'HomePageWebPartStrings';
+import HomePage from './components/HomePage';
+import { IHomePageProps } from './components/IHomePageProps';
 
-export interface ISmartMetaSearchWebPartProps {  
+export interface IHomePageWebPartProps {
   description: string;
-  SmartMetadataListId:string;
-  ContextValue:any;
-  TaskUserListId:string;
+  AnnouncementsListId: string;
+  EventsListId:string,
+  DocumentsListId:string,
+  context:any,
 }
 
-export default class SmartMetaSearchWebPart extends BaseClientSideWebPart<ISmartMetaSearchWebPartProps> {
+export default class HomePageWebPart extends BaseClientSideWebPart<IHomePageWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<ISmartMetaSearchProps> = React.createElement(
-      SmartMetaSearch,
+    const element: React.ReactElement<IHomePageProps> = React.createElement(
+      HomePage,
       {
         description: this.properties.description,
+        AnnouncementsListId: this.properties.AnnouncementsListId,
+        EventsListId: this.properties.EventsListId,
+        DocumentsListId: this.properties.DocumentsListId,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName,
-        SmartMetadataListId:this.properties.SmartMetadataListId,
-        ContextValue:this.context,
-        TaskUserListId: this.properties.TaskUserListId,       
+        context: this.context,
+        userDisplayName: this.context.pageContext.user.displayName
       }
     );
 
@@ -116,12 +118,15 @@ export default class SmartMetaSearchWebPart extends BaseClientSideWebPart<ISmart
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
                 }),
-                PropertyPaneTextField('SmartMetadataListId', {
-                  label:"SmartMetadataListId"
+                PropertyPaneTextField('AnnouncementsListId', {
+                  label: 'Announcements ListId'
                 }),
-                PropertyPaneTextField('TaskUserListId', {
-                  label:"TaskUserListId"
-                }),                              
+                PropertyPaneTextField('EventsListId', {
+                  label: 'Events ListId'
+                }),
+                PropertyPaneTextField('DocumentsListId', {
+                  label: 'Documents ListId'
+                }),
               ]
             }
           ]

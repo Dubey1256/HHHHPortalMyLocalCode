@@ -8,34 +8,30 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as strings from 'SmartMetaSearchWebPartStrings';
-import SmartMetaSearch from './components/SmartMetaSearch';
-import { ISmartMetaSearchProps } from './components/ISmartMetaSearchProps';
+import * as strings from 'AlertManagementWebPartStrings';
+import AlertManagement from './components/AlertManagement';
+import { IAlertManagementProps } from './components/IAlertManagementProps';
 
-export interface ISmartMetaSearchWebPartProps {  
+export interface IAlertManagementWebPartProps {
   description: string;
-  SmartMetadataListId:string;
   ContextValue:any;
-  TaskUserListId:string;
 }
 
-export default class SmartMetaSearchWebPart extends BaseClientSideWebPart<ISmartMetaSearchWebPartProps> {
+export default class AlertManagementWebPart extends BaseClientSideWebPart<IAlertManagementWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<ISmartMetaSearchProps> = React.createElement(
-      SmartMetaSearch,
+    const element: React.ReactElement<IAlertManagementProps> = React.createElement(
+      AlertManagement,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        SmartMetadataListId:this.properties.SmartMetadataListId,
-        ContextValue:this.context,
-        TaskUserListId: this.properties.TaskUserListId,       
+        ContextValue:this.context
       }
     );
 
@@ -115,13 +111,7 @@ export default class SmartMetaSearchWebPart extends BaseClientSideWebPart<ISmart
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
-                }),
-                PropertyPaneTextField('SmartMetadataListId', {
-                  label:"SmartMetadataListId"
-                }),
-                PropertyPaneTextField('TaskUserListId', {
-                  label:"TaskUserListId"
-                }),                              
+                })
               ]
             }
           ]

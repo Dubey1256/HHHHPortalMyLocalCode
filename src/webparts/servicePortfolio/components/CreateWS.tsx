@@ -20,6 +20,7 @@ var SharewebTasknewType: any = ''
 var SelectedTasks: any = []
 var Task: any = []
 var AssignedToIds: any = [];
+let loggedInUser:any={};
 var ResponsibleTeamIds: any = [];
 var dynamicList: any = {}
 var TeamMemberIds: any = [];
@@ -95,6 +96,12 @@ const CreateWS = (props: any) => {
                  setPriorityTask('(1) High')
              }
         }
+        props?.TaskUsers?.map((user:any)=>{
+            if (props?.context?.pageContext?.legacyPageContext?.userId == user?.AssingedToUser?.Id) {
+                loggedInUser = user;
+            }
+        })
+      
     },[selectPriority])
    
 
@@ -225,6 +232,12 @@ const CreateWS = (props: any) => {
 
 
             }
+        }
+        if(type==undefined){
+            setIsPopupComponent(false);  
+            
+            setSharewebTask(item1.data)
+            closeTaskStatusUpdatePoup(item1.data); 
         }
 
         // if (CategoriesData != undefined){
@@ -474,6 +487,7 @@ return new Promise<void>((resolve, reject) => {
                 res.data.AssignedTo = [];
                 res.data.ResponsibleTeam = [];
                 res.data.TeamMembers = [];
+                // res.data.pageName == "TaskFooterTable"
                 if (res?.data?.TeamMembersId?.length > 0) {
                     res.data?.MembersId?.map((teamUser: any) => {
                         let elementFound = props?.TaskUsers?.filter((User: any) => {
@@ -961,7 +975,7 @@ return new Promise<void>((resolve, reject) => {
                 setSharewebTask(res.data)
                 setIsPopupComponent(true)
                 
-                closeTaskStatusUpdatePoup(res);
+                
                 
             }
             else {
@@ -1781,9 +1795,9 @@ return new Promise<void>((resolve, reject) => {
                 </div>
 
             </Panel>
-            {IsComponent && <ComponentPortPolioPopup props={SharewebComponent} Call={Call}></ComponentPortPolioPopup>}
-            {IsComponentPicker && <Picker props={SharewebCategory} Call={Call}></Picker>}
-            {IsPopupComponent && <EditTaskPopup Items={SharewebTask} Call={Call}></EditTaskPopup>}
+            {IsComponent && <ComponentPortPolioPopup props={SharewebComponent} AllListId={dynamicList}context={props.context} Call={Call}></ComponentPortPolioPopup>}
+            {IsComponentPicker && <Picker props={SharewebCategory} AllListId={dynamicList} Call={Call}></Picker>}
+            {IsPopupComponent && <EditTaskPopup Items={SharewebTask} AllListId={dynamicList}pageName ={"TaskFooterTable"}context={props?.context} Call={Call}></EditTaskPopup>}
         </>
     )
 }

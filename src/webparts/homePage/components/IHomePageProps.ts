@@ -1,10 +1,12 @@
-export interface ISmartMetaSearchProps {
+export interface IHomePageProps {
   description: string;
+  AnnouncementsListId: string;
+  EventsListId: string;
+  DocumentsListId: string;
   isDarkTheme: boolean;
   environmentMessage: string;
   hasTeamsContext: boolean;
   userDisplayName: string;
-  SmartMetadataListId:string;
-  ContextValue:any;
-  TaskUserListId:string;   
+  context:any;
+
 }

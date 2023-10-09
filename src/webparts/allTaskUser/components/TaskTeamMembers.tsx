@@ -66,11 +66,13 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         this.state = {
             tasks: [],
             searchText: "",
+            reloadComponent: false,
             showCreatePanel: false,
             showEditPanel: false,
             enableSave: false,
             hideDeleteDialog: true,
             selTaskId: undefined,
+            activeTab: "basic",
             sortedItems: [],
             columns: [],
             taskItem: {
@@ -370,7 +372,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         let selTask = allTasks.filter(t => t.TaskId == this.state.selTaskId)[0];
         console.log(selTask);
         let selTaskItem = { ...this.state.taskItem };
-        if(selTask.ApproverMail!=undefined && selTask.ApproverMail[0]!=undefined){
+        if (selTask.ApproverMail != undefined && selTask.ApproverMail[0] != undefined) {
             let userInfo = await this.getUserInfo(selTask.ApproverMail[0]);
             selTaskItem.approverId = [userInfo.Id]
         }
@@ -457,27 +459,82 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             approverId = userInfo.Id;
         }
         let taskItem = { ...this.state.taskItem };
-        if(approverId!=undefined){
+        if (approverId != undefined) {
             taskItem.approverId = [approverId];
-        }else{
+        } else {
             taskItem.approverId = []
         }
         this.setState({
             taskItem: taskItem
         })
     }
-
     private async onAddTeamMemberClick() {
-        let taskItem = { ...this.state.taskItem };
-        taskItem.userId = undefined;
-        taskItem.userMail = [];
+        const initialCreatetaskItem = {
+            itemType: "User",
+            userTitle: undefined as any | undefined,
+            userSuffix: undefined as any | undefined,
+            groupId: "",
+            sortOrder: undefined as any | undefined,
+            userId: undefined as any | undefined,
+            userMail: [] as any[] | [],
+            timeCategory: "",
+            approverId: [] as number[],
+            approverMail: [] as string[],
+            approvalType: undefined as any | undefined,
+            selSmartMetadataItems: [] as any[] | [],
+            company: "Smalsus",
+            roles: [] as any[] | [],
+            isActive: false,
+            isTaskNotifications: false,
+            itemCover: ""
+        };
+        const _approverId: number = (await this.getUserInfo(this.props.defaultApproverEMail)).Id;
+        const CreatetaskItem = { ...initialCreatetaskItem };
+        CreatetaskItem.approverMail.push(this.props.defaultApproverEMail);
+        CreatetaskItem.approverId.push(_approverId);
         this.setState({
-            taskItem: taskItem,
+            taskItem: CreatetaskItem,
             showCreatePanel: true,
             enableUser: true,
             enableSave: false
         });
     }
+
+    // private async onAddTeamMemberClick() {
+    //     this.componentDidMount();
+    //     let CreatetaskItem: {
+    //         itemType: "User",
+    //         userTitle: undefined,
+    //         userSuffix: undefined,
+    //         groupId: "",
+    //         sortOrder: undefined,
+    //         userId: undefined,
+    //         userMail: [],
+    //         timeCategory: "",
+    //         approverId: [],
+    //         approverMail: [],
+    //         approvalType: undefined,
+    //         selSmartMetadataItems: [],
+    //         company: "Smalsus",
+    //         roles: [],
+    //         isActive: false,
+    //         isTaskNotifications: false,
+    //         itemCover: ""
+    //     }
+    //      const _approverId: number = (await this.getUserInfo(this.props.defaultApproverEMail)).Id;
+    //      CreatetaskItem.approverMail=[]
+    //      CreatetaskItem.approverMail.push(this.props.defaultApproverEMail);
+    //      CreatetaskItem.approverId=[]
+    //      CreatetaskItem.approverId.push(_approverId);   
+    //     CreatetaskItem.userId = undefined;
+    //     CreatetaskItem.userMail = [];
+    //     this.setState({
+    //         taskItem: CreatetaskItem,
+    //         showCreatePanel: true,
+    //         enableUser: true,
+    //         enableSave: false
+    //     });
+    // }
 
     private onSaveTask() {
         this.onCancelTask();
@@ -586,6 +643,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
     }
 
     private onCancelTask() {
+        this.setState({ reloadComponent: !this.state.reloadComponent });
         this.setState({
             showCreatePanel: false,
             showEditPanel: false
@@ -685,6 +743,9 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             taskItem: taskItem
         });
     }
+    handleTabClick = (tab: string) => {
+        this.setState({ activeTab: tab });
+    };
 
     onGroupChange = (event: any) => {
         const selectedGroupId = event.target.value;
@@ -873,7 +934,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
     private openOOTBFormInNewTab = () => {
         const url = `${this.props.context.pageContext.web.absoluteUrl}/Lists/Task%20Users/DispForm.aspx?ID=${this.state.selTaskId}`;
         window.open(url, '_blank');
-      };
+    };
     private onImageAdded(ev: React.ChangeEvent<HTMLInputElement>) {
 
         if (!ev.target.files || ev.target.files.length < 1) {
@@ -964,13 +1025,13 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         const elemCancelButton = (<DefaultButton styles={controlStyles} onClick={this.onCancelTask}>Cancel</DefaultButton>);
         const elemOOTBFormLink = (
             <span
-              className="openlink"
-              onClick={this.openOOTBFormInNewTab}
-              style={{ cursor: 'pointer' }}
+                className="openlink"
+                onClick={this.openOOTBFormInNewTab}
+                style={{ cursor: 'pointer' }}
             >
-              Open out-of-the-box form
+                Open out-of-the-box form
             </span>
-          );
+        );
         //const elemOOTBFormLink = (<Link href={`${this.props.context.pageContext.web.absoluteUrl}/Lists/Task%20Users/DispForm.aspx?ID=${this.state.selTaskId}`} target="_blank" className="openlink">Open out-of-the-box form</Link>);
         const elemActionButons = (<div>
             <div className="text-end c-footer">
@@ -1061,7 +1122,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                         />
                     </div>
                     <div className="ms-Grid-col ms-sm3 ms-md3 ms-lg3">
-                        <label className="ms-Label root-321">Group</label>
+                        <label className="ms-Label root-321 pb-2 pt-1 text-dark">Group</label>
                         <select onChange={(event) => this.onGroupChange(event)} value={this.state.taskItem.groupId} className="fieldGroup-311 ms-sm12 ms-md12 ms-lg12">
                             {this.state.teamGroups.map((item: any) => (
                                 <option key={item.key} value={item.key}>
@@ -1083,7 +1144,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                 <div className="ms-Grid-row">
                     <div className="ms-Grid-col ms-sm4 ms-md4 ms-lg4">{elemUser}</div>
                     <div className="ms-Grid-col ms-sm4 ms-md4 ms-lg4">
-                        <label className="ms-Label root-321">Manage Categories</label>
+                        <label className="ms-Label root-321 pb-2 pt-1 text-dark">Manage Categories</label>
                         <select onChange={(event) => this.onManageTimeCategory(event)} value={this.state.taskItem.timeCategory} className="fieldGroup-311 ms-sm12 ms-md12 ms-lg12">
                             {this.state.timesheetCategories.map((item: any) => (
                                 <option key={item.key} value={item.key}>
@@ -1159,7 +1220,6 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                 <br />
             </div>
         </div>);
-
         const elemSelImage = (this.state.taskItem.itemCover && <div>
             <Image src={this.state.taskItem.itemCover} imageFit={ImageFit.centerContain} height={120} width={160} />
             <Link target="_blank" href={`${this.props.context.pageContext.web.absoluteUrl}/PublishingImages/${this.state.selImageFolder}`}>Image Folder</Link>
@@ -1170,7 +1230,6 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         </div>);
 
         const elemImageGallery = (<div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
-
             {
                 this.state.filteredImages?.map(imgInfo => (<div style={{ width: '205px', display: 'inline-block', verticalAlign: 'top', margin: '2px' }}>
                     <DocumentCard style={{ border: (imgInfo.Id == this.state.selImageId) ? "1px solid red" : "" }}>
@@ -1262,10 +1321,27 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             onDismiss={this.onCancelTask}
             onRenderFooterContent={elemTaskMemberFooter}
         >
-            <Pivot linkFormat={PivotLinkFormat.tabs} linkSize={PivotLinkSize.normal}>
-                <PivotItem headerText="BASIC INFORMATION">{elemEditTaskBasicInfo}</PivotItem>
-                <PivotItem headerText="IMAGE INFORMATION">{elemEditTaskImageInfo}</PivotItem>
-            </Pivot>
+            <div>
+                <ul className="nav nav-tabs" id="myTab" role="tablist">
+                    <li className="nav-item" role="presentation">
+                        <button onClick={() => this.handleTabClick('basic')} className={`nav-link ${this.state.activeTab === 'basic' ? 'active' : ''}`} id="home-tab" type="button" role="tab" aria-controls="home" aria-selected="true">BASIC INFORMATION</button>
+                    </li>
+                    <li className="nav-item" role="presentation">
+                        <button onClick={() => this.handleTabClick('image')} className={`nav-link ${this.state.activeTab === 'image' ? 'active' : ''}`} id="profile-tab" type="button" role="tab" aria-controls="profile" aria-selected="false">IMAGE INFORMATION</button>
+                    </li>
+                </ul>
+                <div className="tab-content border border-top-0 clearfix p-2" id="nav-tabContent">
+                    <div className={`tab-pane fade px-1 ${this.state.activeTab === 'basic' ? 'show active' : ''}`} id="basic" role="tabpanel" aria-labelledby="home-tab">
+                        {elemEditTaskBasicInfo}
+                    </div>
+                    <div className={`tab-pane fade px-1 ${this.state.activeTab === 'image' ? 'show active' : ''}`} id="image" role="tabpanel" aria-labelledby="profile-tab">
+                        {elemEditTaskImageInfo}
+                    </div>
+                </div>
+                {/* <div className="tab-content">
+                    {this.state.activeTab === "basic" ? elemEditTaskBasicInfo : elemEditTaskImageInfo}
+                </div> */}
+            </div>
         </Panel>);
 
         const elemControls = (<>
