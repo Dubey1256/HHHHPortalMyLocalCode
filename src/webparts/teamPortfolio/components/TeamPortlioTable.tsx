@@ -19,12 +19,13 @@ import { ColumnDef } from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 import Loader from "react-loader";
-// import { Bars } from 'react-loader-spinner'
+import { Bars } from 'react-loader-spinner'
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 import SmartFilterSearchGlobal from "../../../globalComponents/SmartFilterGolobalBomponents/SmartFilterGlobalComponents";
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
+import TeamSmartFilter from "../../../globalComponents/SmartFilterGolobalBomponents/TeamSmartFilter";
 //import RestructuringCom from "../../../globalComponents/Restructuring/RestructuringCom";
 var filt: any = "";
 var ContextValue: any = {};
@@ -257,14 +258,15 @@ function TeamPortlioTable(SelectedProp: any) {
                 let AllTasksMatches: any = [];
                 AllTasksMatches = await web.lists
                     .getById(config.listId)
-                    .items.select("ParentTask/Title", "ParentTask/Id","ClientTime", "ItemRank","SiteCompositionSettings","TaskLevel", "OffshoreComments", "TeamMembers/Id", "ClientCategory/Id", "ClientCategory/Title",
+                    .items.select("ParentTask/Title", "ParentTask/Id", "ItemRank", "TaskLevel", "OffshoreComments", "TeamMembers/Id", "ClientCategory/Id", "ClientCategory/Title",
                         "TaskID", "ResponsibleTeam/Id", "ResponsibleTeam/Title", "ParentTask/TaskID", "TaskType/Level", "PriorityRank", "TeamMembers/Title", "FeedBack", "Title", "Id", "ID", "DueDate", "Comments", "Categories", "Status", "Body",
                         "PercentComplete", "ClientCategory", "Priority", "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/PortfolioStructureID", "Portfolio/Title",
-                        "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId",
+                        "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
+                        "Created", "Modified",
                     )
                     .expand(
-                        "ParentTask", "Portfolio", "TaskType", "ClientCategory", "TeamMembers", "ResponsibleTeam", "AssignedTo",
-                        "TaskCategories", "Project"
+                        "ParentTask", "Portfolio", "TaskType", "ClientCategory", "TeamMembers", "ResponsibleTeam", "AssignedTo", "Editor", "Author",
+                        "TaskCategories", "Project",
                     )
                     .filter("Status ne 'Completed'")
                     .orderBy("orderby", false)
@@ -296,16 +298,30 @@ function TeamPortlioTable(SelectedProp: any) {
                             result.chekbox = false;
                             result.descriptionsSearch = '';
                             result.commentsSearch = '';
+                            if (result?.DueDate != null && result?.DueDate != undefined) {
+                                result.serverDueDate = new Date(result?.DueDate).setHours(0, 0, 0, 0)
+                            }
+                            if (result?.Modified != null && result?.Modified != undefined) {
+                                result.serverModifiedDate = new Date(result?.Modified).setHours(0, 0, 0, 0)
+                            }
+                            if (result?.Created != null && result?.Created != undefined) {
+                                result.serverCreatedDate = new Date(result?.Created).setHours(0, 0, 0, 0)
+                            }
                             result.DueDate = Moment(result.DueDate).format("DD/MM/YYYY");
 
                             if (result.DueDate == "Invalid date" || "") {
                                 result.DueDate = result.DueDate.replaceAll("Invalid date", "");
                             }
                             result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
+
+                            if (result.PercentComplete != undefined && result.PercentComplete != '' && result.PercentComplete != null) {
+                                result.percentCompleteValue = parseInt(result?.PercentComplete);
+                            }
+
                             result.chekbox = false;
-                           if (result?.FeedBack != undefined) {
-                    result.descriptionsSearch = JSON.parse(result?.FeedBack)
-                  }
+                            if (result?.Body != undefined) {
+                                result.descriptionsSearch = result?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
+                            }
                             try {
                                 if (result?.Comments != null && result?.Comments != undefined) {
                                     const cleanedComments = result?.Comments?.replace(/[^\x20-\x7E]/g, '');
@@ -413,13 +429,14 @@ function TeamPortlioTable(SelectedProp: any) {
         componentDetails = await web.lists
             .getById(ContextValue.MasterTaskListID)
             .items
-            .select("ID", "Id", "Title", "PortfolioLevel", "Sitestagging","PortfolioStructureID",  "AdminNotes","TechnicalExplanations","Deliverables","Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title",
+            .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title",
                 "DueDate", "Body", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
                 "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete",
-                "ResponsibleTeam/Id", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId",
+                "ResponsibleTeam/Id", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
+                "Created", "Modified",
             )
             .expand(
-                "Parent", "PortfolioType", "AssignedTo", "ClientCategory", "TeamMembers", "ResponsibleTeam"
+                "Parent", "PortfolioType", "AssignedTo", "ClientCategory", "TeamMembers", "ResponsibleTeam", "Editor", "Author"
             )
             .top(4999)
             .filter(filt)
@@ -448,11 +465,24 @@ function TeamPortlioTable(SelectedProp: any) {
             }
             result["TaskID"] = result?.PortfolioStructureID;
 
+            if (result?.DueDate != null && result?.DueDate != undefined) {
+                result.serverDueDate = new Date(result?.DueDate).setHours(0, 0, 0, 0)
+            }
+            if (result?.Modified != null && result?.Modified != undefined) {
+                result.serverModifiedDate = new Date(result?.Modified).setHours(0, 0, 0, 0)
+            }
+            if (result?.Created != null && result?.Created != undefined) {
+                result.serverCreatedDate = new Date(result?.Created).setHours(0, 0, 0, 0)
+            }
             result.DueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
             if (result.DueDate == "Invalid date" || "") {
                 result.DueDate = result?.DueDate.replaceAll("Invalid date", "");
             }
-            result.PercentComplete = (result?.PercentComplete * 100).toFixed(0) === "0" ? "" : (result?.PercentComplete * 100).toFixed(0)
+            result.PercentComplete = (result?.PercentComplete * 100).toFixed(0) === "0" ? "" : (result?.PercentComplete * 100).toFixed(0);
+
+            if (result.PercentComplete != undefined && result.PercentComplete != '' && result.PercentComplete != null) {
+                result.percentCompleteValue = parseInt(result?.PercentComplete);
+            }
 
             if (result?.Short_x0020_Description_x0020_On != undefined) {
                 result.descriptionsSearch = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
@@ -701,12 +731,18 @@ function TeamPortlioTable(SelectedProp: any) {
 
 
     const smartFiltercallBackData = React.useCallback((filterData, updatedSmartFilter, smartTimeTotal) => {
-        if (filterData && smartTimeTotal) {
+        if (filterData.length > 0 && smartTimeTotal) {
             setUpdatedSmartFilter(updatedSmartFilter);
             setAllSmartFilterOriginalData(filterData);
             let filterDataBackup = JSON.parse(JSON.stringify(filterData));
             setAllSmartFilterData(filterDataBackup);
             setSmartTimeTotalFunction(() => smartTimeTotal);
+        }else if (updatedSmartFilter === true && filterData.length === 0) {
+            renderData = [];
+            renderData = renderData.concat(filterData)
+            refreshData();
+            setLoaded(true);
+            // setData([])
         }
     }, []);
 
@@ -1679,7 +1715,6 @@ function TeamPortlioTable(SelectedProp: any) {
 
         }
         if (checkedList?.TaskType?.Id == 2) {
-
             alert("You can not create any item inside Task")
         }
     }
@@ -1764,7 +1799,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     </h2>
                 </div>
                 <div className="togglecontent mt-1">
-                    {filterCounters == true ? <SmartFilterSearchGlobal setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} SelectedProp={SelectedProp.SelectedProp} ContextValue={ContextValue} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
+                    {filterCounters == true ? <TeamSmartFilter ProjectData={ProjectData} portfolioTypeData={portfolioTypeData} setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} SelectedProp={SelectedProp.SelectedProp} ContextValue={ContextValue} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
                 </div>
             </section>
 

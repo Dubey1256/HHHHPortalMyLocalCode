@@ -1,7 +1,7 @@
 import * as React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import InlineEditingcolumns from "../../projectmanagementOverviewTool/components/inlineEditingcolumns";
-import {  FaSort, FaSortDown, FaSortUp, } from "react-icons/fa";
+import { FaSort, FaSortDown, FaSortUp, } from "react-icons/fa";
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import { Web } from "sp-pnp-js";
 import EditProjectPopup from "../../projectmanagementOverviewTool/components/EditProjectPopup";
@@ -35,7 +35,7 @@ var AllListId: any = {};
 var backupAllTasks: any = [];
 var MasterListData: any = []
 let taskTaggedComponents: any = []
-let TaggedPortfoliosToProject:any=[];
+let TaggedPortfoliosToProject: any = [];
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
 const ProjectManagementMain = (props: any) => {
@@ -213,13 +213,7 @@ const ProjectManagementMain = (props: any) => {
           .get().then((fetchedProject: any) => {
             if ((fetchedProject.PercentComplete != undefined)) {
               fetchedProject.PercentComplete = (fetchedProject?.PercentComplete * 100).toFixed(0)
-            }
-            // if (taskUsers.Body != undefined) {
-            //   taskUsers.Body = taskUsers.Body.replace(/(<([^>]+)>)/gi, "");
-            // }
-
-
-            if (fetchedProject?.DueDate != undefined) {
+            }  if (fetchedProject?.DueDate != undefined) {
               fetchedProject.DisplayDueDate = fetchedProject.DueDate != null
                 ? Moment(fetchedProject.DueDate).format("DD/MM/YYYY")
                 : "";
@@ -227,7 +221,7 @@ const ProjectManagementMain = (props: any) => {
               fetchedProject.DisplayDueDate = '';
             }
             TaggedPortfoliosToProject = fetchedProject?.PortfoliosId?.length > 0 ? fetchedProject?.PortfoliosId : [];
-           
+
             fetchedProject.taggedPortfolios = [];
             fetchedProject?.PortfoliosId?.map((item: any) => {
               MasterListData?.map((portfolio: any) => {
@@ -366,10 +360,8 @@ const ProjectManagementMain = (props: any) => {
   const EditComponentPopup = (item: any) => {
     item["siteUrl"] = props?.siteUrl;
     item["listName"] = "Master Tasks";
-    // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
     setIsComponent(true);
     setSharewebComponent(item);
-    // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
   };
 
   const tagAndCreateCallBack = React.useCallback(() => {
@@ -429,7 +421,7 @@ const ProjectManagementMain = (props: any) => {
             }
             if (items?.TaskCategories?.length > 0) {
               items.TaskTypeValue = items?.TaskCategories?.map((val: any) => val.Title).join(",")
-          }
+            }
             items.AllTeamMember = [];
             items.HierarchyData = [];
             items.descriptionsSearch = '';
@@ -452,6 +444,7 @@ const ProjectManagementMain = (props: any) => {
                 : "";
             items.portfolio = {};
             if (items?.Portfolio?.Id != undefined) {
+              items.Portfolio = MasterListData?.find((masterItem: any) => masterItem?.Id == items?.Portfolio?.Id)
               if (!taskComponent?.some((id: any) => id == items?.Portfolio?.Id)) {
                 let comp = items?.Portfolio
                 comp.filterActive = false;
@@ -528,14 +521,6 @@ const ProjectManagementMain = (props: any) => {
       .get()
 
   }
-  // React.useEffect(() => {
-  //   if (Masterdata?.Id != undefined) {
-  //     setItem(Masterdata);
-
-  //     linkedComponentData = Masterdata?.smartService;
-  //     smartPortfoliosData = Masterdata?.smartComponent;
-  //   }
-  // }, [Masterdata]);
   const EditPortfolio = (item: any, type: any) => {
     portfolioType = type;
     setSharewebComponent(item);
@@ -633,15 +618,6 @@ const ProjectManagementMain = (props: any) => {
         });
     }
   };
-  // const toggleSideBar = () => {
-  //   setSidebarStatus({ ...sidebarStatus, dashboard: !sidebarStatus.dashboard });
-  //   if (sidebarStatus.dashboard == false) {
-  //     $(".sidebar").attr("collapsed", "");
-  //   } else {
-  //     $(".sidebar").removeAttr("collapsed");
-  //   }
-  // };
-  //React.useEffect(() => {table.getIsAllRowsExpanded(); }, [])
   const createOpenTask = (items: any) => {
     setCreateTaskId({ portfolioData: items, portfolioType: 'Component' });
     setisOpenCreateTask(true)
@@ -662,10 +638,10 @@ const ProjectManagementMain = (props: any) => {
       })
       TagPotfolioToProject();
     }
-      console.log(Masterdata)
-      setIsComponent(false);
-      setIsPortfolio(false);
-    
+    console.log(Masterdata)
+    setIsComponent(false);
+    setIsPortfolio(false);
+
   }, [])
 
   const column2 = React.useMemo<ColumnDef<any, unknown>[]>(
@@ -706,7 +682,7 @@ const ProjectManagementMain = (props: any) => {
                 {row?.original?.Title}
               </a>
               {row?.original?.Body !== null &&
-              row?.original?.Body != undefined ? (
+                row?.original?.Body != undefined ? (
                 <span className="alignIcon">
                   {" "}
                   <InfoIconsToolTip
@@ -729,16 +705,16 @@ const ProjectManagementMain = (props: any) => {
       {
         accessorFn: (row) => row?.TaskTypeValue,
         cell: ({ row }) => (
-            <>
-                <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content">{row?.original?.TaskTypeValue}</span></span>
-            </>
+          <>
+            <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content">{row?.original?.TaskTypeValue}</span></span>
+          </>
         ),
         placeholder: "Task Type",
         header: "",
         resetColumnFilters: false,
         size: 120,
         id: "TaskTypeValue",
-    },
+      },
       {
         accessorFn: (row) => row?.Site,
         cell: ({ row }) => (
@@ -762,7 +738,9 @@ const ProjectManagementMain = (props: any) => {
             target="blank"
             href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
           >
-            {row?.original?.portfolio?.Title}
+            <span className="d-flex">
+              <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.portfolio?.Title} row={row?.original?.Portfolio} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
+            </span>
           </a>
         ),
         id: "Portfolio",
@@ -807,10 +785,10 @@ const ProjectManagementMain = (props: any) => {
         ),
         id: 'DueDate',
         resetColumnFilters: false,
-        isColumnDefultSortingDesc:true,
+        isColumnDefultSortingDesc: true,
         resetSorting: false,
-        filterFn: (row:any, columnId:any, filterValue:any) => {
-          return  row?.original?.DisplayDueDate?.includes(filterValue)
+        filterFn: (row: any, columnId: any, filterValue: any) => {
+          return row?.original?.DisplayDueDate?.includes(filterValue)
         },
         placeholder: "Due Date",
         header: "",
@@ -915,10 +893,10 @@ const ProjectManagementMain = (props: any) => {
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "Created",
-        filterFn: (row:any, columnId:any, filterValue:any) => {
-          if(row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase())|| row?.original?.DisplayCreateDate?.includes(filterValue)){
-            return  true
-          }else{
+        filterFn: (row: any, columnId: any, filterValue: any) => {
+          if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+            return true
+          } else {
             return false
           }
         },
@@ -1020,13 +998,6 @@ const ProjectManagementMain = (props: any) => {
           <div className="ProjectManagementPage Dashboardsecrtion">
             <div className="dashboard-colm">
               <aside className="sidebar">
-                {/* <button
-              type="button"
-              onClick={() => {
-                toggleSideBar();
-              }}
-              className="collapse-toggle"
-            ></button> */}
                 <section className="sidebar__section sidebar__section--menu">
                   <nav className="nav__item">
                     <ul className="nav__list">
@@ -1066,12 +1037,11 @@ const ProjectManagementMain = (props: any) => {
                       <li className="nav__item  pb-1 pt-0">
                         <div className="nav__text">
                           {Masterdata?.taggedPortfolios?.length > 0 || TaskTaggedPortfolios?.length > 0 ? (
-                            <ul className="nav__subList wrapper mt-2 ps-0 pe-1">
+                            <ul className="nav__subList wrapper scrollbar pt-1 ps-0">
                               {Masterdata?.taggedPortfolios?.map(
                                 (component: any, index: any) => {
                                   return (
-                                    // <li className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1 bg-shade" : "nav__item ps-1"}>
-                                    <li className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1 mb-1 " : "nav__item ps-1 mb-1 bg-shade hreflink"}>
+                                    <li className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "nav__item ps-1"}>
                                       <span>
                                         <a className={component?.Id == createTaskId?.portfolioData?.Id ? "hreflink " : "text-white hreflink"} data-interception="off" target="blank"
                                           onClick={() => filterPotfolioTasks(component, index, "Component")}>{component?.Title}</a>
@@ -1083,7 +1053,7 @@ const ProjectManagementMain = (props: any) => {
                               {TaskTaggedPortfolios?.map(
                                 (component: any, index: any) => {
                                   return (
-                                    <li className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1 mb-1" : "nav__item ps-1 mb-1 bg-shade hreflink"} >
+                                    <li className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "nav__item ps-1"} >
                                       <span>
                                         <a className={component?.Id == createTaskId?.portfolioData?.Id ? "hreflink " : "text-white hreflink"} data-interception="off" target="blank"
                                           onClick={() => filterPotfolioTasks(component, index, "taskComponent")}>{component?.Title}</a>
@@ -1113,34 +1083,24 @@ const ProjectManagementMain = (props: any) => {
                         <section>
                           <div>
                             <div className="align-items-center d-flex justify-content-between">
-                              <div className="align-items-center">
+                              <div className="align-items-center d-flex">
                                 <h2 className="heading">
                                   <img
                                     className="circularImage rounded-circle "
                                     src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Icon_Project.png"
                                   />
                                   <>
-                                    <a>{`${Masterdata?.PortfolioStructureID} - ${Masterdata?.Title}`} </a>   <span
+                                    <a>{`${Masterdata?.PortfolioStructureID} - ${Masterdata?.Title}`} </a>
+                                  </>
+                                </h2>
+                                <span
                                   onClick={() => EditComponentPopup(Masterdata)}
                                   className="mx-2 svg__iconbox svg__icon--edit"
                                   title="Edit Project"
                                 ></span>
-                                  </>
-                                </h2>
-                              
                               </div>
                               <div>
                                 <div className="d-flex">
-
-                                  {/* <CreateTaskFromProject
-                                projectItem={Masterdata}
-                                SelectedProp={props?.props}
-                                pageContext={props.pageContext}
-                                projectId={projectId}
-                                callBack={CreateTask}
-                                createComponent={createTaskId}
-                              /> */}
-
                                   {projectId && (
                                     <TagTaskToProjectPopup
                                       projectItem={Masterdata}
@@ -1150,11 +1110,7 @@ const ProjectManagementMain = (props: any) => {
                                       callBack={tagAndCreateCallBack}
                                       projectTitle={projectTitle}
                                     />
-                                  )}
-
-
-
-                                </div>
+                                  )}</div>
                               </div>
                             </div>
                           </div>
@@ -1240,46 +1196,46 @@ const ProjectManagementMain = (props: any) => {
 
 
 
-                              {
-                                Masterdata?.Body != undefined ? <div className="mt-2 row pe-0 detailsbox">
-                                  <details className="pe-0" open>
-                                    <summary>Description</summary>
-                                    <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Body }}></div>
-                                  </details>
-                                </div>
-                                  : ''
-                              }
+                                  {
+                                    Masterdata?.Body != undefined ? <div className="mt-2 row pe-0 detailsbox">
+                                      <details className="pe-0" open>
+                                        <summary>Description</summary>
+                                        <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Body }}></div>
+                                      </details>
+                                    </div>
+                                      : ''
+                                  }
 
-                              {
-                                Masterdata?.Background != undefined ? <div className="mt-2 row pe-0 detailsbox">
-                                  <details className="pe-0">
-                                    <summary>Background</summary>
-                                    <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Background }}></div>
-                                    {/* <div className="AccordionContent">{Masterdata?.Background}</div> */}
-                                  </details>
-                                </div> : ''
-                              }
+                                  {
+                                    Masterdata?.Background != undefined ? <div className="mt-2 row pe-0 detailsbox">
+                                      <details className="pe-0">
+                                        <summary>Background</summary>
+                                        <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Background }}></div>
+                                        {/* <div className="AccordionContent">{Masterdata?.Background}</div> */}
+                                      </details>
+                                    </div> : ''
+                                  }
 
-                              {
-                                Masterdata?.Idea != undefined ? <div className="mt-2 row pe-0 detailsbox">
-                                  <details className="pe-0">
-                                    <summary>Idea</summary>
-                                    <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Idea }}></div>
-                                    {/* <div className="AccordionContent">{Masterdata?.Idea}</div> */}
-                                  </details>
-                                </div> : ''
-                              }
+                                  {
+                                    Masterdata?.Idea != undefined ? <div className="mt-2 row pe-0 detailsbox">
+                                      <details className="pe-0">
+                                        <summary>Idea</summary>
+                                        <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Idea }}></div>
+                                        {/* <div className="AccordionContent">{Masterdata?.Idea}</div> */}
+                                      </details>
+                                    </div> : ''
+                                  }
 
-                              {
-                                Masterdata?.Deliverables != undefined ? <div className="mt-2 row pe-0 detailsboxp 41_
+                                  {
+                                    Masterdata?.Deliverables != undefined ? <div className="mt-2 row pe-0 detailsboxp 41_
                                 0=][9\
                                 -p/\otyty5/">
-                                  <details className="pe-0">
-                                    <summary>Deliverables</summary>
-                                    <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Deliverables }}></div>
-                                  </details>
-                                </div> : ''
-                              }
+                                      <details className="pe-0">
+                                        <summary>Deliverables</summary>
+                                        <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Deliverables }}></div>
+                                      </details>
+                                    </div> : ''
+                                  }
 
                                 </div>
                               </div>
@@ -1300,32 +1256,11 @@ const ProjectManagementMain = (props: any) => {
                               />
                             )}
                           </span>
-                          {/* <span>
-                            {(QueryId != undefined && isSmartInfoAvailable) ?
-                              <SmartInformation
-                                AllListId={AllListId}
-                                listName={"Master Tasks"}
-                                Context={props?.Context}
-                                siteurl={props?.siteUrl}
-                                Id={QueryId}
-                                spPageContext={props?.Context?.pageContext?._web}
-                              /> : ""
-                            }
-                          </span> */}
                         </div>
                       </div>
                     </div>
 
                     <div>
-                      {/* {sidebarStatus.sideBarFilter ? (
-                        <div className="text-end">
-                          <a onClick={() => clearPortfolioFilter()} className="hreflink">
-                            Clear Portfolio Filter
-                          </a>
-                        </div>
-                      ) : (
-                        ""
-                      )} */}
                       <div className="Alltable">
                         <div className="section-event ps-0">
                           <div className="wrapper project-management-Table">
