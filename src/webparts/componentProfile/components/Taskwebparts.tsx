@@ -495,7 +495,7 @@ function PortfolioTable(SelectedProp: any) {
                     result.ProjectId = result?.Project?.Id;
                     result.projectStructerId = result?.Project?.PortfolioStructureID
                     const title = result?.Project?.Title || '';
-                    const formattedDueDate = Moment(result?.Project?.DueDate, "DD/MM/YYYY").format("YYYY-MM-DD");
+                    const formattedDueDate = Moment(result?.Project?.DueDate).format("DD-MM-YYYY");
                     result.joinedData = [];
                     if (result?.projectStructerId && title || formattedDueDate) {
                         result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
@@ -602,11 +602,7 @@ function PortfolioTable(SelectedProp: any) {
         "Body",
         "Item_x0020_Type",
         "Categories",
-        "Deliverables",
-        "TechnicalExplanations",
         "Short_x0020_Description_x0020_On",
-        "Help_x0020_Information",
-        "AdminNotes",
         "PriorityRank",
         "Priority",
         "AssignedTo/Title",
