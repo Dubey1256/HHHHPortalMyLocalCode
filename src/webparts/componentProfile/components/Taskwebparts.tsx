@@ -1424,7 +1424,7 @@ function PortfolioTable(SelectedProp: any) {
           }
         },
         header: "",
-        size: 125
+        size: 134
       },
       {
         accessorKey: "descriptionsSearch",
@@ -1456,7 +1456,7 @@ function PortfolioTable(SelectedProp: any) {
       {
         cell: ({ row, getValue }) => (
           <>
-            {row?.original?.siteType != "Master Tasks" && (
+            {row?.original?.siteType != "Master Tasks" && row?.original?.Title != "Others" && (
               <a
                 className="alignCenter"
                 onClick={(e) => EditDataTimeEntryData(e, row.original)}
@@ -1499,7 +1499,7 @@ function PortfolioTable(SelectedProp: any) {
         ),
         cell: ({ row, getValue }) => (
           <>
-            {row?.original?.isRestructureActive && (
+            {row?.original?.isRestructureActive  && row?.original?.Title != "Others" && (
               <span
                 className="Dyicons p-1"
                 title="Restructure"
