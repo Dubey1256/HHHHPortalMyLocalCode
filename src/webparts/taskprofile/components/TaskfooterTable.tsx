@@ -41,7 +41,7 @@ import HighlightableCell from '../../../globalComponents/GroupByReactTableCompon
 import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
 import ReactPopperTooltip from '../../../globalComponents/Hierarchy-Popper-tooltip';
 import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
-import BulkeditTask from './BulkeditTask';
+// import BulkeditTask from './BulkeditTask';
 var AllTasks: any = [];
 let AllTasksRendar: any = [];
 let siteConfig: any = [];
@@ -1151,7 +1151,7 @@ function TasksTable(props: any) {
         <div className="col-sm-12 pad0 smart" >
           <div className="">
             <div className={`${data?.length > 10 ? "wrapper" : "MinHeight"}`}>
-            <div> <BulkeditTask SelectedTask={BulkTaskUpdate} Call={Call}></BulkeditTask></div>
+            {/* <div> <BulkeditTask SelectedTask={BulkTaskUpdate} Call={Call}></BulkeditTask></div> */}
               <GlobalCommanTable
               queryItems={props?.props}
                 ref={childRef}
