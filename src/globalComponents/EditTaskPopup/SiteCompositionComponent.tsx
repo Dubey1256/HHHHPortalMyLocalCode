@@ -1020,18 +1020,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                 {siteData.Title == "EPS" ?
                                                     <>
 
-                                                        <div className="input-group">
-                                                            <input type="text" value={SearchedKeyForEPS} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EPS", 341)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
-                                                            {
-                                                                siteData.BtnStatus ?
-                                                                    <span className="input-group-text"
-                                                                        onClick={() => openClientCategoryModel(341, "EPS")}
-                                                                    >
-                                                                        <span title="Client Category Popup" className="svg__iconbox svg__icon--editBox hreflink"></span>
-                                                                    </span>
-                                                                    : null
-                                                            }
-                                                        </div>
+
                                                         {EPSClientCategory != undefined && EPSClientCategory.length > 0 ?
                                                             <> {EPSClientCategory?.map((dataItem: any) => {
                                                                 if (dataItem.siteName == siteData.Title) {
@@ -1058,7 +1047,18 @@ const SiteCompositionComponent = (Props: any) => {
                                                                     )
                                                                 }
                                                             })}
-                                                            </> : null
+                                                            </> : <div className="input-group">
+                                                                <input type="text" value={SearchedKeyForEPS} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EPS", 341)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
+                                                                {
+                                                                    siteData.BtnStatus ?
+                                                                        <span className="input-group-text"
+                                                                            onClick={() => openClientCategoryModel(341, "EPS")}
+                                                                        >
+                                                                            <span title="Client Category Popup" className="svg__iconbox svg__icon--editBox hreflink"></span>
+                                                                        </span>
+                                                                        : null
+                                                                }
+                                                            </div>
 
                                                         }
                                                         {SearchedClientCategoryDataForInput?.length > 0 && ClientCategoryPopupSiteName == "EPS" ? (
