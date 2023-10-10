@@ -8,6 +8,7 @@ import Tooltip from '../Tooltip';
 const RestructuringCom = (props: any, ref: any) => {
 
   let restructureCallBack = props?.restructureCallBack;
+  let controlUseEffect: boolean = true;
 
   const [OldArrayBackup, setOldArrayBackup]: any = React.useState([]);
   const [allData, setAllData]: any = React.useState([]);
@@ -151,7 +152,7 @@ const RestructuringCom = (props: any, ref: any) => {
 
 
   useEffect(() => {
-    if (props?.restructureItem?.length === 0 && checkItemLength) {
+    if (props?.restructureItem?.length === 0 && checkItemLength && controlUseEffect) {
       let array = allData;
       array?.map((obj: any) => {
         obj.isRestructureActive = false;
@@ -846,6 +847,7 @@ const RestructuringCom = (props: any, ref: any) => {
           }
         } else if (items?.Item_x0020_Type === "SubComponent") {
           let checkFeatureCondition: boolean = true;
+          let checkTasks: boolean = true;
           topCompo = true;
           setQuery4TopIcon('Component')
           if(props?.queryItems?.Item_x0020_Type === 'Component'){
@@ -905,7 +907,8 @@ const RestructuringCom = (props: any, ref: any) => {
                   }
                 })
               } else {
-                if (checkFeatureCondition) {
+                if (checkFeatureCondition && checkTasks) {
+                  checkTasks = false;
                   array?.map((obj: any) => {
                     let newChildarray: any = [];
                     let newarrays: any = [];
@@ -2389,11 +2392,13 @@ const RestructuringCom = (props: any, ref: any) => {
             items.TaskType = { Id : TaskTypeId, Level: TaskTypeId == 1 ? 1 : (TaskTypeId == 2 ? 3 : 2) , Title: TaskTypeId == 1 ? "Activity" : (TaskTypeId == 2 ? "Task" : "Workstream")},
             items.TaskID = TaskId })
 
+            let onceRender:any = true;
           array?.map((obj: any, index: any) => {
             obj.isRestructureActive = false;
-             if(newItemBackUp == undefined || newItemBackUp == null || newItemBackUp?.length == 0){
+             if(newItemBackUp == undefined || newItemBackUp == null || newItemBackUp?.length == 0 && onceRender){
               array?.push(...latestCheckedList);
               checkUpdate = checkUpdate + 1;
+              onceRender = false
           }
             if (obj.Id === newItemBackUp?.Id && obj?.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj?.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
               obj?.subRows?.push(...latestCheckedList);
@@ -2482,6 +2487,7 @@ const RestructuringCom = (props: any, ref: any) => {
 
           setResturuningOpen(false);
           setNewItemBackUp([]);
+          controlUseEffect = false;
           restructureCallBack(array, false);
 
         })
@@ -2551,11 +2557,13 @@ const RestructuringCom = (props: any, ref: any) => {
               items.TaskID = PortfolioStructureID + '-' + SiteIconTitle + PortfolioLevel
           })
 
+          let onceRender : any = true;
           array?.map((obj: any, index: any) => {
             obj.isRestructureActive = false;
-            if(newItemBackUp == undefined || newItemBackUp == null || newItemBackUp?.length == 0){
+            if(newItemBackUp == undefined || newItemBackUp == null || newItemBackUp?.length == 0 && onceRender){
               array?.push(...latestCheckedList);
               checkUpdate = checkUpdate + 1;
+              onceRender = false
             }
             if (obj?.Id === newItemBackUp?.Id && obj?.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
               obj.subRows?.push(...latestCheckedList);
@@ -2643,6 +2651,7 @@ const RestructuringCom = (props: any, ref: any) => {
           })
           setResturuningOpen(false);
           restructureCallBack(array, false);
+          controlUseEffect = false;
           setNewArrayBackup([]);
         })
     }
@@ -2719,14 +2728,16 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
             items.Item_x0020_Type = Item_x0020_Type,
             items.SiteIconTitle = SiteIconTitle,
             items.PortfolioStructureID = PortfolioStructureIDs + '-' + SiteIconTitle + PortfolioLevel,
-            items.TaskID = PortfolioStructureIDs + '-' + SiteIconTitle + PortfolioLevel
+            items.TaskID = PortfolioStructureIDs
         })
 
+        let onceRender : any = true;
         array?.map((obj: any, index: any) => {
           obj.isRestructureActive = false;
-          if(newItemBackUp == undefined || newItemBackUp == null || newItemBackUp?.length == 0){
+          if(newItemBackUp == undefined || newItemBackUp == null || newItemBackUp?.length == 0 && onceRender){
             array?.push(...latestCheckedList);
             checkUpdate = checkUpdate + 1;
+            onceRender = false
           }
           if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
             obj.subRows?.push(...latestCheckedList);
@@ -2815,6 +2826,7 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
         setResturuningOpen(false);
         setNewItemBackUp([]);
         setTrueTopCompo(false);
+        controlUseEffect = false
         restructureCallBack(array, false);
       })
 }else{
@@ -2916,11 +2928,13 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
           items.TaskID = TaskID;
       })
 
+      let onceRender:any = true;
       array?.map((obj: any, index: any) => {
         obj.isRestructureActive = false;
-        if(newItemBackUp == undefined || newItemBackUp == null || newItemBackUp?.length == 0){
+        if(newItemBackUp == undefined || newItemBackUp == null || newItemBackUp?.length == 0 && onceRender){
           array?.push(...latestCheckedList);
           checkUpdate = checkUpdate + 1;
+          onceRender = false
         }
         if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
           obj.subRows?.push(...latestCheckedList);
@@ -3009,6 +3023,7 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
       setResturuningOpen(false);
       setTrueTopCompo(false);
       setNewItemBackUp([]);
+      controlUseEffect = false;
       restructureCallBack(array, false);
     }).catch((err:any)=>{
       console.log(err);
