@@ -801,7 +801,7 @@ function TasksTable(props: any) {
               <FaCompressArrowsAlt style={{ height: '11px', width: '20px' }} /> : ''}
             {row?.original?.subRows?.length > 0 ?
               <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
-             {row?.original?.descriptionsSearch.length>0&&<InfoIconsToolTip
+             {row?.original?.descriptionsSearch?.length>0&&<InfoIconsToolTip
                 Discription={row?.original?.descriptionsSearch}
                 row={row?.original}
               />}

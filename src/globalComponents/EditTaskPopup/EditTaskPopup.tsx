@@ -949,11 +949,6 @@ const EditTaskPopup = (Items: any) => {
                                 }
                             })
                         }
-                        if (statusValue == 0) {
-                            setTaskStatus('Not Started');
-                            setPercentCompleteStatus('Not Started');
-                            setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '0' })
-                        }
                         if (statusValue <= 2 && ApprovalStatusGlobal) {
                             ChangeTaskUserStatus = false;
                         } else {
