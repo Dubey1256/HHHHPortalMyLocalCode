@@ -949,11 +949,6 @@ const EditTaskPopup = (Items: any) => {
                                 }
                             })
                         }
-                        if (statusValue == 0) {
-                            setTaskStatus('Not Started');
-                            setPercentCompleteStatus('Not Started');
-                            setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '0' })
-                        }
                         if (statusValue <= 2 && ApprovalStatusGlobal) {
                             ChangeTaskUserStatus = false;
                         } else {
@@ -2437,11 +2432,7 @@ const EditTaskPopup = (Items: any) => {
             ApproverId: { "results": (ApproverIds != undefined && ApproverIds.length > 0) ? ApproverIds : [] },
             // ClientTime: JSON.stringify(ClientCategoryData),
             // ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] },
-<<<<<<< HEAD
-            SiteCompositionSettings: (SiteCompositionSetting != undefined && SiteCompositionSetting.length > 0) ? JSON.stringify(SiteCompositionSetting) : EditData.SiteCompositionSettings,
-=======
             // SiteCompositionSettings: (SiteCompositionSetting != undefined && SiteCompositionSetting.length > 0) ? JSON.stringify(SiteCompositionSetting) : EditData.SiteCompositionSettings,
->>>>>>> cbd93daaafc12310682feb8f81c36987ecf39790
             ApproverHistory: ApproverHistoryData?.length > 0 ? JSON.stringify(ApproverHistoryData) : null,
             EstimatedTime: EditData.EstimatedTime ? EditData.EstimatedTime : null,
             EstimatedTimeDescription: EditData.EstimatedTimeDescriptionArray ? JSON.stringify(EditData.EstimatedTimeDescriptionArray) : null,
