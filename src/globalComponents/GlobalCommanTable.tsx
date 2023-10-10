@@ -381,22 +381,22 @@ const GlobalCommanTable = (items: any) => {
 
                 </tbody>
             </table>
-            {showPagination === true ? <div className="d-flex gap-2 items-center mb-3 mx-2">
+            {showPagination === true ? <div className="d-flex gap-1 paginationspfx mb-3 mx-2">
                 <button
-                    className="border rounded p-1"
+                    
                     onClick={() => table.setPageIndex(0)}
                     disabled={!table.getCanPreviousPage()}
                 >
                     <FaAngleDoubleLeft />
                 </button>
                 <button
-                    className="border rounded p-1"
+                   
                     onClick={() => table.previousPage()}
                     disabled={!table.getCanPreviousPage()}
                 >
                     <FaChevronLeft />
                 </button>
-                <span className="flex items-center gap-1">
+                <span className="flex Total-items gap-1">
                     <div>Page</div>
                     <strong>
                         {table.getState().pagination.pageIndex + 1} of{' '}
@@ -404,14 +404,14 @@ const GlobalCommanTable = (items: any) => {
                     </strong>
                 </span>
                 <button
-                    className="border rounded p-1"
+                  
                     onClick={() => table.nextPage()}
                     disabled={!table.getCanNextPage()}
                 >
                     <FaChevronRight />
                 </button>
                 <button
-                    className="border rounded p-1"
+                   
                     onClick={() => table.setPageIndex(table.getPageCount() - 1)}
                     disabled={!table.getCanNextPage()}
                 >
