@@ -19,6 +19,7 @@ export interface IUserTimeEntryWebPartProps {
   TaskTimeSheetListNewListID: "464fb776-e4b3-404c-8261-7d3c50ff343f";
   TaskTimeSheet2ListID: "9ed5c649-3b4e-42db-a186-778ba43c5c93";
   MasterTaskListID: "ec34b38f-0669-480a-910c-f84e92e58adf";
+  AdminConfiguraionListId:"44c8f826-33ac-4a83-8b6e-8eebaf64d745";
   TimeEntry: any;
   SiteCompostion: any;
 }
@@ -45,6 +46,7 @@ export default class UserTimeEntryWebPart extends BaseClientSideWebPart<IUserTim
         userDisplayName: this.context.pageContext.user.displayName,
         Context: this.context,
         MasterTaskListID: this.properties.MasterTaskListID,
+        AdminConfiguraionListId:this.properties.AdminConfiguraionListId,
         siteUrl: this.context.pageContext.web.absoluteUrl,
         TaskUsertListID: this.properties.TaskUsertListID,
         SmartMetadataListID: this.properties.SmartMetadataListID,
@@ -122,6 +124,9 @@ export default class UserTimeEntryWebPart extends BaseClientSideWebPart<IUserTim
                 }),
                 PropertyPaneTextField('SiteCompostion', {
                   label: "SiteCompostion"
+                }),
+                PropertyPaneTextField('AdminConfiguraionListId', {
+                  label: "AdminConfiguraionListId"
                 })
               ]
             }

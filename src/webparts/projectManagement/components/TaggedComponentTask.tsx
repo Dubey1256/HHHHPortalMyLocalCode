@@ -508,7 +508,7 @@ const TaggedComponentTask = (props: any) => {
                     speed={2} trail={60} shadow={false} hwaccel={false} className="spinner" zIndex={2e9} top="28%" left="50%" scale={1.0} loadedClassName="loadedContent" />
                     </div>
                 <div className="text-end mt-3">
-                    <button className="btn btn-default" onClick={() => callBack()}>Cancel</button>
+                    <button className="btn btn-default mt-2" onClick={() => callBack()}>Cancel</button>
                 </div>
             </Panel>
             {isOpenEditPopup ? (
