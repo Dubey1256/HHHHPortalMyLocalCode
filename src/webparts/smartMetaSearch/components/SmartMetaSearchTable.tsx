@@ -1,15 +1,23 @@
 import * as React from 'react';
 import { Web } from "sp-pnp-js";
 import { ColumnDef } from '@tanstack/react-table';
-// import GlobalCommonTable from '../../../GlobalCommon/GlobalCommonTable';
-import GlobalCommonTable from '../../../globalComponents/GlobalCommanTable';
+import GlobalCommonTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
+import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
+import {GlobalConstants} from '../../../globalComponents/LocalCommon';
 import TaskPopup from './TaskPopup'
 import * as moment from 'moment';
 import { Panel, PanelType, PrimaryButton } from 'office-ui-fabric-react';
-import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
+import { ModalBody } from 'react-bootstrap';
+import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
 // const web = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/";
 // let web = new Web(web);
-
+let checkboxselecteditem:any = [];
+let tempdata:any[] = [];
+let filteredtempdata:any = [];
+let temparr:any[] = [];  
+let pagesType:any = '';
+let GroupItems:any = [];
+let editTimeSheet:any = '';
 const SmartMetaSearchTable = (props:any) => {
     const AllListId = props.AllListId;
     const tableitems = props.SiteSmartfilters;
@@ -18,7 +26,8 @@ const SmartMetaSearchTable = (props:any) => {
     const [AllTask,setAllTask] = React.useState<any[]>([]);    
     const [iseditOpen,setiseditOpen] = React.useState(false);
     const [Updateditem,setUpdateditem] = React.useState([]);   
-    
+    const [selectcompareitem,setselectcompareitem] = React.useState<any>([]); 
+    const [iseditTimeSheetOpen,setiseditTimeSheetOpen] = React.useState(false);    
     React.useEffect(() => {        
         if(tableitems?.selectedfilters?.length>0)      
           loadfilters(tableitems?.AllData);
@@ -30,22 +39,22 @@ const SmartMetaSearchTable = (props:any) => {
     const getChilds = (item: any, items: any) => {
         item.children = [];
         for (let index = 0; index < items?.length; index++) {
-            let childItem = items[index];
-            if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID) {
+            const childItem = items[index];
+            if (childItem.UserGroupId !== undefined && parseInt(childItem.UserGroupId) === item.ID) {
                 childItem.value = childItem.Id;
                 childItem.label = childItem.Title;
                 item.children.push(childItem);
                 getChilds(childItem, items);
             }
         }
-        if (item?.children?.length == 0) {
+        if (item?.children?.length === 0) {
             delete item.children;
         }
     }
     const checkDuplicateItem =(resultitem:any,item:any):boolean =>{
         if(resultitem?.length === 0) {return false}
         else {          
-            return resultitem.some((result: any) => result.Id == item.Id);
+            return resultitem.some((result: any) => result.Id === item.Id);
         }
     }
     const Datefilter = (datefilteritems:any)=>{
@@ -86,54 +95,55 @@ const SmartMetaSearchTable = (props:any) => {
         let temptask:any = [];
         tableitems.selectedfilters.map((selecteditem:any)=>{                      
             var flag = false;
-            highFilters.map((high:any)=> {
-                if (high.TaxType == selecteditem.TaxType) {
-                    if (high.TaxType == "Team Member") {
-                        high.child.push(selecteditem.AssingedToUserId);
-                    } else if (high.TaxType == "Status") {
-                        high.child.push(selecteditem.StatusValue);
-                    } else {
-                        high.child.push(selecteditem.Title);
-                    }
-                    flag = true;
-                }
-            })
-            if(!flag){
-                var temp:any = {};             
-                temp['TaxType'] = selecteditem.TaxType;
-                temp.child = [];
-                if(temp.TaxType !== 'Date'){
-                    highFilters.push(temp)                   
-                }
-                else{
-                    highFilters.push(temp)
-                }
-                highFilters.map((high:any)=>{
-                    if(high.TaxType === selecteditem.TaxType){
-                        if (high.TaxType == "Team Member") {                            
+            if(selecteditem.selected === true){
+                highFilters.map((high:any)=> {
+                    if (high.TaxType == selecteditem.TaxType) {
+                        if (high.TaxType == "Team Member") {
                             high.child.push(selecteditem.AssingedToUserId);
-                        }
-                        else if (high.TaxType == "Status") {
+                        } else if (high.TaxType == "Status") {
                             high.child.push(selecteditem.StatusValue);
-                        }
-                        else if (high.TaxType == "Date") {
-                            high.child.push(selecteditem);
-                        }
-                        else if (high.TaxType == "Url") {
-                            high.child.push(selecteditem.Url);
-                        }
-                        else {
+                        } else {
                             high.child.push(selecteditem.Title);
                         }
+                        flag = true;
                     }
-                })  
-            } 
-            
+                })
+                if(!flag){
+                    var temp:any = {};             
+                    temp['TaxType'] = selecteditem.TaxType;
+                    temp.child = [];
+                    if(temp.TaxType !== 'Date'){
+                        highFilters.push(temp)                   
+                    }
+                    else{
+                        highFilters.push(temp)
+                    }
+                    highFilters.map((high:any)=>{
+                        if(high.TaxType === selecteditem.TaxType){
+                            if (high.TaxType == "Team Member") {                            
+                                high.child.push(selecteditem.AssingedToUserId);
+                            }
+                            else if (high.TaxType == "Status") {
+                                high.child.push(selecteditem.StatusValue);
+                            }
+                            else if (high.TaxType == "Date") {
+                                high.child.push(selecteditem);
+                            }
+                            else if (high.TaxType == "Url") {
+                                high.child.push(selecteditem.Url);
+                            }
+                            else {
+                                high.child.push(selecteditem.Title);
+                            }
+                        }
+                    })  
+                }                            
+            }
             if (selecteditem?.GlobalSearch) {
                 GlobalFilter = selecteditem;
-            }                          
+            }                         
         })
-        if(GlobalFilter !== undefined) {
+        if(GlobalFilter !== undefined && GlobalFilter !== '') {
             if (GlobalFilter.advanceValueAll === 'Allwords') {               
                 GlobalFilter.GlobalSearch.split(' ').map((word:any)=>{
                     if (GlobalFilter.updateFilterAll === "Allfields") {                       
@@ -167,11 +177,11 @@ const SmartMetaSearchTable = (props:any) => {
         }
         highFilters?.map((selecteditems:any)=>{
             if(selecteditems.TaxType === 'Sites'){
-                let tempdata:any = [];
-                let temparr:any = [];
+                temparr = []
+                tempdata = [];  
                 selecteditems?.child.map((childitem:any)=>{
                     resultitem.map((item:any)=>{
-                        if(childitem === item.siteType){
+                        if(childitem === item.siteName){
                             if(!checkDuplicateItem(temparr,item))
                                 temparr.push(item);                        
                         }
@@ -182,8 +192,8 @@ const SmartMetaSearchTable = (props:any) => {
                 resultitem = temparr;
             }
             else if(selecteditems.label === 'Status' || selecteditems.TaxType === 'Status'){
-                let tempdata:any = [];
-                let temparr:any = [];
+                temparr = []
+                tempdata = [];  
                 selecteditems?.child.map((childitem:any)=>{
                     resultitem?.map((taskitems:any)=>{
                         if(childitem === taskitems.PercentComplete){
@@ -197,11 +207,11 @@ const SmartMetaSearchTable = (props:any) => {
                 resultitem = temparr;
             }  
             else if(selecteditems.label === 'Priority' || selecteditems.TaxType === 'Priority'){
-                let tempdata:any = [];
-                let temparr:any = [];
+                temparr = []
+                tempdata = [];  
                 selecteditems?.child.map((childitem:any)=>{
                     resultitem.forEach((taskitems:any)=>{
-                        if(childitem == taskitems.PriorityRank){
+                        if(childitem === taskitems.Priority_x0020_Rank){
                             if(!checkDuplicateItem(temparr,taskitems))
                                 temparr.push(taskitems); 
                         }
@@ -211,29 +221,36 @@ const SmartMetaSearchTable = (props:any) => {
                 tempdata = {...tempdata,...temparr};                                        
                 resultitem = temparr;                                        
             }
-            else if(selecteditems.label === 'Type' || selecteditems.TaxType === 'Type'){ 
-                let tempdata:any = [];
-                let temparr:any = [];
+            else if(selecteditems.label === 'Type' || selecteditems.TaxType === 'Type'){
+                temparr = []
+                tempdata = [];
+                filteredtempdata = []                           
+                resultitem?.map((taskitems:any)=>{
+                    if(taskitems.isPortfolio === false){
+                        if(!checkDuplicateItem(temparr,taskitems))
+                            temparr.push(taskitems); 
+                    }
+                }) 
                 selecteditems?.child.map((childitem:any)=>{
-                    resultitem?.map((taskitems:any)=>{
-                        if(childitem == taskitems?.TaskType?.Title){
-                            if(!checkDuplicateItem(temparr,taskitems))
-                                temparr.push(taskitems); 
+                    temparr?.map((taskitems:any)=>{
+                        if(childitem === taskitems?.TaskType?.Title){
+                            if(!checkDuplicateItem(tempdata,taskitems))
+                              tempdata.push(taskitems); 
                         }
                     })                                        
                 })
                                     
-                tempdata = {...tempdata,...temparr};                                        
-                resultitem = temparr;                                   
+                filteredtempdata = {...filteredtempdata,...tempdata};                                        
+                resultitem = tempdata;                                   
                 
             }
             else if(selecteditems.label === 'Categories' || selecteditems.TaxType === 'Categories'){ 
-                let tempdata:any = [];
-                let temparr:any = [];
+                temparr = []
+                tempdata = [];  
                 selecteditems?.child.map((childitem:any)=>{
                     resultitem?.map((taskitems:any)=>{
-                        if(taskitems?.TaskCategories?.length>0){
-                            taskitems.TaskCategories.map((ctype:any)=>{
+                        if(taskitems?.SharewebCategories?.length>0){
+                            taskitems.SharewebCategories.map((ctype:any)=>{
                                 if(ctype.Title === childitem){
                                     if(!checkDuplicateItem(temparr,taskitems))
                                         temparr.push(taskitems);
@@ -247,9 +264,9 @@ const SmartMetaSearchTable = (props:any) => {
                 resultitem = temparr;                                   
                 
             }
-            else if(selecteditems.label === 'Client Category'  || selecteditems.TaxType === 'Client Category'){  
-                let tempdata:any = [];
-                let temparr:any = [];
+            else if(selecteditems.label === 'Client Category'  || selecteditems.TaxType === 'Client Category'){
+                temparr = []
+                tempdata = [];               
                 selecteditems?.child.map((childitem:any)=>{
                     resultitem?.map((taskitems:any)=>{
                         if(taskitems?.ClientCategory?.length>0){
@@ -268,24 +285,39 @@ const SmartMetaSearchTable = (props:any) => {
                 
             }
             else if(selecteditems.label === 'Portfolio Type'  || selecteditems.TaxType === 'Portfolio Type'){
-                let tempdata:any = [];
-                let temparr:any = [];
+                temparr = []
+                tempdata = [];
+                filteredtempdata = [] 
+                resultitem?.map((taskitems:any)=>{
+                    if(taskitems.isPortfolio === true){
+                        if(!checkDuplicateItem(temparr,taskitems))
+                            temparr.push(taskitems); 
+                    }
+                }) 
                 selecteditems?.child.map((childitem:any)=>{
-                    resultitem?.map((taskitems:any)=>{
-                        if((childitem == 'Component' && taskitems.Component?.length>0) || (childitem == 'Service' && taskitems.Service?.length>0) || (childitem == 'Deliverable' && taskitems.Deliverable?.length>0) || (selecteditems.Title == 'Events' && taskitems.Events?.length>0)){                                           
-                            if(!checkDuplicateItem(temparr,taskitems))
-                                temparr.push(taskitems);                                   
+                    temparr?.map((taskitems:any)=>{
+                        if(childitem === taskitems?.PortfolioType){
+                            if(!checkDuplicateItem(tempdata,taskitems))
+                              tempdata.push(taskitems); 
                         }
-                    })                                     
+                    })                                        
                 })
+                // selecteditems?.child.map((childitem:any)=>{
+                //     resultitem?.map((taskitems:any)=>{
+                //         if((childitem == 'Component' && taskitems.Component?.length>0) || (childitem == 'Service' && taskitems.Service?.length>0) || (childitem == 'Deliverable' && taskitems.Deliverable?.length>0) || (selecteditems.Title == 'Events' && taskitems.Events?.length>0)){                                           
+                //             if(!checkDuplicateItem(temparr,taskitems))
+                //                 temparr.push(taskitems);                                   
+                //         }
+                //     })                                     
+                // })
                                        
-                tempdata = [{...tempdata,...temparr}];                                        
-                resultitem = temparr;                                       
+                filteredtempdata = {...filteredtempdata,...tempdata};                                        
+                resultitem = tempdata;                                    
                 
             }
             else if(selecteditems.TaxType === 'Team Member'){
-                let tempdata:any = [];
-                let temparr:any = [];
+                temparr = []
+                tempdata = [];  
                 selecteditems?.child.map((childitem:any)=>{
                     resultitem?.map((taskitems:any)=>{
                         taskitems.imageurl = imageurl;
@@ -338,8 +370,8 @@ const SmartMetaSearchTable = (props:any) => {
                 
             }
             else if(selecteditems.TaxType === 'Date'){
-                let tempdata:any = [];
-                let temparr:any = [];
+                temparr = []
+                tempdata = [];  
                 selecteditems?.child.map((childitem:any)=>{
                     resultitem.map((dateitem:any)=>{
                         if(childitem?.isCretaedDate || childitem?.isModifiedDate || childitem?.isDueDate ){
@@ -366,11 +398,11 @@ const SmartMetaSearchTable = (props:any) => {
         if(Allresultitem?.length>0){
           resultitem = Datefilter(Allresultitem);
         }
-        if(tableitems?.isShowItem == true){
+        if(tableitems?.isShowItem === true){
             if(resultitem?.length>0){
                 resultitem = resultitem.sort((a:any, b:any) => {
-                    if (a.TaskID < b.TaskID) return 1;
-                    if (a.TaskID > b.TaskID) return -1;
+                    if (a.Shareweb_x0020_ID < b.Shareweb_x0020_ID) return 1;
+                    if (a.Shareweb_x0020_ID > b.Shareweb_x0020_ID) return -1;
                     return 0;
                 });
                 setAllTask(resultitem);
@@ -378,26 +410,21 @@ const SmartMetaSearchTable = (props:any) => {
             }         
             else
              setAllTask([]);
-        }
-        
+        }  
         
     }
-     
-    
-  const Call = React.useCallback((childItem: any) => {
-    setiseditOpen(false);
-  
-  }, []);
-    const EdittaskItems = (taskitem:any) =>{       
+       
+    const EdittaskItems = (taskitem:any) =>{
         setUpdateditem(taskitem);
         setiseditOpen(true);       
-    }
-    const closeEditPopup =()=>{
-        setiseditOpen(false);
+    } 
+    const EditTaskTimesheet = (task:any) =>{
+        editTimeSheet = task;
+        setiseditTimeSheetOpen(true);
     }
 
     const RemoveItem = (Item: any) => {
-        var flag: any = confirm('Do you want to delete this item')
+        let flag: any = confirm('Do you want to delete this item')
         if (flag) {            
             web.lists.getById(Item.listId).items.getById(Item.Id).recycle().then(() => {
                 alert("delete successfully")
@@ -407,17 +434,77 @@ const SmartMetaSearchTable = (props:any) => {
             });
         }
     }
+    const selectedcheckbox = (items:any,event: any) =>{
+        if(event.target.checked){          
+           checkboxselecteditem.push(items);           
+        }
+        else{
+            checkboxselecteditem.map((item:any,index:any) => {
+                if(item.Id === items.Id){
+                    checkboxselecteditem.splice(index,1);
+                }
+            });            
+        } 
+        setselectcompareitem(checkboxselecteditem);              
+    }
 
+    const ShowrelaventComponent = (item:any,event:any) =>{
+        const ischecked = event.target.checked
+        if (item.Portfolio_x0020_Type !== undefined && item.Portfolio_x0020_Type === 'Service')
+                pagesType = 'Service-Portfolio';
+            else pagesType = 'componentportfolio';
+            if (item.Item_x0020_Type !== undefined && item.Item_x0020_Type === 'Feature') {
+                let item1:any = ''; 
+                tableitems?.copymastertasksitem?.forEach((x:any) => { if (x.Id === item.Parent.Id) item1 = x });
+                GroupItems = [];
+                tableitems?.copymastertasksitem?.forEach((x:any) => { if ((x.Id === (item1 === undefined ? item.Parent.Id : item1.Parent.Id))) GroupItems.push(x) });
+                GroupItems[0].childs = []; 
+                GroupItems[0].childs.push(item1);
+                GroupItems[0].expanded = true;
+                if (GroupItems[0]?.childs?.length > 0) {
+                    GroupItems[0].childs((obj:any)=> {
+                        obj.childs = [];
+                        obj.expanded = true;
+                        obj.childs.push(item);
+                    })
+                }
+            }
+            if (item?.Item_x0020_Type && item.Item_x0020_Type === 'SubComponent') {
+                let item1:any = undefined;
+                GroupItems = []; 
+                tableitems?.copymastertasksitem?.forEach((x:any) => { if ((x.Id === (item1 === undefined ? item.Parent.Id : item1.Parent.Id))) GroupItems.push(x) });
+                if (GroupItems?.length > 0) {
+                    GroupItems[0].expanded = true;
+                    GroupItems[0].childs = []; 
+                    GroupItems[0].childs.push(item);
+                }
+            }
+    }
+   
     const columns = React.useMemo<ColumnDef<any, unknown>[]>(() =>
     [
+        { accessorKey: "",placeholder: "", hasCheckbox: true,hasCustomExpanded: true,hasExpanded: true,size: 5,id: 'Id'},
         { cell: ({ row }) => (
             <>
-                <a> <img className='workmember ' src={row.original.siteurl} /></a>{row.original.TaskID}
+                {tableitems?.isGMBH === true && <div>
+                    <a> <img className='workmember ' src={row.original.siteurl} /></a> 
+                    {row.original.TaskID}
+                    <span>{row.original.Item_x0020_Type ==='Feature' || row.original.Item_x0020_Type ==='SubComponent' && <img className='imgWid29' src={`${parenturl}/SiteCollectionImages/ICONS/Shareweb/Add-New.png`} onClick={(e)=>ShowrelaventComponent(row.original,e)}/>}</span>
+                </div>}
+                {tableitems?.isGMBH === false && 
+                    <div>
+                      <a> <img className='workmember ' src={row.original.siteurl} /></a>
+                      {row.original.Item_x0020_Type !=='Component' && row.original.Item_x0020_Type !=='Feature' && row.original.Item_x0020_Type !=='Component Category' && row.original.Item_x0020_Type !=='Service' && row.original.Item_x0020_Type !=='SubComponent' && <span>{row.original.TaskID}</span>}
+                      <span>{row.original.Item_x0020_Type ==='Feature' || row.original.Item_x0020_Type ==='SubComponent' && <img className='imgWid29' src={`${parenturl}/SiteCollectionImages/ICONS/Shareweb/Add-New.png`} onClick={(e)=>ShowrelaventComponent(row.original,e)}/>}</span>
+                    </div>                   
+                }
+                
             </>
         ),accessorKey: "TaskID", placeholder: "TaskID", header: "", size: 70, },
         { cell: ({ row }) => (
             <>
-                <a target='_blank' href={`${parenturl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.siteType}`}>{row.original.Title}</a>
+                {row.original.siteName === 'Master Tasks' && <a target='_blank' href={`${parenturl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}`}>{row.original.Title}</a>}
+                {row.original.siteName !== 'Master Tasks' && <a target='_blank' href={`${parenturl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.siteName}`}>{row.original.Title}</a>}
             </>
         ),accessorKey: "Title", placeholder: "Title", header: "", size: 150, },
         {cell: ({ row }) => (
@@ -427,13 +514,40 @@ const SmartMetaSearchTable = (props:any) => {
         ), accessorKey: "tagComponentTitle", placeholder: "Component", header: "", size: 70, },
         { accessorKey: "Categories", placeholder: "Categories", header: "", size: 70, },
         { accessorKey: "PercentComplete", placeholder: "%", header: "", size: 70, },
-        { accessorKey: "PriorityRank", placeholder: "Priority", header: "", size: 70, },
+        { accessorKey: "Priority_x0020_Rank", placeholder: "Priority", header: "", size: 70, },
         { accessorKey: "Modified", placeholder: "Modified", header: "", size: 70, cell: ({ row }) => (
             <>
-                {row.original.Modified}<a target='_blank' href={`${web}/SitePages/TeamLeader-Dashboard.aspx?UserId=${row.original.userImageId}&Name=${row.original.userImageTitle}`}><img className='workmember ' src={row.original.userImageUrl} /></a>
+                {row.original.Modified}
+                {row.original?.userImageUrl ? <a target='_blank' href={`${parenturl}/SitePages/TeamLeader-Dashboard.aspx?UserId=${row.original.userImageId}&Name=${row.original.userImageTitle}`}><img className='workmember ' src={row.original.userImageUrl} /></a> : <a target='_blank' href={`${parenturl}/SitePages/TeamLeader-Dashboard.aspx?UserId=${row.original.userImageId}&Name=${row.original.userImageTitle}`}><img className='workmember ' src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/Portraits/icon_user.jpg" /></a>}
             </>
         ) },
         { accessorKey: "DueDate", placeholder: "DueDate", header: "", size: 70, },
+        // {
+        //     cell: ({ row }) => (
+        //         <>
+        //             <a onClick={() => EditTaskTimesheet(row.original)} title="Edit"><svg xmlns="http://www.w3.org/2000/svg" width="30" height="25" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333"></path></svg></a>
+        //         </>
+        //     ),
+        //     accessorKey: '',
+        //     canSort: false,
+        //     placeholder: '',
+        //     header: '',
+        //     id: 'row.original',
+        //     size: 10,
+        // },
+        // {
+        //     cell: ({ row }) => (
+        //         <>
+        //             <a onClick={() => EdittaskItems(row.original)} title="Edit"><svg xmlns="http://www.w3.org/2000/svg" width="30" height="25" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333"></path></svg></a>
+        //         </>
+        //     ),
+        //     accessorKey: '',
+        //     canSort: false,
+        //     placeholder: '',
+        //     header: '',
+        //     id: 'row.original',
+        //     size: 10,
+        // },
         {
             cell: ({ row }) => (
                 <>
@@ -463,19 +577,73 @@ const SmartMetaSearchTable = (props:any) => {
     ],[AllTask]
     );
     const callBackData = React.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => {
-
+        if (elem) {
+            checkboxselecteditem.push(elem); 
+        } else {
+            checkboxselecteditem = [];
+        }
     }, []);
+    const CallBack = (type:any) =>{
+        setiseditOpen(false);
+    }
+    const ListId = {
+        TaskUsertListID:GlobalConstants.TaskUsersListId,
+        SmartMetadataListId:GlobalConstants.SP_SMARTMETADATA_LIST_ID,  
+        MasterTaskListID:GlobalConstants.MASTER_TASKS_LISTID,
+        siteUrl:parenturl,
+        TaskTimeSheetListID:GlobalConstants.TASK_TIME_SHEET_LISTID,
+        DocumentsListID:GlobalConstants.SPONLINE_DOCUMENT_LISTID,
+        SmartInformationListID:GlobalConstants.MAIN_SMARTINFORMATIONS_LISTID,
+        TaskTypeID:GlobalConstants.TASK_TYPE_LISTID,
+        isShowTimeEntry:true,
+        isShowSiteCompostion:true
+    }
+    // const onRenderCustomHeaderMain = () => {
+    //     return (
+    //         <div className="d-flex full-width pb-1">
+    //             <div className='subheading'>
+    //              All Time Entry - {editTimeSheet.Title} - {editTimeSheet.siteName}
+    //             </div>
+    //             {/* <Tooltip ComponentId="528" /> */}
+    //         </div>
+    //     );
+    // };
+
   return(
     <>  
-       <div>
+       <div>           
             {AllTask && <GlobalCommonTable columns={columns} data={AllTask} showHeader={true} callBackData={callBackData} />}
-            {iseditOpen && <EditTaskPopup Items={Updateditem} AllListId={AllListId} Call={Call} context={AllListId.ContextValue}></EditTaskPopup>
-     
-            }
-       </div>
+            {iseditOpen && <EditTaskPopup Items={Updateditem} AllListId={ListId} context={AllListId.ContextValue} Call={(Type: any) => { CallBack(Type) }}/>}            
+       </div> 
+       {/* <Panel type={PanelType.large} isOpen={iseditTimeSheetOpen} onRenderHeader={onRenderCustomHeaderMain} isBlocking={false}>
+            <div>
+              <ModalBody>
+                    <div>
+                        <span>
+                            <SlArrowDown onClick={}></SlArrowDown>
+                            <SlArrowRight onClick={}></SlArrowRight>
+                        </span>
+                        <span>
+                          <span className='form-check'> <input className='form-check-input' type="checkbox" id={} checked={} onChange={}/> Flatview </span>
+                          <span> Category Filter </span>
+                        </span>
+                        <span>
+                           + Add Time in New Structure                          
+                        </span>                        
+                    </div> 
+                    <div>
+
+                    </div>
+                    <div>
+
+                    </div>
+              </ModalBody>
+            </div>
+       </Panel>   */}
     </>
   )
-
 }
 
 export default SmartMetaSearchTable;
+
+

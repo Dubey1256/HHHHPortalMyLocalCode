@@ -801,7 +801,7 @@ function TasksTable(props: any) {
               <FaCompressArrowsAlt style={{ height: '11px', width: '20px' }} /> : ''}
             {row?.original?.subRows?.length > 0 ?
               <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
-             {row?.original?.descriptionsSearch.length>0&&<InfoIconsToolTip
+             {row?.original?.descriptionsSearch?.length>0&&<InfoIconsToolTip
                 Discription={row?.original?.descriptionsSearch}
                 row={row?.original}
               />}
@@ -968,7 +968,7 @@ function TasksTable(props: any) {
                 </span>)}
 
               {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && (
-                <span title='Edit' onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit"></span>
+                <span title='Edit' onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit pull-right"></span>
               )}
             </a>
             {getValue()}
