@@ -5,7 +5,9 @@ export interface ITeamMembersState {
     sortedItems: any[];
     columns: any[];
     searchText: string;
+    activeTab:string;
     showCreatePanel: boolean;
+    reloadComponent: boolean;
     showEditPanel: boolean;
     enableSave: boolean;
     hideDeleteDialog: boolean;
@@ -22,6 +24,7 @@ export interface ITeamMembersState {
     selImageId?: number;
     onImageHover: boolean;
     enableUser: boolean;
+
 }
 
 interface ITaskItem {

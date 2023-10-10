@@ -288,11 +288,11 @@ const TagTaskToProjectPopup = (props: any) => {
 
 
             <footer className='text-end p-2'>
-                  <button className="btn btn-primary px-3"
+                  <button className="btn btn-primary mx-2"
                     onClick={() => { tagSelectedTasks() }}>
                     Tag Tasks
                 </button>
-                <button type="button" className="btn btn-default me-1 px-3" onClick={handleClose}>
+                <button type="button" className="btn btn-default me-4" onClick={handleClose}>
                     Cancel
                 </button>
               
