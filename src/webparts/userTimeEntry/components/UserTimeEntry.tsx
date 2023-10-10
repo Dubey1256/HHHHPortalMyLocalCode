@@ -19,6 +19,8 @@ import * as globalCommon from "../../../globalComponents/globalCommon";
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import Tooltip from '../../../globalComponents/Tooltip';
 var AllListId: any;
+var AllPortfolios: any[] = [];
+var AllPortfolioType = [{ 'Title': 'Component', 'Selected': true, }, { 'Title': 'Service', 'Selected': true, }];
 export interface IUserTimeEntryState {
   Result: any;
   taskUsers: any;
@@ -51,6 +53,8 @@ export interface IUserTimeEntryState {
   PreSetItem: any,
   isStartDatePickerOne: boolean;
   isEndDatePickerOne: boolean;
+  IsCheckedComponent: boolean;
+  IsCheckedService: boolean;
 }
 var user: any = ''
 var userIdByQuery: any = ''
@@ -93,13 +97,14 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       PreSetItem: {},
       isStartDatePickerOne: true,
       isEndDatePickerOne: false,
-
+      IsCheckedComponent: true,
+      IsCheckedService: true,
     }
     this.OpenPresetDatePopup = this.OpenPresetDatePopup.bind(this);
     this.ClosePopup = this.ClosePopup.bind(this);
+    this.SavePresetDate = this.SavePresetDate.bind(this);
     this.GetResult();
   }
-
   private SelectedProp = this.props;
   private BackupAllTimeEntry: any = [];
   private AllTimeEntry: any = [];
@@ -109,17 +114,14 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
   private CategoryItemsArray: any = [];
   private StartWeekday: any;
   private endweekday: any;
-
   private async GetResult() {
     var queryString = window.location.search;
-
     // Create a URLSearchParams object to parse the query string
     var params = new URLSearchParams(queryString);
-
     // Get the value of the 'userId' parameter from the query string
     userIdByQuery = params.get('userId');
     console.log(userIdByQuery)
-    //this.checkBoxColor()
+    await this.LoadPortfolio()
     await this.loadAdminConfigurations()
     await this.GetTaskUsers();
     await this.LoadAllMetaDataFilter();
@@ -143,21 +145,23 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               lable.style.color = portfolioColor;
             }
             checkbox.classList.add('form-check-input', 'cursor-pointer');
+            if (lable?.innerHTML === "DE" || lable?.innerHTML === "QA" || lable?.innerHTML === "Health" || lable?.innerHTML === "DA E+E" || lable?.innerHTML === "Kathabeck"
+              || lable?.innerHTML === "Gruene" || lable?.innerHTML === "HHHH" || lable?.innerHTML === "Other") {
+              checkbox.classList.add('smartFilterAlignMarginQD');
+            }
           }
         }
       }
-    }, 200);
+    }, 1000);
   }
   private async DefaultValues() {
     let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
-
     let ImageSelectedUsers = this.state.ImageSelectedUsers;
     if (userIdByQuery != undefined && userIdByQuery != '') {
       user = { "Id": userIdByQuery }
     }
     else {
       user = await web.currentUser.get();
-
     }
     if (user?.Id != null) {
       for (let i = 0; i < this.state.taskUsers.length; i++) {
@@ -174,13 +178,14 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       }
     }
     document.getElementById('rdThisWeek').click();
-
     this.setState({ ImageSelectedUsers }, () => {
       this.updatefilter(true);
     });
-
   }
-
+  private async LoadPortfolio() {
+    let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
+    AllPortfolios = await web.lists.getById(this.props?.MasterTaskListID).items.select("ID", "Id", "Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/Title").expand("PortfolioType").top(4999).filter("(Item_x0020_Type eq 'Component') or (Item_x0020_Type eq 'SubComponent') or (Item_x0020_Type eq 'Feature')").get();
+  }
   private async loadAdminConfigurations() {
     let web = new Web(this.props.Context.pageContext._site.absoluteUrl);
     let results = [];
@@ -192,8 +197,8 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       PreSetItem: results[0],
     })
     this.setState({
-      PresetEndDate: results[0]?.Configurations?.PreStartDate,
-      PresetStartDate: results[0]?.Configurations?.PreStartEnd,
+      PresetEndDate: results[0]?.Configurations?.PreStartEnd,
+      PresetStartDate: results[0]?.Configurations?.PreStartDate,
     })
   }
   private async GetTaskUsers() {
@@ -212,7 +217,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       .orderBy('SortOrder', true)
       .orderBy("Title", true)
       .get();
-
     for (let index = 0; index < results.length; index++) {
       let element = results[index];
       if (element.UserGroupId == undefined) {
@@ -226,22 +230,10 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       taskUsers: taskUsers
     })
   }
-
-
   private GetTimeEntry() {
-    /*if ($scope.getUserID != undefined && $scope.getUserID != '') {
-      let startweeked = getMonday(new Date());     
-      $scope.StartWeekday = $scope.StartYearCurrent + '/01/01';
-      $scope.endweekday = new Date().format("yyyy/MM/dd");
-      //SharewebCommonFactoryService.showProgressBar();
-  }
-  else {    
-    */
     this.StartWeekday = (new Date().getFullYear()).toString() + '/01/01';
     this.endweekday = Moment(new Date()).format("YYYY/MM/DD");
-    //}
   }
-
   private getChilds(item: any, items: any) {
     item.childs = [];
     for (let index = 0; index < items.length; index++) {
@@ -254,9 +246,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         this.getChilds(childItem, items);
       }
     }
-
   }
-
   private async LoadAllMetaDataFilter() {
     //Get Site data and task data
     let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
@@ -274,7 +264,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       .orderBy("Title", true)
       .top(1000)
       .get();
-
+    this.checkBoxColor()
     //seperate the items Client Category and Sites
     results.forEach(function (obj: any, index: any) {
       if (obj.TaxType == 'Client Category')
@@ -282,18 +272,14 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       else
         sitesResult.push(obj)
     });
-
     this.setState({
       SitesConfig: sitesResult
     }, () => this.loadSmartFilters(ccResults, sitesResult))
-
   }
-
   private loadSmartFilters(items: any, siteItems: any) {
     let filterGroups = [];
     let filterItems = [];
     let filterSites = [];
-
     for (let index = 0; index < items.length; index++) {
       let filterItem = items[index];
       if (filterItem.SmartFilters != undefined && filterItem.SmartFilters.indexOf('Dashboard') > -1) {
@@ -304,7 +290,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         item.label = filterItem.Title;
         item.Group = filterItem.TaxType;
         item.TaxType = filterItem.TaxType;
-        //item.Selected = true;
         if (filterItem.ParentID == 0) {
           if (!this.IsExistsData(filterItems, item))
             filterItems.push(item);
@@ -322,7 +307,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         }
       }
     }
-
     for (let index = 0; index < siteItems.length; index++) {
       let filterItem = siteItems[index];
       if (filterItem.SmartFilters != undefined && filterItem.SmartFilters.indexOf('Dashboard') > -1) {
@@ -333,7 +317,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         item.label = filterItem.Title;
         item.Group = filterItem.TaxType;
         item.TaxType = filterItem.TaxType;
-        //item.Selected = true;
         if (filterItem.ParentID == 0) {
           if (!this.IsExistsData(filterSites, item))
             filterSites.push(item);
@@ -349,15 +332,12 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         }
       }
     }
-
-    //console.log(filterGroups);
     console.log(filterItems);
     console.log(filterSites);
     this.setState({
       filterItems, filterSites
     })
   }
-
   private SelectAllCategories(ev: any) {
     let filterItem = this.state.filterItems;
     let checked: any = [];
@@ -386,15 +366,12 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       }
     }
     else {
-
     }
     this.setState({
       checked,
       checkedAll: select
     });
-
   }
-
   private SelectAllSits(ev: any) {
     let filterItem = this.state.filterSites;
     let checked: any = [];
@@ -422,15 +399,12 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       }
     }
     else {
-
     }
     this.setState({
       checkedSites: checked,
       checkedAllSites: select
     });
-
   }
-
   private IsExistsData(array: any, Id: any) {
     let isExists = false;
     for (let index = 0; index < array.length; index++) {
@@ -442,7 +416,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     }
     return isExists;
   }
-
   private getChildsOfFilter(item: any, items: any) {
     item.children = [];
     for (let index = 0; index < items.length; index++) {
@@ -453,12 +426,10 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         item.children.push(childItem);
         this.getChildsOfFilter(childItem, items);
       }
-
     }
     if (item.children == undefined || item.children.length === 0)
       delete item.children;
   }
-
   private SelectAllGroupMember(ev: any) {
     let SelectGroupName = '';
     let select = ev.currentTarget.checked;
@@ -492,36 +463,27 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                 if (el.Id == child.Id)
                   ImageSelectedUsers.splice(k, 1);
               }
-
             } catch (error) {
-
             }
-
           })
         }
       })
     }
-
     this.state.taskUsers.forEach((item: any) => {
       if (item.SelectedGroup == true)
         SelectGroupName = SelectGroupName + item.Title + ' ,';
     })
     SelectGroupName = SelectGroupName.replace(/.$/, "");
-
     this.setState({
       ImageSelectedUsers,
       SelectGroupName
     }, () => console.log(this.state.ImageSelectedUsers));
-
   }
-
   private SelectUserImage(ev: any, item: any) {
     let SelectGroupName = '';
     console.log(`The option ${ev.currentTarget.title}.`);
     console.log(item);
-    //console.log(Parent);
     let ImageSelectedUsers = this.state.ImageSelectedUsers;
-
     const collection = document.getElementsByClassName("AssignUserPhoto mr-5");
     for (let i = 0; i < collection.length; i++) {
       collection[i].classList.remove('seclected-Image');
@@ -530,11 +492,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       ev.currentTarget.classList.remove('seclected-Image');
       document.getElementById('UserImg' + item.Id).classList.remove('activeimg');
       item.IsSelected = false;
-      //uncheck the group checkbox if any one child is unchecked
-      // if (ev.currentTarget.closest('.ng-binding').children[0].checked) {
-      //   ev.currentTarget.closest('.ng-binding').children[0].checked = false
-      // }
-      //remove element from array
       for (let index = 0; index < ImageSelectedUsers.length; index++) {
         let sel = ImageSelectedUsers[index];
         if (sel.Id != undefined && item.Id != undefined && sel.Id == item.Id) {
@@ -552,28 +509,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         ImageSelectedUsers = [];
       ImageSelectedUsers.push(item);
     }
-
-    //need to check uncheck the group
-    /*       
-    this.state.taskUsers.forEach((user:any) => {
-      if (Parent.Id == user.Id && user.childs != undefined && user.childs.length > 0) {
-        let IsNeedToCheckParent = true;
-        let IsNeedToUncheckParent = true;          
-          user.childs.forEach((child:any) => {
-              if (child.IsSelected == true) {
-                IsNeedToCheckParent = true
-              }
-              if (child.IsSelected == false) {
-                  IsNeedToCheckParent = false
-              }
-          })
-          if (IsNeedToUncheckParent == true)
-            ev.currentTarget.closest('.ng-binding').children[0].checked  = false;
-          if (IsNeedToCheckParent == true)
-            ev.currentTarget.closest('.ng-binding').children[0].checked  = true;
-      }
-    })  
-    */
     this.state.taskUsers.forEach((item: any) => {
       if (item.SelectedGroup == true)
         SelectGroupName = SelectGroupName + item.Title + ' ,'
@@ -585,7 +520,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       SelectGroupName
     }, () => console.log(this.state.ImageSelectedUsers));
   }
-
   private SelectedGroup(ev: any, user: any) {
     let SelectGroupName = '';
     console.log(ev.currentTarget.checked)
@@ -622,20 +556,16 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         }
       }
     }
-
     this.state.taskUsers.forEach((item: any) => {
       if (item.SelectedGroup == true)
         SelectGroupName = SelectGroupName + item.Title + ' ,'
     })
     SelectGroupName = SelectGroupName.replace(/.$/, "")
-
     this.setState({
       ImageSelectedUsers,
       SelectGroupName
     }, () => console.log(this.state.ImageSelectedUsers))
-
   }
-
   private isItemExists(array: any, items: any) {
     let isExists = false;
     for (let index = 0; index < array.length; index++) {
@@ -649,7 +579,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     }
     return isExists;
   }
-
   /*private isItemExists(array:any, Id:any) {
     let isExists = false;
     for (let index = 0; index < array.length; index++) {
@@ -662,19 +591,23 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     return isExists;
   }
   */
-
   private setStartDate(dt: any) {
+    dt = new Date(dt);
+    dt = Moment(dt).format("MM/DD/YYYY")
     this.setState({
       startdate: dt
     });
   }
-
   private setEndDate(dt: any) {
+    dt = new Date(dt);
+    dt = Moment(dt).format("MM/DD/YYYY")
     this.setState({
       enddate: dt
     });
   }
   private setPresetStartDate(PreStartDate: any) {
+    PreStartDate = new Date(PreStartDate);
+    PreStartDate = Moment(PreStartDate).format("MM/DD/YYYY")
     this.setState({
       PresetStartDate: PreStartDate,
       isStartDatePickerOne: true,
@@ -682,29 +615,57 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     });
   }
   private setPresetEndDate(PreEndtDate: any) {
+    PreEndtDate = new Date(PreEndtDate);
+    PreEndtDate = Moment(PreEndtDate).format("MM/DD/YYYY")
     this.setState({
       PresetEndDate: PreEndtDate,
       isStartDatePickerOne: false,
       isEndDatePickerOne: true,
     });
   }
-
   private async OpenPresetDatePopup() {
-    // await this.loadAdminConfigurations();
-    // this.setState({
-    //   IsPresetPopup: true,
-    // })
+    await this.loadAdminConfigurations();
+    this.setState({
+      IsPresetPopup: true,
+    })
   }
   private ClosePopup() {
     this.setState({
       IsPresetPopup: false,
     })
   }
-  private SavePresetDate() {
-    this.setState({
-      IsPresetPopup: false,
-    })
-
+  private async SavePresetDate() {
+    try {
+      let web = new Web(this.props.Context.pageContext._site.absoluteUrl);
+      let flag = true;
+      var JsonItem: any = {};
+      let ServerStartDate = new Date(this.state?.PresetStartDate);
+      let ServerEndDate = new Date(this.state?.PresetEndDate);
+      JsonItem.PreStartDate = this.state?.PresetStartDate;
+      JsonItem.PreStartEnd = this.state?.PresetEndDate;
+      if (ServerEndDate.getTime() <= ServerStartDate.getTime()) {
+        flag = false
+      }
+      const PresetItem = {
+        Configurations: JSON.stringify(JsonItem),
+      }
+      if (flag) {
+        await web.lists.getById(this.props.AdminConfiguraionListId).items.getById(this?.state?.PreSetItem?.Id).update(PresetItem).then((res: any) => {
+          this.loadAdminConfigurations()
+        })
+      }
+      if (!flag) {
+        window.alert("!Please re-enter the 'End date',It should be bigger then the 'Start Date'");
+      }
+      this.setState({
+        IsPresetPopup: false,
+      })
+    } catch (error) {
+      this.setState({
+        IsPresetPopup: false,
+      })
+      console.log("Error:", error.messages)
+    }
   }
   private selectDate(type: string) {
     let startdt = new Date(), enddt = new Date(), tempdt = new Date();
@@ -771,10 +732,10 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         break;
 
       case 'Presettime':
-      case 'Presettime1':
+        startdt = new Date(this.state?.PresetStartDate);
+        enddt = new Date(this.state?.PresetEndDate);
         break;
     }
-
     startdt.setHours(0, 0, 0, 0);
     enddt.setHours(0, 0, 0, 0);
     let StartDate: any
@@ -786,7 +747,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       enddate: EndDate
     })
   }
-
   private updatefilter(IsLoader: any) {
     if (this.state.ImageSelectedUsers == undefined || this.state.ImageSelectedUsers.length == 0) {
       alert('Please Select User');
@@ -801,9 +761,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       this.generateTimeEntry();
     }
   }
-
   private async generateTimeEntry() {
-
     //Create filter Creteria based on Dates and Selected users
     //let filters = '(('; //use when with date filter
     let filters = '('; //use when without date filter
@@ -821,9 +779,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       //filters += "(TaskDate ge '"+ this.state.startdate.toISOString()  +"'))";   
       filters += ")";
     }
-
     console.log(filters);
-
     let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
     let resultsOfTimeSheet2 = await web.lists
       .getById(this.props.TaskTimeSheet2ListID)
@@ -833,7 +789,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       .expand('TaskMigration', 'TaskALAKDigital')
       .getAll(4999);
     console.log(resultsOfTimeSheet2);
-
     let resultsofTimeSheetNew = await web.lists
       .getById(this.props.TaskTimeSheetListNewListID)
       .items
@@ -842,14 +797,10 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       .expand('TaskGruene', 'TaskDE', 'TaskEducation', 'TaskEI', 'TaskEPS', 'TaskGender', 'TaskHealth', 'TaskHHHH', 'TaskKathaBeck', 'TaskQA', 'TaskShareweb', 'TaskOffshoreTasks')
       .getAll(4999);
     console.log(resultsofTimeSheetNew);
-
     let AllTimeSheetResult = (resultsOfTimeSheet2).concat(resultsofTimeSheetNew);
     console.log(AllTimeSheetResult);
-
     this.LoadTimeSheetData(AllTimeSheetResult);
-
   }
-
   private LoadTimeSheetData(AllTimeSheetResult: any) {
     let AllTimeSpentDetails: any = [];
     let getSites = this.state.SitesConfig;
@@ -857,12 +808,10 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     AllTimeSheetResult.forEach(function (timeTab: any) {
       for (let i = 0; i < getSites.length; i++) {
         let config = getSites[i];
-
         if (config.Title != undefined && config.Title.toLowerCase() == "offshore tasks")
           config.Title = config.Title.replace(" ", "");
 
         let ColumnName = "Task" + config.Title.replace(" ", "");
-
         if (timeTab[ColumnName] != undefined && timeTab[ColumnName].Title != undefined) {
           timeTab.selectedSiteType = config.Title;
           timeTab.siteType = config.Title;
@@ -883,12 +832,10 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         }
       }
       countered++;
-
     })
     console.log(AllTimeSpentDetails);
     const ids = AllTimeSpentDetails.map((o: { uniqueTimeEntryID: any; }) => o.uniqueTimeEntryID)
     AllTimeSpentDetails = AllTimeSpentDetails.filter(({ uniqueTimeEntryID }: any, index: number) => !ids.includes(uniqueTimeEntryID, index + 1))
-
     let getAllTimeEntry = [];
     for (let i = 0; i < AllTimeSpentDetails.length; i++) {
       let time = AllTimeSpentDetails[i];
@@ -896,14 +843,12 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       let totletimeparent = 0;
       if (time.AdditionalTimeEntry != undefined) {
         let Additionaltimeentry = JSON.parse(time.AdditionalTimeEntry);
-
         if (Additionaltimeentry != undefined && Additionaltimeentry.length > 0) {
           let TimeTaskId = 0;
           let sortArray = Additionaltimeentry;
           this.DynamicSortitems(sortArray, 'ID', 'Number', 'Descending');
           TimeTaskId = sortArray[0].ID;
           TimeTaskId = TimeTaskId + 1;
-
           sortArray.forEach(function (first: { ID: any; }, index: any) {
             let count = 0;
             Additionaltimeentry.forEach(function (second: { ID: number; TimeEntryId: number; }) {
@@ -922,28 +867,22 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             })
           })
         }
-
         for (let index = 0; index < Additionaltimeentry.length; index++) {
           let addtime = Additionaltimeentry[index];
           if (addtime.TaskDate != undefined) {
             let TaskDateConvert = addtime.TaskDate.split("/");
             let TaskDate = new Date(TaskDateConvert[2] + '/' + TaskDateConvert[1] + '/' + TaskDateConvert[0]);
-
             let startDateConvert: any = this.state.startdate;
             startDateConvert = startDateConvert.split("/");
             let startdate = new Date(startDateConvert[0] + '/' + startDateConvert[1] + '/' + startDateConvert[2]);
-
             let endDateConvert: any = this.state.enddate;
             endDateConvert = endDateConvert.split("/");
             let enddate = new Date(endDateConvert[0] + '/' + endDateConvert[1] + '/' + endDateConvert[2]);
-
-
             if (TaskDate >= startdate && TaskDate <= enddate) {
               let hours = addtime.TaskTime;
               let minutes = hours * 60;
               addtime.TaskItemID = time.TaskItemID;
               addtime.DisplayTaskId = time.DisplayTaskId;
-
               addtime.SiteUrl = time.SiteUrl;
               totletimeparent = minutes;
               addtime.MileageJson = totletimeparent;
@@ -972,11 +911,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         }
       }
     }
-
     console.log(getAllTimeEntry);
     this.getJSONTimeEntry(getAllTimeEntry);
   }
-
   private getJSONTimeEntry(getAllTimeEntry: any) {
     let requestcounter = 0;
     let filterItemTimeTab = [];
@@ -1011,7 +948,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     console.log(filterItemTimeTab);
     this.GetAllSiteTaskData(filterItemTimeTab, getAllTimeEntry);
   }
-
   private SpiltQueryString(selectedquery: any) {
     let queryfrist = '';
     let Querystringsplit = selectedquery.split('or');
@@ -1033,7 +969,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     return querystringSplit1;
 
   }
-
   private ConvertLocalTOServerDate(LocalDateTime: any, dtformat: any) {
     if (dtformat == undefined || dtformat == '')
       dtformat = "DD/MM/YYYY";
@@ -1090,8 +1025,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             }
             Item.NewCompletedDate = Item.CompletedDate;
             Item.NewCreated = Item.Created;
-            //Item.listId = '';//Item.__metadata.uri.split("(guid'")[1].split("')/Items")[0];
-
             if (Item.Created != undefined)
               Item.FiltercreatedDate = self.ConvertLocalTOServerDate(Item.Created, "DD/MM/YYYY");
             if (Item.CompletedDate != undefined)
@@ -1100,9 +1033,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           })
         }
       }
-
       console.log(AllSharewebSiteTasks);
-
       console.log(this.state.filterItems);
       let filterItems = this.state.filterItems;
       getAllTimeEntry.forEach(function (filterItem: any) {
@@ -1114,7 +1045,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               filterItem.siteType = 'ALAKDigital'
             }
             getItem['siteType'] = filterItem.siteType;
-
             filterItem.CategoryParentId = 0;
             let cate = '';
             if (getItem?.ClientCategory != undefined && getItem?.ClientCategory?.length > 0) {
@@ -1124,15 +1054,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               })
             }
             filterItem.ClientCategory = cate
-            //  filterItem.ClientCategory = getItem.ClientCategory;
-            // getItem?.ClientCategory.forEach(function (client: any, index: any) {
-            //   if (!this.isExistsclient(filterItem?.ClientCategory, client?.Id))
-            //     filterItem.clientCategory += client.Title + '; ';
-            //   filterItem.clientCategoryIds += client.Id + '; ';
-            //   if (index == 0 && client.ParentID != undefined)
-            //     filterItem.CategoryParentId = client.ParentID;
-            // })
-
             let clientTimeArr: any = [];
             if (getItem.ClientTime != undefined && getItem.ClientTime != '' && getItem.ClientTime?.length > 0) {
               getItem.ClientTime.forEach(function (val: { [x: string]: number; ClienTimeDescription: number; }) {
@@ -1148,38 +1069,24 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             filterItem.PercentComplete = getItem.PercentComplete;
             filterItem.ItemRank = getItem.ItemRank;
             filterItem.PriorityRank = getItem?.PriorityRank;
-            filterItem.TaskID = ''//SharewebCommonFactoryService.getSharewebId(getItem);
+            filterItem.TaskID = ''
             filterItem.Portfolio = getItem?.Portfolio?.Title;
             filterItem.Created = getItem.Created;
-            //filterItem.ListId = getItem.ListId
             filterItem.listId = getItem.listId
 
             if (getItem.Portfolio != undefined) {
-
+              if (AllPortfolios != undefined && AllPortfolios?.length > 0) {
+                let result = AllPortfolios.filter((type: any) => type.Id != undefined && getItem.Portfolio != undefined && getItem.Portfolio?.Id != undefined && getItem.Portfolio?.Id == type.Id)[0];
+                filterItem.PortfolioTypeTitle = "Component";
+                if (result != undefined && result != '')
+                  filterItem.PortfolioTypeTitle = result?.Title;
+              }
               filterItem.ComponentTitle = getItem.Portfolio?.Title;
               filterItem.ComponentIDs = getItem.Portfolio?.Id;
               filterItem.PortfolioItem = getItem?.Portfolio
               filterItem.Portfolio = getItem?.Portfolio?.Title
 
             }
-            // if (getItem.Services != undefined && getItem.Services.length > 0) {
-            //   getItem.Services.forEach(function (sItem: any) {
-            //     filterItem.ComponentTitle = sItem.Title;
-            //     filterItem.ComponentIDs = sItem.Id;
-            //   })
-            //   filterItem.Portfoliotype = 'Service';
-            // }
-            // if (getItem.Events != undefined && getItem.Events.results != undefined && getItem.Events.results.length > 0) {
-            //   getItem.Events.forEach(function (eItem: any) {
-            //     filterItem.ComponentTitle = eItem.Title;
-            //     filterItem.ComponentIDs = eItem.Id;
-            //   })
-            //   filterItem.Portfoliotype = 'Event';
-            // }
-            // filterItem.Component = getItem.Component;
-            // filterItem.Services = getItem.Services;
-            // filterItem.Events = getItem.Events;
-
           }
         })
       })
@@ -1195,7 +1102,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       for (let index = 0; index < AllTimeEntryItem.length; index++) {
         this.TotalTimeEntry += AllTimeEntryItem[index].Effort;
       }
-
       this.TotalTimeEntry = (this.TotalTimeEntry).toFixed(2);
       this.TotalDays = this.TotalTimeEntry / 8;
       this.TotalDays = (this.TotalDays).toFixed(2);
@@ -1206,20 +1112,11 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       }, () => {
         this.getFilterTask(AllTimeEntryItem);
       })
-
-      //$('#showSearchBox').show();
-
-      //$scope.sortBy('TimeEntrykDateNew', true);
-      //SharewebCommonFactoryService.hideProgressBar();
-
     }
     else {
       this.setState({
         loaded: true,
       })
-      //SharewebCommonFactoryService.hideProgressBar();
-      //$scope.TotalTimeEntry = 0;
-      //$('#showSearchBox').show();
     }
   }
 
@@ -1229,57 +1126,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     let filterCheckedItem = this.state.checked;
     let filterCheckedSites = this.state.checkedSites;
     let filterSites = this.state.filterSites;
-
-    // if (this.state.checked.length == 0) {
-    //   filterCheckedItem = [];
-    //   //set All values in filterCheckedItem
-    //   if (filterItems.length > 0) {
-    //     filterItems.forEach((child: any) => {
-    //       filterCheckedItem.push(child.ID);
-    //       if (child.children.length > 0) {
-    //         child.children.forEach((subchild: any) => {
-    //           filterCheckedItem.push(subchild.Id);
-    //           if (subchild.children.length > 0) {
-    //             subchild.children.forEach((subchild2: any) => {
-    //               filterCheckedItem.push(subchild2.Id);
-    //               if (subchild2.children.length > 0) {
-    //                 subchild2.children.forEach((subchild3: any) => {
-    //                   filterCheckedItem.push(subchild3.Id);
-    //                 });
-    //               }
-    //             });
-    //           }
-    //         });
-    //       }
-    //     });
-    //   }
-    // }
-    // if (this.state.checkedSites.length == 0) {
-    //   filterCheckedSites = [];
-    //   //set All values in filterSites
-    //   if (filterSites.length > 0) {
-    //     filterSites.forEach((child: any) => {
-    //       filterCheckedSites.push(child.ID);
-    //       if (child.children.length > 0) {
-    //         child.children.forEach((subchild: any) => {
-    //           filterCheckedSites.push(subchild.Id);
-    //           if (subchild.children.length > 0) {
-    //             subchild.children.forEach((subchild2: any) => {
-    //               filterCheckedSites.push(subchild2.Id);
-    //               if (subchild2.children.length > 0) {
-    //                 subchild2.children.forEach((subchild3: any) => {
-    //                   filterCheckedSites.push(subchild3.Id);
-    //                 });
-    //               }
-    //             });
-    //           }
-    //         });
-    //       }
-    //     });
-    //   }
-
-    // }
-    //Get Selected filters of category
     if (filterCheckedSites != undefined && filterCheckedItem?.length > 0) {
       for (let index = 0; index < filterCheckedItem?.length; index++) {
         let id = filterCheckedItem[index];
@@ -1325,7 +1171,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     }
     console.log('Selected Filter checkbox');
     console.log(selectedFilters);
-
     let SitesItems = [];
     let isSitesSelected = false;
     let CategoryItems = [];
@@ -1336,15 +1181,12 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       let isSitesSelected = false;
       for (let index = 0; index < filterTask.length; index++) {
         let item = filterTask[index];
-        //item.TimeEntryIDunique = index + 1;
         for (let i = 0; i < selectedFilters.length; i++) {
-          //if (selectedFilters[i].Selected) {
           let flag = false;
           switch (selectedFilters[i].TaxType) {
             case 'Client Category':
               if (item.clientCategoryIds != undefined && item.clientCategoryIds != '') {
                 let Category = item.clientCategoryIds.split(';');
-                //let title = selectedFilters[i].ParentTitle == 'PSE' ? 'EPS' : (selectedFilters[i].ParentTitle == 'e+i' ? 'EI' : selectedFilters[i].ParentTitle);
                 let title = selectedFilters[i].Title == 'PSE' ? 'EPS' : (selectedFilters[i].Title == 'e+i' ? 'EI' : selectedFilters[i].Title);
                 for (let j = 0; j < Category.length; j++) {
                   let type = Category[j]
@@ -1376,9 +1218,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                   }
                 }
               }
-
               if (item.clientCategoryIds == '') {
-                //let title = selectedFilters[i].ParentTitle == 'PSE' ? 'EPS' : (selectedFilters[i].ParentTitle == 'e+i' ? 'EI' : selectedFilters[i].ParentTitle);
                 let title = selectedFilters[i].Title == 'PSE' ? 'EPS' : (selectedFilters[i].Title == 'e+i' ? 'EI' : selectedFilters[i].Title);
                 if (selectedFilters[i].Title == 'Other') {
                   if ((item.siteType != undefined && item.siteType == title && (item.ClientCategory.results == undefined || item.ClientCategory.results.length == 0) && !this.issmartExistsIds(CategoryItems, item))) {
@@ -1401,26 +1241,19 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                 CategoryItems.push(item);
                 count++;
               }
-
               isCategorySelected = true;
               const ids: any = CategoryItems.map(o => o.uniqueTimeId);
               CategoryItems = CategoryItems.filter(({ uniqueTimeId }, index) => !ids.includes(uniqueTimeId, index + 1))
-
               break;
-
             case 'Sites':
-
               if ((item.selectedSiteType != undefined && item.selectedSiteType != '') && (item.selectedSiteType.toLowerCase().indexOf(selectedFilters[i].Title.toLowerCase()) > -1) && (!this.issmartExistsIds(SitesItems, item))) {
                 SitesItems.push(item);
               }
               isSitesSelected = true;
               break;
           }
-          //}
         }
-
       }
-
       let commonItems: any = [];
       let isOtherselected = false;
       if (isCategorySelected) {
@@ -1453,21 +1286,14 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       this.DynamicSortitems(commonItemsbackup, 'TimeEntrykDateNew', 'DateTime', 'Descending');
       console.log('Sorted items based on time');
       console.log(commonItemsbackup);
-
-
       this.TotalTimeEntry = 0;
-      //  $scope.TotalTimeEntry 
-
       this.AllTimeEntry = commonItemsbackup;
-
       console.log('All Time Entry');
       console.log(this.AllTimeEntry);
-
       this.TotalTimeEntry = 0;
       for (let index = 0; index < this.AllTimeEntry.length; index++) {
         let timeitem = this.AllTimeEntry[index];
         this.TotalTimeEntry += timeitem.Effort;
-
       }
       this.TotalTimeEntry = (this.TotalTimeEntry).toFixed(2);
       this.TotalDays = this.TotalTimeEntry / 8;
@@ -1494,15 +1320,11 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           totalEntries: this.AllTimeEntry.length
         }
       }
-
       console.log(resultSummary);
-
       this.setState({
         AllTimeEntry: this.AllTimeEntry,
         resultSummary,
-      }, () => this.createTableColumns())
-      //$scope.CopyAllTimeEntry = SharewebCommonFactoryService.ArrayCopy($scope.AllTimeEntry);
-
+      }, () => this.createTableColumns());
     }
     else {
       this.AllTimeEntry = filterTask;
@@ -1543,7 +1365,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       loaded: true,
     }, () => this.createTableColumns())
   }
-
   private issmartExistsIds(array: any[], Ids: { TaskItemID: any; ID: any; TimeEntryId: any; }) {
     var isExists = false;
     array.forEach(function (item: { TaskItemID: any; ID: any; TimeEntryId: any; }) {
@@ -1555,7 +1376,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     });
     return isExists;
   }
-
   private isExistsclient(array: string | any[], Id: any) {
     var isExists = false;
     if (array != '' && array.indexOf(Id) > -1) {
@@ -1563,7 +1383,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     }
     return isExists;
   }
-
   private getParentTitle(item: any, filter: any) {
     let isExistsTitle = '';
     let filterItems = this.state.filterItems;
@@ -1597,9 +1416,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       })
     }
     return isExistsTitle;
-
   }
-
   private isItemExistsTimeEntry(arr: any, Id: any, siteType: any) {
     let isExists = false;
     arr.forEach(function (item: any) {
@@ -1610,7 +1427,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     });
     return isExists;
   }
-
   private getAllowCommonItems(arr1: any, arr2: any) {
     let commonItems: any = [];
     arr1.forEach(function (item1: any) {
@@ -1664,7 +1480,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         });
     }
   }
-
   private groupby_accordingTo_dateNew(arrays: any, StartDate: any) {
     let dayscount = new Date(StartDate).getDay();
     let dateEndnew = new Date(StartDate);
@@ -1684,7 +1499,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     console.log('Week group by data');
     console.log(this.CategoryItemsArray);
   }
-
   private groupby_accordingTo_date(arrays: any, StartDate: any) {
     let dateEndnew = new Date(StartDate);
     dateEndnew.setDate(dateEndnew.getDate() + 6);
@@ -1704,7 +1518,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         this.groupby_accordingTo_date(arrays, NewStart);
     }
   }
-
   private childarray(arrays: any, StartDate: any, EndDate: any) {
     let Item: any = {};
     let DateItem: any = [];
@@ -1750,7 +1563,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             })
             let smarttotalvalue = 0;
             let smarttotalvalueNew = 0;
-
             if (ImageSelectedUsers != undefined && ImageSelectedUsers.length > 0) {
               ImageSelectedUsers.forEach(function (item: any) {
                 if (item.AssingedToUserId == user?.Id) {
@@ -1771,18 +1583,15 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                       ChildItem['TotalSmartTime'] = 0;
                     ChildItem['TotalSmartTime'] += ((smarttotalvalue * item.SmartTime) / 100);
                   }
-
                   else if (item['SmartTime'] == undefined) {
                     if (ChildItem['TotalSmartTime'] == undefined || ChildItem['TotalSmartTime'] == '')
                       ChildItem['TotalSmartTime'] = 0;
                     ChildItem['TotalSmartTime'] += smarttotalvalueNew
                   }
-
                   ChildItem['getUserName'] = item.Title;
                 }
               })
             }
-
             ChildItem['Firstlevel'] = First;
             ChildItem['Thirdlevel'] = Thirdlevel;
             ChildItem['Secondlevel'] = Secondlevel;
@@ -1802,9 +1611,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             Item['childs'].push(ChildItem);
           }
         }
-
       })
-
     }
     let st = StartDate.split('/');
     Item['getUserName'] = 'Week ' + Moment(new Date(StartDate)).format('YYYY-MM-DD');
@@ -1815,7 +1622,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       YearCollection['getMonthYearDate'] = Item['getMonthYearDate'];
       this.AllYearMonth.push(YearCollection);
     }
-
     if (!this.isItemExistsItems(this.AllYearMonth, Item['getMonthYearDate'], 'getMonthYearDate')) {
       let YearCollection: any = {};
       YearCollection['getMonthYearDate'] = Item['getMonthYearDate'];
@@ -1828,7 +1634,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       this.CategoryItemsArray.push(Item);
     }
   }
-
   private isItemExistsItems(arr: any, title: any, titname: any) {
     let isExists = false;
     arr.forEach(function (item: any) {
@@ -1839,7 +1644,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     });
     return isExists;
   }
-
   private sortitems(items: any, column: any, type: any) {
     if (type == 'DateTime') {
       items.sort(function (a: any, b: any) {
@@ -1895,7 +1699,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       checkedSites: []
     }, () => this.createTableColumns())
   }
-
   private getAllSubChildenCount(item: any) {
     let count = 1;
     if (item.children.length > 0) {
@@ -1916,11 +1719,8 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         }
       });
     }
-
     return count;
-
   }
-
   private onCheck(checked: any) {
     debugger;
     this.setState({ checked }, () => {
@@ -1939,15 +1739,12 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             checkedParentNode.push(filterItem);
         })
       }
-
       this.setState({
         checkedParentNode,
         checkedAll: (filterItems.length == checkedParentNode.length) ? true : false
       })
-
     });
   }
-
   private sortBy(propertyName: any, order: any) {
     let AllTimeEntry = this.state.AllTimeEntry;
     AllTimeEntry.sort(function (a: any, b: any) {
@@ -1976,7 +1773,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       IsTask: item
     });
   };
-
   private sortByChild(propertyName: any, order: any) {
     let AllTimeEntry = this.state.AllTimeEntry;
     AllTimeEntry.forEach(function (entry: any) {
@@ -1993,9 +1789,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       AllTimeEntry
     })
   }
-
   private createTableColumns() {
-
     let dt = [
       {
         accessorKey: "",
@@ -2026,7 +1820,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         header: "",
         size: 90,
       },
-
       {
         accessorKey: 'TaskTitle',
         id: "TaskTitle",
@@ -2038,14 +1831,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         </a>,
         size: 175,
       },
-
-      /*
-       {
-         accessorKey: "TaskTitle",
-         placeholder: "Title",
-         header: "",
-         size: 175,
-     },*/
       {
         accessorKey: "ClientCategory",
         id: "ClientCategory",
@@ -2060,7 +1845,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         header: "",
         size: 90,
       },
-
       {
         accessorKey: 'ComponentTitle',
         id: "ComponentTitle",
@@ -2112,13 +1896,10 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         placeholder: "",
         size: 55
       }
-
     ]
-
     this.setState({
       columns: dt
     })
-
   }
   private onRenderCustomHeaderMain = () => {
     return (
@@ -2131,205 +1912,170 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       </div>
     );
   };
-  private changeDatetodayQuickly = function (Type: any) {
-
+  private InlineChangeDate = function (Type: any) {
     if (this.state?.isStartDatePickerOne == true && this.state?.isEndDatePickerOne == false) {
       if (this.state?.PresetStartDate != undefined && this.state?.PresetStartDate != '') {
         let currentInput = this.state?.PresetStartDate.split('/')
-        var currentInputMonth = currentInput[1];
+        var currentInputMonth = currentInput[0];
         var currentInputYear = currentInput[2];
-      }
-      if (Type == 'today') {
-        let ConvertedDate = new Date();
-      }
-      else if (Type == 'year') {
-        let newDate = "01" + "/" + "01" + "/" + currentInputYear;
-        let ConvertedDate = new Date(newDate);
-      }
-      else if (Type == 'fifteenthOfMonth') {
-        let newDate = currentInputMonth + "/" + "15" + "/" + currentInputYear;
-        let ConvertedDate = new Date(newDate);
-      }
-      else if (Type == 'firstOfMonth') {
-        let newDate = currentInputMonth + "/" + "01" + "/" + currentInputYear
-        let ConvertedDate = new Date(newDate);
+        let newDate;
+        if (Type == 'today') {
+          newDate = Moment(new Date()).format("MM/DD/YYYY");
+        }
+        else if (Type == 'year') {
+          newDate = "01" + "/" + "01" + "/" + currentInputYear;
+        }
+        else if (Type == 'fifteenthOfMonth') {
+          newDate = currentInputMonth + "/" + "15" + "/" + currentInputYear;
+        }
+        else if (Type == 'firstOfMonth') {
+          newDate = currentInputMonth + "/" + "01" + "/" + currentInputYear
+        }
+        this.setState({
+          PresetStartDate: newDate,
+        })
       }
     }
     if (this.state?.isStartDatePickerOne == false && this.state?.isEndDatePickerOne == true) {
-      if (this.state?.PresetStartDate != undefined && this.state?.PresetStartDate != '') {
-        let currentInput = this.state?.PresetStartDate.split('/')
-        var currentInputMonth = currentInput[1];
-        var currentInputYear = currentInput[2];
-      }
+      let currentInput = this.state?.PresetEndDate.split('/')
+      var currentInputMonth = currentInput[0];
+      var currentInputYear = currentInput[2];
+      let newDate;
       if (Type == 'today') {
-        let ConvertedDate = new Date();
+        newDate = Moment(new Date()).format("MM/DD/YYYY");
       }
       else if (Type == 'year') {
-        let newDate = "01" + "/" + "01" + "/" + currentInputYear;
-        let ConvertedDate = new Date(newDate);
+        newDate = "01" + "/" + "01" + "/" + currentInputYear;
       }
       else if (Type == 'fifteenthOfMonth') {
-        let newDate = currentInputMonth + "/" + "15" + "/" + currentInputYear;
-        let ConvertedDate = new Date(newDate);
+        newDate = currentInputMonth + "/" + "15" + "/" + currentInputYear;
       }
       else if (Type == 'firstOfMonth') {
-        let newDate = currentInputMonth + "/" + "01" + "/" + currentInputYear
-        let ConvertedDate = new Date(newDate);
+        newDate = currentInputMonth + "/" + "01" + "/" + currentInputYear
       }
+      this.setState({
+        PresetEndDate: newDate,
+      })
     }
-
-
   }
-  private changeDateQuickly = function (Type: any, addDate: any) {
+  private IncreaseDecreaseDate = function (Type: any, addDate: any) {
     if (this.state?.isStartDatePickerOne == true && this.state?.isEndDatePickerOne == false) {
+      let newDate;
       if (Type == "Increase") {
-        if (addDate == 'Month') {
-          if (this.state?.PresetStartDate != undefined && this.state?.PresetStartDate.indexOf(',') > -1) {
-            var DateArrayFormat = Moment(this.state?.PresetStartDate).format('dd/MM/yyyy')
-            let DateArray = DateArrayFormat.split("/");
-            var newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
+        if (this.state?.PresetStartDate != undefined && this.state?.PresetStartDate != undefined) {
+          if (addDate == 'Month') {
+            let ServerDate: any = new Date(this.state?.PresetStartDate)
+            ServerDate = ServerDate.setMonth(ServerDate.getMonth() + 1);
+            newDate = Moment(ServerDate).format("MM/DD/YYYY")
+          }
+          else if (addDate == 'Year') {
+            let ServerDate: any = new Date(this.state?.PresetStartDate)
+            ServerDate = ServerDate.setFullYear(ServerDate.getFullYear() + 1);
+            newDate = Moment(ServerDate).format("MM/DD/YYYY")
           }
           else {
-            let DateArray = this.state?.PresetStartDate.split("/");
-            newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
+            let ServerDate: any = new Date(this.state?.PresetStartDate)
+            ServerDate = ServerDate.setDate(ServerDate.getDate() + 1);
+            newDate = Moment(ServerDate).format("MM/DD/YYYY")
           }
-          let ConvertedDate = new Date(newDate);
-          ConvertedDate.setMonth(ConvertedDate.getMonth() + 1);
-
-        }
-        else if (addDate == 'Year') {
-          if (this.state?.PresetStartDate != undefined && this.state?.PresetStartDate.indexOf(',') > -1) {
-            var DateArrayFormat = Moment(this.state?.PresetStartDate).format('dd/MM/yyyy')
-            let DateArray = DateArrayFormat.split("/");
-            var newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
-          } else {
-            let DateArray = this.state?.PresetStartDate.split("/");
-            newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
-          }
-          let ConvertedDate = new Date(newDate);
-          ConvertedDate.setFullYear(ConvertedDate.getFullYear() + 1);
-        }
-        else {
-          if (this.state?.PresetStartDate != undefined && this.state?.PresetStartDate.indexOf(',') > -1) {
-            var DateArrayFormat = Moment(this.state?.PresetStartDate).format('dd/MM/yyyy')
-            let DateArray = DateArrayFormat.split("/");
-            var newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
-          } else {
-            let DateArray = this.state?.PresetStartDate.split("/");
-            newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
-          }
-          let ConvertedDate = new Date(newDate);
-          ConvertedDate.setDate(ConvertedDate.getDate() + 1);
         }
       }
       else {
         if (addDate == 'Month') {
-          let DateArray = this.state?.PresetStartDate.split("/");
-          if (DateArray.length == 1) {
-            this.state.PresetStartDate = Moment(this.state?.PresetStartDate).format("dd/MM/yyyy");
-            DateArray = this.state?.PresetStartDate.split("/");
-          }
-          let newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
-          let ConvertedDate = new Date(newDate);
-          ConvertedDate.setMonth(ConvertedDate.getMonth() - 1);
+          let ServerDate: any = new Date(this.state?.PresetStartDate)
+          ServerDate = ServerDate.setMonth(ServerDate.getMonth() - 1);
+          newDate = Moment(ServerDate).format("MM/DD/YYYY")
         }
         else if (addDate == 'Year') {
-          let DateArray = this.state?.PresetStartDate.split("/");
-          if (DateArray.length == 1) {
-            this.state.PresetStartDate = Moment(this.state?.PresetStartDate).format("dd/MM/yyyy");
-            DateArray = this.state?.PresetStartDate.split("/");
-          }
-          let newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
-          let ConvertedDate = new Date(newDate);
-          ConvertedDate.setFullYear(ConvertedDate.getFullYear() - 1);
+          let ServerDate: any = new Date(this.state?.PresetStartDate)
+          ServerDate = ServerDate.setFullYear(ServerDate.getFullYear() - 1);
+          newDate = Moment(ServerDate).format("MM/DD/YYYY")
         }
         else {
-          let DateArray = this.state?.PresetStartDate.split("/");
-          if (DateArray.length == 1) {
-            this.state.PresetStartDate = Moment(this.state?.PresetStartDate).format("dd/MM/yyyy");
-            DateArray = this.state?.PresetStartDate.split("/");
-          }
-          let newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
-          let ConvertedDate = new Date(newDate);
-          ConvertedDate.setDate(ConvertedDate.getDate() - 1);
-
+          let ServerDate: any = new Date(this.state?.PresetStartDate)
+          ServerDate = ServerDate.setDate(ServerDate.getDate() - 1);
+          newDate = Moment(ServerDate).format("MM/DD/YYYY")
         }
       }
+      this.setState({
+        PresetStartDate: newDate,
+      })
     }
     if (this.state?.isEndDatePickerOne == true && this.state?.isStartDatePickerOne == false) {
+      let newDate;
       if (Type == "Increase") {
-        if (addDate == 'Month') {
-          if (this.state?.PresetEndDate != undefined && this.state?.PresetEndDate.indexOf(',') > -1) {
-            var DateArrayFormat = Moment(this.state?.PresetEndDate).format('dd/MM/yyyy')
-            let DateArray = DateArrayFormat.split("/");
-            var newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
+        if (this.state?.PresetEndDate != undefined && this.state?.PresetEndDate != undefined) {
+          if (addDate == 'Month') {
+            let ServerDate: any = new Date(this.state?.PresetEndDate)
+            ServerDate = ServerDate.setMonth(ServerDate.getMonth() + 1);
+            newDate = Moment(ServerDate).format("MM/DD/YYYY")
+          }
+          else if (addDate == 'Year') {
+            let ServerDate: any = new Date(this.state?.PresetEndDate)
+            ServerDate = ServerDate.setFullYear(ServerDate.getFullYear() + 1);
+            newDate = Moment(ServerDate).format("MM/DD/YYYY")
           }
           else {
-            let DateArray = this.state?.PresetEndDate.split("/");
-            newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
+            let ServerDate: any = new Date(this.state?.PresetEndDate)
+            ServerDate = ServerDate.setDate(ServerDate.getDate() + 1);
+            newDate = Moment(ServerDate).format("MM/DD/YYYY")
           }
-          let ConvertedDate = new Date(newDate);
-          ConvertedDate.setMonth(ConvertedDate.getMonth() + 1);
-        }
-        else if (addDate == 'Year') {
-          if (this.state?.PresetEndDate != undefined && this.state?.PresetEndDate.indexOf(',') > -1) {
-            var DateArrayFormat = Moment(this.state?.PresetEndDate).format('dd/MM/yyyy')
-            let DateArray = DateArrayFormat.split("/");
-            var newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
-          } else {
-            let DateArray = this.state?.PresetEndDate.split("/");
-            newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
-          }
-          let ConvertedDate = new Date(newDate);
-          ConvertedDate.setFullYear(ConvertedDate.getFullYear() + 1);
-        }
-        else {
-          if (this.state?.PresetEndDate != undefined && this.state?.PresetEndDate.indexOf(',') > -1) {
-            var DateArrayFormat = Moment(this.state?.PresetEndDate).format('dd/MM/yyyy')
-            let DateArray = DateArrayFormat.split("/");
-            var newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
-          } else {
-            let DateArray = this.state?.PresetEndDate.split("/");
-            newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
-          }
-          let ConvertedDate = new Date(newDate);
-          ConvertedDate.setDate(ConvertedDate.getDate() + 1);
         }
       }
       else {
         if (addDate == 'Month') {
-          let DateArray = this.state?.PresetEndDate.split("/");
-          if (DateArray.length == 1) {
-            this.state.PresetEndDate = Moment(this.state?.PresetEndDate).format("dd/MM/yyyy");
-            DateArray = this.state?.PresetEndDate.split("/");
-          }
-          let newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
-          let ConvertedDate = new Date(newDate);
-          ConvertedDate.setMonth(ConvertedDate.getMonth() - 1);
+          let ServerDate: any = new Date(this.state?.PresetEndDate)
+          ServerDate = ServerDate.setMonth(ServerDate.getMonth() - 1);
+          newDate = Moment(ServerDate).format("MM/DD/YYYY")
         }
         else if (addDate == 'Year') {
-          let DateArray = this.state?.PresetEndDate.split("/");
-          if (DateArray.length == 1) {
-            this.state.PresetEndDate = Moment(this.state?.PresetEndDate).format("dd/MM/yyyy");
-            DateArray = this.state?.PresetEndDate.split("/");
-          }
-          let newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
-          let ConvertedDate = new Date(newDate);
-          ConvertedDate.setFullYear(ConvertedDate.getFullYear() - 1);
-
+          let ServerDate: any = new Date(this.state?.PresetEndDate)
+          ServerDate = ServerDate.setFullYear(ServerDate.getFullYear() - 1);
+          newDate = Moment(ServerDate).format("MM/DD/YYYY")
         }
         else {
-          let DateArray = this.state?.PresetEndDate.split("/");
-          if (DateArray.length == 1) {
-            this.state.PresetEndDate = Moment(this.state?.PresetEndDate).format("dd/MM/yyyy");
-            DateArray = this.state?.PresetEndDate.split("/");
-          }
-          let newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
-          let ConvertedDate = new Date(newDate);
-          ConvertedDate.setDate(ConvertedDate.getDate() - 1);
+          let ServerDate: any = new Date(this.state?.PresetEndDate)
+          ServerDate = ServerDate.setDate(ServerDate.getDate() - 1);
+          newDate = Moment(ServerDate).format("MM/DD/YYYY")
         }
       }
+      this.setState({
+        PresetEndDate: newDate,
+      })
     }
+  }
+  private SelectedPortfolioItem(data: any, Type: any) {
+    // if (Type == 'Component') {
+    //   this.setState({
+    //     IsCheckedComponent: data?.target?.checked,
+    //   })
+    // }
+    // else {
+    //   this.setState({
+    //     IsCheckedService: data?.target?.checked,
+    //   })
+    // }
+    // if (this.state?.IsCheckedComponent == true || this.state?.IsCheckedService == false) {
+    //   if (this.BackupAllTimeEntry != undefined && this.BackupAllTimeEntry?.length > 0) {
+    //     let result = this.BackupAllTimeEntry.filter((type: any) => type.PortfolioTypeTitle != undefined && Type != undefined && type.PortfolioTypeTitle.toLowerCase() == Type.toLowerCase());
+    //     this.setState({
+    //       AllTimeEntry: result,         
+    //     })
+    //   }
+    // }
+    // if (this.state?.IsCheckedComponent == false || this.state?.IsCheckedService == true) {
+    //   if (this.BackupAllTimeEntry != undefined && this.BackupAllTimeEntry?.length > 0) {
+    //     let result = this.BackupAllTimeEntry.filter((type: any) => type.PortfolioTypeTitle != undefined && Type != undefined && type.PortfolioTypeTitle.toLowerCase() == Type.toLowerCase());
+    //     this.setState({
+    //       AllTimeEntry: result,       
+    //     })
+    //   }
+    // }
+    // if (this.state?.IsCheckedComponent == true && this.state?.IsCheckedService == true) {
+    //   this.setState({
+    //     AllTimeEntry: this.BackupAllTimeEntry,
+    //   })
+    // }
 
   }
   callBackData = (elem: any, ShowingData: any) => {
@@ -2337,12 +2083,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       ShowingAllData: ShowingData
     }, () => console.log(this.state.ShowingAllData))
   }
-
   public render(): React.ReactElement<IUserTimeEntryProps> {
-
-    //SPComponentLoader.loadCss("https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
-    //SPComponentLoader.loadCss("https://hhhhteams.sharepoint.com/sites/HHHH/Style%20Library/css/SPfoudationSupport.css");
-    //SPComponentLoader.loadCss("https://hhhhteams.sharepoint.com/sites/HHHH/Style%20Library/css/SPfoundation.css");
     const {
       description,
       isDarkTheme,
@@ -2364,33 +2105,17 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                 </span>
               })
               }
-              {/* <span className="pull-right"><a href="#">Add smart favorite</a></span> */}
-
             </summary>
-
             <Col>
               <details open className='p-0'>
                 <span className="pull-right" style={{ display: 'none' }}>
                   <input type="checkbox" className="" onClick={(e) => this.SelectAllGroupMember(e)} />
                   <label>Select All </label>
                 </span>
-                {/* <span className="plus-icon hreflink pl-10 pull-left" >
-                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/24/list-icon.png" />
-            </span> */}
-                {/* <summary><a className="hreflink pull-left mr-5">Task User : </a>
-              {this.state.ImageSelectedUsers != null && this.state.ImageSelectedUsers.length > 0 && this.state.ImageSelectedUsers.map((user: any, i: number) => {
-                return <span>
-                  <img className="AssignUserPhoto mr-5" title={user.AssingedToUser.Title} src={user?.Item_x0020_Cover?.Url} />
-                </span>
-              })
-              }
-              <span> </span>
-            </summary> */}
                 <summary className='hyperlink'>
                   Team members
                   <hr></hr>
                 </summary>
-
                 <div style={{ display: "block" }}>
                   <div className="taskTeamBox ps-40 ">
                     {this.state.taskUsers != null && this.state.taskUsers.length > 0 && this.state.taskUsers.map((users: any, i: number) => {
@@ -2402,9 +2127,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                               <>
                                 {users.Title}
                               </>
-
                             }
-
                           </label>
                           <div className='d-flex'>
                             {users.childs.length > 0 && users.childs.map((item: any, i: number) => {
@@ -2422,14 +2145,10 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                               </div>
                             })}
                           </div>
-
                         </div>
                       </div>
                     })
-
                     }
-
-
                   </div>
 
                 </div>
@@ -2489,7 +2208,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                       <span className='SpfxCheckRadio me-2'>
                         <input type="radio" name="dateSelection" value="Presettime" onClick={() => this.selectDate('Presettime')} className="radio" />
                         <label>Pre-set</label>
-                        <span className="svg__iconbox svg__icon--editBox alignIcon hreflink" onClick={() => this.OpenPresetDatePopup()}></span>                       
+                        <span className="svg__iconbox svg__icon--editBox alignIcon hreflink" onClick={() => this.OpenPresetDatePopup()}></span>
                       </span>
 
                     </div>
@@ -2516,26 +2235,20 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                     </span>
                   </div>
                   <div className='col'>
-                    <label></label>
                     <div className='mt-1'>
-                      <label> <input type="checkbox" className="form-check-input" ng-click="SelectedPortfolio('Component',PortfolioComponent)" /> Component</label>
-                      <label><input type="checkbox" className="form-check-input ml-12" ng-click="SelectedPortfolio('Service',PortfolioComponent)" /> Service</label>
+                      <label className='full_width'>Portfolio Item</label>
+                      <label> <input type="checkbox" checked={this.state?.IsCheckedComponent} className="form-check-input" onClick={(e) => this.SelectedPortfolioItem(e, 'Component')} /> Component</label>
+                      <label><input type="checkbox" checked={this.state?.IsCheckedService} className="form-check-input ml-12" onClick={(e) => this.SelectedPortfolioItem(e, 'Service')} /> Service</label>
                     </div>
                   </div>
                 </Row>
               </details>
-
-
               <div id="showFilterBox" className="col mb-2 p-0 ">
                 <div className="togglebox">
                   <details open>
                     <summary className='hyperlink'>
-
-                      {/* <img className="hreflink wid22" title="Filter" style={{width:'22px'}} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Filter-12-WF.png"/> */}
                       SmartSearch – Filters
                       <hr></hr>
-
-
                       <span>
                         {this.state.checkedAll && this.state.filterItems != null && this.state.filterItems.length > 0 &&
                           this.state.filterItems.map((obj: any) => {
@@ -2566,7 +2279,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                         }
                       </span>
                     </summary>
-
                     <div className="togglecontent ps-30" style={{ display: "block" }}>
                       <div className="smartSearch-Filter-Section">
                         <table width="100%" className="indicator_search">
@@ -2595,7 +2307,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                                   </div>
                                 </div>
                               </td>
-
                               <td valign="top">
                                 <div>
                                   <label className='border-bottom full-width pb-1'>
@@ -2626,10 +2337,8 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                             </tr>
                           </tbody>
                         </table>
-
                       </div>
                       <div className="col text-end mb-2 ">
-
                         <button type="button" className="btnCol btn btn-primary me-1" onClick={(e) => this.updatefilter(true)}>
                           Update Filters
                         </button>
@@ -2637,9 +2346,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                           Clear Filters
                         </button>
                       </div>
-
                     </div>
-
                   </details>
                 </div>
               </div>
@@ -2687,21 +2394,21 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                     <div className="col-md-6">
                       <div>
                         <div>
-                          <span className="href" id="selectedYear" onClick={() => this.changeDatetodayQuickly('firstOfMonth')}>1st</span>
-                          |<span className="href" id="selectedYear" onClick={() => this.changeDatetodayQuickly('fifteenthOfMonth')}>15th</span>
-                          | <span className="href" id="selectedYear" onClick={() => this.changeDatetodayQuickly('year')}>1 Jan</span>
-                          | <span className="href" id="selectedToday" onClick={() => this.changeDatetodayQuickly('today')}>Today</span>
+                          <span className="href" id="selectedYear" onClick={() => this.InlineChangeDate('firstOfMonth')}>1st</span>
+                          |<span className="href" id="selectedYear" onClick={() => this.InlineChangeDate('fifteenthOfMonth')}>15th</span>
+                          | <span className="href" id="selectedYear" onClick={() => this.InlineChangeDate('year')}>1 Jan</span>
+                          | <span className="href" id="selectedToday" onClick={() => this.InlineChangeDate('today')}>Today</span>
                         </div>
                         <div className="col-md-6">
                           <label>Start Date</label>
-                          <input type="date" className="form-control" max="9999-12-31" min={this.state?.PresetStartDate ? Moment(this.state.startdate).format("YYYY-MM-DD") : ""}
+                          <input type="date" className="form-control" max="9999-12-31" min="1856-12-31"
                             value={this.state?.PresetStartDate ? Moment(this.state?.PresetStartDate).format("YYYY-MM-DD") : ''}
                             onChange={(date: any) => this.setPresetStartDate(date.target?.value)} />
                         </div>
                         <div className="col-md-6">
                           <label ng-required="true" className="full_width">End Date</label>
-                          <input type="date" className="form-control" max="9999-12-31" min={this.state?.PresetEndDate ? Moment(this.state.startdate).format("YYYY-MM-DD") : ""}
-                            value={this.state.PresetEndDate ? Moment(this.state.PresetEndDate).format("YYYY-MM-DD") : ''}
+                          <input type="date" className="form-control" max="9999-12-31" min="1856-12-31"
+                            value={this.state?.PresetEndDate ? Moment(this.state.PresetEndDate).format("YYYY-MM-DD") : ''}
                             onChange={(date: any) => this.setPresetEndDate(date.target?.value)} />
                         </div>
                       </div>
@@ -2709,30 +2416,29 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
 
                     <div className="col-md-6">
                       <div>
-                        <button type="button" id="DayPlus" className="top-container plus-button plus-minus" onClick={() => this.changeDateQuickly('Increase', 'Day')}>
+                        <button type="button" id="DayPlus" className="top-container plus-button plus-minus" onClick={() => this.IncreaseDecreaseDate('Increase', 'Day')}>
                           <i className="fa fa-plus" aria-hidden="true"></i>
                         </button>
                         <span className="min-input">Day</span>
-                        <button type="button" id="DayMinus" className="top-container minus-button plus-minus" onClick={() => this.changeDateQuickly('Decrease', 'Day')}>
+                        <button type="button" id="DayMinus" className="top-container minus-button plus-minus" onClick={() => this.IncreaseDecreaseDate('Decrease', 'Day')}>
                           <i className="fa fa-minus" aria-hidden="true"></i>
                         </button>
                       </div>
                       <div>
-                        <button type="button" id="MonthPlus" className="top-container plus-button plus-minus" onClick={() => this.changeDateQuickly('Increase', 'Month')}>
+                        <button type="button" id="MonthPlus" className="top-container plus-button plus-minus" onClick={() => this.IncreaseDecreaseDate('Increase', 'Month')}>
                           <i className="fa fa-plus" aria-hidden="true"></i>
                         </button>
                         <span className="min-input">Month</span>
-                        <button type="button" id="MonthMinus" className="top-container minus-button plus-minus" onClick={() => this.changeDateQuickly('Decrease', 'Month')}>
+                        <button type="button" id="MonthMinus" className="top-container minus-button plus-minus" onClick={() => this.IncreaseDecreaseDate('Decrease', 'Month')}>
                           <i className="fa fa-minus" aria-hidden="true"></i>
                         </button>
                       </div>
-
                       <div>
-                        <button type="button" id="YearPlus" className="top-container plus-button plus-minus" onClick={() => this.changeDateQuickly('Increase', 'Year')}>
+                        <button type="button" id="YearPlus" className="top-container plus-button plus-minus" onClick={() => this.IncreaseDecreaseDate('Increase', 'Year')}>
                           <i className="fa fa-plus" aria-hidden="true"></i>
                         </button>
                         <span className="min-input">Year</span>
-                        <button type="button" id="YearMinus" className="top-container minus-button plus-minus" onClick={() => this.changeDateQuickly('Decrease', 'Year')}>
+                        <button type="button" id="YearMinus" className="top-container minus-button plus-minus" onClick={() => this.IncreaseDecreaseDate('Decrease', 'Year')}>
                           <i className="fa fa-minus" aria-hidden="true"></i>
                         </button>
                       </div>
@@ -2741,7 +2447,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                   </div>
                 </div>
                 <div className='modal-footer'>
-                  <button type="button" className="btn btn-primary ms-1" onClick={this.SavePresetDate}>Save</button>
+                  <button type="button" className="btn btn-primary ms-1" title="Save changes & exit" onClick={this.SavePresetDate}>Save</button>
                 </div>
               </div>
             </div>
