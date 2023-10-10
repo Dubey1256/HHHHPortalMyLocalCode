@@ -16,6 +16,8 @@ import Loader from "react-loader";
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import EditInstituton from "../../EditPopupFiles/EditComponent";
 import * as globalCommon from "../../../globalComponents/globalCommon";
+import { Panel, PanelType } from 'office-ui-fabric-react';
+import Tooltip from '../../../globalComponents/Tooltip';
 var AllListId: any;
 export interface IUserTimeEntryState {
   Result: any;
@@ -41,14 +43,22 @@ export interface IUserTimeEntryState {
   loaded: any;
   expandIcons: boolean;
   columns: ColumnDef<any, unknown>[];
-  IsTask: any;
   IsMasterTask: any;
+  IsTask: any;
+  IsPresetPopup: any;
+  PresetEndDate: any,
+  PresetStartDate: any,
+  PreSetItem: any,
+  isStartDatePickerOne: boolean;
+  isEndDatePickerOne: boolean;
 }
 var user: any = ''
 var userIdByQuery: any = ''
 let portfolioColor: any = '';
 
 export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, IUserTimeEntryState> {
+  openPanel: any;
+  closePanel: any;
   public constructor(props: IUserTimeEntryProps, state: IUserTimeEntryState) {
     super(props);
     this.state = {
@@ -77,7 +87,16 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       columns: [],
       IsTask: '',
       IsMasterTask: '',
+      IsPresetPopup: false,
+      PresetEndDate: new Date(),
+      PresetStartDate: new Date(),
+      PreSetItem: {},
+      isStartDatePickerOne: true,
+      isEndDatePickerOne: false,
+
     }
+    this.OpenPresetDatePopup = this.OpenPresetDatePopup.bind(this);
+    this.ClosePopup = this.ClosePopup.bind(this);
     this.GetResult();
   }
 
@@ -100,6 +119,8 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     // Get the value of the 'userId' parameter from the query string
     userIdByQuery = params.get('userId');
     console.log(userIdByQuery)
+    //this.checkBoxColor()
+    await this.loadAdminConfigurations()
     await this.GetTaskUsers();
     await this.LoadAllMetaDataFilter();
     await this.DefaultValues()
@@ -107,7 +128,26 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     AllListId.isShowTimeEntry = this.props.TimeEntry;
     AllListId.isShowSiteCompostion = this.props.SiteCompostion
   }
-
+  private checkBoxColor = () => {
+    setTimeout(() => {
+      const inputElement = document.getElementsByClassName('custom-checkbox-tree');
+      if (inputElement) {
+        for (let j = 0; j < inputElement.length; j++) {
+          const checkboxContainer = inputElement[j]
+          const childElements = checkboxContainer.getElementsByTagName('input');
+          const childElements2 = checkboxContainer.getElementsByClassName('rct-title');
+          for (let i = 0; i < childElements.length; i++) {
+            const checkbox = childElements[i];
+            const lable: any = childElements2[i];
+            if (lable?.style) {
+              lable.style.color = portfolioColor;
+            }
+            checkbox.classList.add('form-check-input', 'cursor-pointer');
+          }
+        }
+      }
+    }, 200);
+  }
   private async DefaultValues() {
     let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
 
@@ -141,7 +181,21 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
 
   }
 
-
+  private async loadAdminConfigurations() {
+    let web = new Web(this.props.Context.pageContext._site.absoluteUrl);
+    let results = [];
+    results = await web.lists.getById(this.props.AdminConfiguraionListId).items.select("Id,Title,Value,Key,Description,DisplayTitle,Configurations").filter("Key eq 'PreSetUserTimeEntry'").get();
+    if (results[0] != undefined && results[0].Configurations != undefined) {
+      results[0].Configurations = globalCommon.parseJSON(results[0]?.Configurations)
+    }
+    this.setState({
+      PreSetItem: results[0],
+    })
+    this.setState({
+      PresetEndDate: results[0]?.Configurations?.PreStartDate,
+      PresetStartDate: results[0]?.Configurations?.PreStartEnd,
+    })
+  }
   private async GetTaskUsers() {
     this.setState({
       loaded: false,
@@ -620,7 +674,38 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       enddate: dt
     });
   }
+  private setPresetStartDate(PreStartDate: any) {
+    this.setState({
+      PresetStartDate: PreStartDate,
+      isStartDatePickerOne: true,
+      isEndDatePickerOne: false,
+    });
+  }
+  private setPresetEndDate(PreEndtDate: any) {
+    this.setState({
+      PresetEndDate: PreEndtDate,
+      isStartDatePickerOne: false,
+      isEndDatePickerOne: true,
+    });
+  }
 
+  private async OpenPresetDatePopup() {
+    // await this.loadAdminConfigurations();
+    // this.setState({
+    //   IsPresetPopup: true,
+    // })
+  }
+  private ClosePopup() {
+    this.setState({
+      IsPresetPopup: false,
+    })
+  }
+  private SavePresetDate() {
+    this.setState({
+      IsPresetPopup: false,
+    })
+
+  }
   private selectDate(type: string) {
     let startdt = new Date(), enddt = new Date(), tempdt = new Date();
     let diff: number, lastday: number;
@@ -1049,12 +1134,14 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             // })
 
             let clientTimeArr: any = [];
-            getItem.ClientTime.forEach(function (val: { [x: string]: number; ClienTimeDescription: number; }) {
-              val['releventTime'] = (filterItem.Effort / 100) * val.ClienTimeDescription;;
-              if (val.ClienTimeDescription != undefined && val.ClienTimeDescription != 100) {
-                clientTimeArr.push(val);
-              }
-            })
+            if (getItem.ClientTime != undefined && getItem.ClientTime != '' && getItem.ClientTime?.length > 0) {
+              getItem.ClientTime.forEach(function (val: { [x: string]: number; ClienTimeDescription: number; }) {
+                val['releventTime'] = (filterItem.Effort / 100) * val.ClienTimeDescription;;
+                if (val.ClienTimeDescription != undefined && val.ClienTimeDescription != 100) {
+                  clientTimeArr.push(val);
+                }
+              })
+            }
             filterItem.clientTimeInfo = clientTimeArr;
             filterItem.flag = true;
             filterItem.DisplayTaskId = getItem?.DisplayTaskId;
@@ -2033,7 +2120,218 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     })
 
   }
+  private onRenderCustomHeaderMain = () => {
+    return (
+      <div className="d-flex full-width pb-1">
+        <div
+          style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: "20px", }}  >
+          <span>{`Select Pre-Set Date `}</span>
+        </div>
+        <Tooltip ComponentId={2330} />
+      </div>
+    );
+  };
+  private changeDatetodayQuickly = function (Type: any) {
 
+    if (this.state?.isStartDatePickerOne == true && this.state?.isEndDatePickerOne == false) {
+      if (this.state?.PresetStartDate != undefined && this.state?.PresetStartDate != '') {
+        let currentInput = this.state?.PresetStartDate.split('/')
+        var currentInputMonth = currentInput[1];
+        var currentInputYear = currentInput[2];
+      }
+      if (Type == 'today') {
+        let ConvertedDate = new Date();
+      }
+      else if (Type == 'year') {
+        let newDate = "01" + "/" + "01" + "/" + currentInputYear;
+        let ConvertedDate = new Date(newDate);
+      }
+      else if (Type == 'fifteenthOfMonth') {
+        let newDate = currentInputMonth + "/" + "15" + "/" + currentInputYear;
+        let ConvertedDate = new Date(newDate);
+      }
+      else if (Type == 'firstOfMonth') {
+        let newDate = currentInputMonth + "/" + "01" + "/" + currentInputYear
+        let ConvertedDate = new Date(newDate);
+      }
+    }
+    if (this.state?.isStartDatePickerOne == false && this.state?.isEndDatePickerOne == true) {
+      if (this.state?.PresetStartDate != undefined && this.state?.PresetStartDate != '') {
+        let currentInput = this.state?.PresetStartDate.split('/')
+        var currentInputMonth = currentInput[1];
+        var currentInputYear = currentInput[2];
+      }
+      if (Type == 'today') {
+        let ConvertedDate = new Date();
+      }
+      else if (Type == 'year') {
+        let newDate = "01" + "/" + "01" + "/" + currentInputYear;
+        let ConvertedDate = new Date(newDate);
+      }
+      else if (Type == 'fifteenthOfMonth') {
+        let newDate = currentInputMonth + "/" + "15" + "/" + currentInputYear;
+        let ConvertedDate = new Date(newDate);
+      }
+      else if (Type == 'firstOfMonth') {
+        let newDate = currentInputMonth + "/" + "01" + "/" + currentInputYear
+        let ConvertedDate = new Date(newDate);
+      }
+    }
+
+
+  }
+  private changeDateQuickly = function (Type: any, addDate: any) {
+    if (this.state?.isStartDatePickerOne == true && this.state?.isEndDatePickerOne == false) {
+      if (Type == "Increase") {
+        if (addDate == 'Month') {
+          if (this.state?.PresetStartDate != undefined && this.state?.PresetStartDate.indexOf(',') > -1) {
+            var DateArrayFormat = Moment(this.state?.PresetStartDate).format('dd/MM/yyyy')
+            let DateArray = DateArrayFormat.split("/");
+            var newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
+          }
+          else {
+            let DateArray = this.state?.PresetStartDate.split("/");
+            newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
+          }
+          let ConvertedDate = new Date(newDate);
+          ConvertedDate.setMonth(ConvertedDate.getMonth() + 1);
+
+        }
+        else if (addDate == 'Year') {
+          if (this.state?.PresetStartDate != undefined && this.state?.PresetStartDate.indexOf(',') > -1) {
+            var DateArrayFormat = Moment(this.state?.PresetStartDate).format('dd/MM/yyyy')
+            let DateArray = DateArrayFormat.split("/");
+            var newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
+          } else {
+            let DateArray = this.state?.PresetStartDate.split("/");
+            newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
+          }
+          let ConvertedDate = new Date(newDate);
+          ConvertedDate.setFullYear(ConvertedDate.getFullYear() + 1);
+        }
+        else {
+          if (this.state?.PresetStartDate != undefined && this.state?.PresetStartDate.indexOf(',') > -1) {
+            var DateArrayFormat = Moment(this.state?.PresetStartDate).format('dd/MM/yyyy')
+            let DateArray = DateArrayFormat.split("/");
+            var newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
+          } else {
+            let DateArray = this.state?.PresetStartDate.split("/");
+            newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
+          }
+          let ConvertedDate = new Date(newDate);
+          ConvertedDate.setDate(ConvertedDate.getDate() + 1);
+        }
+      }
+      else {
+        if (addDate == 'Month') {
+          let DateArray = this.state?.PresetStartDate.split("/");
+          if (DateArray.length == 1) {
+            this.state.PresetStartDate = Moment(this.state?.PresetStartDate).format("dd/MM/yyyy");
+            DateArray = this.state?.PresetStartDate.split("/");
+          }
+          let newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
+          let ConvertedDate = new Date(newDate);
+          ConvertedDate.setMonth(ConvertedDate.getMonth() - 1);
+        }
+        else if (addDate == 'Year') {
+          let DateArray = this.state?.PresetStartDate.split("/");
+          if (DateArray.length == 1) {
+            this.state.PresetStartDate = Moment(this.state?.PresetStartDate).format("dd/MM/yyyy");
+            DateArray = this.state?.PresetStartDate.split("/");
+          }
+          let newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
+          let ConvertedDate = new Date(newDate);
+          ConvertedDate.setFullYear(ConvertedDate.getFullYear() - 1);
+        }
+        else {
+          let DateArray = this.state?.PresetStartDate.split("/");
+          if (DateArray.length == 1) {
+            this.state.PresetStartDate = Moment(this.state?.PresetStartDate).format("dd/MM/yyyy");
+            DateArray = this.state?.PresetStartDate.split("/");
+          }
+          let newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
+          let ConvertedDate = new Date(newDate);
+          ConvertedDate.setDate(ConvertedDate.getDate() - 1);
+
+        }
+      }
+    }
+    if (this.state?.isEndDatePickerOne == true && this.state?.isStartDatePickerOne == false) {
+      if (Type == "Increase") {
+        if (addDate == 'Month') {
+          if (this.state?.PresetEndDate != undefined && this.state?.PresetEndDate.indexOf(',') > -1) {
+            var DateArrayFormat = Moment(this.state?.PresetEndDate).format('dd/MM/yyyy')
+            let DateArray = DateArrayFormat.split("/");
+            var newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
+          }
+          else {
+            let DateArray = this.state?.PresetEndDate.split("/");
+            newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
+          }
+          let ConvertedDate = new Date(newDate);
+          ConvertedDate.setMonth(ConvertedDate.getMonth() + 1);
+        }
+        else if (addDate == 'Year') {
+          if (this.state?.PresetEndDate != undefined && this.state?.PresetEndDate.indexOf(',') > -1) {
+            var DateArrayFormat = Moment(this.state?.PresetEndDate).format('dd/MM/yyyy')
+            let DateArray = DateArrayFormat.split("/");
+            var newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
+          } else {
+            let DateArray = this.state?.PresetEndDate.split("/");
+            newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
+          }
+          let ConvertedDate = new Date(newDate);
+          ConvertedDate.setFullYear(ConvertedDate.getFullYear() + 1);
+        }
+        else {
+          if (this.state?.PresetEndDate != undefined && this.state?.PresetEndDate.indexOf(',') > -1) {
+            var DateArrayFormat = Moment(this.state?.PresetEndDate).format('dd/MM/yyyy')
+            let DateArray = DateArrayFormat.split("/");
+            var newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
+          } else {
+            let DateArray = this.state?.PresetEndDate.split("/");
+            newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
+          }
+          let ConvertedDate = new Date(newDate);
+          ConvertedDate.setDate(ConvertedDate.getDate() + 1);
+        }
+      }
+      else {
+        if (addDate == 'Month') {
+          let DateArray = this.state?.PresetEndDate.split("/");
+          if (DateArray.length == 1) {
+            this.state.PresetEndDate = Moment(this.state?.PresetEndDate).format("dd/MM/yyyy");
+            DateArray = this.state?.PresetEndDate.split("/");
+          }
+          let newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
+          let ConvertedDate = new Date(newDate);
+          ConvertedDate.setMonth(ConvertedDate.getMonth() - 1);
+        }
+        else if (addDate == 'Year') {
+          let DateArray = this.state?.PresetEndDate.split("/");
+          if (DateArray.length == 1) {
+            this.state.PresetEndDate = Moment(this.state?.PresetEndDate).format("dd/MM/yyyy");
+            DateArray = this.state?.PresetEndDate.split("/");
+          }
+          let newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
+          let ConvertedDate = new Date(newDate);
+          ConvertedDate.setFullYear(ConvertedDate.getFullYear() - 1);
+
+        }
+        else {
+          let DateArray = this.state?.PresetEndDate.split("/");
+          if (DateArray.length == 1) {
+            this.state.PresetEndDate = Moment(this.state?.PresetEndDate).format("dd/MM/yyyy");
+            DateArray = this.state?.PresetEndDate.split("/");
+          }
+          let newDate = DateArray[1] + "/" + DateArray[0] + "/" + DateArray[2]
+          let ConvertedDate = new Date(newDate);
+          ConvertedDate.setDate(ConvertedDate.getDate() - 1);
+        }
+      }
+    }
+
+  }
   callBackData = (elem: any, ShowingData: any) => {
     this.setState({
       ShowingAllData: ShowingData
@@ -2191,8 +2489,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                       <span className='SpfxCheckRadio me-2'>
                         <input type="radio" name="dateSelection" value="Presettime" onClick={() => this.selectDate('Presettime')} className="radio" />
                         <label>Pre-set</label>
-                        <span className="svg__iconbox svg__icon--editBox alignIcon" ng-click="OpenPresetDatePopup('Presettime')"></span>
-                        {/* <img className="hreflink " title="open" ng-click="OpenPresetDatePopup('Presettime')" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" /> */}
+                        <span className="svg__iconbox svg__icon--editBox alignIcon hreflink" onClick={() => this.OpenPresetDatePopup()}></span>                       
                       </span>
 
                     </div>
@@ -2204,25 +2501,25 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                     <label>Start Date</label>
                     <span>
                       {/* <DatePicker selected={this.state.startdate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setStartDate(date)} className="full-width" /> */}
-                      <input type="date" className="form-control" max="9999-12-31" min={this.state.startdate ? Moment(this.state.startdate).format("YYYY-MM-DD") : ""}
+                      <input type="date" className="form-control" max="9999-12-31" min="1856-12-31"
                         value={this.state.startdate ? Moment(this.state.startdate).format("YYYY-MM-DD") : ''}
-                        onChange={(date: any) => this.setStartDate(date)} />
+                        onChange={(date: any) => this.setStartDate(date.target?.value)} />
                     </span>
                   </div>
                   <div className="col">
                     <label>End Date</label>
                     <span>
                       {/* <DatePicker selected={this.state.enddate} dateFormat="dd/MM/yyyy" onChange={(date: any) => this.setEndDate(date)} className="full-width" /> */}
-                      <input type="date" className="form-control" max="9999-12-31" min={this.state.enddate ? Moment(this.state.enddate).format("YYYY-MM-DD") : ""}
+                      <input type="date" className="form-control" max="9999-12-31" min="1856-12-31"
                         value={this.state.enddate ? Moment(this.state.enddate).format("YYYY-MM-DD") : ''}
-                        onChange={(date: any) => this.setEndDate(date)} />
+                        onChange={(date: any) => this.setEndDate(date.target?.value)} />
                     </span>
                   </div>
                   <div className='col'>
                     <label></label>
                     <div className='mt-1'>
                       <label> <input type="checkbox" className="form-check-input" ng-click="SelectedPortfolio('Component',PortfolioComponent)" /> Component</label>
-                      <label><input type="checkbox" className="form-check-input" ng-click="SelectedPortfolio('Service',PortfolioComponent)" /> Service</label>
+                      <label><input type="checkbox" className="form-check-input ml-12" ng-click="SelectedPortfolio('Service',PortfolioComponent)" /> Service</label>
                     </div>
                   </div>
                 </Row>
@@ -2283,18 +2580,19 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                                     <input id='chkAllCategory' defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} type="checkbox" className="form-check-input me-1" />
                                     Client Category
                                   </label>
-
-                                  <CheckboxTree
-                                    nodes={this.state.filterItems}
-                                    checked={this.state.checked}
-                                    expanded={this.state.expanded}
-                                    onCheck={checked => this.setState({ checked })}
-                                    onExpand={expanded => this.setState({ expanded })}
-                                    nativeCheckboxes={true}
-                                    showNodeIcon={false}
-                                    checkModel={'all'}
-                                    icons={{ expandOpen: <SlArrowDown />, expandClose: <SlArrowRight />, parentClose: null, parentOpen: null, leaf: null, }}
-                                  />
+                                  <div className="custom-checkbox-tree">
+                                    <CheckboxTree
+                                      nodes={this.state.filterItems}
+                                      checked={this.state.checked}
+                                      expanded={this.state.expanded}
+                                      onCheck={checked => this.setState({ checked })}
+                                      onExpand={expanded => this.setState({ expanded })}
+                                      nativeCheckboxes={true}
+                                      showNodeIcon={false}
+                                      checkModel={'all'}
+                                      icons={{ expandOpen: <SlArrowDown />, expandClose: <SlArrowRight />, parentClose: null, parentOpen: null, leaf: null, }}
+                                    />
+                                  </div>
                                 </div>
                               </td>
 
@@ -2304,24 +2602,25 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                                     <input type="checkbox" id='chkAllSites' defaultChecked={this.state.checkedAllSites} onClick={(e) => this.SelectAllSits(e)} className="form-check-input me-1" />
                                     Sites
                                   </label>
-
-                                  <CheckboxTree
-                                    nodes={this.state.filterSites}
-                                    checked={this.state.checkedSites}
-                                    expanded={this.state.expandedSites}
-                                    onCheck={checkedSites => this.setState({ checkedSites })}
-                                    onExpand={expandedSites => this.setState({ expandedSites })}
-                                    nativeCheckboxes={true}
-                                    showNodeIcon={false}
-                                    checkModel={'all'}
-                                    icons={{
-                                      expandOpen: <SlArrowDown />,
-                                      expandClose: <SlArrowRight />,
-                                      parentClose: null,
-                                      parentOpen: null,
-                                      leaf: null,
-                                    }}
-                                  />
+                                  <div className="custom-checkbox-tree">
+                                    <CheckboxTree
+                                      nodes={this.state.filterSites}
+                                      checked={this.state.checkedSites}
+                                      expanded={this.state.expandedSites}
+                                      onCheck={checkedSites => this.setState({ checkedSites })}
+                                      onExpand={expandedSites => this.setState({ expandedSites })}
+                                      nativeCheckboxes={true}
+                                      showNodeIcon={false}
+                                      checkModel={'all'}
+                                      icons={{
+                                        expandOpen: <SlArrowDown />,
+                                        expandClose: <SlArrowRight />,
+                                        parentClose: null,
+                                        parentOpen: null,
+                                        leaf: null,
+                                      }}
+                                    />
+                                  </div>
                                 </div>
                               </td>
                             </tr>
@@ -2347,7 +2646,8 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             </Col>
           </details>
         </Col>
-        {this.state.AllTimeEntry != undefined && this.state.AllTimeEntry.length > 0 &&
+        {
+          this.state.AllTimeEntry != undefined && this.state.AllTimeEntry.length > 0 &&
           <div className='col'>
             <div className="Alltable p-0">
               <div className="wrapper">
@@ -2356,25 +2656,98 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             </div>
           </div>
         }
-        {this.state.IsTask && (
-          <EditTaskPopup
-            Items={this.state.IsTask}
-            Call={this.Call}
-            AllListId={AllListId}
-            context={this?.props?.Context}
-          ></EditTaskPopup>
-        )}
-        {this.state?.IsMasterTask && (
-          <EditInstituton
-            item={this.state.IsMasterTask}
-            Calls={this.Call}
-            SelectD={this?.props}
-          >
-            {" "}
-          </EditInstituton>
-        )}
+        {
+          this.state.IsTask && (
+            <EditTaskPopup
+              Items={this.state.IsTask}
+              Call={this.Call}
+              AllListId={AllListId}
+              context={this?.props?.Context}
+            ></EditTaskPopup>
+          )
+        }
+        {
+          this.state?.IsMasterTask && (
+            <EditInstituton
+              item={this.state.IsMasterTask}
+              Calls={this.Call}
+              SelectD={this?.props}
+            >
+              {" "}
+            </EditInstituton>
+          )
+        }
+        {
+          this.state.IsPresetPopup &&
+          <Panel onRenderHeader={this.onRenderCustomHeaderMain} type={PanelType.medium} isOpen={this.state.IsPresetPopup} isBlocking={false} onDismiss={this.ClosePopup} >
+            <div className=''>
+              <div className=''>
+                <div className='modal-body clearfix'>
+                  <div className="row">
+                    <div className="col-md-6">
+                      <div>
+                        <div>
+                          <span className="href" id="selectedYear" onClick={() => this.changeDatetodayQuickly('firstOfMonth')}>1st</span>
+                          |<span className="href" id="selectedYear" onClick={() => this.changeDatetodayQuickly('fifteenthOfMonth')}>15th</span>
+                          | <span className="href" id="selectedYear" onClick={() => this.changeDatetodayQuickly('year')}>1 Jan</span>
+                          | <span className="href" id="selectedToday" onClick={() => this.changeDatetodayQuickly('today')}>Today</span>
+                        </div>
+                        <div className="col-md-6">
+                          <label>Start Date</label>
+                          <input type="date" className="form-control" max="9999-12-31" min={this.state?.PresetStartDate ? Moment(this.state.startdate).format("YYYY-MM-DD") : ""}
+                            value={this.state?.PresetStartDate ? Moment(this.state?.PresetStartDate).format("YYYY-MM-DD") : ''}
+                            onChange={(date: any) => this.setPresetStartDate(date.target?.value)} />
+                        </div>
+                        <div className="col-md-6">
+                          <label ng-required="true" className="full_width">End Date</label>
+                          <input type="date" className="form-control" max="9999-12-31" min={this.state?.PresetEndDate ? Moment(this.state.startdate).format("YYYY-MM-DD") : ""}
+                            value={this.state.PresetEndDate ? Moment(this.state.PresetEndDate).format("YYYY-MM-DD") : ''}
+                            onChange={(date: any) => this.setPresetEndDate(date.target?.value)} />
+                        </div>
+                      </div>
+                    </div>
 
-      </div>
+                    <div className="col-md-6">
+                      <div>
+                        <button type="button" id="DayPlus" className="top-container plus-button plus-minus" onClick={() => this.changeDateQuickly('Increase', 'Day')}>
+                          <i className="fa fa-plus" aria-hidden="true"></i>
+                        </button>
+                        <span className="min-input">Day</span>
+                        <button type="button" id="DayMinus" className="top-container minus-button plus-minus" onClick={() => this.changeDateQuickly('Decrease', 'Day')}>
+                          <i className="fa fa-minus" aria-hidden="true"></i>
+                        </button>
+                      </div>
+                      <div>
+                        <button type="button" id="MonthPlus" className="top-container plus-button plus-minus" onClick={() => this.changeDateQuickly('Increase', 'Month')}>
+                          <i className="fa fa-plus" aria-hidden="true"></i>
+                        </button>
+                        <span className="min-input">Month</span>
+                        <button type="button" id="MonthMinus" className="top-container minus-button plus-minus" onClick={() => this.changeDateQuickly('Decrease', 'Month')}>
+                          <i className="fa fa-minus" aria-hidden="true"></i>
+                        </button>
+                      </div>
+
+                      <div>
+                        <button type="button" id="YearPlus" className="top-container plus-button plus-minus" onClick={() => this.changeDateQuickly('Increase', 'Year')}>
+                          <i className="fa fa-plus" aria-hidden="true"></i>
+                        </button>
+                        <span className="min-input">Year</span>
+                        <button type="button" id="YearMinus" className="top-container minus-button plus-minus" onClick={() => this.changeDateQuickly('Decrease', 'Year')}>
+                          <i className="fa fa-minus" aria-hidden="true"></i>
+                        </button>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+                <div className='modal-footer'>
+                  <button type="button" className="btn btn-primary ms-1" onClick={this.SavePresetDate}>Save</button>
+                </div>
+              </div>
+            </div>
+          </Panel>
+        }
+      </div >
     );
   }
 }
