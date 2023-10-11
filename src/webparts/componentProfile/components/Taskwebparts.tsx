@@ -496,7 +496,7 @@ function PortfolioTable(SelectedProp: any) {
                     result.ProjectId = result?.Project?.Id;
                     result.projectStructerId = result?.Project?.PortfolioStructureID
                     const title = result?.Project?.Title || '';
-                    const formattedDueDate = Moment(result?.Project?.DueDate).format("DD-MM-YYYY");
+                    const formattedDueDate = Moment(result?.Project?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
                     result.joinedData = [];
                     if (result?.projectStructerId && title || formattedDueDate) {
                         result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
