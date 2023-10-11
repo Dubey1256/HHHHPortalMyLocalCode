@@ -2,16 +2,17 @@ import * as React from 'react';
 import { Web } from "sp-pnp-js";
 import CheckboxTree from 'react-checkbox-tree';
 import { Panel, PanelType, PrimaryButton } from 'office-ui-fabric-react';
-import PageLoad from './pageLoader';
+import PageLoad from '../pageLoader';
+import { GetTaskId } from '../globalCommon';
+import {GlobalConstants} from '../../globalComponents/LocalCommon';
 // import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 import {SlArrowRight, SlArrowDown}from "react-icons/sl";
-import SmartMetaSearchTable from './SmartMetaSearchTable';
+import SmartMetaSearchTable from '../../webparts/smartMetaSearch/components/SmartMetaSearchTable';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col'
 import { ModalBody } from 'react-bootstrap';
 import * as moment from 'moment';
-// const baseurl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/";
-// let web = new Web(baseurl);
+
 let selectedfilter:any = [];
 let teamfilters:any = [];
 let filterteamgroup:any=[];
@@ -19,14 +20,23 @@ let isShowItem:boolean = false;
 let advanceValueAll:any = 'Allwords';
 let updateFiltervalue:any = 'Title';
 let keywordsvalue :any = '';
-const SmartFilterSearchGlobal = (AllListitem:any)=>{
-    let ADMIN_CONFIGURATIONS_LISTID = 'e968902a-3021-4af2-a30a-174ea95cf8fa'
+let copymastertasksitem:any = [];
+let PortfolioItems:any = [];
+const SmartFilterSearchGlobal = (AllListitem:any)=>{  
     let item = AllListitem.selectedArray;
     let PageContext = item.ContextValue;
     let web = new Web(PageContext._pageContext._web.absoluteUrl + '/')
+    let isGMBH:boolean = false;
+    if (PageContext._pageContext._web.absoluteUrl.indexOf('gmbh') !== -1) {
+        isGMBH = true;
+    } else {
+        isGMBH = false;
+    }
+    if (PageContext._pageContext._web.absoluteUrl.indexOf('ksl') !== -1)
+       isGMBH = true;
     // let stringSmartfavoriteID = PageContext._pageContext._web.absoluteUrl;
-    let TaskUsertListID: any = item.TaskUsertListID;
-    let SmartMetadataListId: any = item.SmartMetadataListId;
+    // let TaskUserListId: any = item.TaskUserListId;
+    // let SmartMetadataListId: any = item.SmartMetadataListId;
     let filters:any = [];
     let filterGroups1: any = [];                  
     const [advanceValue,setadvanceValue] = React.useState('Allwords');
@@ -64,13 +74,14 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
     
     React.useEffect(() => {
         getTaskUsers();
-        GetSmartmetadata();               
+        GetSmartmetadata();
+        PortfolioListItems();
     }, []);
     const getTaskUsers = async () => {
         let taskUsers:any = [];                
         try{
             let results = await web.lists
-            .getById(TaskUsertListID)
+            .getById(GlobalConstants.TaskUsersListId)
             .items
             .select('Id', 'Title', 'Status','Role', 'Item_x0020_Cover', 'IsActive', 'AssingedToUserId','Suffix', 'UserGroupId', 'UserGroup/Id','UserGroup/Title', "ItemType")
             .filter('IsActive eq 1')
@@ -99,7 +110,8 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
                       teamfilters.push(childuser);                  
                 })
             }
-            filterteamgroup.push({Title:item.Title,selected:false,group:'Team Members'})
+            if(item.Title !== "QA" && item.Title !== "Design")
+             filterteamgroup.push({Title:item.Title,selected:false,group:'Team Members'})
         })                   
     }
 
@@ -126,7 +138,7 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
       // let web = new Web(ContextValue?.siteUrl);
       try{
         let AllMetadata = await web.lists
-        .getById(SmartMetadataListId)
+        .getById(GlobalConstants.SP_SMARTMETADATA_LIST_ID)
         .items
         .select('Id', 'Title', 'IsVisible', 'ParentID', 'SmartSuggestions', 'TaxType', 'Description1', 'Item_x005F_x0020_Cover', 'listId', 'siteName', 'siteUrl', 'SortOrder', 'SmartFilters', 'Selectable', 'Parent/Id', 'Parent/Title')
         .top(4999)
@@ -274,111 +286,14 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
             delete childitem1.children;
         }
     }
-
-    const  getSharewebId = function (item:any) {
-        let TaskID:any = '';
-        if (item?.TaskType?.Title === undefined) {
-            TaskID = 'T' + item.Id;
-        }
-        else if (item?.TaskType && (item.TaskType.Title === 'Task' || item.TaskType.Title === 'MileStone') && item.TaskLevel == undefined && item.TaskLevel == undefined) {
-            TaskID = 'T' + item.Id;
-            if (item?.TaskType?.Title === 'MileStone')
-                TaskID = 'M' + item.Id;
-        }
-        else if (item?.TaskType !== undefined && (item.TaskType.Title === 'Activities' || item.TaskType.Title === 'Project') && item.TaskLevel != undefined) {
-            if (item?.Component?.results?.length > 0) {
-                TaskID = 'CA' + item.TaskLevel;
-            }
-            if (item?.Services?.results?.length > 0) {
-                
-                TaskID = 'SA' + item.TaskLevel;
-                
-            }
-            if (item?.Events?.results?.length > 0) {
-              
-                TaskID = 'EA' + item.TaskLevel;
-               
-            }
-            if (item?.Events?.results?.length > 0 && item?.Services?.results?.length > 0 && item?.Component?.results?.length > 0)
-                
-                TaskID = 'A' + item.TaskLevel;
-               
-            if (item.Component == undefined && item.Events == undefined && item.Services == undefined) {
-                TaskID = 'A' + item.TaskLevel;
-            }
-            if (item?.TaskType?.Title == 'Project')
-                TaskID = 'P' + item.TaskLevel;
-
-        }
-        else if (item?.TaskType && (item.TaskType.Title === 'Workstream' || item.TaskType.Title === 'Step') && item?.TaskLevel && item?.TaskLevel) {
-            if (item?.Events?.results?.length > 0 && item?.Services?.results?.length > 0 && item?.Component?.results?.length > 0) {
-               
-                TaskID = 'A' + item.TaskLevel + '-W' + item.TaskLevel;
-                
-            }
-            if (item?.Component?.results?.length > 0) {                
-                TaskID = 'CA' + item.TaskLevel + '-W' + item.TaskLevel;               
-            }
-            if (item?.Services?.results?.length > 0) {
-               
-                TaskID = 'SA' + item.TaskLevel + '-W' + item.TaskLevel;
-                
-            }
-            if (item?.Events?.results?.length > 0) {
-              
-                TaskID = 'EA' + item.TaskLevel + '-W' + item.TaskLevel;
-              
-            }
-            if (item.Component == undefined && item.Services == undefined && item.Events == undefined) {
-                TaskID = 'A' + item.TaskLevel + '-W' + item.TaskLevel;
-            }
-            if (item?.TaskType?.Title == 'Step')
-                TaskID = 'P' + item.TaskLevel + '-S' + item.TaskLevel;
-
-        }
-        else if (item?.TaskType && (item.TaskType.Title === 'Task' || item.TaskType.Title === 'MileStone') && item?.TaskLevel && item?.TaskLevel) {
-            if (item?.Events?.results?.length > 0 && item?.Services?.results?.length > 0 && item?.Component?.results?.length > 0) {              
-                TaskID = 'A' + item.TaskLevel + '-W' + item.TaskLevel + '-T' + item.Id;               
-            }
-            if (item?.Component?.results?.length > 0) {                
-                TaskID = 'CA' + item.TaskLevel + '-W' + item.TaskLevel + '-T' + item.Id;             
-            }
-            if (item?.Services?.results?.length > 0) {
-               
-                TaskID = 'SA' + item.TaskLevel + '-W' + item.TaskLevel + '-T' + item.Id;
-                
-            }
-            if (item?.Events?.results?.length > 0 ) {
-                
-                TaskID = 'EA' + item.TaskLevel + '-W' + item.TaskLevel + '-T' + item.Id;
-                
-            }
-            if (item.Component == undefined && item.Services == undefined && item.Events == undefined) {
-                TaskID = 'A' + item.TaskLevel + '-W' + item.TaskLevel + '-T' + item.Id;
-            }
-            if (item?.TaskType?.Title == 'MileStone') {
-                TaskID = 'P' + item.TaskLevel + '-S' + item.TaskLevel + '-M' + item.Id;
-            }
-        }
-        else if (item?.TaskType  && (item.TaskType.Title === 'Task' || item.TaskType.Title === 'MileStone') && item?.TaskLevel && item.TaskLevel == undefined) {
-            if (item?.Events?.results?.length > 0 && item?.Services?.results?.length > 0 && item?.Component?.results?.length > 0) {
-                TaskID = 'A' + item.TaskLevel + '-T' + item.Id;
-            }
-            if (item?.Component?.results?.length > 0) {
-                TaskID = 'CA' + item.TaskLevel + '-T' + item.Id;
-            }
-            if (item?.Services?.results?.length > 0) {
-                TaskID = 'SA' + item.TaskLevel + '-T' + item.Id;
-            }
-            if (item?.Events?.results?.length > 0) {
-                TaskID = 'EA' + item.TaskLevel + '-T' + item.Id;
-            }
-            if (item.Component == undefined && item.Services == undefined && item.Events == undefined) {
-                TaskID = 'A' + item.TaskLevel + '-T' + item.Id;
-            }
-        }
-        return TaskID;
-    }
+    const PortfolioListItems = () =>{
+        web.lists.getById("c21ab0e4-4984-4ef7-81b5-805efaa3752e").items.select('Title','Color','Suffix','IdRange').getAll().then((response:any) => {
+            PortfolioItems = response;
+            console.log(PortfolioItems);
+        }).catch((error: any) => {
+            console.error(error);
+        });
+    }  
 
     const LoadAllSiteTasks=(siteconfig1:any)=>{
         const Alltaskitem:any = [];
@@ -386,19 +301,18 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
         (async () => {
             try {
               for (const listitem of siteconfig1) {
-                if(listitem.Title==='Master Task'){
-                    var query = "Deliverables,TechnicalExplanations,ValueAdded,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,Component/Id,Component/Title,Component/ItemType,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title";
-                    var expandlookup = "ComponentPortfolio,ServicePortfolio,ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,TeamMembers,TaskCategories,Parent"
+                if(listitem.Title==='Master Tasks'){
+                    var query = "Deliverables,TechnicalExplanations,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,ValueAdded,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,PortfolioType/Title,PortfolioType/Id,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,TaskCategories/Id,TaskCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,Component/Id,Component/Title,Component/ItemType,TeamMembers/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title";
+                    var expandlookup = "ComponentPortfolio,ServicePortfolio,Portfolio,PortfolioType,ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,TeamMembers,TaskCategories,Parent"
                 }
                 else{
-                    var query = "WebpartId,FeedBack,FolderID,Portfolio_x0020_Type,Comments,ComponentLink,TaskID,TaskLevel,TaskLevel,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,FileLeafRef,Title,Id,PriorityRank,PercentComplete,StartDate,TeamMembers/Id,TeamMembers/Title,DueDate,Status,Body,Priority,Created,Modified,TaskType/Id,TaskType/Title,TaskType/Level,TaskType/Prefix,Author/Id,Author/Title,Editor/Id,Editor/Title,Component/Id,Component/Title,Services/Id,Services/Title,Events/Id,Events/Title,Categories,TaskCategories/Id,TaskCategories/Title,ClientCategory/Id,ClientCategory/Title";        
-                    var expandlookup="ClientCategory,TaskType,TaskCategories,Component,Services,Events,AssignedTo,TeamMembers,Author,Editor"
+                    var query = "WebpartId,FeedBack,FolderID,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PortfolioType/Title,PortfolioType/Id,Comments,component_x0020_link,TaskID,SharewebTaskLevel1No,SharewebTaskLevel2No,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,StartDate,TeamMembers/Id,TeamMembers/Title,DueDate,Status,Body,Priority,Created,Modified,TaskType/Id,TaskType/Title,TaskType/Level,TaskType/Prefix,Author/Id,Author/Title,Editor/Id,Editor/Title,Component/Id,Component/Title,Services/Id,Services/Title,Events/Id,Events/Title,Categories,TaskCategories/Id,TaskCategories/Title,ClientCategory/Id,ClientCategory/Title";        
+                    var expandlookup="ClientCategory,TaskType,TaskCategories,Portfolio,PortfolioType,Component,Services,Events,AssignedTo,TeamMembers,Author,Editor"
                 }
                 if(listitem?.listId){                   
                     const list = web.lists.getById(listitem?.listId);
                     const items = await list.items.select(query).expand(expandlookup).getAll();
-                    listItems.push({ listitem, items });                   
-                    
+                    listItems.push({ listitem, items });                     
                 }
                 else{
                     const items:any = [];
@@ -407,30 +321,72 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
               }
               console.log("List Items:", listItems);
               listItems?.map((allitem:any)=>{
+                if(allitem?.listitem?.Title==='Master Tasks')                  
+                    copymastertasksitem = allitem.items;
                 if(allitem?.items?.length>0){
                     allitem?.items.map((taskitems:any)=>{
-                        taskitems.siteUrl = allitem?.listitem?.siteUrl?.Url,
-                        taskitems.siteType = allitem?.listitem.siteName;
+                        taskitems.siteName = allitem?.listitem.siteName;
                         taskitems.listId = allitem?.listitem?.listId;
+                        if (taskitems.siteName !== 'Master Tasks') {
+                            taskitems.siteurl = allitem?.listitem?.Item_x005F_x0020_Cover?.Url || '';                            
+                        }
+                        else {
+
+                            if(taskitems?.Item_x0020_Type)
+                             taskitems.Item_x0020_Type = taskitems.Item_x0020_Type === "Component Category" ? "Component" : taskitems.Item_x0020_Type;
+                            // val.SiteIcon = SharewebCommonFactoryService.GetIconImageUrl(val.siteType, _spPageContextInfo.webAbsoluteUrl, val);
+                            if(taskitems.siteName === 'Master Tasks' && taskitems.Item_x0020_Type ==='Component')
+                                taskitems.siteurl = PageContext._pageContext._web.absoluteUrl+'/SiteCollectionImages/ICONS/Shareweb/component_icon.png'
+                            else if (taskitems.siteName === 'Master Tasks' && taskitems.Item_x0020_Type  ==='SubComponent')
+                             taskitems.siteurl = PageContext._pageContext._web.absoluteUrl+'/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png'
+                            else if (taskitems.siteName  === 'Master Tasks' && taskitems.Item_x0020_Type ==='Feature')
+                             taskitems.siteurl = PageContext._pageContext._web.absoluteUrl+'/SiteCollectionImages/ICONS/Shareweb/feature_icon.png'                             
+                        } 
+                        taskitems.SiteIcon = taskitems.siteurl 
+                        if (taskitems?.Item_x0020_Type) {
+                            taskitems.isPortfolio = true;
+                        } else {
+                            taskitems.isPortfolio = false;
+                        } 
+                        if (taskitems?.Services?.results?.length > 0)
+                          taskitems.Portfoliotype = 'Service';
+                        else
+                            taskitems.Portfoliotype = 'Component';
+
+                        if (taskitems?.PortfolioType === 'Service' && taskitems?.siteName === 'Master Tasks') {
+                            taskitems.Portfoliotype = 'Service';
+
+                        }
+                        else if (taskitems?.siteName === 'Master Tasks' && taskitems?.PortfolioType === 'Events') {
+                            taskitems.Portfoliotype = 'Events';
+                        }
+                        else if (taskitems?.siteName === 'Master Tasks' && taskitems?.PortfolioType !== 'Events' && taskitems?.PortfolioType !== 'Service') {
+                            taskitems.Portfoliotype = 'Component';
+                        } 
+                        if (taskitems?.ComponentPortfolio) {
+                            taskitems.tagComponent = taskitems.ComponentPortfolio;
+                        }
+                        if (taskitems.ServicePortfolio) {
+                            taskitems.tagComponent = taskitems.ServicePortfolio;
+                        }                    
                         Alltaskitem.push(taskitems);        
                     });                    
                 }                                                              
               })
               if(Alltaskitem?.length>0){
                 Alltaskitem.map((taskitems:any)=>{
-                    taskitems?.Component?.map((type:any)=>{
-                        taskitems.tagComponentTitle = type.Title;
-                        taskitems.tagComponentId = type.Id
-        
-                    });
-                    taskitems?.Services?.map((type:any)=>{
-                        taskitems.tagComponentTitle = type.Title;
-                        taskitems.tagComponentId = type.Id
-                    });
-                    taskitems?.Events?.map((type:any)=>{
-                        taskitems.tagComponentTitle = type.Title;
-                        taskitems.tagComponentId = type.Id
-                    });
+                    if(taskitems?.Portfolio != undefined && taskitems?.Portfolio != null){
+                        taskitems.tagComponentTitle = taskitems.Portfolio.Title;
+                        taskitems.tagComponentId = taskitems.Portfolio.Id
+                    }                                      
+                    // taskitems?.Services?.map((type:any)=>{
+                    //     taskitems.tagComponentTitle = type.Title;
+                    //     taskitems.tagComponentId = type.Id
+                    // });
+                    // taskitems?.Events?.map((type:any)=>{
+                    //     taskitems.tagComponentTitle = type.Title;
+                    //     taskitems.tagComponentId = type.Id
+                    // });
                     if(taskitems?.PercentComplete)
                      taskitems.PercentComplete = parseInt((taskitems.PercentComplete * 100).toFixed(0));
                     teamfilters.map((useritems:any)=>{
@@ -441,9 +397,21 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
                         }
                     })                
                     if(taskitems?.TaskID === null)
-                      taskitems.TaskID = getSharewebId(taskitems);                                           
+                      taskitems.TaskID = GetTaskId(taskitems);                                           
                     taskitems.Created = moment(taskitems.Created).format('MM/DD/YYYY');                
                     taskitems.Modified = moment(taskitems.Modified).format('MM/DD/YYYY');
+                    if (taskitems?.Component?.results?.length > 0) {
+                        taskitems['Portfoliotype'] = 'Component';
+                    }
+                    if (taskitems?.Services?.results?.length > 0) {
+                        taskitems['Portfoliotype'] = 'Service';
+                    }
+                    if (taskitems?.Events?.results?.length > 0) {
+                        taskitems['Portfoliotype'] = 'Event';
+                    }
+                    if (!taskitems?.Component?.results?.length && !taskitems?.Services?.results?.length && !taskitems?.Events?.results?.length) {
+                        taskitems['Portfoliotype'] = 'Component';
+                    }
                     if(taskitems?.DueDate)
                         taskitems.DueDate = moment(taskitems.DueDate).format('MM/DD/YYYY');                              
                     AllListitems.push(taskitems);
@@ -521,16 +489,16 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
         var count = 0;
         Item.MultipleTitle = '';
         array.map((fitem:any) =>{
-            if (fitem.label != undefined && Item.Title != undefined && fitem.label == Item.Title) {
+            if (fitem.label != undefined && Item.Title != undefined && fitem.label == Item.Title && fitem.selected === true) {
                 isExists = true;
                 count++;
-                Item.MultipleTitle += (fitem.label == 'Date' ? fitem.TitleNew : fitem.Title) + ', ';
+                Item.MultipleTitle += (fitem.label === 'Date' ? fitem.TitleNew : fitem.Title) + ', ';
                 return false;
             }
-            else if(fitem.label === undefined && Item.Title != undefined && fitem.TaxType == Item.Title){
+            else if(fitem.label === undefined && Item.Title != undefined && fitem.TaxType == Item.Title && fitem.selected === true){
                 isExists = true;
                 count++;
-                Item.MultipleTitle += (fitem.label == 'Date' ? fitem.TitleNew : fitem.Title) + ', ';
+                Item.MultipleTitle += (fitem.label === 'Date' ? fitem.TitleNew : fitem.Title) + ', ';
                 return false;
             }
         });
@@ -571,19 +539,19 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
             }
             else if(ischecked && groupitem.TaxType !== undefined){
                 filterItems.map((fitm:any)=>{
-                    if(fitm.label === groupitem.label && fitm.Title === groupitem.Title){
+                    if(fitm.TaxType === groupitem.TaxType && fitm.Title === groupitem.Title){
                         fitm.selected = true;                        
                     }
                     fitm?.children?.map((child:any)=>{
                         if(fitm.selected)
                          child.selected = true;
-                        else if(child.Title === groupitem.Title){
+                        else if(child.Title === groupitem.Title && child.TaxType === groupitem.TaxType){
                             child.selected = true;
                         }
                         child?.children?.map((childs:any)=>{
                             if(child.selected)
                              childs.selected = true;
-                            else if(childs.Title === groupitem.Title){
+                            else if(childs.Title === groupitem.Title && childs.TaxType === groupitem.TaxType){
                                 childs.selected = true;
                             }
                         })
@@ -612,11 +580,8 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
                         })
                     })
                 })
-                selectedfilter?.map((itm:any,index:any)=>{
-                    if(itm.selected === false)
-                     selectedfilter.splice(index,1);
-                })
-                setShowSelectdSmartfilter(selectedfilter);
+                const selectedfilter1 = selectedfilter.filter((child:any) => child.selected === true)
+                setShowSelectdSmartfilter(selectedfilter1);
             }
             filterItems.map((filterItem:any) =>{
                 isShowItem = false; 
@@ -649,12 +614,13 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
                 }
             });
             selectedfilter?.map((smart:any)=>{
-                if(smart.TaxType === 'Team Member'){
+                if(smart.TaxType === 'Team Member' && smart.selected === true){
                     setCreatemodified({"isCreated":true,"isModified":true,"isAssignedto":true});
                 }
                 else if(smart.TaxType !== 'Team Member'){
                     setCreatemodified({"isCreated":false,"isModified":false,"isAssignedto":false});
-                }               
+                } 
+                if(smart.selected){
                     var smartfilterItems:any = {};
                     smartfilterItems.Title = smart.label || smart.TaxType;
                     if (IsExitSmartfilter(selectedfilter, smartfilterItems)) {
@@ -663,7 +629,9 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
                         } else smartfilterItems.selectTitle = ' : ' + smartfilterItems.MultipleTitle;
                     }
                     if (!issmartExists(ShowSelectdSmartfilter1, smartfilterItems))
-                        ShowSelectdSmartfilter1.push(smartfilterItems);                                   
+                        ShowSelectdSmartfilter1.push(smartfilterItems);    
+                }             
+                                                   
             })
             setShowSelectdSmartfilter(ShowSelectdSmartfilter1);   
             if(dataid === 'Component'){
@@ -723,11 +691,16 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
     }       
    
     const Searchtasks=()=>{
-        let searchingvalue:any = [];
+        let searchingvalue:any = '';
         if(!isShowTable){            
             setisShowTable(true); 
             isShowItem = true;                                          
             if (keywordsvalue !== undefined  && keywordsvalue !== '') {
+                selectedfilter?.map((key:any,index:any)=>{
+                    if (key?.GlobalSearch !== undefined){
+                        selectedfilter.splice(index,1)
+                    }
+                })
                 filterItems.map((filterItm:any, index:any)=> {
                     if (filterItm?.GlobalSearch !== undefined)
                         filterItems.splice(index, 1);
@@ -740,10 +713,15 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
                     Item.updateFilterAll = updateFiltervalue;
                 Item.slectpopupradio = false;
                 filterItems.push(Item);
-                searchingvalue.push(Item);
+                searchingvalue = Item;
             }
-            if(searchingvalue?.length > 0)
-             selectedfilter = searchingvalue
+            if(searchingvalue !== undefined && searchingvalue !== ''){
+                if(selectedfilter?.length > 0){
+                    selectedfilter.push(searchingvalue);                   
+                }
+                else
+                 selectedfilter = searchingvalue
+            }             
             else
              selectedfilter = selectedfilter;
 
@@ -792,55 +770,110 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
         setCreatemodified({"isCreated":false,"isModified":false,"isAssignedto":false});
     }
 
-    const filtercompo  = (event:any)=>{
+    const filtercompo  = (event:any)=>{        
+        // selectedfilter = []
+        let showselected:any = [];
         if(event.target.checked){
-            if(event.target.value = 'Component'){
+            if(event.target.value === 'Component'){
                 composervtask.iscompo = event.target.checked
                filterItems.map((filter:any)=>{
-                    if(filter.Title === 'Component' && filter.TaxType === 'Portfolio Type')
-                     filter.selected = true;
+                    if(filter.Title === 'Component' && filter.TaxType === 'Portfolio Type'){
+                        filter.selected = true;
+                        if(!issmartExists(selectedfilter, filter))                       
+                         selectedfilter.push(filter);
+                        // showselected.Title = filter.TaxType;
+                        // showselected.selectTitle = filter.Title;
+                    }
+                    
                 })
             }
-            else if(event.target.value = 'Service'){
+            else if(event.target.value=== 'Service'){
                 composervtask.isservice = event.target.checked 
                 filterItems.map((filter:any)=>{
-                    if(filter.Title === 'Service' && filter.TaxType === 'Portfolio Type')
-                     filter.selected = true;
+                    if(filter.Title === 'Service' && filter.TaxType === 'Portfolio Type'){
+                        filter.selected = true;                        
+                        if(!issmartExists(selectedfilter, filter))                       
+                         selectedfilter.push(filter);
+                        // showselected.Title = filter.TaxType;
+                        // showselected.selectTitle = filter.Title;
+                    }
+                     
                 })
             }
-            else if(event.target.value = 'Task'){
+            else if(event.target.value === 'Task'){
                 composervtask.istask = event.target.checked
                 filterItems.map((filter:any)=>{
-                    if(filter.Title === 'Task' && filter.TaxType === 'Portfolio Type')
-                     filter.selected = true;
+                    if(filter.TaxType === 'Type'){
+                        filter.selected = true;                       
+                        if(!issmartExists(selectedfilter, filter))                       
+                         selectedfilter.push(filter);
+                        // showselected.Title = filter.TaxType;
+                        // showselected.selectTitle = filter.Title;
+                    }
                 })
-            }
-            console.log(filterItems);
+            }            
         }
         else {
-            if(event.target.value = 'Component'){
+            if(event.target.value === 'Component'){
                 composervtask.iscompo = event.target.checked
                filterItems.map((filter:any)=>{
-                    if(filter.Title === 'Component' && filter.TaxType === 'Portfolio Type')
-                     filter.selected = false;
+                    if(filter.Title === 'Component' && filter.TaxType === 'Portfolio Type'){
+                        filter.selected = false;
+                        selectedfilter.map((itm:any)=>{
+                            if(itm.Id === filter.Id){
+                                selectedfilter.splice(selectedfilter.indexOf(itm), 1);
+                            }
+                        })
+                    }
+                     
                 })
             }
-            else if(event.target.value = 'Service'){
+            else if(event.target.value === 'Service'){
                 composervtask.isservice = event.target.checked 
                 filterItems.map((filter:any)=>{
                     if(filter.Title === 'Service' && filter.TaxType === 'Portfolio Type')
-                     filter.selected = false;
+                    {
+                        filter.selected = false;
+                        selectedfilter.map((itm:any)=>{
+                            if(itm.Id === filter.Id){
+                                selectedfilter.splice(selectedfilter.indexOf(itm), 1);
+                            }
+                        }) 
+                    }               
                 })
             }
-            else if(event.target.value = 'Task'){
+            else if(event.target.value === 'Task'){
                 composervtask.istask = event.target.checked
                 filterItems.map((filter:any)=>{
-                    if(filter.Title === 'Task'  && filter.TaxType === 'Portfolio Type')
-                     filter.selected = false;
+                    if(filter.TaxType === 'Type')
+                    {
+                        filter.selected = false;
+                        selectedfilter.map((itm:any)=>{
+                            if(itm.Id === filter.Id){
+                                selectedfilter.splice(selectedfilter.indexOf(itm), 1);
+                            }
+                        })
+                    }
                 })
             }
         }
-        
+        selectedfilter?.map((smart:any)=>{            
+            if(smart.selected){
+                var smartfilterItems:any = {};
+                smartfilterItems.Title = smart.label || smart.TaxType;
+                if (IsExitSmartfilter(selectedfilter, smartfilterItems)) {
+                    if (smartfilterItems.count >= 3) {
+                        smartfilterItems.selectTitle = ' : (' + smartfilterItems.count + ')';
+                    } else smartfilterItems.selectTitle = ' : ' + smartfilterItems.MultipleTitle;
+                }
+                if (!issmartExists(showselected, smartfilterItems))
+                 showselected.push(smartfilterItems);    
+            }             
+                                               
+        })
+        setShowSelectdSmartfilter(showselected);
+        // setShowSelectdSmartfilter(showselected);
+        console.log(filterItems);
     }
 
     const resetItem=()=> {
@@ -1052,8 +1085,7 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
         setopensmartfavorite(false);
     } 
    
-    const loadAdminConfigurations = ()=>{
-        let Tasks:any = [];        
+    const loadAdminConfigurations = ()=>{           
         let SmartFavoritesConfig1:any[] = [];
         let copyCreateMeSmartFavorites:any = [];
         let copyEveryoneSmartFavorites:any = [];
@@ -1063,7 +1095,7 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
         //  var filter = "Key eq 'SmartfavoritesSearch'";
         var filter = "Key eq 'SmartfavoritesSearch'";
         web.lists
-        .getById(ADMIN_CONFIGURATIONS_LISTID)
+        .getById(GlobalConstants.SHAREWEB_ADMIN_CONFIGURATIONS_LISTID)
         .items
         .select('Id', 'Title', 'Value', 'Key', 'Description', 'DisplayTitle', 'Configurations')
         .filter(filter)        
@@ -1183,7 +1215,7 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
             Key: 'SmartfavoritesSearch',
             Title: 'SmartfavoritesSearch',
         };
-        web.lists.getById(ADMIN_CONFIGURATIONS_LISTID).items.add(postData).then((result:any) => {
+        web.lists.getById(GlobalConstants.SHAREWEB_ADMIN_CONFIGURATIONS_LISTID).items.add(postData).then((result:any) => {
             console.log("Successfully Added SmartFavorite") ;
             loadAdminConfigurations();
             cancelAddSmartfaviratesfilter();
@@ -1218,7 +1250,7 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
             var deleteConfirmation = confirm("Are you sure, you want to delete this?")
             if (deleteConfirmation) {
                 
-                await web.lists.getById(ADMIN_CONFIGURATIONS_LISTID).items.getById(val.FavoriteId).delete()
+                await web.lists.getById(GlobalConstants.SHAREWEB_ADMIN_CONFIGURATIONS_LISTID).items.getById(val.FavoriteId).delete()
                 CreateMeSmartFavorites?.forEach((vall: any, index: any) => {
                     if (vall?.FavoriteId == val?.FavoriteId) {
                         CreateMeSmartFavorites.splice(index, 1)
@@ -1232,7 +1264,7 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
             var deleteConfirmation = confirm("Are you sure, you want to delete this?")
             if (deleteConfirmation) {
              
-                await web.lists.getById(ADMIN_CONFIGURATIONS_LISTID).items.getById(val.FavoriteId).delete()
+                await web.lists.getById(GlobalConstants.SHAREWEB_ADMIN_CONFIGURATIONS_LISTID).items.getById(val.FavoriteId).delete()
 
                 EveryoneSmartFavorites?.forEach((vall: any, index: any) => {
                     if (vall.FavoriteId == val.FavoriteId) {
@@ -1278,7 +1310,10 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
         duedate:duedate,
         siteConfig:siteConfig,
         AllData:AlllistsData,
-        isShowItem:isShowItem,       
+        isShowItem:isShowItem,
+        isGMBH:isGMBH,
+        copymastertasksitem:copymastertasksitem,
+        
     }
     const isItemExistsGroup = (array:any, Item:any)=> {
         let isExists:any = false;
@@ -1349,7 +1384,6 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
 
         })
 
-
         var favovitesItem: any = {}
         favovitesItem = {
             'SmartFavoriteType': editData.SmartFavoriteType,
@@ -1361,7 +1395,7 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
 
         }
         AddData.push(favovitesItem)       
-        var Mydata = web.lists.getById(ADMIN_CONFIGURATIONS_LISTID).items.getById(editData.FavoriteId).update({
+        var Mydata = web.lists.getById(GlobalConstants.SHAREWEB_ADMIN_CONFIGURATIONS_LISTID).items.getById(editData.FavoriteId).update({
             Configurations: JSON.stringify(AddData),
             Key: 'SmartfavoritesSearch',
             Title: 'SmartfavoritesSearch',
@@ -1382,15 +1416,15 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
                         </div>
                         <Row className='smartFilter'>
                             <details open>
-                                <summary> All filter <span className="no-padding">
+                                <summary className='siteColor'> All filter {ShowSelectdSmartfilter?.length>0 && <span>-</span>} <span className="no-padding">
                                     {keywordsvalue && <span className="no-padding">{keywordsvalue}{ShowSelectdSmartfilter?.length>0 && <span>|</span>}</span>}
                                     {ShowSelectdSmartfilter?.map((updateditems:any,index:any)=>{
                                         return(
                                             <><span>
                                                 <span className="no-padding">
-                                                    {updateditems.Title =='Foundation' && <span >MS Teams</span>}
-                                                    {updateditems.Title !='Foundation' && <span>{updateditems.Title} </span>}                                       
-                                                    <span className="font-normal">{updateditems.selectTitle}</span>
+                                                    {updateditems.Title ==='Foundation' && <span >MS Teams</span>}
+                                                    {updateditems.Title !=='Foundation' && <span>{updateditems.Title} </span>}                                       
+                                                    <span className="font-normal">{updateditems?.selectTitle}</span>
                                                     {index !== (ShowSelectdSmartfilter?.length -1) ? <span> | </span>:''}
                                                 </span>
                                             </span>
@@ -1427,14 +1461,14 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
                                         </label>
                                         <span className='m-2'>|</span>
                                         <label className='SpfxCheckRadio  me-2 '>
-                                          <input className='form-check-input' type='checkbox'  id='Component' defaultChecked={composervtask.iscompo} onChange={(event)=>filtercompo(event)} /> Components
+                                          <input className='form-check-input' type='checkbox'  id='Component' value='Component' onChange={(event)=>filtercompo(event)} /> Components
                                         </label>
                                         <label className='SpfxCheckRadio   me-2'>
-                                         <input className='form-check-input' type='checkbox' id='Service' defaultChecked={composervtask.isservice} onChange={(event)=>filtercompo(event)} /> Service
+                                         <input className='form-check-input' type='checkbox' id='Service' value='Service' onChange={(event)=>filtercompo(event)} /> Service
                                         </label>
                                         <span className='m-2'>|</span>
                                         <label className='SpfxCheckRadio '>
-                                          <input className='form-check-input' type='checkbox' id='Task' defaultChecked={composervtask.istask} onChange={(event)=>filtercompo(event)} /> Task Items
+                                          <input className='form-check-input' type='checkbox' id='Task' value='Task' onChange={(event)=>filtercompo(event)} /> Task Items
                                         </label>
                                         </div>
                                         <div className='mt-2' onClick={AddSmartFavorite}>
@@ -1546,7 +1580,7 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
                                     </Panel>}                                   
                                 </div>
                                 <details>
-                                  <summary onClick={() => showSmartFilter('isSitefilter')}> Sites <hr></hr></summary>
+                                  <summary className='siteColor' onClick={() => showSmartFilter('isSitefilter')}> Sites <hr></hr></summary>
                                     <>
                                     {IsSmartfilter.isSitefilter === true ? 
                                         <Row className='ps-30'  style={{ display: "block" }}>
@@ -1559,7 +1593,7 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
                                                                     {Group.Site === 'sp'  &&
                                                                         <div> 
                                                                             {Group.Title !== 'Foundation' &&  <label className='smartPannel'>
-                                                                                <input className='form-check-input' type="checkbox" id={Group.Title} checked={Group.selected} onChange={(event)=>handleGroupCheckboxChanged(event,Group,'')} /> {Group.Title} 
+                                                                               <span className='form-check'><input className='form-check-input' type="checkbox" id={Group.Title} checked={Group.selected} onChange={(event)=>handleGroupCheckboxChanged(event,Group,'')} /> {Group.Title} </span>
                                                                                 </label>
                                                                             } 
                                                                             {Group.Title === 'Foundation' &&  <label className='smartPannel'>
@@ -1573,7 +1607,7 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
                                                                                             {filteritem.label == Group.Title &&
                                                                                                 <label>
                                                                                                     {filteritem.TaxType != 'Status' &&                                                                                           
-                                                                                                        <span> <input className='form-check-input' type="checkbox" id={filteritem.Title} value={filteritem.Title} checked={filteritem.selected} onChange={(event)=>handleGroupCheckboxChanged(event,filteritem,'')} /> {filteritem.Title} </span>
+                                                                                                        <span className='form-check'> <input className='form-check-input' type="checkbox" id={filteritem.Title} value={filteritem.Title} checked={filteritem.selected} onChange={(event)=>handleGroupCheckboxChanged(event,filteritem,'')} /> {filteritem.Title} </span>
                                                                                                     }                                                                                   
                                                                                                 </label>
                                                                                             }
@@ -1594,7 +1628,7 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
                                     </>
                                 </details>
                                 <details>
-                                    <summary  onClick={() =>  showSmartFilter('isCategoriesStatus')}>  Categories and Status <hr></hr></summary>
+                                    <summary className='siteColor'  onClick={() =>  showSmartFilter('isCategoriesStatus')}>  Categories and Status <hr></hr></summary>
                                     <> 
                                         {IsSmartfilter.isCategoriesStatus === true ? 
                                                 <Row className='mt-1 ps-30 '  style={{ display: "block" }}>
@@ -1606,45 +1640,47 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
                                                                             {Group.Site !== 'sp' && Group.Title != 'Team Member' && Group.Title !='Team' && Group.group !='Team Members' &&
                                                                                 <div>                                                                      
                                                                                     {Group.Title !== 'teamSites' &&  <label className='smartPannel'>
-                                                                                    <span ><input className='form-check-input' type="checkbox" id={Group.Title} checked={Group.selected} onChange={(event)=>handleGroupCheckboxChanged(event,Group,'')}/> {Group.Title} </span>
+                                                                                     <span className='form-check'><input className='form-check-input' type="checkbox" id={Group.Title} checked={Group.selected} onChange={(event)=>handleGroupCheckboxChanged(event,Group,'')}/> {Group.Title} </span>
                                                                                     </label>} 
                                                                                     {Group.Title === 'teamSites' &&   <label className='smartPannel'>
-                                                                                    <span><input className='form-check-input' type="checkbox" id={Group.Title} checked={Group.selected} onChange={(event)=>handleGroupCheckboxChanged(event,Group,'')} /> Sites </span>
+                                                                                    <span className='form-check'><input className='form-check-input' type="checkbox" id={Group.Title} checked={Group.selected} onChange={(event)=>handleGroupCheckboxChanged(event,Group,'')} /> Sites </span>
                                                                                     </label>}  
                                                                                     <div>
                                                                                         {filterItems?.length>0 && filterItems?.map((filteritem:any,index:any)=>{                                                                                           
 
                                                                                             return (
-                                                                                                <div>                                                                                                                                                                       
+                                                                                                <div className='d-flex'>                                                                                                                                                                       
                                                                                                     {filteritem.label == Group.Title &&
                                                                                                     <><span id="filterexpand">
                                                                                                             {filteritem.expand && filteritem?.children?.length > 0 &&  <SlArrowDown onClick={()=>loadMorefilter(filteritem)}></SlArrowDown>}
                                                                                                             {!filteritem.expand && filteritem?.children?.length > 0 && <SlArrowRight onClick={()=>loadMorefilter(filteritem)}></SlArrowRight>}
-                                                                                                        </span><span>
+                                                                                                        </span>                                                                                                          
                                                                                                                 {filteritem.TaxType !== 'Status' &&
-                                                                                                                    <span> <input className='form-check-input' type="checkbox" id={filteritem.Title} value={filteritem.Title} checked={filteritem.selected} onChange={(event)=>handleGroupCheckboxChanged(event,filteritem,'')} /> {filteritem.Title} </span>}
-                                                                                                                {filteritem.TaxType === 'Status' &&
-                                                                                                                    <span> <input className='form-check-input' type="checkbox" id={filteritem.Title} value={filteritem.Title} checked={filteritem.selected} onChange={(event)=>handleGroupCheckboxChanged(event,filteritem,'')} /> {filteritem.Title} </span>}
-
-                                                                                                            </span>
-                                                                                                            <ul>
-                                                                                                                {filteritem.expand === true && filteritem?.children?.length>0 && filteritem.children?.map((child:any)=>{
-                                                                                                                   
-                                                                                                                return(<>
-                                                                                                                    <li style={{ listStyle: 'none' }}>
-                                                                                                                        <span id="filterexpand">
-                                                                                                                        {child.expand && child?.children?.length > 0 &&  <SlArrowDown onClick={() => loadMorefilter(child)}></SlArrowDown> }
-                                                                                                                        {!child.expand && child?.children?.length > 0 && <SlArrowRight onClick={() => loadMorefilter(child)}></SlArrowRight> }
-                                                                                                                        </span>
-                                                                                                                        <input className='form-check-input' type="checkbox" id={child.Title} value={child.Title} checked={child.selected} onChange={(event)=>handleGroupCheckboxChanged(event,child,'')} /> {child.Title}
-                                                                                                                        <ul>
-                                                                                                                            {child.expand === true && child?.children?.length > 0 && child.children?.map((childs: any) => {
-                                                                                                                                return (<li style={{ listStyle: 'none' }}><input className='form-check-input' type="checkbox" id={childs.Title} value={childs.Title} checked={childs.selected} onChange={(event)=>handleGroupCheckboxChanged(event,child,'')} /> {childs.Title} </li>);
+                                                                                                                    <span className='form-check'> <input className='form-check-input' type="checkbox" id={filteritem.Title} value={filteritem.Title} checked={filteritem.selected} onChange={(event)=>handleGroupCheckboxChanged(event,filteritem,'')} /> {filteritem.Title} 
+                                                                                                                      <span>
+                                                                                                                            {filteritem?.children?.length>0 ? <ul>
+                                                                                                                            {filteritem.expand === true && filteritem.children?.map((child:any)=>{                                                                                                                   
+                                                                                                                            return(<>
+                                                                                                                                <li>
+                                                                                                                                    <span id="filterexpand">
+                                                                                                                                    {child.expand && child?.children?.length > 0 &&  <SlArrowDown onClick={() => loadMorefilter(child)}></SlArrowDown> }
+                                                                                                                                    {!child.expand && child?.children?.length > 0 && <SlArrowRight onClick={() => loadMorefilter(child)}></SlArrowRight> }
+                                                                                                                                    </span>
+                                                                                                                                    <input className='form-check-input' type="checkbox" id={child.Title} value={child.Title} checked={child.selected} onChange={(event)=>handleGroupCheckboxChanged(event,child,'')} /> {child.Title}
+                                                                                                                                    {child?.children?.length > 0 ?<ul>
+                                                                                                                                        {child.expand === true && child.children?.map((childs: any) => {
+                                                                                                                                            return (<li><input className='form-check-input' type="checkbox" id={childs.Title} value={childs.Title} checked={childs.selected} onChange={(event)=>handleGroupCheckboxChanged(event,child,'')} /> {childs.Title} </li>);
+                                                                                                                                        })}
+                                                                                                                                    </ul>:''}
+                                                                                                                                </li></>)
                                                                                                                             })}
-                                                                                                                        </ul>
-                                                                                                                    </li></>)
-                                                                                                                })}
-                                                                                                            </ul>  
+                                                                                                                            </ul> : ''}
+                                                                                                                        </span>
+                                                                                                                    </span>}
+                                                                                                                {filteritem.TaxType === 'Status' &&
+                                                                                                                    <span className='form-check'> <input className='form-check-input' type="checkbox" id={filteritem.Title} value={filteritem.Title} checked={filteritem.selected} onChange={(event)=>handleGroupCheckboxChanged(event,filteritem,'')} /> {filteritem.Title} </span>}
+                                                                                                           
+                                                                                                            
                                                                                                         </>
                                                                                                     }                                                                                                                                                                  
                                                                                                 </div>
@@ -1664,7 +1700,7 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
                                     </>
                                 </details>
                                 <details>
-                                <summary onClick={() => showSmartFilter('isTeamMemberfilter')}>  Team Members <hr></hr></summary>
+                                <summary className='siteColor' onClick={() => showSmartFilter('isTeamMemberfilter')}>  Team Members <hr></hr></summary>
                           
                                     <>
                                         {IsSmartfilter.isTeamMemberfilter === true ? 
@@ -1683,59 +1719,62 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
                                                     </Col>
                                                     <table width="100%" className="indicator_search">
                                                         <tr className=''>
+                                                        <td valign="top">
+                                                           <Row>
                                                             {filterGroups != null && filterGroups.length > 0 && filterGroups?.map((Group: any, index: any) =>  {
-                                                                return (
-                                                                    <td valign="top">
-                                                                        {Group.group ==='Team Members' && Group.Title !='Team' && 
-                                                                            <div> 
-                                                                                <label className='smartPannel'>
-                                                                                    <span><input className='form-check-input'  type="checkbox" id={Group.Title} checked={Group.selected} onChange={(event)=>handleGroupCheckboxChanged(event,Group,'')} /> {Group.Title} </span>
-                                                                                </label>                                                                   
-                                                                                <div>
-                                                                                    {filterItems?.map((filteritem:any,index:any)=>{                                                                                       
-                                                                                        return (
-                                                                                            <div>                                                                                                                                                                       
-                                                                                                {filteritem.label == Group.Title &&
-                                                                                                    <><span id="filterexpand">
-                                                                                                        {filteritem.expand && filteritem.children != undefined && filteritem.children.length > 0 && <SlArrowDown onClick={()=>loadMorefilter(filteritem)}></SlArrowDown>}
-                                                                                                        {!filteritem.expand && filteritem.children != undefined && filteritem.children.length > 0 && <SlArrowRight onClick={()=>loadMorefilter(filteritem)}></SlArrowRight>}
-                                                                                                    </span><span>
-                                                                                                            {filteritem.TaxType !== 'Status' &&
-                                                                                                                <span><input className='form-check-input'  type="checkbox" id={filteritem.Title} value={filteritem.Title} checked={filteritem.selected} onChange={(event)=>handleGroupCheckboxChanged(event,filteritem,'')} />  {filteritem.Title}</span>}
-                                                                                                            {filteritem.TaxType === 'Status' &&
-                                                                                                                <span><input className='form-check-input' type="checkbox" id={filteritem.Title} value={filteritem.Title} checked={filteritem.selected} onChange={(event)=>handleGroupCheckboxChanged(event,filteritem,'')} />  {filteritem.Title}</span>}
+                                                                    return (
+                                                                        <>                                                                   
+                                                                            {Group.group ==='Team Members' && Group.Title !='Team' && 
+                                                                                <div className="col-md-3"> 
+                                                                                    <label className='smartPannel'>
+                                                                                        <span className='form-check'><input className='form-check-input'  type="checkbox" id={Group.Title} checked={Group.selected} onChange={(event)=>handleGroupCheckboxChanged(event,Group,'')} /> {Group.Title} </span>
+                                                                                    </label>                                                                   
+                                                                                    <div>
+                                                                                        {filterItems?.map((filteritem:any,index:any)=>{                                                                                       
+                                                                                            return (
+                                                                                                <div >                                                                                                                                                                       
+                                                                                                    {filteritem.label == Group.Title &&
+                                                                                                        <><span id="filterexpand">
+                                                                                                            {filteritem.expand && filteritem.children != undefined && filteritem.children.length > 0 && <SlArrowDown onClick={()=>loadMorefilter(filteritem)}></SlArrowDown>}
+                                                                                                            {!filteritem.expand && filteritem.children != undefined && filteritem.children.length > 0 && <SlArrowRight onClick={()=>loadMorefilter(filteritem)}></SlArrowRight>}
+                                                                                                        </span><span>
+                                                                                                                {filteritem.TaxType !== 'Status' &&
+                                                                                                                    <span className='form-check'><input className='form-check-input'  type="checkbox" id={filteritem.Title} value={filteritem.Title} checked={filteritem.selected} onChange={(event)=>handleGroupCheckboxChanged(event,filteritem,'')} />  {filteritem.Title}</span>}
+                                                                                                                {filteritem.TaxType === 'Status' &&
+                                                                                                                    <span className='form-check'><input className='form-check-input' type="checkbox" id={filteritem.Title} value={filteritem.Title} checked={filteritem.selected} onChange={(event)=>handleGroupCheckboxChanged(event,filteritem,'')} />  {filteritem.Title}</span>}
 
-                                                                                                        </span>
-                                                                                                        <ul>
-                                                                                                            {filteritem.epand === true && filteritem.children!= undefined && filteritem.children.length>0 && filteritem.children?.map((child:any)=>{
-                                                                                                              
-                                                                                                            return(<>
-                                                                                                                <li style={{ listStyle: 'none' }}>
-                                                                                                                    <span id="filterexpand">
-                                                                                                                    {child.expand && child.children != undefined && child.children.length > 0 && <SlArrowDown onClick={() => loadMorefilter(child)} ></SlArrowDown>}
-                                                                                                                    {!child.expand && child.children != undefined && child.children.length > 0 && <SlArrowRight onClick={() => loadMorefilter(child)}></SlArrowRight>}
-                                                                                                                    </span>
-                                                                                                                    <input className='form-check-input' type="checkbox" id={child.Title} value={child.Title} checked={child.selected} onChange={(event)=>handleGroupCheckboxChanged(event,child,'')} /> {child.Title}
-                                                                                                                    <ul>
-                                                                                                                        {child.epand === true && child.children != undefined && child.children.length > 0 && child.children?.map((childs: any) => {
-                                                                                                                            return (<li style={{ listStyle: 'none' }}><input className='form-check-input' type="checkbox" id={childs.Title} value={childs.Title} checked={childs.selected} onChange={(event)=>handleGroupCheckboxChanged(event,childs,'')} /> {childs.Title}</li>);
-                                                                                                                        })}
-                                                                                                                    </ul>
-                                                                                                                </li></>)
-                                                                                                            })}
-                                                                                                        </ul>  
-                                                                                                    </>
-                                                                                                }                                                                                                                                                                  
-                                                                                            </div>
-                                                                                                                                                                                
-                                                                                        )
-                                                                                    })}
-                                                                                </div>                                                                                                                                                                                                    
-                                                                            </div> 
-                                                                        }                                                            
-                                                                                                                                    
-                                                                    </td> )
+                                                                                                            </span>
+                                                                                                            {filteritem?.children?.length>0 ? <ul>
+                                                                                                                {filteritem.epand === true && filteritem.children?.map((child:any)=>{                                                                                                              
+                                                                                                                return(<>
+                                                                                                                    <li style={{ listStyle: 'none' }}>
+                                                                                                                        <span id="filterexpand">
+                                                                                                                        {child.expand && child.children != undefined && child.children.length > 0 && <SlArrowDown onClick={() => loadMorefilter(child)} ></SlArrowDown>}
+                                                                                                                        {!child.expand && child.children != undefined && child.children.length > 0 && <SlArrowRight onClick={() => loadMorefilter(child)}></SlArrowRight>}
+                                                                                                                        </span>
+                                                                                                                        <input className='form-check-input' type="checkbox" id={child.Title} value={child.Title} checked={child.selected} onChange={(event)=>handleGroupCheckboxChanged(event,child,'')} /> {child.Title}
+                                                                                                                        <ul>
+                                                                                                                            {child.epand === true && child.children != undefined && child.children.length > 0 && child.children?.map((childs: any) => {
+                                                                                                                                return (<li style={{ listStyle: 'none' }}><input className='form-check-input' type="checkbox" id={childs.Title} value={childs.Title} checked={childs.selected} onChange={(event)=>handleGroupCheckboxChanged(event,childs,'')} /> {childs.Title}</li>);
+                                                                                                                            })}
+                                                                                                                        </ul>
+                                                                                                                    </li></>)
+                                                                                                                })}
+                                                                                                            </ul>:''}  
+                                                                                                        </>
+                                                                                                    }                                                                                                                                                                  
+                                                                                                </div>
+                                                                                                                                                                                    
+                                                                                            )
+                                                                                        })}
+                                                                                    </div>                                                                                                                                                                                                    
+                                                                                </div> 
+                                                                            }                                                            
+                                                                                                                                        
+                                                                        </> )
                                                             })}
+                                                           </Row>
+                                                        </td>
                                                         </tr>
                                                     </table>                                        
                                               
@@ -1744,7 +1783,7 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
                              
                                 </details>
                                 <details>
-                                    <summary  onClick={() =>showSmartFilter('isDatefilter')}>  Date <hr></hr></summary>
+                                    <summary className='siteColor'  onClick={() =>showSmartFilter('isDatefilter')}>  Date <hr></hr></summary>
                               
                                     <>
                                         {IsSmartfilter.isDatefilter === true ? <div className="ps-30" style={{ display: "block" }}>
@@ -1762,39 +1801,39 @@ const SmartFilterSearchGlobal = (AllListitem:any)=>{
                                                         </Col>
                                                         <Col>
                                                             <span className='SpfxCheckRadio  me-2'>
-                                                                <input className='Radio' type="radio" value="today" checked={eventdatevalue === "today"}  onChange={onDatevalueChanged} />
+                                                                <input className='radio' type="radio" value="today" checked={eventdatevalue === "today"}  onChange={onDatevalueChanged} />
                                                                  <label>Today</label>
                                                             </span>
                                                             <span className='SpfxCheckRadio  me-2'>
-                                                                <input className='Radio' type="radio" value="yesterday" checked={eventdatevalue === "yesterday"}  onChange={onDatevalueChanged} />
+                                                                <input className='radio' type="radio" value="yesterday" checked={eventdatevalue === "yesterday"}  onChange={onDatevalueChanged} />
                                                                  <label>Yesterday</label>
                                                             </span >
                                                             <span className='SpfxCheckRadio  me-2'>
-                                                                <input className='Radio'  type="radio" value="thisweek" checked={eventdatevalue === "thisweek"} onChange={onDatevalueChanged} />
+                                                                <input className='radio'  type="radio" value="thisweek" checked={eventdatevalue === "thisweek"} onChange={onDatevalueChanged} />
                                                                  <label>This Week</label>
                                                             </span>
                                                             <span className='SpfxCheckRadio  me-2'>
-                                                                <input className='Radio' type="radio" value="last7days" checked={eventdatevalue === "last7days"} onChange={onDatevalueChanged} />
+                                                                <input className='radio' type="radio" value="last7days" checked={eventdatevalue === "last7days"} onChange={onDatevalueChanged} />
                                                                  <label>Last 7 Days</label>
                                                             </span>
                                                             <span className='SpfxCheckRadio  me-2'>
-                                                                <input className='Radio' type="radio"  value="thismonth" checked={eventdatevalue === "thismonth"} onChange={onDatevalueChanged} />
+                                                                <input className='radio' type="radio"  value="thismonth" checked={eventdatevalue === "thismonth"} onChange={onDatevalueChanged} />
                                                                  <label>This Month</label>
                                                             </span>
                                                             <span className='SpfxCheckRadio  me-2'>
-                                                                <input className='Radio' type="radio" value="lat30days"  checked={eventdatevalue === "lat30days"} onChange={onDatevalueChanged} />
+                                                                <input className='radio' type="radio" value="lat30days"  checked={eventdatevalue === "lat30days"} onChange={onDatevalueChanged} />
                                                                  <label>Last 30 Days</label>
                                                             </span>
                                                             <span className='SpfxCheckRadio  me-2'>
-                                                                <input className='Radio' type="radio" value="thisyear"  checked={eventdatevalue === "thisyear"} onChange={onDatevalueChanged} />
+                                                                <input className='radio' type="radio" value="thisyear"  checked={eventdatevalue === "thisyear"} onChange={onDatevalueChanged} />
                                                                 <label>This Year</label>
                                                             </span>
                                                             <span className='SpfxCheckRadio  me-2'>
-                                                                <input className='Radio' type="radio" value="lastyear" checked={eventdatevalue === "lastyear"}  onChange={onDatevalueChanged} />
+                                                                <input className='radio' type="radio" value="lastyear" checked={eventdatevalue === "lastyear"}  onChange={onDatevalueChanged} />
                                                                  <label>Last Year</label>
                                                             </span>
                                                             <span className='SpfxCheckRadio  me-2'>
-                                                                <input className='Radio' type="radio" value="custom" checked={eventdatevalue === "custom"} onChange={onDatevalueChanged} />
+                                                                <input className='radio' type="radio" value="custom" checked={eventdatevalue === "custom"} onChange={onDatevalueChanged} />
                                                                  <label>Custom</label>
                                                             </span>
                                                         </Col> 

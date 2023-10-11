@@ -4359,32 +4359,18 @@ function ComponentTable(SelectedProp: any) {
   const onRenderCustomHeaderMain1 = () => {
     return (
       <div className="d-flex full-width pb-1">
-        <div
-          style={{
-            marginRight: "auto",
-            fontSize: "20px",
-            fontWeight: "600",
-            marginLeft: "20px",
-          }}
-        >
-          <span>{`Create Component `}</span>
-        </div>
+        <div className="subheading">
+          <span className="siteColor">{`Create Component `}</span>
         <Tooltip ComponentId={checkedList[0]?.Id} />
+        </div>
       </div>
     );
   };
   const onRenderCustomHeaderMain = () => {
     return (
       <div className="d-flex full-width pb-1">
-        <div
-          style={{
-            marginRight: "auto",
-            fontSize: "20px",
-            fontWeight: "600",
-            marginLeft: "20px",
-          }}
-        >
-          <span>{`Create ${checkedList[0]?.Portfolio_x0020_Type} item in ${checkedList[0]?.PortfolioStructureID}  ${checkedList[0]?.Title}`}</span>
+        <div className="subheading">
+          <span  className="siteColor">{`Create ${checkedList[0]?.Portfolio_x0020_Type} item in ${checkedList[0]?.PortfolioStructureID}  ${checkedList[0]?.Title}`}</span>
         </div>
         <Tooltip ComponentId={checkedList[0]?.Id} />
       </div>

@@ -569,10 +569,13 @@ QATime = 0.00;
                     // item.Department = val.TimeCategory
                     // item.Company = val.Company
 
-                    if (val.UserGroup.Title == 'Senior Developer Team' || val.UserGroup.Title == 'Smalsus Lead Team' || val.UserGroup.Title == 'External Staff' )
+                    if (val.UserGroup.Title == 'Smalsus Lead Team')
 
-                    item.Department = 'Developer';
+                        item.Department = "Smalsus Lead";
 
+                    if (val.UserGroup.Title == 'Senior Developer Team' || val.UserGroup.Title == 'External Staff')
+
+                        item.Department = 'Developer';
                 if (val.UserGroup.Title == 'Junior Developer Team')
 
                 item.Department = 'Junior Developer';

@@ -8,6 +8,11 @@ import { Panel, PanelType } from 'office-ui-fabric-react';
 import "@pnp/sp/folders";
 import ShowImagesOOTB from './showImagesootb';
 let imageOTT=false;
+
+let Imageshow:number;
+let  imagesData:any[];
+
+let count=20;
 const ImagetabFunction = (props: any) => {
 const [editData,setEditData]=useState(props.EditdocumentsData)
     const [selectfolder, setSelectfolder] = useState("Logos");
@@ -288,55 +293,46 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
     }
  }
 
-//   For handle the throttle 
+//   For handle the throttle \
 
-React.useEffect(() => {
-    // Load the first 20 images
-    let  imagesData:any[];
-    if(selectfolder == "Logos"){
-        imagesData = chooseExistingFile?.ChooseExistinglogo;
-    }else if(selectfolder == "Covers"){
 
-    imagesData = chooseExistingFile?.ChooseExistingCover;
-    }else if (selectfolder == "Images1"){
-        imagesData = chooseExistingFile?.ChooseExistingImages1;
-    }
-    imagesData.slice(0, 20).forEach((imageData) => {
-      const img = new Image();
-      img.src = imageData.ServerRelativeUrl;
-      img.onload = () => {
-        setLoadedImages((prevImages) => [...prevImages, img]);
-      };
-    });
-
-    // Add a "Load More" button
-    const loadMoreButton = document.createElement("button");
-    loadMoreButton.textContent = "Load More";
-    loadMoreButton.addEventListener("click", loadMore);
-
-    document.body.appendChild(loadMoreButton);
-  }, []);
 
   const loadMore = async () => {
     // Load the remaining images
-    let  imagesData:any[];
+    count = count+20;
     if(selectfolder == "Logos"){
         imagesData = chooseExistingFile?.ChooseExistinglogo;
+         if(count != 0 && imagesData?.length>0){
+        let myimagedata:any[]=[];
+        for(let i = 0; i<=count;i++){
+           myimagedata?.push(imagesData[i]);
+        }
+        setLoadedImages(myimagedata)
+    }
     }else if(selectfolder == "Covers"){
 
     imagesData = chooseExistingFile?.ChooseExistingCover;
+     if(count != 0 && imagesData?.length>0){
+        let myimagedata:any[]=[];
+        for(let i = 0; i<=count;i++){
+           myimagedata?.push(imagesData[i]);
+        }
+        setLoadedImages(myimagedata)
+    }
     }else if (selectfolder == "Images1"){
         imagesData = chooseExistingFile?.ChooseExistingImages1;
+         if(count != 0 && imagesData?.length>0){
+        let myimagedata:any[]=[];
+        for(let i = 0; i<=count;i++){
+           myimagedata?.push(imagesData[i]);
+        }
+        setLoadedImages(myimagedata)
     }
-    const remainingImages = imagesData.slice(20);
+    }
+   
+   
+   
 
-    for (const imageData of remainingImages) {
-      const img = new Image();
-      img.src = imageData.ServerRelativeUrl;
-      img.onload = () => {
-        setLoadedImages((prevImages) => [...prevImages, img]);
-      };
-    }
   };
 
     return (
@@ -479,9 +475,10 @@ React.useEffect(() => {
                                               </div>
                                           </div>
                                           <div>
-                                          {loadedImages.map((img) => (<img src={img.src} onClick={() => ExistingImageUpload(img)} />))}
-                                          <button onClick={() => loadMore()} type='button'>Load More</button>
+                                          {loadedImages.map((img) => (<img src={img?.ServerRelativeUrl} onClick={() => ExistingImageUpload(img)} />))}
                                             </div>
+                                            <button onClick={() => loadMore()} type='button'>Load More</button>
+                                         
                                             </div>
                                         </Tab>
                                     </Tabs>
