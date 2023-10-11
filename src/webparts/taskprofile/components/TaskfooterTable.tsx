@@ -1183,7 +1183,6 @@ function TasksTable(props: any) {
         <div className="col-sm-12 pad0 smart" >
           <div className="">
             <div className={`${data?.length > 10 ? "wrapper" : "MinHeight"}`}>
-
               <GlobalCommanTable
               queryItems={props?.props}
                 ref={childRef}
