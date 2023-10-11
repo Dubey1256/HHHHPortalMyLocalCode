@@ -13,4 +13,5 @@ export interface IUserTimeEntryProps {
   MasterTaskListID: 'ec34b38f-0669-480a-910c-f84e92e58adf';
   TimeEntry:any;
   SiteCompostion:any;
+  AdminConfiguraionListId:"44c8f826-33ac-4a83-8b6e-8eebaf64d745";
 }

@@ -157,31 +157,37 @@ const HalfClientCategory = (props: any) => {
             return '';
         }
     }
-    function siteCompositionDetails(jsonStr: any) {
-        var data = JSON.parse(jsonStr);
-        let result = '';
+    function siteCompositionDetails(jsonStr: any): any {
+        let totalPercent: number = 0;
+        let result: string[] = [];
+    
         try {
-            data?.map((site: any, index: any) => {
-                if (site?.SiteName != undefined) {
-                    if (index == 0) {
-                        result = site?.SiteName + '-' + parseFloat(site?.ClienTimeDescription).toFixed(2)
-                    } else {
-                        result += ' ; ' + site?.SiteName + '-' + parseFloat(site?.ClienTimeDescription).toFixed(2);
+            const data = JSON.parse(jsonStr);
+    
+            data?.forEach((site: any, index: number) => {
+                if (site?.SiteName || site?.Title) {
+                    let parsedValue: number = parseFloat(site?.ClienTimeDescription || '0');
+                    if (!isNaN(parsedValue)) {
+                        totalPercent += parsedValue;
                     }
-                } else if (site?.Title != undefined) {
-                    if (index == 0) {
-                        result = site?.Title + '-' + parseFloat(site?.ClienTimeDescription).toFixed(2);
-                    } else {
-                        result += ' ; ' + site?.Title + '-' + parseFloat(site?.ClienTimeDescription).toFixed(2);
-                    }
+    
+                    let name = site?.SiteName || site?.Title || '';
+                    result.push(`${name}-${parsedValue.toFixed(2)}`);
                 }
-
-            })
-
-            return result;
+            });
+    
+            totalPercent = parseFloat(totalPercent.toFixed(2));
+    
+            return {
+                result: result.join(' ; '),
+                total: totalPercent
+            };
         } catch (error) {
-            console.log(error)
-            return result;
+            console.error(error);
+            return {
+                result: result.join(' ; '),
+                total: totalPercent
+            };
         }
     }
 
@@ -243,9 +249,12 @@ const HalfClientCategory = (props: any) => {
                                 items.compositionType = '';
                             }
                             if (items?.ClientTime != undefined) {
-                                items.siteCompositionSearch = siteCompositionDetails(items?.ClientTime);
+                                let result = siteCompositionDetails(items?.ClientTime);
+                                items.siteCompositionSearch = result?.result;
+                                items.siteCompositionTotal = result?.total;
                             } else {
-                                items.siteCompositionSearch = '';
+                                items.siteCompositionSearch = ' ';
+                                items.siteCompositionTotal = ' ';
                             }
 
                             items.TeamMembersSearch = "";
@@ -358,9 +367,12 @@ const HalfClientCategory = (props: any) => {
                         items.compositionType = '';
                     }
                     if (items?.Sitestagging != undefined) {
-                        items.siteCompositionSearch = siteCompositionDetails(items?.Sitestagging);
+                        let result = siteCompositionDetails(items?.ClientTime);
+                        items.siteCompositionSearch = result?.result;
+                        items.siteCompositionTotal = result?.total;
                     } else {
-                        items.siteCompositionSearch = '';
+                        items.siteCompositionSearch = ' ';
+                        items.siteCompositionTotal = ' ';
                     }
                     AllTaskUsers?.map((user: any) => {
                         if (user.AssingedToUserId == items.Author.Id) {
@@ -512,6 +524,21 @@ const HalfClientCategory = (props: any) => {
                 resetSorting: false,
             },
             {
+                accessorFn: (row) => row?.siteCompositionTotal,
+                cell: ({ row }) => (
+                    <div className="">
+                        <span>{row?.original?.siteCompositionTotal == 0 ? ' ' : row?.original?.siteCompositionTotal}</span>
+                    </div>
+
+                ),
+                id: 'siteCompositionTotal',
+                placeholder: "Composition Total",
+                header: "",
+                resetColumnFilters: false,
+                resetSorting: false,
+                size: 60,
+            },
+            {
                 accessorFn: (row) => row?.ClientCategorySearch,
                 cell: ({ row }) => (
                     <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadata} />
@@ -656,6 +683,21 @@ const HalfClientCategory = (props: any) => {
                 resetColumnFilters: false,
                 resetSorting: false,
             },
+            // {
+            //     accessorFn: (row) => row?.siteCompositionTotal,
+            //     cell: ({ row }) => (
+            //         <div className="">
+            //             <span>{row?.original?.siteCompositionTotal == 0 ? ' ' : row?.original?.siteCompositionTotal}</span>
+            //         </div>
+
+            //     ),
+            //     id: 'siteCompositionTotal',
+            //     placeholder: "Composition Total",
+            //     header: "",
+            //     resetColumnFilters: false,
+            //     resetSorting: false,
+            //     size: 60,
+            // },
             {
                 accessorFn: (row) => row?.ClientCategorySearch,
                 cell: ({ row }) => (

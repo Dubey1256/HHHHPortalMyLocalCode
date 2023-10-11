@@ -44,6 +44,7 @@ let countAllTasksData: any = [];
 let countAllComposubData: any = [];
 let countsrun = 0;
 let TimesheetData: any = [];
+let count = 1;
 function PortfolioTable(SelectedProp: any) {
   const childRef = React.useRef<any>();
   if (childRef != null) {
@@ -329,6 +330,7 @@ function PortfolioTable(SelectedProp: any) {
             "Author/Title",
             "Project/Id",
             "Project/PortfolioStructureID",
+            "Project/DueDate",
             "Project/Title",
             "AssignedTo/Title",
             "AssignedTo/Id"
@@ -492,14 +494,15 @@ function PortfolioTable(SelectedProp: any) {
                   if (result.Project) {
                     result.ProjectTitle = result?.Project?.Title;
                     result.ProjectId = result?.Project?.Id;
-                    result.projectStructerId =
-                      result?.Project?.PortfolioStructureID;
-                    const title = result?.Project?.Title || "";
-                    const dueDate = result?.DueDate;
+                    result.projectStructerId = result?.Project?.PortfolioStructureID
+                    const title = result?.Project?.Title || '';
+                    const formattedDueDate = Moment(result?.Project?.DueDate).format("DD-MM-YYYY");
                     result.joinedData = [];
-                    if (title) result.joinedData.push(`Title: ${title}`);
-                    if (dueDate) result.joinedData.push(`Due Date: ${dueDate}`);
-                  }
+                    if (result?.projectStructerId && title || formattedDueDate) {
+                        result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
+                    }
+                   
+                }
                   result["Item_x0020_Type"] = "Task";
                   TasksItem.push(result);
                   AllTasksData.push(result);
@@ -517,6 +520,7 @@ function PortfolioTable(SelectedProp: any) {
   };
   const timeEntryIndex: any = {};
   const smartTimeTotal = async () => {
+    count++;
     let AllTimeEntries = [];
     if (timeSheetConfig?.Id !== undefined) {
       AllTimeEntries = await globalCommon.loadAllTimeEntry(timeSheetConfig);
@@ -558,6 +562,7 @@ function PortfolioTable(SelectedProp: any) {
     }
     console.log("timeEntryIndex", timeEntryIndex)
     if (AllSiteTasksData?.length > 0) {
+      setData([]);
       portfolioTypeData.forEach((port, index) => {
         componentGrouping(port?.Id, index);
         countsrun++;
@@ -575,8 +580,8 @@ function PortfolioTable(SelectedProp: any) {
           isUpdated === elem.Title ||
           isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()
         ) {
-        //   filt =
-        //     "(Item_x0020_Type eq 'SubComponent' and Item_x0020_Type eq 'Feature' )";
+          filt =
+            "(Item_x0020_Type eq 'SubComponent' and Item_x0020_Type eq 'Feature' )";
         }
       });
     }
@@ -630,7 +635,7 @@ function PortfolioTable(SelectedProp: any) {
         "ResponsibleTeam"
       )
       .top(4999)
-      // .filter(filt)
+      .filter(filt)
       .get();
 
     console.log(componentDetails);
@@ -800,7 +805,7 @@ function PortfolioTable(SelectedProp: any) {
       var aID = a[column];
       var bID = b[column];
       if (orderby === "asc") return aID == bID ? 0 : aID < bID ? 1 : -1;
-      else return aID == bID ? 0 : aID > bID ? 1 : -1;
+      // else return aID == bID ? 0 : aID > bID ? 1 : -1;
     });
   };
   const componentGrouping = (portId: any, index: any) => {
@@ -868,7 +873,7 @@ function PortfolioTable(SelectedProp: any) {
         });
       }
     });
-    if (portfolioTypeData?.length - 1 === index || index === "") {
+    if ((portfolioTypeData?.length - 1 === index || index === "") && count === 1) {
       let Actatcomponent = AllSiteTasksData?.filter(
         (elem1: any) =>
           elem1?.TaskType?.Id === 1 &&
@@ -901,7 +906,6 @@ function PortfolioTable(SelectedProp: any) {
       temp.ProjectTitle = "";
       temp.Status = "";
       temp.Author = "";
-      temp.TitleNew = "";
       temp.subRows = AllSiteTasksData?.filter(
         (elem1: any) =>
           elem1?.TaskType?.Id != undefined &&
@@ -1423,43 +1427,8 @@ function PortfolioTable(SelectedProp: any) {
           }
         },
         header: "",
-        size: 125
+        size: 134
       },
-      // {
-      //   accessorFn: (row) =>
-      //     row?.Created ? Moment(row?.Created).format("DD/MM/YYYY") : "",
-      //   cell: ({ row, getValue }) => (
-      //     <>
-      //       {row?.original?.Created == null ? (
-      //         ""
-      //       ) : (
-      //         <>
-      //           {row?.original?.Author != undefined ? (
-      //             <>
-      //               <span>
-      //                 {Moment(row?.original?.Created).format("DD/MM/YYYY")}{" "}
-      //               </span>
-      //               <img
-      //                 className="workmember"
-      //                 title={row?.original?.Author?.Title}
-      //                 src={findUserByName(row?.original?.Author?.Id)}
-      //               />
-      //             </>
-      //           ) : (
-      //             <img
-      //               className="workmember"
-      //               src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"
-      //             />
-      //           )}
-      //         </>
-      //       )}
-      //     </>
-      //   ),
-      //   id: "Created",
-      //   placeholder: "Created Date",
-      //   header: "",
-      //   size: 109
-      // },
       {
         accessorKey: "descriptionsSearch",
         placeholder: "descriptionsSearch",
@@ -1490,7 +1459,7 @@ function PortfolioTable(SelectedProp: any) {
       {
         cell: ({ row, getValue }) => (
           <>
-            {row?.original?.siteType != "Master Tasks" && (
+            {row?.original?.siteType != "Master Tasks" && row?.original?.Title != "Others" && (
               <a
                 className="alignCenter"
                 onClick={(e) => EditDataTimeEntryData(e, row.original)}
@@ -2125,6 +2094,7 @@ function PortfolioTable(SelectedProp: any) {
                         AddStructureFeature={
                           SelectedProp?.props?.Item_x0020_Type
                         }
+                        setLoaded={setLoaded}
                         queryItems={SelectedProp?.props}
                         PortfolioFeature={SelectedProp?.props?.Item_x0020_Type}
                         AllMasterTasksData={AllMasterTasksData}
