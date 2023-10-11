@@ -44,6 +44,7 @@ let countAllTasksData: any = [];
 let countAllComposubData: any = [];
 let countsrun = 0;
 let TimesheetData: any = [];
+let count = 1;
 function PortfolioTable(SelectedProp: any) {
   const childRef = React.useRef<any>();
   if (childRef != null) {
@@ -519,6 +520,7 @@ function PortfolioTable(SelectedProp: any) {
   };
   const timeEntryIndex: any = {};
   const smartTimeTotal = async () => {
+    count++;
     let AllTimeEntries = [];
     if (timeSheetConfig?.Id !== undefined) {
       AllTimeEntries = await globalCommon.loadAllTimeEntry(timeSheetConfig);
@@ -560,6 +562,7 @@ function PortfolioTable(SelectedProp: any) {
     }
     console.log("timeEntryIndex", timeEntryIndex)
     if (AllSiteTasksData?.length > 0) {
+      setData([]);
       portfolioTypeData.forEach((port, index) => {
         componentGrouping(port?.Id, index);
         countsrun++;
@@ -802,7 +805,7 @@ function PortfolioTable(SelectedProp: any) {
       var aID = a[column];
       var bID = b[column];
       if (orderby === "asc") return aID == bID ? 0 : aID < bID ? 1 : -1;
-      else return aID == bID ? 0 : aID > bID ? 1 : -1;
+      // else return aID == bID ? 0 : aID > bID ? 1 : -1;
     });
   };
   const componentGrouping = (portId: any, index: any) => {
@@ -870,7 +873,7 @@ function PortfolioTable(SelectedProp: any) {
         });
       }
     });
-    if (portfolioTypeData?.length - 1 === index || index === "") {
+    if ((portfolioTypeData?.length - 1 === index || index === "") && count === 1) {
       let Actatcomponent = AllSiteTasksData?.filter(
         (elem1: any) =>
           elem1?.TaskType?.Id === 1 &&
@@ -1499,7 +1502,7 @@ function PortfolioTable(SelectedProp: any) {
         ),
         cell: ({ row, getValue }) => (
           <>
-            {row?.original?.isRestructureActive  && row?.original?.Title != "Others" && (
+            {row?.original?.isRestructureActive && (
               <span
                 className="Dyicons p-1"
                 title="Restructure"
@@ -2104,6 +2107,7 @@ function PortfolioTable(SelectedProp: any) {
                         AddStructureFeature={
                           SelectedProp?.props?.Item_x0020_Type
                         }
+                        setLoaded={setLoaded}
                         queryItems={SelectedProp?.props}
                         PortfolioFeature={SelectedProp?.props?.Item_x0020_Type}
                         AllMasterTasksData={AllMasterTasksData}
