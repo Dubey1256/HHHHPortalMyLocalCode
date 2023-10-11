@@ -1511,15 +1511,8 @@ function TeamPortlioTable(SelectedProp: any) {
     const onRenderCustomHeaderMain1 = () => {
         return (
             <div className="d-flex full-width pb-1">
-                <div
-                    style={{
-                        marginRight: "auto",
-                        fontSize: "20px",
-                        fontWeight: "600",
-                        marginLeft: "20px",
-                    }}
-                >
-                    <span>{`Create Component `}</span>
+                <div className="subheading">
+                    <span className="siteColor">{`Create Component `}</span>
                 </div>
                 <Tooltip ComponentId={checkedList?.Id} />
             </div>
@@ -1743,13 +1736,7 @@ function TeamPortlioTable(SelectedProp: any) {
     const onRenderCustomHeaderMain = () => {
         return (
             <div className="d-flex full-width pb-1">
-                <div
-                    style={{
-                        marginRight: "auto",
-                        fontSize: "20px",
-                        fontWeight: "600",
-                        marginLeft: "20px",
-                    }}
+                <div 
                 >
                     <span>{`Create Item`}</span>
                 </div>
