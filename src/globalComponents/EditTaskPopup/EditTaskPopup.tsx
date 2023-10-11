@@ -949,11 +949,6 @@ const EditTaskPopup = (Items: any) => {
                                 }
                             })
                         }
-                        if (statusValue == 0) {
-                            setTaskStatus('Not Started');
-                            setPercentCompleteStatus('Not Started');
-                            setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '0' })
-                        }
                         if (statusValue <= 2 && ApprovalStatusGlobal) {
                             ChangeTaskUserStatus = false;
                         } else {
@@ -1765,7 +1760,7 @@ const EditTaskPopup = (Items: any) => {
             if (StatusInput.length > 0) {
                 if (StatusInput == 0) {
                     setTaskStatus('Not Started');
-                    setPercentCompleteStatus('Not Started');
+                    setPercentCompleteStatus('0% Not Started');
                     setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '0' })
                 }
                 if (StatusInput < 70 && StatusInput > 10 || StatusInput < 80 && StatusInput > 70) {

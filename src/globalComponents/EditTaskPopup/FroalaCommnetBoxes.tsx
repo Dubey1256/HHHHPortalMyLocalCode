@@ -13,7 +13,7 @@ import EditTaskPopup from "./EditTaskPopup";
 let globalCount = 0;
 export default function FroalaCommnetBoxes(textItems: any) {
     const Context = textItems.Context;
-    const TextItems = textItems.textItems;   
+    const TextItems = textItems.textItems;
     const callBack = textItems.callBack;
     const taskCreatedCallback = textItems.taskCreatedCallback;
     const TaskDetails: any = textItems.TaskListDetails;
@@ -91,7 +91,6 @@ export default function FroalaCommnetBoxes(textItems: any) {
             Completed: "",
             Title: "",
             text: "",
-            taskIndex: testTaskIndex,
             SeeAbove: '',
             Phone: '',
             LowImportance: '',
@@ -113,7 +112,6 @@ export default function FroalaCommnetBoxes(textItems: any) {
             Completed: "",
             Title: "",
             text: "",
-            taskIndex: testTaskIndex,
             SeeAbove: '',
             Phone: '',
             LowImportance: '',
@@ -126,18 +124,14 @@ export default function FroalaCommnetBoxes(textItems: any) {
         setBtnStatus(true);
     }
 
-    const RemoveItem = (dltItem: any) => {
+    const RemoveItem = (dltItem: any, Index:any) => {
         let tempArray: any = []
-        State.map((array: any) => {
-            if (dltItem.taskIndex != array.taskIndex) {
+        IndexCount--;
+        State.map((array: any, ItemIndex:any) => {
+            if (dltItem.Title != array.Title || ItemIndex != Index) {
                 tempArray.push(array);
             }
         })
-        // ParentArray = [];
-        // tempArray?.map((tempDataItem: any) => {
-        //     ParentArray.push(tempDataItem);
-        // })
-
         if (tempArray?.length == 0) {
             setBtnStatus(false)
             callBack("delete");
@@ -380,6 +374,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
             <div>
                 {TextItems?.length > 0 ? <div className={IndexCount % 2 == 0 ? "add-text-box" : "add-text-box"}>
                     {state?.map((obj, i) => {
+                        let index: any = i + 1;
                         return (
                             <div className={"FeedBack-comment row my-1"}>
                                 <div
@@ -473,14 +468,14 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                             <span> | </span>
                                             <a className="hreflink alignIcon"
                                                 style={{ cursor: "pointer" }} target="_blank"
-                                                onClick={() => RemoveItem(obj)}>
+                                                onClick={() => RemoveItem(obj, i)}>
                                                 <span className="svg__iconbox hreflink mini svg__icon--trash"></span>
                                             </a>
                                         </div>
                                     </div>
                                     <div className={obj.TaskCreatedForThis != undefined && obj.TaskCreatedForThis == true ? "Disabled-Link bg-e9" : ""}>
                                         <div className="d-flex" title={obj.isShowLight}>
-                                            <span className="SubTestBorder p-1 me-1">{obj.taskIndex + 1}</span>
+                                            <span className="SubTestBorder p-1 me-1">{index + 1}</span>
                                             <textarea
                                                 style={{ width: "100%" }}
                                                 className={obj.TaskCreatedForThis != undefined && obj.TaskCreatedForThis == true ? "form-control Disabled-Link bg-e9" : "form-control"}

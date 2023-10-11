@@ -956,7 +956,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                         <>
                           <li>
                             {/* if="Task.PortfolioType=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
-                            {ParentData != undefined &&
+                            {ParentData != undefined && ParentData[0]?.Parent?.Id != undefined && 
                               ParentData.map((ParentD: any) => {
                                 return (
                                   <>

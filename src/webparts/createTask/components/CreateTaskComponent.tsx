@@ -680,8 +680,8 @@ function CreateTaskComponent(props: any) {
             if (CategoryTitle !== undefined) {
                 CategoryTitle.split(';')?.map((cat: any) => {
                     if (cat.toLowerCase() === 'design') {
-                        AssignedToIds.push(298)
-                        TeamMembersIds.push(298);
+                        AssignedToIds.push(301)
+                        TeamMembersIds.push(301);
                         TeamMembersIds.push(49);
                         taskUsers?.map((User: any) => {
                             if (User.Title === 'Design' && burgerMenuTaskDetails.TaskType != "Design" && TeamMembersIds.length === 0) {

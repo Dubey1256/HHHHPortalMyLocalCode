@@ -602,9 +602,13 @@ const RootLevelDashboard = (props: any) => {
           <a className="hreflink" onClick={() => { clearSiteFilter() }}>Clear Site Filter</a>
         </div>
       </div>
-      <div className="Alltable">
-        <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} columns={column2} data={AllTasks} pageSize={100} callBackData={callBackData} showPagination={true} showHeader={true} />
+     
+      <div className="Alltable mt-2">
+        <div className='wrapper'>
+        <GlobalCommanTable expandIcon={true} AllListId={AllListId} headerOptions={headerOptions} columns={column2} data={AllTasks} pageSize={100} callBackData={callBackData} showPagination={true} showHeader={true} />
+        </div>
       </div>
+      
       {IsTimeEntry && (
         <DisplayTimeEntry
           props={SharewebTimeComponent}
