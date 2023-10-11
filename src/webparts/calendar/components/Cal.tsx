@@ -1289,6 +1289,10 @@ const App = (props: any) => {
         setLocation(item.location);
         createdBY = item.created;
         modofiedBy = item.modify;
+        MDate = moment(item.mTime).format("DD-MM-YYYY");
+        MTime = moment(item.mTime).tz("Asia/Kolkata").format("HH:mm")
+        CDate = moment(item.cTime).format("DD-MM-YYYY");
+        CTime =moment(item.cTime).tz("Asia/Kolkata").format("HH:mm")
         setSelectedTime(moment(item.start).tz("Asia/Kolkata").format("HH:mm"));
         setSelectedTimeEnd(moment(item.end).tz("Asia/Kolkata").format("HH:mm"));
         setType(item.eventType);
@@ -1513,7 +1517,7 @@ const App = (props: any) => {
         </a>
       </div>
       <div style={{ height: "500pt" }}>
-        <a className="mailBtn me-4 mt-4" href="#" onClick={emailComp}>
+        <a className="mailBtn me-4" href="#" onClick={emailComp}>
           <FaPaperPlane></FaPaperPlane> <span>Send Leave Summary</span>
         </a>
         {/* <button type="button" className="mailBtn" >

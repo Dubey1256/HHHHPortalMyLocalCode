@@ -8,6 +8,7 @@ import Tooltip from '../Tooltip';
 const RestructuringCom = (props: any, ref: any) => {
 
   let restructureCallBack = props?.restructureCallBack;
+  let controlUseEffect: boolean = true;
 
   const [OldArrayBackup, setOldArrayBackup]: any = React.useState([]);
   const [allData, setAllData]: any = React.useState([]);
@@ -151,7 +152,7 @@ const RestructuringCom = (props: any, ref: any) => {
 
 
   useEffect(() => {
-    if (props?.restructureItem?.length === 0 && checkItemLength) {
+    if (props?.restructureItem?.length === 0 && checkItemLength && controlUseEffect) {
       let array = allData;
       array?.map((obj: any) => {
         obj.isRestructureActive = false;
@@ -846,6 +847,7 @@ const RestructuringCom = (props: any, ref: any) => {
           }
         } else if (items?.Item_x0020_Type === "SubComponent") {
           let checkFeatureCondition: boolean = true;
+          let checkTasks: boolean = true;
           topCompo = true;
           setQuery4TopIcon('Component')
           if(props?.queryItems?.Item_x0020_Type === 'Component'){
@@ -855,7 +857,7 @@ const RestructuringCom = (props: any, ref: any) => {
 
           if (items?.subRows?.length > 0 && items?.subRows != undefined) {
             items?.subRows?.map((newItems: any) => {
-              if (newItems?.Item_x0020_Type === "Feature") {
+              if (newItems?.Item_x0020_Type === "Feature" && checkFeatureCondition) {
                 checkFeatureCondition = false;
                 array?.map((obj: any) => {
                   let newChildarray: any = [];
@@ -905,7 +907,8 @@ const RestructuringCom = (props: any, ref: any) => {
                   }
                 })
               } else {
-                if (checkFeatureCondition) {
+                if (checkFeatureCondition && checkTasks) {
+                  checkTasks = false;
                   array?.map((obj: any) => {
                     let newChildarray: any = [];
                     let newarrays: any = [];
@@ -2387,10 +2390,16 @@ const RestructuringCom = (props: any, ref: any) => {
             items.Portfolio = Portfolio,
             items.TaskLevel = TaskLevel,
             items.TaskType = { Id : TaskTypeId, Level: TaskTypeId == 1 ? 1 : (TaskTypeId == 2 ? 3 : 2) , Title: TaskTypeId == 1 ? "Activity" : (TaskTypeId == 2 ? "Task" : "Workstream")},
-            items.TaskID = GetTaskId(newItemBackUp) })
+            items.TaskID = TaskId })
 
+            let onceRender:any = true;
           array?.map((obj: any, index: any) => {
             obj.isRestructureActive = false;
+             if(newItemBackUp == undefined || newItemBackUp == null || newItemBackUp?.length == 0 && onceRender){
+              array?.push(...latestCheckedList);
+              checkUpdate = checkUpdate + 1;
+              onceRender = false
+          }
             if (obj.Id === newItemBackUp?.Id && obj?.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj?.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
               obj?.subRows?.push(...latestCheckedList);
               checkUpdate = checkUpdate + 1;
@@ -2477,6 +2486,8 @@ const RestructuringCom = (props: any, ref: any) => {
           })
 
           setResturuningOpen(false);
+          setNewItemBackUp([]);
+          controlUseEffect = false;
           restructureCallBack(array, false);
 
         })
@@ -2546,8 +2557,14 @@ const RestructuringCom = (props: any, ref: any) => {
               items.TaskID = PortfolioStructureID + '-' + SiteIconTitle + PortfolioLevel
           })
 
+          let onceRender : any = true;
           array?.map((obj: any, index: any) => {
             obj.isRestructureActive = false;
+            if(newItemBackUp == undefined || newItemBackUp == null || newItemBackUp?.length == 0 && onceRender){
+              array?.push(...latestCheckedList);
+              checkUpdate = checkUpdate + 1;
+              onceRender = false
+            }
             if (obj?.Id === newItemBackUp?.Id && obj?.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
               obj.subRows?.push(...latestCheckedList);
               checkUpdate = checkUpdate + 1;
@@ -2634,6 +2651,8 @@ const RestructuringCom = (props: any, ref: any) => {
           })
           setResturuningOpen(false);
           restructureCallBack(array, false);
+          controlUseEffect = false;
+          setNewArrayBackup([]);
         })
     }
 
@@ -2709,11 +2728,17 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
             items.Item_x0020_Type = Item_x0020_Type,
             items.SiteIconTitle = SiteIconTitle,
             items.PortfolioStructureID = PortfolioStructureIDs + '-' + SiteIconTitle + PortfolioLevel,
-            items.TaskID = PortfolioStructureIDs + '-' + SiteIconTitle + PortfolioLevel
+            items.TaskID = PortfolioStructureIDs
         })
 
+        let onceRender : any = true;
         array?.map((obj: any, index: any) => {
           obj.isRestructureActive = false;
+          if(newItemBackUp == undefined || newItemBackUp == null || newItemBackUp?.length == 0 && onceRender){
+            array?.push(...latestCheckedList);
+            checkUpdate = checkUpdate + 1;
+            onceRender = false
+          }
           if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
             obj.subRows?.push(...latestCheckedList);
             checkUpdate = checkUpdate + 1;
@@ -2799,7 +2824,9 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
 
         })
         setResturuningOpen(false);
+        setNewItemBackUp([]);
         setTrueTopCompo(false);
+        controlUseEffect = false
         restructureCallBack(array, false);
       })
 }else{
@@ -2898,11 +2925,17 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
           items.Portfolio = Portfolio,
           items.TaskLevel = PortfolioLevel,
           items.TaskType = { Id : TaskType, Level: TaskType == 1 ? 1 : (TaskType == 2 ? 3 : 2) , Title: TaskType == 1 ? "Activity" : (TaskType == 2 ? "Task" : "Workstream")},
-          items.TaskID = GetTaskId(props?.queryItems);
+          items.TaskID = TaskID;
       })
 
+      let onceRender:any = true;
       array?.map((obj: any, index: any) => {
         obj.isRestructureActive = false;
+        if(newItemBackUp == undefined || newItemBackUp == null || newItemBackUp?.length == 0 && onceRender){
+          array?.push(...latestCheckedList);
+          checkUpdate = checkUpdate + 1;
+          onceRender = false
+        }
         if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
           obj.subRows?.push(...latestCheckedList);
           checkUpdate = checkUpdate + 1;
@@ -2989,6 +3022,8 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
       })
       setResturuningOpen(false);
       setTrueTopCompo(false);
+      setNewItemBackUp([]);
+      controlUseEffect = false;
       restructureCallBack(array, false);
     }).catch((err:any)=>{
       console.log(err);
@@ -3085,29 +3120,28 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
             onDismiss={closePanel}
           >
             <div>
+            <div>Selected Item will restructure into {RestructureChecked[0]?.Item_x0020_Type != 'Task' ? RestructureChecked[0]?.Item_x0020_Type : RestructureChecked[0]?.TaskType.Title} inside {newItemBackUp?.siteIcon?.length > 1 ? <img src={newItemBackUp?.SiteIcon} /> : <span className="Dyicons me-1">{newItemBackUp?.SiteIconTitle}</span>} {newItemBackUp?.Title} </div>
               <div className='alignCenter my-1'>
                 <div className='me-3'> Old: </div>
                 {OldArrayBackup?.map(function (obj: any) {
                   return (
-                    <div className='stuctureSec'>
-                      <span>
-                      {obj?.siteIcon?.length === 1 ? 
-                      <span className="Dyicons mx-1">{obj.siteIcon}</span> : <span className='mx-1'><img className='workmember' src={obj?.siteIcon} /></span>}
-
+                    <div className='stuctureSection'>
                       <a
                         data-interception="off" target="_blank" className="serviceColor_Active reStuTile"
                         href={obj.Item_x0020_Type != 'Task' ? (props?.contextValue?.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + obj?.Id) : 
                         (props?.contextValue?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + obj?.Id + "&Site=" + restructuredItemarray[0]?.siteType)
                         }
                       >
+                        {obj?.siteIcon?.length === 1 ? 
+                      <span className="Dyicons me-1">{obj.siteIcon}</span> : <span className='mx-1'><img className='workmember me-1' src={obj?.siteIcon} /></span>}
                        {obj?.Title}
 
-                      </a></span>
-                      {obj?.newSubChild ? <span> {'>'} <span >{obj?.newSubChild?.siteIcon === "S" || obj?.newSubChild?.siteIcon === "F" ? <span className="Dyicons mx-1">{obj?.newSubChild?.siteIcon}</span> : <span className='mx-1'><img className='workmember' src={obj?.newSubChild?.siteIcon} /></span>}</span> <a className='reStuTile'>{obj?.newSubChild?.Title}</a></span> : ''}
-                      {obj?.newSubChild?.newFeatChild ? <span> {'>'} <span >{obj?.newSubChild?.newFeatChild?.siteIcon === "F" ? <span className="Dyicons mx-1">{obj?.newSubChild?.newFeatChild?.siteIcon}</span> : <span className='mx-1'><img className='workmember' src={obj?.newSubChild?.newFeatChild?.siteIcon} /></span>}</span> <a className='reStuTile'>{obj?.newSubChild?.newFeatChild?.Title}</a></span> : ''}
-                      {obj?.newSubChild?.newFeatChild?.newActChild ? <span> {'>'} <span className="mx-1"><img className='workmember' src={obj?.newSubChild?.newFeatChild?.newActChild?.siteIcon} /></span><a className='reStuTile'> {obj?.newSubChild?.newFeatChild?.newActChild?.Title}</a></span> : ''}
-                      {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild ? <span> {'>'} <span className="mx-1"><img className='workmember' src={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.siteIcon} /> </span><a className='reStuTile'> {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Title}</a></span> : ''}
-                      {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild ? <span> {'>'} <span className="mx-1"> <img className='workmember' src={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.siteIcon} /> </span> <a className='reStuTile'>{obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.Title}</a></span> : ''}
+                      </a><span> {'>'} </span>
+                      {obj?.newSubChild ? <> <a className='reStuTile'>{obj?.newSubChild?.siteIcon === "S" || obj?.newSubChild?.siteIcon === "F" ?  <span className="Dyicons me-1">{obj?.newSubChild?.siteIcon}</span> : <span className='mx-1'><img className='workmember me-1' src={obj?.newSubChild?.siteIcon} /></span>} {obj?.newSubChild?.Title}</a> <span> {'>'} </span> </>: ''}
+                      {obj?.newSubChild?.newFeatChild ? <> <a className='reStuTile'>{obj?.newSubChild?.newFeatChild?.siteIcon === "F" ? <span className="Dyicons me-1">{obj?.newSubChild?.newFeatChild?.siteIcon}</span> : <span className='mx-1'><img className='workmember me-1' src={obj?.newSubChild?.newFeatChild?.siteIcon} /></span>} {obj?.newSubChild?.newFeatChild?.Title}</a><span> {'>'} </span></> : ''}
+                      {obj?.newSubChild?.newFeatChild?.newActChild ? <><a className='reStuTile'><img className='workmember me-1' src={obj?.newSubChild?.newFeatChild?.newActChild?.siteIcon} /> {obj?.newSubChild?.newFeatChild?.newActChild?.Title}</a><span> {'>'} </span></> : ''}
+                      {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild ? <> <a className='reStuTile'> <img className='workmember me-1' src={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.siteIcon} />  {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Title}</a><span> {'>'} </span></> : ''}
+                      {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild ? <> <a className='reStuTile'> <img className='workmember me-1' src={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.siteIcon} />  {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.Title}</a><span> {'>'} </span></> : ''}
 
                     </div>
                   );
@@ -3119,9 +3153,6 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
                 {NewArrayBackup?.map(function (obj: any) {
                   return (
                     <div className='stuctureSec'>
-                      <span>
-                      {obj?.siteIcon?.length === 1 ? <span className="Dyicons mx-1">{obj?.siteIcon}</span> : <span className='mx-1'><img className='workmember' src={obj?.siteIcon} /></span>}
-
                       <a
                         data-interception="off"
                         target="_blank"
@@ -3130,25 +3161,19 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
                         (props?.contextValue?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + obj?.Id + "&Site=" + restructuredItemarray[0]?.siteType)
                         }
                       >
+                         {obj?.siteIcon?.length === 1 ? <span className="Dyicons me-1">{obj?.siteIcon}</span> : <span className='mx-1'><img className='workmember me-1' src={obj?.siteIcon} /></span>}
                         {obj?.Title}
-                      </a></span>
-                      {obj?.newSubChild ? <span> {'>'} <span >{obj?.newSubChild?.siteIcon === "S" || obj?.newSubChild?.siteIcon === "F" ? <span className="Dyicons mx-1">{obj?.newSubChild?.siteIcon}</span> : <span className='mx-1'><img className='workmember' src={obj?.newSubChild?.siteIcon} /></span>}</span> <a className='reStuTile'>{obj?.newSubChild?.Title}</a></span> : ''}
-                      {obj?.newSubChild?.newFeatChild ? <span> {'>'} <span >{obj?.newSubChild?.newFeatChild?.siteIcon === "F" ? <span className="Dyicons mx-1">{obj?.newSubChild?.newFeatChild?.siteIcon}</span> : <span className='mx-1'><img className='workmember' src={obj?.newSubChild?.newFeatChild?.siteIcon} /></span>}</span> <a className='reStuTile'>{obj?.newSubChild?.newFeatChild?.Title}</a></span> : ''}
-                      {obj?.newSubChild?.newFeatChild?.newActChild ? <span> {'>'} <span className="mx-1"><img className='workmember' src={obj?.newSubChild?.newFeatChild?.newActChild?.siteIcon} /></span> <a className='reStuTile'>{obj?.newSubChild?.newFeatChild?.newActChild?.Title}</a></span> : ''}
-                      {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild ? <span> {'>'} <span className="mx-1"><img className='workmember' src={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.siteIcon} /> </span><a className='reStuTile'> {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Title}</a></span> : ''}
-                      {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild ? <span> {'>'} <span className="mx-1"> <img className='workmember' src={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.siteIcon} /> </span><a className='reStuTile'> {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.Title}</a></span> : ''}
-
-                    </div>
-                  );
-                })}
-                {
+                      </a>
+                      <span> {'>'} </span>
+                      {obj?.newSubChild ? <> <a className='reStuTile'> {obj?.newSubChild?.siteIcon === "S" || obj?.newSubChild?.siteIcon === "F" ? <span className="Dyicons me-1">{obj?.newSubChild?.siteIcon}</span> : <span className='mx-1'><img className='workmember me-1' src={obj?.newSubChild?.siteIcon} /></span>} {obj?.newSubChild?.Title}</a><span> {'>'} </span></> : ''}
+                      {obj?.newSubChild?.newFeatChild ? <><a className='reStuTile'>{obj?.newSubChild?.newFeatChild?.siteIcon === "F" ? <span className="Dyicons me-1">{obj?.newSubChild?.newFeatChild?.siteIcon}</span> : <span className='mx-1'><img className='workmember me-1' src={obj?.newSubChild?.newFeatChild?.siteIcon} /></span>} {obj?.newSubChild?.newFeatChild?.Title}</a><span> {'>'} </span></> : ''}
+                      {obj?.newSubChild?.newFeatChild?.newActChild ? <><a className='reStuTile'> <img className='workmember me-1' src={obj?.newSubChild?.newFeatChild?.newActChild?.siteIcon} />{obj?.newSubChild?.newFeatChild?.newActChild?.Title}</a><span> {'>'} </span></> : ''}
+                      {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild ? <> <a className='reStuTile'><img className='workmember me-1' src={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.siteIcon} />  {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Title}</a><span> {'>'} </span></> : ''}
+                      {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild ? <> <a className='reStuTile'><img className='workmember me-1' src={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.siteIcon} />  {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.Title}</a><span> {'>'} </span></> : ''}
+                      {
                   RestructureChecked?.map((items: any) =>
                     <span> {">"}
-                      {
-                        items?.Item_x0020_Type === "Component" ? <div className="Dyicons">
-                          S
-                        </div> : (newItemBackUp?.Item_x0020_Type == "SubComponent" && items?.Item_x0020_Type === "SubComponent" ? <div className="Dyicons">F</div> : (items?.Item_x0020_Type === "Task" ? <span><img className='workmember' src={items?.siteIcon} /></span> : <div className="Dyicons">{items?.siteIcon}</div>))
-                      }
+                     
                       <a
                         data-interception="off"
                         target="_blank"
@@ -3159,17 +3184,27 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
                           items?.Id
                         }
                       >
+                         {
+                        items?.Item_x0020_Type === "Component" ? <div className="Dyicons me-1">
+                          S
+                        </div> : (newItemBackUp?.Item_x0020_Type == "SubComponent" && items?.Item_x0020_Type === "SubComponent" ? <div className="Dyicons">F</div> : (items?.Item_x0020_Type === "Task" ? <span><img className='workmember me-1' src={items?.siteIcon} /></span> : <div className="Dyicons me-1">{items?.siteIcon}</div>))
+                      }
                        {items?.Title}
                       </a>
                     </span>
                   )
                 }
+                    </div>
+                  );
+                })}
+               
               </div>
               {restructureItem != undefined &&
                 restructureItem?.length > 0 &&
                 restructureItem[0]?.Item_x0020_Type != "Task" && (checkSubChilds?.subRows[0]?.Item_x0020_Type !== "Feature") ? (
                 <div>
-                  {
+                   {
+                    
                     newItemBackUp?.Item_x0020_Type == "SubComponent" ? " " :
                       <span>
                         <span>
@@ -3218,7 +3253,7 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
               )}
 
               {
-                restructureItem != undefined &&
+                  restructureItem != undefined &&
                   restructureItem?.length > 0 &&
                   restructureItem[0]?.Item_x0020_Type === "Task" &&
                   newItemBackUp?.TaskType?.Id == 1 && newItemBackUp?.Item_x0020_Type == "Task" &&
@@ -3262,6 +3297,56 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
                     </span>
                   </span> : " "
               }
+
+            {
+                restructureItem != undefined &&
+                  restructureItem?.length > 0 &&
+                  restructureItem[0]?.Item_x0020_Type === "Task" &&
+                 newItemBackUp?.Item_x0020_Type != 'Task' && (restructureItem[0]?.TaskType?.Id == 2 || (restructureItem[0]?.TaskType?.Id == 1 && restructureItem[0]?.subRows?.length == 0))
+                  
+                  ?
+                  <span>
+                    <span>
+
+                      {"Select Component Type :"}
+                      <label className='SpfxCheckRadio ms-2'>
+                      <input
+                        type="radio" className='radio'
+                        name="fav_language"
+                        value="Activity"
+                        checked={
+                          RestructureChecked[0]?.TaskType?.Id == 1
+                            ? true
+                            : (RestructureChecked[0]?.TaskType?.Id == 1 ? true : false)
+                        }
+                        onChange={(e) =>
+                          setRestructure(RestructureChecked, 1)
+                        }
+                      /></label>
+                      <label className="ms-1"> {"Activity"} </label>
+                    </span>
+                    <span>
+                    <label className='SpfxCheckRadio ms-2'>
+                      <input
+                        type="radio" className='radio'
+                        name="fav_language"
+                        value="Task"
+                        checked={
+                          RestructureChecked[0]?.TaskType?.Id === 2
+                            ? true
+                            : false
+                        }
+                        onChange={(e) =>
+                          setRestructure(RestructureChecked, 2)
+                        }
+                      /></label>
+                      <label className="ms-1"> {"Task"} </label>
+                    </span>
+                  </span> : " "
+              }
+
+
+
               <footer className="mt-2 text-end">
                 {restructureItem != undefined &&
                   restructureItem?.length > 0 &&
