@@ -433,7 +433,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 "DueDate", "Body", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
                 "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete",
                 "ResponsibleTeam/Id", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
-                "Created", "Modified",
+                "Created", "Modified","Deliverables", "TechnicalExplanations", "Short_x0020_Description_x0020_On","Help_x0020_Information","AdminNotes",
             )
             .expand(
                 "Parent", "PortfolioType", "AssignedTo", "ClientCategory", "TeamMembers", "ResponsibleTeam", "Editor", "Author"
@@ -1511,15 +1511,8 @@ function TeamPortlioTable(SelectedProp: any) {
     const onRenderCustomHeaderMain1 = () => {
         return (
             <div className="d-flex full-width pb-1">
-                <div
-                    style={{
-                        marginRight: "auto",
-                        fontSize: "20px",
-                        fontWeight: "600",
-                        marginLeft: "20px",
-                    }}
-                >
-                    <span>{`Create Component `}</span>
+                <div className="subheading">
+                    <span className="siteColor">{`Create Component `}</span>
                 </div>
                 <Tooltip ComponentId={checkedList?.Id} />
             </div>
@@ -1743,13 +1736,7 @@ function TeamPortlioTable(SelectedProp: any) {
     const onRenderCustomHeaderMain = () => {
         return (
             <div className="d-flex full-width pb-1">
-                <div
-                    style={{
-                        marginRight: "auto",
-                        fontSize: "20px",
-                        fontWeight: "600",
-                        marginLeft: "20px",
-                    }}
+                <div 
                 >
                     <span>{`Create Item`}</span>
                 </div>

@@ -1636,15 +1636,9 @@ function PortfolioTable(SelectedProp: any) {
   const onRenderCustomHeaderMain1 = () => {
     return (
       <div className="d-flex full-width pb-1">
-        <div
-          style={{
-            marginRight: "auto",
-            fontSize: "20px",
-            fontWeight: "600",
-            marginLeft: "20px"
-          }}
-        >
-          <span>{`Create Component `}</span>
+        <div className="subheading">
+          
+          <span className="siteColor">{`Create Component `}</span>
         </div>
         <Tooltip ComponentId={checkedList?.Id} />
       </div>
@@ -1949,15 +1943,8 @@ function PortfolioTable(SelectedProp: any) {
   const onRenderCustomHeaderMain = () => {
     return (
       <div className="d-flex full-width pb-1">
-        <div
-          style={{
-            marginRight: "auto",
-            fontSize: "20px",
-            fontWeight: "600",
-            marginLeft: "20px"
-          }}
-        >
-          <span>{`Create Item`}</span>
+        <div className="subheading">
+          <span className="siteColor">{`Create Item`}</span>
         </div>
         <Tooltip ComponentId={1746} />
       </div>
@@ -2179,7 +2166,7 @@ function PortfolioTable(SelectedProp: any) {
               {checkedList != undefined &&
                 checkedList?.TaskType?.Title == "Workstream" ? (
                 <ul className="quick-actions">
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                  <li>
                     <div onClick={(e) => CreateActivityPopup("Task")}>
                       <span className="icon-sites">
                         <img
@@ -2190,7 +2177,7 @@ function PortfolioTable(SelectedProp: any) {
                       Bug
                     </div>
                   </li>
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                  <li>
                     <div onClick={() => CreateActivityPopup("Task")}>
                       <span className="icon-sites">
                         <img
@@ -2201,7 +2188,7 @@ function PortfolioTable(SelectedProp: any) {
                       Feedback
                     </div>
                   </li>
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                  <li>
                     <div onClick={() => CreateActivityPopup("Task")}>
                       <span className="icon-sites">
                         <img src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png" />
@@ -2209,7 +2196,7 @@ function PortfolioTable(SelectedProp: any) {
                       Improvement
                     </div>
                   </li>
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                  <li>
                     <div onClick={() => CreateActivityPopup("Task")}>
                       <span className="icon-sites">
                         <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png" />
@@ -2217,7 +2204,7 @@ function PortfolioTable(SelectedProp: any) {
                       Design
                     </div>
                   </li>
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                  <li>
                     <div onClick={() => CreateActivityPopup("Task")}>
                       <span className="icon-sites"></span>
                       Task
@@ -2226,7 +2213,7 @@ function PortfolioTable(SelectedProp: any) {
                 </ul>
               ) : (
                 <ul className="quick-actions">
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                  <li>
                     <div onClick={(e) => CreateActivityPopup("Implementation")}>
                       <span className="icon-sites">
                         <img
@@ -2237,7 +2224,7 @@ function PortfolioTable(SelectedProp: any) {
                       Implmentation
                     </div>
                   </li>
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                  <li>
                     <div onClick={() => CreateActivityPopup("Development")}>
                       <span className="icon-sites">
                         <img
@@ -2248,13 +2235,13 @@ function PortfolioTable(SelectedProp: any) {
                       Development
                     </div>
                   </li>
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                  <li>
                     <div onClick={() => CreateActivityPopup("Activities")}>
                       <span className="icon-sites"></span>
                       Activity
                     </div>
                   </li>
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                  <li className="mx-1 p-2 position-relative bg-siteColor text-center">
                     <div onClick={() => CreateActivityPopup("Task")}>
                       <span className="icon-sites"></span>
                       Task

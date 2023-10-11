@@ -1396,14 +1396,7 @@ const CreateActivity = (props: any) => {
             : "d-flex full-width pb-1"
         }
       >
-        <div
-          style={{
-            marginRight: "auto",
-            fontSize: "20px",
-            fontWeight: "600",
-            marginLeft: "20px"
-          }}
-        >
+        <div>
           <h2 className="heading">
             {`Create Quick Option - ${AllItems?.NoteCall}`}
           </h2>
