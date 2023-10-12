@@ -952,32 +952,115 @@ const CreateActivity = (props: any) => {
     };
     //----------- save function end --------------
 
-    //Auto Suggest Categories 
-    const autoSuggestionsForCategory = async (e: any) => {
-        let searchedKey: any = e.target.value;
-        setCategorySearchKey(e.target.value);
-        let tempArray: any = [];
-        if (searchedKey?.length > 0) {
-            AutoCompleteItemsArray?.map((itemData: any) => {
-                if (
-                    itemData.Newlabel.toLowerCase().includes(searchedKey.toLowerCase())
-                ) {
-                    tempArray.push(itemData);
-                }
-            });
-            setSearchedCategoryData(tempArray);
-        } else {
-            setSearchedCategoryData([]);
+  const handleDatedue = (date: any) => {
+    AllItems.DueDate = date;
+    var finalDate: any = Moment(date).format("YYYY-MM-DD");
+    setDate(finalDate);
+  };
+
+  const onRenderCustomHeaderMain = () => {
+    return (
+      <div
+        className={
+          AllItems?.PortfolioType?.Id == 2
+            ? "serviepannelgreena d-flex full-width pb-1"
+            : "d-flex full-width pb-1"
         }
-    };
-    const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
-        setCategorySearchKey("");
-        setIsComponentPicker(false);
-        let data: any = CategoriesData;
-        CategoriesData?.map((items: any) => {
-            if (selectCategoryData[0].Id != undefined && !data?.find((obj: any) => obj?.Id == selectCategoryData[0].Id)) {
-                data?.push(selectCategoryData[0]);
-            }
+      >
+        <div>
+          <h2 className="heading ">
+            {`Create Quick Option - ${AllItems?.NoteCall}`}
+          </h2>
+        </div>
+        <Tooltip ComponentId={1746} />
+      </div>
+    );
+  };
+  const SelectSiteType = () => {
+    var mySite: any = [];
+    siteTypess.forEach((value: any) => {
+      value.selectSiteName = true;
+    });
+    setSite("Site Name");
+    setCount(count + 1);
+  };
+  let ArrayImage: any[] = [];
+  const onModelChange = (model: any) => {
+    isModelChange = true;
+    let edData = model;
+    let imgArray = model.split("=");
+
+    imgArray?.map((data: any, index: any) => {
+      if (imgArray?.length > 8) {
+        if (index == 1) {
+          ArrayImage.push(data);
+        }
+      }
+    });
+    let elem = document.createElement("img");
+    elem.innerHTML = edData;
+    imageArrayUpdateFunction(ArrayImage);
+  };
+
+  //  ###################  Smart Category Auto Suggesution Functions  ##################
+
+  const autoSuggestionsForCategory = async (e: any) => {
+    let searchedKey: any = e.target.value;
+    setCategorySearchKey(e.target.value);
+    let tempArray: any = [];
+    if (searchedKey?.length > 0) {
+      AutoCompleteItemsArray?.map((itemData: any) => {
+        if (
+          itemData.Newlabel.toLowerCase().includes(searchedKey.toLowerCase())
+        ) {
+          tempArray.push(itemData);
+        }
+      });
+      setSearchedCategoryData(tempArray);
+    } else {
+      setSearchedCategoryData([]);
+    }
+  };
+
+  ///======================================auto suggestion =====================
+
+  var AutoCompleteItems: any = [];
+  const loadAllCategoryData = function (SmartTaxonomy: any) {
+    var AllTaskusers = [];
+    var AllMetaData: any = [];
+    var TaxonomyItems: any = [];
+    var url =
+      `${dynamicList.siteUrl}/_api/web/lists/getbyid('${dynamicList?.SmartMetadataListID}')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '` +
+      SmartTaxonomy +
+      "'";
+    $.ajax({
+      url: url,
+      method: "GET",
+      headers: {
+        Accept: "application/json; odata=verbose"
+      },
+      success: function (data) {
+        AllTaskusers = data.d.results;
+        $.each(AllTaskusers, function (index: any, item: any) {
+          if (
+            item.Title.toLowerCase() == "pse" &&
+            item.TaxType == "Client Category"
+          ) {
+            item.newTitle = "EPS";
+          } else if (
+            item.Title.toLowerCase() == "e+i" &&
+            item.TaxType == "Client Category"
+          ) {
+            item.newTitle = "EI";
+          } else if (
+            item.Title.toLowerCase() == "education" &&
+            item.TaxType == "Client Category"
+          ) {
+            item.newTitle = "Education";
+          } else {
+            item.newTitle = item.Title;
+          }
+          AllMetaData.push(item);
         });
         setCategoriesData((CategoriesData: any) => [...data]);
         setSearchedCategoryData([]);
