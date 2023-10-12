@@ -261,7 +261,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     .items.select("ParentTask/Title", "ParentTask/Id", "ItemRank", "TaskLevel", "OffshoreComments", "TeamMembers/Id", "ClientCategory/Id", "ClientCategory/Title",
                         "TaskID", "ResponsibleTeam/Id", "ResponsibleTeam/Title", "ParentTask/TaskID", "TaskType/Level", "PriorityRank", "TeamMembers/Title", "FeedBack", "Title", "Id", "ID", "DueDate", "Comments", "Categories", "Status", "Body",
                         "PercentComplete", "ClientCategory", "Priority", "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/PortfolioStructureID", "Portfolio/Title",
-                        "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title", "Project/DueDate", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
+                        "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
                         "Created", "Modified",
                     )
                     .expand(
@@ -433,7 +433,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 "DueDate", "Body", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
                 "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete",
                 "ResponsibleTeam/Id", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
-                "Created", "Modified","Deliverables", "TechnicalExplanations", "Short_x0020_Description_x0020_On","Help_x0020_Information","AdminNotes",
+                "Created", "Modified", "Deliverables", "TechnicalExplanations", "Short_x0020_Description_x0020_On", "Help_x0020_Information", "AdminNotes",
             )
             .expand(
                 "Parent", "PortfolioType", "AssignedTo", "ClientCategory", "TeamMembers", "ResponsibleTeam", "Editor", "Author"
@@ -737,7 +737,7 @@ function TeamPortlioTable(SelectedProp: any) {
             let filterDataBackup = JSON.parse(JSON.stringify(filterData));
             setAllSmartFilterData(filterDataBackup);
             setSmartTimeTotalFunction(() => smartTimeTotal);
-        }else if (updatedSmartFilter === true && filterData.length === 0) {
+        } else if (updatedSmartFilter === true && filterData.length === 0) {
             renderData = [];
             renderData = renderData.concat(filterData)
             refreshData();
@@ -1461,8 +1461,9 @@ function TeamPortlioTable(SelectedProp: any) {
 
 
     const callBackData1 = React.useCallback((getData: any, topCompoIcon: any) => {
-
-        setData((getData) => [...getData]);
+        renderData = [];
+        renderData = renderData.concat(getData);
+        refreshData();
         setTopCompoIcon(topCompoIcon);
     }, []);
 
