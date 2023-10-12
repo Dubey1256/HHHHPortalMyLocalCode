@@ -1,15 +1,12 @@
 import React, { useEffect, useState, useRef, forwardRef } from 'react'
 import { Web } from 'sp-pnp-js';
-import { Modal, Panel, PanelType } from "office-ui-fabric-react";
-import { GetTaskId } from '../globalCommon';
+import {Panel, PanelType } from "office-ui-fabric-react";
 import Tooltip from '../Tooltip';
 import { BsArrowRightShort } from 'react-icons/bs';
-// import { restructureCallBack } from '../../webparts/teamPortfolio/components/TeamPortlioTable';
 
 const RestructuringCom = (props: any, ref: any) => {
 
   let restructureCallBack = props?.restructureCallBack;
-  let controlUseEffect: boolean = true;
 
   const [OldArrayBackup, setOldArrayBackup]: any = React.useState([]);
   const [allData, setAllData]: any = React.useState([]);
@@ -23,7 +20,7 @@ const RestructuringCom = (props: any, ref: any) => {
   const [trueTopCompo, setTrueTopCompo]: any = React.useState(false);
   const [checkItemLength, setCheckItemLength]: any = React.useState(false);
   const [query4TopIcon, setQuery4TopIcon]:any = React.useState('');
-  // const [rowExpand, setRowExpand]:any = React.useState({});
+  const [controlUseEffect, setControlUseEffect]:any = React.useState(true);
 
 
 
@@ -2303,12 +2300,15 @@ const RestructuringCom = (props: any, ref: any) => {
       let TaskLevel: number = 0;
       let TaskTypeId:any;
 
-      if(newItemBackUp?.Item_x0020_Type != 'Task' && (RestructureChecked[0]?.TaskType?.Id === 3) ){
+      if(newItemBackUp?.Item_x0020_Type != 'Task' && RestructureChecked[0]?.TaskType?.Id === 3){
         TaskTypeId = 1;
       }else{
         if(newItemBackUp?.Item_x0020_Type == 'Task' && newItemBackUp?.TaskType?.Id == 3 && RestructureChecked[0].Item_x0020_Type === 'Task'){
           TaskTypeId = 2;
-        }else{
+        }else if(newItemBackUp?.Item_x0020_Type == 'Task' && newItemBackUp?.TaskType?.Id == 1 && RestructureChecked[0]?.TaskType?.Id == 1){
+          TaskTypeId = 3;
+        }
+        else{
           TaskTypeId = RestructureChecked[0]?.TaskType?.Id;
         }
       }
@@ -2401,7 +2401,7 @@ const RestructuringCom = (props: any, ref: any) => {
               array?.push(...latestCheckedList);
               checkUpdate = checkUpdate + 1;
               onceRender = false
-          }
+              }
             if (obj.Id === newItemBackUp?.Id && obj?.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj?.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
               obj?.subRows?.push(...latestCheckedList);
               checkUpdate = checkUpdate + 1;
@@ -2489,8 +2489,7 @@ const RestructuringCom = (props: any, ref: any) => {
 
           setResturuningOpen(false);
           setNewItemBackUp([]);
-
-          controlUseEffect = false;
+          setControlUseEffect(false);
           restructureCallBack(array, false);
 
         })
@@ -2654,7 +2653,7 @@ const RestructuringCom = (props: any, ref: any) => {
           })
           setResturuningOpen(false);
           restructureCallBack(array, false);
-          controlUseEffect = false;
+          setControlUseEffect(false);
           setNewArrayBackup([]);
         })
     }
@@ -2829,7 +2828,7 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
         setResturuningOpen(false);
         setNewItemBackUp([]);
         setTrueTopCompo(false);
-        controlUseEffect = false
+        setControlUseEffect(false);
         restructureCallBack(array, false);
       })
 }else{
@@ -3026,7 +3025,7 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
       setResturuningOpen(false);
       setTrueTopCompo(false);
       setNewItemBackUp([])
-      controlUseEffect = false;
+      setControlUseEffect(false);
       restructureCallBack(array, false);
     }).catch((err:any)=>{
       console.log(err);
@@ -3127,7 +3126,7 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
           >
             <div>
             <div className='my-1'>Selected Item will restructure into 
-            {RestructureChecked[0]?.Item_x0020_Type != 'Task' ? (newItemBackUp?.Item_x0020_Type ==  'Component' && RestructureChecked[0]?.Item_x0020_Type ==  'Component' ?  " SubComponent " : (newItemBackUp?.Item_x0020_Type == 'SubComponent' && (RestructureChecked[0]?.Item_x0020_Type == 'SubComponent' || RestructureChecked[0]?.Item_x0020_Type == 'Component') ? " Feature " : RestructureChecked[0]?.Item_x0020_Type)) : (RestructureChecked[0]?.TaskType?.Id == 2 ? ' Task ' : (RestructureChecked[0]?.TaskType?.Id == 1 ? " Activity " : " Workstream ")) } inside {newItemBackUp?.SiteIconTitle != undefined && newItemBackUp?.SiteIconTitle != null ? <span className="Dyicons me-1">{newItemBackUp?.SiteIconTitle}</span> : <img className='workmember' src={newItemBackUp?.SiteIcon} />} {newItemBackUp?.Title} </div>
+            {RestructureChecked[0]?.Item_x0020_Type != 'Task' ? (newItemBackUp?.Item_x0020_Type ==  'Component' && RestructureChecked[0]?.Item_x0020_Type ==  'Component' ?  " SubComponent " : (newItemBackUp?.Item_x0020_Type == 'SubComponent' && (RestructureChecked[0]?.Item_x0020_Type == 'SubComponent' || RestructureChecked[0]?.Item_x0020_Type == 'Component') ? " Feature " : RestructureChecked[0]?.Item_x0020_Type)) : (RestructureChecked[0]?.TaskType?.Id == 2 ? ' Task ' : (RestructureChecked[0]?.TaskType?.Id == 1 ? " Activity " : (newItemBackUp?.Item_x0020_Type != 'Task' ? " Activity " : " Workstream "))) } inside {newItemBackUp?.SiteIconTitle != undefined && newItemBackUp?.SiteIconTitle != null ? <span className="Dyicons me-1">{newItemBackUp?.SiteIconTitle}</span> : <img className='workmember' src={newItemBackUp?.SiteIcon} />} {newItemBackUp?.Title} </div>
               <label className='fw-bold form-label full-width'> Old: </label>
               <div className='alignCenter border p-1' style={{flexWrap:'wrap'}}>
                 {OldArrayBackup?.map(function (obj: any) {
@@ -3290,7 +3289,7 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
                       <input
                         type="radio" className='radio'
                         name="fav_language"
-                        value="SubComponent"
+                        value="Task"
                         checked={
                           RestructureChecked[0]?.TaskType?.Id === 2
                             ? true
@@ -3309,7 +3308,7 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
                 restructureItem != undefined &&
                   restructureItem?.length > 0 &&
                   restructureItem[0]?.Item_x0020_Type === "Task" &&
-                 newItemBackUp?.Item_x0020_Type != 'Task' && (restructureItem[0]?.TaskType?.Id == 2 || (restructureItem[0]?.TaskType?.Id == 1 && restructureItem[0]?.subRows?.length == 0))
+                 newItemBackUp?.Item_x0020_Type != 'Task' && ((restructureItem[0]?.TaskType?.Id == 3 && restructureItem[0]?.subRows?.length == 0) ||  restructureItem[0]?.TaskType?.Id == 2 || (restructureItem[0]?.TaskType?.Id == 1 && restructureItem[0]?.subRows?.length == 0))
                   
                   ?
                   <div className='mt-2'>

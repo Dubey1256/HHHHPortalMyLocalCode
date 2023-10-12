@@ -2264,19 +2264,14 @@ function PortfolioTable(SelectedProp: any) {
         </div>
       </Panel>
       {isOpenActivity && (
-        <CreateActivity
-          props={
-            checkedList != null && checkedList?.Id != undefined
-              ? checkedList
-              : SelectedProp.props
-          }
-          Call={Call}
-          TaskUsers={AllUsers}
-          AllClientCategory={AllClientCategory}
-          LoadAllSiteTasks={LoadAllSiteTasks}
-          SelectedProp={SelectedProp.NextProp}
-          portfolioTypeData={portfolioTypeData}
-        ></CreateActivity>
+      <CreateActivity
+      Call={Call}
+      AllListId={ContextValue}
+      TaskUsers={AllUsers}
+      AllClientCategory={AllClientCategory}
+      LoadAllSiteTasks={LoadAllSiteTasks}
+      selectedItem={checkedList != null && checkedList?.Id != undefined? checkedList: SelectedProp.props} portfolioTypeData={portfolioTypeData}
+    ></CreateActivity>
       )}
       {isOpenWorkstream && (
         <CreateWS

@@ -184,7 +184,7 @@ const data = props.data;
 
   const juniortotal =  AllTaskuser.filter((Junior:any)=>(Junior?.UserGroupId===8));
   const smalleadtotal =  AllTaskuser.filter((smallead:any)=>(smallead?.UserGroupId===216));
-  const hhhteamtotal =  AllTaskuser.filter((hhhteam:any)=>(hhhteam?.UserGroupId===7));
+  const hhhteamtotal =  AllTaskuser.filter((hhhteam:any)=>(hhhteam?.UserGroupId===7 && hhhteam?.AssingedToUserId != 9));
   const seniodevtotal =  AllTaskuser.filter((seniodev:any)=>(seniodev?.UserGroupId===9));
   const qaleavetotal =  AllTaskuser.filter((qaleave:any)=>(qaleave?.UserGroupId===11));
   const designttotal =  AllTaskuser.filter((designt:any)=>(designt?.UserGroupId===10));
