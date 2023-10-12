@@ -1085,7 +1085,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               filterItem.ComponentIDs = getItem.Portfolio?.Id;
               filterItem.PortfolioItem = getItem?.Portfolio
               filterItem.Portfolio = getItem?.Portfolio?.Title
-
             }
           }
         })
@@ -1147,6 +1146,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         });
       }
     }
+
     //Get Selected filters of sites
     if (filterCheckedSites != undefined && filterCheckedSites?.length > 0) {
       for (let index = 0; index < filterCheckedSites?.length; index++) {
@@ -1169,6 +1169,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         });
       }
     }
+
     console.log('Selected Filter checkbox');
     console.log(selectedFilters);
     let SitesItems = [];
@@ -2097,7 +2098,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       <div>
         <div className="p-0  " style={{ verticalAlign: "top" }}><h2 className="heading d-flex justify-content-between align-items-center"><span> <a>All Timesheets</a> </span><span className="text-end fs-6"><a target="_blank" data-interception="off" href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/UserTimeEntry-Old.aspx`}>Old UserTimeEntry</a></span></h2></div>
         <Col className='smartFilter bg-light border mb-3 '>
-          <details className='p-0 m-0' open>
+          <details className='p-0 m-0 allfilter' open>
             <summary className='hyperlink'><a className="f-16 fw-semibold hreflink mr-5 pe-2 pull-left allfilter"> All Filters - <span className='me-1 fw-normal'>Task User :</span> </a>
               {this.state.ImageSelectedUsers != null && this.state.ImageSelectedUsers.length > 0 && this.state.ImageSelectedUsers.map((user: any, i: number) => {
                 return <span>
@@ -2105,16 +2106,8 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                 </span>
               })
               }
-<<<<<<< HEAD
-              <span className="pull-right"><a href="#">Add Smart Favorite</a></span>
-
             </summary>
-
-            <Col className='SubFilters'>
-=======
-            </summary>
-            <Col>
->>>>>>> 847c8d6489d0bdd7ffab2c44ea210c506fb1aed7
+            <Col className='subfilters'>
               <details open className='p-0'>
                 <span className="pull-right" style={{ display: 'none' }}>
                   <input type="checkbox" className="" onClick={(e) => this.SelectAllGroupMember(e)} />
@@ -2169,51 +2162,51 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                 <Row className="ps-30">
                   <div>
                     <div className="col TimeReportDays">
-                      <span className='SpfxCheckRadio me-2'>
+                      <span className='SpfxCheckRadio me-3'>
                         <input type="radio" className="radio" name="dateSelection" id="rdCustom" value="Custom" onClick={() => this.selectDate('Custom')} />
                         <label>Custom</label>
                       </span>
-                      <span className='SpfxCheckRadio me-2'>
+                      <span className='SpfxCheckRadio me-3'>
                         <input type="radio" name="dateSelection" id="rdToday" value="Today" onClick={() => this.selectDate('today')} className="radio" />
                         <label>Today</label>
                       </span>
-                      <span className='SpfxCheckRadio me-2'>
+                      <span className='SpfxCheckRadio me-3'>
                         <input type="radio" name="dateSelection" id="rdYesterday" value="Yesterday" onClick={() => this.selectDate('yesterday')} className="radio" />
                         <label> Yesterday </label>
                       </span>
-                      <span className='SpfxCheckRadio me-2'>
+                      <span className='SpfxCheckRadio me-3'>
                         <input type="radio" name="dateSelection" defaultChecked={true} id="rdThisWeek" value="ThisWeek" onClick={() => this.selectDate('ThisWeek')} className="radio" />
                         <label> This Week</label>
                       </span>
-                      <span className='SpfxCheckRadio me-2'>
+                      <span className='SpfxCheckRadio me-3'>
                         <input type="radio" name="dateSelection" id="rdLastWeek" value="LastWeek" onClick={() => this.selectDate('LastWeek')} className="radio" />
                         <label> Last Week</label>
                       </span>
-                      <span className='SpfxCheckRadio me-2'>
+                      <span className='SpfxCheckRadio me-3'>
                         <input type="radio" name="dateSelection" id="rdThisMonth" value="EntrieMonth" onClick={() => this.selectDate('EntrieMonth')} className="radio" />
                         <label>This Month</label>
                       </span>
-                      <span className='SpfxCheckRadio me-2'>
+                      <span className='SpfxCheckRadio me-3'>
                         <input type="radio" name="dateSelection" id="rdLastMonth" value="LastMonth" onClick={() => this.selectDate('LastMonth')} className="radio" />
                         <label>Last Month</label>
                       </span>
-                      <span className='SpfxCheckRadio me-2'>
+                      <span className='SpfxCheckRadio me-3'>
                         <input type="radio" name="dateSelection" value="rdLast3Month" onClick={() => this.selectDate('Last3Month')} className="radio" />
                         <label>Last 3 Months</label>
                       </span>
-                      <span className='SpfxCheckRadio me-2'>
+                      <span className='SpfxCheckRadio me-3'>
                         <input type="radio" name="dateSelection" value="rdEntrieYear" onClick={() => this.selectDate('EntrieYear')} className="radio" />
                         <label>This Year</label>
                       </span>
-                      <span className='SpfxCheckRadio me-2'>
+                      <span className='SpfxCheckRadio me-3'>
                         <input type="radio" name="dateSelection" value="rdLastYear" onClick={() => this.selectDate('LastYear')} className="radio" />
                         <label>Last Year</label>
                       </span>
-                      <span className='SpfxCheckRadio me-2'>
+                      <span className='SpfxCheckRadio me-3'>
                         <input type="radio" name="dateSelection" value="rdAllTime" onClick={() => this.selectDate('AllTime')} className="radio" />
                         <label>All Time</label>
                       </span>
-                      <span className='SpfxCheckRadio me-2'>
+                      <span className='SpfxCheckRadio me-3'>
                         <input type="radio" name="dateSelection" value="Presettime" onClick={() => this.selectDate('Presettime')} className="radio" />
                         <label>Pre-set</label>
                         <span className="svg__iconbox svg__icon--editBox alignIcon hreflink" onClick={() => this.OpenPresetDatePopup()}></span>
