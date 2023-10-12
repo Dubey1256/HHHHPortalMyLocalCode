@@ -2105,16 +2105,8 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                 </span>
               })
               }
-<<<<<<< HEAD
-              <span className="pull-right"><a href="#">Add Smart Favorite</a></span>
-
-            </summary>
-
-            <Col className='SubFilters'>
-=======
             </summary>
             <Col>
->>>>>>> 847c8d6489d0bdd7ffab2c44ea210c506fb1aed7
               <details open className='p-0'>
                 <span className="pull-right" style={{ display: 'none' }}>
                   <input type="checkbox" className="" onClick={(e) => this.SelectAllGroupMember(e)} />

@@ -3,8 +3,6 @@ import { useState, useEffect } from "react";
 import "@pnp/sp/sputilities";
 import { IEmailProperties } from "@pnp/sp/sputilities";
 import { Web } from "sp-pnp-js";
-// import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
-// import { Web } from 'sp-pnp-js';
 import { spfi, SPFx as spSPFx } from "@pnp/sp";
 import { BorderBottomSharp } from "@material-ui/icons";
 import { sendEmail } from "../../../globalComponents/globalCommon";
@@ -20,27 +18,20 @@ interface NameIdData {
 }
 
 let count:any=1;
+let counts = 0;
+let Juniordevavailabel=0;
+let smalsusleadavailabel=0; 
+let hhhhteamavailabel = 0;
+let seniordevavailabel = 0;
+let qateamavailabel = 0;
+let designteamavailabel = 0;
 const EmailComponenet = (props: any) => {
   const [AllTaskuser, setAllTaskuser] = React.useState([]);
   const [leaveData, setleaveData] = React.useState([]);
   const [nameidTotals, setNameidTotals] = useState<NameIdData>({});
 
 
-  // const BindHtmlBody() {
-  //     let body = document.getElementById('htmlMailBody')
-  //     console.log(body?.innerHTML);
-  //     return "<style>p>br {display: none;}</style>" + body?.innerHTML;
-  //   }
-// const [red,setRed]:any=useState(false);
-// props?.data?.map((item:any)=>{
-//   if(item.eventType == "Un-Planned"){
-//     setRed(true);
-//     SendEmail();
-//   }      else{
-//     setRed(false);
-//     SendEmail();
-//   }
-// })
+ 
 const loadleave = async () =>  {
   const web = new Web(props.Listdata.siteUrl);
   const results =  await web.lists
@@ -59,8 +50,6 @@ const loadleave = async () =>  {
 
 
  React.useEffect(() => {
-    //void getSPCurrentTimeOffset();
-    // P_UP();
     loadleave()
     if(Object.keys(nameidTotals).length !== 0){
     SendEmail()
@@ -69,17 +58,7 @@ const loadleave = async () =>  {
     
   }, [count]);
 
-  // const P_UP =()=>{
-  //   props.data?.map((item:any)=>{
-  //     if(item.eventType == "Un-Planned"){
-  //       setRed(true);
-  //       SendEmail();
-  //     }      else{
-  //       setRed(false);
-  //       SendEmail();
-  //     }
-  //   })
-  // }
+ 
   const currentDate = new Date();
   const formattedDate = currentDate.toLocaleDateString("en-GB");
 
@@ -89,15 +68,9 @@ const loadleave = async () =>  {
        
     sp.utility
       .sendEmail({
-        //Body of Email
-        //   Body: this.BindHtmlBody(),
         Body: BindHtmlBody(),
-        //Subject of Email
-        //   Subject: emailprops.Subject,
         Subject: "HHHH - Team Attendance "+formattedDate+" "+totalteammemberonleave +" available - "+Object?.keys(nameidTotals)?.length+" on leave" ,
-        //Array of string for To of Email
-        //   To: emailprops.To,
-        To: ["abhishek.tiwari@hochhuth-consulting.de","ranu.trivedi@hochhuth-consulting.de","jyoti.prasad@hochhuth-consulting.de"],
+        To: ["abhishek.tiwari@hochhuth-consulting.de","prashant.kumar@hochhuth-consulting.de","ranu.trivedi@hochhuth-consulting.de"],
         AdditionalHeaders: {
           "content-type": "text/html",
         },
@@ -141,23 +114,6 @@ const loadleave = async () =>  {
   let year =  new Date().getFullYear();
   let yeardata = leaveData.filter((item) =>item?.EventDate?.substring(0, 4) === `${year}`)
  
-
-
-
-
-// For Calculate all the day of leave
-
-
-// const calculateTotalDays = (matchedData:any) => {
-//   return matchedData.reduce((total:any, item:any) => {
-//     const EndDate:any = new Date(item.EndDate);
-//     const EventDate:any = new Date(item.EventDate);
-//     const time_difference_ms = EndDate - EventDate;
-//     const totalDays = Math.floor(time_difference_ms / (1000 * 60 * 60 * 24));
-//     return total + totalDays;
-//   }, 0);
-// };
-
 const calculateTotalDays = (matchedData:any) => {
   return matchedData.reduce((total:any, item:any) => {
     const EndDate:any = new Date(item.EndDate);
@@ -176,9 +132,6 @@ const calculateTotalDays = (matchedData:any) => {
 
 
 React.useEffect(() => {
-  // Assuming 'yeardata' is available from somewhere (prop, state, or elsewhere)
-  // const yeardata = ...;
-
   const userId = props.data.filter((item:any) => item?.NameId != null);
 
   const nameidData:any = {};
@@ -203,10 +156,6 @@ React.useEffect(() => {
 console.log(nameidTotals)
 
 
-
-
-  // arr.map((item:any)=>{})
- 
 // For prepare the property
 const data = props.data;
 {data?.map((item:any,index:any)=>{
@@ -233,6 +182,22 @@ const data = props.data;
 )
   }
 
+  const juniortotal =  AllTaskuser.filter((Junior:any)=>(Junior?.UserGroupId===8));
+  const smalleadtotal =  AllTaskuser.filter((smallead:any)=>(smallead?.UserGroupId===216));
+  const hhhteamtotal =  AllTaskuser.filter((hhhteam:any)=>(hhhteam?.UserGroupId===7));
+  const seniodevtotal =  AllTaskuser.filter((seniodev:any)=>(seniodev?.UserGroupId===9));
+  const qaleavetotal =  AllTaskuser.filter((qaleave:any)=>(qaleave?.UserGroupId===11));
+  const designttotal =  AllTaskuser.filter((designt:any)=>(designt?.UserGroupId===10));
+
+  data?.map((items:any)=>{
+    Juniordevavailabel = juniortotal?.length - items?.Juniordev?.length ;
+    smalsusleadavailabel = smalleadtotal?.length - items?.smalsuslead?.length ;
+    hhhhteamavailabel = hhhteamtotal?.length - items?.hhhhteam?.length ;
+    seniordevavailabel = seniodevtotal?.length - items?.seniordev?.length ;
+    qateamavailabel = qaleavetotal?.length - items?.qateam?.length ;
+    designteamavailabel = designttotal?.length - items?.designteam?.length ;
+    
+  })
 
   return (
     
@@ -241,97 +206,64 @@ const data = props.data;
         <div style={{ marginTop: "2pt" }}>
           Below is the today's leave report.
         </div>
-      
-
       <div>
       <table style={{borderCollapse: "collapse", width: "100%"}}>
   <thead>
     <tr>
-      <th colSpan={8} style={{backgroundColor: "#fcd5b4",borderBottom: "1px solid #CCC", textAlign: "center", padding: "8px"}}>{formattedDate}</th>
+      <th colSpan={8} style={{backgroundColor: "#fcd5b4",borderBottom: "1px solid #CCC", textAlign: "center"}}>{formattedDate}</th>
     </tr>
     <tr>
-      <th style={{border: "1px solid #dddddd", textAlign: "center", padding: "8px"}}>HHHH Team</th>
-      <th style={{border: "1px solid #dddddd", textAlign: "center", padding: "8px"}}>Smalsus Lead Team</th>
-      <th style={{border: "1px solid #dddddd", textAlign: "center", padding: "8px"}}>Senior Developer Team</th>
-      <th style={{border: "1px solid #dddddd", textAlign: "center", padding: "8px"}}>Junior Developer Team</th>
-      <th style={{border: "1px solid #dddddd", textAlign: "center", padding: "8px"}}>Design Team</th>
-      <th style={{border: "1px solid #dddddd", textAlign: "center", padding: "8px"}}>QA Team</th>
+      <th style={{border: "1px solid #dddddd", textAlign: "center"}}>HHHH Team</th>
+      <th style={{border: "1px solid #dddddd", textAlign: "center"}}>Smalsus Lead Team</th>
+      <th style={{border: "1px solid #dddddd", textAlign: "center"}}>Senior Developer Team</th>
+      <th style={{border: "1px solid #dddddd", textAlign: "center"}}>Junior Developer Team</th>
+      <th style={{border: "1px solid #dddddd", textAlign: "center"}}>Design Team</th>
+      <th style={{border: "1px solid #dddddd", textAlign: "center"}}>QA Team</th>
     </tr>
   </thead>
   <tbody>
-    {data?.map((item:any,index:any)=>{
-                return(
+    
     <tr style={{backgroundColor: "#f2f2f2"}}>
-      <td style={{border: "1px solid #dddddd", textAlign: "center", padding: "8px"}}>{item?.hhhhteam != null?item?.hhhhteam.map((hhhte:any)=>{
-                          return hhhte.Title;
-                        }):""}</td>
-      <td style={{border: "1px solid #dddddd", textAlign: "center", padding: "8px"}}>{item?.smalsuslead != (null || undefined)?item?.smalsuslead.map((smalslead:any)=>{
-                          return smalslead.Title;
-                        }):""}</td>
-      <td style={{border: "1px solid #dddddd", textAlign: "center", padding: "8px"}}>{item?.seniordev != (null || undefined)?item?.seniordev.map((seniord:any)=>{
-                          return seniord.Title;}):""}</td>
-      <td style={{border: "1px solid #dddddd", textAlign: "center", padding: "8px"}}>{item?.Juniordev != (null || undefined)?item?.Juniordev.map((juniiord:any)=>{
-                          return juniiord.Title;
-                        }):""}</td>
-      <td style={{border: "1px solid #dddddd", textAlign: "center", padding: "8px"}}>{item?.designteam != (null || undefined)?item?.designteam.map((designord:any)=>{
-                          return designord.Title;
-                        }):""}</td>
-      <td style={{border: "1px solid #dddddd", textAlign: "center", padding: "8px"}}>{item?.qateam != (null || undefined)?item?.qateam.map((qaord:any)=>{
-                          return qaord.Title;
-                        }):""}</td>
+      <td style={{border: "1px solid #dddddd", textAlign: "center"}}>{hhhhteamavailabel}</td>
+      <td style={{border: "1px solid #dddddd", textAlign: "center"}}>{smalsusleadavailabel}</td>
+      <td style={{border: "1px solid #dddddd", textAlign: "center"}}>{seniordevavailabel}</td>
+      <td style={{border: "1px solid #dddddd", textAlign: "center"}}>{Juniordevavailabel}</td>
+      <td style={{border: "1px solid #dddddd", textAlign: "center"}}>{designteamavailabel}</td>
+      <td style={{border: "1px solid #dddddd", textAlign: "center"}}>{qateamavailabel}</td>
     </tr>
-   
-     )})}
   </tbody>
 </table>
-
-     
         <table data-border="1" cellSpacing={0} style={{width: "100%",marginTop: "10px"}}>
           <thead>
-            
-            <tr style={{textAlign:"center", background:"#c5d9f1"}}>
-                <th style={{border:"1px solid #CCC",padding:"8px"}} colSpan={8} >{formattedDate}</th>
-            </tr>
-            <tr style={{textAlign:"center", padding:"8px",background:"#fcd5b4"}}>
-                <th style={{border:"1px solid #CCC",padding:"8px",borderTop:"0px"}}>S No.</th>
+            <tr style={{textAlign:"center",background:"#fcd5b4"}}>
+                <th style={{border:"1px solid #CCC",borderTop:"0px"}}>S No.</th>
                 <th style={{borderBottom:"1px solid #CCC"}}>Name</th>
                 {/* <th style={{border:"1px solid #CCC",borderTop:"0px"}}>Designation</th> */}
-                <th style={{borderBottom:"1px solid #CCC",padding:"8px"}}>Attendance</th>
-                <th style={{border:"1px solid #CCC",borderTop:"0px",padding:"8px"}}>Reason</th>
-                <th style={{border:"1px solid #CCC",padding:"8px",borderTop:"0px"}}>Expected leave end</th>
-                <th style={{border:"1px solid #CCC",padding:"8px",borderTop:"0px"}}>Team</th>
-                <th style={{border:"1px solid #CCC",padding:"8px",borderTop:"0px"}}> Total leave this year</th>
- 
-               
+                <th style={{borderBottom:"1px solid #CCC"}}>Attendance</th>
+                <th style={{border:"1px solid #CCC",borderTop:"0px"}}>Reason</th>
+                <th style={{border:"1px solid #CCC",borderTop:"0px"}}>Expected leave End</th>
+                <th style={{border:"1px solid #CCC",borderTop:"0px"}}>Team</th>
+                <th style={{border:"1px solid #CCC",borderTop:"0px"}}> Total leave this year</th>
             </tr>
             {data?.map((item:any,index:any)=>{
                 return(
-                    <tr style={{textAlign:"center", padding:"8px",background:"#fff"}}>
+                    <tr style={{textAlign:"center",background:"#fff"}}>
                         <td style={{border:"1px solid #CCC",borderTop:"0px"}}>
                             {index+1}
                         </td>
-                        <td style={{borderBottom:"1px solid #CCC", padding:"8px"}}>
+                        <td style={{borderBottom:"1px solid #CCC"}}>
                            <a href={`${props.Listdata.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${item?.NameId}&Name=${item?.Name}`}> {item?.Name}</a>
                         </td>
-                        {/* <td style={{border:"1px solid #CCC",borderTop:"0px"}}>
-                            {item.Designation}
-                        </td>
-                        
-                         */}
-                          <td style={item.eventType=="Un-Planned"?{border:"1px solid #CCC",background:"#f00"}:{borderBottom:"1px solid #CCC",background:"#0ac55f", padding:"8px"}}>
+                          <td style={item.eventType=="Un-Planned"?{border:"1px solid #CCC",background:"#f00"}:{borderBottom:"1px solid #CCC",background:"#0ac55f"}}>
                           {item.eventType}
                       </td>
-                      
-                        
-                        <td style={{border:"1px solid #CCC",borderTop:"0px", padding:"8px"}} >{item?.shortD}</td>
-                        <td style={{border:"1px solid #CCC",borderTop:"0px", padding:"8px"}} ><a href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmalsusLeaveCalendar.aspx">
+                        <td style={{border:"1px solid #CCC",borderTop:"0px"}} >{item?.shortD}</td>
+                        <td style={{border:"1px solid #CCC",borderTop:"0px"}} ><a href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmalsusLeaveCalendar.aspx">
                           <span>{item.enddate.toLocaleString() }</span>
-                          {/* Today Date */}
                           </a></td>
-                        <td style={{border:"1px solid #CCC",borderTop:"0px", padding:"8px"}} dangerouslySetInnerHTML={{__html: item.Designation}}></td>
-                        <td style={{border:"1px solid #CCC",borderTop:"0px", padding:"8px"}} >{item?.TotalLeave}</td>
-                        
-                    </tr>
+                        <td style={{border:"1px solid #CCC",borderTop:"0px"}} dangerouslySetInnerHTML={{__html: item.Designation}}></td>
+                        <td style={{border:"1px solid #CCC",borderTop:"0px"}} >{item?.TotalLeave}</td>
+                      </tr>
                 )
             })}
           </thead> 
@@ -339,8 +271,6 @@ const data = props.data;
       </div>
       </div>
     </div>
-    
-    
     
   );
 };

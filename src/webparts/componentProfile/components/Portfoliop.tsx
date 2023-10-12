@@ -1946,7 +1946,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                         {item?.PortfolioType?.Title && (
                           <dl>
                             <dt className="bg-fxdark">
-                              {`${item?.PortfolioType?.Title}`} Portfolio
+                              Portfolio Item
                             </dt>
                             <dd className={`bg-light `}>
                               <div

@@ -496,7 +496,7 @@ function PortfolioTable(SelectedProp: any) {
                     result.ProjectId = result?.Project?.Id;
                     result.projectStructerId = result?.Project?.PortfolioStructureID
                     const title = result?.Project?.Title || '';
-                    const formattedDueDate = Moment(result?.Project?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
+                    const formattedDueDate = Moment(result?.Project?.DueDate).format('YYYY-MM');
                     result.joinedData = [];
                     if (result?.projectStructerId && title || formattedDueDate) {
                         result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
@@ -1592,6 +1592,9 @@ function PortfolioTable(SelectedProp: any) {
   const callBackData1 = React.useCallback((getData: any, topCompoIcon: any) => {
     setData((getData) => [...getData]);
     setTopCompoIcon(topCompoIcon);
+    renderData = [];
+    renderData = renderData.concat(getData);
+    refreshData();
   }, []);
 
   //  Function to call the child component's function
