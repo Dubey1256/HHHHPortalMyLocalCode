@@ -196,11 +196,11 @@ const ClientCategoryPupup=(props:any)=>{
                                         </div>
                                         {/* <div className="block col p-1"> {select}</div> */}
                                     </div>
-                                    <div className="d-end">
+                                    {/* <div className="d-end">
                                         <button type="button" className="btn btn-primary">
                                             OK
                                         </button>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                         </section>

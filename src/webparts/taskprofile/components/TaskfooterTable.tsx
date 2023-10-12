@@ -583,7 +583,7 @@ function TasksTable(props: any) {
       refreshData();
     }
     //====================Update Table Value===========================
-    if(childItem != undefined && childItem[0].NewBulkUpdate == true){
+    if(childItem != undefined && childItem[0]?.NewBulkUpdate == true){
       childItem.map((childelem:any)=>{
         finalData?.map((elem: any) => {
           if (elem?.Id === childelem?.Id || elem.ID === childelem?.Id) {
@@ -1068,7 +1068,7 @@ function TasksTable(props: any) {
   const callBackData = React.useCallback((checkData: any) => {
     let array: any = [];
     BulkTaskUpdate = []
-    if (checkData != undefined || checkData.length>0) {
+    if (checkData != undefined || checkData?.length>0) {
       checkData.map((item:any)=>{
         BulkTaskUpdate.push(item.original);
       
@@ -1173,6 +1173,7 @@ function TasksTable(props: any) {
                 AddWorkstreamTask={openActivity}
                 taskProfile={true}
                 expandIcon={true}
+                multiSelect={true}
               />
             </div>
 
