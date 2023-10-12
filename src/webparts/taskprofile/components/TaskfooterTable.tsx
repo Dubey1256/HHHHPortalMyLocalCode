@@ -41,7 +41,6 @@ import HighlightableCell from '../../../globalComponents/GroupByReactTableCompon
 import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
 import ReactPopperTooltip from '../../../globalComponents/Hierarchy-Popper-tooltip';
 import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
-import BulkeditTask from './BulkeditTask';
 var AllTasks: any = [];
 let AllTasksRendar: any = [];
 let siteConfig: any = [];
@@ -58,7 +57,6 @@ let siteIconAllTask: any = [];
 let finalData: any = [];
 let childRefdata: any;
 let TasksItem: any = [];
-let BulkTaskUpdate: any[] = []
 function IndeterminateCheckbox(
   {
     indeterminate,
@@ -505,13 +503,87 @@ function TasksTable(props: any) {
     MeetingItems = []
     var MainId: any = ''
     let ParentTaskId: any;
-    if (childItem != undefined && childItem.data?.ItmesDelete == undefined && childItem[0]?.NewBulkUpdate == undefined) {
+    if (childItem != undefined && childItem.data?.ItmesDelete == undefined) {
+      // let  TeamLeaderUser2:any=[];
+      // TeamLeaderUser2=TeamLeaderUser2.concat(childItem?.data?.ResponsibleTeam)
+      // TeamLeaderUser2=TeamLeaderUser2.concat(childItem?.data?.TeamMembers)
+      // TeamLeaderUser2=TeamLeaderUser2.concat(childItem?.data?.AssignedTo)
+      childItem.data.TeamLeaderUser=[];
+      childItem.data.DisplayCreateDate= moment(childItem?.data?.Created).format("DD/MM/YYYY")
+      childItem.data.DisplayDueDate=childItem?.data?.DueDate
       childItem.data.Item_x0020_Type = "Task";
+      if (
+        childItem?.data?.AssignedTo != undefined &&
+        childItem?.data?.AssignedTo?.length > 0
+      ) {
+        $.map(childItem?.data?.AssignedTo, (Assig: any) => {
+          if (Assig?.Id != undefined) {
+            $.map(taskUsers, (users: any) => {
+              if (
+                Assig.Id != undefined &&
+                users.AssingedToUser != undefined &&
+                Assig.Id == users.AssingedToUser.Id
+              ) {
+                users.ItemCover = users.Item_x0020_Cover;
+                childItem?.data?.TeamLeaderUser.push(users);
+                childItem.data.AllTeamName += users.Title + ";";
+              }
+            });
+          }
+        });
+      }
+      if (
+        childItem?.data?.ResponsibleTeam!= undefined &&
+        childItem?.data?.ResponsibleTeam?.length > 0
+      ) {
+        $.map(childItem?.data?.ResponsibleTeam, (Assig: any) => {
+          if (Assig?.Id != undefined) {
+            $.map(taskUsers, (users: any) => {
+              if (
+                Assig.Id != undefined &&
+                users.AssingedToUser != undefined &&
+                Assig.Id == users.AssingedToUser.Id
+              ) {
+                users.ItemCover = users.Item_x0020_Cover;
+                childItem?.data?.TeamLeaderUser.push(users);
+                childItem.data.AllTeamName += users.Title + ";";
+              }
+            });
+          }
+        });
+      }
+      if (
+        childItem?.data?.TeamMembers != undefined &&
+        childItem?.data?.TeamMembers?.length > 0
+      ) {
+        $.map(childItem?.data?.TeamMembers, (Assig: any) => {
+          if (Assig?.Id != undefined) {
+            $.map(taskUsers, (users: any) => {
+              if (
+                Assig?.Id != undefined &&
+                users?.AssingedToUser != undefined &&
+                Assig?.Id == users.AssingedToUser.Id
+              ) {
+                users.ItemCover = users.Item_x0020_Cover;
+                childItem?.data?.TeamLeaderUser.push(users);
+                childItem.data.AllTeamName += users.Title + ";";
+              }
+            });
+          }
+        });
+      }
+
+
       childItem.data['flag'] = true;
+      // childItem.data['SiteIcon']= GetIconImageUrl(childItem.data.siteType,childItem.data.siteUrl,undefined)
+      // childItem.data['TitleNew'] = childItem.data.Title;
       childItem.data['TaskType'] = { Title: 'Workstream' }
       if (childItem.data.PortfolioId != undefined) {
         MainId = childItem.data.PortfolioId
       }
+      // if (childItem.data.ComponentId != undefined && childItem.data.ComponentId.length > 0) {
+      //   MainId = childItem.data.ComponentId[0]
+      // }
       if (childItem.data.ParentTaskId != undefined && childItem.data.ParentTaskId != "") {
         ParentTaskId = childItem.data.ParentTaskId;
       }
@@ -535,7 +607,6 @@ function TasksTable(props: any) {
           finalData = finalData?.concat(AllTasksRendar)
         }
       }
-      
 
       //============ update the data to Edit task popup==================
 
@@ -575,30 +646,6 @@ function TasksTable(props: any) {
         if (ele.Id == childItem.data.Id) {
           finalData.splice(index, 1);
         }
-      })
-      AllTasksRendar = AllTasksRendar?.concat(finalData)
-      finalData = [];
-      finalData = finalData?.concat(AllTasksRendar)
-      console.log(finalData)
-      refreshData();
-    }
-    //====================Update Table Value===========================
-    if(childItem != undefined && childItem[0]?.NewBulkUpdate == true){
-      childItem.map((childelem:any)=>{
-        finalData?.map((elem: any) => {
-          if (elem?.Id === childelem?.Id || elem.ID === childelem?.Id) {
-            if(childelem?.NewDueDate != ''){
-              elem.DueDate = childelem?.NewDueDate
-            }
-            if(childelem?.NewStatus != ''){
-              elem.PercentComplete = childelem?.NewStatus
-            }
-            if(childelem?.NewItemRank != ''){
-              elem.ItemRank = childelem?.NewItemRank
-            }
-            
-          }
-        })
       })
       AllTasksRendar = AllTasksRendar?.concat(finalData)
       finalData = [];
@@ -921,7 +968,7 @@ function TasksTable(props: any) {
                 </span>)}
 
               {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && (
-                <span title='Edit' onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit pull-right"></span>
+                <span title='Edit' onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit ml-auto"></span>
               )}
             </a>
             {getValue()}
@@ -1067,52 +1114,37 @@ function TasksTable(props: any) {
   }, [table.getState().columnFilters]);
   const callBackData = React.useCallback((checkData: any) => {
     let array: any = [];
-    BulkTaskUpdate = []
-    if (checkData != undefined || checkData?.length>0) {
-      checkData.map((item:any)=>{
-        BulkTaskUpdate.push(item.original);
-      
-        BulkTaskUpdate.map((taskitem:any)=>{
-          if (taskitem.TaskType == undefined) {
-            setActivityDisable(false)
-            taskitem['siteUrl'] = props?.AllListId?.siteUrl; 
-            taskitem['listName'] = 'Master Tasks';
-            MeetingItems.push(BulkTaskUpdate)
-            //setMeetingItems(itrm);
-          }
-          if (taskitem.TaskType != undefined) {
-            if (taskitem.TaskType.Title == 'Activities' || taskitem.TaskType.Title == "Workstream") {
-              setActivityDisable(false)
-              // Arrays.push(itrm)
-              taskitem['PortfolioId'] = props?.Id;
-              MeetingItems.push(BulkTaskUpdate)
-              setCount(count + 2)
-            }
-            if (taskitem.TaskType.Title == 'Task') {
-              setActivityDisable(true)
-              MeetingItems.push(BulkTaskUpdate)
-            }
-          }
-        })
-        // let indexToUpdate = -1;
-        // for (let index = 0; index < BulkTaskUpdate.length; index++) {
-        //   if (BulkTaskUpdate[index].Id === checkData.Id) {
-        //     indexToUpdate = index;
-        //     break;
-        //   }
-        // }   
-        // if (indexToUpdate !== -1) {
-        //   BulkTaskUpdate.splice(indexToUpdate, 1);
-        // } else {
-        //   BulkTaskUpdate.push(checkData);
-        // }
-        setcheckData(item.original);
-        array.push(item.original);
-      })  
+    if (checkData != undefined) {
+
+      if (checkData.TaskType == undefined) {
+        setActivityDisable(false)
+        checkData['siteUrl'] = props?.AllListId?.siteUrl;
+        checkData['listName'] = 'Master Tasks';
+        MeetingItems.push(checkData)
+        //setMeetingItems(itrm);
+
+      }
+      if (checkData.TaskType != undefined) {
+        if (checkData.TaskType.Title == 'Activities' || checkData.TaskType.Title == "Workstream") {
+          setActivityDisable(false)
+          // Arrays.push(itrm)
+          checkData['PortfolioId'] = props?.Id;
+          MeetingItems.push(checkData)
+          setCount(count + 2)
+        }
+        if (checkData.TaskType.Title == 'Task') {
+          setActivityDisable(true)
+          MeetingItems.push(checkData)
+
+        }
+      }
+      setcheckData(checkData);
+      array.push(checkData);
+
+
     } else {
       setcheckData({});
       array = [];
-      BulkTaskUpdate = []
     }
     // setCheckedList1(array);
   }, []);
@@ -1151,7 +1183,6 @@ function TasksTable(props: any) {
         <div className="col-sm-12 pad0 smart" >
           <div className="">
             <div className={`${data?.length > 10 ? "wrapper" : "MinHeight"}`}>
-            <div> <BulkeditTask SelectedTask={BulkTaskUpdate} Call={Call}></BulkeditTask></div>
               <GlobalCommanTable
               queryItems={props?.props}
                 ref={childRef}
@@ -1207,4 +1238,3 @@ function TasksTable(props: any) {
 
 }
 export default TasksTable;
-

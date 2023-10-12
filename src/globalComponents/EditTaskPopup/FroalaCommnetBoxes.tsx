@@ -124,11 +124,11 @@ export default function FroalaCommnetBoxes(textItems: any) {
         setBtnStatus(true);
     }
 
-    const RemoveItem = (dltItem: any) => {
+    const RemoveItem = (dltItem: any, Index:any) => {
         let tempArray: any = []
         IndexCount--;
-        State.map((array: any) => {
-            if (dltItem.Title != array.Title) {
+        State.map((array: any, ItemIndex:any) => {
+            if (dltItem.Title != array.Title || ItemIndex != Index) {
                 tempArray.push(array);
             }
         })
@@ -468,7 +468,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                             <span> | </span>
                                             <a className="hreflink alignIcon"
                                                 style={{ cursor: "pointer" }} target="_blank"
-                                                onClick={() => RemoveItem(obj)}>
+                                                onClick={() => RemoveItem(obj, i)}>
                                                 <span className="svg__iconbox hreflink mini svg__icon--trash"></span>
                                             </a>
                                         </div>

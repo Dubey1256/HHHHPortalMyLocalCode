@@ -375,7 +375,7 @@ function ShowTeamMembers(item: any) {
     if (item?.props[0]?.original != undefined && item?.props[0]?.original?.siteType == 'Master Tasks')
       listID = GlobalConstants.MASTER_TASKS_LISTID;
     else if (item?.props[0]?.original != undefined && item?.props[0]?.original?.siteType != 'Master Tasks')
-      listID = item?.original?.listId;
+      listID = item?.props[0]?.original?.listId;
     CurrentItem = await globalCommon.getData(GlobalConstants.SP_SITE_URL, listID, select);
     if (CurrentItem != undefined && CurrentItem?.length > 0) {
       if (CurrentItem[0]?.Comments != undefined && CurrentItem[0]?.Comments?.length > 0) {
