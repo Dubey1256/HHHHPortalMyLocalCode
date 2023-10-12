@@ -304,13 +304,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
       </div>
     );
   }
-  // if(type="text"){
-
-  // } if(type="Number"){
-
-  // }
-
-  const handleSave = async () => {
+const handleSave = async () => {
     try {
       setFieldValue(fieldValue);
       // if(type == "Number"){
@@ -390,7 +384,7 @@ function getQueryVariable(variable: any) {
 }
 let ID: any = "";
 let web: any = "";
-
+let count = 0;
 function Portfolio({ SelectedProp,TaskUser }: any) {
   AllTaskuser=TaskUser;
   const [data, setTaskData] = React.useState([]);
@@ -413,7 +407,6 @@ function Portfolio({ SelectedProp,TaskUser }: any) {
   const [showBlock, setShowBlock] = React.useState(false);
   const [IsTask, setIsTask] = React.useState(false);
   const [questionandhelp, setquestionandhelp] = React.useState([]);
-
   const [ParentData, SetParentData] = React.useState([]);
   const [ImagePopover, SetImagePopover] = React.useState({
     isModalOpen: false,
@@ -585,10 +578,10 @@ function Portfolio({ SelectedProp,TaskUser }: any) {
             }
             if (
               item?.Parent != undefined &&
-              item.Parent.Id != undefined &&
+              item?.Parent?.Id != undefined &&
               item.Item_x0020_Type == "Feature"
             ) {
-              ParentId = item.Parent.Id;
+              ParentId = item?.Parent?.Id;
               let urln = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('${ContextValue.MasterTaskListID}')/items?$select=Id,Parent/Id,Title,Parent/Title,Parent/ItemType&$expand=Parent&$filter=Id eq ${ParentId}`;
               $.ajax({
                 url: urln,
@@ -626,6 +619,8 @@ function Portfolio({ SelectedProp,TaskUser }: any) {
                 },
                 success: function (data) {
                   if (data != undefined) {
+                    AllHelp=[];
+                    AllQuestion=[];
                     data.d.results.forEach(function (item: any) {
                       item.AssignedTo =
                         item?.AssignedTo?.results === undefined
@@ -694,7 +689,7 @@ function Portfolio({ SelectedProp,TaskUser }: any) {
     open();
 
     getPortFolioType();
-  }, []);
+  }, [count]);
 
   // Make Folder data unique
 
@@ -793,24 +788,14 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
     setSharewebComponent(item);
   };
   const Call = React.useCallback((item1) => {
+    count++;
     setIsComponent(false);
     setIsTask(false);
   }, []);
 
   //  Remove duplicate values
 
-  
-
-  
-
-  function handleSuffixHover() {
-    setShowBlock(true);
-  }
-
-  function handleuffixLeave() {
-    setShowBlock(false);
-  }
-
+  // For the On Click icons on the Table
   if (
     ParentData[0]?.Parent?.ItemType == "Component" &&
     data[0].Item_x0020_Type == "Feature"
@@ -868,6 +853,8 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
       }
     ];
   }
+
+// End Here 
 
   // Basic Image
   if ((data?.length != 0 && data[0]?.BasicImageInfo != undefined) || null) {
@@ -951,22 +938,22 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                           </a>
                         )}
                       </li>
-                      {(item.Item_x0020_Type == "SubComponent" ||
-                        item.Item_x0020_Type == "Feature") && (
+                      {(item?.Item_x0020_Type == "SubComponent" ||
+                        item?.Item_x0020_Type == "Feature") && (
                         <>
                           <li>
                             {/* if="Task.PortfolioType=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
-                            {ParentData != undefined && ParentData[0]?.Parent?.Id != undefined && 
-                              ParentData.map((ParentD: any) => {
+                            {ParentData != undefined && ParentData[0].Parent.Id != undefined && 
+                              ParentData?.map((ParentD: any) => {
                                 return (
                                   <>
-                                    {ParentD.Parent != undefined && (
+                                    {ParentD?.Parent != undefined && (
                                       <a
                                         target="_blank"
                                         data-interception="off"
                                         href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${ParentD.Parent.Id}`}
                                       >
-                                        {ParentD.Parent.Title}
+                                        {ParentD?.Parent?.Title}
                                       </a>
                                     )}
                                   </>
@@ -975,13 +962,13 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                           </li>
                           <li>
                             {/* if="Task.PortfolioType=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
-                            {item.Parent != undefined && (
+                            {item?.Parent != undefined && (
                               <a
                                 target="_blank"
                                 data-interception="off"
-                                href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.Parent.Id}`}
+                                href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item?.Parent?.Id}`}
                               >
-                                {item.Parent.Title}
+                                {item?.Parent?.Title}
                               </a>
                             )}
                           </li>
@@ -989,7 +976,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                       )}
 
                       <li>
-                        <a>{item.Title}</a>
+                        <a>{item?.Title}</a>
                       </li>
                     </>
                   );
@@ -1006,10 +993,10 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                       {(item?.PortfolioType?.Id === 1 ||
                         item?.PortfolioType?.Id === 2 ||
                         item?.PortfolioType?.Id === 3) &&
-                        item.Item_x0020_Type == "SubComponent" && (
+                        item?.Item_x0020_Type == "SubComponent" && (
                           <>
                             <span className="Dyicons">S</span>{" "}
-                            <a>{item.Title}</a>{" "}
+                            <a>{item?.Title}</a>{" "}
                             <span>
                               {" "}
                               <img
@@ -1025,10 +1012,10 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                       {(item?.PortfolioType?.Id === 1 ||
                         item?.PortfolioType?.Id === 2 ||
                         item?.PortfolioType?.Id === 3) &&
-                        item.Item_x0020_Type == "Feature" && (
+                        item?.Item_x0020_Type == "Feature" && (
                           <>
                             <span className="Dyicons">F</span>{" "}
-                            <a>{item.Title}</a>{" "}
+                            <a>{item?.Title}</a>{" "}
                             <span>
                               {" "}
                               <img
@@ -1043,11 +1030,11 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                       {(item?.PortfolioType?.Id === 1 ||
                         item?.PortfolioType?.Id === 2 ||
                         item?.PortfolioType?.Id === 3) &&
-                        item.Item_x0020_Type != "SubComponent" &&
-                        item.Item_x0020_Type != "Feature" && (
+                        item?.Item_x0020_Type != "SubComponent" &&
+                        item?.Item_x0020_Type != "Feature" && (
                           <>
                             <span className="Dyicons">C</span>{" "}
-                            <a>{item.Title}</a>{" "}
+                            <a>{item?.Title}</a>{" "}
                             <span>
                               {" "}
                               <img
@@ -1095,7 +1082,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                               <a>
                                 <EditableField
                                   listName="Master Tasks"
-                                  itemId={item.Id}
+                                  itemId={item?.Id}
                                   fieldName="DueDate"
                                   value={
                                     item?.DueDate != undefined
@@ -1120,11 +1107,11 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                             <a>
                               <EditableField
                                 listName="Master Tasks"
-                                itemId={item.Id}
+                                itemId={item?.Id}
                                 fieldName="StartDate"
                                 value={
                                   item?.StartDate != undefined
-                                    ? Moment(item.StartDate).format(
+                                    ? Moment(item?.StartDate).format(
                                         "DD/MM/YYYY"
                                       )
                                     : ""
@@ -1164,7 +1151,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                           {data.map((item) => (
                             <EditableField
                               listName="Master Tasks"
-                              itemId={item.Id}
+                              itemId={item?.Id}
                               fieldName="ItemRank"
                               value={
                                 item?.ItemRank != undefined
@@ -1186,7 +1173,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                           {data.map((item) => (
                             <EditableField
                               listName="Master Tasks"
-                              itemId={item.Id}
+                              itemId={item?.Id}
                               fieldName="Priority"
                               value={
                                 item?.Priority != undefined
@@ -1207,11 +1194,11 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                             <a>
                               <EditableField
                                 listName="Master Tasks"
-                                itemId={item.Id}
+                                itemId={item?.Id}
                                 fieldName="CompletedDate"
                                 value={
                                   item?.CompletedDate != undefined
-                                    ? Moment(item.CompletedDate).format(
+                                    ? Moment(item?.CompletedDate).format(
                                         "DD/MM/YYYY"
                                       )
                                     : ""
@@ -1228,7 +1215,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                         <dt className="bg-fxdark">Categories</dt>
                         <dd className="bg-light text-break">
                           {data.map((item) => (
-                            <a>{item.Categories}</a>
+                            <a>{item?.Categories}</a>
                           ))}
                         </dd>
                       </dl>
@@ -1238,11 +1225,11 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                           {data.map((item) => (
                             <EditableField
                               listName="Master Tasks"
-                              itemId={item.Id}
+                              itemId={item?.Id}
                               fieldName="PercentComplete"
                               value={
                                 item?.PercentComplete != undefined
-                                  ? (item.PercentComplete * 100).toFixed(0)
+                                  ? (item?.PercentComplete * 100).toFixed(0)
                                   : ""
                               }
                               onChange={handleFieldChange("PercentComplete")}
@@ -1255,7 +1242,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                       {data.map((item: any) => {
                         return (
                           <>
-                            {item.Parent.Title != undefined && (
+                            {item?.Parent?.Title != undefined && (
                               <dl>
                                 <dt className="bg-fxdark">Parent</dt>
                                 <dd className="bg-light">
@@ -1265,10 +1252,10 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                     href={
                                       SelectedProp.siteUrl +
                                       "/SitePages/Portfolio-Profile.aspx?taskId=" +
-                                      item.Parent.Id
+                                      item?.Parent?.Id
                                     }
                                   >
-                                    {item.Parent.Title}
+                                    {item?.Parent?.Title}
                                   </a>
                                   <span className="pull-right">
                                     <span className="pencil_icon">
@@ -1282,7 +1269,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                               href={
                                                 SelectedProp.siteUrl +
                                                 "/SitePages/Component-Portfolio.aspx?ComponentID=" +
-                                                item.Parent.Id
+                                                item?.Parent?.Id
                                               }
                                             >
                                               <img
@@ -1302,7 +1289,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                               href={
                                                 SelectedProp.siteUrl +
                                                 "/SitePages/Service-Portfolio.aspx?ComponentID=" +
-                                                item.Parent.Id
+                                                item?.Parent?.Id
                                               }
                                             >
                                               {" "}
@@ -1388,7 +1375,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                       {/* Description */}
                       {data.map((item) => (
                         <>
-                          {item.Body !== null && (
+                          {item?.Body !== null && (
                             <div className="card shadow-none  mb-2">
                               <div
                                 className="accordion-item border-0"
@@ -1404,7 +1391,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                   >
                                     <span className="fw-medium font-sans-serif text-900">
                                       <span className="sign">
-                                        {item.showb ? (
+                                        {item?.showb ? (
                                           <IoMdArrowDropdown />
                                         ) : (
                                           <IoMdArrowDropright />
@@ -1415,7 +1402,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                   </button>
                                 </div>
                                 <div className="accordion-collapse collapse show">
-                                  {item.showb && (
+                                  {item?.showb && (
                                     <div
                                       className="accordion-body pt-1"
                                       id="testDiv1"
@@ -1424,7 +1411,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                         <p
                                           className="m-0"
                                           dangerouslySetInnerHTML={{
-                                            __html: item.Body
+                                            __html: item?.Body
                                           }}
                                         ></p>
                                       ))}
@@ -1439,7 +1426,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                       {/* Short description */}
                       {data.map((item) => (
                         <>
-                          {item.Short_x0020_Description_x0020_On !== null && (
+                          {item?.Short_x0020_Description_x0020_On !== null && (
                             <div className="card shadow-none  mb-2">
                               <div
                                 className="accordion-item border-0"
@@ -1455,7 +1442,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                   >
                                     <span className="fw-medium font-sans-serif text-900">
                                       <span className="sign">
-                                        {item.show ? (
+                                        {item?.show ? (
                                           <IoMdArrowDropdown />
                                         ) : (
                                           <IoMdArrowDropright />
@@ -1466,7 +1453,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                   </button>
                                 </div>
                                 <div className="accordion-collapse collapse show">
-                                  {item.show && (
+                                  {item?.show && (
                                     <div
                                       className="accordion-body pt-1"
                                       id="testDiv1"
@@ -1476,7 +1463,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                           className="m-0"
                                           dangerouslySetInnerHTML={{
                                             __html:
-                                              item.Short_x0020_Description_x0020_On
+                                              item?.Short_x0020_Description_x0020_On
                                           }}
                                         ></p>
                                       ))}
@@ -1504,7 +1491,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                 >
                                   <span className="fw-medium font-sans-serif text-900">
                                     <span className="sign">
-                                      {item.showQues ? (
+                                      {item?.showQues ? (
                                         <IoMdArrowDropdown />
                                       ) : (
                                         <IoMdArrowDropright />
@@ -1515,7 +1502,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                 </button>
                               </div>
 
-                              {item.showQues && (
+                              {item?.showQues && (
                                 <>
                                   <div className="px-2 my-2">
                                     {AllQuestion.map((item) => (
@@ -1530,18 +1517,18 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                           >
                                             <span className="fw-medium font-sans-serif text-900">
                                               <span className="sign">
-                                                {item.showQues ? (
+                                                {item?.showQues ? (
                                                   <IoMdArrowDropdown />
                                                 ) : (
                                                   <IoMdArrowDropright />
                                                 )}
                                               </span>{" "}
-                                              {item.Title}
+                                              {item?.Title}
                                             </span>
                                           </button>
                                         </div>
                                         <div className="accordion-collapse collapse show">
-                                          {item.showQues && (
+                                          {item?.showQues && (
                                             <div
                                               className="accordion-body pt-1"
                                               id="testDiv1"
@@ -1549,7 +1536,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                               <p
                                                 className="m-0"
                                                 dangerouslySetInnerHTML={{
-                                                  __html: item.Body
+                                                  __html: item?.Body
                                                 }}
                                               ></p>
                                             </div>
@@ -1579,7 +1566,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                 >
                                   <span className="fw-medium font-sans-serif text-900">
                                     <span className="sign">
-                                      {item.showHelp ? (
+                                      {item?.showHelp ? (
                                         <IoMdArrowDropdown />
                                       ) : (
                                         <IoMdArrowDropright />
@@ -1590,7 +1577,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                 </button>
                               </div>
 
-                              {item.showHelp && (
+                              {item?.showHelp && (
                                 <>
                                   <div className="px-2 my-2">
                                     {AllHelp.map((item) => (
@@ -1605,18 +1592,18 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                           >
                                             <span className="fw-medium font-sans-serif text-900">
                                               <span className="sign">
-                                                {item.showHelp ? (
+                                                {item?.showHelp ? (
                                                   <IoMdArrowDropdown />
                                                 ) : (
                                                   <IoMdArrowDropright />
                                                 )}
                                               </span>{" "}
-                                              {item.Title}
+                                              {item?.Title}
                                             </span>
                                           </button>
                                         </div>
                                         <div className="accordion-collapse collapse show">
-                                          {item.showHelp && (
+                                          {item?.showHelp && (
                                             <div
                                               className="accordion-body pt-1"
                                               id="testDiv1"
@@ -1624,7 +1611,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                               <p
                                                 className="m-0"
                                                 dangerouslySetInnerHTML={{
-                                                  __html: item.Body
+                                                  __html: item?.Body
                                                 }}
                                               ></p>
                                             </div>
@@ -1641,7 +1628,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                       {/* Background */}
                       {data.map((item) => (
                         <>
-                          {item.Background !== null && (
+                          {item?.Background !== null && (
                             <div className="card shadow-none  mb-2">
                               <div
                                 className="accordion-item border-0"
@@ -1656,7 +1643,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                     data-bs-toggle="collapse"
                                   >
                                     <span className="sign">
-                                      {item.showl ? (
+                                      {item?.showl ? (
                                         <IoMdArrowDropdown />
                                       ) : (
                                         <IoMdArrowDropright />
@@ -1669,14 +1656,14 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                   </button>
                                 </div>
                                 <div className="accordion-collapse collapse show">
-                                  {item.showl && (
+                                  {item?.showl && (
                                     <div
                                       className="accordion-body pt-1"
                                       id="testDiv1"
                                     >
                                       <p className="m-0">
                                         {data.map((item) => (
-                                          <>{item.Background}</>
+                                          <>{item?.Background}</>
                                         ))}
                                       </p>
                                     </div>
@@ -1690,7 +1677,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                       {/* Idea */}
                       {data.map((item) => (
                         <>
-                          {item.Idea !== null && (
+                          {item?.Idea !== null && (
                             <div className="card shadow-none mb-2">
                               <div
                                 className="accordion-item border-0"
@@ -1705,7 +1692,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                     data-bs-toggle="collapse"
                                   >
                                     <span className="sign">
-                                      {item.shows ? (
+                                      {item?.shows ? (
                                         <IoMdArrowDropdown />
                                       ) : (
                                         <IoMdArrowDropright />
@@ -1718,7 +1705,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                   </button>
                                 </div>
                                 <div className="accordion-collapse collapse show">
-                                  {item.shows && (
+                                  {item?.shows && (
                                     <div
                                       className="accordion-body pt-1"
                                       id="testDiv1"
@@ -1726,7 +1713,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                       <p
                                         className="m-0"
                                         dangerouslySetInnerHTML={{
-                                          __html: item.Idea
+                                          __html: item?.Idea
                                         }}
                                       ></p>
                                     </div>
@@ -1740,7 +1727,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                       {/* Value Added */}
                       {data.map((item) => (
                         <>
-                          {item.ValueAdded !== null && (
+                          {item?.ValueAdded !== null && (
                             <div className="card shadow-none mb-2">
                               <div
                                 className="accordion-item border-0"
@@ -1755,7 +1742,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                     data-bs-toggle="collapse"
                                   >
                                     <span className="sign">
-                                      {item.showj ? (
+                                      {item?.showj ? (
                                         <IoMdArrowDropdown />
                                       ) : (
                                         <IoMdArrowDropright />
@@ -1768,7 +1755,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                   </button>
                                 </div>
                                 <div className="accordion-collapse collapse show">
-                                  {item.showj && (
+                                  {item?.showj && (
                                     <div
                                       className="accordion-body pt-1"
                                       id="testDiv1"
@@ -1776,7 +1763,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                       <p
                                         className="m-0"
                                         dangerouslySetInnerHTML={{
-                                          __html: item.ValueAdded
+                                          __html: item?.ValueAdded
                                         }}
                                       ></p>
                                     </div>
@@ -1790,7 +1777,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                       {/* Help Information Help_x0020_Information */}
                       {data.map((item) => (
                         <>
-                          {item.Help_x0020_Information !== null && (
+                          {item?.Help_x0020_Information !== null && (
                             <div className="card shadow-none mb-2">
                               <div
                                 className="accordion-item border-0"
@@ -1805,7 +1792,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                     data-bs-toggle="collapse"
                                   >
                                     <span className="sign">
-                                      {item.showhelp ? (
+                                      {item?.showhelp ? (
                                         <IoMdArrowDropdown />
                                       ) : (
                                         <IoMdArrowDropright />
@@ -1818,7 +1805,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                   </button>
                                 </div>
                                 <div className="accordion-collapse collapse show">
-                                  {item.showhelp && (
+                                  {item?.showhelp && (
                                     <div
                                       className="accordion-body pt-1"
                                       id="testDiv1"
@@ -1826,7 +1813,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                       <p
                                         className="m-0"
                                         dangerouslySetInnerHTML={{
-                                          __html: item.Help_x0020_Information
+                                          __html: item?.Help_x0020_Information
                                         }}
                                       ></p>
                                     </div>
@@ -1840,7 +1827,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                       {/* Technical Explanation */}
                       {data.map((item) => (
                         <>
-                          {item.TechnicalExplanations !== null && (
+                          {item?.TechnicalExplanations !== null && (
                             <div className="card shadow-none mb-2">
                               <div
                                 className="accordion-item border-0"
@@ -1855,7 +1842,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                     data-bs-toggle="collapse"
                                   >
                                     <span className="sign">
-                                      {item.showtech ? (
+                                      {item?.showtech ? (
                                         <IoMdArrowDropdown />
                                       ) : (
                                         <IoMdArrowDropright />
@@ -1867,7 +1854,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                   </button>
                                 </div>
                                 <div className="accordion-collapse collapse show">
-                                  {item.showtech && (
+                                  {item?.showtech && (
                                     <div
                                       className="accordion-body pt-1"
                                       id="testDiv1"
@@ -1875,7 +1862,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                       <p
                                         className="m-0"
                                         dangerouslySetInnerHTML={{
-                                          __html: item.TechnicalExplanations
+                                          __html: item?.TechnicalExplanations
                                         }}
                                       ></p>
                                     </div>
@@ -1889,7 +1876,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                       {/* Deliverables */}
                       {data.map((item) => (
                         <>
-                          {item.Deliverables !== null && (
+                          {item?.Deliverables !== null && (
                             <div className="card shadow-none mb-2">
                               <div
                                 className="accordion-item border-0"
@@ -1904,7 +1891,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                     data-bs-toggle="collapse"
                                   >
                                     <span className="sign">
-                                      {item.showm ? (
+                                      {item?.showm ? (
                                         <IoMdArrowDropdown />
                                       ) : (
                                         <IoMdArrowDropright />
@@ -1917,7 +1904,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                   </button>
                                 </div>
                                 <div className="accordion-collapse collapse show">
-                                  {item.showm && (
+                                  {item?.showm && (
                                     <div
                                       className="accordion-body pt-1"
                                       id="testDiv1"
@@ -1925,7 +1912,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                       <p
                                         className="m-0"
                                         dangerouslySetInnerHTML={{
-                                          __html: item.Deliverables
+                                          __html: item?.Deliverables
                                         }}
                                       ></p>
                                     </div>
@@ -1946,7 +1933,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                         {item?.PortfolioType?.Title && (
                           <dl>
                             <dt className="bg-fxdark">
-                              Portfolio Item
+                              {`${item?.PortfolioType?.Title}`} Portfolio
                             </dt>
                             <dd className={`bg-light `}>
                               <div
@@ -1963,10 +1950,10 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                                   data-interception="off"
                                   href={
                                     SelectedProp.siteUrl +
-                                    `/SitePages/Portfolio-Profile.aspx?taskId=${item?.Portfolios?.results[0]?.Id}`
+                                    `/SitePages/Portfolio-Profile.aspx?taskId=${item?.Portfolios?.results === undefined ?item?.Portfolios?.Id : item?.Portfolios?.results[0]?.Id}`
                                   }
                                 >
-                                  {item?.Portfolios?.results[0]?.Title}
+                                  {item?.Portfolios?.results === undefined ?item?.Portfolios?.Title : item?.Portfolios?.results[0]?.Title}
                                 </a>
                               </div>
                             </dd>
@@ -1988,12 +1975,12 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                 {data.map((item) => {
                   return (
                     <>
-                      {item.Item_x002d_Image != null && (
+                      {item?.Item_x002d_Image != null && (
                         <div>
                           <img
-                            alt={item.Item_x002d_Image.Url}
+                            alt={item?.Item_x002d_Image?.Url}
                             style={{ width: "280px", height: "145px" }}
-                            src={item.Item_x002d_Image.Url}
+                            src={item?.Item_x002d_Image?.Url}
                           />
                         </div>
                       )}
@@ -2105,12 +2092,12 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                   {data.map((item) => {
                     return (
                       <SmartInformation
-                        Id={item.Id}
+                        Id={item?.Id}
                         siteurl={"${web}"}
                         spPageContext={"/sites/HHHH/SP"}
                         AllListId={SelectedProp}
                         Context={SelectedProp?.Context}
-                        taskTitle={item.Title}
+                        taskTitle={item?.Title}
                         listName={"Master Tasks"}
                       />
                     );
@@ -2174,8 +2161,8 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                       <CommentCard
                         siteUrl={SelectedProp.siteUrl}
                         AllListId={SelectedProp}
-                        userDisplayName={item.userDisplayName}
-                        itemID={item.Id}
+                        userDisplayName={item?.userDisplayName}
+                        itemID={item?.Id}
                         listName={"Master Tasks"}
                         Context={SelectedProp.Context}
                       ></CommentCard>
@@ -2208,15 +2195,15 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
               <div>
                 <div>
                   Created{" "}
-                  <span>{Moment(item.Created).format("DD/MM/YYYY hh:mm")}</span>{" "}
-                  by <span className="hyperlink">{item.Author.Title}</span>
+                  <span>{Moment(item?.Created).format("DD/MM/YYYY hh:mm")}</span>{" "}
+                  by <span className="hyperlink">{item?.Author?.Title}</span>
                 </div>
                 <div>
                   Last modified{" "}
                   <span>
-                    {Moment(item.Modified).format("DD/MM/YYYY hh:mm")}
+                    {Moment(item?.Modified).format("DD/MM/YYYY hh:mm")}
                   </span>{" "}
-                  by <span className="hyperlink">{item.Editor.Title}</span>
+                  by <span className="hyperlink">{item?.Editor?.Title}</span>
                 </div>
               </div>
             );

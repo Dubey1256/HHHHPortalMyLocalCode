@@ -3138,10 +3138,14 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
                           href={obj.Item_x0020_Type != 'Task' ? (props?.contextValue?.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + obj?.Id) : 
                           (props?.contextValue?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + obj?.Id + "&Site=" + restructuredItemarray[0]?.siteType)
                           }>
-                          {obj?.siteIcon?.length === 1 ? 
-                        <div className="Dyicons text-center">{obj.siteIcon}</div> : <div className='text-center'><img className='workmember' src={obj?.siteIcon} /></div>}
-                        <div className='alignCenter'>{obj?.Title}</div>
-                        </a>
+                            {
+                              obj?.Title != "Others" ? (obj?.siteIcon?.length === 1 ? 
+                                <div className="Dyicons text-center">{obj.siteIcon}</div> : <div className='text-center'><img className='workmember' src={obj?.siteIcon} /></div>) : ''
+                            }
+                            {
+                              obj?.Title != "Others" ?  <div className='alignCenter'>{obj?.Title}</div> :'Others'
+                            }
+                         </a>
                       </div>
                       {obj?.newSubChild != undefined && obj?.newSubChild != null ? <div className='alignCenter'> <BsArrowRightShort/> </div> : ''}
                       {obj?.newSubChild ? <><div className='reStuMainTiles'> <a className='reStuTile'>{obj?.newSubChild?.siteIcon === "S" || obj?.newSubChild?.siteIcon === "F" ?  <span className="Dyicons me-1">{obj?.newSubChild?.siteIcon}</span> : <span className='mx-1'><img className='workmember' src={obj?.newSubChild?.siteIcon} /></span>} {obj?.newSubChild?.Title}</a> </div> {obj?.newSubChild?.newFeatChild != undefined && obj?.newSubChild?.newFeatChild != null ? <div className='alignCenter'> <BsArrowRightShort/> </div> : ''}</>: ''}
@@ -3167,8 +3171,13 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
                         (props?.contextValue?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + obj?.Id + "&Site=" + restructuredItemarray[0]?.siteType)
                         }
                       >
-                         {obj?.siteIcon?.length === 1 ? <span className="Dyicons">{obj?.siteIcon}</span> : <span><img className='workmember' src={obj?.siteIcon} /></span>}
-                        {obj?.Title}
+                        {
+                          obj?.Title != "Others" ? (obj?.siteIcon?.length === 1 ? <span className="Dyicons">{obj?.siteIcon}</span> : <span><img className='workmember' src={obj?.siteIcon} /></span>) : ''
+                        }
+                        {
+                          obj?.Title != "Others" ? (obj?.Title) : 'Others'
+                        }
+                        
                       </a></div>
                       <div className='alignCenter'> <BsArrowRightShort/> </div>
                       {obj?.newSubChild ? <> <div className='reStuMainTiles'><a className='reStuTile'> {obj?.newSubChild?.siteIcon === "S" || obj?.newSubChild?.siteIcon === "F" ? <span className="Dyicons">{obj?.newSubChild?.siteIcon}</span> : <span className='mx-1'><img className='workmember' src={obj?.newSubChild?.siteIcon} /></span>} {obj?.newSubChild?.Title}</a></div><div className='alignCenter'> <BsArrowRightShort/> </div></> : ''}
@@ -3184,10 +3193,8 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
                         data-interception="off"
                         target="_blank"
                         className="hreflink serviceColor_Active reStuTile"
-                        href={
-                          props?.contextValue?.siteUrl +
-                          "/SitePages/Portfolio-Profile.aspx?taskId=" +
-                          items?.Id
+                        href={restructureItem[0]?.Item_x0020_Type != 'Task' ? (props?.contextValue?.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + obj?.Id) : 
+                        (props?.contextValue?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + items?.Id + "&Site=" + restructureItem[0]?.siteType)
                         }
                       >
                          {
