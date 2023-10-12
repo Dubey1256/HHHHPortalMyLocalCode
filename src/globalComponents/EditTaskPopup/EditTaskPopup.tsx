@@ -43,7 +43,9 @@ import EditSiteComposition from "./EditSiteComposition";
 import SmartTotalTime from './SmartTimeTotal';
 import "react-datepicker/dist/react-datepicker.css";
 import BackgroundCommentComponent from "./BackgroundCommentComponent";
-// import EODReportComponent from "../EOD Report Component/EODReportComponent";
+import EODReportComponent from "../EOD Report Component/EODReportComponent";
+
+
 
 
 var AllMetaData: any = []
@@ -269,8 +271,6 @@ const EditTaskPopup = (Items: any) => {
             AddImageDescriptionsIndex = undefined;
         }
     }, [FeedBackCount])
-
-
 
     const SmartMetaDataListInformations = async () => {
         let AllSmartDataListData: any = [];
@@ -3599,6 +3599,10 @@ const EditTaskPopup = (Items: any) => {
         GetExtraLookupColumnData();
     }
 
+    const EODReportComponentCallback = () => {
+        setOpenEODReportPopup(false);
+    }
+
     // const SiteCompositionCallBack = useCallback((Data: any, Type: any) => {
     //     if (Data.ClientTime != undefined && Data.ClientTime.length > 0) {
     //         setEnableSiteCompositionValidation(true)
@@ -4765,6 +4769,17 @@ const EditTaskPopup = (Items: any) => {
                                                 }
                                             </div>
                                         </div>
+                                        <div className="Sitecomposition mb-3">
+                                            <a className="sitebutton bg-fxdark alignCenter justify-content-between">
+                                                <span className="alignCenter">
+                                                    <span className="svg__iconbox svg__icon--docx"></span>
+                                                    <span className="mx-2">Submit EOD Report</span>
+                                                </span>
+                                                <span className="svg__iconbox svg__icon--editBox hreflink" title="Submit EOD Report Popup"
+                                                    onClick={() => setOpenEODReportPopup(true)}>
+                                                </span>
+                                            </a>
+                                        </div>
                                     </div>
                                     <div className="col-md-4">
                                         <div className="full_width ">
@@ -4780,17 +4795,6 @@ const EditTaskPopup = (Items: any) => {
                                                 />
                                             </span>
                                         </div>
-                                        {/* <div className="Sitecomposition my-3">
-                                            <a className="sitebutton bg-fxdark alignCenter justify-content-between">
-                                                <span className="alignCenter">
-                                                    <span className="svg__iconbox svg__icon--docx"></span>
-                                                    <span className="mx-2">Submit EOD Report</span>
-                                                </span>
-                                                <span className="svg__iconbox svg__icon--editBox hreflink" title="Submit EOD Report Popup"
-                                                    onClick={() => setOpenEODReportPopup(true)}>
-                                                </span>
-                                            </a>
-                                        </div> */}
                                     </div>
 
 
@@ -4999,7 +5003,7 @@ const EditTaskPopup = (Items: any) => {
                             ApprovalTaskStatus={ApprovalTaskStatus}
                             callBack={SendEmailNotificationCallBack}
                         /> : null}
-                    {/* {OpenEODReportPopup ? <EODReportComponent TaskDetails={EditData} Callback={() => setOpenEODReportPopup(false)} /> : null} */}
+                    {OpenEODReportPopup ? <EODReportComponent TaskDetails={EditData} siteUrl={siteUrls} Callback={EODReportComponentCallback} /> : null}
                 </div>
             </Panel>
             {/* ***************** this is Image compare panel *********** */}
