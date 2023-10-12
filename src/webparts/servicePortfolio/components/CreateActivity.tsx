@@ -1397,7 +1397,7 @@ const CreateActivity = (props: any) => {
         }
       >
         <div>
-          <h2 className="heading">
+          <h2 className="heading ">
             {`Create Quick Option - ${AllItems?.NoteCall}`}
           </h2>
         </div>
