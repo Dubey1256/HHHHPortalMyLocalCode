@@ -19,7 +19,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 import Loader from "react-loader";
-import { Bars } from 'react-loader-spinner'
+// import { Bars } from 'react-loader-spinner'
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 import SmartFilterSearchGlobal from "../../../globalComponents/SmartFilterGolobalBomponents/SmartFilterGlobalComponents";
@@ -261,7 +261,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     .items.select("ParentTask/Title", "ParentTask/Id", "ItemRank", "TaskLevel", "OffshoreComments", "TeamMembers/Id", "ClientCategory/Id", "ClientCategory/Title",
                         "TaskID", "ResponsibleTeam/Id", "ResponsibleTeam/Title", "ParentTask/TaskID", "TaskType/Level", "PriorityRank", "TeamMembers/Title", "FeedBack", "Title", "Id", "ID", "DueDate", "Comments", "Categories", "Status", "Body",
                         "PercentComplete", "ClientCategory", "Priority", "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/PortfolioStructureID", "Portfolio/Title",
-                        "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title", "Project/DueDate", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
+                        "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
                         "Created", "Modified",
                     )
                     .expand(
@@ -393,7 +393,7 @@ function TeamPortlioTable(SelectedProp: any) {
                                 result.ProjectId = result?.Project?.Id;
                                 result.projectStructerId = result?.Project?.PortfolioStructureID
                                 const title = result?.Project?.Title || '';
-                                const formattedDueDate = Moment(result?.Project?.DueDate).format("DD-MM-YYYY");
+                                const formattedDueDate = Moment(result?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
                                 result.joinedData = [];
                                 if (result?.projectStructerId && title || formattedDueDate) {
                                     result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
@@ -433,7 +433,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 "DueDate", "Body", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
                 "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete",
                 "ResponsibleTeam/Id", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
-                "Created", "Modified","Deliverables", "TechnicalExplanations", "Short_x0020_Description_x0020_On","Help_x0020_Information","AdminNotes",
+                "Created", "Modified", "Deliverables", "TechnicalExplanations", "Short_x0020_Description_x0020_On", "Help_x0020_Information", "AdminNotes",
             )
             .expand(
                 "Parent", "PortfolioType", "AssignedTo", "ClientCategory", "TeamMembers", "ResponsibleTeam", "Editor", "Author"
@@ -737,7 +737,7 @@ function TeamPortlioTable(SelectedProp: any) {
             let filterDataBackup = JSON.parse(JSON.stringify(filterData));
             setAllSmartFilterData(filterDataBackup);
             setSmartTimeTotalFunction(() => smartTimeTotal);
-        }else if (updatedSmartFilter === true && filterData.length === 0) {
+        } else if (updatedSmartFilter === true && filterData.length === 0) {
             renderData = [];
             renderData = renderData.concat(filterData)
             refreshData();
@@ -1461,8 +1461,9 @@ function TeamPortlioTable(SelectedProp: any) {
 
 
     const callBackData1 = React.useCallback((getData: any, topCompoIcon: any) => {
-
-        setData((getData) => [...getData]);
+        renderData = [];
+        renderData = renderData.concat(getData);
+        refreshData();
         setTopCompoIcon(topCompoIcon);
     }, []);
 
@@ -1736,9 +1737,8 @@ function TeamPortlioTable(SelectedProp: any) {
     const onRenderCustomHeaderMain = () => {
         return (
             <div className="d-flex full-width pb-1">
-                <div 
-                >
-                    <span>{`Create Item`}</span>
+                <div className="subheading">
+                    <span className="siteColor">{`Create Item`}</span>
                 </div>
                 <Tooltip ComponentId={1746} />
             </div>
@@ -1842,7 +1842,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 onDismiss={closeActivity}
                 isBlocking={false}
             >
-                <div className="modal-body bg-f5f5 clearfix">
+                <div className="modal-body">
                     <div
                         className={
                             IsUpdated == "Events Portfolio"
@@ -1952,15 +1952,19 @@ function TeamPortlioTable(SelectedProp: any) {
                 </div>
             </Panel>
             {isOpenActivity && (
-                <CreateActivity
-                    props={checkedList}
-                    Call={Call}
-                    TaskUsers={AllUsers}
-                    AllClientCategory={AllClientCategory}
-                    LoadAllSiteTasks={LoadAllSiteTasks}
-                    SelectedProp={SelectedProp}
-                    portfolioTypeData={portfolioTypeData}
-                ></CreateActivity>
+                <CreateActivity 
+          Call={Call}
+          AllListId={ContextValue}
+          TaskUsers={AllUsers}
+          AllClientCategory={AllClientCategory}
+          LoadAllSiteTasks={LoadAllSiteTasks}
+          selectedItem={
+            checkedList != null && checkedList?.Id != undefined
+              ? checkedList
+              : SelectedProp
+          }
+          portfolioTypeData={portfolioTypeData}
+        />
             )}
             {isOpenWorkstream && (
                 <CreateWS

@@ -360,7 +360,7 @@ const TagTaskToProjectPopup = (props: any) => {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, column, getValue }) => (
                     <>
-                        <span className='d-flex'>
+                        <span>
                             <a className="hreflink"
                                 href={`${props?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                                 data-interception="off"
@@ -368,7 +368,7 @@ const TagTaskToProjectPopup = (props: any) => {
                             >
                                 {row?.original?.Title}
                             </a>
-                            {row?.original?.FeedBack !== null && row?.original?.FeedBack != undefined ? <InfoIconsToolTip Discription={row?.original?.FeedBack} row={row?.original} /> : ''}
+                            {row?.original?.FeedBack !== null && row?.original?.FeedBack != undefined ?<span className='alignIcon'> <InfoIconsToolTip Discription={row?.original?.FeedBack} row={row?.original} /> </span>: ''}
                         </span>
                     </>
                 ),

@@ -961,7 +961,6 @@ const ProjectManagementMain = (props: any) => {
     setMasterdata(projectData);
     setData(displayTasks);
   };
-
   const generateSortingIndicator = (column: any) => {
     return column.isSorted ? (
       column.isSortedDesc ? (
