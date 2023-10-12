@@ -1952,15 +1952,19 @@ function TeamPortlioTable(SelectedProp: any) {
                 </div>
             </Panel>
             {isOpenActivity && (
-                <CreateActivity
-                    props={checkedList}
-                    Call={Call}
-                    TaskUsers={AllUsers}
-                    AllClientCategory={AllClientCategory}
-                    LoadAllSiteTasks={LoadAllSiteTasks}
-                    SelectedProp={SelectedProp}
-                    portfolioTypeData={portfolioTypeData}
-                ></CreateActivity>
+                <CreateActivity 
+          Call={Call}
+          AllListId={ContextValue}
+          TaskUsers={AllUsers}
+          AllClientCategory={AllClientCategory}
+          LoadAllSiteTasks={LoadAllSiteTasks}
+          selectedItem={
+            checkedList != null && checkedList?.Id != undefined
+              ? checkedList
+              : SelectedProp
+          }
+          portfolioTypeData={portfolioTypeData}
+        />
             )}
             {isOpenWorkstream && (
                 <CreateWS
