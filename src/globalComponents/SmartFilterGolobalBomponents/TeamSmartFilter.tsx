@@ -16,6 +16,7 @@ import ShowTaskTeamMembers from '../ShowTaskTeamMembers';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { ColumnDef } from '@tanstack/react-table';
 import GlobalCommanTable from '../GroupByReactTableComponents/GlobalCommanTable';
+import PreSetDatePikerPannel from './PreSetDatePiker';
 let filterGroupsDataBackup: any = [];
 let filterGroupData1: any = [];
 let timeSheetConfig: any = {};
@@ -26,7 +27,7 @@ const TeamSmartFilter = (item: any) => {
     let ContextValue = item?.ContextValue;
     let portfolioColor: any = item?.portfolioColor
     let AllProjectBackupArray = JSON.parse(JSON.stringify(item?.ProjectData));
-
+    const [PreSetPanelIsOpen, setPreSetPanelIsOpen] = React.useState(false);
     const [TaskUsersData, setTaskUsersData] = React.useState([]);
     const [AllUsers, setTaskUser] = React.useState([]);
     const [smartmetaDataDetails, setSmartmetaDataDetails] = React.useState([])
@@ -68,6 +69,7 @@ const TeamSmartFilter = (item: any) => {
     const [isCreatedDateSelected, setIsCreatedDateSelected] = React.useState(false);
     const [isModifiedDateSelected, setIsModifiedDateSelected] = React.useState(false);
     const [isDueDateSelected, setIsDueDateSelected] = React.useState(false);
+    // const [preSet, setPreSet] = React.useState(false);
     //*******************************************************Date Section End********************************************************************/
 
     //*******************************************************Teams Section********************************************************************/
@@ -1005,6 +1007,7 @@ const TeamSmartFilter = (item: any) => {
         GetfilterGroups();
         setUpdatedSmartFilter(false);
         setFinalArray([]);
+        // setPreSet(false);
     };
     const UpdateFilterData = () => {
         item?.setLoaded(false);
@@ -1356,6 +1359,20 @@ const TeamSmartFilter = (item: any) => {
                 setStartDate(lastYearStartDate);
                 setEndDate(lastYearEndDate);
                 break;
+            case "Pre-set":
+                let storedDataStartDate: any
+                let storedDataEndDate: any
+                try {
+                    storedDataStartDate = JSON.parse(localStorage.getItem('startDate'));
+                    storedDataEndDate = JSON.parse(localStorage.getItem('endDate'))
+                } catch (error) {
+
+                }
+                if (storedDataStartDate && storedDataStartDate != null && storedDataStartDate != "Invalid Date" && storedDataEndDate && storedDataEndDate != null && storedDataEndDate != "Invalid Date") {
+                    setStartDate(new Date(storedDataStartDate));
+                    setEndDate(new Date(storedDataEndDate));
+                }
+                break;
             default:
                 setStartDate(null);
                 setEndDate(null);
@@ -1365,6 +1382,8 @@ const TeamSmartFilter = (item: any) => {
 
     const handleDateFilterChange = (event: any) => {
         setSelectedFilter(event.target.value);
+        // setPreSet(false);
+        // rerender();
         if (
             !isCreatedDateSelected &&
             !isModifiedDateSelected &&
@@ -1372,7 +1391,7 @@ const TeamSmartFilter = (item: any) => {
         ) {
             switch (event.target.value) {
                 case "today": case "yesterday": case "thisweek": case "last7days":
-                case "thismonth": case "last30days": case "thisyear": case "lastyear":
+                case "thismonth": case "last30days": case "thisyear": case "lastyear": case "Pre-set":
                     setIsCreatedDateSelected(true);
                     setIsModifiedDateSelected(true);
                     setIsDueDateSelected(true);
@@ -1599,7 +1618,41 @@ const TeamSmartFilter = (item: any) => {
         }
     }, []);
 
+    const PreSetPikerCallBack = React.useCallback((preSetStartDate: any, preSetEndDate) => {
+        if (preSetStartDate != undefined) {
+            setStartDate(preSetStartDate);
+        }
+        if (preSetEndDate != undefined) {
+            setEndDate(preSetEndDate);
+        }
+        setPreSetPanelIsOpen(false)
+    }, []);
 
+    // const handleDatePreSetChange = () => {
+    //     let storedDataStartDate: any
+    //     let storedDataEndDate: any
+    //     try {
+    //         storedDataStartDate = JSON.parse(localStorage.getItem('startDate'));
+    //         storedDataEndDate = JSON.parse(localStorage.getItem('endDate'))
+    //     } catch (error) {
+
+    //     }
+    //     if (storedDataStartDate && storedDataStartDate != null && storedDataStartDate != "Invalid Date" && storedDataEndDate && storedDataEndDate != null && storedDataEndDate != "Invalid Date") {
+    //         setStartDate(new Date(storedDataStartDate));
+    //         setEndDate(new Date(storedDataEndDate));
+    //     }
+    //     setSelectedFilter('')
+    //     setPreSet(true);
+    //     setIsCreatedDateSelected(true);
+    //     setIsModifiedDateSelected(true);
+    //     setIsDueDateSelected(true);
+    //     rerender();
+    // }
+    const preSetIconClick = () => {
+        // setPreSet(true);
+        
+        setPreSetPanelIsOpen(true);
+    }
 
     ///////////end/////////////////////
     //*******************************************************************Key Word Section ****************************/
@@ -2064,6 +2117,12 @@ const TeamSmartFilter = (item: any) => {
                                                     checked={selectedFilter === "custom" || (startDate !== null && endDate !== null && !selectedFilter)} />
                                                 <label className='ms-1'>Custom</label>
                                             </span>
+                                            <span className='SpfxCheckRadio  me-2'>
+                                                <input type="radio" name="dateFilter" value="Pre-set" onChange={handleDateFilterChange}
+                                                    checked={selectedFilter === "Pre-set"} />
+                                                <label className='ms-1'>Pre-set <span style={{ backgroundColor: `${portfolioColor}` }} onClick={() => preSetIconClick()} className="svg__iconbox svg__icon--editBox alignIcon hreflink"></span></label>
+                                            </span>
+
                                         </Col>
                                         <div className="container">
                                             <Row className="mt-2">
@@ -2136,6 +2195,7 @@ const TeamSmartFilter = (item: any) => {
                 </Panel>
                 : null
             }
+            <>{PreSetPanelIsOpen && <PreSetDatePikerPannel isOpen={PreSetPanelIsOpen} PreSetPikerCallBack={PreSetPikerCallBack} portfolioColor={portfolioColor} />}</>
         </>
     )
 
