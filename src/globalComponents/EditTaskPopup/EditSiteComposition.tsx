@@ -29,6 +29,7 @@ const EditSiteComposition = (Props: any) => {
                 selectedClientCategory.push(itemData);
             })
         }
+       
     }, [])
 
     //  ******************  This is All Site Details Get Data Call From Backend **************
@@ -178,18 +179,19 @@ const EditSiteComposition = (Props: any) => {
                                 AllListId={AllListIdData}
                                 siteUrls={siteUrls}
                                 SiteTypes={SiteTypes}
-                                ClientTime={EditData.ClientTime != false ? EditData.ClientTime : []}
-                                SiteCompositionSettings={EditData.SiteCompositionSettings}
+                                SelectedItemDetails={EditData}
+                                // ClientTime={EditData.ClientTime != false ? EditData.ClientTime : []}
+                                // SiteCompositionSettings={EditData.SiteCompositionSettings}
                                 SmartTotalTimeData={SmartTotalTimeData}
-                                currentListName={EditData.siteType}
+                                // currentListName={EditData.siteType}
                                 callBack={SiteCompositionCallBack}
                                 isServiceTask={ServicesTaskCheck}
-                                SelectedClientCategory={EditData.ClientCategory}
+                                // SelectedClientCategory={EditData.ClientCategory}
                                 isPortfolioConncted={ComponentTaskCheck || ServicesTaskCheck ? true : false}
                                 SitesTaggingData={SitesTaggingData}
                                 usedFor={"Task-Profile"}
-                                ItemId={EditData.Id}
-                                ListId={EditData.listId}
+                                // ItemId={EditData.Id}
+                                // ListId={EditData.listId}
                                 closePopupCallBack={closePopupCallBack}
                             />
                         </>

@@ -16,6 +16,7 @@ import ShowTaskTeamMembers from '../ShowTaskTeamMembers';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { ColumnDef } from '@tanstack/react-table';
 import GlobalCommanTable from '../GroupByReactTableComponents/GlobalCommanTable';
+import PreSetDatePikerPannel from './PreSetDatePiker';
 let filterGroupsDataBackup: any = [];
 let filterGroupData1: any = [];
 let timeSheetConfig: any = {};
@@ -26,7 +27,7 @@ const TeamSmartFilter = (item: any) => {
     let ContextValue = item?.ContextValue;
     let portfolioColor: any = item?.portfolioColor
     let AllProjectBackupArray = JSON.parse(JSON.stringify(item?.ProjectData));
-
+    const [PreSetPanelIsOpen, setPreSetPanelIsOpen] = React.useState(false);
     const [TaskUsersData, setTaskUsersData] = React.useState([]);
     const [AllUsers, setTaskUser] = React.useState([]);
     const [smartmetaDataDetails, setSmartmetaDataDetails] = React.useState([])
@@ -38,6 +39,7 @@ const TeamSmartFilter = (item: any) => {
 
     const [IsSmartfilter, setIsSmartfilter] = React.useState(false);
     const [isSitesExpendShow, setIsSitesExpendShow] = React.useState(false);
+    const [isKeywordsExpendShow, setIsKeywordsExpendShow] = React.useState(false);
     const [isProjectExpendShow, setIsProjectExpendShow] = React.useState(false);
     const [iscategoriesAndStatusExpendShow, setIscategoriesAndStatusExpendShow] = React.useState(false);
     const [isTeamMembersExpendShow, setIsTeamMembersExpendShow] = React.useState(false);
@@ -67,6 +69,7 @@ const TeamSmartFilter = (item: any) => {
     const [isCreatedDateSelected, setIsCreatedDateSelected] = React.useState(false);
     const [isModifiedDateSelected, setIsModifiedDateSelected] = React.useState(false);
     const [isDueDateSelected, setIsDueDateSelected] = React.useState(false);
+    // const [preSet, setPreSet] = React.useState(false);
     //*******************************************************Date Section End********************************************************************/
 
     //*******************************************************Teams Section********************************************************************/
@@ -81,10 +84,21 @@ const TeamSmartFilter = (item: any) => {
     const [keyWordSearchTearm, setKeyWordSearchTearm] = React.useState("");
     //*******************************************************Key Word Section End********************************************************************/
     //*************************************************** Portfolio Items & Task Items selected ***************************************************************** */
-    // const [isPortfolioItems, setIsPortfolioItems] = React.useState(true);
-    // const [isTaskItems, setIsTaskItems] = React.useState(true);
+    const [isPortfolioItems, setIsPortfolioItems] = React.useState(false);
+    const [isTaskItems, setIsTaskItems] = React.useState(false);
     //*************************************************** Portfolio Items & Task Items End ***************************************************************** */
-    
+    ///// Year Range Using Piker ////////
+    const [years, setYear] = React.useState([])
+    const [months, setMonths] = React.useState(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December",])
+    React.useEffect(() => {
+        const currentYear = new Date().getFullYear();
+        const year: any = [];
+        for (let i = 1990; i <= currentYear; i++) {
+            year.push(i);
+        }
+        setYear(year);
+    }, [])
+    ///// Year Range Using Piker end////////
 
 
     let finalArrayData: any = [];
@@ -773,13 +787,16 @@ const TeamSmartFilter = (item: any) => {
             teamMember = TaskUsersData.reduce((acc, item) => [...acc, ...item.checkedObj], []);
             if (isCreatedBy === true) { teamMember.push(isCreatedBy) } else if (isModifiedby === true) { teamMember.push(isModifiedby) } else if (isAssignedto === true) { teamMember.push(isAssignedto) }
         }
-        const filteredMasterTaskData = allMasterTasksData.filter((data: any) =>
-            updatedCheckMatch(data, 'Item_x0020_Type', 'Title', portFolio) &&
-            updatedCheckMatch(data, 'ClientCategory', 'Title', clientCategory) &&
-            updatedCheckTeamMembers(data, teamMember) &&
-            updatedKeyWordData(data, keyWordSearchTearm) &&
-            updatedCheckDateSection(data, startDate, endDate)
-        );
+        let filteredMasterTaskData: any = []
+        if (portFolio.length > 0) {
+            filteredMasterTaskData = allMasterTasksData.filter((data: any) =>
+                updatedCheckMatch(data, 'Item_x0020_Type', 'Title', portFolio) &&
+                updatedCheckMatch(data, 'ClientCategory', 'Title', clientCategory) &&
+                updatedCheckTeamMembers(data, teamMember) &&
+                updatedKeyWordData(data, keyWordSearchTearm) &&
+                updatedCheckDateSection(data, startDate, endDate)
+            );
+        }
         const filteredTaskData = allTastsData.filter((data: any) =>
             updatedCheckMatch(data, 'siteType', 'Title', site) &&
             updatedCheckTaskType(data, type) &&
@@ -990,6 +1007,7 @@ const TeamSmartFilter = (item: any) => {
         GetfilterGroups();
         setUpdatedSmartFilter(false);
         setFinalArray([]);
+        // setPreSet(false);
     };
     const UpdateFilterData = () => {
         item?.setLoaded(false);
@@ -1007,6 +1025,16 @@ const TeamSmartFilter = (item: any) => {
                 // checkBoxColor();
             }
         }
+        if (value == "isKeywordsExpendShow") {
+            if (isKeywordsExpendShow == true) {
+                setIsKeywordsExpendShow(false)
+                // checkBoxColor();
+            } else {
+                setIsKeywordsExpendShow(true)
+                // checkBoxColor();
+            }
+        }
+
         if (value == "isProjectExpendShow") {
             if (isProjectExpendShow == true) {
                 setIsProjectExpendShow(false)
@@ -1051,6 +1079,7 @@ const TeamSmartFilter = (item: any) => {
             setcollapseAll(false);
             setIsSitesExpendShow(true);
             setIsProjectExpendShow(true)
+            setIsKeywordsExpendShow(true)
             setIscategoriesAndStatusExpendShow(true);
             setIsTeamMembersExpendShow(true);
             setIsDateExpendShow(true);
@@ -1061,6 +1090,7 @@ const TeamSmartFilter = (item: any) => {
             setcollapseAll(false);
             setIsSitesExpendShow(false);
             setIsProjectExpendShow(false)
+            setIsKeywordsExpendShow(false)
             setIscategoriesAndStatusExpendShow(false);
             setIsTeamMembersExpendShow(false);
             setIsDateExpendShow(false);
@@ -1070,6 +1100,7 @@ const TeamSmartFilter = (item: any) => {
             setcollapseAll(true);
             setIsSitesExpendShow(false);
             setIsProjectExpendShow(false)
+            setIsKeywordsExpendShow(false)
             setIscategoriesAndStatusExpendShow(false);
             setIsTeamMembersExpendShow(false);
             setIsDateExpendShow(false);
@@ -1079,6 +1110,7 @@ const TeamSmartFilter = (item: any) => {
             setcollapseAll(false);
             setIsSitesExpendShow(false);
             setIsProjectExpendShow(false);
+            setIsKeywordsExpendShow(false)
             setIscategoriesAndStatusExpendShow(false);
             setIsTeamMembersExpendShow(false);
             setIsDateExpendShow(false);
@@ -1309,16 +1341,10 @@ const TeamSmartFilter = (item: any) => {
                 setEndDate(currentDate);
                 break;
             case "last30days":
-                const last30DaysStartDate = new Date(
-                    currentDate.getFullYear(),
-                    currentDate.getMonth() - 1,
-                    31
-                );
-                const last30DaysEndDate = new Date(
-                    currentDate.getFullYear(),
-                    currentDate.getMonth(),
-                    30
-                );
+                const last30DaysEndDate: any = new Date(currentDate);
+                last30DaysEndDate.setDate(currentDate.getDate() - 1);
+                const last30DaysStartDate = new Date(last30DaysEndDate);
+                last30DaysStartDate.setDate(last30DaysEndDate.getDate() - 30);
                 setStartDate(last30DaysStartDate);
                 setEndDate(last30DaysEndDate);
                 break;
@@ -1333,6 +1359,20 @@ const TeamSmartFilter = (item: any) => {
                 setStartDate(lastYearStartDate);
                 setEndDate(lastYearEndDate);
                 break;
+            case "Pre-set":
+                let storedDataStartDate: any
+                let storedDataEndDate: any
+                try {
+                    storedDataStartDate = JSON.parse(localStorage.getItem('startDate'));
+                    storedDataEndDate = JSON.parse(localStorage.getItem('endDate'))
+                } catch (error) {
+
+                }
+                if (storedDataStartDate && storedDataStartDate != null && storedDataStartDate != "Invalid Date" && storedDataEndDate && storedDataEndDate != null && storedDataEndDate != "Invalid Date") {
+                    setStartDate(new Date(storedDataStartDate));
+                    setEndDate(new Date(storedDataEndDate));
+                }
+                break;
             default:
                 setStartDate(null);
                 setEndDate(null);
@@ -1342,6 +1382,8 @@ const TeamSmartFilter = (item: any) => {
 
     const handleDateFilterChange = (event: any) => {
         setSelectedFilter(event.target.value);
+        // setPreSet(false);
+        // rerender();
         if (
             !isCreatedDateSelected &&
             !isModifiedDateSelected &&
@@ -1349,7 +1391,7 @@ const TeamSmartFilter = (item: any) => {
         ) {
             switch (event.target.value) {
                 case "today": case "yesterday": case "thisweek": case "last7days":
-                case "thismonth": case "last30days": case "thisyear": case "lastyear":
+                case "thismonth": case "last30days": case "thisyear": case "lastyear": case "Pre-set":
                     setIsCreatedDateSelected(true);
                     setIsModifiedDateSelected(true);
                     setIsDueDateSelected(true);
@@ -1576,7 +1618,41 @@ const TeamSmartFilter = (item: any) => {
         }
     }, []);
 
+    const PreSetPikerCallBack = React.useCallback((preSetStartDate: any, preSetEndDate) => {
+        if (preSetStartDate != undefined) {
+            setStartDate(preSetStartDate);
+        }
+        if (preSetEndDate != undefined) {
+            setEndDate(preSetEndDate);
+        }
+        setPreSetPanelIsOpen(false)
+    }, []);
 
+    // const handleDatePreSetChange = () => {
+    //     let storedDataStartDate: any
+    //     let storedDataEndDate: any
+    //     try {
+    //         storedDataStartDate = JSON.parse(localStorage.getItem('startDate'));
+    //         storedDataEndDate = JSON.parse(localStorage.getItem('endDate'))
+    //     } catch (error) {
+
+    //     }
+    //     if (storedDataStartDate && storedDataStartDate != null && storedDataStartDate != "Invalid Date" && storedDataEndDate && storedDataEndDate != null && storedDataEndDate != "Invalid Date") {
+    //         setStartDate(new Date(storedDataStartDate));
+    //         setEndDate(new Date(storedDataEndDate));
+    //     }
+    //     setSelectedFilter('')
+    //     setPreSet(true);
+    //     setIsCreatedDateSelected(true);
+    //     setIsModifiedDateSelected(true);
+    //     setIsDueDateSelected(true);
+    //     rerender();
+    // }
+    const preSetIconClick = () => {
+        // setPreSet(true);
+        
+        setPreSetPanelIsOpen(true);
+    }
 
     ///////////end/////////////////////
     //*******************************************************************Key Word Section ****************************/
@@ -1604,43 +1680,39 @@ const TeamSmartFilter = (item: any) => {
     return (
         <>
             <section className="ContentSection smartFilterSection row mb-1">
-                <div className="bg-wihite border p-2">
+                <div className="bg-wihite border p-1 px-2">
                     <div className="togglebox">
-                        <div className="togglebox">
-                                <div className='d-flex justify-content-between'>
-                                    <span>
-                                        <span className="ml20" style={{ color: `${portfolioColor}` }} >{filterInfo}</span>
-                                    </span>
-                                    <div>
-                                        <button className='btn btn-primary me-1' onClick={UpdateFilterData}>Update Filter</button>
-                                        <button className='btn  btn-default' onClick={ClearFilter}> Clear Filters</button>
-                                    </div>
+                        <div className='alignCenter justify-content-between col-sm-12'>
+                            <div className='alignCenter col-sm-9'>
+                                <div className='mt--3' style={{ color: `${portfolioColor}` }} onClick={() => { toggleIcon(); toggleAllExpendCloseUpDown(iconIndex) }}>
+                                    {icons[iconIndex]}
                                 </div>
+                                <div className="ml20" style={{ color: `${portfolioColor}` }} >{filterInfo}</div>
+                            </div>
+                            <div className='alignCenter col-sm-3'>
+                                <div className='ml-auto'>
+                                    <button className='btn btn-primary me-1 px-3 py-1' onClick={UpdateFilterData}>Update Filter</button>
+                                    <button className='btn  btn-default px-3 py-1' onClick={ClearFilter}> Clear Filters</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div >
             </section>
-            <section className="ContentSection smartFilterSection row mb-1">
+            {collapseAll == false ? <section className="ContentSection smartFilterSection row mb-1">
                 <div className="bg-wihite border p-2">
                     <div className="togglebox">
                         <div className="togglebox">
-                            <label className="toggler full_width mb-10 active">
-                                <span style={{ color: `${portfolioColor}` }}
-                                    onClick={() => { toggleIcon(); toggleAllExpendCloseUpDown(iconIndex) }}>
-                                    {icons[iconIndex]}
-                                    {/* <span className='mx-1'>Sites</span> */}
-                                    {/* <span className="ml20" style={{ color: `${portfolioColor}` }} >{filterInfo}</span> */}
-                                </span>
-                            </label>
-                            {collapseAll == false ? <div>
-                                <div className=''>
+                            <span style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter("isKeywordsExpendShow")}>
+                                {isKeywordsExpendShow === true ?
+                                    <SlArrowDown style={{ color: `${portfolioColor}`, width: '12px' }} /> : <SlArrowRight style={{ color: `${portfolioColor}`, width: '12px' }} />}
+                                <span className='mx-1'>Keywords</span>
+                            </span>
+                            {isKeywordsExpendShow === true ? <div>
+                                <div className='d-flex justify-content-between'>
                                     <div className='col-md-12'><input className='full-width' placeholder='Keywords' type='text' value={keyWordSearchTearm} onChange={handleInputChange}></input> </div>
-                                    {/* <div>
-                                        <button className='btn btn-primary me-1' onClick={UpdateFilterData}>Update Filter</button>
-                                        <button className='btn  btn-default' onClick={ClearFilter}> Clear Filters</button>
-                                    </div> */}
                                 </div>
-                                <div className=''>
+                                <div className='d-flex justify-content-between'>
                                     <div className='mt-2'>
                                         <label className='SpfxCheckRadio  me-2'>
                                             <input className='radio' type='radio' value="Allwords" checked={selectedKeyWordFilter === "Allwords"} onChange={() => setKeyWordSelected("Allwords")} /> All words
@@ -1660,11 +1732,11 @@ const TeamSmartFilter = (item: any) => {
                                         </label> */}
                                         <span className='m-2'>|</span>
                                         <label className='SpfxCheckRadio  me-2 '>
-                                            <input className='form-check-input' type='checkbox' id='Component' value='Component' disabled/> Portfolio Items
+                                            <input className='form-check-input' type='checkbox' id='Component' value='Component' checked={isPortfolioItems} onChange={() => setIsPortfolioItems(!isPortfolioItems)} /> Portfolio Items
                                         </label>
                                         <span className='m-2'>|</span>
                                         <label className='SpfxCheckRadio '>
-                                            <input className='form-check-input' type='checkbox' id='Task' value='Task' disabled/>Task Items
+                                            <input className='form-check-input' type='checkbox' id='Task' value='Task' checked={isTaskItems} onChange={() => setIsTaskItems(!isTaskItems)} />Task Items
                                         </label>
                                     </div>
                                 </div>
@@ -1673,7 +1745,7 @@ const TeamSmartFilter = (item: any) => {
 
                     </div>
                 </div >
-            </section>
+            </section> : ''}
 
 
             {collapseAll == false ? <section className="ContentSection smartFilterSection row mb-1">
@@ -1912,7 +1984,7 @@ const TeamSmartFilter = (item: any) => {
                                             <input className='form-check-input' type="checkbox" value="isModifiedBy" checked={isModifiedby} onChange={() => setIsModifiedby(!isModifiedby)} /> Modified by
                                         </label>
                                         <label className='me-2'>
-                                            <input className='form-check-input' type="checkbox" value="isAssignedBy" checked={isAssignedto} onChange={() => setIsAssignedto(!isAssignedto)} /> Assigned to
+                                            <input className='form-check-input' type="checkbox" value="isAssignedBy" checked={isAssignedto} onChange={() => setIsAssignedto(!isAssignedto)} /> Working Member
                                         </label>
                                     </Col>
                                     <div className="col-sm-12 pad0">
@@ -2041,9 +2113,16 @@ const TeamSmartFilter = (item: any) => {
                                                 <label className='ms-1'>Last Year</label>
                                             </span>
                                             <span className='SpfxCheckRadio  me-2'>
-                                                <input type="radio" name="dateFilter" value="custom" checked={selectedFilter === "custom"} onChange={handleDateFilterChange} />
+                                                <input type="radio" name="dateFilter" value="custom" onChange={handleDateFilterChange}
+                                                    checked={selectedFilter === "custom" || (startDate !== null && endDate !== null && !selectedFilter)} />
                                                 <label className='ms-1'>Custom</label>
                                             </span>
+                                            <span className='SpfxCheckRadio  me-2'>
+                                                <input type="radio" name="dateFilter" value="Pre-set" onChange={handleDateFilterChange}
+                                                    checked={selectedFilter === "Pre-set"} />
+                                                <label className='ms-1'>Pre-set <span style={{ backgroundColor: `${portfolioColor}` }} onClick={() => preSetIconClick()} className="svg__iconbox svg__icon--editBox alignIcon hreflink"></span></label>
+                                            </span>
+
                                         </Col>
                                         <div className="container">
                                             <Row className="mt-2">
@@ -2051,14 +2130,32 @@ const TeamSmartFilter = (item: any) => {
                                                     <label>Start Date</label>
                                                     <div className="input-group">
                                                         <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
-                                                            className="form-control date-picker" popperPlacement="bottom-start" customInput={<ExampleCustomInput />} />
+                                                            className="form-control date-picker" popperPlacement="bottom-start" customInput={<ExampleCustomInput />}
+                                                            renderCustomHeader={({ date, changeYear, changeMonth, decreaseMonth, increaseMonth, prevMonthButtonDisabled, nextMonthButtonDisabled
+                                                            }) => (<div style={{ margin: 10, display: "flex", justifyContent: "center" }}>
+                                                                <button onClick={decreaseMonth} disabled={prevMonthButtonDisabled}>{"<"}</button>
+                                                                <select value={date.getFullYear()} onChange={({ target: { value } }: any) => changeYear(value)}>{years.map((option) => (<option key={option} value={option}>{option}</option>))}</select>
+                                                                <select value={months[date.getMonth()]} onChange={({ target: { value } }) => changeMonth(months.indexOf(value))}>{months.map((option) => (<option key={option} value={option}>{option} </option>))}</select>
+                                                                <button onClick={increaseMonth} disabled={nextMonthButtonDisabled} >{">"}</button>
+                                                            </div>
+                                                            )}
+                                                        />
                                                     </div>
                                                 </div>
                                                 <div className="col-sm-5 dateformate">
                                                     <label>End Date</label>
                                                     <div className="input-group">
                                                         <DatePicker selected={endDate} onChange={(date) => setEndDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
-                                                            className="form-control date-picker" popperPlacement="bottom-start" customInput={<ExampleCustomInput />} />
+                                                            className="form-control date-picker" popperPlacement="bottom-start" customInput={<ExampleCustomInput />}
+                                                            renderCustomHeader={({ date, changeYear, changeMonth, decreaseMonth, increaseMonth, prevMonthButtonDisabled, nextMonthButtonDisabled
+                                                            }) => (<div style={{ margin: 10, display: "flex", justifyContent: "center" }}>
+                                                                <button onClick={decreaseMonth} disabled={prevMonthButtonDisabled}>{"<"}</button>
+                                                                <select value={date.getFullYear()} onChange={({ target: { value } }: any) => changeYear(value)}>{years.map((option) => (<option key={option} value={option}>{option}</option>))}</select>
+                                                                <select value={months[date.getMonth()]} onChange={({ target: { value } }) => changeMonth(months.indexOf(value))}>{months.map((option) => (<option key={option} value={option}>{option} </option>))}</select>
+                                                                <button onClick={increaseMonth} disabled={nextMonthButtonDisabled} >{">"}</button>
+                                                            </div>
+                                                            )}
+                                                        />
                                                     </div>
                                                 </div>
                                                 <div className="col-sm-2">
@@ -2098,6 +2195,7 @@ const TeamSmartFilter = (item: any) => {
                 </Panel>
                 : null
             }
+            <>{PreSetPanelIsOpen && <PreSetDatePikerPannel isOpen={PreSetPanelIsOpen} PreSetPikerCallBack={PreSetPikerCallBack} portfolioColor={portfolioColor} />}</>
         </>
     )
 
