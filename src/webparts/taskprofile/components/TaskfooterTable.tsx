@@ -1,1240 +1,1460 @@
-import * as React from 'react';
-import * as $ from 'jquery';
-import * as globalCommon from '../../../globalComponents/globalCommon';
-import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup'
-import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryComponent';
-import CreateActivity from '../../servicePortfolio/components/CreateActivity';
-import CreateWS from '../../servicePortfolio/components/CreateWS';
-import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
-import Loader from "react-loader";
-import * as moment from 'moment';
-import { SlArrowRight } from "react-icons/sl";
-import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
-import {
-  FaChevronRight,
-  FaChevronDown,
-  FaSortDown,
-  FaSortUp,
-  FaSort,
-  FaCompressArrowsAlt,
-} from "react-icons/fa";
-import {
-  Column,
-  Table,
-  ExpandedState,
-  useReactTable,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getExpandedRowModel,
-  ColumnDef,
-  flexRender,
-  getSortedRowModel,
-  SortingState,
-  ColumnFiltersState,
-} from "@tanstack/react-table";
+import * as React from "react";
+import { arraysEqual, Modal, Panel, PanelType } from "office-ui-fabric-react";
+import { Web } from "sp-pnp-js";
+import TeamConfigurationCard from "../../../globalComponents/TeamConfiguration/TeamConfiguration";
+import HtmlEditorCard from "../../../globalComponents/HtmlEditor/HtmlEditor";
+import moment, * as Moment from "moment";
+import Picker from "../../../globalComponents/EditTaskPopup/SmartMetaDataPicker";
 
-import PortfolioStructureCreationCard from '../../../globalComponents/tableControls/PortfolioStructureCreation';
-import { Panel, PanelType } from 'office-ui-fabric-react';
-import { Web, sp } from 'sp-pnp-js';
-import HighlightableCell from '../../../globalComponents/GroupByReactTableComponents/highlight';
+import ClientCategoryPupup from "../../../globalComponents/ClientCategoryPopup";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "react-datepicker/dist/react-datepicker-cssmodules.css";
+import Tooltip from "../../../globalComponents/Tooltip";
+import "react-datepicker/dist/react-datepicker.css";
+import "froala-editor/js/plugins.pkgd.min.js";
+import "froala-editor/js/froala_editor.pkgd.min.js";
+import "froala-editor/css/froala_style.min.css";
+import "froala-editor/css/froala_editor.pkgd.min.css";
+import * as globalCommon from "../../../globalComponents/globalCommon";
 
-import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
-import ReactPopperTooltip from '../../../globalComponents/Hierarchy-Popper-tooltip';
-import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
-var AllTasks: any = [];
-let AllTasksRendar: any = [];
+import Froala from "react-froala-wysiwyg";
+import ServiceComponentPortfolioPopup from "../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup";
+import FlorarImageUploadComponent from "../../../globalComponents/FlorarComponents/FlorarImageUploadComponent";
+let SitesTypes: any = [];
+let AllListId: any = {};
+let IsapprovalTask = false
+let subCategories: any = [];
+let AllMetadata: any = [];
 let siteConfig: any = [];
-var IsUpdated: any = '';
-var MeetingItems: any = []
-let AllWSTasks = [];
-let allworkstreamTasks: any = []
-var filter: any = '';
-var Array: any = []
-let taskUsers: any = [];
-let IsShowRestru: any = false;
-let componentDetails: any = '';
-let siteIconAllTask: any = [];
-let finalData: any = [];
-let childRefdata: any;
-let TasksItem: any = [];
-function IndeterminateCheckbox(
-  {
-    indeterminate,
-    className = "",
-    ...rest
-  }: { indeterminate?: boolean } & React.HTMLProps<HTMLInputElement>) {
-  const ref = React.useRef<HTMLInputElement>(null!);
-  React.useEffect(() => {
-    if (typeof indeterminate === "boolean") {
-      ref.current.indeterminate = !rest.checked && indeterminate;
-    }
-  }, [ref, indeterminate]);
-  return (
-    <input
-      type="checkbox"
-      ref={ref}
-      className={className + "cursor-pointer form-check-input me-1 "}
-      {...rest}
-    />
-  );
-}
-function Filter({
-  column,
-  table,
-  placeholder
-}: {
-  column: Column<any, any>;
-  table: Table<any>;
-  placeholder: any
-}): any {
-  const columnFilterValue = column.getFilterValue();
+let loggedInUser: any = {};
+let AutoCompleteItemsArray: any = [];
+let FeedBackItem: any = {};
+const CreateActivity = (props: any) => {
+    const [isActive, setIsActive] = React.useState({
+        siteType: false,
+        time: false,
+        rank: false,
+        dueDate: false,
 
-  return (
-    <input style={{ width: "100%" }} className="me-1 mb-1 mt-1 on-search-cross form-control "
-
-      title={placeholder?.placeholder}
-      type="search"
-      value={(columnFilterValue ?? "") as string}
-      onChange={(e) => column.setFilterValue(e.target.value)}
-      placeholder={`${placeholder?.placeholder}`}
-
-    />
-  );
-}
-function TasksTable(props: any) {
-  const childRef = React.useRef<any>();
-  if (childRef != null) {
-    childRefdata = { ...childRef };
-
-  }
-  const [loaded, setLoaded] = React.useState(true);
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [expanded, setExpanded] = React.useState<ExpandedState>({});
-
-  const [rowSelection, setRowSelection] = React.useState({});
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [data, setData] = React.useState([]);
-  finalData = data;
-  const refreshData = () => setData(() => finalData);
-  const [checkedList, setCheckedList] = React.useState([]);
-  const [AllUsers, setTaskUser] = React.useState([]);
-  const [IsTask, setIsTask] = React.useState(false);
-  const [SharewebTask, setSharewebTask] = React.useState('');
-  const [IsTimeEntry, setIsTimeEntry] = React.useState(false);
-  const [SharewebTimeComponent, setSharewebTimeComponent] = React.useState([]);
-  const [AllClientCategory, setAllClientCategory] = React.useState([])
-  const [count, setCount] = React.useState(0);
-   const [AllMasterTasksData,setAllMasterTasksData]=React.useState([])
-  const [ActivityDisable, setActivityDisable] = React.useState(false);
-  const [addModalOpen, setAddModalOpen] = React.useState(false);
-
-  const [maidataBackup, setmaidataBackup] = React.useState([])
-  const [OldArrayBackup, setOldArrayBackup] = React.useState([]);
-  const [MeetingPopup, setMeetingPopup] = React.useState(false);
-  const [WSPopup, setWSPopup] = React.useState(false);
-
-  const [NewArrayBackup, setNewArrayBackup] = React.useState([]);
-  const [ResturuningOpen, setResturuningOpen] = React.useState(false);
-  const [topTaskresIcon, setTopTaskresIcon] = React.useState(false);
-  const [tasksRestruct, setTasksRestruct] = React.useState(false);
-  const [smartmetaDetails, setsmartmetaDetails] = React.useState([]);
-  const [checkData, setcheckData] = React.useState(null)
-  const [topCompoIcon, setTopCompoIcon]: any = React.useState(false);
-  // IsUpdated = props.props.Portfolio_x0020_Type;
-  IsUpdated = props.props.PortfolioType;
-
-  const GetSmartmetadata = async () => {
-   
-    //  var metadatItem: any = []
-    let smartmetaDetails: any = [];
-    let AllSiteName: any = [];
-    var select: any = 'Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,Parent/Id,Parent/Title&$expand=Parent'
-    smartmetaDetails = await globalCommon.getData(props?.AllListId?.siteUrl, props?.AllListId?.SmartMetadataListID, select);
-    setAllClientCategory(smartmetaDetails?.filter((metadata: any) => metadata?.TaxType == 'Client Category'));
-    console.log(smartmetaDetails);
-    setsmartmetaDetails(smartmetaDetails)
-
-    smartmetaDetails.forEach((newtest: any) => {
-      newtest.Id = newtest.ID;
-      if (newtest.TaxType == 'Sites' && newtest.Title != 'Master Tasks' && newtest.Title != 'SDC Sites') {
-        siteConfig.push(newtest)
-      }
-      if (newtest.TaxType == 'Sites' && newtest.Item_x005F_x0020_Cover != undefined) {
-        siteIconAllTask.push(newtest)
-
-      }
     });
-
-    // var filter: any = '';
-    if (props.props.TaskType != undefined && props.props.TaskType != undefined && props.props.TaskType === 'Activities') {
-      filter += '(ParentTask/Id eq ' + props.props.Id + ' ) or '
-      loadWSTasks(props.props);
-    }
-    else if (props.props.TaskType != undefined && props.props.TaskType != undefined && props.props.TaskType === 'Workstream') {
-      filter += '(ParentTask/Id eq ' + props.props.Id + ' )'
-      loadActivityTasks(props.props);
-
-    }
-  }
-
-
-  const loadActivityTasks = async (task: any) => {
-    let activity: any = [];
-    var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,TaskLevel,ItemRank,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,PortfolioType,ResponsibleTeam,TaskCategories&$filter=Id eq " + task.ParentTask.Id + ""
-    activity = await globalCommon.getData(props?.AllListId?.siteUrl, task.listId, select)
-    if (activity?.length > 0)
-      GetComponents(activity[0])
-    LoadAllSiteTasks(filter);
-  }
-  const loadWSTasks = async (task: any) => {
-    var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,TaskLevel,ItemRank,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,PortfolioType,ResponsibleTeam,TaskCategories&$filter=ParentTask/Id eq " + task.Id + ""
-    // var select = "TaskLevel,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,TaskLevel,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Component/Id,Component/Title,Component/Item_x0020_Type, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,TaskType,AssignedTo,Component,ClientCategory,Author,Editor,TeamMembers,ResponsibleTeam,TaskCategories&$filter=ParentTask/Id eq " + task.Id + ""
-    AllWSTasks = await globalCommon.getData(props?.AllListId?.siteUrl, task.listId, select)
-    if (AllWSTasks?.length === 0)
-      filter += '(ParentTask/Id eq ' + props.props.Id + ' )'
-    AllWSTasks.forEach((obj: any, index: any) => {
-      if ((AllWSTasks?.length - 1) === index)
-        filter += '(ParentTask/Id eq ' + obj.Id + ' )'
-      else filter += '(ParentTask/Id eq ' + obj.Id + ' ) or '
-
+    const [siteType, setSiteType] = React.useState([]);
+    const [TaskTitle, setTaskTitle] = React.useState('');
+    const [instantCategories, setInstantCategories] = React.useState([])
+    const [sendApproverMail, setSendApproverMail] = React.useState(false)
+    const [taskCat, setTaskCat] = React.useState([]);
+    const [CategoriesData, setCategoriesData] = React.useState<any>([]);
+    const [categorySearchKey, setCategorySearchKey] = React.useState("");
+    const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
+    // const [IsClientPopup, setIsClientPopup] = React.useState(false);
+    const [FeedbackPost, setFeedbackPost] = React.useState([])
+    const [SharewebCategory, setSharewebCategory] = React.useState("");
+    const [selectedItem, setSelectedItem]: any = React.useState({})
+    const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
+    const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
+    const [selectPriority, setselectPriority] = React.useState("");
+    const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
+    const [ClientCategoriesData, setClientCategoriesData] = React.useState<any>(
+        []
+    );
+    const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
+    const [editTaskPopupData, setEditTaskPopupData] = React.useState({
+        isOpenEditPopup: false,
+        passdata: null
     })
-    LoadAllSiteTasks(filter);
-    console.log(AllWSTasks);
-  }
-  var Response: any = []
-  const getTaskUsers = async () => {
-    let web = new Web(props?.AllListId?.siteUrl);
-    await web.lists
-      .getById(props?.AllListId?.TaskUsertListID)
-      .items
-      .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover, ItemType,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
-      .get().then((Response: any) => {
-        setTaskUser(Response);
-        console.log(Response);
-        taskUsers = Response
-      })
+    const [save, setSave] = React.useState({ siteType: undefined, linkedServices: [], recentClick: undefined, Mileage: '', Body: [], DueDate: undefined, dueDate: '', taskCategory: '', taskCategoryParent: '', rank: undefined, taskName: '', taskUrl: undefined, portfolioType: 'Component', Component: [] })
 
+    React.useEffect(() => {
 
-
-  }
-
-  const GetIconImageUrl = (siteType: any, siteUrl: any, undefined: any) => {
-    let siteIcon = '';
-    siteIconAllTask?.map((items: any) => {
-      if (items?.Title == siteType) {
-        siteIcon = items?.Item_x005F_x0020_Cover?.Url
-        // return siteIcon;
-      }
-    })
-    return siteIcon;
-  }
-
-
-  const LoadAllSiteTasks = async function (filter:any) {
-    let AllTasksData: any = [];
-    let Counter = 0;
-    if (siteConfig != undefined && siteConfig?.length > 0) {
-      const batch = sp.createBatch();
-      for (let i = 0; i < siteConfig?.length; i++) {
-        const config = siteConfig[i];
-        var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,SiteCompositionSettings,TaskLevel,ItemRank,Project/Id,Project/PortfolioStructureID, Project/Title,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Project,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,PortfolioType,ResponsibleTeam,TaskCategories&$filter=" + filter + ""
-        
-        const web = new Web(props?.AllListId?.siteUrl);
-        const list = web.lists.getById(config.listId);
-        list.items
-          .inBatch(batch)
-          .select(select).orderBy("orderby", false)
-          .getAll(4000)
-
-          .then((AllTasksMatches) => {
-            console.log(AllTasksMatches);
-            Counter++;
-            console.log(AllTasksMatches?.length);
-            if (AllTasksMatches != undefined) {
-              if (AllTasksMatches?.length > 0) {
-                $.each(AllTasksMatches, function (index: any, item: any) {
-                  item.isDrafted = false;
-                  item.flag = true;
-                  item.TitleNew = item.Title;
-                  item.siteType = config.Title;
-                  item.childs = [];
-                  item.listId = config.listId;
-                  item.siteUrl = props?.AllListId?.siteUrl;
-                  item["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
-                  item.fontColorTask = "#000";
-                 
-                });
-              }
-              AllTasks = AllTasks.concat(AllTasksMatches);
-              AllTasks = $.grep(AllTasks, function (type: any) {
-                return type.isDrafted == false;
-              });
-              if (Counter == siteConfig?.length) {
-                $.map(AllTasks, (result: any) => {
-                  result.Id = result.Id != undefined ? result.Id : result.ID;
-                  result.TeamLeaderUser = [];
-                  result.AllTeamName =
-                    result.AllTeamName === undefined ? "" : result.AllTeamName;
-                  result.chekbox = false;
-                  result.descriptionsSearch = [];
-                  result.commentsSearch = "";
-                  result.DueDate = moment(result.DueDate).format("DD/MM/YYYY");
-                  result.DisplayDueDate = moment(result.DueDate).format("DD/MM/YYYY");
-                  if (result.DisplayDueDate == "Invalid date" || "") {
-                    result.DisplayDueDate = result.DisplayDueDate.replaceAll(
-                      "Invalid date",
-                      ""
-                    );
-                  }
-                  if (result.DisplayCreateDate == "Invalid date" || "") {
-                    result.DisplayCreateDate = result.DisplayCreateDate.replaceAll(
-                      "Invalid date",
-                      ""
-                    );
-                  }
-                  result.DisplayCreateDate = moment(result.Created).format("DD/MM/YYYY");
-                  result.PercentComplete = (
-                    result.PercentComplete * 100
-                  ).toFixed(0);
-                  result.chekbox = false;
-                  if (result.FeedBack != undefined) {
-                    let feedbackdata: any = JSON.parse(result?.FeedBack);
-        
-                    let FeedbackdatatinfoIcon: any =
-                      feedbackdata[0]?.FeedBackDescriptions?.map(
-                        (child: any) =>
-                          child?.Title +
-                          " " +
-                          child?.Subtext?.map((subChild: any) => subChild?.Title).join(
-                            " "
-                          )
-                      ).join(" ");
-        
-                    result.descriptionsSearch .push(FeedbackdatatinfoIcon)
-                      // FeedbackdatatinfoIcon.replace("undefined", "")
-                      //   .replace(/(<([^>]+)>)/gi, "")
-                      //   .replace(/\n/g, "");
-                  }
-                
-                  if (result?.Comments != null) {
-                    result.commentsSearch = result?.Comments.replace(
-                      /(<([^>]+)>)/gi,
-                      ""
-                    ).replace(/\n/g, "");
-                  }
-                  if (
-                    result.AssignedTo != undefined &&
-                    result?.AssignedTo?.length > 0
-                  ) {
-                    $.map(result.AssignedTo, (Assig: any) => {
-                      if (Assig.Id != undefined) {
-                        $.map(taskUsers, (users: any) => {
-                          if (
-                            Assig.Id != undefined &&
-                            users.AssingedToUser != undefined &&
-                            Assig.Id == users.AssingedToUser.Id
-                          ) {
-                            users.ItemCover = users.Item_x0020_Cover;
-                            result.TeamLeaderUser.push(users);
-                            result.AllTeamName += users.Title + ";";
-                          }
-                        });
-                      }
-                    });
-                  }
-                  if (
-                    result.ResponsibleTeam != undefined &&
-                    result?.ResponsibleTeam?.length > 0
-                  ) {
-                    $.map(result?.ResponsibleTeam, (Assig: any) => {
-                      if (Assig.Id != undefined) {
-                        $.map(taskUsers, (users: any) => {
-                          if (
-                            Assig.Id != undefined &&
-                            users.AssingedToUser != undefined &&
-                            Assig.Id == users.AssingedToUser.Id
-                          ) {
-                            users.ItemCover = users.Item_x0020_Cover;
-                            result.TeamLeaderUser.push(users);
-                            result.AllTeamName += users.Title + ";";
-                          }
-                        });
-                      }
-                    });
-                  }
-                  if (
-                    result.TeamMembers != undefined &&
-                    result.TeamMembers?.length > 0
-                  ) {
-                    $.map(result.TeamMembers, (Assig: any) => {
-                      if (Assig.Id != undefined) {
-                        $.map(taskUsers, (users: any) => {
-                          if (
-                            Assig.Id != undefined &&
-                            users.AssingedToUser != undefined &&
-                            Assig.Id == users.AssingedToUser.Id
-                          ) {
-                            users.ItemCover = users.Item_x0020_Cover;
-                            result.TeamLeaderUser.push(users);
-                            result.AllTeamName += users.Title + ";";
-                          }
-                        });
-                      }
-                    });
-                  }
-                  if (result?.ClientCategory?.length > 0) {
-                    result.ClientCategorySearch = result?.ClientCategory?.map(
-                      (elem: any) => elem.Title
-                    ).join(" ");
-                  } else {
-                    result.ClientCategorySearch = "";
-                  }
-                  result["TaskID"] = globalCommon.GetTaskId(result);
-                  if (result.Project) {
-                    result.ProjectTitle = result?.Project?.Title;
-                    result.ProjectId = result?.Project?.Id;
-                    result.projectStructerId =
-                      result?.Project?.PortfolioStructureID;
-                    const title = result?.Project?.Title || "";
-                    const dueDate = result?.DueDate;
-                    result.joinedData = [];
-                    if (title) result.joinedData.push(`Title: ${title}`);
-                    if (dueDate) result.joinedData.push(`Due Date: ${dueDate}`);
-                  }
-                  result["Item_x0020_Type"] = "Task";
-                })
-                  let allParentTasks = $.grep(AllTasks, function (type: any) { return (type.ParentTask != undefined && type.ParentTask.Id === props.props.Id) && (type.TaskType != undefined && type.TaskType.Title != 'Workstream') });
-                  if (props.props.TaskType != undefined && props.props.TaskType != undefined && props.props.TaskType === 'Activities')
-                    allworkstreamTasks = $.grep(AllTasks, function (task: any) { return (task.TaskType != undefined && task.TaskType.Title === 'Workstream') });
-                   
-                  if (allworkstreamTasks != undefined && allworkstreamTasks?.length > 0) {
-                    allworkstreamTasks.forEach((obj: any) => {
-                      if (obj.Id != undefined) {
-                        AllTasks.forEach((task: any) => {
-                          if (task?.ParentTask != undefined && obj?.Id === task?.ParentTask?.Id) {
-                            
-                            obj.subRows = obj?.subRows != undefined ? obj?.subRows : []
-                        
-                            obj.subRows.push(task)
-                          }
-                         
-                        })
-                      }
-                      obj.Restructuring = IsUpdated != undefined && IsUpdated == 'Service' ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
-                      obj.childsLength = obj?.childs != undefined && obj?.childs?.length > 0 ? obj?.childs?.length : 0;
-                      obj.subRowsLength = obj?.subRows != undefined && obj?.subRows?.length > 0 ? obj.subRows?.length : 0;
-                    })
-                  }
-          
-                  var temp: any = {};
-          
-                  temp.flag = true;
-                  temp.show = true;
-                  temp.PercentComplete = '';
-                  
-                  temp.ItemRank = '';
-                  temp.DueDate = '';
-                  if (allworkstreamTasks === undefined)
-                    allworkstreamTasks = [];
-                  if (allParentTasks.length > 0)
-                    allParentTasks?.map((items) => {
-                      allworkstreamTasks.push(items);
-                    })
-             
-                  setData(allworkstreamTasks);
-                  setmaidataBackup(allworkstreamTasks)
-                 
-              }
+        AllListId = props?.AllListId
+        GetSmartMetadata();
+        props?.TaskUsers?.map((user: any) => {
+            if (props?.context?.pageContext?.legacyPageContext?.userId == user?.AssingedToUser?.Id) {
+                loggedInUser = user;
             }
-          });
-      }
-    }
-  };
-
-  const GetComponents = async (Item: any) => {
-    var filt = "Id eq " + Item?.Portfolio?.Id + "";
-    let web = new Web(props?.AllListId?.siteUrl);
-    let compo = [];
-    compo = await web.lists
-      .getById(props?.AllListId?.MasterTaskListID)
-      .items
-      .select("ID", "Id", "Title", "Mileage", "PortfolioType/Id", "PortfolioType/Title", "PortfolioType/Color", "Item_x0020_Type",
-      ).expand('PortfolioType')
-
-      .top(4999)
-      .filter(filt)
-      .get()
-    componentDetails = compo[0]
-    setAllMasterTasksData(compo)
-    IsUpdated = componentDetails?.PortfoliType?.Title;
-   
-
-    console.log(componentDetails);
-  }
-  React.useEffect(() => {
-   
-    getTaskUsers();
-
-    if (props.props.Portfolio != undefined)
-      GetComponents(props.props)
-  
-    GetSmartmetadata();
-
-  }, []);
-
-
-  const EditItemTaskPopup = (item: any) => {
-
-    setIsTask(true);
-    setSharewebTask(item);
-  }
-  const EditData = (e: any, item: any) => {
-    setIsTimeEntry(true);
-    setSharewebTimeComponent(item);
-  }
-
-  //=================== callback function to all the poup handle ================
-  const Call = React.useCallback((childItem: any) => {
-    AllTasksRendar = [];
-    setIsTask(false);
-    setRowSelection({});
-    setMeetingPopup(false);
-    setWSPopup(false);
-    MeetingItems = []
-    var MainId: any = ''
-    let ParentTaskId: any;
-    if (childItem != undefined && childItem.data?.ItmesDelete == undefined) {
-      // let  TeamLeaderUser2:any=[];
-      // TeamLeaderUser2=TeamLeaderUser2.concat(childItem?.data?.ResponsibleTeam)
-      // TeamLeaderUser2=TeamLeaderUser2.concat(childItem?.data?.TeamMembers)
-      // TeamLeaderUser2=TeamLeaderUser2.concat(childItem?.data?.AssignedTo)
-      childItem.data.TeamLeaderUser=[];
-      childItem.data.DisplayCreateDate= moment(childItem?.data?.Created).format("DD/MM/YYYY")
-      childItem.data.DisplayDueDate=childItem?.data?.DueDate
-      childItem.data.Item_x0020_Type = "Task";
-      if (
-        childItem?.data?.AssignedTo != undefined &&
-        childItem?.data?.AssignedTo?.length > 0
-      ) {
-        $.map(childItem?.data?.AssignedTo, (Assig: any) => {
-          if (Assig?.Id != undefined) {
-            $.map(taskUsers, (users: any) => {
-              if (
-                Assig.Id != undefined &&
-                users.AssingedToUser != undefined &&
-                Assig.Id == users.AssingedToUser.Id
-              ) {
-                users.ItemCover = users.Item_x0020_Cover;
-                childItem?.data?.TeamLeaderUser.push(users);
-                childItem.data.AllTeamName += users.Title + ";";
-              }
-            });
-          }
-        });
-      }
-      if (
-        childItem?.data?.ResponsibleTeam!= undefined &&
-        childItem?.data?.ResponsibleTeam?.length > 0
-      ) {
-        $.map(childItem?.data?.ResponsibleTeam, (Assig: any) => {
-          if (Assig?.Id != undefined) {
-            $.map(taskUsers, (users: any) => {
-              if (
-                Assig.Id != undefined &&
-                users.AssingedToUser != undefined &&
-                Assig.Id == users.AssingedToUser.Id
-              ) {
-                users.ItemCover = users.Item_x0020_Cover;
-                childItem?.data?.TeamLeaderUser.push(users);
-                childItem.data.AllTeamName += users.Title + ";";
-              }
-            });
-          }
-        });
-      }
-      if (
-        childItem?.data?.TeamMembers != undefined &&
-        childItem?.data?.TeamMembers?.length > 0
-      ) {
-        $.map(childItem?.data?.TeamMembers, (Assig: any) => {
-          if (Assig?.Id != undefined) {
-            $.map(taskUsers, (users: any) => {
-              if (
-                Assig?.Id != undefined &&
-                users?.AssingedToUser != undefined &&
-                Assig?.Id == users.AssingedToUser.Id
-              ) {
-                users.ItemCover = users.Item_x0020_Cover;
-                childItem?.data?.TeamLeaderUser.push(users);
-                childItem.data.AllTeamName += users.Title + ";";
-              }
-            });
-          }
-        });
-      }
-
-
-      childItem.data['flag'] = true;
-      // childItem.data['SiteIcon']= GetIconImageUrl(childItem.data.siteType,childItem.data.siteUrl,undefined)
-      // childItem.data['TitleNew'] = childItem.data.Title;
-      childItem.data['TaskType'] = { Title: 'Workstream' }
-      if (childItem.data.PortfolioId != undefined) {
-        MainId = childItem.data.PortfolioId
-      }
-      // if (childItem.data.ComponentId != undefined && childItem.data.ComponentId.length > 0) {
-      //   MainId = childItem.data.ComponentId[0]
-      // }
-      if (childItem.data.ParentTaskId != undefined && childItem.data.ParentTaskId != "") {
-        ParentTaskId = childItem.data.ParentTaskId;
-      }
-      // ==========create ws and task======================== 
-      let grouping: any = true;
-      if (childItem.data?.editpopup == undefined && childItem.data?.ItmesDelete == undefined) {
-        finalData?.map((elem: any) => {
-          if (elem?.Id === ParentTaskId || elem.ID === ParentTaskId) {
-            elem.subRows = elem.subRows == undefined ? [] : elem.subRows
-            elem.subRows.push(childItem.data)
-            grouping = false;
-          }
         })
-        if (grouping === true) {
-          AllTasksRendar?.push(childItem.data)
-          finalData = finalData.concat(AllTasksRendar)
+        if (props?.selectedItem?.AssignedTo?.length > 0) {
+            setTaskAssignedTo(props?.selectedItem?.AssignedTo)
         }
-        else if (grouping === false) {
-          AllTasksRendar = AllTasksRendar?.concat(finalData)
-          finalData = [];
-          finalData = finalData?.concat(AllTasksRendar)
+        if (props?.selectedItem?.ResponsibleTeam?.length > 0) {
+            setTaskResponsibleTeam(props?.ResponsibleTeam?.AssignedTo)
         }
-      }
+        if (props?.selectedItem?.TeamMembers?.length > 0) {
+            setTaskTeamMembers(props?.TeamMembers?.AssignedTo)
+        }
+        if (props?.selectedItem?.ClientCategory?.length > 0) {
+            setClientCategoriesData(props?.selectedItem?.ClientCategory)
+        } else if (props?.selectedItem?.ClientCategory?.results?.length > 0) {
+            setClientCategoriesData(props?.selectedItem?.ClientCategory?.results)
+        }
+        setSelectedItem(props?.selectedItem)
 
-      //============ update the data to Edit task popup==================
+    }, [])
 
-      if (childItem.data?.editpopup != undefined && childItem.data?.editpopup == true && childItem.data?.ItmesDelete == undefined) {
-        finalData?.map((ele: any, index: any) => {
-          if (ele.subRows != undefined && ele.subRows?.length > 0) {
-            ele.subRows?.map((sub: any, subindex: any) => {
-              if (sub.Id == childItem.data.Id) {
-                finalData[index].subRows.splice(subindex, 1, childItem.data);
-              }
-            })
-          }
-          if (ele.Id == childItem.data.Id) {
-            finalData.splice(index, 1, childItem.data);
-          }
-        })
-        AllTasksRendar = AllTasksRendar?.concat(finalData)
-        finalData = [];
-        finalData = finalData?.concat(AllTasksRendar)
-      }
+    const Call = React.useCallback((item1: any, type: any) => {
+        setIsComponentPicker(false);
+        // setIsClientPopup(false);
+        if (type == "Category-Task-Footertable") {
+            setCategoriesData(item1);
+        }
+        // if (type == "ClientCategory") {
+        //     var Data: any = [];
+        //     if (item1 != undefined && item1.Clientcategories != "") {
+        //         var title: any = {};
+        //         title.Title = item1.Clientcategories;
+        //         item1.Clientcategories.map((itenn: any) => {
+        //             if (!isItemExists(ClientCategoriesData, itenn.Id)) {
+        //                 Data.push(itenn);
+        //             }
+        //         });
+        //         setClientCategoriesData(Data);
+        //     }
+        // }
 
-
-      console.log(finalData)
-      refreshData();
-    }
-    // ===============Delete the data to Edit task popup====================
-
-    if (childItem?.data?.ItmesDelete == true) {
-      finalData?.map((ele: any, index: any) => {
-        if (ele.subRows != undefined && ele.subRows?.length > 0) {
-          ele.subRows?.map((sub: any, subindex: any) => {
-            if (sub.Id == childItem.data.Id) {
-              finalData[index].subRows.splice(subindex, 1);
+    }, []);
+    var isItemExists = function (arr: any, Id: any) {
+        var isExists = false;
+        $.each(arr, function (index: any, items: any) {
+            if (items.ID === Id) {
+                isExists = true;
+                return false;
             }
-          })
-        }
-        if (ele.Id == childItem.data.Id) {
-          finalData.splice(index, 1);
-        }
-      })
-      AllTasksRendar = AllTasksRendar?.concat(finalData)
-      finalData = [];
-      finalData = finalData?.concat(AllTasksRendar)
-      console.log(finalData)
-      refreshData();
-    }
-  }, []);
-
-  const TimeEntryCallBack = React.useCallback((item1) => {
-    setIsTimeEntry(false);
-  }, []);
-  let isOpenPopup = false;
-  const CloseCall = React.useCallback((item) => {
-    if (!isOpenPopup && item.CreatedItem != undefined) {
-      item.CreatedItem.forEach((obj: any) => {
-        obj.data.childs = [];
-        obj.data.flag = true;
-        obj.data.TitleNew = obj.data.Title;
-        // obj.data.TeamMembers=item.TeamMembersIds;
-        // obj.AssignedTo =item.AssignedIds;
-        obj.data.siteType = "Master Tasks";
-        obj.data['TaskID'] = obj.data.PortfolioStructureID;
-        if (item.props != undefined && item.props.SelectedItem != undefined && item.props.SelectedItem.childs != undefined) {
-          item.props.SelectedItem.childs = item.props.SelectedItem.childs == undefined ? [] : item.props.SelectedItem.childs;
-          item.props.SelectedItem.childs.unshift(obj.data);
-        }
-
-      })
-
-    }
-    if (!isOpenPopup && item.data != undefined) {
-      item.data.childs = [];
-      item.data.flag = true;
-      item.data.TitleNew = item.data.Title;
-      item.data.siteType = "Master Tasks"
-      item.data.childsLength = 0;
-      // item.data['TaskID'] = item.data.PortfolioStructureID;
-      // ComponentsData.unshift(item.data);
-      // setData((data) => [...ComponentsData]);
-    }
-    setAddModalOpen(false)
-  }, []);
-
-
-
-  function clearreacture() {
-    AllTasksRendar = [];
-    data.forEach((obj) => {
-      obj.isRestructureActive = false;
-      if (obj.childs != undefined && obj.childs?.length > 0) {
-        obj.childs.forEach((sub: any) => {
-          obj.isRestructureActive = false;
-          if (sub.childs != undefined && sub.childs?.length > 0) {
-            sub.childs.forEach((subchild: any) => {
-              obj.isRestructureActive = false;
-            })
-          }
-
-        })
-      }
-
-
-    })
-
-    setTopTaskresIcon(false);
-    AllTasksRendar = AllTasksRendar?.concat(data)
-    finalData = [];
-    finalData = finalData?.concat(AllTasksRendar);
-    refreshData();
-
-  }
-
-  const CreateOpenCall = React.useCallback((item) => {
-    isOpenPopup = true;
-    item.data.childs = [];
-    item.data.flag = true;
-    item.data.siteType = "Master Tasks"
-    item.data.TitleNew = item.data.Title;
-    item.data.childsLength = 0;
-    item.data['TaskID'] = item.data.PortfolioStructureID;
-    if (checkedList != undefined && checkedList?.length > 0)
-      checkedList[0].childs.unshift(item.data);
-    // else ComponentsData.unshift(item.data);
-
-    // setSharewebComponent(item.data)
-    // setIsComponent(true);
-    // setData((data) => [...ComponentsData]);
-    // setSharewebComponent(item);
-  }, []);
-
-  const columns = React.useMemo<ColumnDef<any, unknown>[]>(
-    () => [
-      {
-        accessorKey: "",
-        placeholder: "",
-        hasCheckbox: true,
-        hasCustomExpanded: true,
-        hasExpanded: true,
-        size: 55,
-        id: 'Id',
-      },
-      {
-        accessorKey: "",
-        placeholder: "",
-        id: 'icons',
-        size: 90,
-        cell: ({ row, getValue }) => (
-          <div>
-            {row?.original?.SiteIcon != undefined &&
-              <a className="hreflink" title="Show All Child" data-toggle="modal">
-                <img className="icon-sites-img ml20 me-1" src={row?.original?.SiteIcon}></img>
-              </a>
+        });
+        return isExists;
+    };
+    const GetSmartMetadata = async () => {
+        SitesTypes = [];
+        subCategories = [];
+        var TaskTypes: any = []
+        var Priority: any = []
+        var Timing: any = []
+        var Task: any = []
+        let web = new Web(AllListId?.siteUrl);
+        let MetaData = [];
+        MetaData = await web.lists
+            .getById(AllListId?.SmartMetadataListID)
+            .items
+            .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,Parent/Id,Parent/Title,EncodedAbsUrl,IsVisible,Created,Item_x0020_Cover,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,AlternativeTitle")
+            .top(4999)
+            .expand('Author,Editor,Parent')
+            .get();
+        AllMetadata = MetaData;
+        siteConfig = getSmartMetadataItemsByTaxType(AllMetadata, 'Sites')
+        siteConfig?.map((site: any) => {
+            if (site?.Title !== undefined && site?.Title !== 'Foundation' && site?.Title !== 'Master Tasks' && site?.Title !== 'DRR' && site?.Title !== 'Health' && site?.Title !== 'Gender' && site?.Title !== 'SP Online') {
+                SitesTypes.push(site);
             }
-            {getValue()}
-          </div>
-        ),
-      },
-      {
-        accessorKey: "TaskID",
-        placeholder: "ID",
-        id: 'TaskID',
-        size: 145,
-        cell: ({ row, getValue }) => (
-          <div>
-            {row?.original?.TitleNew != "Tasks" ?
-              <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={props?.AllListId} />
-              : ''}
-          </div>
-        ),
-      },
-      {
-        accessorFn: (row) => row?.Title,
-        cell: ({ row, column, getValue }) => (
-          <>
-            {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== 'Others' && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-              href={props?.AllListId?.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.ID}
-            >
-              <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
-            </a>}
-            {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== 'Others' &&
-              <a className="hreflink serviceColor_Active" target="_blank" data-interception="off"
-                href={props?.AllListId?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + row?.original?.ID + "&Site=" + row?.original?.siteType}
-              >
-                <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
-              </a>}
-            {row?.original.TitleNew === "Tasks" ? (
-              <span>{row?.original.TitleNew}</span>
-            ) : (
-              ""
-            )}
-            {row?.original?.Categories == 'Draft' ?
-              <FaCompressArrowsAlt style={{ height: '11px', width: '20px' }} /> : ''}
-            {row?.original?.subRows?.length > 0 ?
-              <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
-             {row?.original?.descriptionsSearch?.length>0&&<InfoIconsToolTip
-                Discription={row?.original?.descriptionsSearch}
-                row={row?.original}
-              />}
-           </>
-        ),
-        id: "Title",
-        placeholder: "Title",
-        header: "",
-      },
-      {
-        accessorFn: (row) => row?.projectStructerId + "." + row?.ProjectTitle,
-        cell: ({ row }) => (
-          <>
-            {row?.original?.ProjectTitle != (null || undefined) ?
-              <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${props?.AllListId.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
-                <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={props?.AllListId} /></a></span>
-              : ""}
-          </>
-        ),
-        id: 'ProjectTitle',
-        placeholder: "Project",
-        resetColumnFilters: false,
-        header: "",
-        size: 70,
-      },
-      {
-        accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title).join("-"),
-        cell: ({ row }) => (
-          <>
-            <ShowClintCatogory clintData={row?.original} AllMetadata={smartmetaDetails} />
-
-          </>
-        ),
-        id: 'ClientCategory',
-        placeholder: "Client Category",
-        header: "",
-        size: 120,
-      },
-      {
-        accessorFn: (row) => row?.TeamLeaderUser?.map((val: any) => val.Title).join("-"),
-        cell: ({ row }) => (
-          <div>
-            <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={AllUsers} />
-          </div>
-        ),
-        id: 'TeamLeaderUser',
-        placeholder: "Team",
-        header: "",
-        size: 100,
-      },
-      {
-        accessorKey: "PercentComplete",
-        placeholder: "Status",
-        header: "",
-        size: 42,
-      },
-      {
-        accessorKey: "ItemRank",
-        placeholder: "Item Rank",
-        header: "",
-        size: 42,
-      },
-      {
-        accessorFn: (row) => row?.DueDate,
-        cell: ({ row }) => (
-          <span className='ms-1'>{row?.original?.DisplayDueDate} </span>
-
-        ),
-        id: 'DueDate',
-        filterFn: (row: any,columnName:any, filterValue: any) => {
-          if (row?.original?.DisplayDueDate?.includes(filterValue)) {
-            return true
-          } else {
-            return false
-          }
-        },
-        resetColumnFilters: false,
-        resetSorting: false,
-        placeholder: "DueDate",
-        header: "",
-        size: 100
-      },
-      {
-        accessorFn: (row) => row?.Created,
-        cell: ({ row }) => (
-          <span>
-            {row?.original?.Created == null ? (
-              ""
-            ) : (
-              <>
-                <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
-
-                {row?.original?.Author != undefined ? (
-                  <>
-                    <a
-                      href={`${props?.AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
-                      target="_blank"
-                      data-interception="off"
-                    >
-                      <img title={row?.original?.Author?.Title} className="workmember ms-1" src={findUserByName(row?.original?.Author?.Id)} />
-                    </a>
-                  </>
-                ) : (
-                  <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
-                )}
-              </>
-            )}
-          </span>
-        ),
-        id: 'Created',
-        resetColumnFilters: false,
-        resetSorting: false,
-        placeholder: "Created",
-        filterFn: (row: any, columnName:any, filterValue: any) => {
-          if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
-            return true
-          } else {
-            return false
-          }
-        },
-        header: "",
-        size: 125
-      },
-     
-      {
-        cell: ({ row, getValue }) => (
-          <>
-            {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && (
-              <a className='time-icons' onClick={(e) => EditData(e, row?.original)} >
-                <span title='Time' className="svg__iconbox svg__icon--clock"></span>
-              </a>
-            )}
-            {getValue()}
-          </>
-        ),
-        id: "row?.original.Id",
-        canSort: false,
-        placeholder: "",
-        header: "",
-        size: 2,
-      },
-
-
-
-      {
-        header: ({ table }: any) => (
-          <>{
-            topCompoIcon ?
-              <span
-                // style={{ backgroundColor: `${portfolioColor}` }}
-                title="Restructure" className="Dyicons mb-1 mx-1 p-1" onClick={() => trueTopIcon(true)}>
-                <span className="svg__iconbox svg__icon--re-structure"></span>
-              </span>
-              : ''
-          }
-          </>
-        ),
-        cell: ({ row, getValue }) => (
-          <>
-            <a className='d-flex'>
-              {row?.original?.isRestructureActive && (
-                <span className="Dyicons p-1" title="Restructure" style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} onClick={() => callChildFunction(row?.original)}>
-                  <span className="svg__iconbox svg__icon--re-structure"></span>
-                </span>)}
-
-              {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && (
-                <span title='Edit' onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit ml-auto"></span>
-              )}
-            </a>
-            {getValue()}
-          </>
-        ),
-        id: "row?.original.Id",
-        canSort: false,
-        placeholder: "",
-        size: 2,
-      },
-
-    ],
-    [data]
-  );
-  const table: any = useReactTable({
-    data,
-    columns,
-    state: {
-      columnFilters,
-      expanded,
-      sorting,
-      rowSelection,
-    },
-    onColumnFiltersChange: setColumnFilters,
-    onSortingChange: setSorting,
-    onExpandedChange: setExpanded,
-    getSubRows: (row) => row.subRows,
-    onRowSelectionChange: setRowSelection,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getExpandedRowModel: getExpandedRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    debugTable: true,
-    filterFromLeafRows: true,
-    enableSubRowSelection: false,
-    filterFns: undefined
-  });
-
-
-  
-
-
-  const RestruringCloseCall = () => {
-    setResturuningOpen(false);
-    setTasksRestruct(false);
-    clearreacture();
-  };
-
-  // function structuredClone(obj: any): any {
-
-  //   return JSON.parse(JSON.stringify(obj));
-
-  // }
-
-  const openActivity = () => {
-    let data2 = props?.props
-    // let data2: any = structuredClone(props?.props)
-    if (checkData != undefined && checkData != null && checkData?.TaskType != null) {
-      if (checkData?.TaskType?.Title == 'Workstream') {
-        checkData['NoteCall'] = 'Task'
-        console.log(MeetingItems[MeetingItems?.length - 1])
-        if (MeetingItems[MeetingItems?.length - 1]?.ClientTime?.length > 0 && MeetingItems[MeetingItems?.length - 1].ClientTime != undefined) {
-          MeetingItems[MeetingItems?.length - 1].ClientTime = JSON.parse(MeetingItems[MeetingItems?.length - 1]?.ClientTime)
-        }
-
-        setMeetingPopup(true)
-      }
-    }
-    else {
-      if (props.props.TaskType == 'Workstream') {
-        props.props['NoteCall'] = 'Task'
-        MeetingItems.push(props.props)
-        setMeetingPopup(true)
-      }
-      if (props.props.TaskType == 'Activities') {
-        let parentcat: any = [];
-
-        if (data2?.ClientTime != null && data2?.ClientTime != undefined) {
-
-          data2.ClientTime = JSON.stringify(data2?.ClientTime)
+        })
+        if (SitesTypes?.length == 1) {
+            setActiveTile("siteType", "siteType", SitesTypes[0].Title)
+            setSiteType(SitesTypes)
         } else {
-          data2.ClientTime = null
+            setSiteType(SitesTypes)
         }
+        TaskTypes = getSmartMetadataItemsByTaxType(AllMetadata, 'Categories');
+        let instantCat: any = [];
+        TaskTypes?.map((cat: any) => {
+            cat.ActiveTile = false;
+            getChilds(cat, TaskTypes);
+            if (cat?.ParentID !== undefined && cat?.ParentID === 0 && cat?.Title !== 'Phone') {
+                Task.push(cat);
+            }
+            if (cat?.Title == 'Phone' || cat?.Title == 'Email Notification' || cat?.Title == 'Immediate' || cat?.Title == 'Approval') {
+                instantCat.push(cat)
+            }
+            if (cat?.Parent?.Id !== undefined && cat?.Parent?.Id !== 0 && cat?.IsVisible) {
+                subCategories.push(cat);
+            }
+        })
+        setInstantCategories(instantCat)
+        console.log(AutoCompleteItemsArray, 'Auto Due Date')
+        let uniqueArray: any = [];
+        AutoCompleteItemsArray.map((currentObject: any) => {
+            if (!uniqueArray.find((obj: any) => obj.Id === currentObject.Id)) {
+                uniqueArray.push(currentObject)
+            }
+        })
+        AutoCompleteItemsArray = uniqueArray;
+        Task?.map((taskItem: any) => {
+            subCategories?.map((item: any) => {
+                if (taskItem?.Id === item?.Parent?.Id) {
+                    try {
+                        item.ActiveTile = false;
+                        item.SubTaskActTile = item?.Title?.replace(/\s/g, "");
+                    } catch (error) {
+                        console.log(error);
+                    }
+                }
+            })
+        })
 
-        MeetingItems.push(data2)
-        setWSPopup(true)
-
-
-
-      }
+        if (IsapprovalTask == true) {
+            subCategories?.map((item: any) => {
+                if (item?.Title == "Approval" && !item.ActiveTile) {
+                    selectSubTaskCategory(item?.Title, item?.Id, item)
+                }
+            })
+        }
     }
-
-  }
-
-
-
-  const findUserByName = (Id: any) => {
-    const user = AllUsers.filter((user: any) => user?.AssingedToUser?.Id == Id);
-    let Image: any;
-    if (user[0]?.Item_x0020_Cover != undefined) {
-      Image = user[0].Item_x0020_Cover.Url;
-    } else {
-      Image =
-        "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg";
+    const changeTitle = (e: any) => {
+        if (e.target.value.length > 56) {
+            alert("Task Title is too long. Please chose a shorter name and enter the details into the task description.")
+        } else {
+            setTaskTitle(e.target.value);
+        }
     }
-    return user ? Image : null;
-  };
+    const setActiveTile = (item: keyof typeof save, isActiveItem: keyof typeof isActive, title: any) => {
 
+        let saveItem = save;
+        let isActiveData = isActive;
 
-  React.useEffect(() => {
-    CheckDataPrepre()
-  }, [table?.getSelectedRowModel()?.flatRows?.length])
+        if (save[item] !== title) {
+            saveItem[item] = title;
+            setSave(saveItem);
+            if (isActive[isActiveItem] !== true) {
+                isActiveData[isActiveItem] = true;
+                setIsActive(isActiveData);
+            }
+        } else if (save[item] === title) {
+            saveItem[item] = '';
+            setSave(saveItem);
+            isActiveData[isActiveItem] = false;
+            setIsActive(isActiveData);
+        }
+        setSave({ ...save, recentClick: isActiveItem })
+    };
 
-  const CheckDataPrepre = () => {
-    if (table?.getSelectedRowModel()?.flatRows?.length) {
-      let eTarget = false;
-      let itrm: any;
-      if (table?.getSelectedRowModel()?.flatRows?.length > 0) {
-        table?.getSelectedRowModel()?.flatRows?.map((value: any) => {
-          value.original.Id = value.original.ID
-          itrm = value.original;
-          if (value?.getCanSelect() == true) {
-            eTarget = true
-          } else {
-            eTarget = false
-          }
+    const getChilds = (item: any, items: any) => {
+        let parent = JSON.parse(JSON.stringify(item))
+        parent.Newlabel = `${parent?.Title}`;
+        AutoCompleteItemsArray.push(parent)
+        parent.childs = [];
+        items?.map((childItem: any) => {
+            if (childItem?.Parent?.Id !== undefined && parseInt(childItem?.Parent?.Id) === parent.ID) {
+                let child = JSON.parse(JSON.stringify(childItem))
+                parent.childs.push(child);
+                child.Newlabel = `${parent?.Newlabel} > ${child?.Title}`;
+                AutoCompleteItemsArray.push(child);
+                getChilds(child, items);
+            }
         });
-      }
-   
-    } else {
-
-      setcheckData(null)
-  
     }
+    let getSmartMetadataItemsByTaxType = (metadataItems: any, taxType: any) => {
+        var Items: any = [];
+        metadataItems?.map((taxItem: any) => {
+            if (taxItem.TaxType === taxType)
+                Items.push(taxItem);
+        });
 
-  }
-  React.useEffect(() => {
-    if (table.getState().columnFilters?.length) {
-      setExpanded(true);
-    } else {
-      setExpanded({});
+        Items.sort((a: any, b: any) => {
+            return a.SortOrder - b.SortOrder;
+        });
+        return Items;
     }
-  }, [table.getState().columnFilters]);
-  const callBackData = React.useCallback((checkData: any) => {
-    let array: any = [];
-    if (checkData != undefined) {
+    const onRenderCustomHeaderMain = () => {
+        return (
+            <>
+                <div
+                    style={{
+                        marginRight: "auto",
+                        fontSize: "20px",
+                        fontWeight: "600",
+                        marginLeft: "20px"
+                    }}
+                >
+                    <h2 className="heading">
+                        {`Create Quick Option - ${selectedItem?.NoteCall}`}
+                    </h2>
+                </div>
+                <Tooltip ComponentId={1746} />
+            </>
+        );
+    };
 
-      if (checkData.TaskType == undefined) {
-        setActivityDisable(false)
-        checkData['siteUrl'] = props?.AllListId?.siteUrl;
-        checkData['listName'] = 'Master Tasks';
-        MeetingItems.push(checkData)
-        //setMeetingItems(itrm);
-
-      }
-      if (checkData.TaskType != undefined) {
-        if (checkData.TaskType.Title == 'Activities' || checkData.TaskType.Title == "Workstream") {
-          setActivityDisable(false)
-          // Arrays.push(itrm)
-          checkData['PortfolioId'] = props?.Id;
-          MeetingItems.push(checkData)
-          setCount(count + 2)
+    const closePopup = (res: any) => {
+        if (res === "item") {
+            props.Call("Close");
+        } else {
+            props.Call(res);
         }
-        if (checkData.TaskType.Title == 'Task') {
-          setActivityDisable(true)
-          MeetingItems.push(checkData)
+    };
+    function DDComponentCallBack(TeamData: any) {
+        // setTeamConfig(dt)
 
+        if (TeamData?.AssignedTo?.length > 0) {
+            let AssignedUser: any = [];
+            TeamData.AssignedTo?.map((arrayData: any) => {
+                if (arrayData.AssingedToUser != null) {
+                    AssignedUser.push(arrayData.AssingedToUser);
+                } else {
+                    AssignedUser.push(arrayData);
+                }
+            });
+            setTaskAssignedTo(AssignedUser);
+        } else {
+            setTaskAssignedTo([]);
         }
-      }
-      setcheckData(checkData);
-      array.push(checkData);
-
-
-    } else {
-      setcheckData({});
-      array = [];
+        if (TeamData?.TeamMemberUsers?.length > 0) {
+            let teamMembers: any = [];
+            TeamData.TeamMemberUsers?.map((arrayData: any) => {
+                if (arrayData.AssingedToUser != null) {
+                    teamMembers.push(arrayData.AssingedToUser);
+                } else {
+                    teamMembers.push(arrayData);
+                }
+            });
+            setTaskTeamMembers(teamMembers);
+        } else {
+            setTaskTeamMembers([]);
+        }
+        if (TeamData.ResponsibleTeam != undefined && TeamData.ResponsibleTeam.length > 0) {
+            let responsibleTeam: any = [];
+            TeamData.ResponsibleTeam?.map((arrayData: any) => {
+                if (arrayData.AssingedToUser != null) {
+                    responsibleTeam.push(arrayData.AssingedToUser);
+                } else {
+                    responsibleTeam.push(arrayData);
+                }
+            });
+            setTaskResponsibleTeam(responsibleTeam);
+        } else {
+            setTaskResponsibleTeam([]);
+        }
     }
-    // setCheckedList1(array);
-  }, []);
-  const callBackData1 = React.useCallback((getData: any, topCompoIcon: any) => {
-    if (getData != undefined && getData?.length > 0) {
-      finalData = [];
-      finalData = finalData?.concat(getData)
-      console.log(finalData)
-      refreshData();
-      setTopCompoIcon(topCompoIcon);
+    const handleDatedue = (date: any) => {
+        // AllItems.DueDate = date;
+        var finalDate: any = Moment(date).format("YYYY-MM-DD");
+        setSave({ ...save, DueDate: finalDate });
+    };
+    const HtmlEditorCallBack = React.useCallback((EditorData: any) => {
+
+
+        if (EditorData.length > 8) {
+            let param: any = Moment(new Date().toLocaleString());
+            FeedBackItem["Title"] = "FeedBackPicture" + param;
+            FeedBackItem["FeedBackDescriptions"] = [];
+            FeedBackItem.FeedBackDescriptions = [
+                {
+                    Title: EditorData
+                }
+            ];
+            FeedBackItem["ImageDate"] = "" + param;
+            FeedBackItem["Completed"] = "";
+            setFeedbackPost([FeedBackItem]);
+        }
+    }, []);
+
+    //------------Image upload function start--------------
+
+
+    const FlorarImageUploadComponentCallBack = (dt: any) => {
+        console.log(dt)
+        // setUploadBtnStatus(false);
+        // let DataObject: any = {
+        //     data_url: dt,
+        //     file: "Image/jpg"
+        // }
+        // let arrayIndex: any = TaskImages?.length
+        // TaskImages.push(DataObject)
+        // if (dt.length > 0) {
+        //     onUploadImageFunction(TaskImages, [arrayIndex]);
+        // }
     }
-    
-  }, []);
+
+    //------------ Image Upload Function end -------------
+
+    // ---------------- change priority status function start -------------------
+    const ChangePriorityStatusFunction = (e: any) => {
+        let value = e.target.value;
+        if (Number(value) <= 10) {
+            setselectPriority(e.target.value);
+        } else {
+            alert("Priority Status not should be greater than 10");
+            setselectPriority("0");
+        }
+    };
+
+    //------- change priority status function End -----------
 
 
-  //  Function to call the child component's function
-  const callChildFunction = (items: any) => {
-    if (childRef.current) {
-      childRef.current.callChildFunction(items);
+    //--------Edit client categroy and categrioes open popup function  -------------
+    // const EditClientCategory = (item: any) => {
+    //     setIsClientPopup(true);
+    //     setSharewebCategory(item);
+    // };
+    const EditComponentPicker = (item: any) => {
+        setIsComponentPicker(true);
+        setSharewebCategory(item);
+    };
+    //-------- Edit client categrory and categrioes open popup  fuction end ------------
+
+
+    //-------------------- save function  start ---------------------
+    const saveNoteCall = () => {
+        if (
+            save?.siteType == undefined
+            // AllItems?.TaskType?.Title != "Workstream"
+        ) {
+            alert("Please select the site");
+        } else if (TaskTitle?.length <= 0) {
+            alert("Please Enter Task Title");
+        }
+        else {
+            //   FeedBackItemArray.push(
+            //     FeedBackItem?.FeedBackDescriptions != undefined ? FeedBackItem : ""
+            //   );
+            //   if (NewArray != undefined && NewArray.length > 0) {
+            //     NewArray.map((NeitemA: any) => {
+            //       CategoriesData.push(NeitemA);
+            //     });
+            //   }
+            //   if (smartComponentData != undefined && smartComponentData.length > 0) {
+            //   }
+
+            var categoriesItem = "";
+            var CategoryID: any = [];
+            CategoriesData.map((category: any) => {
+                if (category.Title != undefined) {
+                    categoriesItem =
+                        categoriesItem == ""
+                            ? category.Title
+                            : categoriesItem + ";" + category.Title;
+                    CategoryID.push(category.Id);
+                }
+            });
+            var ClientCategory: any = [];
+            if (
+                ClientCategoriesData != undefined &&
+                ClientCategoriesData?.length > 0
+            ) {
+                ClientCategoriesData.map((val: any) => {
+                    if (save?.siteType == "Shareweb") {
+                        ClientCategory.push(val?.Id);
+                    }
+                    else if (val?.Id != undefined && val?.siteName == save?.siteType) {
+                        ClientCategory.push(val?.Id);
+                    }
+                    else if (val?.Id != undefined && val?.Titles != undefined && val?.Titles.length > 0 && val?.Titles[0] == save?.siteType) {
+                        ClientCategory.push(val?.Id);
+                    }
+                });
+            }
+            let Sitestagging: any;
+            if (selectedItem?.Sitestagging != undefined) {
+                if (save?.siteType == "Shareweb") {
+                    Sitestagging = selectedItem?.Sitestagging
+                } else {
+                    var siteComp: any = {};
+                    siteComp.SiteName = save?.siteType,
+                        siteComp.localSiteComposition = true
+                    siteComp.ClienTimeDescription = 100,
+                        //   siteComp.SiteImages = ,
+                        siteComp.Date = Moment(new Date().toLocaleString()).format("MM-DD-YYYY");
+                    Sitestagging = JSON?.stringify([siteComp]);
+                }
+            }
+
+
+
+
+
+            let AssignedToIds: any = [];
+            let TeamMemberIds: any = [];
+            let ResponsibleTeamIds: any = [];
+            if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
+                TaskAssignedTo.map((taskInfo: any) => {
+                    AssignedToIds.push(taskInfo.Id);
+                });
+            }
+
+            if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
+                TaskTeamMembers.map((taskInfo: any) => {
+                    TeamMemberIds.push(taskInfo.Id);
+                });
+            }
+            if (
+                TaskResponsibleTeam != undefined &&
+                TaskResponsibleTeam?.length > 0
+            ) {
+                TaskResponsibleTeam.map((taskInfo: any) => {
+                    ResponsibleTeamIds.push(taskInfo.Id);
+                });
+            }
+
+            siteType.forEach(async (site: any) => {
+                let Tasklevel: any = "";
+                let TaskID = "";
+                let prentID = "";
+                let LetestLevelData: any = [];
+                if (site.Title == save?.siteType) {
+                    if (selectedItem?.NoteCall != "Task") {
+                        let web = new Web(AllListId?.siteUrl);
+                        let componentDetails: any = [];
+                        componentDetails = await web.lists
+                            .getById(site.listId)
+                            .items.select("Id,Title,TaskType/Id,TaskType/Title,TaskLevel")
+                            .expand("TaskType")
+                            .orderBy("Id", false)
+                            .filter("TaskType/Title eq 'Activities'")
+                            .top(1)
+                            .get();
+                        console.log(componentDetails);
+                        if (componentDetails.length == 0) {
+                            var LatestId: any = 1;
+                            Tasklevel = LatestId;
+                            TaskID = "A" + LatestId;
+                        } else {
+                            var LatestId = componentDetails[0].TaskLevel + 1;
+                            Tasklevel = LatestId;
+                            TaskID = "A" + LatestId;
+                        }
+
+                        var MyTaskID = TaskID + LatestId;
+
+                        await web.lists
+                            .getById(site.listId)
+                            .items.add({
+                                Title: TaskTitle,
+                                Categories: categoriesItem ? categoriesItem : null,
+
+                                DueDate:
+                                    save.DueDate != undefined ? new Date(save.DueDate).toISOString() : null,
+                                TaskCategoriesId: { results: CategoryID },
+                                ClientCategoryId: { results: ClientCategory },
+                                PortfolioId: selectedItem?.Id,
+                                PriorityRank: selectPriority != "" ? selectPriority : null,
+                                TaskTypeId: 1,
+                                FeedBack:
+                                    FeedbackPost?.length > 0
+                                        ? JSON.stringify(FeedbackPost)
+                                        : null,
+                                AssignedToId: {
+                                    results:
+                                        AssignedToIds != undefined && AssignedToIds?.length > 0
+                                            ? AssignedToIds
+                                            : []
+                                },
+                                ResponsibleTeamId: {
+                                    results:
+                                        ResponsibleTeamIds != undefined &&
+                                            ResponsibleTeamIds?.length > 0
+                                            ? ResponsibleTeamIds
+                                            : []
+                                },
+                                TeamMembersId: {
+                                    results:
+                                        TeamMemberIds != undefined && TeamMemberIds?.length > 0
+                                            ? TeamMemberIds
+                                            : []
+                                },
+                                SiteCompositionSettings:
+                                    selectedItem.SiteCompositionSettings,
+
+                                ClientTime: Sitestagging,
+                                TaskID: TaskID,
+                                TaskLevel: Tasklevel
+                            })
+                            .then((res: any) => {
+                                res.data.TaskID = selectedItem?.PortfolioStructureID + "-" + TaskID;
+                                res.data["SiteIcon"] = site.Item_x005F_x0020_Cover?.Url;
+                                res.data["listId"] = site?.listId;
+                                // (res.data["PortfolioType"] =
+                                //     portFolioTypeId == undefined ? null : portFolioTypeId[0]),
+                                //     (res.data["Portfolio"] = { Id: portFolio });
+                                res.data["TaskType"] = { Id: res.data.TaskTypeId };
+                                // res.data['TaskType'] =
+                                (res.data.DueDate = save.DueDate
+                                    ? Moment(save.DueDate).format("MM-DD-YYYY")
+                                    : null),
+                                    (res.data["siteType"] = site.siteName);
+
+                                res.data.ParentTaskId = selectedItem.Id;
+                                res.data.ClientCategory = [];
+                                res.data.AssignedTo = [];
+                                res.data.TeamMembers = [];
+                                res.data.ResponsibleTeam = [];
+                                var MyData = res.data;
+                                if (res?.data?.TeamMembersId?.length > 0) {
+                                    res.data?.TeamMembersId?.map((teamUser: any) => {
+                                        let elementFound = props?.TaskUsers?.filter((User: any) => {
+                                            if (User?.AssingedToUser?.Id == teamUser) {
+                                                res.data.TeamMembers.push(User?.AssingedToUser);
+                                            }
+                                        });
+                                    });
+                                }
+                                if (res?.data?.ResponsibleTeamId?.length > 0) {
+                                    res.data?.ResponsibleTeamId?.map((teamUser: any) => {
+                                        let elementFound = props?.TaskUsers?.filter((User: any) => {
+                                            if (User?.AssingedToUser?.Id == teamUser) {
+                                                res.data.ResponsibleTeam.push(User?.AssingedToUser);
+                                            }
+                                        });
+                                    });
+                                }
+                                if (res?.data?.AssignedToId?.length > 0) {
+                                    res.data?.AssignedToId?.map((teamUser: any) => {
+                                        let elementFound = props?.TaskUsers?.filter((User: any) => {
+                                            if (User?.AssingedToUser?.Id == teamUser) {
+                                                res.data.AssignedTo.push(User?.AssingedToUser);
+                                            }
+                                        });
+                                    });
+                                }
+                                // if (res?.data?.ClientCategoryId?.length > 0) {
+                                //     res.data?.ClientCategoryId?.map((category: any) => {
+                                //         let elementFound = AllClientCategory?.filter(
+                                //             (metaCategory: any) => metaCategory?.Id == category
+                                //         );
+                                //         if (elementFound) {
+                                //             res.data.ClientCategory.push(elementFound[0]);
+                                //         }
+                                //     });
+                                // }
+                                res.data.Clientcategories = res.data.ClientCategory;
+
+                                let fileName: any = "";
+                                let tempArray: any = [];
+                                // let SiteUrl = SiteUrl;
+                                // if (TaskImages != undefined && TaskImages.length > 0) {
+                                //     TaskImages?.map(async (imgItem: any, index: number) => {
+                                //         if (
+                                //             imgItem.data_url != undefined &&
+                                //             imgItem.file != undefined
+                                //         ) {
+                                //             let date = new Date();
+                                //             let timeStamp = date.getTime();
+                                //             fileName =
+                                //                 "Image" +
+                                //                 "-" +
+                                //                 res.data.Title +
+                                //                 " " +
+                                //                 res.data.Title +
+                                //                 timeStamp +
+                                //                 ".jpg";
+                                //             let ImgArray = {
+                                //                 ImageName: fileName,
+                                //                 UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
+                                //                 imageDataUrl:
+                                //                     dynamicList?.siteUrl +
+                                //                     "/Lists/" +
+                                //                     res.data.siteType +
+                                //                     "/Attachments/" +
+                                //                     res?.data.Id +
+                                //                     "/" +
+                                //                     fileName,
+                                //                 ImageUrl: imgItem.data_url
+                                //             };
+                                //             tempArray.push(ImgArray);
+                                //         }
+                                //     });
+                                //     tempArray?.map((tempItem: any) => {
+                                //         tempItem.Checked = false;
+                                //     });
+                                //     var src = TaskImages[0].data_url?.split(",")[1];
+                                //     var byteArray = new Uint8Array(
+                                //         atob(src)
+                                //             ?.split("")
+                                //             ?.map(function (c) {
+                                //                 return c.charCodeAt(0);
+                                //             })
+                                //     );
+                                //         const data: any = byteArray;
+                                //         var fileData = "";
+                                //         for (var i = 0; i < byteArray.byteLength; i++) {
+                                //             fileData += String.fromCharCode(byteArray[i]);
+                                //         }
+                                //         if (res.data.listId != undefined) {
+                                //             let web = new Web(dynamicList?.siteUrl);
+                                //             let item = web.lists
+                                //                 .getById(res.data.listId)
+                                //                 .items.getById(res.data.Id);
+                                //             item.attachmentFiles.add(fileName, data).then((res) => {
+                                //                 console.log("Attachment added");
+
+                                //                 UpdateBasicImageInfoJSON(tempArray, MyData);
+                                //             });
+                                //         }
+                                //     }
+
+                                if (selectedItem.PageType == "ProjectManagement") {
+                                    props.Call();
+                                    let url = `${AllListId.siteUrl}/SitePages/Task-Profile.aspx?taskId=${res.data.Id}&Site=${res.data.siteType}`;
+                                    window.location.href = url;
+                                } else {
+                                    console.log(res);
+                                    closeTaskStatusUpdatePoup(res);
+                                    console.log(res);
+                                }
+
+                                //closeTaskStatusUpdatePoup(res);
+                            });
+
+
+                    }
+                    if (selectedItem?.NoteCall == "Task") {
+                        let web = new Web(AllListId?.siteUrl);
+                        let componentDetails: any = [];
+                        componentDetails = await web.lists
+                            .getById(site.listId)
+                            .items.select("Id,Title")
+                            .orderBy("Id", false)
+                            .top(1)
+                            .get();
+                        console.log(componentDetails);
+                        var LatestId = componentDetails[0].Id + 1;
+
+                        if (
+                            selectedItem?.TaskType?.Title == "Workstream" ||
+                            selectedItem?.SharewebTaskType?.Title == "Workstream" || selectedItem?.TaskType === "Workstream"
+                        ) {
+                            TaskID = selectedItem?.TaskID + "-T" + LatestId;
+                        } else {
+                            TaskID = "T" + LatestId;
+                        }
+
+
+
+                        if (selectedItem?.TaskType?.Title == "Workstream" || selectedItem?.TaskType === "Workstream") {
+                            var PortfolioData = selectedItem?.Portfolio?.Id;
+                            var ParentData = selectedItem?.Id;
+                        } else {
+                            var PortfolioData = selectedItem?.Id;
+                        }
+                        let clientTime: any;
+                        if (selectedItem?.ClientTime != undefined) {
+                            if (typeof selectedItem?.ClientTime == "object") {
+                                if (save?.siteType == "Shareweb") {
+                                    clientTime = JSON.stringify(selectedItem?.ClientTime);
+                                } else {
+                                    var siteComp: any = {};
+                                    siteComp.SiteName = save?.siteType,
+                                        siteComp.localSiteComposition = true
+                                    siteComp.ClienTimeDescription = 100,
+                                        //   siteComp.SiteImages = ,
+                                        siteComp.Date = Moment(new Date().toLocaleString()).format("DD-MM-YYYY");
+                                    clientTime = JSON?.stringify([siteComp]);
+                                }
+                                // clientTime = JSON.stringify(selectedItem?.ClientTime);
+                            } else {
+                                if (save?.siteType == "Shareweb") {
+                                    clientTime = selectedItem?.ClientTime
+                                } else {
+                                    var siteComp: any = {};
+                                    siteComp.SiteName = save?.siteType,
+                                        siteComp.localSiteComposition = true
+                                    siteComp.ClienTimeDescription = 100,
+                                        //   siteComp.SiteImages = ,
+                                        siteComp.Date = Moment(new Date().toLocaleString()).format("DD-MM-YYYY");
+                                    clientTime = JSON?.stringify([siteComp]);
+                                }
+                                clientTime = selectedItem?.ClientTime
+                            }
+                        }
+
+
+                        var arrayy = [];
+                        web = new Web(AllListId?.siteUrl);
+                        await web.lists
+                            .getById(site.listId)
+                            .items.add({
+                                Title: TaskTitle,
+                                Categories: categoriesItem ? categoriesItem : null,
+                                PriorityRank: selectPriority != "" ? selectPriority : null,
+                                // DueDate: date != undefined ? new Date(date).toDateString() : date,
+                                DueDate:
+                                    save?.DueDate != undefined ? new Date(save.DueDate).toISOString() : null,
+                                TaskCategoriesId: { results: CategoryID },
+                                PortfolioId: PortfolioData,
+                                ParentTaskId: ParentData != undefined ? ParentData : null,
+                                ClientCategoryId: { results: ClientCategory },
+                                FeedBack:
+                                    FeedbackPost?.length > 0
+                                        ? JSON.stringify(FeedbackPost)
+                                        : null,
+
+                                Priority: selectedItem.Priority,
+                                AssignedToId: {
+                                    results:
+                                        AssignedToIds != undefined && AssignedToIds?.length > 0
+                                            ? AssignedToIds
+                                            : []
+                                },
+                                ResponsibleTeamId: {
+                                    results:
+                                        ResponsibleTeamIds != undefined &&
+                                            ResponsibleTeamIds?.length > 0
+                                            ? ResponsibleTeamIds
+                                            : []
+                                },
+                                TeamMembersId: {
+                                    results:
+                                        TeamMemberIds != undefined && TeamMemberIds?.length > 0
+                                            ? TeamMemberIds
+                                            : []
+                                },
+                                SiteCompositionSettings: selectedItem?.SiteCompositionSettingsbackup != undefined ? JSON.stringify(
+                                    selectedItem?.SiteCompositionSettingsbackup) : null
+                                ,
+                                ClientTime: clientTime != undefined ? clientTime : Sitestagging != undefined ? Sitestagging : null,
+                                TaskID: TaskID,
+                                TaskTypeId: 2
+                            })
+                            .then((res: any) => {
+                                res.data["SiteIcon"] = site.Item_x005F_x0020_Cover?.Url;
+                                res.data["listId"] = site?.listId;
+                                // (res.data["PortfolioType"] =
+                                //     portFolioTypeId == undefined ? null : portFolioTypeId[0]),
+                                //     (res.data["Portfolio"] = { Id: portFolio });
+                                res.data["TaskType"] = { Id: res.data.TaskTypeId };
+                                // res.data['TaskType'] =
+                                (res.data.DueDate = save?.DueDate
+                                    ? Moment(save?.DueDate).format("MM-DD-YYYY")
+                                    : null),
+                                    (res.data["siteType"] = site.siteName);
+                                res.data.Author = {
+                                    Id: res?.data?.AuthorId
+                                }
+                                res.data.ParentTaskId = selectedItem.Id;
+                                res.data.ClientCategory = [];
+                                res.data.AssignedTo = [];
+                                res.data.TeamMembers = [];
+                                res.data.ResponsibleTeam = [];
+                                var MyData = res.data;
+                                if (res?.data?.TeamMembersId?.length > 0) {
+                                    res.data?.TeamMembersId?.map((teamUser: any) => {
+                                        let elementFound = props?.TaskUsers?.filter((User: any) => {
+                                            if (User?.AssingedToUser?.Id == teamUser) {
+                                                res.data.TeamMembers.push(User?.AssingedToUser);
+                                            }
+                                        });
+                                    });
+                                }
+                                if (res?.data?.ResponsibleTeamId?.length > 0) {
+                                    res.data?.ResponsibleTeamId?.map((teamUser: any) => {
+                                        let elementFound = props?.TaskUsers?.filter((User: any) => {
+                                            if (User?.AssingedToUser?.Id == teamUser) {
+                                                res.data.ResponsibleTeam.push(User?.AssingedToUser);
+                                            }
+                                        });
+                                    });
+                                }
+                                if (res?.data?.AssignedToId?.length > 0) {
+                                    res.data?.AssignedToId?.map((teamUser: any) => {
+                                        let elementFound = props?.TaskUsers?.filter((User: any) => {
+                                            if (User?.AssingedToUser?.Id == teamUser) {
+                                                res.data.AssignedTo.push(User?.AssingedToUser);
+                                            }
+                                        });
+                                    });
+                                }
+                                // if (res?.data?.ClientCategoryId?.length > 0) {
+                                //     res.data?.ClientCategoryId?.map((category: any) => {
+                                //         let elementFound = AllClientCategory?.filter(
+                                //             (metaCategory: any) => metaCategory?.Id == category
+                                //         );
+                                //         if (elementFound) {
+                                //             res.data.ClientCategory.push(elementFound[0]);
+                                //         }
+                                //     });
+                                // }
+                                res.data.Clientcategories = res.data.ClientCategory;
+
+                                let fileName: any = "";
+                                let tempArray: any = [];
+                                // let SiteUrl = SiteUrl;
+                                // if (TaskImages != undefined && TaskImages.length > 0) {
+                                //     TaskImages?.map(async (imgItem: any, index: number) => {
+                                //         if (
+                                //             imgItem.data_url != undefined &&
+                                //             imgItem.file != undefined
+                                //         ) {
+                                //             let date = new Date();
+                                //             let timeStamp = date.getTime();
+                                //             fileName =
+                                //                 "Image" +
+                                //                 "-" +
+                                //                 res.data.Title +
+                                //                 " " +
+                                //                 res.data.Title +
+                                //                 timeStamp +
+                                //                 ".jpg";
+                                //             let ImgArray = {
+                                //                 ImageName: fileName,
+                                //                 UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
+                                //                 imageDataUrl:
+                                //                     dynamicList?.siteUrl +
+                                //                     "/Lists/" +
+                                //                     res.data.siteType +
+                                //                     "/Attachments/" +
+                                //                     res?.data.Id +
+                                //                     "/" +
+                                //                     fileName,
+                                //                 ImageUrl: imgItem.data_url
+                                //             };
+                                //             tempArray.push(ImgArray);
+                                //         }
+                                //     });
+                                //     tempArray?.map((tempItem: any) => {
+                                //         tempItem.Checked = false;
+                                //     });
+                                //     var src = TaskImages[0].data_url?.split(",")[1];
+                                //     var byteArray = new Uint8Array(
+                                //         atob(src)
+                                //             ?.split("")
+                                //             ?.map(function (c) {
+                                //                 return c.charCodeAt(0);
+                                //             })
+                                //     );
+                                //     const data: any = byteArray;
+                                //     var fileData = "";
+                                //     for (var i = 0; i < byteArray.byteLength; i++) {
+                                //         fileData += String.fromCharCode(byteArray[i]);
+                                //     }
+                                //     if (res.data.listId != undefined) {
+                                //         let web = new Web(dynamicList?.siteUrl);
+                                //         let item = web.lists
+                                //             .getById(res.data.listId)
+                                //             .items.getById(res.data.Id);
+                                //         item.attachmentFiles.add(fileName, data).then((res) => {
+                                //             console.log("Attachment added");
+
+                                //             UpdateBasicImageInfoJSON(tempArray, MyData);
+                                //         });
+                                //     }
+                                // }
+
+                                if (selectedItem.PageType == "ProjectManagement") {
+                                    props.Call();
+                                    let url = `${AllListId.siteUrl}/SitePages/Task-Profile.aspx?taskId=${res.data.Id}&Site=${res.data.siteType}`;
+                                    window.location.href = url;
+                                } else {
+
+                                    closeTaskStatusUpdatePoup(res);
+                                }
+
+                                // closeTaskStatusUpdatePoup(res);
+                            });
+                        // }
+                    }
+                }
+            });
+        }
+    };
+    const closeTaskStatusUpdatePoup = (res: any) => {
+        if (res === "item") {
+            //   setTaskStatuspopup(false);
+            props.Call("Close");
+        } else {
+            //   setTaskStatuspopup(false);
+            props.Call(res);
+        }
+    };
+    //----------- save function end --------------
+
+    //Auto Suggest Categories 
+    const autoSuggestionsForCategory = async (e: any) => {
+        let searchedKey: any = e.target.value;
+        setCategorySearchKey(e.target.value);
+        let tempArray: any = [];
+        if (searchedKey?.length > 0) {
+            AutoCompleteItemsArray?.map((itemData: any) => {
+                if (
+                    itemData.Newlabel.toLowerCase().includes(searchedKey.toLowerCase())
+                ) {
+                    tempArray.push(itemData);
+                }
+            });
+            setSearchedCategoryData(tempArray);
+        } else {
+            setSearchedCategoryData([]);
+        }
+    };
+    const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
+        setCategorySearchKey("");
+        setIsComponentPicker(false);
+        let data: any = CategoriesData;
+        CategoriesData?.map((items: any) => {
+            if (selectCategoryData[0].Id != undefined && !data?.find((obj: any) => obj?.Id == selectCategoryData[0].Id)) {
+                data?.push(selectCategoryData[0]);
+            }
+        });
+        setCategoriesData((CategoriesData: any) => [...data]);
+        setSearchedCategoryData([]);
+    };
+    //End
+
+    // select category Functionality
+
+    const selectSubTaskCategory = (title: any, Id: any, item: any) => {
+
+
+        if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve all but selected items' && !IsapprovalTask) {
+            try {
+                let selectedApprovalCat = JSON.parse(loggedInUser?.CategoriesItemsJson)
+                IsapprovalTask = selectedApprovalCat?.some((selectiveApproval: any) => selectiveApproval?.Title == title)
+                if (IsapprovalTask == true) {
+                    subCategories?.map((item: any) => {
+                        if (item?.Title == "Approval" && !item.ActiveTile) {
+                            selectSubTaskCategory(item?.Title, item?.Id, item)
+                        }
+                    })
+                }
+            } catch (error: any) {
+                console.log(error, "Can't Parse Selected Approval Categories")
+            }
+        }
+
+        let TaskCategories: any[] = CategoriesData;
+        if (item.ActiveTile) {
+            if (IsapprovalTask && title == 'Approval') {
+                console.log('')
+            } else {
+                item.ActiveTile = !item.ActiveTile;
+                TaskCategories = TaskCategories.filter((category: any) => category?.Id !== Id);
+                if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve all but selected items' && IsapprovalTask) {
+                    try {
+                        let selectedApprovalCat = JSON.parse(loggedInUser?.CategoriesItemsJson)
+                        IsapprovalTask = !selectedApprovalCat?.some((selectiveApproval: any) => selectiveApproval?.Title == title)
+                        subCategories?.map((item: any) => {
+                            if (item?.Title == "Approval" && item.ActiveTile) {
+                                selectSubTaskCategory(item?.Title, item?.Id, item)
+                            }
+                        })
+                    } catch (error: any) {
+                        console.log(error, "Can't Parse Selected Approval Categories")
+                    }
+                }
+            }
+
+        } else if (!item.ActiveTile) {
+            if (title === 'Email Notification' || title === 'Immediate' || title === 'Bug') {
+                setselectPriority('10');
+                handleDatedue(new Date());
+            }
+            if (title == 'Feedback' || title == 'Quality Control') {
+                var flag = true;
+                let AssignedToUsers: any = [];
+                props?.TaskUsers?.map((User: any) => {
+                    if (User.Role == 'QA') {
+                        AssignedToUsers.filter((item: any) => item != User.Id)
+                        AssignedToUsers.push(User.Id);
+                        flag = false;
+                    }
+                });
+            }
+            if (title?.indexOf('Design') > -1) {
+                let AssignedToUsers: any = [];
+                var flag = true;
+                props?.TaskUsers?.map((User: any) => {
+                    if (User.Role == 'Developer' && User.Title == 'Design Team') {
+
+                        AssignedToUsers.filter((item: any) => item != User.Id)
+                        AssignedToUsers.push(User.Id);
+                        flag = false;
+                    }
+
+
+                });
+                AssignedToUsers.push(301)
+                setTaskAssignedTo(AssignedToUsers)
+                setTaskTeamMembers([301, 49]);
+            }
+            if (title?.indexOf('Support') > -1) {
+                var flag = true;
+                let AssignedToUsers: any = [];
+                props?.TaskUsers?.map((User: any) => {
+                    if (User.Role == 'Developer' && User.Title == 'Support') {
+                        AssignedToUsers.filter((item: any) => item != User.Id)
+                        AssignedToUsers.push(User.Id);
+                        flag = false;
+                    }
+                });
+                setTaskAssignedTo(AssignedToUsers)
+            }
+            item.ActiveTile = !item.ActiveTile;
+            TaskCategories.push(item)
+        }
+        setInstantCategories((CategoriesData: any) => CategoriesData?.map((selectCAT: any) => {
+            if (selectCAT?.Id === item?.Id) {
+                return item;
+            }
+            return selectCAT; // Return the original value if no change is needed
+        }));
+        setCategoriesData(TaskCategories)
+
     }
-  };
+    const deleteCategories = (id: any) => {
+        CategoriesData.map((catId: { Id: any }, index: any) => {
+            if (id == catId.Id) {
+                CategoriesData.splice(index, 1);
+            }
+        });
+        setCategoriesData((CategoriesData: any) => [...CategoriesData]);
+    };
+    //End
+    return (
+        <>
+            <Panel
+                onRenderHeader={onRenderCustomHeaderMain}
+                type={PanelType.custom}
+                customWidth="1348px"
+                isOpen={true}
+                onDismiss={() => closePopup("item")}
+                isBlocking={false}
+                className={props?.props?.PortfolioType?.Color}
+            >
+                <div className="modal-body active">
 
-  const trueTopIcon = (items: any) => {
-    if (childRef.current) {
-      childRef.current.trueTopIcon(items);
-    }
-  };
+                </div>
 
-  return (
+                <div className="modal-footer">
+                    {siteType?.length > 1 ?
+                        <div className='col mt-4'>
+                            <h4 className="titleBorder ">Websites</h4>
+                            <div className='clearfix p-0'>
+                                <ul className="site-actions">
+                                    {siteType?.map((item: any) => {
+                                        return (
+                                            <>
+                                                {(item.Title !== undefined && item.Title !== 'Offshore Tasks' && item.Title !== 'Master Tasks' && item.Title !== 'DRR' && item.Title !== 'SDC Sites' && item.Title !== 'QA') &&
+                                                    <>
+                                                        <li
+                                                            className={isActive.siteType && save.siteType === item.Title ? 'bgtile active text-center position-relative' : "position-relative bgtile text-center"} onClick={() => setActiveTile("siteType", "siteType", item.Title)} >
+                                                            {/*  */}
+                                                            <a className=' text-decoration-none' >
+                                                                <span className="icon-sites">
+                                                                    {item.Item_x005F_x0020_Cover != undefined &&
+                                                                        <img className="icon-sites"
+                                                                            src={item.Item_x005F_x0020_Cover.Url} />
+                                                                    }
+                                                                </span>{item.Title}
+                                                            </a>
+                                                        </li>
+                                                    </>
+                                                }
+                                            </>)
+                                    })}
+                                </ul>
+                            </div>
+                        </div> : ''}
+                    <div className="row">
+                        <div className="col-sm-10">
+                            <div className="row">
+                                <div className="col-sm-10 mb-10 mt-2">
+                                    <div className='input-group'>
+                                        <label className='full-width'>Task Name</label>
+                                        <input type="text" placeholder='Enter task Name' className='form-control' value={TaskTitle} onChange={(e) => { changeTitle(e) }}></input>
+                                    </div>
 
-    <div
-    // className={IsUpdated === 'Events' ? 'app component eventpannelorange' : (IsUpdated == 'Service' ? 'app component serviepannelgreena' : 'app component')}
-    >
-      <div className="Alltable mt-10">
+                                </div>
+                                <div className="col-sm-2 mb-10 padL-0 mt-2">
+                                    <label>Due Date</label>
+                                    <input
+                                        type="date"
+                                        className="form-control"
+                                        value={save.DueDate}
+                                        // defaultValue={Moment(save.DueDate).format("YYYY/MM/DD/")}
+                                        onChange={handleDatedue}
+                                    />
+                                </div>
+                            </div>
+                            <div className="row mt-2">
+                                <TeamConfigurationCard
+                                    ItemInfo={selectedItem}
+                                    AllListId={AllListId}
+                                    parentCallback={DDComponentCallBack}
+                                ></TeamConfigurationCard>
+                            </div>
+                            <div className="row">
+                                <div className="col-sm-5">
+                                    {/* <FroalaImageUploadComponent 
+                                     callBack={copyImage} /> */}
+                                    <div
+                                        className="Florar-Editor-Image-Upload-Container"
+                                        id="uploadImageFroalaEditor"
+                                    >
+                                        <div>
+                                            <FlorarImageUploadComponent callBack={FlorarImageUploadComponentCallBack} />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-sm-7">
+                                    <HtmlEditorCard
+                                        editorValue={
+                                            save?.Body != undefined ? save?.Body : ""
+                                        }
+                                        HtmlEditorStateChange={HtmlEditorCallBack}
+                                    ></HtmlEditorCard>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-sm-2">
+                            <div className="col-sm-12 padL-0 Prioritytp PadR0 mt-2">
+                                <div>
+                                    <fieldset>
+                                        <label className="full-width">
+                                            Priority
+                                            <span>
+                                                <div
+                                                    className="popover__wrapper ms-1"
+                                                    data-bs-toggle="tooltip"
+                                                    data-bs-placement="auto"
+                                                >
+                                                    <span
+                                                        title="Edit"
+                                                        className="alignIcon svg__icon--info svg__iconbox"
+                                                    ></span>
 
-        <div className="col-sm-12 pad0 smart" >
-          <div className="">
-            <div className={`${data?.length > 10 ? "wrapper" : "MinHeight"}`}>
-              <GlobalCommanTable
-              queryItems={props?.props}
-                ref={childRef}
-                callChildFunction={callChildFunction}
-                AllListId={props?.AllListId}
-                columns={columns}
-                restructureCallBack={callBackData1}
-                data={data}
-                callBackData={callBackData}
-                TaskUsers={AllUsers}
-                showHeader={true}
-                AllMasterTasksData={AllMasterTasksData}
-                // portfolioColor={portfolioColor} 
-                // portfolioTypeData={portfolioTypeDataItem}
-                //  taskTypeDataItem={taskTypeDataItem} 
-                // portfolioTypeConfrigration={portfolioTypeConfrigration } 
-                showingAllPortFolioCount={false}
-                showCreationAllButton={true}
-                AddWorkstreamTask={openActivity}
-                taskProfile={true}
-                expandIcon={true}
-                multiSelect={true}
-              />
-            </div>
+                                                    <div className="popover__content">
+                                                        <span>
+                                                            8-10 = High Priority,
+                                                            <br />
+                                                            4-7 = Normal Priority,
+                                                            <br />
+                                                            1-3 = Low Priority
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </span>
+                                        </label>
 
-          </div>
-        </div>
-      </div>
+                                        <div className="input-group">
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                placeholder="Enter Priority"
+                                                value={selectPriority ? selectPriority : ""}
+                                                onChange={(e) => ChangePriorityStatusFunction(e)}
+                                            />
+                                        </div>
+
+                                        <ul className="p-0 mt-1">
+                                            <li className="form-check l-radio">
+                                                <input
+                                                    className="form-check-input"
+                                                    name="radioPriority"
+                                                    type="radio"
+                                                    checked={
+                                                        Number(selectPriority) <= 10 &&
+                                                        Number(selectPriority) >= 8
+                                                    }
+                                                    onChange={() => setselectPriority("8")}
+                                                />
+                                                <label className="form-check-label">High</label>
+                                            </li>
+                                            <li className="form-check l-radio">
+                                                <input
+                                                    className="form-check-input"
+                                                    name="radioPriority"
+                                                    type="radio"
+                                                    checked={
+                                                        Number(selectPriority) <= 7 &&
+                                                        Number(selectPriority) >= 4
+                                                    }
+                                                    onChange={() => setselectPriority("4")}
+                                                />
+                                                <label className="form-check-label">Normal</label>
+                                            </li>
+                                            <li className="form-check l-radio">
+                                                <input
+                                                    className="form-check-input"
+                                                    name="radioPriority"
+                                                    type="radio"
+                                                    checked={
+                                                        Number(selectPriority) <= 3 &&
+                                                        Number(selectPriority) > 0
+                                                    }
+                                                    onChange={() => setselectPriority("1")}
+                                                />
+                                                <label className="form-check-label">Low</label>
+                                            </li>
+                                        </ul>
+                                    </fieldset>
+                                </div>
+                            </div>
+                            <div className="row mt-2">
+                                <div className="col-sm-12">
+                                    <div className="col-sm-12 padding-0 input-group">
+                                        <label className="full_width">Categories</label>
+
+                                        <input
+                                            type="text"
+                                            className="ui-autocomplete-input form-control"
+                                            id="txtCategories"
+                                            value={categorySearchKey}
+                                            onChange={(e) => autoSuggestionsForCategory(e)}
+                                        />
+                                        <span className="input-group-text">
+                                            <a className="hreflink" title="Edit Categories">
+                                                <img
+                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png"
+                                                    onClick={() => EditComponentPicker(selectedItem)}
+                                                />
+                                            </a>
+                                        </span>
+
+                                    </div>
+                                    {
+                                        instantCategories?.map((item: any) => {
+                                            return (
+                                                <div className="form-check">
+                                                    <input
+                                                        className="form-check-input rounded-0"
+                                                        type="checkbox"
+                                                        checked={CategoriesData?.some((selectedCat: any) => selectedCat?.Id == item?.Id)}
+                                                        onClick={() =>
+                                                            selectSubTaskCategory(item?.Title, item?.Id, item)
+                                                        }
+                                                    />
+                                                    <label>{item?.Title}</label>
+                                                </div>
+                                            )
+                                        })
+                                    }
+                                    {SearchedCategoryData?.length > 0 ? (
+                                        <div className="SmartTableOnTaskPopup">
+                                            <ul className="list-group">
+                                                {SearchedCategoryData.map((item: any) => {
+                                                    return (
+                                                        <li
+                                                            className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                            key={item.id}
+                                                            onClick={() =>
+                                                                setSelectedCategoryData([item], "For-Auto-Search")
+                                                            }
+                                                        >
+                                                            <a>{item.Newlabel}</a>
+                                                        </li>
+                                                    );
+                                                })}
+                                            </ul>
+                                        </div>
+                                    ) : null}
+                                </div>
+                                {CategoriesData != undefined ? (
+                                    <div>
+                                        {CategoriesData?.map((type: any, index: number) => {
+                                            return (
+                                                <>
+                                                    {!instantCategories?.some((selectedCat: any) => selectedCat?.Title == type?.Title) && (
+                                                        <div className="block d-flex full-width justify-content-between mb-1 p-2">
+                                                            <a
+                                                                style={{ color: "#fff !important" }}
+                                                                target="_blank"
+                                                                data-interception="off"
+                                                                href={`${AllListId.siteUrl.siteUrl}/SitePages/Portfolio-Profile.aspx?${selectedItem?.Id}`}
+                                                            >
+                                                                {type.Title}
+                                                            </a>
+                                                            <span
+                                                                className="bg-light svg__iconbox svg__icon--cross"
+                                                                onClick={() => deleteCategories(type?.Id)}
+                                                            ></span>
+                                                            {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
+                                                        </div>
+                                                    )}
+                                                </>
+                                            );
+                                        })}
+                                    </div>
+                                ) : null}
+                                {/* <div className="col-sm-12">
+                                    <div className="col-sm-12 padding-0 input-group">
+                                        <label className="full_width">Client Category</label>
+                                        <input
+                                            type="text"
+                                            className="ui-autocomplete-input form-control"
+                                            id="txtCategories"
+                                        />
+
+                                        <span className="input-group-text">
+                                            <a className="hreflink" title="Edit Categories">
+                                                <img
+                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png"
+                                                    onClick={() => EditClientCategory(selectedItem)}
+                                                />
+                                            </a>
+                                        </span>
+                                    </div>
+
+                                </div> */}
+
+                            </div>
+                            {/* 
+                            {ClientCategoriesData != undefined &&
+                                ClientCategoriesData?.length > 0 ? (
+                                <div>
+                                    {ClientCategoriesData?.map((type: any, index: number) => {
+                                        return (
+                                            <>
+
+                                                <div className="block d-flex full-width justify-content-between mb-1 p-2">
+                                                    <a
+                                                        target="_blank"
+                                                        data-interception="off"
+                                                        href={`${AllListId.siteUrl}/SitePages/Portfolio-Profile.aspx?${props?.selectedItem?.Id}`}
+                                                    >
+                                                        {type.Title}
+                                                    </a>
+                                                    <span
+                                                        className="bg-light svg__iconbox svg__icon--cross"
+                                                      onClick={() =>
+                                                        deleteClientCategories(type.Id)
+                                                      }
+                                                    >
+                                                        {" "}
+                                                    </span>
+                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteClientCategories(type.Id)} className="p-1" />
+                                                </div>
+
+                                            </>
+                                        );
+                                    })}
+                                </div>
+                            ) : null} */}
+
+                        </div>
 
 
 
+                    </div>
+                    <button
+                        type="button"
+                        className="btn btn-primary m-2"
+                        onClick={() => saveNoteCall()}
+                    >
+                        Submit
+                    </button>
+                    <button
+                        type="button"
+                        className="btn btn-default m-2"
+                    // onClick={() => closeTaskStatusUpdatePoup("item")}
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </Panel>
 
 
+            {IsComponentPicker && (
+                <Picker
+                    props={SharewebCategory}
+                    selectedCategoryData={CategoriesData}
+                    usedFor="Task-Footertable"
+                    AllListId={AllListId}
+                    Call={Call}
+                ></Picker>
+            )}
+            {/* {IsClientPopup && (
+                <ClientCategoryPupup
+                    props={SharewebCategory}
+                    selectedClientCategoryData={ClientCategoriesData}
+                    Call={Call}
+                ></ClientCategoryPupup>
+            )} */}
+        </>
+    );
+};
 
-      {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call} AllListId={props.AllListId} context={props.Context} pageName={"TaskFooterTable"}></EditTaskPopup>}
-      {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack} AllListId={props.AllListId} TimeEntryPopup Context={props.Context}></TimeEntryPopup>}
-      {MeetingPopup &&
-        <CreateActivity
-          props={MeetingItems[MeetingItems.length - 1]}
-          Call={Call}
-          TaskUsers={AllUsers}
-          AllClientCategory={AllClientCategory}
-          LoadAllSiteTasks={LoadAllSiteTasks}
-          SelectedProp={props.AllListId}>
-        </CreateActivity>}
-      {WSPopup && <CreateWS props={MeetingItems[MeetingItems.length - 1]} Call={Call} data={data} SelectedProp={props.AllListId}></CreateWS>}
-      {addModalOpen && <Panel headerText={` Create Component `} type={PanelType.medium} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
-        <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} PropsValue={props} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
-      </Panel>
-      }
-    </div>
-  )
-
-}
-export default TasksTable;
+export default CreateActivity;
