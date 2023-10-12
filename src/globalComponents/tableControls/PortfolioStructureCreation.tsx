@@ -684,16 +684,16 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                 <div className="col form-group">
                                     <div className="d-flex">
                                         <label className='full-width'>Title</label>
-                                        {(this.props.PortfolioType === "" || this.props.PortfolioType === undefined) && <div className="mx-auto SpfxCheckRadio col-auto">{this.state.PortfolioTypeArray != undefined && this.state.PortfolioTypeArray?.length > 0 && this.state.PortfolioTypeArray?.map((item: any) => {
+                                        {(this.props.PortfolioType === "" || this.props.PortfolioType === undefined) && <div className="mx-auto  col-auto mb-1">{this.state.PortfolioTypeArray != undefined && this.state.PortfolioTypeArray?.length > 0 && this.state.PortfolioTypeArray?.map((item: any) => {
                                             return (
-                                                <label className='label--radio'><input className='radio' defaultChecked={this.state.defaultPortfolioType.toLowerCase() === item.Title.toLowerCase()} name='PortfolioType' type='radio' onClick={() => this.CheckPortfolioType(item)} ></input>{item.Title}</label>
+                                                <label className='SpfxCheckRadio me-1'><input className='radio' defaultChecked={this.state.defaultPortfolioType.toLowerCase() === item.Title.toLowerCase()} name='PortfolioType'  type='radio'  onClick={() => this.CheckPortfolioType(item)} ></input> {item.Title}</label>
                                             )
                                         }
                                         )}
 
                                         </div>}
                                     </div>
-                                    <div className="col-sm-12 p-0">
+                                    <div className="col">
                                         <input className="form-control full_width" type="text" value={this.state.textTitle} onChange={(e) => this.handleInputChange(e)}
                                             placeholder="Enter Component Title..." ng-required="true" />
                                         <div className="dropdown">
@@ -797,8 +797,9 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                                                 {this.state.SelectedItem.Item_x0020_Type == 'Component' &&
                                                                     <>
                                                                         <div>
-                                                                            <span className='me-2'>
+                                                                            <span className='me-2 SpfxCheckRadio'>
                                                                                 <input
+                                                                                className='radio'
                                                                                     type="radio"
                                                                                     value="SubComponent"
                                                                                     checked={item.MasterItemsType === 'SubComponent'}
@@ -806,8 +807,9 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                                                                 />
                                                                                 <label className='ms-1'>SubComponent</label>
                                                                             </span>
-                                                                            <span>
+                                                                            <span className='SpfxCheckRadio'>
                                                                                 <input
+                                                                                className='radio'
                                                                                     type="radio"
                                                                                     value="Feature"
                                                                                     checked={item.MasterItemsType === 'Feature'}

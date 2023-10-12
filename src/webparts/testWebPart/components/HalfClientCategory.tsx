@@ -163,25 +163,28 @@ const HalfClientCategory = (props: any) => {
     
         try {
             const data = JSON.parse(jsonStr);
-    
-            data?.forEach((site: any, index: number) => {
-                if (site?.SiteName || site?.Title) {
-                    let parsedValue: number = parseFloat(site?.ClienTimeDescription || '0');
-                    if (!isNaN(parsedValue)) {
-                        totalPercent += parsedValue;
+            if(data?.length>0){
+                data?.forEach((site: any, index: number) => {
+                    if (site?.SiteName || site?.Title) {
+                        let parsedValue: number = parseFloat(site?.ClienTimeDescription || '0');
+                        if (!isNaN(parsedValue)) {
+                            totalPercent += parsedValue;
+                        }
+        
+                        let name = site?.SiteName || site?.Title || '';
+                        result.push(`${name}-${parsedValue.toFixed(2)}`);
                     }
-    
-                    let name = site?.SiteName || site?.Title || '';
-                    result.push(`${name}-${parsedValue.toFixed(2)}`);
-                }
-            });
-    
+                });
+                
             totalPercent = parseFloat(totalPercent.toFixed(2));
     
             return {
                 result: result.join(' ; '),
                 total: totalPercent
             };
+            }
+           
+    
         } catch (error) {
             console.error(error);
             return {
@@ -367,7 +370,7 @@ const HalfClientCategory = (props: any) => {
                         items.compositionType = '';
                     }
                     if (items?.Sitestagging != undefined) {
-                        let result = siteCompositionDetails(items?.ClientTime);
+                        let result = siteCompositionDetails(items?.Sitestagging);
                         items.siteCompositionSearch = result?.result;
                         items.siteCompositionTotal = result?.total;
                     } else {
@@ -683,21 +686,21 @@ const HalfClientCategory = (props: any) => {
                 resetColumnFilters: false,
                 resetSorting: false,
             },
-            // {
-            //     accessorFn: (row) => row?.siteCompositionTotal,
-            //     cell: ({ row }) => (
-            //         <div className="">
-            //             <span>{row?.original?.siteCompositionTotal == 0 ? ' ' : row?.original?.siteCompositionTotal}</span>
-            //         </div>
+            {
+                accessorFn: (row) => row?.siteCompositionTotal,
+                cell: ({ row }) => (
+                    <div className="">
+                        <span>{row?.original?.siteCompositionTotal == 0 ? ' ' : row?.original?.siteCompositionTotal}</span>
+                    </div>
 
-            //     ),
-            //     id: 'siteCompositionTotal',
-            //     placeholder: "Composition Total",
-            //     header: "",
-            //     resetColumnFilters: false,
-            //     resetSorting: false,
-            //     size: 60,
-            // },
+                ),
+                id: 'siteCompositionTotal',
+                placeholder: "Composition Total",
+                header: "",
+                resetColumnFilters: false,
+                resetSorting: false,
+                size: 60,
+            },
             {
                 accessorFn: (row) => row?.ClientCategorySearch,
                 cell: ({ row }) => (
