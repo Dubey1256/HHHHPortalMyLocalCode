@@ -19,7 +19,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 import Loader from "react-loader";
-import { Bars } from 'react-loader-spinner'
+// import { Bars } from 'react-loader-spinner'
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 import SmartFilterSearchGlobal from "../../../globalComponents/SmartFilterGolobalBomponents/SmartFilterGlobalComponents";
@@ -433,7 +433,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 "DueDate", "Body", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
                 "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete",
                 "ResponsibleTeam/Id", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
-                "Created", "Modified",
+                "Created", "Modified","Deliverables", "TechnicalExplanations", "Short_x0020_Description_x0020_On","Help_x0020_Information","AdminNotes",
             )
             .expand(
                 "Parent", "PortfolioType", "AssignedTo", "ClientCategory", "TeamMembers", "ResponsibleTeam", "Editor", "Author"
