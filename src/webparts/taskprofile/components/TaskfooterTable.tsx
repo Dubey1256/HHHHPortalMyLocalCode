@@ -1204,6 +1204,7 @@ function TasksTable(props: any) {
                 AddWorkstreamTask={openActivity}
                 taskProfile={true}
                 expandIcon={true}
+                multiSelect={true}
               />
             </div>
 
