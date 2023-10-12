@@ -43,9 +43,7 @@ import EditSiteComposition from "./EditSiteComposition";
 import SmartTotalTime from './SmartTimeTotal';
 import "react-datepicker/dist/react-datepicker.css";
 import BackgroundCommentComponent from "./BackgroundCommentComponent";
-import EODReportComponent from "../EOD Report Component/EODReportComponent";
-
-
+// import EODReportComponent from "../EOD Report Component/EODReportComponent";
 
 
 var AllMetaData: any = []
@@ -4782,7 +4780,7 @@ const EditTaskPopup = (Items: any) => {
                                                 />
                                             </span>
                                         </div>
-                                        <div className="Sitecomposition my-3">
+                                        {/* <div className="Sitecomposition my-3">
                                             <a className="sitebutton bg-fxdark alignCenter justify-content-between">
                                                 <span className="alignCenter">
                                                     <span className="svg__iconbox svg__icon--docx"></span>
@@ -4792,7 +4790,7 @@ const EditTaskPopup = (Items: any) => {
                                                     onClick={() => setOpenEODReportPopup(true)}>
                                                 </span>
                                             </a>
-                                        </div>
+                                        </div> */}
                                     </div>
 
 
@@ -5001,7 +4999,7 @@ const EditTaskPopup = (Items: any) => {
                             ApprovalTaskStatus={ApprovalTaskStatus}
                             callBack={SendEmailNotificationCallBack}
                         /> : null}
-                    {OpenEODReportPopup ? <EODReportComponent TaskDetails={EditData} Callback={() => setOpenEODReportPopup(false)} /> : null}
+                    {/* {OpenEODReportPopup ? <EODReportComponent TaskDetails={EditData} Callback={() => setOpenEODReportPopup(false)} /> : null} */}
                 </div>
             </Panel>
             {/* ***************** this is Image compare panel *********** */}
