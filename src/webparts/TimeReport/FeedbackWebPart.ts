@@ -17,6 +17,7 @@ export interface IFeedbackWebPartProps {
   description: string;
   SmartMetadataListID: "01a34938-8c7e-4ea6-a003-cee649e8c67a";
   TaskUsertListID: "b318ba84-e21d-4876-8851-88b94b9dc300";
+  LeaveCalenderListID: "72ABA576-5272-4E30-B332-25D7E594AAA4"
 }
 
 export default class FeedbackWebPart extends BaseClientSideWebPart<IFeedbackWebPartProps> {
@@ -37,6 +38,7 @@ export default class FeedbackWebPart extends BaseClientSideWebPart<IFeedbackWebP
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         TaskUsertListID: this.properties.TaskUsertListID,
         SmartMetadataListID: this.properties.SmartMetadataListID,
+        LeaveCalenderListID: this.properties.LeaveCalenderListID,
       }
     );
 
@@ -106,6 +108,9 @@ export default class FeedbackWebPart extends BaseClientSideWebPart<IFeedbackWebP
                 }),
                 PropertyPaneTextField("SmartMetadataListID", {
                   label: "Smart Metadata List",
+                }),
+                PropertyPaneTextField("LeaveCalenderListID", {
+                  label: "Leave Calender List",
                 }),
               ]
             }

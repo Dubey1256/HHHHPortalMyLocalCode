@@ -124,7 +124,7 @@ function TasksTable(props: any) {
   const [SharewebTimeComponent, setSharewebTimeComponent] = React.useState([]);
   const [AllClientCategory, setAllClientCategory] = React.useState([])
   const [count, setCount] = React.useState(0);
-   const [AllMasterTasksData,setAllMasterTasksData]=React.useState([])
+  const [AllMasterTasksData, setAllMasterTasksData] = React.useState([])
   const [ActivityDisable, setActivityDisable] = React.useState(false);
   const [addModalOpen, setAddModalOpen] = React.useState(false);
 
@@ -144,7 +144,7 @@ function TasksTable(props: any) {
   IsUpdated = props.props.PortfolioType;
 
   const GetSmartmetadata = async () => {
-   
+
     //  var metadatItem: any = []
     let smartmetaDetails: any = [];
     let AllSiteName: any = [];
@@ -207,7 +207,7 @@ function TasksTable(props: any) {
     await web.lists
       .getById(props?.AllListId?.TaskUsertListID)
       .items
-      .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover, ItemType,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+      .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,IsApprovalMail,CategoriesItemsJson,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover, ItemType,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
       .get().then((Response: any) => {
         setTaskUser(Response);
         console.log(Response);
@@ -230,7 +230,7 @@ function TasksTable(props: any) {
   }
 
 
-  const LoadAllSiteTasks = async function (filter:any) {
+  const LoadAllSiteTasks = async function (filter: any) {
     let AllTasksData: any = [];
     let Counter = 0;
     if (siteConfig != undefined && siteConfig?.length > 0) {
@@ -238,7 +238,7 @@ function TasksTable(props: any) {
       for (let i = 0; i < siteConfig?.length; i++) {
         const config = siteConfig[i];
         var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,SiteCompositionSettings,TaskLevel,ItemRank,Project/Id,Project/PortfolioStructureID, Project/Title,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Project,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,PortfolioType,ResponsibleTeam,TaskCategories&$filter=" + filter + ""
-        
+
         const web = new Web(props?.AllListId?.siteUrl);
         const list = web.lists.getById(config.listId);
         list.items
@@ -262,7 +262,7 @@ function TasksTable(props: any) {
                   item.siteUrl = props?.AllListId?.siteUrl;
                   item["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
                   item.fontColorTask = "#000";
-                 
+
                 });
               }
               AllTasks = AllTasks.concat(AllTasksMatches);
@@ -299,7 +299,7 @@ function TasksTable(props: any) {
                   result.chekbox = false;
                   if (result.FeedBack != undefined) {
                     let feedbackdata: any = JSON.parse(result?.FeedBack);
-        
+
                     let FeedbackdatatinfoIcon: any =
                       feedbackdata[0]?.FeedBackDescriptions?.map(
                         (child: any) =>
@@ -309,13 +309,13 @@ function TasksTable(props: any) {
                             " "
                           )
                       ).join(" ");
-        
-                    result.descriptionsSearch .push(FeedbackdatatinfoIcon)
-                      // FeedbackdatatinfoIcon.replace("undefined", "")
-                      //   .replace(/(<([^>]+)>)/gi, "")
-                      //   .replace(/\n/g, "");
+
+                    result.descriptionsSearch.push(FeedbackdatatinfoIcon)
+                    // FeedbackdatatinfoIcon.replace("undefined", "")
+                    //   .replace(/(<([^>]+)>)/gi, "")
+                    //   .replace(/\n/g, "");
                   }
-                
+
                   if (result?.Comments != null) {
                     result.commentsSearch = result?.Comments.replace(
                       /(<([^>]+)>)/gi,
@@ -403,47 +403,47 @@ function TasksTable(props: any) {
                   }
                   result["Item_x0020_Type"] = "Task";
                 })
-                  let allParentTasks = $.grep(AllTasks, function (type: any) { return (type.ParentTask != undefined && type.ParentTask.Id === props.props.Id) && (type.TaskType != undefined && type.TaskType.Title != 'Workstream') });
-                  if (props.props.TaskType != undefined && props.props.TaskType != undefined && props.props.TaskType === 'Activities')
-                    allworkstreamTasks = $.grep(AllTasks, function (task: any) { return (task.TaskType != undefined && task.TaskType.Title === 'Workstream') });
-                   
-                  if (allworkstreamTasks != undefined && allworkstreamTasks?.length > 0) {
-                    allworkstreamTasks.forEach((obj: any) => {
-                      if (obj.Id != undefined) {
-                        AllTasks.forEach((task: any) => {
-                          if (task?.ParentTask != undefined && obj?.Id === task?.ParentTask?.Id) {
-                            
-                            obj.subRows = obj?.subRows != undefined ? obj?.subRows : []
-                        
-                            obj.subRows.push(task)
-                          }
-                         
-                        })
-                      }
-                      obj.Restructuring = IsUpdated != undefined && IsUpdated == 'Service' ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
-                      obj.childsLength = obj?.childs != undefined && obj?.childs?.length > 0 ? obj?.childs?.length : 0;
-                      obj.subRowsLength = obj?.subRows != undefined && obj?.subRows?.length > 0 ? obj.subRows?.length : 0;
-                    })
-                  }
-          
-                  var temp: any = {};
-          
-                  temp.flag = true;
-                  temp.show = true;
-                  temp.PercentComplete = '';
-                  
-                  temp.ItemRank = '';
-                  temp.DueDate = '';
-                  if (allworkstreamTasks === undefined)
-                    allworkstreamTasks = [];
-                  if (allParentTasks.length > 0)
-                    allParentTasks?.map((items) => {
-                      allworkstreamTasks.push(items);
-                    })
-             
-                  setData(allworkstreamTasks);
-                  setmaidataBackup(allworkstreamTasks)
-                 
+                let allParentTasks = $.grep(AllTasks, function (type: any) { return (type.ParentTask != undefined && type.ParentTask.Id === props.props.Id) && (type.TaskType != undefined && type.TaskType.Title != 'Workstream') });
+                if (props.props.TaskType != undefined && props.props.TaskType != undefined && props.props.TaskType === 'Activities')
+                  allworkstreamTasks = $.grep(AllTasks, function (task: any) { return (task.TaskType != undefined && task.TaskType.Title === 'Workstream') });
+
+                if (allworkstreamTasks != undefined && allworkstreamTasks?.length > 0) {
+                  allworkstreamTasks.forEach((obj: any) => {
+                    if (obj.Id != undefined) {
+                      AllTasks.forEach((task: any) => {
+                        if (task?.ParentTask != undefined && obj?.Id === task?.ParentTask?.Id) {
+
+                          obj.subRows = obj?.subRows != undefined ? obj?.subRows : []
+
+                          obj.subRows.push(task)
+                        }
+
+                      })
+                    }
+                    obj.Restructuring = IsUpdated != undefined && IsUpdated == 'Service' ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                    obj.childsLength = obj?.childs != undefined && obj?.childs?.length > 0 ? obj?.childs?.length : 0;
+                    obj.subRowsLength = obj?.subRows != undefined && obj?.subRows?.length > 0 ? obj.subRows?.length : 0;
+                  })
+                }
+
+                var temp: any = {};
+
+                temp.flag = true;
+                temp.show = true;
+                temp.PercentComplete = '';
+
+                temp.ItemRank = '';
+                temp.DueDate = '';
+                if (allworkstreamTasks === undefined)
+                  allworkstreamTasks = [];
+                if (allParentTasks.length > 0)
+                  allParentTasks?.map((items) => {
+                    allworkstreamTasks.push(items);
+                  })
+
+                setData(allworkstreamTasks);
+                setmaidataBackup(allworkstreamTasks)
+
               }
             }
           });
@@ -467,17 +467,17 @@ function TasksTable(props: any) {
     componentDetails = compo[0]
     setAllMasterTasksData(compo)
     IsUpdated = componentDetails?.PortfoliType?.Title;
-   
+
 
     console.log(componentDetails);
   }
   React.useEffect(() => {
-   
+
     getTaskUsers();
 
     if (props.props.Portfolio != undefined)
       GetComponents(props.props)
-  
+
     GetSmartmetadata();
 
   }, []);
@@ -508,9 +508,9 @@ function TasksTable(props: any) {
       // TeamLeaderUser2=TeamLeaderUser2.concat(childItem?.data?.ResponsibleTeam)
       // TeamLeaderUser2=TeamLeaderUser2.concat(childItem?.data?.TeamMembers)
       // TeamLeaderUser2=TeamLeaderUser2.concat(childItem?.data?.AssignedTo)
-      childItem.data.TeamLeaderUser=[];
-      childItem.data.DisplayCreateDate= moment(childItem?.data?.Created).format("DD/MM/YYYY")
-      childItem.data.DisplayDueDate=childItem?.data?.DueDate
+      childItem.data.TeamLeaderUser = [];
+      childItem.data.DisplayCreateDate = moment(childItem?.data?.Created).format("DD/MM/YYYY")
+      childItem.data.DisplayDueDate = childItem?.data?.DueDate
       childItem.data.Item_x0020_Type = "Task";
       if (
         childItem?.data?.AssignedTo != undefined &&
@@ -533,7 +533,7 @@ function TasksTable(props: any) {
         });
       }
       if (
-        childItem?.data?.ResponsibleTeam!= undefined &&
+        childItem?.data?.ResponsibleTeam != undefined &&
         childItem?.data?.ResponsibleTeam?.length > 0
       ) {
         $.map(childItem?.data?.ResponsibleTeam, (Assig: any) => {
@@ -801,11 +801,11 @@ function TasksTable(props: any) {
               <FaCompressArrowsAlt style={{ height: '11px', width: '20px' }} /> : ''}
             {row?.original?.subRows?.length > 0 ?
               <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
-             {row?.original?.descriptionsSearch?.length>0&&<InfoIconsToolTip
-                Discription={row?.original?.descriptionsSearch}
-                row={row?.original}
-              />}
-           </>
+            {row?.original?.descriptionsSearch?.length > 0 && <InfoIconsToolTip
+              Discription={row?.original?.descriptionsSearch}
+              row={row?.original}
+            />}
+          </>
         ),
         id: "Title",
         placeholder: "Title",
@@ -871,7 +871,7 @@ function TasksTable(props: any) {
 
         ),
         id: 'DueDate',
-        filterFn: (row: any,columnName:any, filterValue: any) => {
+        filterFn: (row: any, columnName: any, filterValue: any) => {
           if (row?.original?.DisplayDueDate?.includes(filterValue)) {
             return true
           } else {
@@ -915,7 +915,7 @@ function TasksTable(props: any) {
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "Created",
-        filterFn: (row: any, columnName:any, filterValue: any) => {
+        filterFn: (row: any, columnName: any, filterValue: any) => {
           if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
             return true
           } else {
@@ -923,9 +923,9 @@ function TasksTable(props: any) {
           }
         },
         header: "",
-        size: 125
+        size: 129
       },
-     
+
       {
         cell: ({ row, getValue }) => (
           <>
@@ -968,7 +968,7 @@ function TasksTable(props: any) {
                 </span>)}
 
               {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && (
-                <span title='Edit' onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit ml-auto"></span>
+                <span title='Edit' onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit"></span>
               )}
             </a>
             {getValue()}
@@ -1008,7 +1008,7 @@ function TasksTable(props: any) {
   });
 
 
-  
+
 
 
   const RestruringCloseCall = () => {
@@ -1047,8 +1047,10 @@ function TasksTable(props: any) {
         let parentcat: any = [];
 
         if (data2?.ClientTime != null && data2?.ClientTime != undefined) {
+          if(typeof data2?.ClientTime =="object"){
+            data2.ClientTime= JSON.stringify(data2?.ClientTime );
+          }
 
-          data2.ClientTime = JSON.stringify(data2?.ClientTime)
         } else {
           data2.ClientTime = null
         }
@@ -1097,11 +1099,11 @@ function TasksTable(props: any) {
           }
         });
       }
-   
+
     } else {
 
       setcheckData(null)
-  
+
     }
 
   }
@@ -1116,7 +1118,7 @@ function TasksTable(props: any) {
     let array: any = [];
     if (checkData != undefined) {
 
-      if (checkData.TaskType == undefined) {
+      if (checkData?.TaskType == undefined) {
         setActivityDisable(false)
         checkData['siteUrl'] = props?.AllListId?.siteUrl;
         checkData['listName'] = 'Master Tasks';
@@ -1156,7 +1158,7 @@ function TasksTable(props: any) {
       refreshData();
       setTopCompoIcon(topCompoIcon);
     }
-    
+
   }, []);
 
 
@@ -1183,8 +1185,9 @@ function TasksTable(props: any) {
         <div className="col-sm-12 pad0 smart" >
           <div className="">
             <div className={`${data?.length > 10 ? "wrapper" : "MinHeight"}`}>
+
               <GlobalCommanTable
-              queryItems={props?.props}
+                queryItems={props?.props}
                 ref={childRef}
                 callChildFunction={callChildFunction}
                 AllListId={props?.AllListId}
@@ -1204,7 +1207,6 @@ function TasksTable(props: any) {
                 AddWorkstreamTask={openActivity}
                 taskProfile={true}
                 expandIcon={true}
-                multiSelect={true}
               />
             </div>
 
@@ -1213,22 +1215,18 @@ function TasksTable(props: any) {
       </div>
 
 
-
-
-
-
       {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call} AllListId={props.AllListId} context={props.Context} pageName={"TaskFooterTable"}></EditTaskPopup>}
       {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack} AllListId={props.AllListId} TimeEntryPopup Context={props.Context}></TimeEntryPopup>}
       {MeetingPopup &&
         <CreateActivity
-          props={MeetingItems[MeetingItems.length - 1]}
+          selectedItem={MeetingItems[MeetingItems.length - 1]}
           Call={Call}
           TaskUsers={AllUsers}
           AllClientCategory={AllClientCategory}
           LoadAllSiteTasks={LoadAllSiteTasks}
-          SelectedProp={props.AllListId}>
+          AllListId={props.AllListId}>
         </CreateActivity>}
-      {WSPopup && <CreateWS props={MeetingItems[MeetingItems.length - 1]} Call={Call} data={data} SelectedProp={props.AllListId}></CreateWS>}
+        {WSPopup && <CreateWS props={MeetingItems[MeetingItems.length - 1]} Call={Call} data={data} SelectedProp={props.AllListId}></CreateWS>}
       {addModalOpen && <Panel headerText={` Create Component `} type={PanelType.medium} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
         <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} PropsValue={props} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
       </Panel>
@@ -1238,3 +1236,4 @@ function TasksTable(props: any) {
 
 }
 export default TasksTable;
+

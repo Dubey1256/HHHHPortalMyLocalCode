@@ -20,6 +20,8 @@ import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
 import CommentCard from "../../../globalComponents/Comments/CommentCard";
 import SmartInformation from "../../taskprofile/components/SmartInformation";
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
+import { BiCommentDetail } from "react-icons/bi";
+//import { BsXCircleFill, BsCheckCircleFill } from "react-icons/bs";
 var QueryId: any = "";
 let smartPortfoliosData: any = [];
 let portfolioType = "";
@@ -213,7 +215,7 @@ const ProjectManagementMain = (props: any) => {
           .get().then((fetchedProject: any) => {
             if ((fetchedProject.PercentComplete != undefined)) {
               fetchedProject.PercentComplete = (fetchedProject?.PercentComplete * 100).toFixed(0)
-            }  if (fetchedProject?.DueDate != undefined) {
+            } if (fetchedProject?.DueDate != undefined) {
               fetchedProject.DisplayDueDate = fetchedProject.DueDate != null
                 ? Moment(fetchedProject.DueDate).format("DD/MM/YYYY")
                 : "";
@@ -659,7 +661,7 @@ const ProjectManagementMain = (props: any) => {
         header: "",
         resetColumnFilters: false,
         resetSorting: false,
-        size: 70,
+        size: 125,
         cell: ({ row, getValue }) => (
           <>
             <span className="d-flex">
@@ -855,8 +857,8 @@ const ProjectManagementMain = (props: any) => {
       {
         accessorFn: (row) => row?.SmartInformation[0]?.Title,
         cell: ({ row }) => (
-          <span style={{ display: "flex", width: "100%", height: "100%" }} className='d-flex' onClick={() => openRemark(row?.original)}>
-            &nbsp; {row?.original?.SmartInformation[0]?.Title}
+          <span  className='d-flex hreflink' >
+            &nbsp; {row?.original?.SmartInformation?.length>0 ? <span onClick={() => openRemark(row?.original)} className="commentDetailFill-active"><BiCommentDetail /></span> : <span onClick={() => openRemark(row?.original)} className="commentDetailFill"><BiCommentDetail /></span>}
           </span>
         ),
         id: 'SmartInformation',
@@ -864,7 +866,7 @@ const ProjectManagementMain = (props: any) => {
         resetColumnFilters: false,
         placeholder: "Remarks",
         header: '',
-        size: 125
+        size: 50
       },
 
       {
@@ -959,7 +961,6 @@ const ProjectManagementMain = (props: any) => {
     setMasterdata(projectData);
     setData(displayTasks);
   };
-
   const generateSortingIndicator = (column: any) => {
     return column.isSorted ? (
       column.isSortedDesc ? (

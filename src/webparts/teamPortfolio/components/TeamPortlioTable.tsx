@@ -1737,9 +1737,8 @@ function TeamPortlioTable(SelectedProp: any) {
     const onRenderCustomHeaderMain = () => {
         return (
             <div className="d-flex full-width pb-1">
-                <div 
-                >
-                    <span>{`Create Item`}</span>
+                <div className="subheading">
+                    <span className="siteColor">{`Create Item`}</span>
                 </div>
                 <Tooltip ComponentId={1746} />
             </div>
@@ -1843,7 +1842,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 onDismiss={closeActivity}
                 isBlocking={false}
             >
-                <div className="modal-body bg-f5f5 clearfix">
+                <div className="modal-body">
                     <div
                         className={
                             IsUpdated == "Events Portfolio"
@@ -1953,15 +1952,19 @@ function TeamPortlioTable(SelectedProp: any) {
                 </div>
             </Panel>
             {isOpenActivity && (
-                <CreateActivity
-                    props={checkedList}
-                    Call={Call}
-                    TaskUsers={AllUsers}
-                    AllClientCategory={AllClientCategory}
-                    LoadAllSiteTasks={LoadAllSiteTasks}
-                    SelectedProp={SelectedProp}
-                    portfolioTypeData={portfolioTypeData}
-                ></CreateActivity>
+                <CreateActivity 
+          Call={Call}
+          AllListId={ContextValue}
+          TaskUsers={AllUsers}
+          AllClientCategory={AllClientCategory}
+          LoadAllSiteTasks={LoadAllSiteTasks}
+          selectedItem={
+            checkedList != null && checkedList?.Id != undefined
+              ? checkedList
+              : SelectedProp
+          }
+          portfolioTypeData={portfolioTypeData}
+        />
             )}
             {isOpenWorkstream && (
                 <CreateWS

@@ -272,11 +272,11 @@ function CreateTaskComponent(props: any) {
             let SDCDescription = BurgerMenuData.SDCDescription = params.get('Description');
             let SDCPageUrl = BurgerMenuData.SDCTaskUrl = params.get('TaskUrl');
             let SDCTaskUrl = '';
-            if(SDCDescription=='null'){
-                SDCDescription=null
+            if (SDCDescription == 'null') {
+                SDCDescription = null
             }
             let previousTaggedTaskToComp: any[] = []
-            
+
             BurgerMenuData.ComponentID = paramComponentId;
             BurgerMenuData.Siteurl = paramSiteUrl;
             BurgerMenuData.TaskType = paramTaskType;
@@ -287,7 +287,7 @@ function CreateTaskComponent(props: any) {
                 PageName = paramSiteUrl?.split('aspx')[0].split("").reverse().join("").split('/')[0].split("").reverse().join("");
                 PageName = PageName + 'aspx'
             }
-            if (paramComponentId == undefined && paramType == undefined && (paramSiteUrl!=undefined ||SDCTaskId!=undefined )) {
+            if (paramComponentId == undefined && paramType == undefined && (paramSiteUrl != undefined || SDCTaskId != undefined)) {
                 paramComponentId = "756";
                 QueryPortfolioId = '756';
             }
@@ -684,12 +684,12 @@ function CreateTaskComponent(props: any) {
                         TeamMembersIds.push(301);
                         TeamMembersIds.push(49);
                         taskUsers?.map((User: any) => {
-                            if (User.Title === 'Design' && burgerMenuTaskDetails.TaskType != "Design" && TeamMembersIds.length === 0) {
+                            if (User.Title === 'Design' && burgerMenuTaskDetails.TaskType != "Design" && TeamMembersIds.length === 0 && User.AssingedToUserId != null && User.AssingedToUserId != '' && User.AssingedToUserId != undefined) {
                                 TeamMembersIds.push(User.AssingedToUserId);
                             }
                             else if (User.Title === 'Design' && TeamMembersIds.length > 0) {
                                 TeamMembersIds.map((workingMember: any) => {
-                                    if (workingMember !== 48 && workingMember !== 49) {
+                                    if (workingMember !== 48 && workingMember !== 49 && User.AssingedToUserId != null && User.AssingedToUserId != '' && User.AssingedToUserId != undefined) {
                                         TeamMembersIds.push(User.AssingedToUserId);
                                     }
                                 })

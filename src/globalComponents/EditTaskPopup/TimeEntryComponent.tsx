@@ -1639,9 +1639,12 @@ function TimeEntryPopup(item: any) {
             .getFileByServerRelativeUrl(`${listUri}/${newdata.data.Id}_.000`)
             .moveTo(`${listUri}${folderUri}/${newdata.data.Id}_.000`);
           console.log(movedata);
-          mainParentId = newdata.data.Id;
-          mainParentTitle = newdata.data.Title;
-          createItemMainList();
+          if(movedata != undefined){
+            mainParentId = newdata.data.Id;
+            mainParentTitle = newdata.data.Title;
+            createItemMainList();
+          }
+         
         }
       });
     }
@@ -1772,11 +1775,15 @@ function TimeEntryPopup(item: any) {
       .getFileByServerRelativeUrl(`${listUri}/${newdata.data.Id}_.000`)
       .moveTo(`${listUri}${folderUri}/${newdata.data.Id}_.000`);
     console.log(movedata);
-    NewParentId = newdata.data.Id;
-    NewParentTitle = newdata.data.Title;
-    NewCategoryId = newdata.data.CategoryId;
-    AllTimeEntry = [];
-    EditData(item.props);
+
+    if(movedata != undefined){
+        NewParentId = newdata.data.Id;
+        NewParentTitle = newdata.data.Title;
+        NewCategoryId = newdata.data.CategoryId;
+        AllTimeEntry = [];
+        EditData(item.props);
+    }
+   
   };
   const createItemforNewUser = async (LetestFolderID: any) => {
     let web = new Web(`${CurrentSiteUrl}`);
