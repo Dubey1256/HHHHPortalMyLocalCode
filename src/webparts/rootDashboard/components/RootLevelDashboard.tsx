@@ -465,7 +465,7 @@ const RootLevelDashboard = (props: any) => {
                 </a>
               </>
             ) : (
-              <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
+              <span className='alignIcon  svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
             )}
           </span>
         ),
@@ -488,7 +488,7 @@ const RootLevelDashboard = (props: any) => {
                 title="Click To Edit Timesheet"
               >
                 <span
-                  className="svg__iconbox svg__icon--clock"
+                  className="alignIcon  svg__iconbox svg__icon--clock"
                   data-bs-toggle="tooltip"
                   data-bs-placement="bottom"
                   title="Click To Edit Timesheet"
@@ -591,20 +591,24 @@ const RootLevelDashboard = (props: any) => {
         <dl className='alignCenter gap-2 mb-0'>
           {dashboardConfigrations?.map((list: any) => {
             return (
-              <dt className='form-check'>
+              <dt className='form-check pt-1'>
                 <input className='form-check-input' type="checkbox" value={list?.siteUrl} name="date" checked={selectedSiteFilter?.includes(list?.siteUrl)} onClick={() => siteFilter(list)} /> {list?.siteName}
               </dt>
             )
           })}
 
         </dl>
-        <div className="text-end">
+        <div className="text-end m-0">
           <a className="hreflink" onClick={() => { clearSiteFilter() }}>Clear Site Filter</a>
         </div>
       </div>
-      <div className="Alltable">
-        <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} columns={column2} data={AllTasks} pageSize={100} callBackData={callBackData} showPagination={true} showHeader={true} />
+     <section className='TableContentSection'>
+      <div className="Alltable mt-2">
+        <div className='wrapper'>
+        <GlobalCommanTable expandIcon={true} AllListId={AllListId} headerOptions={headerOptions} columns={column2} data={AllTasks} pageSize={100} callBackData={callBackData} showPagination={true} showHeader={true} />
+        </div>
       </div>
+      </section>
       {IsTimeEntry && (
         <DisplayTimeEntry
           props={SharewebTimeComponent}

@@ -308,7 +308,7 @@ const GlobalCommanTable = (items: any) => {
                     </span> : <span><a className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }} title='Web Page'></span></a></span>}
                     <a className='excal' onClick={() => downloadExcel(excelDatas, "Task-User-Management")} title='Export To Excel' ><RiFileExcel2Fill /></a>
 
-                    <a  className='brush' title="Clear All"><i className="fa fa-paint-brush hreflink" aria-hidden="true" title="Clear All"></i></a>
+                    <a className='brush' title="Clear All"><i className="fa fa-paint-brush hreflink" aria-hidden="true" title="Clear All"></i></a>
 
 
                     <a title="Print" className='Prints' onClick={() => downloadPdf()}>
@@ -381,22 +381,22 @@ const GlobalCommanTable = (items: any) => {
 
                 </tbody>
             </table>
-            {showPagination === true ? <div className="d-flex gap-2 items-center mb-3 mx-2">
+            {showPagination === true ? <div className="d-flex gap-1 paginationspfx mb-3 mx-2">
                 <button
-                    className="border rounded p-1"
+                    
                     onClick={() => table.setPageIndex(0)}
                     disabled={!table.getCanPreviousPage()}
                 >
                     <FaAngleDoubleLeft />
                 </button>
                 <button
-                    className="border rounded p-1"
+                   
                     onClick={() => table.previousPage()}
                     disabled={!table.getCanPreviousPage()}
                 >
                     <FaChevronLeft />
                 </button>
-                <span className="flex items-center gap-1">
+                <span className="flex Total-items gap-1">
                     <div>Page</div>
                     <strong>
                         {table.getState().pagination.pageIndex + 1} of{' '}
@@ -404,14 +404,14 @@ const GlobalCommanTable = (items: any) => {
                     </strong>
                 </span>
                 <button
-                    className="border rounded p-1"
+                  
                     onClick={() => table.nextPage()}
                     disabled={!table.getCanNextPage()}
                 >
                     <FaChevronRight />
                 </button>
                 <button
-                    className="border rounded p-1"
+                   
                     onClick={() => table.setPageIndex(table.getPageCount() - 1)}
                     disabled={!table.getCanNextPage()}
                 >
@@ -430,8 +430,8 @@ const GlobalCommanTable = (items: any) => {
                     ))}
                 </select>
             </div> : ''}
-            {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} /> : ''}
-
+            {/* {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} /> : ''} */}
+            {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} portfolioTypeData={items?.portfolioTypeData} context={items?.AllListId?.Context} /> : ''}
         </>
     )
 }

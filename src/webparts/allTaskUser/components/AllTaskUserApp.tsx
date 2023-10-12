@@ -116,10 +116,10 @@ export default class AllTaskUserApp extends React.Component<ITaskUserProps, ITas
           </li>
         </ul>  
         <div className="tab-content border border-top-0 clearfix " id="nav-tabContent">
-          <div className={`tab-pane fade ${this.activeTab === 'TEAM MEMBERS' ? 'show active' : ''}`} id="Contact" role="tabpanel" aria-labelledby="home-tab">
+          <div className={`tab-pane fade px-1 ${this.activeTab === 'TEAM MEMBERS' ? 'show active' : ''}`} id="Contact" role="tabpanel" aria-labelledby="home-tab">
             {this.tabContent['TEAM MEMBERS']}
           </div>
-          <div className={`tab-pane fade ${this.activeTab === 'TEAM GROUPS' ? 'show active' : ''}`} id="Institution" role="tabpanel" aria-labelledby="profile-tab">
+          <div className={`tab-pane fade px-1 ${this.activeTab === 'TEAM GROUPS' ? 'show active' : ''}`} id="Institution" role="tabpanel" aria-labelledby="profile-tab">
             {this.tabContent['TEAM GROUPS']}
           </div>
         </div>        

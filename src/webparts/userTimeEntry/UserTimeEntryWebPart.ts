@@ -13,12 +13,15 @@ import UserTimeEntry from './components/UserTimeEntry';
 import { IUserTimeEntryProps } from './components/IUserTimeEntryProps';
 
 export interface IUserTimeEntryWebPartProps {
-  description: string;  
-  TaskUserListID : "b318ba84-e21d-4876-8851-88b94b9dc300";
-  SmartMetadataListID : "01a34938-8c7e-4ea6-a003-cee649e8c67a";
-  TaskTimeSheetListNewListID : "464fb776-e4b3-404c-8261-7d3c50ff343f";
-  TaskTimeSheet2ListID : "9ed5c649-3b4e-42db-a186-778ba43c5c93";
-  
+  description: string;
+  TaskUsertListID: "b318ba84-e21d-4876-8851-88b94b9dc300";
+  SmartMetadataListID: "01a34938-8c7e-4ea6-a003-cee649e8c67a";
+  TaskTimeSheetListNewListID: "464fb776-e4b3-404c-8261-7d3c50ff343f";
+  TaskTimeSheet2ListID: "9ed5c649-3b4e-42db-a186-778ba43c5c93";
+  MasterTaskListID: "ec34b38f-0669-480a-910c-f84e92e58adf";
+  AdminConfiguraionListId:"44c8f826-33ac-4a83-8b6e-8eebaf64d745";
+  TimeEntry: any;
+  SiteCompostion: any;
 }
 
 export default class UserTimeEntryWebPart extends BaseClientSideWebPart<IUserTimeEntryWebPartProps> {
@@ -42,11 +45,16 @@ export default class UserTimeEntryWebPart extends BaseClientSideWebPart<IUserTim
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
         Context: this.context,
-        TaskUserListID: this.properties.TaskUserListID,
-        SmartMetadataListID: this.properties.SmartMetadataListID, 
+        MasterTaskListID: this.properties.MasterTaskListID,
+        AdminConfiguraionListId:this.properties.AdminConfiguraionListId,
+        siteUrl: this.context.pageContext.web.absoluteUrl,
+        TaskUsertListID: this.properties.TaskUsertListID,
+        SmartMetadataListID: this.properties.SmartMetadataListID,
         TaskTimeSheetListNewListID: this.properties.TaskTimeSheetListNewListID,
-      TaskTimeSheet2ListID : this.properties.TaskTimeSheet2ListID
-    }      
+        TimeEntry: this.properties.TimeEntry,
+        SiteCompostion: this.properties.SiteCompostion,
+        TaskTimeSheet2ListID: this.properties.TaskTimeSheet2ListID
+      }
     );
 
     ReactDom.render(element, this.domElement);
@@ -100,7 +108,7 @@ export default class UserTimeEntryWebPart extends BaseClientSideWebPart<IUserTim
                 PropertyPaneTextField('SmartMetadataListID', {
                   label: 'Smart Metadata ListID'
                 }),
-                PropertyPaneTextField('TaskUserListID', {
+                PropertyPaneTextField('TaskUsertListID', {
                   label: 'Task users ListID'
                 }),
                 PropertyPaneTextField('TaskTimeSheet2ListID', {
@@ -108,6 +116,17 @@ export default class UserTimeEntryWebPart extends BaseClientSideWebPart<IUserTim
                 }),
                 PropertyPaneTextField('TaskTimeSheetListNewListID', {
                   label: 'TaskTimeSheetListNew ListID'
+                }),
+                PropertyPaneTextField("MasterTaskListID", {
+                  label: "Master Task List",
+                }), PropertyPaneTextField('TimeEntry', {
+                  label: "TimeEntry"
+                }),
+                PropertyPaneTextField('SiteCompostion', {
+                  label: "SiteCompostion"
+                }),
+                PropertyPaneTextField('AdminConfiguraionListId', {
+                  label: "AdminConfiguraionListId"
                 })
               ]
             }

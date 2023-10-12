@@ -364,7 +364,7 @@ const SmartFilterSearchGlobal = (item: any) => {
         allTastsData?.map((data: any) => {
             if (checkSiteMatch(data, site) && checkTypeMatch(data, type)) {
                 if (percentCompleteMatch(data, percentComplete)) {
-                    data.TotalTaskTime = data.TotalTaskTime
+                    data.TotalTaskTime = data?.TotalTaskTime;
                     updateArray.push(data);
                 }
             }

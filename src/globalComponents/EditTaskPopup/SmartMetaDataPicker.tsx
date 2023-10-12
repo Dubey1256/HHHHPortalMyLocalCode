@@ -46,7 +46,6 @@ const Picker = (item: any) => {
         } else {
             NewArray = []
             setSelect([])
-            item?.Call()
             item?.closePopupCallBack();
             SelectedCategoryBackupArray = [];
         }
@@ -224,10 +223,8 @@ const Picker = (item: any) => {
         else {
             if (searchedKey?.length > 0) {
                 AutoCompleteItemsArray.map((itemData: any) => {
-                    if (itemData.Description1 != null) {
-                        if (itemData.Newlabel.toLowerCase().includes(searchedKey.toLowerCase()) || itemData.Description1.toLowerCase().includes(searchedKey.toLowerCase())) {
-                            tempArray.push(itemData);
-                        }
+                    if (itemData.Newlabel.toLowerCase().includes(searchedKey.toLowerCase()) || itemData.Description1?.toLowerCase().includes(searchedKey.toLowerCase())) {
+                        tempArray.push(itemData);
                     }
                 })
                 setSearchedData(tempArray)
@@ -271,25 +268,11 @@ const Picker = (item: any) => {
         return previous
     }, [])
 
-    const customFooter = () => {
-        return (
-            <footer className={isServiceTask || item?.props?.Portfolio_x0020_Type == "Service" ? "serviepannelgreena" : ""}>
-                <span>
-                    <a className="siteColor mx-1" target="_blank" data-interception="off" href={`{}/SitePages/SmartMetadata.aspx`} >Manage Smart Taxonomy</a>
-                </span>
-                <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveCategories} >
-                    Save
-                </button>
-            </footer>
-
-        )
-    }
-
     const customHeader = () => {
         return (
             <div className={isServiceTask || item?.props?.Portfolio_x0020_Type == "Service" ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"} >
-                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <h2 className="heading">Select Category</h2>
+                <div className="subheading siteColor">
+                    Select Category
                 </div>
                 <Tooltip ComponentId="1741" />
             </div>
@@ -306,11 +289,10 @@ const Picker = (item: any) => {
                 customWidth="850px"
                 onDismiss={closePopupSmartTaxanomy}
                 isBlocking={PopupSmartTaxanomy}
-            // onRenderFooter={customFooter}
+
             >
                 <div id="SmartTaxonomyPopup" className={(item?.props?.Portfolio_x0020_Type != undefined && item?.props?.Portfolio_x0020_Type == "Service") ? "serviepannelgreena" : ""}>
                     <div className={isServiceTask ? "modal-body serviepannelgreena" : "modal-body"}>
-
 
                         <div className="mb-3">
                             <div className="mb-2 col-sm-12 p-0">
@@ -330,21 +312,20 @@ const Picker = (item: any) => {
                                                 )}
                                             </ul>
                                         </div>) : null}
+
                                 </div>
                             </div>
-                            <div className="border full-width my-2 p-2 pb-1 ActivityBox">
-                                {select.map((val: any) => {
-                                    return (
-                                        <span className="bg-69 p-1 ps-2 me-1"> {val.Title}
-                                            <a className="hreflink" onClick={() => deleteSelectedCat(val)}>
-                                                <span className="bg-light svg__icon--cross svg__iconbox"></span>
-                                            </a>
-                                        </span>
-                                    )
-                                })}
-
-                            </div>
-
+                            {select?.length > 0 ?
+                                <div className="border full-width ActivityBox">
+                                    {select.map((val: any) => {
+                                        return (
+                                            <span className="block me-1">
+                                                <span>{val.Title}</span>
+                                                <span className="bg-light hreflink ms-2 svg__icon--cross svg__iconbox" onClick={() => deleteSelectedCat(val)}></span>
+                                            </span>
+                                        )
+                                    })}
+                                </div> : null}
                         </div>
                         <div className='col-sm-12 categScroll'>
                             <ul className="categories-menu p-0">
@@ -423,9 +404,9 @@ const Picker = (item: any) => {
                             </ul>
                         </div>
                     </div>
-                    <footer className={isServiceTask ? "serviepannelgreena fixed-bottom bg-f4 p-2" : "fixed-bottom bg-f4 p-2"}>
-                        <div className="alignCenter justify-content-between me-3">
-                            <div className="mb-0 pull-left">
+                    <footer className={isServiceTask ? "serviepannelgreena fixed-bottom bg-f4 p-3" : "fixed-bottom bg-f4 p-3"}>
+                        <div className="alignCenter justify-content-between">
+                            <div className="">
                                 <div id="addNewTermDescription">
                                     <p className="mb-1"> New items are added under the currently selected item.
                                         <span><a className="hreflink" target="_blank" data-interception="off" href={`${siteUrls}/SitePages/SmartMetadata.aspx`} > Add New Item </a></span>
@@ -436,6 +417,7 @@ const Picker = (item: any) => {
                                         <span><a className="hreflink"> Send Feedback </a></span>
                                     </p>
                                 </div>
+
                             </div>
                             <div className="pull-right">
                                 <span>

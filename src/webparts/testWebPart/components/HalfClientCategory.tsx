@@ -18,10 +18,13 @@ import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup
 import ShowTeamMembers from '../../../globalComponents/ShowTeamMember';
 import { FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaInfoCircle, FaChevronRight, FaChevronDown } from 'react-icons/fa';
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
+import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
+import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 
 var siteConfig: any = []
 var AllTaskUsers: any = []
 var Idd: number;
+let AllMasterTaskItems: any = [];
 var allSitesTasks: any = [];
 var AllListId: any = {};
 var currentUserId: '';
@@ -154,35 +157,45 @@ const HalfClientCategory = (props: any) => {
             return '';
         }
     }
-    function siteCompositionDetails(jsonStr: any) {
-        var data = JSON.parse(jsonStr);
-        let result = '';
+    function siteCompositionDetails(jsonStr: any): any {
+        let totalPercent: number = 0;
+        let result: string[] = [];
+    
         try {
-            data?.map((site: any, index: any) => {
-                if (site?.SiteName != undefined) {
-                    if (index == 0) {
-                        result = site?.SiteName + '-' + parseFloat(site?.ClienTimeDescription).toFixed(2)
-                    } else {
-                        result += ' ; ' + site?.SiteName + '-' + parseFloat(site?.ClienTimeDescription).toFixed(2);
+            const data = JSON.parse(jsonStr);
+            if(data?.length>0){
+                data?.forEach((site: any, index: number) => {
+                    if (site?.SiteName || site?.Title) {
+                        let parsedValue: number = parseFloat(site?.ClienTimeDescription || '0');
+                        if (!isNaN(parsedValue)) {
+                            totalPercent += parsedValue;
+                        }
+        
+                        let name = site?.SiteName || site?.Title || '';
+                        result.push(`${name}-${parsedValue.toFixed(2)}`);
                     }
-                } else if (site?.Title != undefined) {
-                    if (index == 0) {
-                        result = site?.Title + '-' + parseFloat(site?.ClienTimeDescription).toFixed(2);
-                    } else {
-                        result += ' ; ' + site?.Title + '-' + parseFloat(site?.ClienTimeDescription).toFixed(2);
-                    }
-                }
-
-            })
-
-            return result;
+                });
+                
+            totalPercent = parseFloat(totalPercent.toFixed(2));
+    
+            return {
+                result: result.join(' ; '),
+                total: totalPercent
+            };
+            }
+           
+    
         } catch (error) {
-            console.log(error)
-            return result;
+            console.error(error);
+            return {
+                result: result.join(' ; '),
+                total: totalPercent
+            };
         }
     }
 
     const LoadAllSiteTasks = function () {
+        allSitesTasks = [];
         setPageLoader(true);
         if (siteConfig?.length > 0) {
             try {
@@ -194,12 +207,13 @@ const HalfClientCategory = (props: any) => {
                     smartmeta = await web.lists
                         .getById(config.listId)
                         .items
-                        .select("Id,Title,PriorityRank,Project/PriorityRank,Portfolio/PortfolioStructureID,Project/Id,Project/Title,workingThisWeek,ParentTask/TaskID,ParentTask/Title,ParentTask/Id,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,SiteCompositionSettings,IsTodaysTask,Body,Portfolio/Id,Portfolio/TitlePercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+                        .select("Id,Title,PriorityRank,Project/PriorityRank,Portfolio/PortfolioStructureID,Project/Id,Project/Title,workingThisWeek,ParentTask/TaskID,ParentTask/Title,ParentTask/Id,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,SiteCompositionSettings,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
                         .expand('AssignedTo,Project,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ParentTask,ClientCategory')
                         .top(4999)
                         .get();
                     arraycount++;
                     smartmeta.map((items: any) => {
+                        allSitesTasks.push(items)
                         if (items?.ClientCategory?.length > 0 || items?.SiteCompositionSettings != undefined) {
                             items.Item_x0020_Type = 'tasks';
                             items.ShowTeamsIcon = false
@@ -218,12 +232,12 @@ const HalfClientCategory = (props: any) => {
                                     ? Moment(items.Created).format("DD/MM/YYYY")
                                     : "";
                             items.portfolio = {};
-                            if (items?.Portfolio?.Id !=undefined) {
+                            if (items?.Portfolio?.Id != undefined) {
                                 items.portfolio = items?.Portfolio;
                                 items.PortfolioTitle = items?.Portfolio?.Title;
-                              //  items["Portfoliotype"] = "Component";
+                                //  items["Portfoliotype"] = "Component";
                             }
-                         
+
                             items["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
                             if (items?.Project?.Title != undefined) {
                                 items["ProjectTitle"] = items?.Project?.Title;
@@ -238,9 +252,12 @@ const HalfClientCategory = (props: any) => {
                                 items.compositionType = '';
                             }
                             if (items?.ClientTime != undefined) {
-                                items.siteCompositionSearch = siteCompositionDetails(items?.ClientTime);
+                                let result = siteCompositionDetails(items?.ClientTime);
+                                items.siteCompositionSearch = result?.result;
+                                items.siteCompositionTotal = result?.total;
                             } else {
-                                items.siteCompositionSearch = '';
+                                items.siteCompositionSearch = ' ';
+                                items.siteCompositionTotal = ' ';
                             }
 
                             items.TeamMembersSearch = "";
@@ -319,14 +336,15 @@ const HalfClientCategory = (props: any) => {
         if (AllListId?.MasterTaskListID != undefined) {
             let web = new Web(`${AllListId?.siteUrl}`);
             let taskUsers: any = [];
-            let Alltask: any = [];
+
+            AllMasterTaskItems = [];
             // var AllUsers: any = []
-            Alltask = await web.lists.getById(AllListId?.MasterTaskListID).items
+            AllMasterTaskItems = await web.lists.getById(AllListId?.MasterTaskListID).items
                 .select("Deliverables,PortfolioStructureID,ClientCategory/Id,ClientCategory/Title,TechnicalExplanations,ValueAdded,Categories,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,SiteCompositionSettings,ClientTime,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title")
                 .filter("Item_x0020_Type ne 'Project'")
                 .expand("ComponentCategory,ClientCategory,AssignedTo,AttachmentFiles,Author,Editor,TeamMembers,TaskCategories,Parent").top(4999).getAll();
 
-            Alltask.map((items: any) => {
+            AllMasterTaskItems.map((items: any) => {
                 if (items?.ClientCategory?.length > 0 || items?.SiteCompositionSettings != undefined || items?.Sitestagging != undefined) {
                     items.ShowTeamsIcon = false
                     items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
@@ -352,10 +370,22 @@ const HalfClientCategory = (props: any) => {
                         items.compositionType = '';
                     }
                     if (items?.Sitestagging != undefined) {
-                        items.siteCompositionSearch = siteCompositionDetails(items?.Sitestagging);
+                        let result = siteCompositionDetails(items?.Sitestagging);
+                        items.siteCompositionSearch = result?.result;
+                        items.siteCompositionTotal = result?.total;
                     } else {
-                        items.siteCompositionSearch = '';
+                        items.siteCompositionSearch = ' ';
+                        items.siteCompositionTotal = ' ';
                     }
+                    AllTaskUsers?.map((user: any) => {
+                        if (user.AssingedToUserId == items.Author.Id) {
+                            items.createdImg = user?.Item_x0020_Cover?.Url;
+                        }
+                    });
+                    items.DisplayCreateDate =
+                        items.Created != null
+                            ? Moment(items.Created).format("DD/MM/YYYY")
+                            : "";
                     items.siteType = 'Master Tasks';
                     items.DisplayDueDate = items.DueDate != null ? Moment(items.DueDate).format('DD/MM/YYYY') : ""
                     AllMasterTasks.push(items)
@@ -416,11 +446,9 @@ const HalfClientCategory = (props: any) => {
                 resetSorting: false,
                 size: 70,
                 cell: ({ row, getValue }) => (
-                    <div>
-                        <>
-                            {row?.original.TaskID}
-                        </>
-                    </div>
+                    <span className="d-flex">
+                        <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTaskItems} AllSitesTaskData={allSitesTasks} />
+                    </span>
                 ),
             },
             {
@@ -454,7 +482,13 @@ const HalfClientCategory = (props: any) => {
                             >
                                 {row?.original?.Title}
                             </a>
-
+                            <span className="alignIcon">
+                                {" "}
+                                <InfoIconsToolTip
+                                    Discription={row?.original?.bodys}
+                                    row={row?.original}
+                                />{" "}
+                            </span>
 
                         </span> : ''}
                     </>
@@ -493,6 +527,21 @@ const HalfClientCategory = (props: any) => {
                 resetSorting: false,
             },
             {
+                accessorFn: (row) => row?.siteCompositionTotal,
+                cell: ({ row }) => (
+                    <div className="">
+                        <span>{row?.original?.siteCompositionTotal == 0 ? ' ' : row?.original?.siteCompositionTotal}</span>
+                    </div>
+
+                ),
+                id: 'siteCompositionTotal',
+                placeholder: "Composition Total",
+                header: "",
+                resetColumnFilters: false,
+                resetSorting: false,
+                size: 60,
+            },
+            {
                 accessorFn: (row) => row?.ClientCategorySearch,
                 cell: ({ row }) => (
                     <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadata} />
@@ -515,6 +564,42 @@ const HalfClientCategory = (props: any) => {
                 resetColumnFilters: false,
                 resetSorting: false,
                 size: 100,
+            },
+            {
+                accessorFn: (row) => row?.Created,
+                cell: ({ row }) => (
+                    <span className="d-flex">
+                        <span>{row?.original?.DisplayCreateDate} </span>
+
+                        {row?.original?.createdImg != undefined ? (
+                            <>
+                                <a
+                                    href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                                    target="_blank"
+                                    data-interception="off"
+                                >
+                                    <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} />
+                                </a>
+                            </>
+                        ) : (
+                            <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
+                        )}
+                    </span>
+                ),
+                id: 'Created',
+                canSort: false,
+                resetColumnFilters: false,
+                resetSorting: false,
+                placeholder: "Created",
+                filterFn: (row: any, columnId: any, filterValue: any) => {
+                    if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
+                header: "",
+                size: 105
             },
             {
 
@@ -551,11 +636,9 @@ const HalfClientCategory = (props: any) => {
                 resetSorting: false,
                 size: 70,
                 cell: ({ row, getValue }) => (
-                    <div>
-                        <>
-                            {row?.original.TaskID}
-                        </>
-                    </div>
+                    <span className="d-flex">
+                        <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTaskItems} AllSitesTaskData={allSitesTasks} />
+                    </span>
                 ),
             },
 
@@ -574,15 +657,12 @@ const HalfClientCategory = (props: any) => {
                             </a>
 
                             {row?.original?.Body !== null && (
-                                <span className='me-1'>
-                                    <div className='popover__wrapper me-1' data-bs-toggle='tooltip' data-bs-placement='auto'>
-                                        <span className='svg__iconbox svg__icon--info'></span>
-                                        <div className='popover__content'>
-                                            <span>
-                                                <p dangerouslySetInnerHTML={{ __html: row?.original?.bodys }}></p>
-                                            </span>
-                                        </div>
-                                    </div>
+                                <span className="alignIcon">
+                                    {" "}
+                                    <InfoIconsToolTip
+                                        Discription={row?.original?.bodys}
+                                        row={row?.original}
+                                    />{" "}
                                 </span>
                             )}
                         </span>
@@ -605,6 +685,21 @@ const HalfClientCategory = (props: any) => {
                 header: "",
                 resetColumnFilters: false,
                 resetSorting: false,
+            },
+            {
+                accessorFn: (row) => row?.siteCompositionTotal,
+                cell: ({ row }) => (
+                    <div className="">
+                        <span>{row?.original?.siteCompositionTotal == 0 ? ' ' : row?.original?.siteCompositionTotal}</span>
+                    </div>
+
+                ),
+                id: 'siteCompositionTotal',
+                placeholder: "Composition Total",
+                header: "",
+                resetColumnFilters: false,
+                resetSorting: false,
+                size: 60,
             },
             {
                 accessorFn: (row) => row?.ClientCategorySearch,
@@ -641,6 +736,42 @@ const HalfClientCategory = (props: any) => {
                 resetColumnFilters: false,
                 resetSorting: false,
                 size: 100,
+            },
+            {
+                accessorFn: (row) => row?.Created,
+                cell: ({ row }) => (
+                    <span className="d-flex">
+                        <span>{row?.original?.DisplayCreateDate} </span>
+
+                        {row?.original?.createdImg != undefined ? (
+                            <>
+                                <a
+                                    href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                                    target="_blank"
+                                    data-interception="off"
+                                >
+                                    <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} />
+                                </a>
+                            </>
+                        ) : (
+                            <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
+                        )}
+                    </span>
+                ),
+                id: 'Created',
+                canSort: false,
+                resetColumnFilters: false,
+                resetSorting: false,
+                placeholder: "Created",
+                filterFn: (row: any, columnId: any, filterValue: any) => {
+                    if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
+                header: "",
+                size: 105
             },
             {
 

@@ -921,10 +921,10 @@ const CreateActivity = (props: any) => {
                       ? TeamMemberIds
                       : []
                 },
-                SiteCompositionSettings: JSON.stringify(
-                  AllItems.SiteCompositionSettingsbackup
-                ),
-                ClientTime: JSON.stringify(AllItems.Sitestaggingbackup),
+                SiteCompositionSettings: 
+                  AllItems.SiteCompositionSettings,
+                
+                ClientTime: AllItems.Sitestagging,
                 TaskID: TaskID,
                 TaskLevel: Tasklevel
               })
@@ -1078,7 +1078,7 @@ const CreateActivity = (props: any) => {
 
             if (
               AllItems?.TaskType?.Title == "Workstream" ||
-              AllItems?.SharewebTaskType?.Title == "Workstream"
+              AllItems?.SharewebTaskType?.Title == "Workstream"||AllItems?.TaskType === "Workstream"
             ) {
               TaskID = props?.props?.TaskID + "-T" + LatestId;
             } else {
@@ -1090,13 +1090,20 @@ const CreateActivity = (props: any) => {
               TaskprofileId = SelectedTasks[0].Id;
             }
 
-            if (AllItems?.TaskType?.Title == "Workstream") {
+            if (AllItems?.TaskType?.Title == "Workstream"||AllItems?.TaskType === "Workstream") {
               var PortfolioData = AllItems?.Portfolio?.Id;
               var ParentData = AllItems?.Id;
             } else {
               var PortfolioData = AllItems?.Id;
             }
-
+     let clientTime:any;
+     if(AllItems?.ClientTime!=undefined){
+      if(typeof AllItems?.ClientTime=="object"){
+        clientTime= JSON.stringify(AllItems?.ClientTime);
+      }else{
+        clientTime=AllItems?.ClientTime
+      }
+     }
             var arrayy = [];
             web = new Web(dynamicList.siteUrl);
             await web.lists
@@ -1148,7 +1155,7 @@ const CreateActivity = (props: any) => {
                 SiteCompositionSettings: JSON.stringify(
                   AllItems.SiteCompositionSettingsbackup
                 ),
-                ClientTime: JSON.stringify(AllItems?.ClientTime),
+                ClientTime: clientTime!=undefined?clientTime:AllItems.Sitestagging,
                 TaskID: TaskID
               })
               .then((res: any) => {
@@ -1163,7 +1170,9 @@ const CreateActivity = (props: any) => {
                   ? Moment(date).format("MM-DD-YYYY")
                   : null),
                   (res.data["siteType"] = value.siteName);
-
+                  res.data.Author = {
+                    Id: res?.data?.AuthorId
+                }
                 res.data.ParentTaskId = AllItems.Id;
                 res.data.ClientCategory = [];
                 res.data.AssignedTo = [];
@@ -1208,7 +1217,7 @@ const CreateActivity = (props: any) => {
                   });
                 }
                 res.data.Clientcategories = res.data.ClientCategory;
-
+               
                 let fileName: any = "";
                 let tempArray: any = [];
                 // let SiteUrl = SiteUrl;
@@ -1387,14 +1396,7 @@ const CreateActivity = (props: any) => {
             : "d-flex full-width pb-1"
         }
       >
-        <div
-          style={{
-            marginRight: "auto",
-            fontSize: "20px",
-            fontWeight: "600",
-            marginLeft: "20px"
-          }}
-        >
+        <div>
           <h2 className="heading">
             {`Create Quick Option - ${AllItems?.NoteCall}`}
           </h2>

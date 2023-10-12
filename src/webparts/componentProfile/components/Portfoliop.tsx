@@ -14,6 +14,7 @@ import ComponentTable from "./Taskwebparts";
 import Sitecomposition from "../../../globalComponents/SiteComposition";
 import SmartInformation from "../../taskprofile/components/SmartInformation";
 import { spfi } from "@pnp/sp/presets/all";
+import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
 const sp = spfi();
 // Work the Inline Editing
 interface EditableFieldProps {
@@ -360,19 +361,18 @@ export const EditableField: React.FC<EditableFieldProps> = ({
 };
 
 // Work end the Inline Editing
-let TeamMembers: any = [];
-let AssigntoMembers: any = [];
+
 let AllQuestion: any[] = [];
 let AllHelp: any[] = [];
 let AllTeamMember: any = [];
 let Folderdatas: any = [];
-let AssignTeamMember: any = [];
 let ContextValue: any = {};
 
 let Iconpps: any = [];
 let componentDetails: any = [];
 let filterdata: any = [];
 let imageArray: any = [];
+let AllTaskuser:any=[];
 function getQueryVariable(variable: any) {
   let query = window.location.search.substring(1);
   console.log(query); //"app=article&act=news_content&aid=160990"
@@ -391,7 +391,8 @@ function getQueryVariable(variable: any) {
 let ID: any = "";
 let web: any = "";
 
-function Portfolio({ SelectedProp }: any) {
+function Portfolio({ SelectedProp,TaskUser }: any) {
+  AllTaskuser=TaskUser;
   const [data, setTaskData] = React.useState([]);
   const [isActive, setIsActive] = React.useState(false);
   const [array, setArray] = React.useState([]);
@@ -411,7 +412,6 @@ function Portfolio({ SelectedProp }: any) {
   const [SharewebComponent, setSharewebComponent] = React.useState("");
   const [showBlock, setShowBlock] = React.useState(false);
   const [IsTask, setIsTask] = React.useState(false);
-  const [AllTaskuser, setAllTaskuser] = React.useState([]);
   const [questionandhelp, setquestionandhelp] = React.useState([]);
 
   const [ParentData, SetParentData] = React.useState([]);
@@ -502,6 +502,7 @@ function Portfolio({ SelectedProp }: any) {
     }
   };
   React.useEffect(() => {
+    
     let folderId: any = "";
 
     let ParentId: any = "";
@@ -688,7 +689,7 @@ function Portfolio({ SelectedProp }: any) {
       });
     };
     GetListItems();
-    getTaskUser();
+    
     getMasterTaskListTasks();
     open();
 
@@ -708,22 +709,7 @@ function Portfolio({ SelectedProp }: any) {
     return previous;
   }, []);
   // Get All User
-
-  const getTaskUser = async () => {
-    let web = new Web(ContextValue.siteUrl);
-    await web.lists
-      .getById(ContextValue.TaskUsertListID)
-      .items.orderBy("Created", true)
-      .get()
-      .then((Data: any[]) => {
-        console.log(Data);
-
-        setAllTaskuser(Data);
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-  };
+  
   function open() {
     data.map((item: any) => {
       handleOpen(item);
@@ -738,28 +724,65 @@ function Portfolio({ SelectedProp }: any) {
     if (item?.PortfolioType?.Title != undefined) {
       TypeSite = item?.PortfolioType?.Title;
     }
+
+// Prepare Show task Teammember data 
+
+if (item.AssignedTo != undefined && item.AssignedTo.length > 0) {
+  $.map(item.AssignedTo, (Assig: any) => {
+    if (Assig.Id != undefined) {
+      $.map(AllTaskuser, (users: any) => {
+        if (
+          Assig.Id != undefined &&
+          users.AssingedToUser != undefined &&
+          Assig.Id == users.AssingedToUser.Id
+        ) {
+          users.ItemCover = users.Item_x0020_Cover;
+          item?.TeamLeaderUser?.push(users);
+        }
+      });
+    }
+  });
+}
+if (
+  item.ResponsibleTeam != undefined &&
+  item.ResponsibleTeam.length > 0
+) {
+  $.map(item.ResponsibleTeam, (Assig: any) => {
+    if (Assig.Id != undefined) {
+      $.map(AllTaskuser, (users: any) => {
+        if (
+          Assig.Id != undefined &&
+          users.AssingedToUser != undefined &&
+          Assig.Id == users.AssingedToUser.Id
+        ) {
+          users.ItemCover = users.Item_x0020_Cover;
+          item?.TeamLeaderUser?.push(users);
+        }
+      });
+    }
+  });
+}
+if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
+  $.map(item.TeamMembers, (Assig: any) => {
+    if (Assig.Id != undefined) {
+      $.map(AllTaskuser, (users: any) => {
+        if (
+          Assig.Id != undefined &&
+          users.AssingedToUser != undefined &&
+          Assig.Id == users.AssingedToUser.Id
+        ) {
+          users.ItemCover = users.Item_x0020_Cover;
+          item?.TeamLeaderUser?.push(users);
+        }
+      });
+    }
+  });
+}
+
+
     // Set the page titile
     document.title = `${item?.PortfolioType?.Title}-${item.Title}`;
-    if (item.TeamMembers != undefined) {
-      AllTaskuser.map((users) => {
-        item.TeamMembers.map((members: any) => {
-          if (members.Id != undefined) {
-            if (users.AssingedToUserId == members.Id) {
-              TeamMembers.push(users);
-            }
-          }
-        });
-      });
-    }
-    if (item.AssignedTo != undefined) {
-      AllTaskuser.map((users) => {
-        item.AssignedTo.map((members: any) => {
-          if (users.AssingedToUserId == members.Id) {
-            AssigntoMembers.push(users);
-          }
-        });
-      });
-    }
+   
   });
   //    Get Folder data
 
@@ -776,33 +799,9 @@ function Portfolio({ SelectedProp }: any) {
 
   //  Remove duplicate values
 
-  AllTeamMember = TeamMembers.reduce(function (previous: any, current: any) {
-    let alredyExists =
-      previous.filter(function (item: any) {
-        return item.Id === current.Id;
-      }).length > 0;
-    if (!alredyExists) {
-      previous.push(current);
-    }
-    return previous;
-  }, []);
+  
 
-  AssignTeamMember = AssigntoMembers.reduce(function (
-    previous: any,
-    current: any
-  ) {
-    let alredyExists =
-      previous.filter(function (item: any) {
-        return item.Id === current.Id;
-      }).length > 0;
-    if (!alredyExists) {
-      previous.push(current);
-    }
-    return previous;
-  },
-  []);
-
-  console.log(AllTeamMember);
+  
 
   function handleSuffixHover() {
     setShowBlock(true);
@@ -957,7 +956,7 @@ function Portfolio({ SelectedProp }: any) {
                         <>
                           <li>
                             {/* if="Task.PortfolioType=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
-                            {ParentData != undefined &&
+                            {ParentData != undefined && ParentData[0]?.Parent?.Id != undefined && 
                               ParentData.map((ParentD: any) => {
                                 return (
                                   <>
@@ -1149,100 +1148,14 @@ function Portfolio({ SelectedProp }: any) {
                       <dl>
                         <dt className="bg-fxdark">Team Members</dt>
                         <dd className="bg-light d-flex">
-                          {AssignTeamMember.length != 0
-                            ? AssignTeamMember.map((item: any) => (
-                                <>
-                                  <a
-                                    target="_blank"
-                                    data-interception="off"
-                                    href={
-                                      SelectedProp.siteUrl +
-                                      `/SitePages/TaskDashboard.aspx?UserId=${item.AssingedToUserId}&Name=${item.Title}`
-                                    }
-                                  >
-                                    <img
-                                      className="workmember"
-                                      src={item.Item_x0020_Cover?.Url}
-                                      title={item.Title}
-                                    />
-                                  </a>
-                                </>
-                              ))
-                            : ""}
-
-                          {AllTeamMember != null &&
-                            AllTeamMember.length > 0 && (
-                              <>
-                                <span>|</span>
-                                <div className="user_Member_img">
-                                  <a
-                                    href={
-                                      SelectedProp.siteUrl +
-                                      `/SitePages/TaskDashboard.aspx?UserId=${AllTeamMember[0].Id}&Name=${AllTeamMember[0].Title}`
-                                    }
-                                    target="_blank"
-                                    data-interception="off"
-                                  >
-                                    <img
-                                      className="workmember"
-                                      src={
-                                        AllTeamMember[0].Item_x0020_Cover?.Url
-                                      }
-                                      title={AllTeamMember[0].Title}
-                                    ></img>
-                                  </a>
-                                </div>
-                              </>
-                            )}
-                          {AllTeamMember != null &&
-                            AllTeamMember.length > 1 && (
-                              <div
-                                className="position-relative user_Member_img_suffix2 multimember fs13"
-                                style={{ paddingTop: "2px" }}
-                                onMouseOver={(e) => handleSuffixHover()}
-                                onMouseLeave={(e) => handleuffixLeave()}
-                              >
-                                +{AllTeamMember.length - 1}
-                                {showBlock && (
-                                  <span className="tooltiptext">
-                                    <div className="bg-white border p-2">
-                                      {AllTeamMember.slice(1).map(
-                                        (rcData: any, i: any) => {
-                                          return (
-                                            <div className="team_Members_Item p-1">
-                                              <div>
-                                                <a
-                                                  href={
-                                                    SelectedProp.siteUrl +
-                                                    "/SitePages/TaskDashboard.aspx?UserId=" +
-                                                    rcData.Id +
-                                                    "&Name=" +
-                                                    rcData.Title
-                                                  }
-                                                  target="_blank"
-                                                  data-interception="off"
-                                                >
-                                                  <img
-                                                    className="workmember"
-                                                    src={
-                                                      rcData.Item_x0020_Cover
-                                                        ?.Url
-                                                    }
-                                                  ></img>
-                                                </a>
-                                              </div>
-                                              <div className="m-1">
-                                                {rcData.Title}
-                                              </div>
-                                            </div>
-                                          );
-                                        }
-                                      )}
-                                    </div>
-                                  </span>
-                                )}
-                              </div>
-                            )}
+                          {AllTaskuser?.length>0 && <ShowTaskTeamMembers
+              key={data[0]?.Id}
+              props={data[0]}
+              TaskUsers={AllTaskuser}
+              Context={SelectedProp}
+            />
+          }
+                       
                         </dd>
                       </dl>
                       <dl>
@@ -2257,7 +2170,7 @@ function Portfolio({ SelectedProp }: any) {
                 )}
                 <div className="mb-3 card">
                   <>
-                    {data.map((item) => (
+                    {data?.map((item) => (
                       <CommentCard
                         siteUrl={SelectedProp.siteUrl}
                         AllListId={SelectedProp}

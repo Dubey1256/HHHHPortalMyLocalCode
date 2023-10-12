@@ -2,7 +2,8 @@ import * as React from "react";
 // import { render } from 'react-dom';
 // import { Calendar, Views, momentLocalizer } from "react-big-calendar";
 import { Calendar, momentLocalizer } from "react-big-calendar";
-import * as moment from "moment";
+// import * as moment from "moment";
+import moment from 'moment';
 // import './style.css';
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "moment-timezone";
@@ -145,8 +146,8 @@ const App = (props: any) => {
   const [disabl, setdisabl] = React.useState(false);
   const [disab, setdisab] = React.useState(false);
   const [dt, setDt] = React.useState();
-  const [selectedTime, setSelectedTime]: any = React.useState("10:00");
-  const [selectedTimeEnd, setSelectedTimeEnd]: any = React.useState("19:00");
+  const [selectedTime, setSelectedTime]: any = React.useState();
+  const [selectedTimeEnd, setSelectedTimeEnd]: any = React.useState();
   const [location, setLocation]: any = React.useState();
   //const [saveE, setsaveE]:any = React.useState([]);
   //let saveE:any=[]
@@ -1171,8 +1172,15 @@ const App = (props: any) => {
       selectedTimeEnd == undefined ||
       newEvent.loc == undefined
     ) {
-      setSelectedTime("10:00");
-      setSelectedTimeEnd("19:00");
+      const date = moment(startDate);
+      date.tz("Asia/Kolkata");
+      const time = date.format();
+      
+      const dateend = moment(endDate);
+      dateend.tz("Asia/Kolkata");
+      const timeend = date.format();
+      setSelectedTime(time);
+      setSelectedTimeEnd(timeend);
       newEvent.loc = "Noida";
     }
     newEvent.title = newEvent.title.replace("Un-Planned", newEvent.type);
@@ -1281,12 +1289,12 @@ const App = (props: any) => {
         setLocation(item.location);
         createdBY = item.created;
         modofiedBy = item.modify;
-        const date1 = moment(item.cTime);
-        CTime = date1.format("HH:mm:ss");
-        CDate = date1.format("DD/MM/YYYY");
-        const date = moment(item.mTime);
-        MTime = date.format("HH:mm:ss");
-        MDate = date.format("DD/MM/YYYY");
+        MDate = moment(item.mTime).format("DD-MM-YYYY");
+        MTime = moment(item.mTime).tz("Asia/Kolkata").format("HH:mm")
+        CDate = moment(item.cTime).format("DD-MM-YYYY");
+        CTime =moment(item.cTime).tz("Asia/Kolkata").format("HH:mm")
+        setSelectedTime(moment(item.start).tz("Asia/Kolkata").format("HH:mm"));
+        setSelectedTimeEnd(moment(item.end).tz("Asia/Kolkata").format("HH:mm"));
         setType(item.eventType);
         sedType(item.Designation);
         setInputValueReason(item.desc);
@@ -1326,8 +1334,8 @@ const App = (props: any) => {
     setdisabl(true);
     setStartDate(slotInfo.start);
     setEndDate(slotInfo.start);
-    setSelectedTime(selectedTime);
-    setSelectedTimeEnd(selectedTimeEnd);
+    setSelectedTimeEnd("19:00");
+    setSelectedTime("10:00");
     setIsChecked(false);
     setDisableTime(false);
     maxD = new Date(8640000000000000);
@@ -1509,7 +1517,7 @@ const App = (props: any) => {
         </a>
       </div>
       <div style={{ height: "500pt" }}>
-        <a className="mailBtn me-4 mt-4" href="#" onClick={emailComp}>
+        <a className="mailBtn me-4" href="#" onClick={emailComp}>
           <FaPaperPlane></FaPaperPlane> <span>Send Leave Summary</span>
         </a>
         {/* <button type="button" className="mailBtn" >

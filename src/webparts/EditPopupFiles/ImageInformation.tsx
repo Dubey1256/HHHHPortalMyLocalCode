@@ -6,8 +6,13 @@ import pnp, { sp, Web } from "sp-pnp-js";
 import { useState } from 'react';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import "@pnp/sp/folders";
-import ShowImagesOOTB from './showImagesootb'
+import ShowImagesOOTB from './showImagesootb';
 let imageOTT=false;
+
+let Imageshow:number;
+let  imagesData:any[];
+
+let count=20;
 const ImagetabFunction = (props: any) => {
 const [editData,setEditData]=useState(props.EditdocumentsData)
     const [selectfolder, setSelectfolder] = useState("Logos");
@@ -17,6 +22,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
     const[showImagesOOTB,setShowImagesOOTB]=useState(null)
     const [uploadedImage, setUploadedImage] = useState(null);
     const [uploadedImageUrl, setUploadedImageUrl] = useState("");
+    const [loadedImages, setLoadedImages] = useState([]);
     console.log(props)
     console.log(props)
     React.useEffect(() => {
@@ -48,7 +54,35 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
     //         });
     //     });
     //   };
-       const getAllImageData=async()=>{
+    //    const getAllImageData=async()=>{
+    //     const web=new Web(props.Context.pageContext.web.absoluteUrl);
+    //     var data=[ "Logos", "Covers","Page-Images"]
+    //     let ChooseExistinglogoarray: any=[];
+    //     let ChooseExistingCoverarray: any=[];
+    //     let ChooseExistingImages1array: any=[];
+    //     for(let i=0;i<data.length;i++){
+    //         await web.getFolderByServerRelativeUrl(`${props?.Context?._pageContext?.web?.serverRelativeUrl}/PublishingImages/${data[i]}`).files.get()
+    //         .then(async(dataimage: any) => {
+    //             if (data[i] == "Logos") {
+    //                 ChooseExistinglogoarray=dataimage;
+               
+    //             }
+    //             if (data[i] == "Covers") {
+    //                 ChooseExistingCoverarray=dataimage
+                   
+    //             }
+    //             if (data[i] == "Page-Images") {
+    //                 ChooseExistingImages1array=dataimage
+        
+    //             }
+    //         }).catch((err: any) => {
+    //             console.log(err.message);
+
+    //         });
+    //     }
+    //     setChooseExistingFile({ ...chooseExistingFile, ChooseExistinglogo: ChooseExistinglogoarray,ChooseExistingCover:ChooseExistingCoverarray, ChooseExistingImages1:ChooseExistingImages1array})
+    //    }
+    const getAllImageData=async()=>{
         const web=new Web(props.Context.pageContext.web.absoluteUrl);
         var data=[ "Logos", "Covers","Page-Images"]
         let ChooseExistinglogoarray: any=[];
@@ -76,7 +110,8 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
         }
         setChooseExistingFile({ ...chooseExistingFile, ChooseExistinglogo: ChooseExistinglogoarray,ChooseExistingCover:ChooseExistingCoverarray, ChooseExistingImages1:ChooseExistingImages1array})
        }
-   
+      
+
     const florarImageUploadCallBackFunction = (item: any,FileName:any) => {
         console.log(item)
         let DataObject: any = {
@@ -258,6 +293,48 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
     }
  }
 
+//   For handle the throttle \
+
+
+
+  const loadMore = async () => {
+    // Load the remaining images
+    count = count+20;
+    if(selectfolder == "Logos"){
+        imagesData = chooseExistingFile?.ChooseExistinglogo;
+         if(count != 0 && imagesData?.length>0){
+        let myimagedata:any[]=[];
+        for(let i = 0; i<=count;i++){
+           myimagedata?.push(imagesData[i]);
+        }
+        setLoadedImages(myimagedata)
+    }
+    }else if(selectfolder == "Covers"){
+
+    imagesData = chooseExistingFile?.ChooseExistingCover;
+     if(count != 0 && imagesData?.length>0){
+        let myimagedata:any[]=[];
+        for(let i = 0; i<=count;i++){
+           myimagedata?.push(imagesData[i]);
+        }
+        setLoadedImages(myimagedata)
+    }
+    }else if (selectfolder == "Images1"){
+        imagesData = chooseExistingFile?.ChooseExistingImages1;
+         if(count != 0 && imagesData?.length>0){
+        let myimagedata:any[]=[];
+        for(let i = 0; i<=count;i++){
+           myimagedata?.push(imagesData[i]);
+        }
+        setLoadedImages(myimagedata)
+    }
+    }
+   
+   
+   
+
+  };
+
     return (
         <>
             <div className='d-flex '>
@@ -398,13 +475,10 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                               </div>
                                           </div>
                                           <div>
-                                                {chooseExistingFile?.ChooseExistingCover != undefined && chooseExistingFile?.ChooseExistingCover?.length > 0 && chooseExistingFile?.ChooseExistingCover?.map((imagesData: any) => {
-                                                    return (
-                                                        <>
-                                                            <img src={`${imagesData?.ServerRelativeUrl}`} onClick={()=>ExistingImageUpload(imagesData)}></img></>
-                                                    )
-                                                })}
+                                          {loadedImages.map((img) => (<img src={img?.ServerRelativeUrl} onClick={() => ExistingImageUpload(img)} />))}
                                             </div>
+                                            <button onClick={() => loadMore()} type='button'>Load More</button>
+                                         
                                             </div>
                                         </Tab>
                                     </Tabs>
@@ -425,14 +499,14 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                                 <div className='mt-3'>
                                                     <FlorarImagetabportfolio callBack={florarImageUploadCallBackFunction}></FlorarImagetabportfolio>
                                                  </div>
-                                                <div className='text-lg-end mt-2'><Button className='btn btn-primary ms-1  btn btn-primary'onClick={() => uploadImage()}>Upload</Button></div> 
+                                                <div className='text-lg-end mt-2'><Button className='btn btn-primary ms-1  mx-2 btn btn-primary'onClick={() => uploadImage()}>Upload</Button></div> 
                                             </div>
                                         </Tab>
                                         <Tab eventKey="Upload" title="Upload">
                                             <div className='border border-top-0 p-2'>
                                                 <div className='mt-3' style={{ height: "500px" }}>
                                                     <input type="file" multiple accept='image/*' className='full-width' onChange={(e) => UploadImageValue(e, "upload")} />
-                                                    <div className='text-lg-end mt-2'><Button className='btn btn-primary ms-1   btn btn-primary' onClick={() => uploadImage()}>Upload</Button></div>
+                                                    <div className='text-lg-end mt-2'><Button className='btn btn-primary ms-1  mx-2 btn btn-primary' onClick={() => uploadImage()}>Upload</Button></div>
                                                 </div>
                                             </div>
                                         </Tab>

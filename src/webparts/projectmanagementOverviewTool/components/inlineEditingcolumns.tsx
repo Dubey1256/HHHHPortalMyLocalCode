@@ -373,8 +373,8 @@ const inlineEditingcolumns = (props: any) => {
         })
             .then((res: any) => {
 
-                web.lists.getById(props?.item?.listId).items.select("ID", "Title", "EstimatedTime", "Comments", "Remark", "DueDate", "Approver/Id", "Approver/Title", "Portfolio/PortfolioStructureID","ParentTask/Id", "ParentTask/Title", "ParentTask/TaskID", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Editor/Title", "Modified")
-                    .expand("TeamMembers", "Approver", "ParentTask", "AssignedTo", "TaskCategories", "Author", "ResponsibleTeam", "TaskType", "Portfolio", "Editor")
+                web.lists.getById(props?.item?.listId).items.select("Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+                    .expand('AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory')
                     .getById(props?.item?.Id).get().then((task) => {
                         task.AllTeamMember = [];
                         task.siteType = props?.item?.siteType;
@@ -404,7 +404,7 @@ const inlineEditingcolumns = (props: any) => {
                             });
                         });
                         task.TeamMembersId = [];
-                        task.TaskID = globalCommon.GetTaskId(task);
+                        task.TaskID = props?.item?.TaskID;
                         task?.TeamMembersId?.map((taskUser: any) => {
                             task.TeamMembersId.push(taskUser);
                             var newuserdata: any = {};
@@ -796,7 +796,7 @@ const inlineEditingcolumns = (props: any) => {
             {
                 props?.columnName == 'Priority' ?
                     <>
-                        <span className={ServicesTaskCheck && props?.pageName !== 'ProjectOverView' ? "serviepannelgreena hreflink" : "hreflink"} style={{ display: "flex", width: "100%", height: "100%" }} onClick={() => setTaskPriorityPopup(true)} >
+                        <span className={ServicesTaskCheck && props?.pageName !== 'ProjectOverView' ? "serviepannelgreena hreflink" : "hreflink"} style={{ display: "flex", width: "100%", height: "100%", gap:"1px" }} onClick={() => setTaskPriorityPopup(true)} >
                             &nbsp;
                             {props?.item?.PriorityRank}
                             {

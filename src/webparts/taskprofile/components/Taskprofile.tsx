@@ -244,7 +244,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       .getByTitle(this.state?.listName)
       .items
       .getById(this.state?.itemID)
-      .select("ID", "Title", "Comments", "ApproverHistory", "EstimatedTime", "TaskID", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "PortfolioType/Id", "DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "Approver/Id", "Approver/Title", "ParentTask/Id", "Project/Id", "Project/Title", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
+      .select("ID", "Title", "Comments", "ApproverHistory", "EstimatedTime", "TaskID", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "ParentTask/TaskID","PortfolioType/Id", "DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "Approver/Id", "Approver/Title", "ParentTask/Id", "Project/Id", "Project/Title", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
       .expand("TeamMembers", "Project", "Approver", "ParentTask", "Portfolio", "PortfolioType", "SmartInformation", "AssignedTo", "TaskCategories", "Author", "ClientCategory", "ResponsibleTeam", "TaskType", "Editor", "AttachmentFiles")
       .get()
     AllListId = {
@@ -385,6 +385,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       TaskId: taskDetails["TaskId"],
       TaskID: taskDetails["TaskID"],
       Title: taskDetails["Title"],
+      Item_x0020_Type: 'Task',
       DueDate: taskDetails["DueDate"],
       Categories: taskDetails["Categories"],
       Status: taskDetails["Status"],
@@ -475,8 +476,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         var regex = items?.FileName?.substring(0, 20);
         items.newFileName = regex;
       })
-      AttachmentFiles?.sort(this.sortAlphaNumericAscending)
-
+      // AttachmentFiles?.sort(this.sortAlphaNumericAscending)
+     
       AttachmentFiles?.forEach(function (Attach: any) {
         let attachdata: any = [];
         if (BasicImageInfo != null || BasicImageInfo != undefined) {
@@ -585,7 +586,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     if (ClientTimeArray != undefined && ClientTimeArray.length > 0) {
       ClientTimeArray?.map((item: any) => {
         array2?.map((items: any) => {
-          if (item?.SiteName == items?.SiteName) {
+          if ((item?.SiteName == items?.SiteName)||(item?.Title == items?.SiteName)) {
             if (item.ClientCategory == undefined) {
               item.ClientCategory = [];
               item.ClientCategory.push(items);
@@ -1747,7 +1748,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                         <dt className='bg-Fa'>Status</dt>
                         <dd className='bg-Ff'>{this.state.Result["Status"]}<br></br>
                           {this.state.Result["ApproverHistory"] != undefined && this.state.Result["ApproverHistory"].length > 1 && this.state.Result["Categories"].includes("Approval") ?
-                            <span style={{ fontSize: "smaller" }}>Pre-Approved by
+                            <span style={{ fontSize: "smaller" }}>Approved by
                               <img className="workmember" title={this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length - 2]?.ApproverName} src={(this.state.Result?.ApproverHistory[this.state.Result?.ApproverHistory?.length - 2]?.ApproverImage != null) ? (this.state.Result.ApproverHistory[this.state.Result.ApproverHistory.length - 2]?.ApproverImage) : (this.state.Result?.ApproverHistory[this.state.Result.ApproverHistory.length - 2]?.ApproverSuffix)}></img></span>
                             // {this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length-1].Title}
                             : null}</dd>
@@ -1861,13 +1862,14 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                     {this.state.Result?.EstimatedTimeDescriptionArray?.map((EstimatedTimeData: any, Index: any) => {
                                       return (
                                         <div className={this.state.Result?.EstimatedTimeDescriptionArray?.length == Index + 1 ? "align-content-center alignCenter justify-content-between p-1 px-2" : "align-content-center justify-content-between border-bottom alignCenter p-1 px-2"}>
-                                          <div>
+                                          <div className='alignCenter'>
                                             <span className='me-2'>{EstimatedTimeData?.Team != undefined ? EstimatedTimeData?.Team : EstimatedTimeData?.Category != undefined ?EstimatedTimeData?.Category : null  }</span> |
                                             <span className='mx-2'>{EstimatedTimeData.EstimatedTime ? (EstimatedTimeData.EstimatedTime > 1 ? EstimatedTimeData.EstimatedTime + " hours" : EstimatedTimeData.EstimatedTime + " hour") : "0 hour"}</span>
                                             <img className="ProirityAssignedUserPhoto m-0 mx-2" title={EstimatedTimeData.UserName} src={EstimatedTimeData.UserImage != undefined && EstimatedTimeData.UserImage?.length > 0 ? EstimatedTimeData.UserImage : ''} />
                                           </div>
-                                          <div className='alignCenter'>
-                                            <span className="svg__iconbox svg__icon--info" title={EstimatedTimeData.EstimatedTimeDescription}></span>
+                                          <div className='alignCenter hover-text'>
+                                            <span className="svg__iconbox svg__icon--info"></span>
+                                            <span className='tooltip-text pop-right'>{EstimatedTimeData.EstimatedTimeDescription} </span>
                                           </div>
                                         </div>
                                       )
@@ -1959,7 +1961,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
                                   try {
                                     if (fbData?.Title != undefined) {
-                                      fbData.Title = fbData?.Title?.replace(/\n/g, '<br/>');
+                                      fbData.Title = fbData?.Title?.replace(/\n/g, '<br>');
 
                                     }
                                   } catch (e) {
@@ -1970,9 +1972,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                         {/* { this.state?.emailcomponentopen && countemailbutton==0 &&<EmailComponenet approvalcallback={() => { this.approvalcallback() }}  Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus}  currentUser={this.props?.CurrentUser} items={this.props?.Result} />} */}
                                         <div className="col mb-2">
                                           <div className='justify-content-between d-flex'>
-                                            <div className="pt-1 m-0">
+                                            <div className="alignCenter m-0">
                                               {this.state.ApprovalStatus ?
-                                                <span className="MR5">
+                                                <span className="alignCenter">
                                                   <span title="Rejected"
                                                     onClick={() => this.changeTrafficLigth(i, "Reject")}
                                                     className={fbData['isShowLight'] == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
@@ -1987,12 +1989,13 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                     className={fbData['isShowLight'] == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
 
                                                   </span>
-                                                  {fbData['ApproverData'] != undefined && fbData?.ApproverData.length > 0 && <span className='px-3'>
-                                                    <a
+                                                  {fbData['ApproverData'] != undefined && fbData?.ApproverData.length > 0 && 
+                                                  <>
+                                                    <a className='hreflink mt--2 mx-2'
                                                       onClick={() => this.ShowApprovalHistory(fbData, i, null)}
-                                                    >Pre-approved by -</a>
+                                                    >Approved by -</a>
                                                     <img className="workmember" src={fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.ImageUrl}></img>
-                                                  </span>}
+                                                  </>}
                                                 </span>
 
                                                 : null
@@ -2038,7 +2041,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                             // title={fbData.ApproverData != undefined && fbData.ApproverData.length > 0 ? fbData.ApproverData[fbData.ApproverData.length - 1].isShowLight : ""}
                                             >
 
-                                              <span dangerouslySetInnerHTML={{ __html: fbData?.Title?.replace(/\n/g, "<br />") }}></span>
+                                              <span dangerouslySetInnerHTML={{ __html: fbData?.Title?.replace(/\n/g, "<br>") }}></span>
                                               <div className="col">
                                                 {fbData['Comments'] != null && fbData['Comments']?.length > 0 && fbData['Comments']?.map((fbComment: any, k: any) => {
                                                   return <div className={fbComment.isShowLight != undefined && fbComment.isApprovalComment ? `col add_cmnt my-1 ${fbComment.isShowLight}` : "col add_cmnt my-1"} title={fbComment.isShowLight != undefined ? fbComment.isShowLight : ""}>
@@ -2071,7 +2074,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                                 <span className='svg__iconbox svg__icon--trash'></span></a>
                                                             </span>
                                                           </div>
-                                                          <div><span dangerouslySetInnerHTML={{ __html: fbComment?.Title.replace(/\n/g, "<br />") }}></span></div>
+                                                          <div><span dangerouslySetInnerHTML={{ __html: fbComment?.Title.replace(/\n/g, "<br>") }}></span></div>
                                                         </div>
                                                       </div>
                                                       <div className="col-12 ps-3 pe-0 mt-1">
@@ -2099,7 +2102,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                                       <span className='svg__iconbox svg__icon--trash'></span></a>
                                                                   </span>
                                                                 </div>
-                                                                <div><span dangerouslySetInnerHTML={{ __html: replymessage?.Title.replace(/\n/g, "<br />") }}></span></div>
+                                                                <div><span dangerouslySetInnerHTML={{ __html: replymessage?.Title.replace(/\n/g, "<br>") }}></span></div>
                                                               </div>
                                                             </div>
 
@@ -2134,9 +2137,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                         {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext']?.map((fbSubData: any, j: any) => {
                                           return <div className="col-sm-12 p-0 mb-2" style={{ width: '100%' }}>
                                             <div className='justify-content-between d-flex'>
-                                              <div className='m-0 pt-1'>
+                                              <div className='alignCenter m-0'>
                                                 {this.state.ApprovalStatus ?
-                                                  <span className="MR5">
+                                                  <span className="alignCenter">
                                                     <span title="Rejected"
                                                       onClick={() => this.changeTrafficLigthsubtext(i, j, "Reject")}
                                                       className={fbSubData.isShowLight == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
@@ -2151,12 +2154,12 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                       className={fbSubData?.isShowLight == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
 
                                                     </span>
-                                                    {fbSubData.ApproverData != undefined && fbSubData.ApproverData.length > 0 && <span className='px-3'>
-                                                      <a
+                                                    {fbSubData.ApproverData != undefined && fbSubData.ApproverData.length > 0 && <>
+                                                      <a className='hreflink mt--2 mx-2'
                                                         onClick={() => this.ShowApprovalHistory(fbSubData, i, j)}
-                                                      >Pre-approved by -</a>
+                                                      >Approved by -</a>
                                                       <img className="workmember" src={fbSubData?.ApproverData[fbSubData?.ApproverData?.length - 1]?.ImageUrl}></img>
-                                                    </span>}
+                                                    </>}
                                                   </span>
                                                   : null
                                                 }
@@ -2200,7 +2203,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                               <div className="border p-2 full-width text-break"
                                               // title={fbSubData?.ApproverData != undefined && fbSubData?.ApproverData?.length > 0 ? fbSubData?.ApproverData[fbSubData?.ApproverData.length - 1]?.isShowLight : ""}
                                               >
-                                                <span ><span dangerouslySetInnerHTML={{ __html: fbSubData?.Title?.replace(/\n/g, "<br />") }}></span></span>
+                                                <span ><span dangerouslySetInnerHTML={{ __html: fbSubData?.Title?.replace(/\n/g, "<br>") }}></span></span>
                                                 <div className="feedbackcomment col-sm-12 PadR0 mt-10">
                                                   {fbSubData?.Comments != null && fbSubData.Comments.length > 0 && fbSubData?.Comments?.map((fbComment: any, k: any) => {
                                                     return <div className={fbComment?.isShowLight != undefined && fbComment.isApprovalComment ? `col-sm-12  mb-2 add_cmnt my-1 ${fbComment?.isShowLight}` : "col-sm-12  mb-2 add_cmnt my-1 "} title={fbComment?.isShowLight != undefined ? fbComment?.isShowLight : ""}>
@@ -2233,7 +2236,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                                 ><span className='svg__iconbox svg__icon--trash'></span></a>
                                                               </span>
                                                             </div>
-                                                            <div ><span dangerouslySetInnerHTML={{ __html: fbComment?.Title.replace(/\n/g, "<br />") }}></span></div>
+                                                            <div ><span dangerouslySetInnerHTML={{ __html: fbComment?.Title.replace(/\n/g, "<br>") }}></span></div>
                                                           </div>
                                                         </div>
                                                         <div className="col-12 ps-3 pe-0 mt-1">
@@ -2262,7 +2265,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                                         <span className='svg__iconbox svg__icon--trash'></span></a>
                                                                     </span>
                                                                   </div>
-                                                                  <div><span dangerouslySetInnerHTML={{ __html: replymessage?.Title.replace(/\n/g, "<br />") }}></span></div>
+                                                                  <div><span dangerouslySetInnerHTML={{ __html: replymessage?.Title.replace(/\n/g, "<br>") }}></span></div>
                                                                 </div>
                                                               </div>
 
@@ -2493,7 +2496,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
           }
           {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} context={this.props.Context} AllListId={AllListId} Call={(Type: any) => { this.CallBack(Type) }} /> : ''}
           {/* {this.state.isTimeEntry ? <TimeEntry props={this.state.Result} isopen={this.state.isTimeEntry} CallBackTimesheet={() => { this.CallBackTimesheet() }} /> : ''} */}
-          {this.state.EditSiteCompositionStatus ? <EditSiteComposition EditData={this.state.Result} context={this.props.Context} ServicesTaskCheck={this.state.Result["Portfolio"] != undefined ? true : false} AllListId={AllListId} Call={(Type: any) => { this.CallBack(Type) }} /> : ''}
+          {this.state.EditSiteCompositionStatus ? <EditSiteComposition EditData={this.state.Result} context={this.props.Context} AllListId={AllListId} Call={(Type: any) => { this.CallBack(Type) }} /> : ''}
           {this.state?.emailcomponentopen && countemailbutton == 0 && <EmailComponenet approvalcallback={() => { this.approvalcallback() }} Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus} currentUser={this?.currentUser} items={this.state?.Result} />}
         </div>
       </MyContext.Provider>

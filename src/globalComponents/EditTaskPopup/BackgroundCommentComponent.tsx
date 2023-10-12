@@ -3,9 +3,7 @@ import FlorarImageUploadComponent from '../FlorarComponents/UploadImageForBackgr
 import { useState, useCallback } from 'react';
 import * as Moment from 'moment';
 import { Panel, PanelType } from 'office-ui-fabric-react';
-import { FaExpandAlt } from 'react-icons/fa';
-import { RiDeleteBin6Line, RiH6 } from 'react-icons/ri';
-import { TbReplace } from 'react-icons/tb';
+import Tooltip from "../Tooltip";
 import { Web } from "sp-pnp-js";
 import { HiOutlineArrowTopRightOnSquare } from 'react-icons/hi2';
 
@@ -187,6 +185,18 @@ const BackgroundCommentComponent = (Props: any) => {
             setUpdateCommentData("");
         }
         setEditCommentPanel(false);
+
+    }
+
+    const onRenderCustomHeader = () => {
+        return (
+            <div className="d-flex full-width pb-1" >
+                <div className="subheading siteColor">
+                    {`Update Comment`}
+                </div>
+                <Tooltip ComponentId='1683' />
+            </div>
+        )
     }
     return (
         <div className="d-flex justify-content-between">
@@ -197,25 +207,26 @@ const BackgroundCommentComponent = (Props: any) => {
                             <div key={index} className="image-item">
                                 <div className="my-1">
                                     <div>
-                                        <span className="mx-1">{ImageDtl.ImageName ? ImageDtl.ImageName.slice(0, 50) : ''}</span>
+                                        {ImageDtl.ImageName ? ImageDtl.ImageName.slice(0, 50) : ''}
                                     </div>
                                     <a href={ImageDtl.Url} target="_blank" data-interception="off">
                                         <img src={ImageDtl.Url ? ImageDtl.Url : ''}
-                                            className="border card-img-top my-1" />
+                                            className="border card-img-top" />
                                     </a>
 
-                                    <div className="card-footer d-flex justify-content-between">
-                                        <div>
+                                    <div className=" bg-fxdark d-flex p-1 justify-content-between">
+                                        <div className="alignCenter">
                                             <span className="fw-semibold">{ImageDtl.UploadeDate ? ImageDtl.UploadeDate : ''}</span>
                                             <span className="mx-1">
                                                 <img className="imgAuthor" title={ImageDtl.UserName} src={ImageDtl.UserImage ? ImageDtl.UserImage : ''} />
                                             </span>
                                         </div>
-                                        <div>
-                                            <span className="mx-1" title="Delete"
-                                                onClick={() => deletebackgroundImageFunction(ImageDtl)}
-                                            ><RiDeleteBin6Line /> | </span>
-                                            <span title="Open Image In Another Tab">
+                                        <div className="alignCenter mt--10">
+                                            <span className="mx-1 alignIcon" title="Delete"
+                                                onClick={() => deletebackgroundImageFunction(ImageDtl)}>
+                                                <span className="svg__iconbox hreflink mini svg__icon--trash"></span>
+                                                | </span>
+                                            <span title="Open Image In Another Tab" className="mt-1">
                                                 <a href={ImageDtl.Url} target="_blank" data-interception="off">
                                                     <HiOutlineArrowTopRightOnSquare />
                                                 </a>
@@ -244,28 +255,23 @@ const BackgroundCommentComponent = (Props: any) => {
                     return (
                         <div className={`col-12 d-flex float-end add_cmnt my-1 `}>
                             <div className="">
-                                <img
-                                    style={{ width: "40px", borderRadius: "50%", height: "40px", margin: "5px" }}
+                                <img className="workmember"
                                     src={dataItem.AuthorImage != undefined && dataItem.AuthorImage != '' ?
                                         dataItem.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
                             </div>
-                            <div className="col-11 pe-0 mt-2 ms-1" >
+                            <div className="col-11 pe-0 ms-3" >
                                 <div className='d-flex justify-content-between align-items-center'>
                                     <span className="siteColor font-weight-normal">
                                         {dataItem.AuthorName} - {dataItem.Created}
                                     </span>
-                                    <span>
-                                        <a className="ps-1"
-                                            onClick={() => openEditModal(Index, dataItem.Body)}
-                                        >
-                                            <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
-                                        </a>
-                                        <a className="ps-1"
-                                            onClick={() => DeleteBackgroundCommentFunction(dataItem.ID, dataItem.Body)}
-                                        >
-                                            <img src={require('../../Assets/ICON/cross.svg')} width="25">
-                                            </img>
-                                        </a>
+                                    <span className="alignCenter">
+                                        {/* <img src={require('../../Assets/ICON/edit_page.svg')} width="25" /> */}
+                                        <span onClick={() => openEditModal(Index, dataItem.Body)} title="Edit Comment" className="svg__iconbox hreflink svg__icon--edit"></span>
+                                    
+                                        {/* <img src={require('../../Assets/ICON/cross.svg')} width="25">
+                                        </img> */}
+                                        <span  onClick={() => DeleteBackgroundCommentFunction(dataItem.ID, dataItem.Body)} title="Delete Comment" className="svg__iconbox hreflink ms-1 svg__icon--trash"></span>
+                                    
                                     </span>
                                 </div>
                                 <div>
@@ -293,18 +299,19 @@ const BackgroundCommentComponent = (Props: any) => {
                     Post Comment
                 </button>
             </div>
-            <section className="Update-FeedBack-section">
-                <Panel headerText={`Update Comment`}
+            <section className="Update-FeedBack-section SiteColor">
+                <Panel
+                    onRenderHeader={onRenderCustomHeader}
                     isOpen={EditCommentPanel}
                     onDismiss={editPostCloseFunction}
                     isBlocking={EditCommentPanel}
                     type={PanelType.custom}
                     customWidth="500px"
                 >
-                    <div className="parentDiv">
+                    <div className="parentDiv p-0 pt-1">
                         <div
                         >
-                            <textarea
+                            <textarea className="full-width"
                                 id="txtUpdateComment"
                                 rows={6}
                                 defaultValue={UpdateCommentData}
@@ -312,7 +319,7 @@ const BackgroundCommentComponent = (Props: any) => {
                             >
                             </textarea>
                         </div>
-                        <footer className="d-flex justify-content-between ms-3 mx-2 float-end">
+                        <footer className="d-flex justify-content-between ms-3 float-end">
                             <div>
                                 <button className="btn btnPrimary mx-1" onClick={ChangeCommentFunction}>
                                     Save

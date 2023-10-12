@@ -10,6 +10,14 @@
         }
       ]
     },
+    "alert-management-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/alertManagement/AlertManagementWebPart.js",
+          "manifest": "./src/webparts/alertManagement/AlertManagementWebPart.manifest.json"
+        }
+      ]
+    },
     "smart-connect-web-part": {
       "components": [
         {
@@ -301,6 +309,14 @@
         }
       ]
     },
+    "parent-portfolio-view-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/parentPortfolioView/ParentPortfolioViewWebPart.js",
+          "manifest": "./src/webparts/parentPortfolioView/ParentPortfolioViewWebPart.manifest.json"
+        }
+      ]
+    },
     "user-time-entry-web-part": {
       "components": [
         {
@@ -332,6 +348,23 @@
       ]
 
     },
+    "home-page-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/homePage/HomePageWebPart.js",
+          "manifest": "./src/webparts/homePage/HomePageWebPart.manifest.json"
+        }
+      ]
+    },
+     "smartmetadataportfolio-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/smartmetadataportfolio/SmartmetadataportfolioWebPart.js",
+          "manifest": "./src/webparts/smartmetadataportfolio/SmartmetadataportfolioWebPart.manifest.json"
+        }
+      ]
+    },
+ 
     "meeting-over-view-page-web-part": {
       "components": [
         {
@@ -363,6 +396,7 @@
   "localizedResources": {
     "MeetingOverViewPageWebPartStrings": "lib/webparts/meetingOverViewPage/loc/{locale}.js",
     "ServicePortfolioWebPartStrings": "lib/webparts/servicePortfolio/loc/{locale}.js",
+    "AlertManagementWebPartStrings": "lib/webparts/alertManagement/loc/{locale}.js",
     "SmartConnectWebPartStrings": "lib/webparts/smartConnect/loc/{locale}.js",
     "ComponentPortfolioWebPartStrings": "lib/webparts/componentPortfolio/loc/{locale}.js",
     "ComponentProfileWebPartStrings": "lib/webparts/componentProfile/loc/{locale}.js",
@@ -370,8 +404,11 @@
     "TaskprofileWebPartStrings": "lib/webparts/taskprofile/loc/{locale}.js",
     "ComponentCommentsWebPartStrings": "lib/webparts/componentComments/loc/{locale}.js",
     "FeedbackWebPartStrings": "lib/webparts/TimeReport/loc/{locale}.js",
+    "HomePageWebPartStrings": "lib/webparts/homePage/loc/{locale}.js",
     "TaskStepsWebPartStrings": "lib/webparts/taskSteps/loc/{locale}.js",
+    "SmartmetadataportfolioWebPartStrings": "lib/webparts/smartmetadataportfolio/loc/{locale}.js",
     "HrToolWebPartStrings": "lib/webparts/hrTool/loc/{locale}.js",
+    "ParentPortfolioViewWebPartStrings": "lib/webparts/parentPortfolioView/loc/{locale}.js",
     "EmployeDashBoardWebPartStrings": "lib/webparts/employeDashBoard/loc/{locale}.js",
     "TestProjectWebPartStrings": "lib/webparts/BackupData/loc/{locale}.js",
     "ProjectManagementWebPartStrings": "lib/webparts/projectManagement/loc/{locale}.js",

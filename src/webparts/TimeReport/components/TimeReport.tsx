@@ -28,6 +28,12 @@ var AllTime: any = []
 var AllTimeMigration: any = []
 var DevloperTime: any = 0.00;
 var QATime: any = 0.00;
+var QAMembers: any = 0;
+var DesignMembers: any = 0;
+var DevelopmentMembers: any = 0;
+var TotalQAMember: any = 0;
+var TotalDesignMember: any = 0;
+var TotalDevelopmentMember: any = 0;
 var DesignTime: any = 0.00;
 var TotleTaskTime:any=0.00
 var leaveUsers:any  = 0.00
@@ -219,6 +225,14 @@ const TimeReport = (props:any) => {
     const GeneratedTask = async () => {
         leaveUsers =0.00
          DevloperTime = 0.00;
+QATime = 0.00;
+ QAMembers = 0;
+ DesignMembers = 0;
+ DevelopmentMembers = 0;
+ TotalQAMember = 0;
+ TotalDesignMember = 0;
+ TotalDevelopmentMember = 0;
+ DesignTime = 0.00;
          QATime = 0.00;
          DesignTime = 0.00;
          TotleTaskTime = 0.00
@@ -294,6 +308,8 @@ const TimeReport = (props:any) => {
 
 
     }
+    var TotalMembersss = 0.00
+    var TotalleaveMembersss = 0.00
     const GetleaveUser=async(selectDate:any)=>{
         var myData:any=[]
         var leaveData:any=[]
@@ -359,9 +375,48 @@ const TimeReport = (props:any) => {
               finalData = todayLeaveUsers.filter((val: any, TaskId: any, array: any) => {
                  return array.indexOf(val) == TaskId;
           })
+          var D=[]
+          var De=[]
+          var QAteam=[]
+          AllUsers?.forEach((item:any)=>{
+            if((item?.TimeCategory == 'Development' && item?.Company == 'Smalsus') || item?.UserGroup?.Title == 'Senior Developer Team' || item?.UserGroup?.Title == 'Smalsus Lead Team' || item?.UserGroup?.Title == 'External Staff' || item?.UserGroup?.Title == 'Junior Developer Team'){
+                D.push(item)
+            }
+            if((item?.TimeCategory == 'Design'  && item.Company == 'Smalsus') ||  item?.UserGroup?.Title == 'Design Team'){
+                De.push(item)
+            }
+            if(item?.TimeCategory == 'QA'  && item.Company == 'Smalsus' &&  item?.UserGroup?.Title != 'Ex Staff'){
+                QAteam.push(item)
+            }
+          })
             console.log(finalData)
+            var QA =[]
+            var Design = []
+            var Development =[]
+            finalData?.forEach((val:any)=>{
+                if(val?.Department == 'QA'){
+                    QA.push(val)  
+                }
+                if(val?.Department == 'Design'){
+                    Design.push(val)  
+                }
+                if(val?.Department == 'Development'){
+                    Development.push(val)  
+                }
+            })
+            QAMembers = QA.length
+            DesignMembers = Design.length
+            DevelopmentMembers = Development.length
+            TotalDevelopmentMember = D.length 
+            TotalDesignMember = De.length
+            TotalQAMember = QAteam.length 
+
+             TotalMembersss = TotalDevelopmentMember + TotalDesignMember + TotalQAMember
+             TotalleaveMembersss = DesignMembers + DevelopmentMembers + QAMembers
+
             if(finalData != undefined && finalData.length>0){
-                 leaveUsers = finalData.length * 8
+                 leaveUsers = TotalleaveMembersss * 8
+                
             }
            
     }
@@ -514,10 +569,13 @@ const TimeReport = (props:any) => {
                     // item.Department = val.TimeCategory
                     // item.Company = val.Company
 
-                    if (val.UserGroup.Title == 'Senior Developer Team' || val.UserGroup.Title == 'Smalsus Lead Team' || val.UserGroup.Title == 'External Staff' )
+                    if (val.UserGroup.Title == 'Smalsus Lead Team')
 
-                    item.Department = 'Developer';
+                        item.Department = "Smalsus Lead";
 
+                    if (val.UserGroup.Title == 'Senior Developer Team' || val.UserGroup.Title == 'External Staff')
+
+                        item.Department = 'Developer';
                 if (val.UserGroup.Title == 'Junior Developer Team')
 
                 item.Department = 'Junior Developer';
@@ -612,7 +670,7 @@ const TimeReport = (props:any) => {
                 }
 
             })
-            TotleTaskTime = QATime + DevloperTime + DesignTime + leaveUsers
+            TotleTaskTime = QATime + DevloperTime + DesignTime 
         }
         finalData?.forEach((items:any)=>{
             SelectedTime.push(items)
@@ -926,7 +984,9 @@ const TimeReport = (props:any) => {
         var To:any=[]
         var MyDate:any=''
         var ApprovalId:any = []
-        var TotlaTime = QATime + DevloperTime + DesignTime + leaveUsers
+        var TotlaTime = QATime + DevloperTime + DesignTime 
+        var TotalMembers = TotalDevelopmentMember + TotalDesignMember + TotalQAMember
+        var TotalleaveMembers = DesignMembers + DevelopmentMembers + QAMembers
 
         AllUsers?.forEach((items:any)=>{
             if(CurrentUserId == items.AssingedToUserId){
@@ -994,28 +1054,36 @@ const TimeReport = (props:any) => {
         '<tr>'
         + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + '<strong>' + 'Team' + '</strong>' + '</td>'
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + 'Time in Hours' + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + 'Total TeamMembers' + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + 'TeamMembers on leave' + '</strong>' + '</td>'
         + '</tr>'
         + '<tr>'
         + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Design' + '</td>'
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + DesignTime.toFixed(2) + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + TotalDesignMember + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DesignMembers + '</td>'
         + '</tr>'
         + '<tr>'
         + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Development' + '</td>'
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevloperTime.toFixed(2) + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + TotalDevelopmentMember + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevelopmentMembers + '</td>'
         + '</tr>'
         + '<tr>'
         + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'QA' + '</td>'
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + QATime.toFixed(2) + '</td>'
-        + '</tr>'
-        + '<tr>'
-        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Users on leaves' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + leaveUsers.toFixed(2) + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + TotalQAMember + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + QAMembers + '</td>'
         + '</tr>'
         + '<tr>'
         + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + '<strong>' + 'Total' + '</strong>' + '</td>'
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotlaTime.toFixed(2) + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotalMembers.toFixed(2) + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotalleaveMembers.toFixed(2) * 8 + '</strong>' + '</td>'
         + '</tr>';
     body2.push(text2);
+
+    
 
     var bodyA =
     '<table cellspacing="0" cellpadding="1" width="30%" style="margin: 0 auto;border-collapse: collapse;">'
@@ -1177,30 +1245,35 @@ var ReportDate = new Date(a1)
                             <tr>
                                 <th className='border bg-light'><strong>Team</strong></th>
                                 <th className='border'><strong>Time In Hours</strong></th>
+                                <th className='border'><strong>Total TeamMembers</strong></th>
+                                <th className='border'><strong>TeamMembers on leave</strong></th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td className='border bg-light'>Design</td>
                                 <td className='border'>{DesignTime.toFixed(2)}</td>
+                                <td className='border'>{TotalDesignMember}</td>
+                                <td className='border'>{DesignMembers}</td>
                             </tr>
                             <tr>
                                 <td className='border bg-light'>Development</td>
                                 <td className='border'>{DevloperTime.toFixed(2)}</td>
+                                <td className='border'>{TotalDevelopmentMember}</td>
+                                <td className='border'>{DevelopmentMembers}</td>
                             </tr>
                             <tr>
                                 <td className='border bg-light'> QA</td>
-
                                 <td className='border'>{QATime.toFixed(2)}</td>
+                                <td className='border'>{TotalQAMember}</td>
+                                <td className='border'>{QAMembers}</td>
                             </tr>
+                           
                             <tr>
-                                <td className='border bg-light'> Users on Leave </td>
-
-                                <td className='border'>{leaveUsers.toFixed(2)}</td>
-                            </tr>
-                            <tr>
-                                <td className='border bg-light'> <strong>Total Time</strong></td>
+                                <td className='border bg-light'> <strong>Total</strong></td>
                                 <td className='border'>{TotleTaskTime?.toFixed(2)}</td>
+                                <td className='border'>{TotalDevelopmentMember + TotalDesignMember + TotalQAMember}</td>
+                                <td className='border'>{leaveUsers}</td>
                             </tr>
 
                         </tbody>

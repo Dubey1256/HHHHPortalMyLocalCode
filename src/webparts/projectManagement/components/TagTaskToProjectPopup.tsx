@@ -12,6 +12,7 @@ import GlobalCommanTable from '../../../globalComponents/GroupByReactTableCompon
 import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
 import { ColumnDef } from '@tanstack/react-table';
 import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
+import ReactPopperTooltip from '../../../globalComponents/Hierarchy-Popper-tooltip';
 var AllUser: any = []
 var siteConfig: any = []
 var DataSiteIcon: any = []
@@ -28,7 +29,7 @@ const TagTaskToProjectPopup = (props: any) => {
     const [AllTaskUser, setAllTaskUser] = React.useState([])
 
     const TaskUser = async () => {
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let web = new Web(props?.AllListId?.siteUrl);
         let taskUser = [];
         taskUser = await web.lists
             .getById('b318ba84-e21d-4876-8851-88b94b9dc300')
@@ -40,7 +41,7 @@ const TagTaskToProjectPopup = (props: any) => {
         setAllTaskUser(taskUser)
     }
     const GetMetaData = async () => {
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let web = new Web(props?.AllListId?.siteUrl);
         let smartmeta = [];
 
         let TaxonomyItems = [];
@@ -97,13 +98,14 @@ const TagTaskToProjectPopup = (props: any) => {
                 smartmeta = await web.lists
                     .getById(config?.listId)
                     .items
-                    .select("Id,Title,PriorityRank,Remark,ParentTask/TaskID,ParentTask/Title,ParentTask/Id,TaskID,Project/PriorityRank,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,Portfolio/PortfolioStructureID,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,FeedBack,PriorityRank,Remark,ParentTask/TaskID,ParentTask/Title,ParentTask/Id,TaskID,Project/PriorityRank,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,Portfolio/PortfolioStructureID,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
                     .expand('AssignedTo,Project,Portfolio,ParentTask,SmartInformation,Author,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory')
                     .top(4999)
                     // .filter("Project/Id ne " + props.projectId)
                     .get();
                 arraycount++;
                 smartmeta.map((items: any) => {
+                    items.TitleNew = items.Title;
                     items.AllTeamMember = [];
                     items.HierarchyData = [];
                     items.descriptionsSearch = '';
@@ -272,7 +274,7 @@ const TagTaskToProjectPopup = (props: any) => {
             <div className={"d-flex full-width pb-1"}>
                 <div className='subheading'>
                     <span className="siteColor">
-                        {`Add Existing Tasks - ${props.projectTitle}`}
+                        { `Add Existing Tasks -${props?.projectItem?.PortfolioStructureID} ${props.projectTitle}`}
                     </span>
                 </div>
             </div>
@@ -286,13 +288,14 @@ const TagTaskToProjectPopup = (props: any) => {
 
 
             <footer className='text-end p-2'>
-                <button type="button" className="btn btn-default me-1 px-3" onClick={handleClose}>
-                    Cancel
-                </button>
-                <button className="btn btn-primary px-3"
+                  <button className="btn btn-primary mx-2"
                     onClick={() => { tagSelectedTasks() }}>
                     Tag Tasks
                 </button>
+                <button type="button" className="btn btn-default me-4" onClick={handleClose}>
+                    Cancel
+                </button>
+              
 
                 {/* <Button type="button" className="me-2" variant="secondary" onClick={handleClose}>Cancel</Button>
                 <Button type="button" variant="primary" disabled={selectedTasks?.length > 0 ? false : true} onClick={() => tagSelectedTasks()}>Tag</Button> */}
@@ -325,34 +328,47 @@ const TagTaskToProjectPopup = (props: any) => {
                 size: 30,
                 id: 'Id',
             },
+            // {
+            //     accessorKey: "TaskID",
+            //     placeholder: "Task Id",
+            //     header: "",
+            //     resetColumnFilters: false,
+            //     resetSorting: false,
+            //     size: 130,
+            //     cell: ({ row, getValue }) => (
+            //         <>
+            //             <span className="d-flex">
+            //                 {row?.original?.TaskID}
+            //             </span>
+            //         </>
+            //     ),
+            // },
             {
                 accessorKey: "TaskID",
                 placeholder: "Task Id",
-                header: "",
-                resetColumnFilters: false,
-                resetSorting: false,
+                id: 'TaskID',
                 size: 130,
                 cell: ({ row, getValue }) => (
-                    <>
-                        <span className="d-flex">
-                            {row?.original?.TaskID}
-                        </span>
-                    </>
+                  <div>
+                    {row?.original?.TitleNew != "Tasks" ?
+                      <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={props?.AllListId} />
+                      : ''}
+                  </div>
                 ),
-            },
+              },
             {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, column, getValue }) => (
                     <>
                         <span className='d-flex'>
                             <a className="hreflink"
-                                href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                                href={`${props?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                                 data-interception="off"
                                 target="_blank"
                             >
                                 {row?.original?.Title}
                             </a>
-                            {row?.original?.Body !== null && row?.original?.Body != undefined ? <InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} /> : ''}
+                            {row?.original?.FeedBack !== null && row?.original?.FeedBack != undefined ? <InfoIconsToolTip Discription={row?.original?.FeedBack} row={row?.original} /> : ''}
                         </span>
                     </>
                 ),
@@ -383,7 +399,7 @@ const TagTaskToProjectPopup = (props: any) => {
                         <a className="hreflink"
                             data-interception="off"
                             target="blank"
-                            href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
+                            href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
                         >
                             {row?.original?.portfolio?.Title}
                         </a>

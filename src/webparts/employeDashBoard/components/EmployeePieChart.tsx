@@ -168,7 +168,7 @@ function getStartingDate(startDateOf: any) {
       colors: barChartColors,
       plotOptions: {
         bar: {
-          columnWidth: '25%',
+          columnWidth: '50%',
           distributed: true,
         },
       },
@@ -216,24 +216,17 @@ function getStartingDate(startDateOf: any) {
 
 
   return (
-    <div className='border p-2'>
       <div id="bar-chart border">
         {console.log(contextdata)}
         <div className='alignCenter'>
-          <div>
-          <span>This Week's TimeSheet ({sumBarTime})</span>
-          </div>
-          <div className='ml-auto'>
-          <span className="svg__iconbox svg__icon--refresh dark me-2" onClick={()=>GetDate()}></span>
-            {/* <span className="svg__iconbox svg__icon--share dark"></span> */}
-          </div>
-         
+          <span className='fw-bold'>
+            This Week's TimeSheet ({sumBarTime})
+          </span>
+          <span className="ml-auto svg__iconbox svg__icon--refresh dark me-2" onClick={()=>GetDate()}></span>
         </div>
       <ReactApexChart options={barChartData?.options} series={barChartData?.series} type="bar" height={350} />
     
       </div>
-      
-    </div>
   );
 };
 

@@ -237,7 +237,7 @@ function TasksTable(props: any) {
       const batch = sp.createBatch();
       for (let i = 0; i < siteConfig?.length; i++) {
         const config = siteConfig[i];
-        var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,TaskLevel,ItemRank,Project/Id,Project/PortfolioStructureID, Project/Title,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Project,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,PortfolioType,ResponsibleTeam,TaskCategories&$filter=" + filter + ""
+        var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,SiteCompositionSettings,TaskLevel,ItemRank,Project/Id,Project/PortfolioStructureID, Project/Title,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Project,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,PortfolioType,ResponsibleTeam,TaskCategories&$filter=" + filter + ""
         
         const web = new Web(props?.AllListId?.siteUrl);
         const list = web.lists.getById(config.listId);
@@ -276,16 +276,23 @@ function TasksTable(props: any) {
                   result.AllTeamName =
                     result.AllTeamName === undefined ? "" : result.AllTeamName;
                   result.chekbox = false;
-                  result.descriptionsSearch = "";
+                  result.descriptionsSearch = [];
                   result.commentsSearch = "";
                   result.DueDate = moment(result.DueDate).format("DD/MM/YYYY");
-
-                  if (result.DueDate == "Invalid date" || "") {
-                    result.DueDate = result.DueDate.replaceAll(
+                  result.DisplayDueDate = moment(result.DueDate).format("DD/MM/YYYY");
+                  if (result.DisplayDueDate == "Invalid date" || "") {
+                    result.DisplayDueDate = result.DisplayDueDate.replaceAll(
                       "Invalid date",
                       ""
                     );
                   }
+                  if (result.DisplayCreateDate == "Invalid date" || "") {
+                    result.DisplayCreateDate = result.DisplayCreateDate.replaceAll(
+                      "Invalid date",
+                      ""
+                    );
+                  }
+                  result.DisplayCreateDate = moment(result.Created).format("DD/MM/YYYY");
                   result.PercentComplete = (
                     result.PercentComplete * 100
                   ).toFixed(0);
@@ -303,10 +310,10 @@ function TasksTable(props: any) {
                           )
                       ).join(" ");
         
-                    result.descriptionsSearch =
-                      FeedbackdatatinfoIcon.replace("undefined", "")
-                        .replace(/(<([^>]+)>)/gi, "")
-                        .replace(/\n/g, "");
+                    result.descriptionsSearch .push(FeedbackdatatinfoIcon)
+                      // FeedbackdatatinfoIcon.replace("undefined", "")
+                      //   .replace(/(<([^>]+)>)/gi, "")
+                      //   .replace(/\n/g, "");
                   }
                 
                   if (result?.Comments != null) {
@@ -497,9 +504,74 @@ function TasksTable(props: any) {
     var MainId: any = ''
     let ParentTaskId: any;
     if (childItem != undefined && childItem.data?.ItmesDelete == undefined) {
-
+      // let  TeamLeaderUser2:any=[];
+      // TeamLeaderUser2=TeamLeaderUser2.concat(childItem?.data?.ResponsibleTeam)
+      // TeamLeaderUser2=TeamLeaderUser2.concat(childItem?.data?.TeamMembers)
+      // TeamLeaderUser2=TeamLeaderUser2.concat(childItem?.data?.AssignedTo)
+      childItem.data.TeamLeaderUser=[];
+      childItem.data.DisplayCreateDate= moment(childItem?.data?.Created).format("DD/MM/YYYY")
+      childItem.data.DisplayDueDate=childItem?.data?.DueDate
       childItem.data.Item_x0020_Type = "Task";
-
+      if (
+        childItem?.data?.AssignedTo != undefined &&
+        childItem?.data?.AssignedTo?.length > 0
+      ) {
+        $.map(childItem?.data?.AssignedTo, (Assig: any) => {
+          if (Assig?.Id != undefined) {
+            $.map(taskUsers, (users: any) => {
+              if (
+                Assig.Id != undefined &&
+                users.AssingedToUser != undefined &&
+                Assig.Id == users.AssingedToUser.Id
+              ) {
+                users.ItemCover = users.Item_x0020_Cover;
+                childItem?.data?.TeamLeaderUser.push(users);
+                childItem.data.AllTeamName += users.Title + ";";
+              }
+            });
+          }
+        });
+      }
+      if (
+        childItem?.data?.ResponsibleTeam!= undefined &&
+        childItem?.data?.ResponsibleTeam?.length > 0
+      ) {
+        $.map(childItem?.data?.ResponsibleTeam, (Assig: any) => {
+          if (Assig?.Id != undefined) {
+            $.map(taskUsers, (users: any) => {
+              if (
+                Assig.Id != undefined &&
+                users.AssingedToUser != undefined &&
+                Assig.Id == users.AssingedToUser.Id
+              ) {
+                users.ItemCover = users.Item_x0020_Cover;
+                childItem?.data?.TeamLeaderUser.push(users);
+                childItem.data.AllTeamName += users.Title + ";";
+              }
+            });
+          }
+        });
+      }
+      if (
+        childItem?.data?.TeamMembers != undefined &&
+        childItem?.data?.TeamMembers?.length > 0
+      ) {
+        $.map(childItem?.data?.TeamMembers, (Assig: any) => {
+          if (Assig?.Id != undefined) {
+            $.map(taskUsers, (users: any) => {
+              if (
+                Assig?.Id != undefined &&
+                users?.AssingedToUser != undefined &&
+                Assig?.Id == users.AssingedToUser.Id
+              ) {
+                users.ItemCover = users.Item_x0020_Cover;
+                childItem?.data?.TeamLeaderUser.push(users);
+                childItem.data.AllTeamName += users.Title + ";";
+              }
+            });
+          }
+        });
+      }
 
 
       childItem.data['flag'] = true;
@@ -729,10 +801,10 @@ function TasksTable(props: any) {
               <FaCompressArrowsAlt style={{ height: '11px', width: '20px' }} /> : ''}
             {row?.original?.subRows?.length > 0 ?
               <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
-             <InfoIconsToolTip
+             {row?.original?.descriptionsSearch?.length>0&&<InfoIconsToolTip
                 Discription={row?.original?.descriptionsSearch}
                 row={row?.original}
-              />
+              />}
            </>
         ),
         id: "Title",
@@ -793,48 +865,67 @@ function TasksTable(props: any) {
         size: 42,
       },
       {
-        accessorKey: "DueDate",
-        placeholder: "Due Date",
-        header: "",
+        accessorFn: (row) => row?.DueDate,
+        cell: ({ row }) => (
+          <span className='ms-1'>{row?.original?.DisplayDueDate} </span>
+
+        ),
+        id: 'DueDate',
+        filterFn: (row: any,columnName:any, filterValue: any) => {
+          if (row?.original?.DisplayDueDate?.includes(filterValue)) {
+            return true
+          } else {
+            return false
+          }
+        },
         resetColumnFilters: false,
-        size: 100,
-        id: "DueDate"
+        resetSorting: false,
+        placeholder: "DueDate",
+        header: "",
+        size: 100
       },
       {
-        accessorFn: (row) =>
-          row?.Created ? moment(row?.Created).format("DD/MM/YYYY") : "",
-        cell: ({ row, getValue }) => (
-          <>
+        accessorFn: (row) => row?.Created,
+        cell: ({ row }) => (
+          <span>
             {row?.original?.Created == null ? (
               ""
             ) : (
               <>
+                <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
+
                 {row?.original?.Author != undefined ? (
                   <>
-                    <span>
-                      {moment(row?.original?.Created).format("DD/MM/YYYY")}{" "}
-                    </span>
-                    <img
-                      className="workmember"
-                      title={row?.original?.Author?.Title}
-                      src={findUserByName(row?.original?.Author?.Id)}
-                    />
+                    <a
+                      href={`${props?.AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                      target="_blank"
+                      data-interception="off"
+                    >
+                      <img title={row?.original?.Author?.Title} className="workmember ms-1" src={findUserByName(row?.original?.Author?.Id)} />
+                    </a>
                   </>
                 ) : (
-                  <img
-                    className="workmember"
-                    src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"
-                  />
+                  <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
                 )}
               </>
             )}
-          </>
+          </span>
         ),
-        id: "Created",
-        placeholder: "Created Date",
+        id: 'Created',
+        resetColumnFilters: false,
+        resetSorting: false,
+        placeholder: "Created",
+        filterFn: (row: any, columnName:any, filterValue: any) => {
+          if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+            return true
+          } else {
+            return false
+          }
+        },
         header: "",
-        size: 109
+        size: 125
       },
+     
       {
         cell: ({ row, getValue }) => (
           <>
@@ -873,11 +964,11 @@ function TasksTable(props: any) {
             <a className='d-flex'>
               {row?.original?.isRestructureActive && (
                 <span className="Dyicons p-1" title="Restructure" style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} onClick={() => callChildFunction(row?.original)}>
-                  <img className="icon-sites-img me-2" src={row?.original?.Restructuring} />
+                  <span className="svg__iconbox svg__icon--re-structure"></span>
                 </span>)}
 
               {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && (
-                <span title='Edit' onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit"></span>
+                <span title='Edit' onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit ml-auto"></span>
               )}
             </a>
             {getValue()}
@@ -917,62 +1008,7 @@ function TasksTable(props: any) {
   });
 
 
-  const buttonRestructuring = () => {
-    var ArrayTest: any = [];
-    let array = data;
-    AllTasksRendar = [];
-
-
-    if (checkedList?.length > 0 && checkedList != undefined) {
-      checkedList.map((items: any) => {
-        array.map((obj) => {
-          setTopTaskresIcon(true);
-          let newobj: any;
-          if (obj.TaskType?.Title != "Task") {
-            obj.isRestructureActive = true;
-          }
-
-
-          if (obj.Id === items.Id && obj.TaskType?.Title != undefined) {
-            obj.isRestructureActive = false;
-            newobj = { Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIcon, TaskType: obj.TaskType, }
-            ArrayTest.push(newobj);
-
-          }
-          if (obj.childs?.length > 0 && obj.childs != undefined) {
-            obj.childs.map((sub: any) => {
-              setTopTaskresIcon(true);
-              if (obj.TaskType?.Title != "Task") {
-                sub.isRestructureActive = true;
-              }
-
-              if (sub.Id === items.Id && sub.TaskType?.Title != undefined) {
-                obj.isRestructureActive = false;
-                sub.isRestructureActive = false;
-                newobj = {
-                  Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle, TaskType: obj.TaskType,
-                  newChild: {
-                    Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIcon, TaskType: sub.TaskType,
-                  }
-                }
-                ArrayTest.push(newobj);
-
-              }
-
-            })
-          }
-        })
-      })
-
-    }
-    setOldArrayBackup(ArrayTest);
-    AllTasksRendar = AllTasksRendar?.concat(array)
-    finalData = [];
-    finalData = finalData?.concat(AllTasksRendar);
-    refreshData();
-
-  }
-
+  
 
 
   const RestruringCloseCall = () => {
@@ -981,236 +1017,11 @@ function TasksTable(props: any) {
     clearreacture();
   };
 
-  const OpenModal = (item: any) => {
-    var TestArray: any = [];
-    setResturuningOpen(true);
-    TestArray = [item]
-    setNewArrayBackup(TestArray);
+  // function structuredClone(obj: any): any {
 
+  //   return JSON.parse(JSON.stringify(obj));
 
-  }
-
-  const setRestructure = (e: any) => {
-    let value = e.target.value;
-    // let data:any = data;
-    let array: any = []
-    let TaskLevel: any = 0;
-    let ParentTask: any;
-    let TaskType: any;
-    let TaskID: any;
-    let dataArray = checkedList;
-
-
-    if (value != undefined) {
-      data?.map((obj: any) => {
-
-        if (value == "Task") {
-          TaskType = { Id: 2, Title: value, Level: 2 };
-          ParentTask = obj.ParentTask;
-          TaskID = obj?.ParentTask.TaskID + "-" + "T" + obj.Id;
-          TaskLevel = null;
-        } else {
-          TaskType = { Id: 3, Title: value, Level: 3 };
-          ParentTask = obj.ParentTask;
-          TaskID = obj?.ParentTask.TaskID + "-" + "W" + TaskLevel;
-          if (obj?.TaskType?.Title == value && (TaskLevel < obj.TaskLevel || TaskLevel == obj.TaskLevel)) {
-            TaskLevel = obj.TaskLevel + 1;
-          } else {
-            if (TaskLevel == 0) {
-              TaskLevel = 1;
-            }
-          }
-        }
-      })
-    }
-
-    if (checkedList != undefined) {
-      dataArray.map((items: any) => {
-        items.TaskLevel = TaskLevel;
-        items.ParentTask = ParentTask;
-        items.TaskType = TaskType
-        items.TaskID = TaskID;
-        array.push(items);
-      })
-    }
-    setCheckedList(array);
-
-  }
-
-
-
-  const UpdateTopTaskRestructure = async () => {
-    AllTasksRendar = [];
-
-
-    let web = new Web(props?.AllListId?.siteUrl);
-    await web.lists.getById(checkedList[0].listId).items
-      .getById(checkedList[0].Id)
-      .update({
-        TaskID: checkedList[0].TaskID,
-        TaskLevel: checkedList[0].TaskLevel,
-        TaskTypeId: checkedList[0].TaskType.Id,
-        ParentTaskId: checkedList[0].ParentTask.Id
-      })
-      .then((res: any) => {
-        let checkUpdate: number = 1;
-        let checkUpdate1: number = 1;
-        let backupCheckedList: any = OldArrayBackup;
-        let latestCheckedList: any = checkedList;
-
-        let array: any = [];
-        data.map((items: any) => {
-          array.push(items)
-        })
-
-        array.forEach((obj: any, index: any) => {
-          obj.isRestructureActive = false;
-          if (checkUpdate == 1) {
-            array.push(...{ ...latestCheckedList });
-            checkUpdate = checkUpdate + 1;
-          }
-          if (obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate1 == 1) {
-            array.splice(index, 1);
-            checkUpdate = checkUpdate1 + 1;
-          }
-          if (obj.childs != undefined && obj.childs?.length > 0) {
-            obj.childs.forEach((sub: any, indexsub: any) => {
-              sub.isRestructureActive = false;
-              if (sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate1 == 1) {
-                array[index]?.subRows.splice(indexsub, 1);
-                array[index]?.childs.splice(indexsub, 1);
-                checkUpdate = checkUpdate1 + 1;
-              }
-            })
-          }
-
-
-        })
-
-        setTopTaskresIcon(false);
-        setTasksRestruct(false);
-        AllTasksRendar = AllTasksRendar?.concat(array)
-        finalData = [];
-        finalData = finalData?.concat(AllTasksRendar);
-        refreshData();
-        setNewArrayBackup([]);
-        setOldArrayBackup([]);
-        setRowSelection({});
-        setCheckedList([]);
-        setResturuningOpen(false);
-      })
-  }
-
-
-
-
-  const UpdateTaskRestructure = async function () {
-    AllTasksRendar = [];
-
-    let numbers: any;
-    let numbers1: any;
-    let TaskTypeId: any;
-    let ParentTaskId: any;
-    let TaskID: any;
-
-    if (NewArrayBackup?.length > 0 && NewArrayBackup != undefined) {
-      if (NewArrayBackup[0]?.TaskType?.Title == "Workstream") {
-        ParentTaskId = NewArrayBackup[0].Id;
-        TaskID = NewArrayBackup[0].TaskID + "-" + "T" + checkedList[0].Id;
-        TaskTypeId = 2;
-      }
-    }
-
-
-    let web = new Web(props?.AllListId?.siteUrl);
-    await web.lists.getById(checkedList[0].listId).items
-      .getById(checkedList[0].Id)
-      .update({
-        TaskID: TaskID,
-        TaskTypeId: TaskTypeId,
-        ParentTaskId: ParentTaskId
-      })
-      .then((res: any) => {
-        let checkUpdate: number = 1;
-        let backupCheckedList: any = [];
-        let latestCheckedList: any = [];
-        checkedList.map((items: any) => {
-          latestCheckedList.push({ ...items })
-          backupCheckedList.push({ ...items })
-        })
-
-        latestCheckedList?.map((items: any) => {
-          items.Parent = { Id: ParentTaskId, TaskID: TaskID, Title: NewArrayBackup[0]?.Title },
-            items.TaskID = TaskID,
-            items.TaskType = { Id: 2, Title: "Task", Level: 2 }
-        })
-
-
-        let array = data;
-        array.forEach((obj: any, index: any) => {
-          obj.isRestructureActive = false;
-          if (obj.Id === NewArrayBackup[0]?.Id && obj.Item_x0020_Type === NewArrayBackup[0]?.Item_x0020_Type && obj.TaskType?.Title === NewArrayBackup[0]?.TaskType?.Title && checkUpdate != 3) {
-            obj.subRows.push(...latestCheckedList);
-            obj.childs.push(...latestCheckedList);
-            checkUpdate = checkUpdate + 1;
-          }
-          if (obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
-            array.splice(index, 1);
-            checkUpdate = checkUpdate + 1;
-          }
-          if (obj.childs != undefined && obj.childs?.length > 0) {
-            obj.childs.forEach((sub: any, indexsub: any) => {
-              sub.isRestructureActive = false;
-              if (sub.Id === NewArrayBackup[0]?.Id && sub.Item_x0020_Type === NewArrayBackup[0]?.Item_x0020_Type && sub.TaskType?.Title === NewArrayBackup[0]?.TaskType?.Title && checkUpdate != 3) {
-                sub.subRows.push(...latestCheckedList);
-                sub.childs.push(...latestCheckedList);
-                checkUpdate = checkUpdate + 1;
-              }
-              if (sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
-                array[index]?.subRows.splice(indexsub, 1);
-                array[index]?.childs.splice(indexsub, 1);
-                checkUpdate = checkUpdate + 1;
-              }
-              if (sub.childs != undefined && sub.childs?.length > 0) {
-                sub.childs.forEach((newsub: any, lastIndex: any) => {
-                  newsub.isRestructureActive = false;
-                  if (newsub.Id === NewArrayBackup[0]?.Id && newsub.Item_x0020_Type === NewArrayBackup[0]?.Item_x0020_Type && newsub.TaskType?.Title === NewArrayBackup[0]?.TaskType?.Title && checkUpdate != 3) {
-                    newsub.subRows.push(...latestCheckedList);
-                    newsub.childs.push(...latestCheckedList);
-                    checkUpdate = checkUpdate + 1;
-                  }
-                  if (newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && newsub.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && checkUpdate != 3) {
-                    array[index]?.subRows[indexsub]?.subRows.splice(lastIndex, 1);
-                    array[index]?.childs[indexsub]?.childs.splice(lastIndex, 1);
-                    checkUpdate = checkUpdate + 1;
-                  }
-                })
-              }
-
-            })
-          }
-
-
-        })
-
-        setTopTaskresIcon(false);
-        AllTasksRendar = AllTasksRendar?.concat(array)
-        finalData = [];
-        finalData = finalData?.concat(AllTasksRendar);
-        refreshData();
-        setNewArrayBackup([]);
-        setOldArrayBackup([]);
-        setCheckedList([]);
-        setRowSelection({});
-        setResturuningOpen(false);
-      })
-
-  }
-  function structuredClone(obj: any): any {
-
-    return JSON.parse(JSON.stringify(obj));
-
-  }
+  // }
 
   const openActivity = () => {
     let data2 = props?.props
@@ -1286,15 +1097,11 @@ function TasksTable(props: any) {
           }
         });
       }
-      // if (itrm?.Item_x0020_Type == "Component") {
-
-      // } else {
-
-      // }
+   
     } else {
 
       setcheckData(null)
-      //   setShowTeamMemberOnCheck(false)
+  
     }
 
   }
@@ -1376,7 +1183,6 @@ function TasksTable(props: any) {
         <div className="col-sm-12 pad0 smart" >
           <div className="">
             <div className={`${data?.length > 10 ? "wrapper" : "MinHeight"}`}>
-
               <GlobalCommanTable
               queryItems={props?.props}
                 ref={childRef}
@@ -1398,6 +1204,7 @@ function TasksTable(props: any) {
                 AddWorkstreamTask={openActivity}
                 taskProfile={true}
                 expandIcon={true}
+                multiSelect={true}
               />
             </div>
 
@@ -1406,64 +1213,7 @@ function TasksTable(props: any) {
       </div>
 
 
-      <span>
-        <Panel headerText={` ${NewArrayBackup[0]?.Title}-Restructuring Tool `} type={PanelType.medium} isOpen={ResturuningOpen} isBlocking={false} onDismiss={RestruringCloseCall}>
-          <div className='mt-4 mb-3'>
-            <span>{`All below selected items will be added as Task inside "${NewArrayBackup[0]?.Title}"`}</span>
-            <div className='mt-2' >Old : <span><img width={"25px"} height={"25px"} src={NewArrayBackup[0]?.SiteIcon} />{NewArrayBackup[0]?.Title}</span></div>
-            <div className='mt-2'>New : <span><img width={"25px"} height={"25px"} src={NewArrayBackup[0]?.SiteIcon} />{NewArrayBackup[0]?.Title}</span><span>{`>`}</span> <span><img width={"25px"} height={"25px"} src={OldArrayBackup[0]?.siteIcon} />{OldArrayBackup[0]?.Title}</span></div>
-          </div>
-          <footer className="mt-2 text-end">
-            <button type="button" className="btn btn-primary " onClick={(e) => UpdateTaskRestructure()}>Save</button>
-            <button type="button" className="btn btn-default btn-default ms-1" onClick={RestruringCloseCall}>Cancel</button>
-          </footer>
-        </Panel>
-      </span>
 
-
-      <span>
-        <Panel headerText={`Restructuring Tool `} type={PanelType.medium} isOpen={tasksRestruct} isBlocking={false} onDismiss={RestruringCloseCall}>
-          <div className='mt-4 mb-3'>
-            <span>{`All below selected items will be added as ${checkedList[0]?.TaskType?.Title}`}</span>
-            <div className='mt-2' >Select Task Type :
-              <span>
-                <input
-                  type="radio"
-                  name="fav_language"
-                  value="Workstream"
-                  checked={
-                    checkedList[0]?.TaskType?.Title == "Workstream"
-                      ? true
-                      : false
-                  }
-                  onChange={(e) => setRestructure(e)}
-                />
-                <label className="ms-1"> {"Workstream"} </label>
-              </span>
-              <span>
-                <input
-                  type="radio"
-                  name="fav_language"
-                  value="Task"
-                  checked={
-                    checkedList[0]?.TaskType?.Title == "Task"
-                      ? true
-                      : false
-                  }
-                  onChange={(e) => setRestructure(e)}
-                />
-                <label className="ms-1"> {"Task"} </label>
-              </span>
-            </div>
-            <div className='mt-2' >Old : <span><img width={"25px"} height={"25px"} src={OldArrayBackup[0]?.siteIcon} />{OldArrayBackup[0]?.Title}</span></div>
-            <div className='mt-2'>New : <span><img width={"25px"} height={"25px"} src={OldArrayBackup[0]?.siteIcon} />{OldArrayBackup[0]?.Title}</span></div>
-          </div>
-          <footer className="mt-2 text-end">
-            <button type="button" className="btn btn-primary " onClick={(e) => UpdateTopTaskRestructure()}>Save</button>
-            <button type="button" className="btn btn-default btn-default ms-1" onClick={RestruringCloseCall}>Cancel</button>
-          </footer>
-        </Panel>
-      </span>
 
 
 
@@ -1488,4 +1238,3 @@ function TasksTable(props: any) {
 
 }
 export default TasksTable;
-
