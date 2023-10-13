@@ -16,6 +16,7 @@ export default function SiteDataBackupTool(selectedProps: any) {
         SiteUrl: string;
         List_x0020_Id: string;
         Site_x0020_Name: string;
+
         Title: string;
         Items: any[];
         [key: string]: any;
@@ -54,14 +55,14 @@ export default function SiteDataBackupTool(selectedProps: any) {
     };
     const isItemExists = (array: Item[], key: string, value: string) => {
         for (let i = 0; i < array.length; i++) {
-          if (array[i][key] === value) {
-            return i;
-          }
+            if (array[i][key] === value) {
+                return i;
+            }
         }
         return -1; // Return -1 if the item is not found (similar to findIndex)
-      };
-      
-      
+    };
+
+
     var lookupColums: any[]
     const DataBackup = async (Values: any) => {
         const now = new Date();
@@ -182,32 +183,51 @@ export default function SiteDataBackupTool(selectedProps: any) {
     useEffect(() => {
         GetBackupConfig()
     }, [0])
-    const columns = useMemo<ColumnDef<any, unknown>[]>(() => [{
-        accessorKey: "Title", placeholder: "Title", header: "", size: 30,
-        cell: ({ row }) => (
-            <>
-                <div className='alignCenter'>
-                    <span title="Tick" className="svg__iconbox svg__icon--tickRight"></span>
-                    {row?.original?.Title != undefined && row?.original?.Title != null && row?.original?.Title != '' ? <a className='ms-2'>{row?.original?.Title}</a> : ""} ({row?.original?.Items.length})
-                </div>
-            </>
-        ),
-    }],
-        [ListData]);
+    // const columns = useMemo<ColumnDef<any, unknown>[]>(() => [{
+    //     accessorKey: "Title", placeholder: "Title", header: "", size: 30,
+    //     cell: ({ row }) => (
+    //         <>
+    //             <div className='alignCenter'>
+    //                 <span title="Tick" className="svg__iconbox svg__icon--tickRight"></span>
+    //                 {row?.original?.Title != undefined && row?.original?.Title != null && row?.original?.Title != '' ? <a className='ms-2'>{row?.original?.Title}</a> : ""} ({row?.original?.Items.length})
+    //             </div>
+    //         </>
+    //     ),
+    // }],
+    //     [ListData]);
     const callBackData = useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => {
     }, []);
     return (
-        <>
-            {ListData && <div>
+        <div className='px-3 border'>
+            <label className='form-label full-width fw-bold'>SP Site</label>
+            {/* {ListData && <div>
                 < GlobalCommanTable columns={columns} data={ListData} showHeader={true} callBackData={callBackData} />
-            </div>}
+            </div>} */}
+            <div>
+                {ListData.map((item: any) => {
+                    return (<>
+                        <div className='alignCenter pb-1'>
+                            <span className='svg__iconbox svg__icon--tickRight mini me-1'></span>
+                  
+                        {item.Title} ({item.Items.length})
+                        </div></>)
+                })}
+
+            </div >
+
             {
-                <div>
-                    <input type="file" onChange={handleFileChange} />
-                    <PrimaryButton onClick={() => uploadDocument()}>Upload Document</PrimaryButton>             <PrimaryButton type="button" onClick={() => DataBackup('Daily')}>Daily Backup</PrimaryButton>             <PrimaryButton type="button" onClick={() => DataBackup('Monthly')}>Monthly Backup</PrimaryButton>
+                <div className='my-2 alignCenter'>
+                    <span className='alignCenter'>
+                        <input type="file" className='p-1' onChange={handleFileChange} />
+                        <button className='btnCol btn btn-primary ms-3' onClick={() => uploadDocument()}>Upload Document</button>
+                    </span>
+                    <span className='ml-auto'>            
+                        <button type="button" className='btnCol btn btn-primary me-1' onClick={() => DataBackup('Daily')}>Daily Backup</button>             
+                        <button type="button" className='btnCol btn btn-primary ms-1' onClick={() => DataBackup('Monthly')}>Monthly Backup</button>
+                    </span> 
                     {successMessage && <p>File Uploaded Successfully</p>}
-                </div>
+                </div >
             }
-        </>
+        </div>
     )
 }

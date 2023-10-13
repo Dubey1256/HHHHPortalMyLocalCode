@@ -14,7 +14,7 @@ import {
 
 } from 'react-table';
 // import styles from './CreatedByTables.module.scss';
-import './Style.css';
+// import './Style.css';
 import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
 import { Filter, DefaultColumnFilter } from './filters';
@@ -401,7 +401,7 @@ const Tabless = (props: any) => {
   const columns = React.useMemo(
     () => [
       {
-        accessorFn: (row: any) => <img style={{borderRadius:'20px',width:'30px',height:'30px'}} className="icon-sites-img ml20 me-1" src={row?.siteIcon}></img>,
+        accessorFn: (row: any) => <img className="workmember" src={row?.siteIcon}></img>,
         id: "siteIcon",
         placeholder: "",
         header: "",
@@ -412,7 +412,7 @@ const Tabless = (props: any) => {
         accessorFn: (row: any) => row?.idType,
         cell: ({ row, getValue }: any) => (
 
-          <span style={{ color: `${row?.original?.PortfolioType?.Color}` }}>{row?.original?.idType}</span>
+          <>{row?.original?.idType}</>
 
         ),
         id: "idType",
@@ -441,16 +441,11 @@ const Tabless = (props: any) => {
         placeholder: "Task Title",
         header: "",
         resetColumnFilters: false,
-        size: 140,
-
       },
       {
-
         accessorFn: (row: any) => row?.Categories,
         cell: ({ row, getValue }: any) => (
-          <div>
-            <span style={{ color: `${row?.original?.PortfolioType?.Color}` }}>{row?.original?.Categories}</span>
-          </div>
+            <>{row?.original?.Categories}</>
         ),
         id: "Categories",
         placeholder: "Categories",
@@ -463,9 +458,7 @@ const Tabless = (props: any) => {
 
         accessorFn: (row: any) => row?.percentage,
         cell: ({ row, getValue }: any) => (
-          <div>
-            <span style={{ color: `${row?.original?.PortfolioType?.Color}` }}>{row?.original?.percentage}</span>
-          </div>
+            <>{row?.original?.percentage}</>
         ),
         id: "percentage",
         placeholder: "%",
@@ -476,9 +469,9 @@ const Tabless = (props: any) => {
       {
         accessorFn: (row: any) => row?.Priority,
         cell: ({ row, getValue }: any) => (
-          <div>
-            <span style={{ color: `${row?.original?.PortfolioType?.Color}` }}>{row?.original?.priority}</span>
-          </div>
+          <>
+            {row?.original?.priority}
+          </>
         ),
         id: "Priority",
         placeholder: "Priority",
@@ -489,9 +482,8 @@ const Tabless = (props: any) => {
       {
         accessorFn: (row: any) => row?.EstimatedTime,
         cell: ({ row, getValue }: any) => (
-          <div>
-            <span style={{ color: `${row?.original?.PortfolioType?.Color}` }}>{row?.original?.EstimatedTime}</span>
-          </div>
+          <>{row?.original?.EstimatedTime}
+          </>
         ),
         id: "EstimatedTime",
         placeholder: "EstimatedTime",
@@ -503,9 +495,7 @@ const Tabless = (props: any) => {
 
         accessorFn: (row: any) => row?.dueDate,
         cell: ({ row, getValue }: any) => (
-          <div>
-            <div style={{ color: `${row?.original?.PortfolioType?.Color}` }}>{row?.original?.newDueDate}</div>
-          </div>
+            <>{row?.original?.newDueDate}</>
         ),
         id: "dueDate",
         placeholder: "Due Date",
@@ -519,20 +509,20 @@ const Tabless = (props: any) => {
 
         accessorFn: (row: any) => row?.modified,
         cell: ({ row, getValue }: any) => (
-          <div>
+          <>
             <a style={{ textDecoration: 'none', cursor: 'pointer', color: `${row?.original?.PortfolioType?.Color}` }} target='_blank' href={`${props.Items.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}>
               {row?.original?.newModified}
               <span>{
-                row?.original?.editorImg === undefined ? <span className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{row?.original?.EditorSuffix}</span> : <img style={{ width: "25px", height: '25px', borderRadius: '20px' }} src={row?.original?.editorImg} />}
+                row?.original?.editorImg === undefined ? <span className="workmember alignCenter">{row?.original?.EditorSuffix}</span> : <img className='workmember ms-1' src={row?.original?.editorImg} />}
                 </span>
             </a>
-          </div>
+          </>
         ),
         id: "modified",
         placeholder: "Modified",
         header: "",
         resetColumnFilters: false,
-        size: 110,
+        size: 120,
       },
       {
 
@@ -542,7 +532,7 @@ const Tabless = (props: any) => {
             <a style={{ textDecoration: 'none', cursor: 'pointer', color: `${row?.original?.PortfolioType?.Color}` }} target='_blank' href={`${props.Items.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}>
               {row?.original?.newCreated}
               <span>{
-                row?.original?.authorImg === undefined ? <span className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{row?.original?.AuthorSuffix}</span> : <img style={{ width: "25px", height: '25px', borderRadius: '20px' }} src={row?.original?.authorImg} />}
+                row?.original?.authorImg === undefined ? <span className="workmember alignCenter">{row?.original?.AuthorSuffix}</span> : <img className='workmember ms-1' src={row?.original?.authorImg} />}
                 </span>
             </a>
           </div>
@@ -552,7 +542,7 @@ const Tabless = (props: any) => {
         header: "",
         isColumnDefultSortingDesc: true ,
         resetColumnFilters: false,
-        size: 110,
+        size: 120,
       },
       {
         accessorFn: (row: any) => row?.TeamMembersSearch,
@@ -569,10 +559,10 @@ const Tabless = (props: any) => {
       },
       {
         cell: ({ row, getValue }: any) => (
-          <span>
-            <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink ms-1" onClick={() => editPopFunc(row.original)} ></span>
-            <span title="Delete Task" className="svg__iconbox svg__icon--trash hreflink" onClick={() => deleteItemFunction(row.original)} ></span>
-          </span>
+          <div className='alignCenter'>
+            <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink" onClick={() => editPopFunc(row.original)} ></span>
+            <span title="Delete Task" className="svg__iconbox svg__icon--trash hreflink ml-auto" onClick={() => deleteItemFunction(row.original)} ></span>
+          </div>
         ),
         id: "ID",
         placeholder: "",
@@ -595,15 +585,15 @@ const Tabless = (props: any) => {
   }, []);
   return (
 
-    <div className='createdBy'>
+    <div className='createdBy mt-2'>
 
       <section className='ContentSection'><div className='row'>
         {
-          queryId != null && <div className='col'><h3 className="siteColor">Created By - {queryId}</h3></div>
+          queryId != null && <div className='col heading siteColor'>Created By - {queryId}</div>
         }
         <div className='col alignCenter justify-content-end'>
-          <input className='form-check-input me-1' type="checkbox" value={'Component'} onChange={(e: any) => filterCom(e)} /> Component
-          <input className='form-check-input me-1' type="checkbox" value={'Service'} onChange={(e: any) => filterCom(e)} /> Service
+          <input className='form-check-input me-1 mt-0' type="checkbox" value={'Component'} onChange={(e: any) => filterCom(e)} /> Component
+          <input className='form-check-input me-1 mt-0 ms-2' type="checkbox" value={'Service'} onChange={(e: any) => filterCom(e)} /> Service
           <a
           target='_blank'
             href={`${props.Items.siteUrl}/SitePages/Tasks%20View.aspx?CreatedBy=${queryId}`}
@@ -619,7 +609,9 @@ const Tabless = (props: any) => {
 
       <section className="TableContentSection">
         <div className='Alltable'>
-          <GlobalCommanTable expandIcon={true} showHeader={true} showPagination={true} columns={columns} data={data} callBackData={callBackData} />
+          <div className='wrapper'>
+            <GlobalCommanTable expandIcon={true} showHeader={true} columns={columns} data={data} callBackData={callBackData} />
+          </div>
         </div>
       </section>
       <span>
