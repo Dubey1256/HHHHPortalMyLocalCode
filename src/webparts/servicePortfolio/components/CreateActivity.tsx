@@ -410,7 +410,23 @@ const CreateActivity = (props: any) => {
             //   }
             //   if (smartComponentData != undefined && smartComponentData.length > 0) {
             //   }
-
+            let priorityRank = 4;
+            let priority = '';
+            if (selectPriority ===''|| parseInt(selectPriority) <= 0) {
+                priority = '(2) Normal';
+            }
+            else {
+                priorityRank = parseInt(selectPriority);
+                if (priorityRank >= 8 && priorityRank <= 10) {
+                    priority = '(1) High';
+                }
+                if (priorityRank >= 4 && priorityRank <= 7) {
+                    priority = '(2) Normal';
+                }
+                if (priorityRank >= 1 && priorityRank <= 3) {
+                    priority = '(3) Low';
+                }
+            }
             var categoriesItem = "";
             var CategoryID: any = [];
             CategoriesData.map((category: any) => {
@@ -440,20 +456,50 @@ const CreateActivity = (props: any) => {
                 });
             }
             let Sitestagging: any;
+            // if (selectedItem?.Sitestagging != undefined) {
+            //     if (save?.siteType == "Shareweb") {
+            //         Sitestagging = selectedItem?.Sitestagging
+            //     } else {
+            //         var siteComp: any = {};
+            //         siteComp.SiteName = save?.siteType,
+            //             siteComp.localSiteComposition = true
+            //         siteComp.ClienTimeDescription = 100,
+            //             //   siteComp.SiteImages = ,
+            //             siteComp.Date = Moment(new Date().toLocaleString()).format("MM-DD-YYYY");
+            //         Sitestagging = JSON?.stringify([siteComp]);
+            //     }
+            // }
+
+           
             if (selectedItem?.Sitestagging != undefined) {
-                if (save?.siteType == "Shareweb") {
-                    Sitestagging = selectedItem?.Sitestagging
+                if (typeof selectedItem?.Sitestagging == "object") {
+                    if (save?.siteType == "Shareweb") {
+                        Sitestagging = JSON.stringify(selectedItem?.Sitestagging);
+                    } else {
+                        var siteComp: any = {};
+                        siteComp.SiteName = save?.siteType,
+                            siteComp.localSiteComposition = true
+                        siteComp.ClienTimeDescription = 100,
+                            //   siteComp.SiteImages = ,
+                            siteComp.Date = Moment(new Date().toLocaleString()).format("DD-MM-YYYY");
+                        Sitestagging = JSON?.stringify([siteComp]);
+                    }
+                    // clientTime = JSON.stringify(selectedItem?.ClientTime);
                 } else {
-                    var siteComp: any = {};
-                    siteComp.SiteName = save?.siteType,
-                        siteComp.localSiteComposition = true
-                    siteComp.ClienTimeDescription = 100,
-                        //   siteComp.SiteImages = ,
-                        siteComp.Date = Moment(new Date().toLocaleString()).format("MM-DD-YYYY");
-                    Sitestagging = JSON?.stringify([siteComp]);
+                    if (save?.siteType == "Shareweb") {
+                        Sitestagging = selectedItem?.ClientTime
+                    } else {
+                        var siteComp: any = {};
+                        siteComp.SiteName = save?.siteType,
+                            siteComp.localSiteComposition = true
+                        siteComp.ClienTimeDescription = 100,
+                            //   siteComp.SiteImages = ,
+                            siteComp.Date = Moment(new Date().toLocaleString()).format("DD-MM-YYYY");
+                        Sitestagging = JSON?.stringify([siteComp]);
+                    }
+                    Sitestagging = selectedItem?.Sitestagging
                 }
             }
-
 
 
 
@@ -522,7 +568,8 @@ const CreateActivity = (props: any) => {
                                 TaskCategoriesId: { results: CategoryID },
                                 ClientCategoryId: { results: ClientCategory },
                                 PortfolioId: selectedItem?.Id,
-                                PriorityRank: selectPriority != "" ? selectPriority : null,
+                                PriorityRank: priorityRank,
+                                Priority: priority,
                                 TaskTypeId: 1,
                                 FeedBack:
                                     FeedbackPost?.length > 0
@@ -760,7 +807,8 @@ const CreateActivity = (props: any) => {
                             .items.add({
                                 Title: TaskTitle,
                                 Categories: categoriesItem ? categoriesItem : null,
-                                PriorityRank: selectPriority != "" ? selectPriority : null,
+                                PriorityRank: priorityRank,
+                                Priority: priority,
                                 // DueDate: date != undefined ? new Date(date).toDateString() : date,
                                 DueDate:
                                     save?.DueDate != undefined ? new Date(save.DueDate).toISOString() : null,
@@ -772,8 +820,6 @@ const CreateActivity = (props: any) => {
                                     FeedbackPost?.length > 0
                                         ? JSON.stringify(FeedbackPost)
                                         : null,
-
-                                Priority: selectedItem.Priority,
                                 AssignedToId: {
                                     results:
                                         AssignedToIds != undefined && AssignedToIds?.length > 0
