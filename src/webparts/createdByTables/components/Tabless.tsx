@@ -589,7 +589,7 @@ const Tabless = (props: any) => {
 
       <section className='ContentSection'><div className='row'>
         {
-          queryId != null && <div className='col heading siteColor'>Created By - {queryId}</div>
+          queryId != null && <h2 className='col heading siteColor'>Created By - {queryId}</h2>
         }
         <div className='col alignCenter justify-content-end'>
           <input className='form-check-input me-1 mt-0' type="checkbox" value={'Component'} onChange={(e: any) => filterCom(e)} /> Component
