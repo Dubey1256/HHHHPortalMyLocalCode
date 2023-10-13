@@ -42,6 +42,7 @@ export default class AllTaskUserApp extends React.Component<ITaskUserProps, ITas
         Approver: taskItem.Approver ? taskItem.Approver.map((i: { Title: any; }) => i.Title).join(", ") : "",
         TaskId: taskItem.Id,
         Suffix: taskItem.Suffix,
+        Team: taskItem.Team,
         GroupId: taskItem.UserGroup ? taskItem.UserGroup.Id.toString() : "",
         AssignedToUserMail: taskItem.AssingedToUser ? [taskItem.AssingedToUser.Name.split("|")[2]] : [],
         ApproverMail: taskItem.Approver ? taskItem.Approver.map((i: { Name: string; }) => i.Name.split("|")[2]) : [],
