@@ -7,7 +7,7 @@ import SmartMetadataEditPopup from './SmartMetadataEditPopup';
 export default function CreateMetadataItem(props: any) {
     let SelectedItem: any = props.SelectedItem;
     let Taxtype: any = props.TabSelected
-    let SmartMetadataListID = '01a34938-8c7e-4ea6-a003-cee649e8c67a';
+    let SmartMetadataListID = props.AllList.SPSmartMetadataListID;
     let addItemCallBack: any = props.addItemCallBack
     const [addedMetadataItem, setAddedMetadataItem]: any = useState({});
     const [SmartMetadataEditPopupOpen, setSmartMetadataEditPopupOpen] = useState(false);
@@ -18,10 +18,8 @@ export default function CreateMetadataItem(props: any) {
     const [IsCreatePopupOpen, setIsCreatePopupOpen] = useState(false);
     const [showDes, setShowDes] = useState(true);
     const isOwner = true;
-    const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP/');
     const clearControl = () => {
         setChildItemTitle(undefined);
-        setSmartMetaDataTitle(undefined);
     };
     const removeFeedbackColumn = () => {
         if (showDes) {
@@ -39,6 +37,7 @@ export default function CreateMetadataItem(props: any) {
         if (buttonType === 'createAndOpenPopup') {
             if (SelectedItem.length > 0) {
                 try {
+                    const web = new Web(props?.AllList?.SPSitesListUrl);
                     const addedItem = await web.lists.getById(SmartMetadataListID).items.add({
                         "TaxType": SelectedItem[0].TaxType,
                         "Description1": smartDescription,
@@ -50,12 +49,12 @@ export default function CreateMetadataItem(props: any) {
                 } catch (error) {
                     console.error(error);
                 } finally {
-
                     closeCreateSmartMetadataPopup();
                     addItemCallBack(array, false, SelectedItem[0]?.TaxType);
                 }
             } else {
                 try {
+                    const web = new Web(props?.AllList?.SPSitesListUrl);
                     const addedItem = await web.lists.getById(SmartMetadataListID).items.add({
                         "TaxType": Taxtype,
                         "Description1": smartDescription,
@@ -75,6 +74,7 @@ export default function CreateMetadataItem(props: any) {
         } else {
             if (SelectedItem.length > 0) {
                 try {
+                    const web = new Web(props?.AllList?.SPSitesListUrl);
                     await web.lists.getById(SmartMetadataListID).items.add({
                         "TaxType": SelectedItem[0].TaxType,
                         "Description1": smartDescription,
@@ -91,6 +91,7 @@ export default function CreateMetadataItem(props: any) {
                 }
             } else {
                 try {
+                    const web = new Web(props?.AllList?.SPSitesListUrl);
                     await web.lists.getById(SmartMetadataListID).items.add({
                         "TaxType": Taxtype,
                         "Description1": smartDescription,
@@ -110,6 +111,7 @@ export default function CreateMetadataItem(props: any) {
         let array: any = [...props.ParentItem]
         try {
             for (const item of childItemTitle) {
+                const web = new Web(props?.AllList?.SPSitesListUrl);
                 await web.lists.getById(SmartMetadataListID).items.add({
                     TaxType: props.ParentItem.TaxType,
                     ParentId: props.ParentItem.Id,
@@ -173,7 +175,7 @@ export default function CreateMetadataItem(props: any) {
     return (
         <>
             <div>
-                <button type="button" title="Add" onClick={OpenCreateSmartMetadataPopup} className="btn btn-primary">+ Add</button>
+                <button type="button" title="Add" onClick={OpenCreateSmartMetadataPopup} className="btnCol btn btn-primary">+ Add</button>
             </div>
             {
                 IsCreatePopupOpen === true ? <section>
@@ -302,8 +304,7 @@ export default function CreateMetadataItem(props: any) {
                     </Panel>
                 </section> : ''
             }
-            {SmartMetadataEditPopupOpen ? <SmartMetadataEditPopup smartMetaDataTitle={smartMetaDataTitle} smartDescription={smartDescription} CloseEditSmartMetaPopup={() => setSmartMetadataEditPopupOpen(false)} EditItemCallBack={props.addItemCallBack} AllMetadata={props.ParentItem} modalInstance={addedMetadataItem} /> : ''}
-
+            {SmartMetadataEditPopupOpen ? <SmartMetadataEditPopup AllList={props.AllList} smartMetaDataTitle={smartMetaDataTitle} smartDescription={smartDescription} CloseEditSmartMetaPopup={() => setSmartMetadataEditPopupOpen(false)} EditItemCallBack={props.addItemCallBack} AllMetadata={props.ParentItem} modalInstance={addedMetadataItem} /> : ''}
         </>
     )
 }

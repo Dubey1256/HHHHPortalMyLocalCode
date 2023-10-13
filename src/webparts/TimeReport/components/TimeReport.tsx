@@ -243,6 +243,8 @@ QATime = 0.00;
  TotalQAMember = 0;
  TotalDesignMember = 0;
  TotalDevelopmentMember = 0;
+ StartDatesss=''
+ 
  DesignTime = 0.00;
          QATime = 0.00;
          DesignTime = 0.00;
@@ -264,6 +266,7 @@ QATime = 0.00;
             var final: any = (Moment(myDate).add(-1, 'days').format())
         }
         if(selectDatess == 'Today'){
+            selectdate=undefined
             var dat:any = new Date()
             setcheckedCustom(false)
             setcheckedWS(false)
@@ -272,8 +275,8 @@ QATime = 0.00;
             var myDate = new Date()
             var Datenew = Moment(myDate).format("DD/MM/YYYY")          
             setSelectDate(myDate)
-            // var final: any = (Moment(myDate).add(-1, 'days').format())
-            var final: any = (Moment(myDate).format())
+            var final: any = (Moment(myDate).add(-1, 'days').format())
+            //var final: any = (Moment(myDate).format())
         }
         if(selectDatess == 'Custom') {
             setcheckedWS(false)
@@ -472,8 +475,7 @@ QATime = 0.00;
         }
         else {
             var myDate = new Date()
-            var final: any = (Moment(myDate).add(-1, 'days').format())
-            var Datenew = Moment(final).format("DD/MM/YYYY")
+            var Datenew = Moment(myDate).format("DD/MM/YYYY")
         }
       
 
