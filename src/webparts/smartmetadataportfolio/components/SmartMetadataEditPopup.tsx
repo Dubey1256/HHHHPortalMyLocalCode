@@ -3,7 +3,7 @@ import { Panel, PanelType } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Web, sp } from 'sp-pnp-js';
-import GlobalCommanTable from '../../../GlobalCommanTableSmartmetadata';
+import GlobalCommanTable from './GlobalCommanTableSmartmetadata';
 let modaltype: any;
 let SitesConfig: any[] = []
 let allSitesTask: any[] = []
