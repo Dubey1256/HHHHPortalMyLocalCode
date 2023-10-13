@@ -224,7 +224,6 @@ const ProjectManagementMain = (props: any) => {
             fetchedProject?.PortfoliosId?.map((item: any) => {
               MasterListData?.map((portfolio: any) => {
                 if (portfolio?.Id == item) {
-                  portfolio.filterActive = false;
                   fetchedProject?.taggedPortfolios?.push(portfolio);
                 }
               });
@@ -445,7 +444,6 @@ const ProjectManagementMain = (props: any) => {
               items.Portfolio = MasterListData?.find((masterItem: any) => masterItem?.Id == items?.Portfolio?.Id)
               if (!taskComponent?.some((id: any) => id == items?.Portfolio?.Id)) {
                 let comp = items?.Portfolio
-                comp.filterActive = false;
                 taskComponent.push(comp?.Id)
                 taskTaggedComponents.push(comp)
               }
