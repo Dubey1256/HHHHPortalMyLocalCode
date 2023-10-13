@@ -2392,7 +2392,7 @@ const RestructuringCom = (props: any, ref: any) => {
             items.Portfolio = Portfolio == null ? {} : Portfolio,
             items.TaskLevel = TaskLevel,
             items.TaskType = { Id : TaskTypeId, Level: TaskTypeId == 1 ? 1 : (TaskTypeId == 2 ? 3 : 2) , Title: TaskTypeId == 1 ? "Activity" : (TaskTypeId == 2 ? "Task" : "Workstream")},
-            items.TaskID = TaskId })
+            items.TaskID = TaskTypeId == 2 ? newItemBackUp?.TaskId + '-' + TaskId : TaskId })
 
             let onceRender:any = true;
           array?.map((obj: any, index: any) => {
@@ -3125,8 +3125,8 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
             onDismiss={closePanel}
           >
             <div>
-            <div className='my-1'>Selected Item will restructure into 
-            {RestructureChecked[0]?.Item_x0020_Type != 'Task' ? (newItemBackUp?.Item_x0020_Type ==  'Component' && RestructureChecked[0]?.Item_x0020_Type ==  'Component' ?  " SubComponent " : (newItemBackUp?.Item_x0020_Type == 'SubComponent' && (RestructureChecked[0]?.Item_x0020_Type == 'SubComponent' || RestructureChecked[0]?.Item_x0020_Type == 'Component') ? " Feature " : RestructureChecked[0]?.Item_x0020_Type)) : (RestructureChecked[0]?.TaskType?.Id == 2 ? ' Task ' : (RestructureChecked[0]?.TaskType?.Id == 1 ? " Activity " : (newItemBackUp?.Item_x0020_Type != 'Task' ? " Activity " : " Workstream "))) } inside {newItemBackUp?.SiteIconTitle != undefined && newItemBackUp?.SiteIconTitle != null ? <span className="Dyicons me-1">{newItemBackUp?.SiteIconTitle}</span> : <img className='workmember' src={newItemBackUp?.SiteIcon} />} {newItemBackUp?.Title} </div>
+            <div className='my-1'>Selected Item will restructure into the 
+            {RestructureChecked[0]?.Item_x0020_Type != 'Task' ? (newItemBackUp?.Item_x0020_Type ==  'Component' && RestructureChecked[0]?.Item_x0020_Type ==  'Component' ?  " SubComponent " : (newItemBackUp?.Item_x0020_Type == 'SubComponent' && (RestructureChecked[0]?.Item_x0020_Type == 'SubComponent' || RestructureChecked[0]?.Item_x0020_Type == 'Component') ? " Feature " : ` ${RestructureChecked[0]?.Item_x0020_Type}`)) : ((RestructureChecked[0]?.TaskType?.Id == 2 || (RestructureChecked[0]?.TaskType?.Id == 1 || newItemBackUp?.TaskType?.Id == 3)) ? ' Task ' : (RestructureChecked[0]?.TaskType?.Id == 1 ? " Activity " : (newItemBackUp?.Item_x0020_Type != 'Task' ? " Activity " : " Workstream "))) } inside {newItemBackUp?.SiteIconTitle != undefined && newItemBackUp?.SiteIconTitle != null ? <span className="Dyicons me-1">{newItemBackUp?.SiteIconTitle}</span> : <img className='workmember' src={newItemBackUp?.SiteIcon} />} {newItemBackUp?.Title} </div>
               <label className='fw-bold form-label full-width'> Old: </label>
               <div className='alignCenter border p-1' style={{flexWrap:'wrap'}}>
                 {OldArrayBackup?.map(function (obj: any) {
@@ -3135,8 +3135,8 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
                       <div className='reStuMainTiles'>
                         <a
                           data-interception="off" target="_blank" className="serviceColor_Active reStuTile"
-                          href={obj.Item_x0020_Type != 'Task' ? (props?.contextValue?.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + obj?.Id) : 
-                          (props?.contextValue?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + obj?.Id + "&Site=" + restructuredItemarray[0]?.siteType)
+                          href={obj?.Title != "Others" ? (obj.Item_x0020_Type != 'Task' ? (props?.contextValue?.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + obj?.Id) : 
+                          (props?.contextValue?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + obj?.Id + "&Site=" + restructuredItemarray[0]?.siteType)) : ""
                           }>
                             {
                               obj?.Title != "Others" ? (obj?.siteIcon?.length === 1 ? 
@@ -3167,8 +3167,8 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
                         data-interception="off"
                         target="_blank"
                         className="hreflink serviceColor_Active reStuTile"
-                        href={obj.Item_x0020_Type != 'Task' ? (props?.contextValue?.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + obj?.Id) : 
-                        (props?.contextValue?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + obj?.Id + "&Site=" + restructuredItemarray[0]?.siteType)
+                        href={obj?.Title != 'Others' ? (obj.Item_x0020_Type != 'Task' ? (props?.contextValue?.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + obj?.Id) : 
+                        (props?.contextValue?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + obj?.Id + "&Site=" +obj?.siteType)) : ''
                         }
                       >
                         {
@@ -3328,7 +3328,7 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
                         name="fav_language"
                         value="Activity"
                         checked={
-                          RestructureChecked[0]?.TaskType?.Id == 1
+                          RestructureChecked[0]?.TaskType?.Id == 3
                             ? true
                             : (RestructureChecked[0]?.TaskType?.Id == 1 ? true : false)
                         }

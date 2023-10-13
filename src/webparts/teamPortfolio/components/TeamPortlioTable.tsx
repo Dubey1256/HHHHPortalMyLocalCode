@@ -1380,7 +1380,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 ),
                 cell: ({ row, getValue }) => (
                     <>
-                        {row?.original?.isRestructureActive && (
+                        {row?.original?.isRestructureActive && row?.original?.Title != "Others" && (
                             <span className="Dyicons p-1" title="Restructure" style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} onClick={() => callChildFunction(row?.original)}>
                                 <span className="svg__iconbox svg__icon--re-structure"> </span>
                                 {/* <img
