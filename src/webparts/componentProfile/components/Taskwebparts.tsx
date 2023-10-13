@@ -1502,7 +1502,7 @@ function PortfolioTable(SelectedProp: any) {
         ),
         cell: ({ row, getValue }) => (
           <>
-            {row?.original?.isRestructureActive && (
+            {row?.original?.isRestructureActive && row?.original?.Title != "Others" && (
               <span
                 className="Dyicons p-1"
                 title="Restructure"
