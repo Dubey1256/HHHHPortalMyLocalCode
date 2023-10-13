@@ -497,7 +497,7 @@ const CreateActivity = (props: any) => {
                             siteComp.Date = Moment(new Date().toLocaleString()).format("DD-MM-YYYY");
                         Sitestagging = JSON?.stringify([siteComp]);
                     }
-                    Sitestagging = selectedItem?.Sitestagging
+                  
                 }
             }
 
@@ -795,7 +795,7 @@ const CreateActivity = (props: any) => {
                                         siteComp.Date = Moment(new Date().toLocaleString()).format("DD-MM-YYYY");
                                     clientTime = JSON?.stringify([siteComp]);
                                 }
-                                clientTime = selectedItem?.ClientTime
+                                
                             }
                         }
 
@@ -974,7 +974,8 @@ const CreateActivity = (props: any) => {
                                     props.Call();
                                     let url = `${AllListId.siteUrl}/SitePages/Task-Profile.aspx?taskId=${res.data.Id}&Site=${res.data.siteType}`;
                                     window.location.href = url;
-                                } else {
+                                } 
+                                else {
 
                                     closeTaskStatusUpdatePoup(res);
                                 }
