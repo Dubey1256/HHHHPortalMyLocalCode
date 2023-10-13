@@ -1033,14 +1033,14 @@ const ProjectManagementMain = (props: any) => {
                           </span>
                         </a>
                       </li>
-                      <li className="nav__item  pb-1 pt-0">
+                      <li className="nav__item  pb-1 pt-0 mt-1">
                         <div className="nav__text">
                           {Masterdata?.taggedPortfolios?.length > 0 || TaskTaggedPortfolios?.length > 0 ? (
-                            <ul className="nav__subList wrapper scrollbar pt-1 ps-0">
+                            <ul className="nav__subList wrapper  ps-0 pe-2">
                               {Masterdata?.taggedPortfolios?.map(
                                 (component: any, index: any) => {
                                   return (
-                                    <li className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "nav__item ps-1"}>
+                                    <li className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "mb-1 bg-shade hreflink"}>
                                       <span>
                                         <a className={component?.Id == createTaskId?.portfolioData?.Id ? "hreflink " : "text-white hreflink"} data-interception="off" target="blank"
                                           onClick={() => filterPotfolioTasks(component, index, "Component")}>{component?.Title}</a>
@@ -1052,7 +1052,7 @@ const ProjectManagementMain = (props: any) => {
                               {TaskTaggedPortfolios?.map(
                                 (component: any, index: any) => {
                                   return (
-                                    <li className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "nav__item ps-1"} >
+                                    <li className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "mb-1 bg-shade hreflink"} >
                                       <span>
                                         <a className={component?.Id == createTaskId?.portfolioData?.Id ? "hreflink " : "text-white hreflink"} data-interception="off" target="blank"
                                           onClick={() => filterPotfolioTasks(component, index, "taskComponent")}>{component?.Title}</a>
@@ -1260,6 +1260,7 @@ const ProjectManagementMain = (props: any) => {
                     </div>
 
                     <div>
+                      <div className="TableSection">
                       <div className="Alltable">
                         <div className="section-event ps-0">
                           <div className="wrapper project-management-Table">
@@ -1268,6 +1269,7 @@ const ProjectManagementMain = (props: any) => {
                           </div>
 
                         </div>
+                      </div>
                       </div>
                     </div>
                     <div id="SpfxProgressbar" style={{ display: "none" }}>
