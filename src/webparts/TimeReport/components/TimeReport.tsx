@@ -17,9 +17,10 @@ import {
 } from "@tanstack/react-table";
 //import { Button, Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
 
-import * as Moment from 'moment';
+// import * as Moment from 'moment';
+import * as Moment from 'moment-timezone';
 import { MdEmail } from "react-icons/Md";
-import Loader from "react-loader";
+ import Loader from "react-loader";
 var AllUsers: any = []
 let smartmetaDetails: any = [];
 var AllTasks: any = []
@@ -30,6 +31,9 @@ var DevloperTime: any = 0.00;
 var QATime: any = 0.00;
 var QAMembers: any = 0;
 var DesignMembers: any = 0;
+var QAleaveHours:any = 0;
+var DevelopmentleaveHours:any = 0;
+var DesignMemberleaveHours:any = 0;
 var DevelopmentMembers: any = 0;
 var TotalQAMember: any = 0;
 var TotalDesignMember: any = 0;
@@ -48,9 +52,16 @@ var TotalTime: any = 0
 var CurrentUserId=''
 var StartDatesss:any=''
 var selectDatess:any=''
+var QAhalfdayleave:any = [];
+var developmenthalfdayleave:any = [];
+var designhalfdayleave:any = [];
+var QAfulldayleave:any = [];
+var developmentfulldayleave:any = [];
+var designfulldayleave:any = [];
 const TimeReport = (props:any) => {
    
     CurrentUserId = props.ContextData.Context.pageContext._legacyPageContext?.userId
+    const web = new Web(props.ContextData.Context._pageContext._web.absoluteUrl);
     var OffshoreSitee = '&$filter=';
     var HealthSitee = '&$filter=';
     var GenderSitee = '&$filter=';
@@ -72,15 +83,15 @@ const TimeReport = (props:any) => {
     const [checkedCustom,setcheckedCustom] = React.useState(false )
     const [Editpopup, setEditpopup] = React.useState(false)
     var [selectdate, setSelectDate] = React.useState(undefined)
-    const [checkedWS, setcheckedWS] = React.useState(true);
-    const [checkedTask, setcheckedTask] = React.useState(false);
+    const [checkedWS, setcheckedWS] = React.useState(false);
+    const [checkedTask, setcheckedTask] = React.useState(true);
     const [defaultDate,setDefaultDate] = React.useState()
     const [post, setPost] = React.useState({ Title: '', ItemRank: '', Body: '' })
     
     React.useEffect(() => {
-    var datteee = new Date()
-    var MyYesterdayDate:any = Moment(datteee).add(-1, 'days').format()
-    setDefaultDate(MyYesterdayDate)
+    var datteee:any = new Date()
+    // var MyYesterdayDate:any = Moment(datteee).add(-1, 'days').format()
+    setDefaultDate(datteee)
     
         showProgressBar();
         GetTaskUsers();
@@ -90,7 +101,7 @@ const TimeReport = (props:any) => {
     }, [])
 
     const GetTaskUsers = async () => {
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        // let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
         let taskUsers = [];
         taskUsers = await web.lists
             .getByTitle('Task Users')
@@ -105,9 +116,9 @@ const TimeReport = (props:any) => {
     }
     const GetSmartmetadata = async () => {
         var metadatItem: any = []
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        // let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
         metadatItem = await web.lists
-            .getById('01a34938-8c7e-4ea6-a003-cee649e8c67a')
+            .getById(props?.ContextData?.SmartMetadataListID)
             .items
             .select('Id', 'Title', 'IsVisible', 'ParentID', 'SmartSuggestions', 'TaxType', 'Description1', 'Item_x005F_x0020_Cover', 'listId', 'siteName', 'siteUrl', 'SortOrder', 'SmartFilters', 'Selectable', 'Parent/Id', 'Parent/Title')
             .top(4999)
@@ -129,7 +140,7 @@ const TimeReport = (props:any) => {
     const LoadAllSiteTasks = async () => {
         var Counter = 0;
 
-        let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+        // let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
        
      
         const requests = smartmetaDetails.map((listID: any) => web.lists
@@ -172,7 +183,7 @@ const TimeReport = (props:any) => {
 
 
             })
-            selectType('Yesterday')
+            selectType('Today')
         } catch (error) {
             console.error(error);
         }
@@ -223,7 +234,7 @@ const TimeReport = (props:any) => {
     var datess = ''
     var TodayDate =''
     const GeneratedTask = async () => {
-        leaveUsers =0.00
+        leaveUsers = 0
          DevloperTime = 0.00;
 QATime = 0.00;
  QAMembers = 0;
@@ -232,6 +243,8 @@ QATime = 0.00;
  TotalQAMember = 0;
  TotalDesignMember = 0;
  TotalDevelopmentMember = 0;
+ StartDatesss=''
+ 
  DesignTime = 0.00;
          QATime = 0.00;
          DesignTime = 0.00;
@@ -243,30 +256,36 @@ QATime = 0.00;
         if (selectDatess == "Yesterday") {
             var datteee = new Date()
             var MyYesterdayDate:any = Moment(datteee).add(-1, 'days').format()
-            setDefaultDate(MyYesterdayDate)
+            setDefaultDate(MyYesterdayDate);
+            setcheckedCustom(false)
+            setcheckedWS(true)
+            setcheckedTask(false)
             var Datenew = Moment(MyYesterdayDate).format("DD/MM/YYYY")
             var myDate = new Date()
-            var final: any = (Moment(myDate).add(-2, 'days').format())
+            // var final: any = (Moment(myDate).add(-2, 'days').format())
+            var final: any = (Moment(myDate).add(-1, 'days').format())
         }
         if(selectDatess == 'Today'){
+            selectdate=undefined
             var dat:any = new Date()
             setcheckedCustom(false)
+            setcheckedWS(false)
+            setcheckedTask(true)
             setDefaultDate(dat)
             var myDate = new Date()
-            var Datenew = Moment(myDate).format("DD/MM/YYYY")
-          
+            var Datenew = Moment(myDate).format("DD/MM/YYYY")          
             setSelectDate(myDate)
             var final: any = (Moment(myDate).add(-1, 'days').format())
-           
+            //var final: any = (Moment(myDate).format())
         }
         if(selectDatess == 'Custom') {
             setcheckedWS(false)
             setcheckedTask(false)
             setcheckedCustom(true)
             var myDate = new Date(selectdate)
-            var Datenew = Moment(selectdate).format("DD/MM/YYYY")
-         
-            var final: any = (Moment(myDate).add(-1, 'days').format())
+            var Datenew = Moment(selectdate).format("DD/MM/YYYY")         
+            // var final: any = (Moment(myDate).add(-1, 'days').format())
+            var final: any = (Moment(myDate).format())
         }
          
         datess = new Date(final).toISOString()
@@ -310,15 +329,16 @@ QATime = 0.00;
     }
     var TotalMembersss = 0.00
     var TotalleaveMembersss = 0.00
+    var TotalleaveHours = 0;
     const GetleaveUser=async(selectDate:any)=>{
         var myData:any=[]
         var leaveData:any=[]
-        var leaveUser:any=[]
+        var leaveUser:any=[]        
         todayLeaveUsers=[]
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        // let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
 
         myData = await web.lists
-            .getById('72ABA576-5272-4E30-B332-25D7E594AAA4')
+            .getById(props?.ContextData?.LeaveCalenderListID)
             .items
             .select("RecurrenceData,Duration,Author/Title,Editor/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,Employee/Id")
             .top(499)
@@ -330,26 +350,30 @@ QATime = 0.00;
               
                     // var TodayDate:any = new Date()
                     // TodayDate =  Moment(TodayDate).format("DD/MM/YYYY")
-                   //var TodayDate =  selectDate.split("/")
-                   var a = val.EndDate?.substring(0, 10)
-                   var TodayDate =  selectDate[2] + selectDate[1] + selectDate[0]
+                   //var TodayDate =  selectDate.split("/")  
+                   var itemDate = Moment(val.EventDate)
+                              
+                    var a = val.EndDate?.substring(0, 10);                                    
+                    var TodayDate =  selectDate[2] + selectDate[1] + selectDate[0]
                     var endDate = Moment(a).format("DD/MM/YYYY")
                     var eventDate = Moment(val.EventDate).format("DD/MM/YYYY")
-
+ 
                     var NewEndDate = endDate.split("/")
                     var NewEventDate = eventDate.split("/")
-
-                     var End = NewEndDate[2]  + NewEndDate[1] + NewEndDate[0]
-                     var start = NewEventDate[2] + NewEventDate[1] + NewEventDate[0]
-
-
-                     if (TodayDate >= start && TodayDate <= End){
+ 
+                    var End = NewEndDate[2] + NewEndDate[1] + NewEndDate[0]
+                    var start = NewEventDate[2] + NewEventDate[1] + NewEventDate[0]
+                    // if(start === End)
+                    //  totaltime = stattime - endtime;
+ 
+                    if (TodayDate >= start && TodayDate <= End){
+                        var stattime = Moment.tz(itemDate,'Europe/Berlin').format('DD/MM/YYYY HH:MM:SS Z').split(' ')[1].split(':');
+                        var endtime = Moment.tz(val.EndDate,'Europe/Berlin').format('DD/MM/YYYY HH:MM:SS Z').split(' ')[1].split(':');    
+                        val.totaltime = Math.abs(parseInt(endtime[0]) - parseInt(stattime[0]));            
                         console.log(val)
-                        leaveData.push(val)
-    
+                        leaveData.push(val)                       
                     }
-                
-               
+                                                 
             })
             console.log(leaveData)
             leaveData?.forEach((val:any)=>{
@@ -361,7 +385,7 @@ QATime = 0.00;
                         users['SubComponents'] = ''
                         users['Features'] = ''
                         users['Department'] = item.TimeCategory
-                        users['Effort'] = 8
+                        users['Effort'] = val.totaltime !== undefined && val.totaltime <= 4 ? val.totaltime : 8
                         users['Task'] = 'Leave'
                         users['Comments'] = 'Leave'
                         users['ClientCategory'] = 'Leave'
@@ -390,9 +414,9 @@ QATime = 0.00;
             }
           })
             console.log(finalData)
-            var QA =[]
-            var Design = []
-            var Development =[]
+            var QA:any =[]
+            var Design:any = []
+            var Development:any =[]
             finalData?.forEach((val:any)=>{
                 if(val?.Department == 'QA'){
                     QA.push(val)  
@@ -407,15 +431,37 @@ QATime = 0.00;
             QAMembers = QA.length
             DesignMembers = Design.length
             DevelopmentMembers = Development.length
+
+            QAhalfdayleave = QA.filter((x:any)=>x.Effort === 4);
+            developmenthalfdayleave = Development.filter((x:any)=>x.Effort === 4);
+            designhalfdayleave = Design.filter((x:any)=>x.Effort === 4);
+
+            QAfulldayleave = QA.filter((x:any)=>x.Effort === 8);
+            developmentfulldayleave = Development.filter((x:any)=>x.Effort === 8);
+            designfulldayleave = Design.filter((x:any)=>x.Effort === 8);
+
+            if(QAhalfdayleave.length > 0 || developmenthalfdayleave.length>0 || designhalfdayleave.length>0){
+                QAleaveHours = ((QAhalfdayleave.length) * 4) + ((QAfulldayleave.length) * 8);
+                DevelopmentleaveHours = ((developmenthalfdayleave.length) * 4) + ((developmentfulldayleave.length) * 8);
+                DesignMemberleaveHours = ((designhalfdayleave.length) * 4)+((designfulldayleave.length) * 8);
+            }
+            else{
+                QAleaveHours = (QA.length) * 8;
+                DevelopmentleaveHours = (Development.length) * 8;
+                DesignMemberleaveHours = (Design.length) * 8;
+            }
+            
             TotalDevelopmentMember = D.length 
-            TotalDesignMember = De.length
+            TotalDesignMember = De.length      
             TotalQAMember = QAteam.length 
 
-             TotalMembersss = TotalDevelopmentMember + TotalDesignMember + TotalQAMember
-             TotalleaveMembersss = DesignMembers + DevelopmentMembers + QAMembers
+            TotalMembersss = TotalDevelopmentMember + TotalDesignMember + TotalQAMember
+            TotalleaveMembersss = DesignMembers + DevelopmentMembers + QAMembers
+            TotalleaveHours = QAleaveHours+DevelopmentleaveHours+DesignMemberleaveHours
 
             if(finalData != undefined && finalData.length>0){
-                 leaveUsers = TotalleaveMembersss * 8
+                //  leaveUsers = TotalleaveMembersss * 8
+                leaveUsers = TotalleaveMembersss 
                 
             }
            
@@ -429,8 +475,7 @@ QATime = 0.00;
         }
         else {
             var myDate = new Date()
-            var final: any = (Moment(myDate).add(-1, 'days').format())
-            var Datenew = Moment(final).format("DD/MM/YYYY")
+            var Datenew = Moment(myDate).format("DD/MM/YYYY")
         }
       
 
@@ -565,26 +610,23 @@ QATime = 0.00;
         AllUsers?.forEach((val: any) => {
             SelectedTime?.forEach((item: any) => {
                 item.Company = 'Smalsus'
-                if (item.AuthorId == val.AssingedToUserId) {
+                if (item?.AuthorId == val?.AssingedToUserId) {
                     // item.Department = val.TimeCategory
                     // item.Company = val.Company
 
-                    if (val.UserGroup.Title == 'Smalsus Lead Team')
+                    if (val?.UserGroup?.Title == 'Senior Developer Team' || val?.UserGroup?.Title == 'Smalsus Lead Team' || val?.UserGroup?.Title == 'External Staff' )
 
-                        item.Department = "Smalsus Lead";
+                    item.Department = 'Developer';
 
-                    if (val.UserGroup.Title == 'Senior Developer Team' || val.UserGroup.Title == 'External Staff')
-
-                        item.Department = 'Developer';
-                if (val.UserGroup.Title == 'Junior Developer Team')
+                if (val?.UserGroup?.Title == 'Junior Developer Team')
 
                 item.Department = 'Junior Developer';
 
-                if (val.UserGroup.Title == 'Design Team')
+                if (val?.UserGroup?.Title == 'Design Team')
 
                 item.Department = 'Design';
 
-                if (val.UserGroup.Title == 'QA Team')
+                if (val?.UserGroup?.Title == 'QA Team')
 
                 item.Department = 'QA';
 
@@ -595,7 +637,7 @@ QATime = 0.00;
         AllTasks?.forEach((task: any) => {
             SelectedTime?.forEach((item: any) => {
 
-                if (item.TaskId === task.Id && item.Task === task.Title && item.Company == 'Smalsus') {
+                if (item.TaskId === task.Id && item.Task === task.Title && item?.Company == 'Smalsus') {
 
 
                     if (task?.Portfolio?.ItemType == 'Component') {
@@ -683,36 +725,37 @@ QATime = 0.00;
         selectDatess = Dates;
         if (Dates == 'Today') {
             setcheckedWS(false)
-            setcheckedCustom(false)
-            selectdate = undefined
+            setcheckedCustom(false)            
             setcheckedTask(true)
-            var Yesterday: any = new window.Date();
-            setSelectDate(Yesterday)
-            var a = Yesterday.getDate() - 1;
-            var Datene = Moment(Yesterday).subtract(1, 'day')
-            var Datenew = Moment().format("DDMMYYYY")
+            var Todaydate: any = new window.Date();
+            setSelectDate(Todaydate)
+            // var a = Yesterday.getDate() - 1;
+            // var Datene = Moment(Yesterday).subtract(1, 'day')
+            var Datenew = Moment(Todaydate).format("DD/MM/YYYY")
             checkDate = Datenew;
-          
+            GeneratedTask();
         }
         if (Dates == 'Yesterday') {
             setcheckedWS(true)
             setcheckedTask(false)
             setcheckedCustom(false)
-            selectdate = undefined
+            // selectdate = undefined
             var Yesterday: any = new window.Date();
-            var a = Yesterday.getDate() - 1;
+            var Yesterdaydate = Yesterday.getDate() - 1;
+
             var Datene = Moment(Yesterday).subtract(1, 'day')
             var Datenew = Moment(Datene).format("DD-MM-YYYY")
-            var Daten = Moment(Datene).format("DD/MM/YYYY")
-            checkDate = Datenew;
-            GeneratedTask();
+            var Daten = Moment(Datene);
+            setSelectDate(Daten);
+            checkDate = Datenew;            
         }
        
         if (Dates == 'Custom') {
-            setcheckedWS(false)
+            setcheckedWS(false);
+            selectdate = undefined;
             setcheckedTask(false)
             setcheckedCustom(true)
-           
+            setSelectDate(undefined);
         }
 
 
@@ -724,11 +767,21 @@ QATime = 0.00;
         () => [
             {
 
+                accessorFn: (row) => row?.TaskId,
+                id: 'TaskID',
+                header: '',
+                placeholder: "TaskID",
+               
+ 
+
+            },
+            {
+
                 accessorFn: (row) => row?.Task,
                 cell: ({ row, getValue }) => (
                     <>
                         <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + row?.original?.TaskId + '&Site=' + row?.original?.siteType}
+                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId="+ row?.original?.TaskId + '&Site=' + row?.original?.siteType}
                         >
                             {getValue()}
                         </a>
@@ -987,7 +1040,7 @@ QATime = 0.00;
         var TotlaTime = QATime + DevloperTime + DesignTime 
         var TotalMembers = TotalDevelopmentMember + TotalDesignMember + TotalQAMember
         var TotalleaveMembers = DesignMembers + DevelopmentMembers + QAMembers
-
+        var TotalleaveHours = DesignMemberleaveHours + DevelopmentleaveHours+QAleaveHours;
         AllUsers?.forEach((items:any)=>{
             if(CurrentUserId == items.AssingedToUserId){
                 items.Approver?.forEach((val:any)=>{
@@ -1052,34 +1105,39 @@ QATime = 0.00;
         })
         var text2 =
         '<tr>'
-        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + '<strong>' + 'Team' + '</strong>' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + 'Time in Hours' + '</strong>' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + 'Total TeamMembers' + '</strong>' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + 'TeamMembers on leave' + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + '<strong>' + 'Team' + '</strong>' + '</td>'        
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + 'Total Employees' + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + 'Employees on leave' + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + 'Hours' + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + 'Leave Hours' + '</strong>' + '</td>'
         + '</tr>'
         + '<tr>'
-        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Design' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DesignTime.toFixed(2) + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Design' + '</td>'        
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + TotalDesignMember + '</td>'
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + DesignMembers + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DesignTime.toFixed(2) + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DesignMemberleaveHours + '</td>'
         + '</tr>'
         + '<tr>'
-        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Development' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevloperTime.toFixed(2) + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Development' + '</td>'        
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + TotalDevelopmentMember + '</td>'
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevelopmentMembers + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevloperTime.toFixed(2) + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevelopmentleaveHours + '</td>'
         + '</tr>'
         + '<tr>'
-        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'QA' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + QATime.toFixed(2) + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'QA' + '</td>'        
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + TotalQAMember + '</td>'
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + QAMembers + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + QATime.toFixed(2) + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + QAleaveHours + '</td>'
         + '</tr>'
         + '<tr>'
-        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + '<strong>' + 'Total' + '</strong>' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotlaTime.toFixed(2) + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + '<strong>' + 'Total' + '</strong>' + '</td>'        
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotalMembers.toFixed(2) + '</strong>' + '</td>'
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotalleaveMembers.toFixed(2) * 8 + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotlaTime.toFixed(2) + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotalleaveHours + '</strong>' + '</td>'
         + '</tr>';
     body2.push(text2);
 
@@ -1227,7 +1285,7 @@ var ReportDate = new Date(a1)
 
                     <input type='date' value={Moment(selectdate!= undefined?selectdate:defaultDate).format("YYYY-MM-DD")} max="9999-12-31 mx-3" onChange={(e) => setSelectDate(e.target.value)} />
                     <label className='mx-2 SpfxCheckRadio'>
-                        <input type="radio" name="Custom" checked={checkedCustom} className="radio" />Custom
+                        <input type="radio" name="Custom" checked={checkedCustom} onClick={() => selectType('Custom')} className="radio" />Custom
                     </label>
                     <label className='mx-2 SpfxCheckRadio'>
                         <input type="radio"  name="Yesterday" checked={checkedWS} onClick={() => selectType('Yesterday')} className="radio" />Yesterday
@@ -1244,36 +1302,41 @@ var ReportDate = new Date(a1)
                         <thead>
                             <tr>
                                 <th className='border bg-light'><strong>Team</strong></th>
-                                <th className='border'><strong>Time In Hours</strong></th>
-                                <th className='border'><strong>Total TeamMembers</strong></th>
-                                <th className='border'><strong>TeamMembers on leave</strong></th>
+                                <th className='border'><strong>Total Employees</strong></th>
+                                <th className='border'><strong>Employees on leave</strong></th>
+                                <th className='border'><strong>Hours</strong></th>                                
+                                <th className='border'><strong>Leave Hours</strong></th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td className='border bg-light'>Design</td>
-                                <td className='border'>{DesignTime.toFixed(2)}</td>
+                                <td className='border bg-light'>Design</td>                                
                                 <td className='border'>{TotalDesignMember}</td>
                                 <td className='border'>{DesignMembers}</td>
+                                <td className='border'>{DesignTime.toFixed(2)}</td>
+                                <td className='border'>{DesignMemberleaveHours}</td>
                             </tr>
                             <tr>
-                                <td className='border bg-light'>Development</td>
-                                <td className='border'>{DevloperTime.toFixed(2)}</td>
+                                <td className='border bg-light'>Development</td>                                
                                 <td className='border'>{TotalDevelopmentMember}</td>
                                 <td className='border'>{DevelopmentMembers}</td>
+                                <td className='border'>{DevloperTime.toFixed(2)}</td>
+                                <td className='border'>{DevelopmentleaveHours}</td>
                             </tr>
                             <tr>
-                                <td className='border bg-light'> QA</td>
-                                <td className='border'>{QATime.toFixed(2)}</td>
+                                <td className='border bg-light'> QA</td>                                
                                 <td className='border'>{TotalQAMember}</td>
                                 <td className='border'>{QAMembers}</td>
+                                <td className='border'>{QATime.toFixed(2)}</td>
+                                <td className='border'>{QAleaveHours}</td>
                             </tr>
                            
                             <tr>
-                                <td className='border bg-light'> <strong>Total</strong></td>
-                                <td className='border'>{TotleTaskTime?.toFixed(2)}</td>
+                                <td className='border bg-light'> <strong>Total</strong></td>                                
                                 <td className='border'>{TotalDevelopmentMember + TotalDesignMember + TotalQAMember}</td>
                                 <td className='border'>{leaveUsers}</td>
+                                <td className='border'>{TotleTaskTime?.toFixed(2)}</td>
+                                <td className='border'>{DesignMemberleaveHours + DevelopmentleaveHours + QAleaveHours}</td>
                             </tr>
 
                         </tbody>

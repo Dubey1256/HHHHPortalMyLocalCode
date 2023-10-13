@@ -609,9 +609,7 @@ const Tabless = (props: any) => {
 
       <section className="TableContentSection">
         <div className='Alltable'>
-          <div className='wrapper'>
-            <GlobalCommanTable expandIcon={true} showHeader={true} columns={columns} data={data} callBackData={callBackData} />
-          </div>
+          <GlobalCommanTable expandIcon={true} showHeader={true} showPagination={true} columns={columns} data={data} callBackData={callBackData} />
         </div>
       </section>
       <span>

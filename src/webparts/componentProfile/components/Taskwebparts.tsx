@@ -496,7 +496,7 @@ function PortfolioTable(SelectedProp: any) {
                     result.ProjectId = result?.Project?.Id;
                     result.projectStructerId = result?.Project?.PortfolioStructureID
                     const title = result?.Project?.Title || '';
-                    const formattedDueDate = Moment(result?.Project?.DueDate).format("DD-MM-YYYY");
+                    const formattedDueDate = Moment(result?.Project?.DueDate).format('YYYY-MM');
                     result.joinedData = [];
                     if (result?.projectStructerId && title || formattedDueDate) {
                         result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
@@ -1502,7 +1502,7 @@ function PortfolioTable(SelectedProp: any) {
         ),
         cell: ({ row, getValue }) => (
           <>
-            {row?.original?.isRestructureActive && (
+            {row?.original?.isRestructureActive && row?.original?.Title != "Others" && (
               <span
                 className="Dyicons p-1"
                 title="Restructure"
@@ -1592,6 +1592,9 @@ function PortfolioTable(SelectedProp: any) {
   const callBackData1 = React.useCallback((getData: any, topCompoIcon: any) => {
     setData((getData) => [...getData]);
     setTopCompoIcon(topCompoIcon);
+    renderData = [];
+    renderData = renderData.concat(getData);
+    refreshData();
   }, []);
 
   //  Function to call the child component's function
@@ -2261,19 +2264,14 @@ function PortfolioTable(SelectedProp: any) {
         </div>
       </Panel>
       {isOpenActivity && (
-        <CreateActivity
-          props={
-            checkedList != null && checkedList?.Id != undefined
-              ? checkedList
-              : SelectedProp.props
-          }
-          Call={Call}
-          TaskUsers={AllUsers}
-          AllClientCategory={AllClientCategory}
-          LoadAllSiteTasks={LoadAllSiteTasks}
-          SelectedProp={SelectedProp.NextProp}
-          portfolioTypeData={portfolioTypeData}
-        ></CreateActivity>
+      <CreateActivity
+      Call={Call}
+      AllListId={ContextValue}
+      TaskUsers={AllUsers}
+      AllClientCategory={AllClientCategory}
+      LoadAllSiteTasks={LoadAllSiteTasks}
+      selectedItem={checkedList != null && checkedList?.Id != undefined? checkedList: SelectedProp.props} portfolioTypeData={portfolioTypeData}
+    ></CreateActivity>
       )}
       {isOpenWorkstream && (
         <CreateWS
