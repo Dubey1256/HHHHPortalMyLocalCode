@@ -1654,7 +1654,7 @@ export const getPortfolio = async (type: any) => {
 export const GetServiceAndComponentAllData = async (Props: any) => {
     var ComponentsData: any = [];
     var AllPathGeneratedData: any = [];
-    let TaskUsers: any = [];
+    // let TaskUsers: any = [];
     let AllMasterTaskData: any = [];
     try {
         let web = new Web(Props.siteUrl);
@@ -1666,7 +1666,7 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
             .expand("TeamMembers", "Author", "ClientCategory", "Parent", "TaskCategories", "AssignedTo", "ClientCategory", "PortfolioType")
             .getAll();
         // console.log("all Service and Coponent data form global Call=======", AllMasterTaskData);
-        TaskUsers = await AllTaskUsers(Props.siteUrl, Props.TaskUserListId);
+        // TaskUsers = await AllTaskUsers(Props.siteUrl, Props.TaskUserListId);
         $.each(AllMasterTaskData, function (index: any, result: any) {
             result.isSelected = false;
             result.isSelected = Props?.selectedItems?.find((obj: any) => obj.Id === result.ID);

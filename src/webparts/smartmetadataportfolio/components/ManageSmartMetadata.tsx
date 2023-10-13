@@ -8,6 +8,7 @@ import DeleteSmartMetadata from "./DeleteSmartMetadata";
 let ParentMetaDataItems: any = [];
 let SmartmetadataItems: any = [];
 let TabSelected: string;
+let compareSeletected: any = [];
 export default function ManageSmartMetadata(selectedProps: any) {
     const [setName]: any = useState('');
     const [AllCombinedJSON, setAllCombinedJSON] = useState(JSON);
@@ -24,8 +25,8 @@ export default function ManageSmartMetadata(selectedProps: any) {
     const childRef: any = useRef<any>();
     const GetAdminConfig = async () => {
         try {
-            let web = new Web(selectedProps.AllList.SPBackupConfigListUrl);
-            const Config = await web.lists.getById(selectedProps.AllList.SPBackupConfigListID).items.select("ID,Title,OrderBy,WebpartId,DisplayColumns,Columns,QueryType,FilterItems&$filter=WebpartId eq 'AllManageSmartMetadataPortfolioTabs'").getAll();
+            let web = new Web(selectedProps.AllList.SPSitesListUrl);
+            const Config = await web.lists.getById(selectedProps.AllList.SPSiteConfigListID).items.select("ID,Title,OrderBy,WebpartId,DisplayColumns,Columns,QueryType,FilterItems&$filter=WebpartId eq 'AllManageSmartMetadataPortfolioTabs'").getAll();
             if (Config) {
                 setTabs(JSON.parse(Config[0].DisplayColumns));
                 console.log(Tabs);
@@ -37,8 +38,8 @@ export default function ManageSmartMetadata(selectedProps: any) {
     };
     const LoadSmartMetadata = async () => {
         try {
-            let web = new Web(selectedProps.AllList.SPBackupConfigListUrl);
-            const AllMetaDataItems = await web.lists.getById('01a34938-8c7e-4ea6-a003-cee649e8c67a').items.select("*,Author/Title,Editor/Title,Parent/Id,Parent/Title&$expand=Parent,Author,Editor&$orderBy=SortOrder&$filter=isDeleted ne 1").getAll();
+            let web = new Web(selectedProps.AllList.SPSitesListUrl);
+            const AllMetaDataItems = await web.lists.getById(selectedProps.AllList.SPSmartMetadataListID).items.select("*,Author/Title,Editor/Title,Parent/Id,Parent/Title&$expand=Parent,Author,Editor&$orderBy=SortOrder&$filter=isDeleted ne 1").getAll();
             SmartmetadataItems = SmartmetadataItems.concat(AllMetaDataItems)
             ShowingTabsData('Categories')
         } catch (error) {
@@ -237,15 +238,17 @@ export default function ManageSmartMetadata(selectedProps: any) {
     const callBackData = useCallback((checkData: any) => {
         let array: any = [];
         if (checkData != undefined) {
+            compareSeletected.push(checkData);
             setSelectedItem(checkData);
             array.push(checkData);
         } else {
             setSelectedItem({});
             array = [];
+
+            compareSeletected = [];
         }
         setSelectedItem(array);
     }, []);
-    console.log(SelectedItem)
     const callBackSmartMetaData = useCallback((Array: any, topCompoIcon: any, Taxtype: any) => {
         if (Array) {
             let MetaData: any = [...Array]
@@ -336,7 +339,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
                 <div className="tab-pane Alltable mx-height show active" id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
                     {
                         Smartmetadata &&
-                        <GlobalCommanTable CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} SelectedItem={SelectedItem} setName={setName} ParentItem={Smartmetadata} AllList={selectedProps.AllList} data={Smartmetadata} TabSelected={TabSelected} ref={childRef} callChildFunction={callChildFunction} callBackSmartMetaData={callBackSmartMetaData} columns={columns} showHeader={true} expandIcon={true} showPagination={true} callBackData={callBackData} />
+                        <GlobalCommanTable compareSeletected={compareSeletected} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} SelectedItem={SelectedItem} setName={setName} ParentItem={Smartmetadata} AllList={selectedProps.AllList} data={Smartmetadata} TabSelected={TabSelected} ref={childRef} callChildFunction={callChildFunction} callBackSmartMetaData={callBackSmartMetaData} columns={columns} showHeader={true} expandIcon={true} showPagination={true} callBackData={callBackData} />
                     }
                 </div>
             </div>
@@ -367,8 +370,8 @@ export default function ManageSmartMetadata(selectedProps: any) {
                     </div>
                 </Panel>
             </div>)}
-            {SmartMetadataEditPopupOpen ? <SmartMetadataEditPopup CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} EditItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} modalInstance={SelectedSmartMetadataItem} /> : ''}
-            {SmartMetadataDeletePopupOpen ? <DeleteSmartMetadata CloseDeleteSmartMetaPopup={CloseDeleteSmartMetaPopup} DeleteItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} modalInstance={SelectedSmartMetadataItem} /> : ''}
+            {SmartMetadataEditPopupOpen ? <SmartMetadataEditPopup AllList={selectedProps.AllList} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} EditItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} modalInstance={SelectedSmartMetadataItem} /> : ''}
+            {SmartMetadataDeletePopupOpen ? <DeleteSmartMetadata AllList={selectedProps.AllList} CloseDeleteSmartMetaPopup={CloseDeleteSmartMetaPopup} DeleteItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} modalInstance={SelectedSmartMetadataItem} /> : ''}
         </>
     );
 }

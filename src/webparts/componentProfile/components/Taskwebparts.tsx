@@ -635,7 +635,6 @@ function PortfolioTable(SelectedProp: any) {
         "ResponsibleTeam"
       )
       .top(4999)
-      .filter(filt)
       .get();
 
     console.log(componentDetails);

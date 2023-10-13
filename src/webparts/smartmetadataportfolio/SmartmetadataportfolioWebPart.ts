@@ -13,8 +13,9 @@ import Smartmetadataportfolio from './components/Smartmetadataportfolio';
 import { ISmartmetadataportfolioProps } from './components/ISmartmetadataportfolioProps';
 
 export interface ISmartmetadataportfolioWebPartProps {
-  SPBackupConfigListUrl: string;
-  SPBackupConfigListID: string;
+  SPSiteConfigListID: string;
+  SPSitesListUrl: string;
+  SPSmartMetadataListID: string;
   description: string;
 }
 
@@ -32,8 +33,9 @@ export default class SmartmetadataportfolioWebPart extends BaseClientSideWebPart
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        SPBackupConfigListID: this.properties.SPBackupConfigListID,
-        SPBackupConfigListUrl: this.properties.SPBackupConfigListUrl
+        SPSitesListUrl: this.context.pageContext.web.absoluteUrl,
+        SPSiteConfigListID: this.properties.SPSiteConfigListID,
+        SPSmartMetadataListID: this.properties.SPSmartMetadataListID,
       }
     );
 
@@ -91,11 +93,11 @@ export default class SmartmetadataportfolioWebPart extends BaseClientSideWebPart
             {
               groupName: strings.BasicGroupName,
               groupFields: [
-                PropertyPaneTextField('SPBackupConfigListID', {
-                  label: 'SPBackupConfigListID'
+                PropertyPaneTextField('SPSiteConfigListID', {
+                  label: 'SPSiteConfigListID'
                 }),
-                PropertyPaneTextField('SPBackupConfigListUrl', {
-                  label: 'SPBackupConfigListUrl'
+                PropertyPaneTextField('SPSmartMetadataListID', {
+                  label: 'SPSmartMetadataListID'
                 })
               ]
             }

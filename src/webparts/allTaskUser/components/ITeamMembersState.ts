@@ -6,6 +6,7 @@ export interface ITeamMembersState {
     columns: any[];
     searchText: string;
     activeTab:string;
+    folderUrl:string;
     showCreatePanel: boolean;
     reloadComponent: boolean;
     showEditPanel: boolean;
