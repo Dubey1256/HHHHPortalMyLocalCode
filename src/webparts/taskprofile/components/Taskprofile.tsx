@@ -1907,7 +1907,6 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                           </div>
                         </dl>
                       }
-
                     </div>
                   </div>
                   <div className='row url'>
@@ -1918,7 +1917,6 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                           <a target="_blank" data-interception="off" href={this.state.Result["component_url"].Url}>{this.state.Result["component_url"].Url}</a>
                         }
                       </div>
-
                     </div>
                   </div>
                   <section>
