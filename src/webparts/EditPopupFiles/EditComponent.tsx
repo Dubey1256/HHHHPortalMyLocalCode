@@ -721,6 +721,15 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
     //  deferred.resolve(Tasks);
     setComponent(Tasks);
     console.log("All Portfolio Data From Backend =====", Tasks);
+    if (Tasks[0].ClientCategory?.length > 0) {
+
+      Tasks[0].ClientCategory = {
+
+        results: Tasks[0].ClientCategory
+
+      }
+
+    }
     setEditData(Tasks[0]);
     setModalIsOpenToTrue(true);
 

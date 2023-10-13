@@ -33,7 +33,9 @@ import Tooltip from '../../../globalComponents/Tooltip'
 import ApprovalHistoryPopup from '../../../globalComponents/EditTaskPopup/ApprovalHistoryPopup';
 import { Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import { ImReply } from 'react-icons/im';
-import KeyDocuments from './KeyDocument'
+import KeyDocuments from './KeyDocument';
+import EODReportComponent from '../../../globalComponents/EOD Report Component/EODReportComponent';
+
 
 // import {MyContext} from './myContext'
 const MyContext: any = React.createContext<any>({})
@@ -72,7 +74,8 @@ export interface ITaskprofileState {
   subchildParentIndex: any
   sendMail: boolean,
   showPopup: any;
-  emailcomponentopen: boolean
+  emailcomponentopen: boolean,
+  OpenEODReportPopup: boolean,
   showhideCommentBoxIndex: any
   ApprovalCommentcheckbox: boolean;
   CommenttoPost: string;
@@ -138,6 +141,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       ApprovalPointCurrentParentIndex: null,
       ApprovalHistoryPopup: false,
       emailcomponentopen: false,
+      OpenEODReportPopup: false,
       emailComponentstatus: null,
       subchildParentIndex: null,
       showcomment_subtext: 'none',
@@ -244,7 +248,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       .getByTitle(this.state?.listName)
       .items
       .getById(this.state?.itemID)
-      .select("ID", "Title", "Comments", "ApproverHistory", "EstimatedTime", "TaskID", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "ParentTask/TaskID","PortfolioType/Id", "DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "Approver/Id", "Approver/Title", "ParentTask/Id", "Project/Id", "Project/Title", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
+      .select("ID", "Title", "Comments", "ApproverHistory", "EstimatedTime", "TaskID", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "PortfolioType/Id", "DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/TaskID", "Project/Id", "Project/Title", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
       .expand("TeamMembers", "Project", "Approver", "ParentTask", "Portfolio", "PortfolioType", "SmartInformation", "AssignedTo", "TaskCategories", "Author", "ClientCategory", "ResponsibleTeam", "TaskType", "Editor", "AttachmentFiles")
       .get()
     AllListId = {
@@ -361,7 +365,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
       portfolio = this.masterTaskData.filter((item: any) => item.Id == taskDetails?.Portfolio?.Id)
     }
-
+    let feedBackData: any = JSON.parse(taskDetails["FeedBack"]);
     console.log(this.masterTaskData)
     let tempTask = {
       SiteIcon: this.GetSiteIcon(this.state?.listName),
@@ -401,6 +405,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       component_url: taskDetails["ComponentLink"],
       BasicImageInfo: this.GetAllImages(JSON.parse(taskDetails["BasicImageInfo"]), taskDetails["AttachmentFiles"], taskDetails["Attachments"]),
       FeedBack: JSON.parse(taskDetails["FeedBack"]),
+      FeedBackBackup: JSON.parse(taskDetails["FeedBack"]),
+      FeedBackArray: feedBackData[0]?.FeedBackDescriptions,
       TaskType: taskDetails["TaskType"] != null ? taskDetails["TaskType"]?.Title : '',
       EstimatedTimeDescriptionArray: tempEstimatedArrayData,
       TotalEstimatedTime: TotalEstimatedTime,
@@ -477,7 +483,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         items.newFileName = regex;
       })
       // AttachmentFiles?.sort(this.sortAlphaNumericAscending)
-     
+
       AttachmentFiles?.forEach(function (Attach: any) {
         let attachdata: any = [];
         if (BasicImageInfo != null || BasicImageInfo != undefined) {
@@ -586,7 +592,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     if (ClientTimeArray != undefined && ClientTimeArray.length > 0) {
       ClientTimeArray?.map((item: any) => {
         array2?.map((items: any) => {
-          if ((item?.SiteName == items?.SiteName)||(item?.Title == items?.SiteName)) {
+          if ((item?.SiteName == items?.SiteName) || (item?.Title == items?.SiteName)) {
             if (item.ClientCategory == undefined) {
               item.ClientCategory = [];
               item.ClientCategory.push(items);
@@ -861,7 +867,12 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     })
     this.GetResult();
   }
-
+  private async EODReportComponentCallback() {
+    this.setState({
+      OpenEODReportPopup: false,
+    })
+    this.GetResult();
+  }
   private ConvertLocalTOServerDate(LocalDateTime: any, dtformat: any) {
     if (dtformat == undefined || dtformat == '')
       dtformat = "DD/MM/YYYY";
@@ -898,7 +909,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     }
     let breadCrumData1WithSubRow: any = globalCommon.findTaskHierarchy(this.state.Result, this.masterTaskData)
     console.log(breadCrumData1WithSubRow)
-  
+
 
     let array: any = [];
     const getValueSubRow = (row: any) => {
@@ -1846,6 +1857,17 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                           </div>
                         }
                       </dl>}
+                      <div className="Sitecomposition my-2">
+                        <a className="sitebutton bg-fxdark alignCenter justify-content-between">
+                          <span className="alignCenter">
+                            <span className="svg__iconbox svg__icon--docx"></span>
+                            <span className="mx-2">Submit EOD Report</span>
+                          </span>
+                          <span className="svg__iconbox svg__icon--editBox hreflink" title="Submit EOD Report Popup"
+                            onClick={() => this.setState({ OpenEODReportPopup: true })}>
+                          </span>
+                        </a>
+                      </div>
                       {this.state.Result?.EstimatedTimeDescriptionArray?.length > 0 &&
                         <dl className="Sitecomposition my-2">
                           <div className='dropdown'>
@@ -1863,14 +1885,14 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                       return (
                                         <div className={this.state.Result?.EstimatedTimeDescriptionArray?.length == Index + 1 ? "align-content-center alignCenter justify-content-between p-1 px-2" : "align-content-center justify-content-between border-bottom alignCenter p-1 px-2"}>
                                           <div className='alignCenter'>
-                                            <span className='me-2'>{EstimatedTimeData?.Team != undefined ? EstimatedTimeData?.Team : EstimatedTimeData?.Category != undefined ?EstimatedTimeData?.Category : null  }</span> |
+                                            <span className='me-2'>{EstimatedTimeData?.Team != undefined ? EstimatedTimeData?.Team : EstimatedTimeData?.Category != undefined ? EstimatedTimeData?.Category : null}</span> |
                                             <span className='mx-2'>{EstimatedTimeData.EstimatedTime ? (EstimatedTimeData.EstimatedTime > 1 ? EstimatedTimeData.EstimatedTime + " hours" : EstimatedTimeData.EstimatedTime + " hour") : "0 hour"}</span>
                                             <img className="ProirityAssignedUserPhoto m-0 mx-2" title={EstimatedTimeData.UserName} src={EstimatedTimeData.UserImage != undefined && EstimatedTimeData.UserImage?.length > 0 ? EstimatedTimeData.UserImage : ''} />
                                           </div>
-                                          <div className='alignCenter hover-text'>
+                                          {EstimatedTimeData.EstimatedTimeDescription.length > 0 && <div className='alignCenter hover-text'>
                                             <span className="svg__iconbox svg__icon--info"></span>
                                             <span className='tooltip-text pop-right'>{EstimatedTimeData.EstimatedTimeDescription} </span>
-                                          </div>
+                                          </div>}
                                         </div>
                                       )
                                     })}
@@ -1885,7 +1907,6 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                           </div>
                         </dl>
                       }
-
                     </div>
                   </div>
                   <div className='row url'>
@@ -1896,7 +1917,6 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                           <a target="_blank" data-interception="off" href={this.state.Result["component_url"].Url}>{this.state.Result["component_url"].Url}</a>
                         }
                       </div>
-
                     </div>
                   </div>
                   <section>
@@ -1989,13 +2009,13 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                     className={fbData['isShowLight'] == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
 
                                                   </span>
-                                                  {fbData['ApproverData'] != undefined && fbData?.ApproverData.length > 0 && 
-                                                  <>
-                                                    <a className='hreflink mt--2 mx-2'
-                                                      onClick={() => this.ShowApprovalHistory(fbData, i, null)}
-                                                    >Approved by -</a>
-                                                    <img className="workmember" src={fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.ImageUrl}></img>
-                                                  </>}
+                                                  {fbData['ApproverData'] != undefined && fbData?.ApproverData.length > 0 &&
+                                                    <>
+                                                      <a className='hreflink mt--2 mx-2'
+                                                        onClick={() => this.ShowApprovalHistory(fbData, i, null)}
+                                                      >Approved by -</a>
+                                                      <img className="workmember" src={fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.ImageUrl}></img>
+                                                    </>}
                                                 </span>
 
                                                 : null
@@ -2498,6 +2518,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
           {/* {this.state.isTimeEntry ? <TimeEntry props={this.state.Result} isopen={this.state.isTimeEntry} CallBackTimesheet={() => { this.CallBackTimesheet() }} /> : ''} */}
           {this.state.EditSiteCompositionStatus ? <EditSiteComposition EditData={this.state.Result} context={this.props.Context} AllListId={AllListId} Call={(Type: any) => { this.CallBack(Type) }} /> : ''}
           {this.state?.emailcomponentopen && countemailbutton == 0 && <EmailComponenet approvalcallback={() => { this.approvalcallback() }} Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus} currentUser={this?.currentUser} items={this.state?.Result} />}
+          {this.state?.OpenEODReportPopup ? <EODReportComponent TaskDetails={this.state.Result} siteUrl={this.props?.siteUrl} Callback={() => { this.EODReportComponentCallback() }} /> : null}
         </div>
       </MyContext.Provider>
     );

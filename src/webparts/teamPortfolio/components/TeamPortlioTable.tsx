@@ -393,7 +393,7 @@ function TeamPortlioTable(SelectedProp: any) {
                                 result.ProjectId = result?.Project?.Id;
                                 result.projectStructerId = result?.Project?.PortfolioStructureID
                                 const title = result?.Project?.Title || '';
-                                const formattedDueDate = Moment(result?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
+                                const formattedDueDate = Moment(result?.Project?.DueDate).format('YYYY-MM');
                                 result.joinedData = [];
                                 if (result?.projectStructerId && title || formattedDueDate) {
                                     result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
@@ -1380,7 +1380,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 ),
                 cell: ({ row, getValue }) => (
                     <>
-                        {row?.original?.isRestructureActive && (
+                        {row?.original?.isRestructureActive && row?.original?.Title != "Others" && (
                             <span className="Dyicons p-1" title="Restructure" style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} onClick={() => callChildFunction(row?.original)}>
                                 <span className="svg__iconbox svg__icon--re-structure"> </span>
                                 {/* <img
@@ -1952,15 +1952,19 @@ function TeamPortlioTable(SelectedProp: any) {
                 </div>
             </Panel>
             {isOpenActivity && (
-                <CreateActivity
-                    props={checkedList}
-                    Call={Call}
-                    TaskUsers={AllUsers}
-                    AllClientCategory={AllClientCategory}
-                    LoadAllSiteTasks={LoadAllSiteTasks}
-                    SelectedProp={SelectedProp}
-                    portfolioTypeData={portfolioTypeData}
-                ></CreateActivity>
+                <CreateActivity 
+          Call={Call}
+          AllListId={ContextValue}
+          TaskUsers={AllUsers}
+          AllClientCategory={AllClientCategory}
+          LoadAllSiteTasks={LoadAllSiteTasks}
+          selectedItem={
+            checkedList != null && checkedList?.Id != undefined
+              ? checkedList
+              : SelectedProp
+          }
+          portfolioTypeData={portfolioTypeData}
+        />
             )}
             {isOpenWorkstream && (
                 <CreateWS

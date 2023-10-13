@@ -20,6 +20,8 @@ import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
 import CommentCard from "../../../globalComponents/Comments/CommentCard";
 import SmartInformation from "../../taskprofile/components/SmartInformation";
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
+import { BiCommentDetail } from "react-icons/bi";
+//import { BsXCircleFill, BsCheckCircleFill } from "react-icons/bs";
 var QueryId: any = "";
 let smartPortfoliosData: any = [];
 let portfolioType = "";
@@ -33,6 +35,7 @@ var allSmartInfo: any = [];
 var AllSitesAllTasks: any = [];
 var AllListId: any = {};
 var backupAllTasks: any = [];
+let groupedComponentData:any=[];
 var MasterListData: any = []
 let taskTaggedComponents: any = []
 let TaggedPortfoliosToProject: any = [];
@@ -131,11 +134,6 @@ const ProjectManagementMain = (props: any) => {
     getQueryVariable((e: any) => e);
 
     loadAllSmartInformation()
-    // .then((Data: any) => {
-    //   LoadAllSiteAllTasks()
-    // }).catch((error: any) => {
-    //   LoadAllSiteAllTasks()
-    // })
 
     try {
       $("#spPageCanvasContent").removeClass();
@@ -213,7 +211,7 @@ const ProjectManagementMain = (props: any) => {
           .get().then((fetchedProject: any) => {
             if ((fetchedProject.PercentComplete != undefined)) {
               fetchedProject.PercentComplete = (fetchedProject?.PercentComplete * 100).toFixed(0)
-            }  if (fetchedProject?.DueDate != undefined) {
+            } if (fetchedProject?.DueDate != undefined) {
               fetchedProject.DisplayDueDate = fetchedProject.DueDate != null
                 ? Moment(fetchedProject.DueDate).format("DD/MM/YYYY")
                 : "";
@@ -226,7 +224,6 @@ const ProjectManagementMain = (props: any) => {
             fetchedProject?.PortfoliosId?.map((item: any) => {
               MasterListData?.map((portfolio: any) => {
                 if (portfolio?.Id == item) {
-                  portfolio.filterActive = false;
                   fetchedProject?.taggedPortfolios?.push(portfolio);
                 }
               });
@@ -447,7 +444,6 @@ const ProjectManagementMain = (props: any) => {
               items.Portfolio = MasterListData?.find((masterItem: any) => masterItem?.Id == items?.Portfolio?.Id)
               if (!taskComponent?.some((id: any) => id == items?.Portfolio?.Id)) {
                 let comp = items?.Portfolio
-                comp.filterActive = false;
                 taskComponent.push(comp?.Id)
                 taskTaggedComponents.push(comp)
               }
@@ -490,10 +486,27 @@ const ProjectManagementMain = (props: any) => {
                 });
               }
             });
+            items.subRows = [];
             AllTask.push(items);
           });
           let setCount = siteConfig?.length
           if (arraycount === setCount) {
+            AllTask?.map((childTask: any) => {
+              if (childTask?.ParentTask?.Id) {
+                AllTask?.map((parentTask: any) => {
+                  if (parentTask?.Id == childTask?.ParentTask?.Id && parentTask?.isFlag != true) {
+                    parentTask.isFlag = true;
+                    parentTask.subRows.push(childTask);
+                    childTask.removeFlag = true;
+                    if (parentTask?.ParentTask?.Id) {
+                      getChilds(parentTask, AllTask);
+                    }
+                  }
+                });
+              }
+            });
+
+            AllTask = AllTask.filter((item: any) => item.removeFlag !== true);
             setAllTasks(AllTask);
             setData(AllTask);
             setTaskTaggedPortfolios(taskTaggedComponents)
@@ -510,15 +523,29 @@ const ProjectManagementMain = (props: any) => {
     }
   };
 
-  const loadAllComponent = async () => {
+  const getChilds = (item: any, items: any) => {
+    items?.map((sub: any) => {
+      if (sub?.Id == item?.ParentTask?.Id && sub?.isFlag != true) {
+        sub.isFlag = true;
+        sub.subRows.push(item);
+        item.removeFlag = true;
+      }
+    });
+  };
 
-    let web = new Web(AllListId?.siteUrl);
-    MasterListData = await web.lists
-      .getById(AllListId?.MasterTaskListID)
-      .items.select("ComponentCategory/Id", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "DeliverableSynonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "AdminNotes", "AdminStatus", "Background", "Help_x0020_Information", "TaskCategories/Id", "TaskCategories/Title", "PriorityRank", "Reference_x0020_Item_x0020_Json", "TeamMembers/Title", "TeamMembers/Name", "TeamMembers/Id", "Item_x002d_Image", "ComponentLink", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
-      .expand("ClientCategory", "ComponentCategory", "AssignedTo", "AttachmentFiles", "Author", "Editor", "TeamMembers", "TaskCategories", "Parent")
-      .top(4999)
-      .get()
+  const loadAllComponent = async () => {
+    let PropsObject: any = {
+      MasterTaskListID: AllListId.MasterTaskListID,
+      siteUrl: AllListId.siteUrl,
+      TaskUserListId: AllListId.TaskUsertListID,
+    }
+    let componentDetails: any = [];
+    let results = await globalCommon.GetServiceAndComponentAllData(PropsObject)
+    if (results?.AllData?.length > 0) {
+      componentDetails = results?.AllData;
+      groupedComponentData = results?.GroupByData;
+    }
+    MasterListData = componentDetails
 
   }
   const EditPortfolio = (item: any, type: any) => {
@@ -618,10 +645,7 @@ const ProjectManagementMain = (props: any) => {
         });
     }
   };
-  const createOpenTask = (items: any) => {
-    setCreateTaskId({ portfolioData: items, portfolioType: 'Component' });
-    setisOpenCreateTask(true)
-  }
+
   const openRemark = (items: any) => {
     setRemarkData(items)
     if (items.SmartInformation.length > 0) {
@@ -649,8 +673,10 @@ const ProjectManagementMain = (props: any) => {
       {
         accessorKey: "",
         placeholder: "",
+        hasCustomExpanded: true,
+        hasExpanded: true,
         hasCheckbox: true,
-        size: 20,
+        size: 10,
         id: 'Id',
       },
       {
@@ -659,7 +685,7 @@ const ProjectManagementMain = (props: any) => {
         header: "",
         resetColumnFilters: false,
         resetSorting: false,
-        size: 70,
+        size: 125,
         cell: ({ row, getValue }) => (
           <>
             <span className="d-flex">
@@ -855,8 +881,8 @@ const ProjectManagementMain = (props: any) => {
       {
         accessorFn: (row) => row?.SmartInformation[0]?.Title,
         cell: ({ row }) => (
-          <span style={{ display: "flex", width: "100%", height: "100%" }} className='d-flex' onClick={() => openRemark(row?.original)}>
-            &nbsp; {row?.original?.SmartInformation[0]?.Title}
+          <span className='d-flex hreflink' >
+            &nbsp; {row?.original?.SmartInformation?.length > 0 ? <span onClick={() => openRemark(row?.original)} className="commentDetailFill-active"><BiCommentDetail /></span> : <span onClick={() => openRemark(row?.original)} className="commentDetailFill"><BiCommentDetail /></span>}
           </span>
         ),
         id: 'SmartInformation',
@@ -864,7 +890,7 @@ const ProjectManagementMain = (props: any) => {
         resetColumnFilters: false,
         placeholder: "Remarks",
         header: '',
-        size: 125
+        size: 50
       },
 
       {
@@ -930,22 +956,11 @@ const ProjectManagementMain = (props: any) => {
     ],
     [data]
   );
-  const clearPortfolioFilter = () => {
-    setCreateTaskId({ portfolioData: null, portfolioType: null })
-    setData(AllTasks);
-    setSidebarStatus({ ...sidebarStatus, sideBarFilter: false });
-  };
   const filterPotfolioTasks = (portfolio: any, clickedIndex: any, type: any) => {
     let projectData = Masterdata;
     let displayTasks = AllTasks;
     if (type == 'Component' || type == 'taskComponent') {
       if (createTaskId?.portfolioData?.Id != portfolio?.Id) {
-        // displayTasks = AllTasks.filter((items: any) => {
-        //   if (items?.Portfolio?.Id != undefined && items?.Portfolio?.Id == portfolio?.Id) {
-        //     return true;
-        //   }
-        //   return false;
-        // });
         setCreateTaskId({ portfolioData: portfolio, portfolioType: 'Component' });
         setIsTaggedCompTask(true);
         setSidebarStatus({ ...sidebarStatus, sideBarFilter: true });
@@ -959,19 +974,7 @@ const ProjectManagementMain = (props: any) => {
     setMasterdata(projectData);
     setData(displayTasks);
   };
-  const generateSortingIndicator = (column: any) => {
-    return column.isSorted ? (
-      column.isSortedDesc ? (
-        <FaSortDown />
-      ) : (
-        <FaSortUp />
-      )
-    ) : column.showSortIcon ? (
-      <FaSort />
-    ) : (
-      ""
-    );
-  };
+
 
   return (
     <div>
@@ -1007,7 +1010,7 @@ const ProjectManagementMain = (props: any) => {
                         >
                           <span className="nav__icon nav__icon--home"></span>
                           <span className="nav__text">
-                            Portfolios{" "}
+                            Portfolios Item{" "}
                             <span
                               className="float-end "
                               style={{ cursor: "pointer" }}
@@ -1265,7 +1268,7 @@ const ProjectManagementMain = (props: any) => {
                         <div className="section-event ps-0">
                           <div className="wrapper project-management-Table">
 
-                            <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} columns={column2} data={data} callBackData={callBackData} TaskUsers={AllUser} showHeader={true} />
+                            <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} columns={column2} data={data} callBackData={callBackData} TaskUsers={AllUser} showHeader={true} expendedTrue={false} />
                           </div>
 
                         </div>
@@ -1292,6 +1295,7 @@ const ProjectManagementMain = (props: any) => {
               ComponentType={portfolioType}
               Call={ComponentServicePopupCallBack}
               selectionType={"Multi"}
+              groupedData={groupedComponentData}
             ></ServiceComponentPortfolioPopup>
           )}
           {remark && <SmartInformation Id={remarkData?.Id}

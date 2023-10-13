@@ -274,7 +274,7 @@ const Picker = (item: any) => {
                 <div className="subheading siteColor">
                     Select Category
                 </div>
-                <Tooltip ComponentId="1626" />
+                <Tooltip ComponentId="1741" />
             </div>
         )
     }

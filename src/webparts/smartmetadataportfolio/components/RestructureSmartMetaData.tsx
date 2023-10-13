@@ -29,26 +29,26 @@ const RestructureSmartMetaData = (props: any, ref: any) => {
         }
     }, [props?.restructureItem])
     useEffect(() => {
-        if (restructureItem?.length === 0 && checkItemLength) {
+        if (props?.restructureItem?.length === 0 && checkItemLength) {
             let topCompo: any = false;
             let array = AllMetaData;
             array?.map((obj: any) => {
                 obj.isRestructureActive = false;
-                if (obj?.subRows.length > 0 && obj?.subRows != undefined) {
-                    obj?.subRows?.map((sub: any) => {
-                        sub.isRestructureActive = false;
-                        if (sub?.subRows?.length > 0 && sub?.subRows != undefined) {
-                            sub?.subRows?.map((feature: any) => {
-                                feature.isRestructureActive = false;
-                                if (feature?.subRows?.length > 0 && feature?.subRows != undefined) {
-                                    feature?.subRows?.map((activity: any) => {
-                                        activity.isRestructureActive = false;
-                                        if (activity?.subRows?.length > 0 && activity?.subRows != undefined) {
-                                            activity?.subRows?.map((wrkstrm: any) => {
-                                                wrkstrm.isRestructureActive = false;
-                                                if (wrkstrm?.subRows?.length > 0 && wrkstrm?.subRows != undefined) {
-                                                    wrkstrm?.subRows?.map((task: any) => {
-                                                        task.isRestructureActive = false;
+                if (obj?.subRows?.length > 0 && obj?.subRows != undefined) {
+                    obj?.subRows?.map((Item: any) => {
+                        Item.isRestructureActive = false;
+                        if (Item?.subRows?.length > 0 && Item?.subRows != undefined) {
+                            Item?.subRows?.map((Item1: any) => {
+                                Item1.isRestructureActive = false;
+                                if (Item1?.subRows?.length > 0 && Item1?.subRows != undefined) {
+                                    Item1?.subRows?.map((Item2: any) => {
+                                        Item2.isRestructureActive = false;
+                                        if (Item2?.subRows?.length > 0 && Item2?.subRows != undefined) {
+                                            Item2?.subRows?.map((Item3: any) => {
+                                                Item3.isRestructureActive = false;
+                                                if (Item3?.subRows?.length > 0 && Item3?.subRows != undefined) {
+                                                    Item3?.subRows?.map((Item4: any) => {
+                                                        Item4.isRestructureActive = false;
                                                     })
                                                 }
                                             })
@@ -60,55 +60,37 @@ const RestructureSmartMetaData = (props: any, ref: any) => {
                     })
                 }
             })
-            props.restructureFunct(false);
+            props.SmartrestructureFunct(false);
             restructureItemCallBack(array, topCompo);
         }
-    }, [restructureItem])
+    }, [props.restructureItem.length === 0])
     const buttonRestructureCheck = () => {
         let topCompo: any = false
         if (AllMetaData?.length > 0 && AllMetaData !== undefined && restructureItem?.length > 0 && restructureItem !== undefined) {
             let MetaDataArray = AllMetaData;
             MetaDataArray?.filter((obj: any) => {
                 topCompo = true;
-                obj.isRestructureActive = true;
+                restructureItem[0]?.Id === obj?.Id ? obj.isRestructureActive = false : obj.isRestructureActive = true;
                 if (obj?.subRows?.length > 0 && obj?.subRows !== null) {
                     obj?.subRows?.filter((sub: any) => {
-                        sub.isRestructureActive = true;
+                        restructureItem[0]?.Id === sub?.Id ? sub.isRestructureActive = false : sub.isRestructureActive = true;
                         if (sub?.subRows?.length > 0 && sub?.subRows !== null) {
                             sub?.subRows?.filter((sub1: any) => {
-                                sub1.isRestructureActive = true;
+                                restructureItem[0]?.Id === sub1?.Id ? sub1.isRestructureActive = false : sub1.isRestructureActive = true;
                                 if (sub1?.subRows?.length > 0 && sub1?.subRows !== null) {
                                     sub1?.subRows?.filter((sub2: any) => {
-                                        sub2.isRestructureActive = true;
+                                        restructureItem[0]?.Id === sub2?.Id ? sub2.isRestructureActive = false : sub2.isRestructureActive = true;
+                                        if (sub2?.subRows?.length > 0 && sub2?.subRows !== null) {
+                                            sub2?.subRows?.filter((sub3: any) => {
+                                                restructureItem[0]?.Id === sub3?.Id ? sub3.isRestructureActive = false : sub3.isRestructureActive = true;
+                                            })
+                                        }
                                     })
                                 }
                             })
                         }
                     })
-
                 }
-            })
-            MetaDataArray?.filter((obj: any, index: number) => {
-                restructureItem?.filter((ReStruct: any) => {
-                    if (obj?.Id === ReStruct?.Id) {
-                        obj.isRestructureActive = false;
-                        MetaDataArray[index].isRestructureActive = { ...ReStruct?.isRestructureActive }
-                        if (obj?.subRows?.length > 0 && obj?.subRows !== null) {
-                            obj?.subRows?.filter((sub: any, index2: number) => {
-                                sub.isRestructureActive = false;
-                                MetaDataArray[index].subRows[index2].isRestructureActive = { ...sub?.isRestructureActive }
-                            })
-                        }
-                    }
-                    if (obj?.subRows?.length > 0 && obj?.subRows !== null) {
-                        obj?.subRows?.filter((sub: any, index2: number) => {
-                            if (obj?.Id === ReStruct?.Id) {
-                                obj.isRestructureActive = false;
-                                MetaDataArray[index].subRows[index2].isRestructureActive = { ...sub?.isRestructureActive }
-                            }
-                        })
-                    }
-                })
             })
             props.SmartrestructureFunct(true);
             restructureItemCallBack(MetaDataArray, topCompo);
@@ -121,7 +103,7 @@ const RestructureSmartMetaData = (props: any, ref: any) => {
         array.forEach((obj: any) => {
             let object: any = {};
             if (obj.Id === item.Id) {
-                object = { Title: obj.Title, Id: obj.Id, TaxType: obj.TaxType }
+                object = { Title: obj.Title, Id: obj.Id, TaxType: obj.TaxType, Level: 'Level1', }
                 TestArray.push(object);
             }
             if (obj.subRows != undefined && obj.subRows.length > 0) {
@@ -172,7 +154,7 @@ const RestructureSmartMetaData = (props: any, ref: any) => {
     };
     const UpdateMetaDataRestructure = async function () {
         if (restructureItem[0] !== undefined) {
-            let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP/');
+            let web = new Web(props.AllList.SPSitesListUrl);
             if (NewArrayBackup[0].Level === 'Level2') {
                 var postData: any = {
                     ParentId: NewArrayBackup[0].newSubChild?.Id,
@@ -198,7 +180,7 @@ const RestructureSmartMetaData = (props: any, ref: any) => {
                 };
             }
             await web.lists
-                .getById('01a34938-8c7e-4ea6-a003-cee649e8c67a')
+                .getById(props.AllList.SPSmartMetadataListID)
                 .items.getById(restructureItem[0]?.Id)
                 .update(postData)
                 .then(async (res: any) => {
@@ -216,7 +198,7 @@ const RestructureSmartMetaData = (props: any, ref: any) => {
     }));
     return (
         <>
-            <button type="button" title="Restructure" className="btn btn-primary" style={{ backgroundColor: `${props.portfolioColor}`, borderColor: `${props.portfolioColor}`, color: '#fff' }}
+            <button type="button" title="Restructure" className="btnCol btn btn-primary" style={{ backgroundColor: `${props.portfolioColor}`, borderColor: `${props.portfolioColor}`, color: '#fff' }}
                 onClick={buttonRestructureCheck}
             >Restructure</button>
             {
