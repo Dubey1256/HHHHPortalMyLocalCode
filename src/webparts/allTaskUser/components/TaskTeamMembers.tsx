@@ -7,10 +7,13 @@ import { FilePicker, IFilePickerResult } from '@pnp/spfx-controls-react/lib/File
 import { ITeamMembersProps } from "./ITeamMembersProps";
 import { ITeamMembersState } from "./ITeamMembersState";
 import * as pnp from 'sp-pnp-js';
+import { sp } from 'sp-pnp-js';
+import { List, Item } from '@pnp/sp/presets/all';
 import { SPHttpClient } from '@microsoft/sp-http';
 import { getSP } from "../../../spservices/pnpjsConfig"
 import TaskUsersTable from "./TaskUsersTable";
 import Tooltip from "../../../globalComponents/Tooltip";
+import axios from "axios";
 
 const controlStyles = {
     root: {
@@ -59,6 +62,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
     private commandBarItems: ICommandBarItemProps[] = null;
     private _sp: any;
     private _webSerRelURL: any;
+    private roleDefId: any
     constructor(props: ITeamMembersProps) {
         super(props);
         this._sp = getSP();
@@ -66,6 +70,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         this.state = {
             tasks: [],
             searchText: "",
+            folderUrl: '',
             reloadComponent: false,
             showCreatePanel: false,
             showEditPanel: false,
@@ -227,7 +232,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             smartMetadataItems.push(smartMetadataItem);
         });
 
-        const listTasks: any[] = [..._tasks].map(({ Title, Group, Category, Role, SortOrder, Suffix, Item_x0020_Cover, Company, Approver, TaskId }) => ({ Title, Group, Category, Role, SortOrder, Suffix, Item_x0020_Cover, Company, Approver, TaskId }));
+        const listTasks: any[] = [..._tasks].map(({ Title, Group, Category, Role,Team, SortOrder, Suffix, Item_x0020_Cover, Company, Approver, TaskId }) => ({ Title, Group, Category, Role, SortOrder,Team, Suffix, Item_x0020_Cover, Company, Approver, TaskId }));
         let filteredImages: any = []
         let _filteredImages: any = []
         //let filteredImages = await this.props.spService.getImages(this.props.imagesLibraryId, this.state.selImageFolder);
@@ -277,6 +282,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             Approver: taskItem.Approver ? taskItem.Approver.map((i: { Title: any; }) => i.Title).join(", ") : "",
             TaskId: taskItem.Id,
             Suffix: taskItem.Suffix,
+            Team:taskItem.Team,
             SortOrder: taskItem.SortOrder,
             GroupId: taskItem.UserGroup ? taskItem.UserGroup.Id.toString() : "",
             AssignedToUserMail: taskItem.AssingedToUser ? [taskItem.AssingedToUser.Name.split("|")[2]] : [],
@@ -363,7 +369,8 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
     private onEditIconClick(selTaskId: number) {
         this.setState({
             selTaskId: selTaskId,
-            enableUser: false
+            enableUser: false,
+            activeTab: "basic",
         }, this.onEditTask);
     }
 
@@ -499,45 +506,16 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             enableSave: false
         });
     }
-
-    // private async onAddTeamMemberClick() {
-    //     this.componentDidMount();
-    //     let CreatetaskItem: {
-    //         itemType: "User",
-    //         userTitle: undefined,
-    //         userSuffix: undefined,
-    //         groupId: "",
-    //         sortOrder: undefined,
-    //         userId: undefined,
-    //         userMail: [],
-    //         timeCategory: "",
-    //         approverId: [],
-    //         approverMail: [],
-    //         approvalType: undefined,
-    //         selSmartMetadataItems: [],
-    //         company: "Smalsus",
-    //         roles: [],
-    //         isActive: false,
-    //         isTaskNotifications: false,
-    //         itemCover: ""
-    //     }
-    //      const _approverId: number = (await this.getUserInfo(this.props.defaultApproverEMail)).Id;
-    //      CreatetaskItem.approverMail=[]
-    //      CreatetaskItem.approverMail.push(this.props.defaultApproverEMail);
-    //      CreatetaskItem.approverId=[]
-    //      CreatetaskItem.approverId.push(_approverId);   
-    //     CreatetaskItem.userId = undefined;
-    //     CreatetaskItem.userMail = [];
-    //     this.setState({
-    //         taskItem: CreatetaskItem,
-    //         showCreatePanel: true,
-    //         enableUser: true,
-    //         enableSave: false
-    //     });
-    // }
-
+    getRoleDefinitions = async () => {
+        const roleDefinitions = await pnp.sp.web.roleDefinitions.get();
+        roleDefinitions.forEach((i: any) => {
+            if (i.Name == "Full Control")
+                this.roleDefId = i.Id
+        })
+        console.log(roleDefinitions);
+    };
     private onSaveTask() {
-        this.onCancelTask();
+        this.getRoleDefinitions();
         if (this.state.selTaskId) {
             this.updateTask();
         }
@@ -546,8 +524,67 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         }
     }
 
-    private async createTask() {
+    taskUsersListId = '9ed5c649-3b4e-42db-a186-778ba43c5c93';
+    querySelect: string = 'Id,Title,FileLeafRef,File_x0020_Type,Modified,Created,EncodedAbsUrl&$filter=FSObjType eq 1'
+    getListItemsInBatch = async (listId: string, querySelect: string, batchSize: number) => {
+        const list = sp.web.lists.getById(listId);
+        let allItems: any[] = [];
+        let skip = 0;
+        try {
+            while (true) {
+                const items = await list.items.select(querySelect).orderBy('Modified', false).top(batchSize).skip(skip).get();
+                if (items.length === 0) {
+                    break;
+                }
+                allItems = allItems.concat(items);
+                skip += batchSize;
+            }
 
+            return allItems;
+        } catch (error) {
+            console.error('Error getting list items:', error);
+            throw error;
+        }
+    };
+    createNewFolder = async (folderName: any, UpdatedData: any, SiteUrl: any, ListId: any) => {
+        const groupID: number = 63;
+        const SmalsusgroupID: number = 62;
+        const userId: number = this.state.taskItem.userId
+        const list = sp.web.lists.getByTitle(ListId);
+        const folderNames = `${UpdatedData.company}/${folderName}`;
+        await list.items.add({
+            FileSystemObjectType: 1,
+            ContentTypeId: "0x0120"
+        })
+            .then(async (res) => {
+                const lists = sp.web.lists.getByTitle(ListId);
+                const ResDataId = res.data.Id
+                await lists.items.getById(res.data.Id).update({
+                    Title: folderName,
+                    FileLeafRef: folderNames
+                })
+                    .then(async (res) => {
+                        const folderItemData = await list.items.getById(ResDataId).get();
+                        const groupId = groupID;
+                        const roleDefId = 1073741829;
+                        await sp.web.lists.getByTitle(ListId).items.getById(folderItemData.Id).breakRoleInheritance(false);
+                        await sp.web.lists.getByTitle(ListId).items.getById(folderItemData.Id).roleAssignments.add(groupId, roleDefId);
+                        if (UpdatedData.company == 'Smalsus')
+                            await sp.web.lists.getByTitle(ListId).items.getById(folderItemData.Id).roleAssignments.add(SmalsusgroupID, roleDefId);
+                        await sp.web.siteUsers.getById(userId).get()
+                            .then(async (user) => {
+                                await sp.web.lists.getByTitle(ListId).items.getById(folderItemData.Id).roleAssignments.add(user.Id, roleDefId);
+                            })
+                            .catch((error) => {
+                                console.error("Error setting permissions for the user", error);
+                            });
+                        console.log("Folder created and permissions set.");
+                        console.log(res);
+                    });
+            });
+    };
+    private async createTask() {
+        let SiteUrl = ''
         let taskItem = this.state.taskItem;
         let newTaskItem = {
             Title: taskItem.userTitle,
@@ -556,14 +593,23 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             ApproverId: taskItem.approverId,
             ItemType: taskItem.itemType
         }
-
         const newTask = await this.props.spService.createTask(this.props.taskUsersListId, newTaskItem);
-
+        this.getListItemsInBatch(this.taskUsersListId, this.querySelect, 100) // Use an appropriate batch size
+            .then((items) => {
+                console.log(items);
+                let flag = items.filter((i) => i.Title === taskItem.userTitle);
+                this.onCancelTask();
+                if (flag.length == 0)
+                    this.createNewFolder(taskItem.userTitle, taskItem, SiteUrl, 'TasksTimesheet2')
+            })
+            .catch((error) => {
+                console.error('An error occurred:', error);
+            });
         if (newTask) {
             this.updateGallery();
             let _taskItem = { ...this.state.taskItem };
             let assignedUserInfo = await this.props.spService.getUserMail(newTask.AssingedToUserId);
-            let approverInfo = await this.props.spService.getUserMail(newTask.ApproverId[0]);
+            let approverInfo = await this.props.spService.getUserMail(newTask[0]);
             _taskItem.userTitle = newTask.Title;
             _taskItem.userSuffix = newTask.Suffix;
             _taskItem.userId = newTask.AssingedToUserId;
@@ -581,6 +627,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
     }
 
     private async updateTask() {
+        this.onCancelTask();
         let taskItem = this.state.taskItem;
         let updateTaskItem = {
             Title: taskItem.userTitle,
@@ -667,7 +714,9 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
 
         const allTasks = await this.props.spService.getTasks(this.props.taskUsersListId);
 
-        const teamMembersTasks = allTasks.filter(taskItem => taskItem.ItemType == "User").map(taskItem => ({
+        const teamMembersTasks = allTasks.filter((taskItem: { ItemType: string; }) => taskItem.ItemType == "User").map((taskItem: {
+            Team: any; Title: any; UserGroup: { Title: any; Id: { toString: () => any; }; }; TimeCategory: any; Role: string[]; Company: any; Approver: any[]; Id: any; Suffix: any; AssingedToUser: { Name: string; }; IsApprovalMail: any; CategoriesItemsJson: string; SortOrder: null; IsActive: any; IsTaskNotifications: any; Item_x0020_Cover: any; Created: string; Author: { Title: any; }; Modified: string; Editor: { Title: any; }; 
+}) => ({
             Title: taskItem.Title,
             Group: taskItem.UserGroup ? taskItem.UserGroup.Title : "",
             Category: taskItem.TimeCategory,
@@ -679,6 +728,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             Approver: taskItem.Approver ? taskItem.Approver.map((i: { Title: any; }) => i.Title).join(", ") : "",
             TaskId: taskItem.Id,
             Suffix: taskItem.Suffix,
+            Team: taskItem.Team!=undefined?taskItem.Team:'',
             GroupId: taskItem.UserGroup ? taskItem.UserGroup.Id.toString() : "",
             AssignedToUserMail: taskItem.AssingedToUser ? [taskItem.AssingedToUser.Name.split("|")[2]] : [],
             ApproverMail: taskItem.Approver ? taskItem.Approver.map((i: { Name: string; }) => i.Name.split("|")[2]) : [],
@@ -695,7 +745,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             ModifiedBy: taskItem.Editor.Title
         }));
 
-        let listTasks = teamMembersTasks.map(({ Title, Group, Category, SortOrder, CategoriesItemsJson, Role, Company, Approver, TaskId }) => ({ Title, Group, Category, SortOrder, CategoriesItemsJson, Role, Company, Approver, TaskId }));
+        let listTasks = teamMembersTasks.map(({ Title, Group, Category, SortOrder, Team, CategoriesItemsJson, Role, Company, Approver, TaskId }) => ({ Title, Group, Category, SortOrder, Team, CategoriesItemsJson, Role, Company, Approver, TaskId }));
 
         this.setState({
             selTaskId: undefined,
@@ -1095,7 +1145,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         </Panel>);
 
         const elemApproveSelectedMenu = (<PrimaryButton menuProps={this.menuProps()}>Select Items</PrimaryButton>);
-        const elemSelSmartMetadataItems = this.state.taskItem.selSmartMetadataItems?.map((selSmartMetadataItem) => (
+        const elemSelSmartMetadataItems = this.state.taskItem.selSmartMetadataItems?.map((selSmartMetadataItem: { Title: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal; Id: any; }) => (
             <div className="block mx-1 py-2 my-1 justify-content-between">
                 {selSmartMetadataItem.Title}
                 <span className="bg-light svg__icon--cross svg__iconbox" onClick={() => this.onRemoveSmartMetadataItem(selSmartMetadataItem.Id)}></span>
@@ -1231,7 +1281,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
 
         const elemImageGallery = (<div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
             {
-                this.state.filteredImages?.map(imgInfo => (<div style={{ width: '205px', display: 'inline-block', verticalAlign: 'top', margin: '2px' }}>
+                this.state.filteredImages?.map((imgInfo: { Id: any; URL: string; Name: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal; }) => (<div style={{ width: '205px', display: 'inline-block', verticalAlign: 'top', margin: '2px' }}>
                     <DocumentCard style={{ border: (imgInfo.Id == this.state.selImageId) ? "1px solid red" : "" }}>
                         <div
                             //onMouseOver={(ev)=>{ev.preventDefault();this.setState({onImageHover:!this.state.onImageHover})}}
@@ -1421,7 +1471,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         // Reset the items and columns to match the state.
         this.setState({
             sortedItems: sortedItems,
-            columns: columns.map(col => {
+            columns: columns.map((col: { isSorted: boolean; key: string; isSortedDescending: boolean; }) => {
                 col.isSorted = col.key === column.key;
 
                 if (col.isSorted) {
