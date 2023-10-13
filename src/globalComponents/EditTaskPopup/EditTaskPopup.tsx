@@ -43,7 +43,8 @@ import EditSiteComposition from "./EditSiteComposition";
 import SmartTotalTime from './SmartTimeTotal';
 import "react-datepicker/dist/react-datepicker.css";
 import BackgroundCommentComponent from "./BackgroundCommentComponent";
-import context from "react-bootstrap/esm/AccordionContext";
+import EODReportComponent from "../EOD Report Component/EODReportComponent";
+
 
 
 
@@ -187,6 +188,7 @@ const EditTaskPopup = (Items: any) => {
     const [SiteCompositionShow, setSiteCompositionShow] = useState(false);
     const [IsSendAttentionMsgStatus, setIsSendAttentionMsgStatus] = useState(false);
     const [SendCategoryName, setSendCategoryName] = useState('');
+    const [OpenEODReportPopup, setOpenEODReportPopup] = useState(false);
     let [StatusOptions, setStatusOptions] = useState([
         { value: 0, status: "0% Not Started", taskStatusComment: "Not Started" },
         { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
@@ -261,16 +263,14 @@ const EditTaskPopup = (Items: any) => {
     }
     useEffect(() => {
         if (FeedBackCount == 0) {
-
             loadTaskUsers();
             GetExtraLookupColumnData();
             GetMasterData();
             SmartMetaDataListInformations();
+            GetAllComponentAndServiceData("Component");
             AddImageDescriptionsIndex = undefined;
         }
     }, [FeedBackCount])
-
-
 
     const SmartMetaDataListInformations = async () => {
         let AllSmartDataListData: any = [];
@@ -1211,9 +1211,14 @@ const EditTaskPopup = (Items: any) => {
     }
 
     const autoSuggestionsForServiceAndComponent = (e: any, usedFor: any) => {
-        GetAllComponentAndServiceData("Component");
         let SearchedKeyWord: any = e.target.value;
         let TempArray: any = [];
+        if (usedFor == "Portfolio") {
+            setSearchedServiceCompnentKey(SearchedKeyWord);
+        }
+        if (usedFor == "Linked-Portfolios") {
+            setSearchedLinkedPortfolioKey(SearchedKeyWord)
+        }
         if (SearchedKeyWord.length > 0) {
             if (GlobalServiceAndComponentData != undefined && GlobalServiceAndComponentData.length > 0) {
                 GlobalServiceAndComponentData.map((AllDataItem: any) => {
@@ -1225,11 +1230,10 @@ const EditTaskPopup = (Items: any) => {
             if (TempArray != undefined && TempArray.length > 0) {
                 if (usedFor == "Portfolio") {
                     setSearchedServiceCompnentData(TempArray);
-                    setSearchedServiceCompnentKey(SearchedKeyWord);
+
                 }
                 if (usedFor == "Linked-Portfolios") {
                     setSearchedLinkedPortfolioData(TempArray);
-                    setSearchedLinkedPortfolioKey(SearchedKeyWord)
                 }
 
             }
@@ -1526,6 +1530,7 @@ const EditTaskPopup = (Items: any) => {
                 if (type == "Approval") {
                     setApprovalStatus(true);
                     setApproverData(TaskApproverBackupArray);
+                    Items.sendApproverMail = true;
                     StatusOptions?.map((item: any) => {
                         if (item.value == 1) {
                             setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '1' })
@@ -2213,6 +2218,7 @@ const EditTaskPopup = (Items: any) => {
 
         if (PrecentStatus == 1) {
             let tempArrayApprover: any = [];
+
             if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
                 if (TaskApproverBackupArray?.length > 0) {
                     TaskApproverBackupArray.map((dataItem: any) => {
@@ -3593,6 +3599,10 @@ const EditTaskPopup = (Items: any) => {
         GetExtraLookupColumnData();
     }
 
+    const EODReportComponentCallback = () => {
+        setOpenEODReportPopup(false);
+    }
+
     // const SiteCompositionCallBack = useCallback((Data: any, Type: any) => {
     //     if (Data.ClientTime != undefined && Data.ClientTime.length > 0) {
     //         setEnableSiteCompositionValidation(true)
@@ -4134,7 +4144,7 @@ const EditTaskPopup = (Items: any) => {
                                             <div className="col ps-0">
                                                 <div className="input-group mb-2">
                                                     <label className="form-label full-width">
-                                                        Portfolio
+                                                        Portfolio Item
                                                     </label>
                                                     {TaggedPortfolioData?.length > 0 ?
                                                         <div className="full-width">
@@ -4156,7 +4166,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 className="form-control"
                                                                 value={SearchedServiceCompnentKey}
                                                                 onChange={(e) => autoSuggestionsForServiceAndComponent(e, "Portfolio")}
-                                                                placeholder="Search Portfolio Components"
+                                                                placeholder="Search Portfolio Item"
                                                             />
                                                             <span className="input-group-text">
                                                                 <span title="Component Popup" onClick={() => OpenTeamPortfolioPopupFunction(EditData, 'Portfolio')} className="svg__iconbox svg__icon--editBox"></span>
@@ -4423,13 +4433,13 @@ const EditTaskPopup = (Items: any) => {
                                                 <div className="col-12 mb-2 mt-2">
                                                     <div className="input-group mb-2">
                                                         <label className="form-label full-width">
-                                                            Linked Portfolios
+                                                            Linked Portfolio Items
                                                         </label>
                                                         <input type="text"
                                                             className="form-control"
                                                             value={SearchedLinkedPortfolioKey}
                                                             onChange={(e) => autoSuggestionsForServiceAndComponent(e, "Linked-Portfolios")}
-                                                            placeholder="Search Portfolio Components"
+                                                            placeholder="Search Portfolio Items"
                                                         />
                                                         <span className="input-group-text">
                                                             <span title="Component Popup" onClick={() => OpenTeamPortfolioPopupFunction(EditData, 'Linked-Portfolios')} className="svg__iconbox svg__icon--editBox"></span>
@@ -4759,6 +4769,17 @@ const EditTaskPopup = (Items: any) => {
                                                 }
                                             </div>
                                         </div>
+                                        <div className="Sitecomposition mb-3">
+                                            <a className="sitebutton bg-fxdark alignCenter justify-content-between">
+                                                <span className="alignCenter">
+                                                    <span className="svg__iconbox svg__icon--docx"></span>
+                                                    <span className="mx-2">Submit EOD Report</span>
+                                                </span>
+                                                <span className="svg__iconbox svg__icon--editBox hreflink" title="Submit EOD Report Popup"
+                                                    onClick={() => setOpenEODReportPopup(true)}>
+                                                </span>
+                                            </a>
+                                        </div>
                                     </div>
                                     <div className="col-md-4">
                                         <div className="full_width ">
@@ -4775,6 +4796,9 @@ const EditTaskPopup = (Items: any) => {
                                             </span>
                                         </div>
                                     </div>
+
+
+
                                 </div>
                                 <div className="row py-3">
                                     <div className={IsShowFullViewImage != true ?
@@ -4963,7 +4987,7 @@ const EditTaskPopup = (Items: any) => {
                     {SiteCompositionShow ?
                         <EditSiteComposition
                             EditData={EditData}
-                            context={context}
+                            context={Context}
                             ServicesTaskCheck={ServicesTaskCheck}
                             AllListId={AllListIdData}
                             Call={closeSiteCompsotionPanelFunction}
@@ -4979,6 +5003,7 @@ const EditTaskPopup = (Items: any) => {
                             ApprovalTaskStatus={ApprovalTaskStatus}
                             callBack={SendEmailNotificationCallBack}
                         /> : null}
+                    {OpenEODReportPopup ? <EODReportComponent TaskDetails={EditData} siteUrl={siteUrls} Callback={EODReportComponentCallback} /> : null}
                 </div>
             </Panel>
             {/* ***************** this is Image compare panel *********** */}
@@ -5193,7 +5218,7 @@ const EditTaskPopup = (Items: any) => {
                                                         <div className="col ps-0">
                                                             <div className="input-group mb-2">
                                                                 <label className="form-label full-width">
-                                                                    Portfolio
+                                                                    Portfolio Item
                                                                 </label>
                                                                 {TaggedPortfolioData?.length > 0 ?
                                                                     <div className="full-width">
@@ -5215,7 +5240,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             className="form-control"
                                                                             value={SearchedServiceCompnentKey}
                                                                             onChange={(e) => autoSuggestionsForServiceAndComponent(e, "Portfolio")}
-                                                                            placeholder="Search Portfolio Components"
+                                                                            placeholder="Search Portfolio Items"
                                                                         />
                                                                         <span className="input-group-text">
                                                                             <span title="Component Popup" onClick={() => OpenTeamPortfolioPopupFunction(EditData, 'Portfolio')} className="svg__iconbox svg__icon--editBox"></span>
@@ -5824,6 +5849,7 @@ const EditTaskPopup = (Items: any) => {
                                                             />
                                                         </span>
                                                     </div>
+
                                                 </div>
                                             </div>
                                         </div>
