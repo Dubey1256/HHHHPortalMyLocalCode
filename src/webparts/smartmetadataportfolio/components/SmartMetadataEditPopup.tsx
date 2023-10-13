@@ -3,7 +3,7 @@ import { Panel, PanelType } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Web, sp } from 'sp-pnp-js';
-import GlobalCommanTable from './GlobalCommanTableSmartmetadata';
+import GlobalCommanTable from '../../../GlobalCommanTableSmartmetadata';
 let modaltype: any;
 let SitesConfig: any[] = []
 let allSitesTask: any[] = []
@@ -15,7 +15,7 @@ let CurrentSiteUrl: any;
 export default function SmartMetadataEditPopup(props: any) {
     const [activeTab, setActiveTab] = useState('BasicInfo');
     const [AllSitesTask, setAllSitesTask]: any = useState([]);
-    let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP/');
+    let web = new Web(props.AllList.SPSitesListUrl);
     const [SmartTaxonomyItem, setSmartTaxonomyItem] = useState({
         Id: 0,
         Title: '',
@@ -45,7 +45,6 @@ export default function SmartMetadataEditPopup(props: any) {
     let Items: any
     let folderUrl: any
     let SelectItemImagetype: any = 'ItemImage';
-    // const MainSiteUrl = props.SelectProperties.PageContext._pageContext._web.absoluteUrl;
     useEffect(() => {
     }, []);
     const CloseEditSmartMetaPopup = () => {
@@ -56,7 +55,7 @@ export default function SmartMetadataEditPopup(props: any) {
     };
     const loaddropdown = async () => {
         try {
-            const fieldsData = await web.lists.getById('01a34938-8c7e-4ea6-a003-cee649e8c67a').fields.filter("EntityPropertyName eq 'Status'").select('Choices').get();
+            const fieldsData = await web.lists.getById(props.AllList.SPSmartMetadataListID).fields.filter("EntityPropertyName eq 'Status'").select('Choices').get();
             if (fieldsData && fieldsData[0].Choices) {
                 DropdownArray = fieldsData[0].Choices;
                 console.log('DropdownArray', DropdownArray);
@@ -89,7 +88,7 @@ export default function SmartMetadataEditPopup(props: any) {
             SitesConfig = [];
             const query = `(TaxType eq 'Categories') or (TaxType eq 'Sites')`
             const select = `Id,Title,TaxType,listId`;
-            const AllMetaData = await web.lists.getById('01a34938-8c7e-4ea6-a003-cee649e8c67a').items.select(select).filter(query).getAll()
+            const AllMetaData = await web.lists.getById(props.AllList.SPSmartMetadataListID).items.select(select).filter(query).getAll()
             SitesConfig = getSmartMetadataItemsByTaxType(AllMetaData, 'Sites');
             for (var i = 0; i < SitesConfig.length; i++) {
                 if (SitesConfig[i].listId == undefined || SitesConfig[i].Title == 'Master Tasks') {
@@ -101,7 +100,6 @@ export default function SmartMetadataEditPopup(props: any) {
         } catch (error: any) {
             console.error(error);
         };
-
     }
     const loadAllSitesTask = async () => {
         try {
@@ -160,7 +158,7 @@ export default function SmartMetadataEditPopup(props: any) {
             try {
                 const query = `TaxType eq '${props.modalInstance.TaxType}'`
                 const select = `*,Author/Title,Editor/Title,Parent/Id,Parent/Title`;
-                const items = await web.lists.getById('01a34938-8c7e-4ea6-a003-cee649e8c67a').items.select(select).expand("Author,Editor,Parent").filter(query).getAll();
+                const items = await web.lists.getById(props.AllList.SPSmartMetadataListID).items.select(select).expand("Author,Editor,Parent").filter(query).getAll();
                 const SmartMetDataAllItems: any[] = [];
                 items.forEach((item: any) => {
                     if (item.Parent == undefined) {
@@ -331,12 +329,14 @@ export default function SmartMetadataEditPopup(props: any) {
                 };
             }
             if (modaltype == "Add") {
-                await sp.web.lists.getById('01a34938-8c7e-4ea6-a003-cee649e8c67a').items.add(item);
+                await sp.web.lists.getById(props.AllList.SPSmartMetadataListID).items.add(item);
+                props.EditItemCallBack('', '', SmartTaxonomyItem?.TaxType)
                 CloseEditSmartMetaPopup()
             }
 
             if (modaltype == "Update") {
-                await sp.web.lists.getById('01a34938-8c7e-4ea6-a003-cee649e8c67a').items.getById(SmartTaxonomyItem.Id).update(item);
+                await sp.web.lists.getById(props.AllList.SPSmartMetadataListID).items.getById(SmartTaxonomyItem.Id).update(item);
+                props.EditItemCallBack('', '', SmartTaxonomyItem?.TaxType)
                 CloseEditSmartMetaPopup()
             }
 
