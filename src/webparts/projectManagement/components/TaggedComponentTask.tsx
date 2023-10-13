@@ -54,7 +54,7 @@ const TaggedComponentTask = (props: any) => {
                 header: "",
                 resetColumnFilters: false,
                 resetSorting: false,
-                size: 70,
+                size: 125,
                 cell: ({ row, getValue }) => (
                     <>
                         <span className="d-flex">
@@ -223,15 +223,6 @@ const TaggedComponentTask = (props: any) => {
                 ),
                 header: "",
                 size: 110
-            },
-            {
-                accessorFn: (row) => row?.SmartInformation[0]?.Title,
-                id: 'SmartInformation',
-                resetSorting: false,
-                resetColumnFilters: false,
-                placeholder: "Remarks",
-                header: '',
-                size: 125
             },
 
             {

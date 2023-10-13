@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import Tooltip from "../Tooltip";
+import ShowClintCatogory from '../ShowClintCatogory';
 import "bootstrap/dist/css/bootstrap.min.css";
 import * as globalCommon from "../globalCommon";
 import {
@@ -9,22 +10,23 @@ import {
 import GlobalCommanTable, { IndeterminateCheckbox } from "../GroupByReactTableComponents/GlobalCommanTable";
 import HighlightableCell from "../GroupByReactTableComponents/highlight";
 import ShowTaskTeamMembers from "../ShowTaskTeamMembers";
+import { Web } from "sp-pnp-js";
 var LinkedServicesBackupArray: any = [];
 var MultiSelectedData: any = [];
-const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, selectionType }: any) => {
+let AllMetadata: any = [];
+const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, selectionType, groupedData }: any) => {
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [data, setData] = React.useState([]);
     const [CheckBoxData, setCheckBoxData] = React.useState([]);
-    const [selectedComponent, setSelectedComponent] = React.useState([]);
+    const [AllMetadataItems, setAllMetadataItems] = React.useState([]);
     const [AllUsers, setTaskUser] = React.useState([]);
     const [ShowingAllData, setShowingData] = React.useState([])
     const PopupType: any = props?.PopupType;
     let selectedDataArray: any = [];
     let GlobalArray: any = [];
     React.useEffect(() => {
-        if (props.smartComponent != undefined && props.smartComponent.length > 0)
-            setSelectedComponent(props?.smartComponent);
-        GetComponents();
+        GetMetaData();
+       
 
     },
         []);
@@ -53,23 +55,73 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
         item.show = item.show = item?.show == true ? false : true;
         setData(data => ([...data]));
     };
-    const GetComponents = async () => {
+    const GetMetaData = async () => {
+        if (Dynamic?.SmartMetadataListID != undefined) {
+            try {
+                let web = new Web(Dynamic?.siteUrl);
+                let smartmeta = [];
+                smartmeta = await web.lists
+                    .getById(Dynamic?.SmartMetadataListID)
+                    .items.select("Id", "IsVisible", "ParentID", "Color_x0020_Tag", "Title", "SmartSuggestions", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
+                    .top(5000)
+                    .expand("Parent")
+                    .get();
+                setAllMetadataItems(AllMetadata)
+                loadTaskUsers()
+                AllMetadata = smartmeta;
 
-        if (props?.smartComponent != undefined && props?.smartComponent?.length > 0) {
-            selectedDataArray = props?.smartComponent;
+            } catch (error) {
+                console.log(error)
+
+            }
+        } else {
+            alert('Smart Metadata List Id not present')
         }
-        let PropsObject: any = {
-            MasterTaskListID: Dynamic.MasterTaskListID,
-            siteUrl: Dynamic.siteUrl,
-            ComponentType: ComponentType,
-            TaskUserListId: Dynamic.TaskUsertListID,
-            selectedItems: selectedDataArray
+    };
+    const loadTaskUsers = async () => {
+        let taskUser:any=[];
+        if (Dynamic?.TaskUsertListID != undefined) {
+            try {
+                let web = new Web(Dynamic?.siteUrl);
+                taskUser = await web.lists
+                    .getById(Dynamic?.TaskUsertListID)
+                    .items
+                    .select("Id,UserGroupId,Suffix,IsActive,Title,Email,SortOrder,Role,showAllTimeEntry,Company,Group,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+                    .filter('IsActive eq 1')
+                    .get();
+            }
+            catch (error) {
+                GetComponents();
+                return Promise.reject(error);
+            }
+            GetComponents();
+            setTaskUser(taskUser) ;
+        } else {
+            alert('Task User List Id not Available')
         }
-        GlobalArray = await globalCommon.GetServiceAndComponentAllData(PropsObject);
-        if (GlobalArray?.GroupByData != undefined && GlobalArray?.GroupByData?.length > 0) {
-            setData(GlobalArray.GroupByData);
-            LinkedServicesBackupArray = GlobalArray.GroupByData;
+    }
+    const GetComponents = async () => {
+        if (groupedData?.length > 0) {
+            setData(groupedData);
+            LinkedServicesBackupArray = groupedData;
+        } else {
+            if (props?.smartComponent != undefined && props?.smartComponent?.length > 0) {
+                selectedDataArray = props?.smartComponent;
+            }
+            let PropsObject: any = {
+                MasterTaskListID: Dynamic.MasterTaskListID,
+                siteUrl: Dynamic.siteUrl,
+                ComponentType: ComponentType,
+                TaskUserListId: Dynamic.TaskUsertListID,
+                selectedItems: selectedDataArray
+            }
+            GlobalArray = await globalCommon.GetServiceAndComponentAllData(PropsObject);
+            if (GlobalArray?.GroupByData != undefined && GlobalArray?.GroupByData?.length > 0) {
+                setData(GlobalArray.GroupByData);
+                LinkedServicesBackupArray = GlobalArray.GroupByData;
+            }
         }
+
         setModalIsOpen(true);
     }
 
@@ -185,11 +237,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title).join("-"),
                 cell: ({ row }) => (
                     <>
-                        {row?.original?.ClientCategory?.map((elem: any) => {
-                            return (
-                                <> <span title={elem?.Title} className="ClientCategory-Usericon">{elem?.Title?.slice(0, 2).toUpperCase()}</span></>
-                            )
-                        })}
+                        <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadataItems} />
                     </>
                 ),
                 id: 'ClientCategory',
