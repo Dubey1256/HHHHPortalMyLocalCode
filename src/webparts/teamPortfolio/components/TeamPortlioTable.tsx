@@ -19,7 +19,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 import Loader from "react-loader";
-// import { Bars } from 'react-loader-spinner'
+import { Bars } from 'react-loader-spinner'
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 import SmartFilterSearchGlobal from "../../../globalComponents/SmartFilterGolobalBomponents/SmartFilterGlobalComponents";
@@ -106,6 +106,7 @@ function TeamPortlioTable(SelectedProp: any) {
     const [smartTimeTotalFunction, setSmartTimeTotalFunction] = React.useState(null);
     const [groupByButtonClickData, setGroupByButtonClickData] = React.useState([]);
     const [clickFlatView, setclickFlatView] = React.useState(false);
+    const [updatedSmartFilterFlatView, setUpdatedSmartFilterFlatView] = React.useState(false);
     // const [tableHeight, setTableHeight] = React.useState(window.innerHeight);
     const [portfolioTypeConfrigration, setPortfolioTypeConfrigration] = React.useState<any>([{ Title: 'Component', Suffix: 'C', Level: 1 }, { Title: 'SubComponent', Suffix: 'S', Level: 2 }, { Title: 'Feature', Suffix: 'F', Level: 3 }]);
     let ComponetsData: any = {};
@@ -730,9 +731,10 @@ function TeamPortlioTable(SelectedProp: any) {
     }
 
 
-    const smartFiltercallBackData = React.useCallback((filterData, updatedSmartFilter, smartTimeTotal) => {
+    const smartFiltercallBackData = React.useCallback((filterData, updatedSmartFilter, smartTimeTotal, flatView) => {
         if (filterData.length > 0 && smartTimeTotal) {
             setUpdatedSmartFilter(updatedSmartFilter);
+            setUpdatedSmartFilterFlatView(flatView);
             setAllSmartFilterOriginalData(filterData);
             let filterDataBackup = JSON.parse(JSON.stringify(filterData));
             setAllSmartFilterData(filterDataBackup);
@@ -748,6 +750,10 @@ function TeamPortlioTable(SelectedProp: any) {
 
     React.useEffect(() => {
         if (smartAllFilterData?.length > 0 && updatedSmartFilter === false) {
+            isColumnDefultSortingAsc = false
+            hasCustomExpanded = true
+            hasExpanded = true
+            isHeaderNotAvlable = false
             setLoaded(false);
             componentData = [];
             AfterFilterTaskCount = [];
@@ -776,7 +782,11 @@ function TeamPortlioTable(SelectedProp: any) {
             countTaskAWTLevel(AfterFilterTaskCount, afterFilter);
             // }
         }
-        if (smartAllFilterData?.length > 0 && updatedSmartFilter === true) {
+        if (smartAllFilterData?.length > 0 && updatedSmartFilter === true && updatedSmartFilterFlatView === false) {
+            isColumnDefultSortingAsc = false
+            hasCustomExpanded = true
+            hasExpanded = true
+            isHeaderNotAvlable = false
             setLoaded(false);
             filterCount = 0;
             componentDataCopyBackup = [];
@@ -784,6 +794,14 @@ function TeamPortlioTable(SelectedProp: any) {
             setDataBackup(structuredClone(AllSmartFilterDataBackup));
             componentDataCopyBackup = structuredClone(componentData);
             filterDataAfterUpdate();
+        } else if (smartAllFilterData?.length > 0 && updatedSmartFilter === true && updatedSmartFilterFlatView === true) {
+            let afterFilter = true;
+            taskTypeDataItem?.filter((taskLevelcount: any) => { taskLevelcount[taskLevelcount.Title + 'filterNumber'] = 0 });
+            countTaskAWTLevel(smartAllFilterData, afterFilter)
+            portfolioTypeDataItem?.filter((taskLevelcount: any) => { taskLevelcount[taskLevelcount.Title + 'filterNumber'] = 0 });
+            countComponentLevel(smartAllFilterData, afterFilter)
+            setLoaded(true);
+            updatedSmartFilterFlatViewData(smartAllFilterData);
         }
     }, [smartAllFilterData]);
 
@@ -1052,7 +1070,14 @@ function TeamPortlioTable(SelectedProp: any) {
         }
     }
 
-
+    const updatedSmartFilterFlatViewData = (data: any) => {
+        hasCustomExpanded = false
+        hasExpanded = false
+        isHeaderNotAvlable = true
+        isColumnDefultSortingAsc = true
+        setData(data);
+        // setData(smartAllFilterData);
+    }
     const switchFlatViewData = (data: any) => {
         let groupedDataItems = JSON.parse(JSON.stringify(data));
         const flattenedData = flattenData(groupedDataItems);
@@ -1512,8 +1537,15 @@ function TeamPortlioTable(SelectedProp: any) {
     const onRenderCustomHeaderMain1 = () => {
         return (
             <div className="d-flex full-width pb-1">
-                <div className="subheading">
-                    <span className="siteColor">{`Create Component `}</span>
+                <div
+                    style={{
+                        marginRight: "auto",
+                        fontSize: "20px",
+                        fontWeight: "600",
+                        marginLeft: "20px",
+                    }}
+                >
+                    <span>{`Create Component `}</span>
                 </div>
                 <Tooltip ComponentId={checkedList?.Id} />
             </div>
@@ -1737,7 +1769,13 @@ function TeamPortlioTable(SelectedProp: any) {
     const onRenderCustomHeaderMain = () => {
         return (
             <div className="d-flex full-width pb-1">
-                <div 
+                <div
+                    style={{
+                        marginRight: "auto",
+                        fontSize: "20px",
+                        fontWeight: "600",
+                        marginLeft: "20px",
+                    }}
                 >
                     <span>{`Create Item`}</span>
                 </div>
@@ -1813,7 +1851,7 @@ function TeamPortlioTable(SelectedProp: any) {
                                                 scale={1.0}
                                                 loadedClassName="loadedContent"
                                             />
-                                            <GlobalCommanTable setLoaded={setLoaded} clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData} flatView={true} switchGroupbyData={switchGroupbyData} smartTimeTotalFunction={smartTimeTotalFunction} SmartTimeIconShow={true} AllMasterTasksData={AllMasterTasksData} ref={childRef} callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1} data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity} />
+                                            <GlobalCommanTable updatedSmartFilterFlatView={updatedSmartFilterFlatView} setLoaded={setLoaded} clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData} flatView={true} switchGroupbyData={switchGroupbyData} smartTimeTotalFunction={smartTimeTotalFunction} SmartTimeIconShow={true} AllMasterTasksData={AllMasterTasksData} ref={childRef} callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1} data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity} />
                                         </div>
                                     </div>
                                 </div>
@@ -1954,14 +1992,18 @@ function TeamPortlioTable(SelectedProp: any) {
             </Panel>
             {isOpenActivity && (
                 <CreateActivity
-                    props={checkedList}
                     Call={Call}
+                    AllListId={ContextValue}
                     TaskUsers={AllUsers}
                     AllClientCategory={AllClientCategory}
                     LoadAllSiteTasks={LoadAllSiteTasks}
-                    SelectedProp={SelectedProp}
+                    selectedItem={
+                        checkedList != null && checkedList?.Id != undefined
+                            ? checkedList
+                            : SelectedProp
+                    }
                     portfolioTypeData={portfolioTypeData}
-                ></CreateActivity>
+                />
             )}
             {isOpenWorkstream && (
                 <CreateWS

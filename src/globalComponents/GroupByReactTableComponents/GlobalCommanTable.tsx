@@ -795,7 +795,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         </span>
                     </div> :
                         <span style={{ color: `${portfolioColor}` }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} of ${data?.length} `}</span>}
-                    <span className="mx-1">{items?.showDateTime}</span>
+                    <span>{items?.showDateTime}</span>
                     <DebouncedInput
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}
@@ -832,7 +832,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                             <button type="button" disabled className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: "#fff" }} title=" Add Structure"> {" "} Add Structure{" "}</button>
                         )}
 
-                        {items?.protfolioProfileButton != true && <>{table?.getSelectedRowModel()?.flatRows.length === 1 ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
+                        {items?.protfolioProfileButton != true && <>{table?.getSelectedRowModel()?.flatRows.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task" ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
                             <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} > Add Activity-Task</button>}</>}
 
                         {items?.protfolioProfileButton === true && <>{items?.protfolioProfileButton === true && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task" ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
@@ -868,8 +868,10 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
                     {items?.SmartTimeIconShow === true && items?.AllListId?.isShowTimeEntry === true && <a className='smartTotalTime' title="Load SmartTime of AWT" onClick={() => openCreationAllStructure("Smart-Time")} > <BsClockHistory style={{ color: `${portfolioColor}` }} /></a>}
 
-                    {items?.flatView === true && <>{items?.clickFlatView === false ? <a className='smartTotalTime' title='Switch to Flat-View' style={{ color: `${portfolioColor}` }} onClick={() => openCreationAllStructure("Flat-View")}><BsList /></a> :
+                    {items?.flatView === true && items?.updatedSmartFilterFlatView === false && <>{items?.clickFlatView === false ? <a className='smartTotalTime' title='Switch to Flat-View' style={{ color: `${portfolioColor}` }} onClick={() => openCreationAllStructure("Flat-View")}><BsList /></a> :
                         <a className='smartTotalTime' title='Switch to Groupby View' style={{ color: `${portfolioColor}` }} onClick={() => openCreationAllStructure("Groupby-View")}><FaListAlt /></a>}</>}
+
+                    {items?.flatView === true && items?.updatedSmartFilterFlatView === true && <a className='smartTotalTime' title='deactivated to Groupby View'><FaListAlt style={{ color: "#918d8d" }} /></a>}
 
 
                     <a className='brush'><i className="fa fa-paint-brush hreflink" style={{ color: `${portfolioColor}` }} aria-hidden="true" title="Clear All" onClick={() => { setGlobalFilter(''); setColumnFilters([]); }}></i></a>
