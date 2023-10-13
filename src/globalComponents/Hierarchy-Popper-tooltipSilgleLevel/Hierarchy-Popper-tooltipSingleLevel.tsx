@@ -162,7 +162,26 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
             {
                 cell: ({ row }) => (
                     <>
-                        <span>{row.original.Title}</span>
+                        <div>
+                            {row?.original?.SiteIcon != undefined ?
+                                <a
+                                    className="hreflink"
+                                    href={`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                                    data-interception="off"
+                                    target="_blank"
+                                >
+                                    {row?.original?.Title}
+                                </a> : <>{row?.original?.Title != "Others" ? <a
+                                    className="hreflink"
+                                    data-interception="off"
+                                    target="blank"
+                                    href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.Id}`}
+                                >
+                                    <span className="d-flex">
+                                        {row?.original?.Title}
+                                    </span>
+                                </a> : ""}</>}
+                        </div>
                     </>
                 ),
                 id: "Title",
@@ -234,9 +253,9 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
             )}
             {openActivity && (
                 <CreateActivity
-                    props={checkedData}
+                    selectedItem={checkedData}
                     Call={Call}
-                    SelectedProp={AllListId}
+                    AllListId={AllListId}
                 ></CreateActivity>
             )}
             {openWS && (
