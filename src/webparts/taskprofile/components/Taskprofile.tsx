@@ -406,7 +406,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       BasicImageInfo: this.GetAllImages(JSON.parse(taskDetails["BasicImageInfo"]), taskDetails["AttachmentFiles"], taskDetails["Attachments"]),
       FeedBack: JSON.parse(taskDetails["FeedBack"]),
       FeedBackBackup: JSON.parse(taskDetails["FeedBack"]),
-      FeedBackArray: feedBackData[0]?.FeedBackDescriptions,
+      FeedBackArray: feedBackData != undefined && feedBackData?.length > 0 ? feedBackData[0]?.FeedBackDescriptions:[],
       TaskType: taskDetails["TaskType"] != null ? taskDetails["TaskType"]?.Title : '',
       EstimatedTimeDescriptionArray: tempEstimatedArrayData,
       TotalEstimatedTime: TotalEstimatedTime,
