@@ -1702,14 +1702,14 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                             {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 0 &&
                               <div className="img  "><a href={`${this.state.Result["siteUrl"]}/SitePages/TaskDashboard.aspx?UserId=${this.state.Result["TeamMembers"][0]?.Id}&Name=${this.state.Result["TeamMembers"][0]?.Title}`} target="_blank" data-interception="off" title={this.state.Result["TeamMembers"][0]?.Title}>
                                 {this.state.Result["TeamMembers"][0].userImage != null && <img className={`workmember ${this.state.Result["TeamMembers"][0].activeimg2}`} src={this.state.Result["TeamMembers"][0]?.userImage}></img>}
-                                {this.state.Result["TeamMembers"][0].userImage == null && <span className={`workmember ${this.state.Result["TeamMembers"][0].activeimg2}bg-fxdark border bg-e9 p-1 `} >{this.state.Result["TeamMembers"][0]?.Suffix}</span>}
-                              </a>
+                                {this.state.Result["TeamMembers"][0].userImage == null && <span className={`workmember ${this.state.Result["TeamMembers"][0].activeimg2}  suffix_Usericon bg-e9 p-1 `} >{this.state.Result["TeamMembers"][0]?.Suffix}</span>}
+                              </a> 
                               </div>
                             }
 
                             {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length == 2 && <div className="img mx-2"><a href={`${this.state.Result["siteUrl"]}/SitePages/TaskDashboard.aspx?UserId=${this.state.Result["TeamMembers"][1]?.Id}&Name=${this.state.Result["TeamMembers"][1]?.Title}`} target="_blank" data-interception="off" title={this.state.Result["TeamMembers"][1]?.Title}>
                               {this.state.Result["TeamMembers"][1]?.userImage != null && <img className={`workmember ${this.state.Result["TeamMembers"][1]?.activeimg2}`} src={this.state.Result["TeamMembers"][1]?.userImage}></img>}
-                              {this.state.Result["TeamMembers"][1]?.userImage == null && <span className={`workmember ${this.state.Result["TeamMembers"][1]?.activeimg2}bg-fxdark border bg-e9 p-1`} >{this.state.Result["TeamMembers"][1]?.Suffix}</span>}
+                              {this.state.Result["TeamMembers"][1]?.userImage == null && <span className={`workmember ${this.state.Result["TeamMembers"][1]?.activeimg2} suffix_Usericon bg-e9 p-1`} >{this.state.Result["TeamMembers"][1]?.Suffix}</span>}
                             </a>
                             </div>
                             }
@@ -1723,7 +1723,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                         <a href={`${this.state.Result["siteUrl"]}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`} target="_blank" data-interception="off">
 
                                           {rcData?.userImage != null && <img className={`workmember ${rcData?.activeimg2}`} src={rcData?.userImage}></img>}
-                                          {rcData?.userImage == null && <span className={`workmember ${rcData?.activeimg2}bg-fxdark border bg-e9 p-1`}>{rcData?.Suffix}</span>}
+                                          {rcData?.userImage == null && <span className={`workmember ${rcData?.activeimg2} suffix_Usericon bg-e9 p-1`}>{rcData?.Suffix}</span>}
 
                                           <span className='mx-2'>{rcData?.Title}</span>
                                         </a>
