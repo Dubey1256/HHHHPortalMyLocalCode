@@ -39,7 +39,7 @@ const CreateActivity = (props: any) => {
 
     });
     const [siteType, setSiteType] = React.useState([]);
-    const [TaskTitle, setTaskTitle] = React.useState('');
+    const [TaskTitle, setTaskTitle] = React.useState(props?.selectedItem?.Title);
     const [instantCategories, setInstantCategories] = React.useState([])
     const [sendApproverMail, setSendApproverMail] = React.useState(false)
     const [taskCat, setTaskCat] = React.useState([]);
@@ -687,7 +687,7 @@ const CreateActivity = (props: any) => {
                                     console.log(res);
                                 }
 
-                                //closeTaskStatusUpdatePoup(res);
+                          
                             });
 
 
@@ -933,7 +933,6 @@ const CreateActivity = (props: any) => {
                                     closeTaskStatusUpdatePoup(res);
                                 }
 
-                                // closeTaskStatusUpdatePoup(res);
                             });
                         // }
                     }
@@ -974,12 +973,15 @@ const CreateActivity = (props: any) => {
         setCategorySearchKey("");
         setIsComponentPicker(false);
         let data: any = CategoriesData;
-        CategoriesData?.map((items: any) => {
-            if (selectCategoryData[0].Id != undefined && !data?.find((obj: any) => obj?.Id == selectCategoryData[0].Id)) {
-                data?.push(selectCategoryData[0]);
-            }
-        });
-        setCategoriesData((CategoriesData: any) => [...data]);
+        if (selectCategoryData[0].Id != undefined) {
+            data?.push(selectCategoryData[0]);
+        }
+        let uniqueData:any=[];
+        data?.map((item:any)=>{if(!uniqueData.find((secItem:any)=>secItem?.Id==item?.Id)){
+            uniqueData.push(item)
+        }})
+      
+        setCategoriesData((CategoriesData: any) => [...uniqueData]);
         setSearchedCategoryData([]);
     };
     //End
@@ -1109,7 +1111,7 @@ const CreateActivity = (props: any) => {
                 </div>
 
                 <div className="modal-footer">
-                    {siteType?.length > 1 ?
+                    {siteType?.length > 1  && selectedItem?.TaskType?.Title!="Workstream"?
                         <div className='col mt-4'>
                             <h4 className="titleBorder ">Websites</h4>
                             <div className='clearfix p-0'>
@@ -1429,7 +1431,7 @@ const CreateActivity = (props: any) => {
                     <button
                         type="button"
                         className="btn btn-default m-2"
-                    // onClick={() => closeTaskStatusUpdatePoup("item")}
+                    onClick={() => closeTaskStatusUpdatePoup("item")}
                     >
                         Cancel
                     </button>

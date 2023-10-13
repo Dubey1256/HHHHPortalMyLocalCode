@@ -2,7 +2,7 @@ import * as React from 'react';
 import styles from './CreatedByTables.module.scss';
 import { ICreatedByTablesProps } from './ICreatedByTablesProps';
 import { escape } from '@microsoft/sp-lodash-subset';
-import Table from './Table';
+// import Table from './Table';
 import Tabless from './Tabless';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.min.js";
