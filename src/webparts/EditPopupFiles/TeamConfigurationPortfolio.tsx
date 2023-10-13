@@ -122,16 +122,16 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 .getById(this.props?.ItemInfo?.listId || this.props?.ItemInfo?.listName)
                 .items
                 .getById(this.props.ItemInfo.Id)
-                .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "TeamMembers/Title", "TeamMembers/Id", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "Component/Id", "Component/Title", "Services/Id", "Services/Title")
-                .expand("TeamMembers", "AssignedTo", "ResponsibleTeam", "TaskType", "Component", "Services")
+                .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "TeamMembers/Title", "TeamMembers/Id", "ResponsibleTeam/Title", "ResponsibleTeam/Id","Component/Id", "Component/Title", "Services/Id", "Services/Title")
+                .expand("TeamMembers", "AssignedTo", "ResponsibleTeam", "Component", "Services")
                 .get()
         } else {
             taskDetails = await web.lists
                 .getByTitle(this.props?.ItemInfo?.siteType)
                 .items
                 .getById(this.props.ItemInfo.Id)
-                .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "TeamMembers/Title", "TeamMembers/Id", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "Component/Id", "Component/Title", "Services/Id", "Services/Title")
-                .expand("TeamMembers", "AssignedTo", "ResponsibleTeam", "TaskType", "Component", "Services")
+                .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "TeamMembers/Title", "TeamMembers/Id", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "Component/Id", "Component/Title", "Services/Id", "Services/Title")
+                .expand("TeamMembers", "AssignedTo", "ResponsibleTeam",  "Component", "Services")
                 .get()
         }
 

@@ -14,7 +14,7 @@ import {
 
 } from 'react-table';
 // import styles from './CreatedByTables.module.scss';
-import './Style.css';
+// import './Style.css';
 import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
 import { Filter, DefaultColumnFilter } from './filters';
@@ -401,7 +401,7 @@ const Tabless = (props: any) => {
   const columns = React.useMemo(
     () => [
       {
-        accessorFn: (row: any) => <img style={{borderRadius:'20px',width:'30px',height:'30px'}} className="icon-sites-img ml20 me-1" src={row?.siteIcon}></img>,
+        accessorFn: (row: any) => <img className="workmember" src={row?.siteIcon}></img>,
         id: "siteIcon",
         placeholder: "",
         header: "",
@@ -441,8 +441,6 @@ const Tabless = (props: any) => {
         placeholder: "Task Title",
         header: "",
         resetColumnFilters: false,
-        size: 140,
-
       },
       {
 
@@ -523,7 +521,7 @@ const Tabless = (props: any) => {
             <a style={{ textDecoration: 'none', cursor: 'pointer', color: `${row?.original?.PortfolioType?.Color}` }} target='_blank' href={`${props.Items.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}>
               {row?.original?.newModified}
               <span>{
-                row?.original?.editorImg === undefined ? <span className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{row?.original?.EditorSuffix}</span> : <img style={{ width: "25px", height: '25px', borderRadius: '20px' }} src={row?.original?.editorImg} />}
+                row?.original?.editorImg === undefined ? <span className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{row?.original?.EditorSuffix}</span> : <img className='workmember ms-1' src={row?.original?.editorImg} />}
                 </span>
             </a>
           </div>
@@ -532,7 +530,7 @@ const Tabless = (props: any) => {
         placeholder: "Modified",
         header: "",
         resetColumnFilters: false,
-        size: 110,
+        size: 120,
       },
       {
 
@@ -542,7 +540,7 @@ const Tabless = (props: any) => {
             <a style={{ textDecoration: 'none', cursor: 'pointer', color: `${row?.original?.PortfolioType?.Color}` }} target='_blank' href={`${props.Items.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}>
               {row?.original?.newCreated}
               <span>{
-                row?.original?.authorImg === undefined ? <span className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{row?.original?.AuthorSuffix}</span> : <img style={{ width: "25px", height: '25px', borderRadius: '20px' }} src={row?.original?.authorImg} />}
+                row?.original?.authorImg === undefined ? <span className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{row?.original?.AuthorSuffix}</span> : <img className='workmember ms-1' src={row?.original?.authorImg} />}
                 </span>
             </a>
           </div>
@@ -552,7 +550,7 @@ const Tabless = (props: any) => {
         header: "",
         isColumnDefultSortingDesc: true ,
         resetColumnFilters: false,
-        size: 110,
+        size: 120,
       },
       {
         accessorFn: (row: any) => row?.TeamMembersSearch,
@@ -569,7 +567,7 @@ const Tabless = (props: any) => {
       },
       {
         cell: ({ row, getValue }: any) => (
-          <span>
+          <span className='ml-auto'>
             <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink ms-1" onClick={() => editPopFunc(row.original)} ></span>
             <span title="Delete Task" className="svg__iconbox svg__icon--trash hreflink" onClick={() => deleteItemFunction(row.original)} ></span>
           </span>
@@ -599,11 +597,11 @@ const Tabless = (props: any) => {
 
       <section className='ContentSection'><div className='row'>
         {
-          queryId != null && <div className='col'><h3 className="siteColor">Created By - {queryId}</h3></div>
+          queryId != null && <div className='col heading siteColor'>Created By - {queryId}</div>
         }
-        <div className='col alignCenter justify-content-end'>
-          <input className='form-check-input me-1' type="checkbox" value={'Component'} onChange={(e: any) => filterCom(e)} /> Component
-          <input className='form-check-input me-1' type="checkbox" value={'Service'} onChange={(e: any) => filterCom(e)} /> Service
+        <div className='col alignCenter p-0 justify-content-end'>
+          <input className='form-check-input me-1 mt-0' type="checkbox" value={'Component'} onChange={(e: any) => filterCom(e)} /> Component
+          <input className='form-check-input me-1 mt-0 ms-2' type="checkbox" value={'Service'} onChange={(e: any) => filterCom(e)} /> Service
           <a
           target='_blank'
             href={`${props.Items.siteUrl}/SitePages/Tasks%20View.aspx?CreatedBy=${queryId}`}
@@ -619,7 +617,9 @@ const Tabless = (props: any) => {
 
       <section className="TableContentSection">
         <div className='Alltable'>
-          <GlobalCommanTable expandIcon={true} showHeader={true} showPagination={true} columns={columns} data={data} callBackData={callBackData} />
+          <div className='wrapper'>
+          <GlobalCommanTable expandIcon={true} showHeader={true} columns={columns} data={data} callBackData={callBackData} />
+          </div>
         </div>
       </section>
       <span>
