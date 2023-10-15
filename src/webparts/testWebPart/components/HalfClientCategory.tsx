@@ -1,25 +1,19 @@
 import React from 'react'
-import "bootstrap/dist/css/bootstrap.min.css"; import { Button, Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
-import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaCaretDown, FaCaretRight, FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
 import {
     ColumnDef,
 } from "@tanstack/react-table";
 import PageLoader from '../../../globalComponents/pageLoader';
 import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
 import { Web } from "sp-pnp-js";
-import { useTable, useSortBy, useFilters, useExpanded, usePagination, HeaderGroup, } from "react-table";
-import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewTool/components/filters";
-import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 import * as Moment from 'moment';
 import EditInstituton from "../../EditPopupFiles/EditComponent";
 import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
-import ShowTeamMembers from '../../../globalComponents/ShowTeamMember';
-import { FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaInfoCircle, FaChevronRight, FaChevronDown } from 'react-icons/fa';
-import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
+import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
+import EditSiteComposition from '../../../globalComponents/EditTaskPopup/EditSiteComposition';
 
 var siteConfig: any = []
 var AllTaskUsers: any = []
@@ -33,10 +27,11 @@ let headerOptions: any = {
     openTab: true,
     teamsIcon: true
 }
+let siteSortOrder: any = {}
 let AllCSFMasterTasks: any = [];
 var isShowTimeEntry: any = "";
 var AllMetadata: any = [];
-let BackUpAllCCTask:any=[];
+let BackUpAllCCTask: any = [];
 var isShowSiteCompostion: any = "";
 const HalfClientCategory = (props: any) => {
     const [pageLoaderActive, setPageLoader] = React.useState(false)
@@ -46,9 +41,11 @@ const HalfClientCategory = (props: any) => {
     const [IsComponent, setIsComponent] = React.useState(false);
     const [selectedView, setSelectedView] = React.useState("MasterTask");
     const [isOpenEditPopup, setisOpenEditPopup] = React.useState(false);
+    const [EditSiteCompositionStatus, setEditSiteCompositionStatus] = React.useState(false);
     const [AllSiteTasks, setAllSiteTasks]: any = React.useState([]);
     const [AllMasterTasks, setAllMasterTasks]: any = React.useState([]);
     const [passdata, setpassdata] = React.useState("");
+    const [selectedItem, setSelectedItem]: any = React.useState(null);
     const [currentUserData, setCurrentUserData]: any = React.useState({});
     React.useEffect(() => {
         try {
@@ -116,6 +113,7 @@ const HalfClientCategory = (props: any) => {
                 let web = new Web(AllListId?.siteUrl);
                 let smartmeta = [];
                 let TaxonomyItems = [];
+
                 smartmeta = await web.lists
                     .getById(AllListId?.SmartMetadataListID)
                     .items.select("Id", "IsVisible", "ParentID", "Color_x0020_Tag", "Title", "SmartSuggestions", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
@@ -126,6 +124,7 @@ const HalfClientCategory = (props: any) => {
                     smartmeta?.map((site: any) => {
                         if (site?.Title != "Master Tasks" && site?.Title != "SDC Sites" && site?.TaxType == 'Sites') {
                             siteConfig.push(site)
+                            siteSortOrder[site?.Title?.toLowerCase()] = site?.SortOrder;
                         }
                     })
                 } else {
@@ -179,31 +178,30 @@ const HalfClientCategory = (props: any) => {
     function siteCompositionDetails(jsonStr: any): any {
         let totalPercent: number = 0;
         let result: string[] = [];
-
         try {
             const data = JSON.parse(jsonStr);
             if (data?.length > 0) {
-                data?.forEach((site: any, index: number) => {
+                const sortedData = data?.sort((a: any, b: any) => {
+                    const orderA = siteSortOrder[a?.Title?.toLowerCase()] || Infinity;
+                    const orderB = siteSortOrder[b?.Title?.toLowerCase()] || Infinity;
+                    return orderA - orderB;
+                });
+                sortedData?.forEach((site: any, index: number) => {
                     if (site?.SiteName || site?.Title) {
                         let parsedValue: number = parseFloat(site?.ClienTimeDescription || '0');
                         if (!isNaN(parsedValue)) {
                             totalPercent += parsedValue;
                         }
-
                         let name = site?.SiteName || site?.Title || '';
-                        result.push(`${name}-${parsedValue.toFixed(2)}`);
+                        result.push(`${name}-${parsedValue?.toFixed(2)}`);
                     }
                 });
-
-                totalPercent = parseFloat(totalPercent.toFixed(2));
-
+                totalPercent = parseFloat(totalPercent?.toFixed(2));
                 return {
                     result: result.join(' ; '),
                     total: totalPercent
                 };
             }
-
-
         } catch (error) {
             console.error(error);
             return {
@@ -228,7 +226,7 @@ const HalfClientCategory = (props: any) => {
         setPageLoader(true);
         if (siteConfig?.length > 0) {
             try {
-               BackUpAllCCTask = [];
+                BackUpAllCCTask = [];
                 let web = new Web(AllListId?.siteUrl);
                 var arraycount = 0;
                 siteConfig.map(async (config: any) => {
@@ -248,9 +246,9 @@ const HalfClientCategory = (props: any) => {
                             items.ShowTeamsIcon = false
                             items.AllTeamMember = [];
                             items.siteType = config.Title;
-                            items.ClientCatTitle=[];
-                            
-                            
+                            items.ClientCatTitle = [];
+
+
                             items.bodys = items.Body != null && items.Body.split('<p><br></p>').join('');
                             items.listId = config.listId;
                             items.siteUrl = config.siteUrl.Url;
@@ -278,21 +276,6 @@ const HalfClientCategory = (props: any) => {
                                 items["ProjectTitle"] = '';
                                 items["ProjectPriority"] = 0;
                             }
-                            if (items?.SiteCompositionSettings != undefined) {
-                                items.compositionType = siteCompositionType(items?.SiteCompositionSettings);
-                                items.isProtectedItem = itemProtected(items?.SiteCompositionSettings)
-                            } else {
-                                items.compositionType = '';
-                                items.isProtectedItem = false;
-                            }
-                            if (items?.ClientTime != undefined) {
-                                let result = siteCompositionDetails(items?.ClientTime);
-                                items.siteCompositionSearch = result?.result;
-                                items.siteCompositionTotal = result?.total;
-                            } else {
-                                items.siteCompositionSearch = ' ';
-                                items.siteCompositionTotal = ' ';
-                            }
 
                             items.TeamMembersSearch = "";
                             items.AssignedToIds = [];
@@ -311,7 +294,7 @@ const HalfClientCategory = (props: any) => {
                             }
                             if (items?.ClientCategory?.length > 0) {
                                 items?.ClientCategory?.map((dataCat: any) => {
-                                    const matchingItem = AllMetadata?.find((elem:any) => elem?.Id === dataCat?.Id);
+                                    const matchingItem = AllMetadata?.find((elem: any) => elem?.Id === dataCat?.Id);
                                     if (matchingItem) {
                                         const titles = [];
                                         if (matchingItem?.Parent == null) {
@@ -320,18 +303,18 @@ const HalfClientCategory = (props: any) => {
                                             const parentTitles = getParentTitles(matchingItem?.Parent?.Id);     // Has parent, get the parent titles recursively
                                             titles.push(...parentTitles, matchingItem?.Title);
                                         }
-                                        if(titles?.length>0){
+                                        if (titles?.length > 0) {
                                             dataCat.Titles = titles?.join(' > ');
                                             items.ClientCatTitle.push(dataCat.Titles)
                                         }  // Set the titles array to the dataCat
                                         dataCat.Color_x0020_Tag = matchingItem.Color_x0020_Tag;
                                     }
                                 });
-                            } 
-                            if(items?.ClientCatTitle?.length>0){
-                                items.CCSearch= items?.ClientCatTitle?.join(' ; ');
-                            }else{
-                                items.CCSearch=''
+                            }
+                            if (items?.ClientCatTitle?.length > 0) {
+                                items.CCSearch = items?.ClientCatTitle?.join(' ; ');
+                            } else {
+                                items.CCSearch = ''
                             }
                             items.componentString =
                                 items.Component != undefined &&
@@ -359,6 +342,27 @@ const HalfClientCategory = (props: any) => {
                                     });
                                 }
                             });
+                            try {
+                                if (items?.SiteCompositionSettings != undefined) {
+                                    items.compositionType = siteCompositionType(items?.SiteCompositionSettings);
+                                    items.isProtectedItem = itemProtected(items?.SiteCompositionSettings)
+                                } else {
+                                    items.compositionType = '';
+                                    items.isProtectedItem = false;
+                                }
+                                if (items?.ClientTime != undefined) {
+                                    let result = siteCompositionDetails(items?.ClientTime);
+                                    items.ClientTime = JSON.parse(items?.ClientTime);
+                                    items.siteCompositionSearch = result?.result;
+                                    items.siteCompositionTotal = result?.total;
+                                } else {
+                                    items.siteCompositionSearch = ' ';
+                                    items.siteCompositionTotal = ' ';
+                                }
+                            } catch (error) {
+
+                            }
+
                             BackUpAllCCTask.push(items);
                         }
                     });
@@ -385,7 +389,7 @@ const HalfClientCategory = (props: any) => {
     };
     const GetMasterData = async () => {
         setPageLoader(true);
-        AllCSFMasterTasks= [];
+        AllCSFMasterTasks = [];
         if (AllListId?.MasterTaskListID != undefined) {
             let web = new Web(`${AllListId?.siteUrl}`);
             let taskUsers: any = [];
@@ -403,9 +407,9 @@ const HalfClientCategory = (props: any) => {
                     items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
                     items.siteUrl = AllListId?.siteUrl;
                     items.listId = AllListId?.MasterTaskListID;
-                    items.ClientCatTitle=[];
+                    items.ClientCatTitle = [];
                     items?.ClientCategory?.map((dataCat: any) => {
-                        const matchingItem = AllMetadata?.find((elem:any) => elem?.Id === dataCat?.Id);
+                        const matchingItem = AllMetadata?.find((elem: any) => elem?.Id === dataCat?.Id);
                         if (matchingItem) {
                             const titles = [];
                             if (matchingItem?.Parent == null) {
@@ -414,17 +418,17 @@ const HalfClientCategory = (props: any) => {
                                 const parentTitles = getParentTitles(matchingItem?.Parent?.Id);     // Has parent, get the parent titles recursively
                                 titles.push(...parentTitles, matchingItem?.Title);
                             }
-                            if(titles?.length>0){
+                            if (titles?.length > 0) {
                                 dataCat.Titles = titles?.join(' > ');
                                 items.ClientCatTitle.push(dataCat.Titles)
                             }  // Set the titles array to the dataCat
                             dataCat.Color_x0020_Tag = matchingItem.Color_x0020_Tag;
                         }
                     });
-                    if(items?.ClientCatTitle?.length>0){
-                        items.CCSearch= items?.ClientCatTitle?.join(' ; ');
-                    }else{
-                        items.CCSearch=''
+                    if (items?.ClientCatTitle?.length > 0) {
+                        items.CCSearch = items?.ClientCatTitle?.join(' ; ');
+                    } else {
+                        items.CCSearch = ''
                     }
                     items.AssignedUser = []
                     items.TaskID = items?.PortfolioStructureID;
@@ -440,21 +444,6 @@ const HalfClientCategory = (props: any) => {
                             })
                         })
                     }
-                    if (items?.SiteCompositionSettings != undefined) {
-                        items.compositionType = siteCompositionType(items?.SiteCompositionSettings);
-                        items.isProtectedItem = itemProtected(items?.SiteCompositionSettings)
-                    } else {
-                        items.compositionType = '';
-                        items.isProtectedItem = false;
-                    }
-                    if (items?.Sitestagging != undefined) {
-                        let result = siteCompositionDetails(items?.Sitestagging);
-                        items.siteCompositionSearch = result?.result;
-                        items.siteCompositionTotal = result?.total;
-                    } else {
-                        items.siteCompositionSearch = ' ';
-                        items.siteCompositionTotal = ' ';
-                    }
                     AllTaskUsers?.map((user: any) => {
                         if (user.AssingedToUserId == items.Author.Id) {
                             items.createdImg = user?.Item_x0020_Cover?.Url;
@@ -465,13 +454,33 @@ const HalfClientCategory = (props: any) => {
                             ? Moment(items.Created).format("DD/MM/YYYY")
                             : "";
                     items.siteType = 'Master Tasks';
-                    items.DisplayDueDate = items.DueDate != null ? Moment(items.DueDate).format('DD/MM/YYYY') : ""
+                    items.DisplayDueDate = items.DueDate != null ? Moment(items.DueDate).format('DD/MM/YYYY') : "";
+                    try {
+                        if (items?.SiteCompositionSettings != undefined) {
+                            items.compositionType = siteCompositionType(items?.SiteCompositionSettings);
+                            items.isProtectedItem = itemProtected(items?.SiteCompositionSettings)
+                        } else {
+                            items.compositionType = '';
+                            items.isProtectedItem = false;
+                        }
+                        if (items?.Sitestagging != undefined) {
+                            let result = siteCompositionDetails(items?.Sitestagging);
+                            items.Sitestagging = JSON.parse(items?.Sitestagging)
+                            items.siteCompositionSearch = result?.result;
+                            items.siteCompositionTotal = result?.total;
+                        } else {
+                            items.siteCompositionSearch = ' ';
+                            items.siteCompositionTotal = ' ';
+                        }
+                    } catch (error) {
+
+                    }
                     AllCSFMasterTasks.push(items)
                 }
             })
             setPageLoader(false);
             setAllMasterTasks(AllCSFMasterTasks)
-          //  console.log(AllCSFMasterTasks);
+            //  console.log(AllCSFMasterTasks);
 
         } else {
             alert('Master Task List Id Not Available')
@@ -505,7 +514,10 @@ const HalfClientCategory = (props: any) => {
         setIsComponent(false);
     };
     const CallBack = (item: any) => {
-
+        if (item == 'SiteComp') {
+            setEditSiteCompositionStatus(false);
+            setSelectedItem(null)
+        }
     }
 
     const columns = React.useMemo<ColumnDef<any, unknown>[]>(
@@ -525,7 +537,7 @@ const HalfClientCategory = (props: any) => {
                 size: 70,
                 cell: ({ row, getValue }) => (
                     <span className="d-flex">
-                        <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTaskItems} AllSitesTaskData={allSitesTasks} />
+                        <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTaskItems} AllSitesTaskData={allSitesTasks} AllListId={AllListId} />
                     </span>
                 ),
             },
@@ -596,7 +608,12 @@ const HalfClientCategory = (props: any) => {
             {
                 accessorFn: (row) => row?.siteCompositionSearch,
                 cell: ({ row }) => (
-                    <span>{row?.original?.siteCompositionSearch}</span>
+                    <div>
+                        <span>{row?.original?.siteCompositionSearch}</span>
+                        {row?.original?.ClientTime?.length > 0 ?
+                            <span title="Edit Site Composition" onClick={() => { setSelectedItem(row?.original), setEditSiteCompositionStatus(true) }} className="alignIcon svg__iconbox svg__icon--editBox"></span>
+                            : ''}
+                    </div>
                 ),
                 id: 'siteCompositionSearch',
                 placeholder: "Site Composition",
@@ -660,7 +677,7 @@ const HalfClientCategory = (props: any) => {
                                 </a>
                             </>
                         ) : (
-                            <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
+                            <span className='alignIcon workmember svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
                         )}
                     </span>
                 ),
@@ -715,7 +732,7 @@ const HalfClientCategory = (props: any) => {
                 size: 70,
                 cell: ({ row, getValue }) => (
                     <span className="d-flex">
-                        <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTaskItems} AllSitesTaskData={allSitesTasks} />
+                        <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTaskItems} AllSitesTaskData={allSitesTasks} AllListId={AllListId}/>
                     </span>
                 ),
             },
@@ -756,7 +773,12 @@ const HalfClientCategory = (props: any) => {
             {
                 accessorFn: (row) => row?.siteCompositionSearch,
                 cell: ({ row }) => (
-                    <span>{row?.original?.siteCompositionSearch}</span>
+                    <div>
+                        <span>{row?.original?.siteCompositionSearch}</span>
+                        {/* {row?.original?.Sitestagging?.length > 0 ?
+                        <span title="Edit Site Composition" onClick={() => { setSelectedItem(row?.original), setEditSiteCompositionMaster(true) }} className="svg__iconbox svg__icon--editBox"></span>
+                        : ''} */}
+                    </div>
                 ),
                 id: 'siteCompositionSearch',
                 placeholder: "Site Composition",
@@ -832,7 +854,7 @@ const HalfClientCategory = (props: any) => {
                                 </a>
                             </>
                         ) : (
-                            <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
+                            <span className='alignIcon workmember svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
                         )}
                     </span>
                 ),
@@ -869,12 +891,12 @@ const HalfClientCategory = (props: any) => {
         ],
         [AllCSFMasterTasks]
     );
-    const filterProtectedView =(checked:any)=>{
-        if(!checked){
-            setAllMasterTasks(AllCSFMasterTasks?.filter((item:any)=> item?.isProtectedItem==true))
-            setAllSiteTasks(BackUpAllCCTask?.filter((item:any)=> item?.isProtectedItem==true))
+    const filterProtectedView = (checked: any) => {
+        if (!checked) {
+            setAllMasterTasks(AllCSFMasterTasks?.filter((item: any) => item?.isProtectedItem == true))
+            setAllSiteTasks(BackUpAllCCTask?.filter((item: any) => item?.isProtectedItem == true))
             setProtectedView(!checked)
-        }else {
+        } else {
             setAllMasterTasks(AllCSFMasterTasks)
             setAllSiteTasks(BackUpAllCCTask)
             setProtectedView(!checked)
@@ -922,7 +944,7 @@ const HalfClientCategory = (props: any) => {
                     {" "}
                 </EditInstituton>
             )}
-            
+            {EditSiteCompositionStatus ? <EditSiteComposition EditData={selectedItem} context={props?.props?.Context} AllListId={AllListId} Call={() => { CallBack('SiteComp') }} /> : ''}
             {pageLoaderActive ? <PageLoader /> : ''}
         </div>
     )
