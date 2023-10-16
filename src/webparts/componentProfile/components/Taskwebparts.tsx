@@ -215,12 +215,8 @@ function PortfolioTable(SelectedProp: any) {
       )
     );
     smartmetaDetails?.map((newtest: any) => {
-      if (
-        newtest.Title == "SDC Sites" ||
-        newtest.Title == "DRR" ||
-        newtest.Title == "Master Tasks"
-      )
-        newtest.DataLoadNew = false;
+      if (newtest.Title == "SDC Sites" || newtest.Title == "DRR" || newtest.Title == "Offshore Tasks" || newtest.Title == "DE" || newtest.Title == "Gender" || newtest.Title == "Small Projects" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
+      newtest.DataLoadNew = false;
       else if (newtest.TaxType == "Sites") siteConfigSites.push(newtest);
       if (newtest?.TaxType == 'timesheetListConfigrations') {
         timeSheetConfig = newtest;
@@ -1790,7 +1786,35 @@ function PortfolioTable(SelectedProp: any) {
       setIsOpenWorkstream(false);
       setActivityPopup(false);
       setIsComponent(false);
-    } else {
+    }
+    else if(res?.Id != undefined && res?.siteCompositionData != undefined){
+      copyDtaArray.forEach((val:any, index:any) => {
+        if (res?.Id === val?.Id && val?.Item_x0020_Type === res?.Item_x0020_Type) {
+          const newVal = { ...res };
+          copyDtaArray[index] = newVal;
+        } else if (val?.subRows) {
+          val.subRows.forEach((ele:any, subIndex:any) => {
+            if (res?.Id === ele?.Id && ele?.Item_x0020_Type === res?.Item_x0020_Type) {
+              const newVal = { ...res };
+              copyDtaArray[index].subRows[subIndex] = newVal;
+            } else if (ele?.subRows) {
+              ele.subRows.forEach((elev:any, subSubIndex:any) => {
+                if (res?.Id === elev?.Id && elev?.Item_x0020_Type === res?.Item_x0020_Type) {
+                  const newVal = { ...res };
+                  copyDtaArray[index].subRows[subIndex].subRows[subSubIndex] = newVal;
+                }
+              });
+            }
+          });
+        }
+      });
+      
+      renderData = [];
+      renderData = renderData.concat(copyDtaArray);
+      refreshData();
+   
+    } 
+    else {
       childRef?.current?.setRowSelection({});
       setIsComponent(false);
       setIsTask(false);
@@ -2274,13 +2298,11 @@ function PortfolioTable(SelectedProp: any) {
       )}
       {isOpenWorkstream && (
         <CreateWS
-          props={checkedList}
-          Call={Call}
-          TaskUsers={AllUsers}
-          AllClientCategory={AllClientCategory}
-          data={data}
-          SelectedProp={SelectedProp.NextProp}
-          portfolioTypeData={portfolioTypeData}
+        selectedItem={checkedList}
+        Call={Call}
+        AllListId={ContextValue}
+        TaskUsers={AllUsers}
+        data={data}
         ></CreateWS>
       )}
       {IsTask && (

@@ -18,6 +18,9 @@ export default function Sitecomposition(datas: any) {
   const [selectedClientCategory, setselectedClientCategory] = React.useState([]);
   const [AllSitesData, setAllSitesData] = React.useState([]);
   const [renderCount, setRenderCount] = React.useState(0);
+  const [key, setKey] = React.useState(0); // Add a key state
+
+
   let BackupSiteTaggingData: any = [];
   let BackupClientCategory: any = [];
   let siteUrl: any = datas?.sitedata?.siteUrl;
@@ -175,17 +178,19 @@ export default function Sitecomposition(datas: any) {
     if (datas?.props?.ClientCategory?.results?.length > 0 || datas?.props.Sitestagging != undefined) {
       GetSmartMetaData(datas?.props?.ClientCategory?.results, datas?.props?.Sitestagging);
     }
+    setKey((prevKey) => prevKey + 1);
     // setRenderCount(renderCount + 1)
   }, [])
 
   const SiteCompositionCallBack = React.useCallback((Data: any, Type: any) => {
     datas.props.Sitestagging = Data.ClientTime?.length > 0 ? JSON.stringify(Data.ClientTime) :[];
     datas.props.ClientCategory.results = Data.selectedClientCategory;
+    setKey((prevKey) => prevKey + 1);
   }, [])
   return (
     <>
-      <dl className="Sitecomposition">
-        <div className='dropdown'>
+      <dl key={key} className="Sitecomposition">
+        <div  className='dropdown'>
           <a className="sitebutton bg-fxdark d-flex "
           >
             <span onClick={() => showhideComposition()} >
