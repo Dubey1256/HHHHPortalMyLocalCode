@@ -19,7 +19,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 import Loader from "react-loader";
-import { Bars } from 'react-loader-spinner'
+// import { Bars } from 'react-loader-spinner'
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 import SmartFilterSearchGlobal from "../../../globalComponents/SmartFilterGolobalBomponents/SmartFilterGlobalComponents";
@@ -1998,7 +1998,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     portfolioTypeData={portfolioTypeData}
                 />
             )}
-            {isOpenWorkstream && (
+            {/* {isOpenWorkstream && (
                 <CreateWS
                     props={checkedList}
                     Call={Call}
@@ -2008,7 +2008,16 @@ function TeamPortlioTable(SelectedProp: any) {
                     SelectedProp={SelectedProp}
                     portfolioTypeData={portfolioTypeData}
                 ></CreateWS>
-            )}
+            )} */}
+
+                {isOpenWorkstream && (
+                   <CreateWS
+               selectedItem={checkedList}
+                  Call={Call}
+                  AllListId={ContextValue}
+                 TaskUsers={AllUsers}
+                data={data}
+               ></CreateWS>)}
             {IsTask && (
                 <EditTaskPopup
                     Items={SharewebTask}
