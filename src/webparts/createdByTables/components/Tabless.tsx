@@ -412,7 +412,7 @@ const Tabless = (props: any) => {
         accessorFn: (row: any) => row?.idType,
         cell: ({ row, getValue }: any) => (
 
-          <span style={{ color: `${row?.original?.PortfolioType?.Color}` }}>{row?.original?.idType}</span>
+          <>{row?.original?.idType}</>
 
         ),
         id: "idType",
@@ -443,12 +443,9 @@ const Tabless = (props: any) => {
         resetColumnFilters: false,
       },
       {
-
         accessorFn: (row: any) => row?.Categories,
         cell: ({ row, getValue }: any) => (
-          <div>
-            <span style={{ color: `${row?.original?.PortfolioType?.Color}` }}>{row?.original?.Categories}</span>
-          </div>
+            <>{row?.original?.Categories}</>
         ),
         id: "Categories",
         placeholder: "Categories",
@@ -461,9 +458,7 @@ const Tabless = (props: any) => {
 
         accessorFn: (row: any) => row?.percentage,
         cell: ({ row, getValue }: any) => (
-          <div>
-            <span style={{ color: `${row?.original?.PortfolioType?.Color}` }}>{row?.original?.percentage}</span>
-          </div>
+            <>{row?.original?.percentage}</>
         ),
         id: "percentage",
         placeholder: "%",
@@ -474,9 +469,9 @@ const Tabless = (props: any) => {
       {
         accessorFn: (row: any) => row?.Priority,
         cell: ({ row, getValue }: any) => (
-          <div>
-            <span style={{ color: `${row?.original?.PortfolioType?.Color}` }}>{row?.original?.priority}</span>
-          </div>
+          <>
+            {row?.original?.priority}
+          </>
         ),
         id: "Priority",
         placeholder: "Priority",
@@ -487,9 +482,8 @@ const Tabless = (props: any) => {
       {
         accessorFn: (row: any) => row?.EstimatedTime,
         cell: ({ row, getValue }: any) => (
-          <div>
-            <span style={{ color: `${row?.original?.PortfolioType?.Color}` }}>{row?.original?.EstimatedTime}</span>
-          </div>
+          <>{row?.original?.EstimatedTime}
+          </>
         ),
         id: "EstimatedTime",
         placeholder: "EstimatedTime",
@@ -501,9 +495,7 @@ const Tabless = (props: any) => {
 
         accessorFn: (row: any) => row?.dueDate,
         cell: ({ row, getValue }: any) => (
-          <div>
-            <div style={{ color: `${row?.original?.PortfolioType?.Color}` }}>{row?.original?.newDueDate}</div>
-          </div>
+            <>{row?.original?.newDueDate}</>
         ),
         id: "dueDate",
         placeholder: "Due Date",
@@ -517,14 +509,14 @@ const Tabless = (props: any) => {
 
         accessorFn: (row: any) => row?.modified,
         cell: ({ row, getValue }: any) => (
-          <div>
+          <>
             <a style={{ textDecoration: 'none', cursor: 'pointer', color: `${row?.original?.PortfolioType?.Color}` }} target='_blank' href={`${props.Items.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}>
               {row?.original?.newModified}
               <span>{
-                row?.original?.editorImg === undefined ? <span className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{row?.original?.EditorSuffix}</span> : <img className='workmember ms-1' src={row?.original?.editorImg} />}
+                row?.original?.editorImg === undefined ? <span className="workmember alignCenter">{row?.original?.EditorSuffix}</span> : <img className='workmember ms-1' src={row?.original?.editorImg} />}
                 </span>
             </a>
-          </div>
+          </>
         ),
         id: "modified",
         placeholder: "Modified",
@@ -540,7 +532,7 @@ const Tabless = (props: any) => {
             <a style={{ textDecoration: 'none', cursor: 'pointer', color: `${row?.original?.PortfolioType?.Color}` }} target='_blank' href={`${props.Items.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}>
               {row?.original?.newCreated}
               <span>{
-                row?.original?.authorImg === undefined ? <span className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{row?.original?.AuthorSuffix}</span> : <img className='workmember ms-1' src={row?.original?.authorImg} />}
+                row?.original?.authorImg === undefined ? <span className="workmember alignCenter">{row?.original?.AuthorSuffix}</span> : <img className='workmember ms-1' src={row?.original?.authorImg} />}
                 </span>
             </a>
           </div>
@@ -567,10 +559,10 @@ const Tabless = (props: any) => {
       },
       {
         cell: ({ row, getValue }: any) => (
-          <span className='ml-auto'>
-            <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink ms-1" onClick={() => editPopFunc(row.original)} ></span>
-            <span title="Delete Task" className="svg__iconbox svg__icon--trash hreflink" onClick={() => deleteItemFunction(row.original)} ></span>
-          </span>
+          <div className='alignCenter'>
+            <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink" onClick={() => editPopFunc(row.original)} ></span>
+            <span title="Delete Task" className="svg__iconbox svg__icon--trash hreflink ml-auto" onClick={() => deleteItemFunction(row.original)} ></span>
+          </div>
         ),
         id: "ID",
         placeholder: "",
@@ -593,13 +585,13 @@ const Tabless = (props: any) => {
   }, []);
   return (
 
-    <div className='createdBy'>
+    <div className='createdBy mt-2'>
 
       <section className='ContentSection'><div className='row'>
         {
-          queryId != null && <div className='col heading siteColor'>Created By - {queryId}</div>
+          queryId != null && <h2 className='col heading siteColor'>Created By - {queryId}</h2>
         }
-        <div className='col alignCenter p-0 justify-content-end'>
+        <div className='col alignCenter justify-content-end'>
           <input className='form-check-input me-1 mt-0' type="checkbox" value={'Component'} onChange={(e: any) => filterCom(e)} /> Component
           <input className='form-check-input me-1 mt-0 ms-2' type="checkbox" value={'Service'} onChange={(e: any) => filterCom(e)} /> Service
           <a
@@ -617,9 +609,7 @@ const Tabless = (props: any) => {
 
       <section className="TableContentSection">
         <div className='Alltable'>
-          <div className='wrapper'>
-          <GlobalCommanTable expandIcon={true} showHeader={true} columns={columns} data={data} callBackData={callBackData} />
-          </div>
+          <GlobalCommanTable expandIcon={true} showHeader={true} showPagination={true} columns={columns} data={data} callBackData={callBackData} />
         </div>
       </section>
       <span>

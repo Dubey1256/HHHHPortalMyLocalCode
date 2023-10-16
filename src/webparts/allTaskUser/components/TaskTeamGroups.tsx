@@ -324,8 +324,7 @@ export default class TaskTeamGroups extends Component<ITeamGroupsProps, ITeamGro
             this.setState({
                 selTaskId: newTask.Id,
                 taskItem: taskItem,
-                showCreatePanel: false,
-                showEditPanel: true
+                showCreatePanel: false
             });            
         }
     }

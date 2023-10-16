@@ -23,14 +23,15 @@ import * as XLSX from "xlsx";
 import saveAs from "file-saver";
 import { RiFileExcel2Fill } from 'react-icons/ri';
 //import ShowTeamMembers from '../ShowTeamMember';
-import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
-import { BsSearch } from 'react-icons/bs';
-import RestructureSmartMetaData from './RestructureSmartMetaData';
 import SelectFilterPanel from '../../../globalComponents/GroupByReactTableComponents/selectFilterPannel';
 import ExpndTable from '../../../globalComponents/ExpandTable/Expandtable';
 import RestructuringCom from '../../../globalComponents/Restructuring/RestructuringCom';
-import CreateMetadataItem from './CreateMetadataItem';
+import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
+import { BsSearch } from 'react-icons/bs';
+import RestructureSmartMetaData from './RestructureSmartMetaData';
 import CompareSmartMetaData from './CompareSmartmetadata';
+import CreateMetadataItem from './CreateMetadataItem';
+
 
 // ReactTable Part/////
 declare module "@tanstack/table-core" {
@@ -543,6 +544,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     item = elem.original;
                 });
                 callBackData(item)
+                compareFunct(items?.compareSeletected.length === 2);
+
             } else {
                 restructureFunct(false)
                 callBackData(item)
@@ -797,22 +800,24 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     </span>
                 </span>
                 <span className="toolbox">
-                    {
-                        SmartmetadataAdd === true ?
-                            <CreateMetadataItem addItemCallBack={items.callBackSmartMetaData} CloseEditSmartMetaPopup={items.CloseEditSmartMetaPopup} SelectedItem={items.SelectedItem} setName={items.setName} ParentItem={items.ParentItem} TabSelected={items.TabSelected}></CreateMetadataItem>
-                            : <button type="button" title="Add" className="btn btn-primary">+ Add</button>
-                    }
-                    {
-                        SmartmetadataCompare === true ?
-                            <CompareSmartMetaData ref={childRef} compareFunct={compareFunct} SelectedItem={items.SelectedItem} setName={items.setName} ParentItem={items.ParentItem} TabSelected={items.TabSelected}></CompareSmartMetaData>
-                            : <button type="button" title="Compare" disabled={true} className="btn btn-primary">Compare</button>
-                    }
-                    {
-                        SmartmetadataRestructure === true ?
-                            <RestructureSmartMetaData
-                                SmartrestructureFunct={SmartrestructureFunct} ref={childRef} AllMetaData={items.ParentItem} restructureItemCallBack={items.callBackSmartMetaData} restructureItem={table?.getSelectedRowModel()?.flatRows.length > 0 ? [table?.getSelectedRowModel()?.flatRows[0].original] : []} />
-                            : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>
-                    }
+                    {items.AllList && <>
+                        {
+                            SmartmetadataAdd === true ?
+                                <CreateMetadataItem AllList={items.AllList} addItemCallBack={items.callBackSmartMetaData} CloseEditSmartMetaPopup={items.CloseEditSmartMetaPopup} SelectedItem={items.SelectedItem} setName={items.setName} ParentItem={items.ParentItem} TabSelected={items.TabSelected}></CreateMetadataItem>
+                                : ''
+                        }
+                        {
+                            SmartmetadataCompare === true ?
+                                <CompareSmartMetaData AllList={items.AllList} compareSeletected={items?.compareSeletected} ref={childRef} compareFunct={compareFunct} SelectedItem={items.SelectedItem} setName={items.setName} ParentItem={items.ParentItem} TabSelected={items.TabSelected}></CompareSmartMetaData>
+                                : <button type="button" title="Compare" disabled={true} className="btnCol btn btn-primary ">Compare</button>
+                        }
+                        {
+                            SmartmetadataRestructure === true ?
+                                <RestructureSmartMetaData
+                                    AllList={items.AllList} SmartrestructureFunct={SmartrestructureFunct} ref={childRef} AllMetaData={items.ParentItem} restructureItemCallBack={items.callBackSmartMetaData} restructureItem={table?.getSelectedRowModel()?.flatRows.length > 0 ? [table?.getSelectedRowModel()?.flatRows[0].original] : []} />
+                                : <button type="button" title="Restructure" disabled={true} className="btnCol btn btn-primary">Restructure</button>
+                        }
+                    </>}
                     {items.taskProfile != true && items?.showCreationAllButton === true && <>
                         {table?.getSelectedRowModel()?.flatRows?.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Feature" &&
                             table?.getSelectedRowModel()?.flatRows[0]?.original?.SharewebTaskType?.Title != "Activities" && table?.getSelectedRowModel()?.flatRows[0]?.original?.SharewebTaskType?.Title != "Workstream" &&

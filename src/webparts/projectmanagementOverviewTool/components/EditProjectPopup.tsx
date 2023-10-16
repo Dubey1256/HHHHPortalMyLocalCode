@@ -2027,7 +2027,7 @@ function EditProjectPopup(item: any) {
                         ></TeamConfigurationCard>
                       </div>
                       <div className="row">
-                        <section className="accordionbox">
+                        <section className="accordionbox mt-2">
                           <div className="accordion p-0  overflow-hidden">
                             <div className="card shadow-none  mb-2">
                               <div

@@ -1,1337 +1,90 @@
-import * as React from 'react';
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import DatePicker from "react-datepicker";
 import { Web } from "sp-pnp-js";
 import * as $ from 'jquery';
 import "bootstrap/dist/css/bootstrap.min.css";
 import TeamConfigurationCard from '../../../globalComponents/TeamConfiguration/TeamConfiguration';
-import ComponentPortPolioPopup from '../../EditPopupFiles/ComponentPortfolioSelection';
-import Picker from '../../../globalComponents/EditTaskPopup/SmartMetaDataPicker';
-import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
+// import ComponentPortPolioPopup from '../../EditPopupFiles/ComponentPortfolioSelection';
+// import Picker from '../../../globalComponents/EditTaskPopup/SmartMetaDataPicker';
+// import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import * as Moment from 'moment'
 import Tooltip from '../../../globalComponents/Tooltip';
 import { data } from 'jquery';
 import moment from 'moment';
-
-const TaskItemRank: any = [];
-var TaskTypeItems: any = [];
-var SharewebTasknewTypeId: any = ''
-var SharewebTasknewType: any = ''
-var SelectedTasks: any = []
-var Task: any = []
-var AssignedToIds: any = [];
-let loggedInUser:any={};
-var ResponsibleTeamIds: any = [];
-var dynamicList: any = {}
-var TeamMemberIds: any = [];
-let InheritClientCategory: any = [];
-let AllItems: any = {};
-var portFolioTypeId: any = ''
-//var checkedWS:boolean=true;
+import React from 'react';
+let AllListId: any = {};
+const itemRanks: any = [
+    { rankTitle: 'Select Item Rank', rank: null },
+    { rankTitle: '(8) Top Highlights', rank: 8 },
+    { rankTitle: '(7) Featured Item', rank: 7 },
+    { rankTitle: '(6) Key Item', rank: 6 },
+    { rankTitle: '(5) Relevant Item', rank: 5 },
+    { rankTitle: '(4) Background Item', rank: 4 },
+    { rankTitle: '(2) to be verified', rank: 2 },
+    { rankTitle: '(1) Archive', rank: 1 },
+    { rankTitle: '(0) No Show', rank: 0 }
+]
 const CreateWS = (props: any) => {
-
-    portFolioTypeId = props?.portfolioTypeData?.filter((elem: any) => elem?.Id === props?.props?.PortfolioType?.Id)
-    let portFolio = props?.props?.Id
-
-    if (props.SelectedProp != undefined && props.SelectedProp.SelectedProp != undefined) {
-        dynamicList = props.SelectedProp.SelectedProp;
-    } else {
-        dynamicList = props.SelectedProp;
-    }
-    SelectedTasks = []
-    if (props != undefined) {
-        AllItems = { ...props?.props };
-        SelectedTasks.push(AllItems)
-        console.log(props)
-    }
-
-    const [TaskStatuspopup, setTaskStatuspopup] = React.useState(true);
-
-    const [isDropItem, setisDropItem] = React.useState(false);
-    const [isDropItemRes, setisDropItemRes] = React.useState(false);
-    const [SharewebComponent, setSharewebComponent] = React.useState('');
-    const [smartComponentData, setSmartComponentData] = React.useState<any>([]);
-    const [inputFields, setInputFields] = React.useState([]);
-    const [ParentArray, setParentArray] = React.useState([]);
-    const [postData, setPostData] = React.useState({ Title: '' })
-    const [linkedComponentData, setLinkedComponentData] = React.useState<any>([]);
-    const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
-    const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
-    const [SharewebCategory, setSharewebCategory] = React.useState('');
-    const [SharewebTask, setSharewebTask] = React.useState<any>();
-    const [PriorityTask, setPriorityTask] = React.useState<any>('');
-    const [IsComponent, setIsComponent] = React.useState(false);
-    const [date, setDate] = React.useState(undefined);
-    const [AssignMembers, setAssignMembers] = React.useState<any>([]);
+    const [refreshData, setRefreshData]: any = React.useState(false)
+    const [selectedWSTaskIndex, setSelectedWSTaskIndex]: any = React.useState(null)
     const [myDate, setMyDate] = React.useState({ editDate: null, selectDateName: '' });
-    const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
-    const [selectPriority, setselectPriority] = React.useState('');
-    const [Priorityy, setPriorityy] = React.useState(false);
-    const [Categories, setCategories] = React.useState([]);
-    const [IsPopupComponent, setIsPopupComponent] = React.useState(false)
-    const [CategoriesData, setCategoriesData] = React.useState<any>([]);
-    const [checkedWS, setcheckedWS] = React.useState(true);
-    const [checkedTask, setcheckedTask] = React.useState(false);
-    const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
-    const [showChildData, setShowChildData] = React.useState(false);
-    const [ItemRank, setItemRank] = React.useState<any>();
+    const [selectedItem, setSelectedItem]: any = React.useState({})
+    const [selectedTaskType, setSelectedTaskType] = React.useState(3)
+    const [ClientCategoriesData, setClientCategoriesData] = React.useState<any>(
+        []
+    );
+    const [inputFields, setInputFields]: any = React.useState([{
+        Title: '',
+        ItemRank: '',
+        Priority: '',
+        DueDate: '',
+        Description: [],
+        AssignedTo: props?.selectedItem?.AssignedTo?.length > 0 ? props?.selectedItem?.AssignedTo : [],
+        TeamMember: props?.selectedItem?.TeamMember?.length > 0 ? props?.selectedItem?.TeamMember : props?.selectedItem?.TeamMembers.length > 0 ? props?.selectedItem?.TeamMembers : [],
+        ResponsibleTeam: props?.selectedItem?.ResponsibleTeam?.length > 0 ? props?.selectedItem?.ResponsibleTeam : props?.selectedItem?.TeamLeader.length > 0 ? props?.selectedItem?.TeamLeader : [],
+    }]);
 
 
+    const AddchildItem = () => {
+        setInputFields([...inputFields, {
+            Title: '',
+            ItemRank: '',
+            Priority: '',
+            DueDate: '',
+            Description: [],
+            AssignedTo: props?.selectedItem?.AssignedTo?.length > 0 ? props?.selectedItem?.AssignedTo : [],
+            TeamMember: props?.selectedItem?.TeamMember?.length > 0 ? props?.selectedItem?.TeamMember : props?.selectedItem?.TeamMembers?.length > 0 ? props?.selectedItem?.TeamMembers : [],
+            ResponsibleTeam: props?.selectedItem?.ResponsibleTeam?.length > 0 ? props?.selectedItem?.ResponsibleTeam : props?.selectedItem?.TeamLeader?.length > 0 ? props?.selectedItem?.TeamLeader : [],
+        }])
+        setRefreshData(!refreshData)
+
+    }
+    //----------close popup ----
 
     const closeTaskStatusUpdatePoup = (res: any) => {
-        setTaskStatuspopup(false)
-        props.Call(res);
 
-    }
-    React.useEffect(()=>{
-        if(selectPriority != undefined){
-            if (selectPriority == '1' || selectPriority == '2' || selectPriority == '3') {
-                setPriorityTask('(3) Low')
-               
-             }
-             if (selectPriority == '4' || selectPriority == '5' || selectPriority == '6' || selectPriority == '7') {
-                 setPriorityTask('(2) Normal')
-             }
-             if (selectPriority == '8' || selectPriority == '9' || selectPriority == '10') {
-                 setPriorityTask('(1) High')
-             }
-        }
-        props?.TaskUsers?.map((user:any)=>{
-            if (props?.context?.pageContext?.legacyPageContext?.userId == user?.AssingedToUser?.Id) {
-                loggedInUser = user;
-            }
-        })
-      
-    },[selectPriority])
-   
-
-    React.useEffect(() => {
-       
-        selectType('Workstream');
-        GetParentHierarchy(props.props)
-
-
-    }, [])
-    const GetParentHierarchy = async (Item: any) => {
-        const parentdata: any = []
-        // parentdata.push()
-        // return new Promise((resolve, reject) => {
-        if (Item.Parent != null || Item?.Portfolio != undefined ) {
-
-            var filt: any = "Id eq " + (Item.Parent != null || undefined ? Item?.Parent?.Id : Item?.Portfolio?.Id) + "";
-
-        }
-        let web = new Web(dynamicList?.siteUrl);
-        let compo = [];
-        web.lists
-            .getById(dynamicList?.MasterTaskListID)
-            .items
-            .select("ID", "Id", "Title", "Mileage", "ItemType", "Parent/Id", "Parent/Title"
-            ).expand("Parent")
-
-            .top(4999)
-            .filter(filt)
-            .get().then((comp: any) => {
-
-                console.log(comp)
-                parentdata.push(comp[0])
-                parentdata.push(Item)
-                //  if(comp[0].Parent!=undefined){
-                // GetParentHierarchy(comp[0])
-                //  }else{
-                setParentArray(parentdata)
-                // resolve(parentdata)
-                //  }
-
-            }).catch((error: any) => {
-                console.log(error)
-                // reject(error)
-            });
-        // })
-
-    }
-    var ItemRankTitle: any = ''
-    TaskItemRank.push([{ rankTitle: 'Select Item Rank', rank: null }, { rankTitle: '(8) Top Highlights', rank: 8 }, { rankTitle: '(7) Featured Item', rank: 7 }, { rankTitle: '(6) Key Item', rank: 6 }, { rankTitle: '(5) Relevant Item', rank: 5 }, { rankTitle: '(4) Background Item', rank: 4 }, { rankTitle: '(2) to be verified', rank: 2 }, { rankTitle: '(1) Archive', rank: 1 }, { rankTitle: '(0) No Show', rank: 0 }]);
-    const DDComponentCallBack = (dt: any) => {
-        var daatta=[]
-        daatta.push(dt)
-        setAssignMembers(dt)
-        // setTeamConfig(dt)
-        setisDropItem(dt.isDrop)
-        setisDropItemRes(dt.isDropRes)
-        console.log(dt)
-        if (dt?.AssignedTo?.length > 0) {
-            let tempArray: any = [];
-            dt.AssignedTo?.map((arrayData: any) => {
-                if (arrayData.AssingedToUser != null) {
-                    tempArray.push(arrayData.AssingedToUser)
-                } else {
-                    tempArray.push(arrayData);
-                }
-            })
-            setTaskAssignedTo(tempArray);
-            console.log("Team Config  assigadf=====", tempArray)
-        }
-        if (dt?.TeamMemberUsers?.length > 0) {
-            let tempArray: any = [];
-            dt.TeamMemberUsers?.map((arrayData: any) => {
-                if (arrayData.AssingedToUser != null) {
-                    tempArray.push(arrayData.AssingedToUser)
-                } else {
-                    tempArray.push(arrayData);
-                }
-            })
-            setTaskTeamMembers(tempArray);
-            console.log("Team Config member=====", tempArray)
-
-        }
-        if (dt.ResponsibleTeam != undefined && dt.ResponsibleTeam.length > 0) {
-            let tempArray: any = [];
-            dt.ResponsibleTeam?.map((arrayData: any) => {
-                if (arrayData.AssingedToUser != null) {
-                    tempArray.push(arrayData.AssingedToUser)
-                } else {
-                    tempArray.push(arrayData);
-                }
-            })
-            setTaskResponsibleTeam(tempArray);
-            console.log("Team Config reasponsible ===== ", tempArray)
-
-        }
-        else {
-            setTaskResponsibleTeam([])
-        }
-    }
-    var CheckCategory: any = []
-    CheckCategory.push({ "TaxType": "Categories", "Title": "Phone", "Id": 199, "ParentId": 225 }, { "TaxType": "Categories", "Title": "Email Notification", "Id": 276, "ParentId": 225 }, { "TaxType": "Categories", "Title": "Approval", "Id": 227, "ParentId": 225 },
-        { "TaxType": "Categories", "Title": "Immediate", "Id": 228, "parentId": 225 });
-    const Call = React.useCallback((item1: any, type: any) => {
-        if (type == "SmartComponent") {
-            if (AllItems != undefined && item1 != undefined) {
-                AllItems.smartComponent = item1.smartComponent;
-                setSmartComponentData(item1.smartComponent);
-            }
-
-        }
-
-        if (type == "Category") {
-            if (item1 != undefined && item1.Categories != "") {
-                var title: any = {};
-                title.Title = item1.categories;
-                item1.categories.map((itenn: any) => {
-                    if (!isItemExists(CategoriesData, itenn.Id)) {
-                        CategoriesData.push(itenn);
-                    }
-
-                })
-                item1.SharewebCategories?.map((itenn: any) => {
-                    CategoriesData.push(itenn)
-                })
-
-                setCategoriesData(CategoriesData)
-
-
-            }
-        }
-        if(type==undefined){
-            setIsPopupComponent(false);  
-            
-            setSharewebTask(item1.data)
-            closeTaskStatusUpdatePoup(item1.data); 
-        }
-
-        // if (CategoriesData != undefined){
-        //     CategoriesData.forEach(function(type:any){
-        //     CheckCategory.forEach(function(val:any){
-        //         if(type.Id == val.Id){
-        //         BackupCat = type.Id
-        //         setcheckedCat(true)
-        //         }
-        //       })
-
-        //   })
-        //   setUpdate(update+2)
-        // }
-        setIsComponentPicker(false);
-        setIsComponent(false);
-    }, []);
-    var isItemExists = function (arr: any, Id: any) {
-        var isExists = false;
-        $.each(arr, function (index: any, items: any) {
-            if (items.ID === Id) {
-                isExists = true;
-                return false;
-            }
-        });
-        return isExists;
-    }
-    var TaskprofileId: any = ''
-    var WorstreamLatestId: any = ''
-    var PopupType = ''
-    const createWorkStream = async (Type: any) => {
-        PopupType = Type;
-        if (AllItems == '' || AllItems.length > 0) {
-            TaskprofileId = AllItems[0].Id;
-        }
-        console.log(Type)
-        let web = new Web(dynamicList.siteUrl);
-        let componentDetails: any = [];
-        componentDetails = await web.lists
-            .getById(AllItems.listId)
-            .items
-            .select("FolderID,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,TaskLevel,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,Priority,Created,Modified,TaskType/Id,TaskType/Title,ParentTask/Id,ParentTask/Title,Author/Id,Author/Title,Editor/Id,Editor/Title")
-            .expand("TaskType,ParentTask,Author,Editor,AssignedTo")
-            .filter(("TaskType/Title eq 'Workstream'") && ("ParentTask/Id eq '" + AllItems?.Id + "'"))
-            .orderBy("Created", false)
-            .top(4999)
-            .get()
-        console.log(componentDetails)
-        if (componentDetails.length == 0) {
-            WorstreamLatestId = 1;
+        if (res === "item") {
+            props.Call("Close");
         } else {
-            WorstreamLatestId = componentDetails.length + 1;
+            props.Call(res);
         }
-        SelectedTasks.forEach(async (item: any, index: any) => {
-            if (item.Title != "") {
-                if (SharewebTasknewTypeId == 3 || SharewebTasknewTypeId == 5) {
-                    await createChildAsWorkStream(item, Type, index, WorstreamLatestId);
-                    if (inputFields != undefined && inputFields.length > 0) {
-                       for( let i=0 ;inputFields.length>i;){
-                            if (inputFields[i].Title != undefined && inputFields[i].Title != "") {
-                                
-;
-                                componentDetails =  await web.lists
-                                .getById(AllItems.listId)
-                                .items
-                                .select("Id,FolderID,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,TaskLevel,TaskID,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,Priority,Created,Modified,TaskType/Id,TaskType/Title,ParentTask/Id,ParentTask/Title,Author/Id,Author/Title,Editor/Id,Editor/Title")
-                                .expand("TaskType,ParentTask,Author,Editor,AssignedTo")
-                                .filter(("TaskType/Title eq 'Workstream'") && ("ParentTask/Id eq '" + AllItems?.Id + "'"))
-                                .orderBy("Created", false)
-                                .top(1)
-                                .get()
-                                await createMultiChildAsWorkStream(inputFields[i], Type, index, componentDetails).then((data)=>{
-                                    i++
-                                });
-                            }
-                        }
-                    }
-                } else {
-                    await createChildAsTask(item, Type, index);
-                    if (inputFields != undefined && inputFields.length > 0) {
-                        for( let i=0 ;inputFields.length>i;){
-                            if (inputFields[i].Title != undefined && inputFields[i].Title != "") {
-                                
-                                await createMultiChildTask(inputFields[i], Type, index, componentDetails).then((data)=>{
-                                    i++
-                                });
-                            }
-                        }
-                    }
-                }
-            }
-        })
-
 
 
     }
-  
-    const createMultiChildAsWorkStream = async (item: any, Type: any, index: any, componentDetails: any) => {
-return new Promise<void>((resolve, reject) => {
-    var clientcaterogiesdata2: any = [];
-    var LatestId=''
-    var AssignedToUser: any = [];
-    var AllTeamMembers: any = [];
-    var TeamLeaderws: any = [];
-    let LetestLevelData: any = []
-    let Tasklevel: any = ''
-    let TaskID = ''
-    var NewDate = ''
-    //let componentDetails: any = []pro
-    var SharewebID = '';
-    
-    var Component: any = []
-    let web = new Web(dynamicList.siteUrl);
-
-   
-
-            console.log(componentDetails)
-            if (componentDetails.length == 0) {
-                WorstreamLatestId = 1;
-            } else {
-                WorstreamLatestId = componentDetails[0].TaskLevel + 1;
-                LatestId = componentDetails[0].Id + 1;
-            }
-            if (Task == undefined || Task == '')
-                Task = SelectedTasks[0];
-            if (TaskprofileId == '' || SelectedTasks.length > 0) {
-                TaskprofileId = SelectedTasks[0].Id;
-            }
-        
-  
-
-    var categoriesItem = '';
-    CategoriesData.map((category: { Title: string; }) => {
-        if (category.Title != undefined) {
-            categoriesItem = categoriesItem == "" ? category.Title : categoriesItem + ';' + category.Title;
-        }
-    })
-    smartComponentData.forEach((com: any) => {
-        if (com != undefined) {
-            Component.push(com[0].Id)
-        }
-
-    })
-
-    AllItems?.subRows?.forEach((vall: any) => {
-        if (vall?.TaskType?.Title == 'Workstream' || vall?.SharewebTaskType?.Title == 'Workstream') {
-            LetestLevelData.push(vall)
-        }
-
-    })
-    let result = componentDetails[0].TaskID.substring(0, 4);
-
-    Tasklevel = WorstreamLatestId
-    TaskID = result +'-W' + WorstreamLatestId;
-
-    var CategoryID: any = []
-    CategoriesData.map((category: { Id: any; }) => {
-        if (category.Id != undefined) {
-            CategoryID.push(category.Id)
-        }
-    })
-    if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length > 0) {
-        AllItems.AssignedTo.forEach((obj: any) => {
-            AssignedToIds.push(obj.Id);
-        })
-    }
-    if (isDropItemRes == true) {
-        if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
-            TaskAssignedTo.map((taskInfo: any) => {
-                AssignedToIds.push(taskInfo.Id);
-            })
-        }
-    }
-    if (AllItems?.TeamMembers != undefined && AllItems?.TeamMembers?.length > 0) {
-        AllItems.TeamMembers.forEach((obj: any) => {
-            TeamMemberIds.push(obj.Id);
-        })
-    }
-    if (isDropItem == true) {
-        if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
-            TaskTeamMembers.map((taskInfo: any) => {
-                TeamMemberIds.push(taskInfo.Id);
-            })
-        }
-    }
-    if (AllItems?.TeamLeader != undefined && AllItems?.TeamLeader?.length > 0) {
-        AllItems.TeamLeader.forEach((obj: any) => {
-            ResponsibleTeamIds.push(obj.Id);
-        })
-    }
-    if (isDropItem == true) {
-        if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
-            TaskResponsibleTeam.map((taskInfo: any) => {
-                ResponsibleTeamIds.push(taskInfo.Id);
-            })
-        }
-    }
-
-
-    let FeedBackItemArrayNew: any = [];
-    if (item.Description != undefined) {
-        let param: any = Moment(new Date().toLocaleString())
-        let FeedBackItem: any = {};
-        FeedBackItem['Title'] = "FeedBackPicture" + param;
-        FeedBackItem['FeedBackDescriptions'] = [];
-        FeedBackItem.FeedBackDescriptions = [{
-            'Title': item.Description
-        }]
-        FeedBackItem['ImageDate'] = "" + param;
-        FeedBackItem['Completed'] = '';
-        if (FeedBackItem != undefined && FeedBackItem.length > 1)
-            FeedBackItemArrayNew.push(FeedBackItem)
-    }
-     web.lists.getById(AllItems.listId).items.add({
-            Title: item?.Title != undefined ? item?.Title : AllItems.Title,
-            Categories: categoriesItem ? categoriesItem : null,
-            TaskCategoriesId: { "results": CategoryID },
-            Priority_x0020_Rank: item.selectPriority,
-            PortfolioId: AllItems?.Portfolio?.Id,
-            PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
-            TaskTypeId: SharewebTasknewTypeId,
-            ParentTaskId: AllItems.Id,
-            Priority: item.Priorityy,
-            Body: item?.Description != undefined ? item?.Description : AllItems.Description,
-            // DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
-            DueDate: item.editDate != null ? Moment(item?.editDate).format("ddd, DD MMM yyyy") : null,
-            SharewebTaskTypeId: SharewebTasknewTypeId,
-            FeedBack: FeedBackItemArrayNew.length === 0 ? '' : JSON.stringify(FeedBackItemArrayNew),
-            SharewebTaskLevel2No: WorstreamLatestId,
-            SharewebTaskLevel1No: AllItems.SharewebTaskLevel1No,
-            AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
-            ResponsibleTeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
-            TeamMembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] },
-            TaskID: TaskID,
-            TaskLevel: Tasklevel
-        }).then((res: any) => {
-            console.log(res);
-            if (PopupType == 'CreatePopup') {
-                res.data['SiteIcon'] = AllItems.SiteIcon;
-                res.data['listId'] = AllItems.listId;
-                res.data['SharewebTaskType'] = { Title: 'Workstream' };
-                res.data['TaskType'] = { 'Id': res.data?.TaskTypeId };
-                res.data['listId'] = AllItems.listId;
-                res.data['Shareweb_x0020_ID'] = SharewebID;
-                res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0] : null;
-                res.data['Portfolio'] = { 'Id': portFolio };
-                res.data.AssignedTo = [];
-                res.data.ResponsibleTeam = [];
-                res.data.TeamMembers = [];
-                // res.data.pageName == "TaskFooterTable"
-                if (res?.data?.TeamMembersId?.length > 0) {
-                    res.data?.MembersId?.map((teamUser: any) => {
-                        let elementFound = props?.TaskUsers?.filter((User: any) => {
-                            if (User?.AssingedToUser?.Id == teamUser) {
-                                res.data.TeamMembers.push(User?.AssingedToUser);
-                            }
-                        });
-
-                    });
-                }
-                if (res?.data?.ResponsibleTeamId?.length > 0) {
-                    res.data?.ResponsibleTeamId?.map((teamUser: any) => {
-                        let elementFound = props?.TaskUsers?.filter((User: any) => {
-                            if (User?.AssingedToUser?.Id == teamUser) {
-                                res.data.ResponsibleTeam.push(User?.AssingedToUser);
-                            }
-                        });
-
-                    });
-                }
-                if (res?.data?.AssignedToId?.length > 0) {
-                    res.data?.AssignedToId?.map((teamUser: any) => {
-                        let elementFound = props?.TaskUsers?.filter((User: any) => {
-                            if (User?.AssingedToUser?.Id == teamUser) {
-                                res.data.AssignedTo.push(User?.AssingedToUser);
-                            }
-                        });
-
-                    });
-                }
-                res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("DD-MM-YYYY") : null,
-                    res.data['siteType'] = AllItems.siteType;
-                res.data['Shareweb_x0020_ID'] = SharewebID;
-                if (SelectedTasks != undefined && SelectedTasks.length > 0)
-                    setIsPopupComponent(true);
-                    setSharewebTask(res.data);
-                    closeTaskStatusUpdatePoup(res);
-                resolve(res)
-              
-               
-            }
-            else {
-                res.data['SiteIcon'] = AllItems.SiteIcon;
-                res.data['listId'] = AllItems.listId;
-                res.data['SharewebTaskType'] = { Title: 'Workstream' };
-                res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : null,
-                    res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0] : null;
-                res.data['siteType'] = AllItems.siteType;
-                res.data['Shareweb_x0020_ID'] = SharewebID;
-                res.data.ClientCategory = clientcaterogiesdata2,
-                    res.data.Created = new Date();
-                res.data.Author = {
-                    Id: res?.data?.AuthorId
-                };
-                res.data.TeamMembers = AllTeamMembers?.length > 0 ? AllTeamMembers : [];
-                res.data.Responsible_x0020_Team = TeamLeaderws?.length > 0 ? TeamLeaderws : [];
-                res.data.AssignedTo = AssignedToUser?.length > 0 ? AssignedToUser : [];
-                res.Item_x0020_Type = "";
-                resolve(res)
-                setSharewebTask(res.data);
-                closeTaskStatusUpdatePoup(res);
-
-            }
-
-
-
-        });
-    
- 
-})
-       
-
-    }
-
-    const createMultiChildTask = async (item: any, Type: any, index: any, WorstreamLatestId: any) => {
-        var clientcaterogiesdata2: any = [];
-        var AssignedToUser: any = [];
-        var AllTeamMembers: any = [];
-        var TeamLeaderws: any = [];
-        let LetestLevelData: any = []
-        let Tasklevel: any = ''
-        let TaskID = ''
-        var NewDate = ''
-      
-        var SharewebID = '';
-        let web = new Web(dynamicList.siteUrl);
-        if (Task == undefined || Task == '')
-            Task = SelectedTasks[0];
-        if (TaskprofileId == '' || SelectedTasks.length > 0) {
-            TaskprofileId = SelectedTasks[0].Id;
-        }
-        let componentDetails: any = [];
-        componentDetails = await web.lists
-            .getById(AllItems?.listId)
-            .items
-            .select("Id,Title")
-            .orderBy("Id", false)
-            .top(1)
-            .get()
-        console.log(componentDetails)
-        var LatestId = componentDetails[0].Id + 1;
-
-        if (Task == undefined || Task == '')
-            Task = SelectedTasks[0];
-        if (TaskprofileId == '' || SelectedTasks.length > 0) {
-            TaskprofileId = SelectedTasks[0].Id;
-        }
-        var component = await web.lists
-            .getById(AllItems?.listId)
-            .items
-            .select("Id,Title,TaskType/Id,TaskType/Title,TaskLevel,TaskID")
-            .expand('TaskType')
-            .orderBy("Id", false)
-            .filter(`Id eq '${props.props.Id}'`)
-            .get()
-        console.log(component)
-       
-        if (component.length == 0) {
-            Tasklevel = 1
-            TaskID = component[0]?.TaskID + '-T' + LatestId;
-        }
-        else {
-            Tasklevel = LetestLevelData.length + 1
-            TaskID = component[0]?.TaskID + '-T' + LatestId;;
-        }
-
-
-        if (date != undefined) {
-            NewDate = new Date(date).toDateString();
-        }
-        
-
-        var categoriesItem = '';
-        CategoriesData.map((category: { Title: string; }) => {
-            if (category.Title != undefined) {
-                categoriesItem = categoriesItem == "" ? category.Title : categoriesItem + ';' + category.Title;
-            }
-        })
-       
-       
-        var CategoryID: any = []
-        CategoriesData.map((category: { Id: any; }) => {
-            if (category.Id != undefined) {
-                CategoryID.push(category.Id)
-            }
-        })
-        if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length > 0) {
-            AllItems.AssignedTo.forEach((obj: any) => {
-                AssignedToIds.push(obj.Id);
-            })
-        }
-        if (isDropItemRes == true) {
-            if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
-                TaskAssignedTo.map((taskInfo: any) => {
-                    AssignedToIds.push(taskInfo.Id);
-                })
+    //---- close popup end -------
+    React.useEffect(() => {
+        AllListId = props?.AllListId;
+        if (props?.selectedItem?.ClientCategory?.length > 0) {
+            if (ClientCategoriesData?.length == 0) {
+                setClientCategoriesData(props?.selectedItem?.ClientCategory)
             }
         }
-        if (AllItems?.TeamMembers != undefined && AllItems?.TeamMembers?.length > 0) {
-            AllItems.TeamMembers.forEach((obj: any) => {
-                TeamMemberIds.push(obj.Id);
-            })
-        }
-        if (isDropItem == true) {
-            if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
-                TaskTeamMembers.map((taskInfo: any) => {
-                    TeamMemberIds.push(taskInfo.Id);
-                })
-            }
-        }
-        if (AllItems?.TeamLeader != undefined && AllItems?.TeamLeader?.length > 0) {
-            AllItems.TeamLeader.forEach((obj: any) => {
-                ResponsibleTeamIds.push(obj.Id);
-            })
-        }
-        if (isDropItem == true) {
-            if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
-                TaskResponsibleTeam.map((taskInfo: any) => {
-                    ResponsibleTeamIds.push(taskInfo.Id);
-                })
-            }
-        }
-
-
-        let FeedBackItemArrayNew: any = [];
-        if (item.Description != undefined) {
-            let param: any = Moment(new Date().toLocaleString())
-            let FeedBackItem: any = {};
-            FeedBackItem['Title'] = "FeedBackPicture" + param;
-            FeedBackItem['FeedBackDescriptions'] = [];
-            FeedBackItem.FeedBackDescriptions = [{
-                'Title': item.Description
-            }]
-            FeedBackItem['ImageDate'] = "" + param;
-            FeedBackItem['Completed'] = '';
-            if (FeedBackItem != undefined && FeedBackItem.length > 1)
-                FeedBackItemArrayNew.push(FeedBackItem)
-        }
-        await web.lists.getById(AllItems.listId).items.add({
-            Title: item?.Title != undefined ? item?.Title : AllItems.Title,
-            Categories: categoriesItem ? categoriesItem : null,
-            TaskCategoriesId: { "results": CategoryID },
-            Priority_x0020_Rank: item.selectPriority,
-            PortfolioId: AllItems?.Portfolio?.Id,
-            PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
-            TaskTypeId: SharewebTasknewTypeId,
-            ParentTaskId: AllItems.Id,
-            Priority: item.Priority,
-            Body: item?.Description != undefined ? item?.Description : AllItems.Description,
-            // DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
-            DueDate: item.editDate != null ? Moment(item?.editDate).format("ddd, DD MMM yyyy") : null,
-            FeedBack: FeedBackItemArrayNew.length === 0 ? '' : JSON.stringify(FeedBackItemArrayNew),
-            AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
-            ResponsibleTeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
-            TeamMembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] },
-            TaskID: TaskID,
-            TaskLevel: Tasklevel
-
-
-        }).then((res: any) => {
-            console.log(res);
-            if (PopupType == 'CreatePopup') {
-                res.data['SiteIcon'] = AllItems.SiteIcon
-                res.data['listId'] = AllItems.listId
-                res.data['SharewebTaskType'] = { Title: 'Task' }
-                res.data['TaskType'] = { Title: 'Task' }
-                res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0] : null
-                res.data.AssignedTo = []
-                res.data.ResponsibleTeam = []
-                res.data.TeamMembers = []
-                if (res?.data?.TeamMembersId?.length > 0) {
-                    res.data?.TeamMembersId?.map((teamUser: any) => {
-                        let elementFound = props?.TaskUsers?.filter((User: any) => {
-                            if (User?.AssingedToUser?.Id == teamUser) {
-                                res.data.TeamMembers.push(User?.AssingedToUser)
-                            }
-                        })
-
-                    })
-                }
-                if (res?.data?.ResponsibleTeamId?.length > 0) {
-                    res.data?.ResponsibleTeamId?.map((teamUser: any) => {
-                        let elementFound = props?.TaskUsers?.filter((User: any) => {
-                            if (User?.AssingedToUser?.Id == teamUser) {
-                                res.data.ResponsibleTeam.push(User?.AssingedToUser);
-                            }
-                        })
-
-                    })
-                }
-                if (res?.data?.AssignedToId?.length > 0) {
-                    res.data?.AssignedToId?.map((teamUser: any) => {
-                        let elementFound = props?.TaskUsers?.filter((User: any) => {
-                            if (User?.AssingedToUser?.Id == teamUser) {
-                                res.data.AssignedTo.push(User?.AssingedToUser)
-                            }
-                        })
-
-                    })
-                }
-                res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("DD-MM-YYYY") : null,
-                    res.data['siteType'] = AllItems.siteType
-                res.data['Shareweb_x0020_ID'] = SharewebID
-                if (SelectedTasks != undefined && SelectedTasks.length > 0)
-                    setIsPopupComponent(true)
-                setSharewebTask(res.data)
-                closeTaskStatusUpdatePoup(res);
-            }
-            else {
-                res.data['SiteIcon'] = AllItems.SiteIcon
-                res.data['listId'] = AllItems.listId
-                res.data['SharewebTaskType'] = { Title: 'Task' }
-                res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0] : null
-                res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : null,
-                    res.data['siteType'] = AllItems.siteType
-                res.data['Shareweb_x0020_ID'] = SharewebID
-                res.data.ClientCategory = clientcaterogiesdata2,
-                    res.data.Created = new Date();
-                res.data.Author = {
-                    Id: res?.data?.AuthorId
-                }
-                res.data.TeamMembers = AllTeamMembers?.length > 0 ? AllTeamMembers : []
-                res.data.ResponsibleTeam = TeamLeaderws?.length > 0 ? TeamLeaderws : []
-                res.data.AssignedTo = AssignedToUser?.length > 0 ? AssignedToUser : []
-                res.Item_x0020_Type = ""
-                setSharewebTask(res.data)
-                closeTaskStatusUpdatePoup(res);
-
-            }
-
-
-
-        })
-
-    }
-    const createChildAsWorkStream = async (item: any, Type: any, index: any, WorstreamLatestId: any) => {
-        var NewDate = ''
-        var clientcaterogiesdata2: any = [];
-        var AssignedToUser: any = [];
-        var AllTeamMembers: any = [];
-        var TeamLeaderws: any = [];
-        let componentDetails: any = [];
-        WorstreamLatestId += index;
-        var SharewebID = '';
-        if (Task == undefined || Task == '')
-            Task = SelectedTasks[0];
-        if (TaskprofileId == '' || SelectedTasks.length > 0) {
-            TaskprofileId = SelectedTasks[0].Id;
-        }
-        let LetestLevelData: any = []
-        let Tasklevel: any = ''
-        let TaskID = ''
-        let web = new Web(dynamicList.siteUrl);
-
-        componentDetails = await web.lists
-            .getById(AllItems?.listId)
-            .items
-            .select("Id,Title,TaskType/Id,TaskType/Title,TaskLevel,TaskID")
-            .expand('TaskType')
-            .orderBy("Id", false)
-            .filter(`Id eq '${props.props.Id}'`)
-            .get()
-        console.log(componentDetails)
-
-        AllItems?.subRows?.forEach((vall: any) => {
-            if (vall?.TaskType?.Title == 'Workstream' || vall?.SharewebTaskType?.Title == 'Workstream') {
-                LetestLevelData.push(vall)
-            }
-
-        })
-        if (LetestLevelData.length == 0) {
-            Tasklevel = 1
-            TaskID = componentDetails[0]?.TaskID + '-W' + WorstreamLatestId;
-        }
-        else {
-            Tasklevel = LetestLevelData.length + 1
-            TaskID = componentDetails[0]?.TaskID + '-W' + WorstreamLatestId;
-        }
-
-
-        if (date != undefined) {
-            NewDate = new Date(date).toDateString();
-        }
-
-
-        var categoriesItem = '';
-        CategoriesData.map((category: any) => {
-            if (category.Title != undefined) {
-                categoriesItem = categoriesItem == "" ? category.Title : categoriesItem + ';' + category.Title;
-            }
-        })
-
-        var CategoryID: any = []
-        CategoriesData.map((category: { Id: any; }) => {
-            if (category.Id != undefined) {
-                CategoryID.push(category.Id)
-            }
-        })
-        
-       if(AssignMembers?.TeamMemberUsers != undefined && AssignMembers.TeamMemberUsers.length>0){
-        AssignMembers.TeamMemberUsers.map((taskInfo: any) => {
-            TeamMemberIds.push(taskInfo.AssingedToUserId);
-            AllTeamMembers.push(taskInfo.AssingedToUser);
-        })
-       }
-       if(AssignMembers?.ResponsibleTeam != undefined && AssignMembers?.ResponsibleTeam.length>0){
-        AssignMembers.ResponsibleTeam.map((taskInfo: any) => {
-            ResponsibleTeamIds.push(taskInfo.AssingedToUserId);
-            TeamLeaderws.push(taskInfo.AssingedToUser)
-        })
-       }
-       if(AssignMembers?.AssignedTo != undefined && AssignMembers?.AssignedTo.length>0){
-        AssignMembers.AssignedTo.map((taskInfo: any) => {
-            AssignedToIds.push(taskInfo.AssingedToUserId);
-            AssignedToUser.push(taskInfo.AssingedToUser);
-        })
-       }
-       if(AssignMembers?.length == 0){
-        if (AllItems?.TeamMembers != undefined && AllItems?.TeamMembers?.length > 0) {
-                    AllItems?.TeamMembers.forEach((obj: any) => {
-                        TeamMemberIds.push(obj.Id);
-                        AllTeamMembers.push(obj);
-        
-                    })
-         }
-          if (AllItems?.ResponsibleTeam != undefined && AllItems?.ResponsibleTeam?.length > 0) {
-            AllItems?.ResponsibleTeam?.forEach((obj: any) => {
-                ResponsibleTeamIds.push(obj.Id);
-                TeamLeaderws.push(obj)
-            })
-        }
-        if(AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length > 0) {
-                    AllItems.AssignedTo.forEach((obj: any) => {
-                        AssignedToIds.push(obj.Id);
-                        AssignedToUser.push(obj);
-        
-                    })
-                }
-       }
-        
-        if (props?.props != undefined && props?.props?.ClientCategory?.length > 0) {
-            if (props?.props?.ClientCategory2 != undefined && props?.props?.ClientCategory2?.results?.length > 0) {
-                props?.props?.ClientCategory2?.results?.map((items: any) => {
-                    InheritClientCategory.push(items.Id)
-                    clientcaterogiesdata2.push(items)
-                })
-            } else {
-                props.props.ClientCategory?.map((items: any) => {
-                    InheritClientCategory.push(items.Id)
-                    clientcaterogiesdata2.push(items)
-                })
-            }
-
-
-        }
-       let FeedBackItemArrayNew:any=[];
-        if (item.Description != undefined) {
-            let param: any = Moment(new Date().toLocaleString())
-            let FeedBackItem: any = {};
-            FeedBackItem['Title'] = "FeedBackPicture" + param;
-            FeedBackItem['FeedBackDescriptions'] = [];
-            FeedBackItem.FeedBackDescriptions = [{
-                'Title': item.Description
-            }]
-            FeedBackItem['ImageDate'] = "" + param;
-            FeedBackItem['Completed'] = '';
-            if (FeedBackItem != undefined && FeedBackItem.length > 1)
-                FeedBackItemArrayNew.push(FeedBackItem)
-        }
-
-        await web.lists.getById(AllItems.listId).items.add({
-            Title: postData.Title != '' && postData.Title != undefined ? postData.Title : AllItems.Title,
-            Categories: categoriesItem ? categoriesItem : null,
-            SharewebCategoriesId: { "results": CategoryID },
-            Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
-           PortfolioId: AllItems?.Portfolio?.Id,
-            PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
-            ParentTaskId: AllItems.Id,
-            TaskTypeId: SharewebTasknewTypeId,
-            ItemRank:ItemRank,
-            Body:item.Description,
-            //ParentTaskId :portFolio,
-            Priority: PriorityTask != undefined && PriorityTask != ''? PriorityTask:AllItems.Priority,
-            FeedBack:FeedBackItemArrayNew!=null?JSON.stringify(FeedBackItemArrayNew):null ,
-            // DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
-            DueDate: myDate.editDate = myDate.editDate ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy") : null,
-            ClientCategoryId: { "results": InheritClientCategory },
-            SiteCompositionSettings: props?.props?.SiteCompositionSettings != undefined ? props?.props?.SiteCompositionSettings : "",
-            ClientTime: props?.props?.ClientTime == 'false' ? null : props?.props?.ClientTime,
-            AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
-            ResponsibleTeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
-            TeamMembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] },
-            TaskID: TaskID,
-            TaskLevel: Tasklevel
-
-        }).then((res: any) => {
-            // var  CreateDate:any
-            console.log(res);
-            if (PopupType == 'CreatePopup') {
-                res.data['SiteIcon'] = AllItems.SiteIcon
-                res.data['listId'] = AllItems.listId
-                res.data['SharewebTaskType'] = { Title: 'Workstream' }
-                res.data['TaskType'] = { 'Id': res.data?.TaskTypeId };
-                res.data['listId'] = AllItems.listId
-                res.data['Shareweb_x0020_ID'] = SharewebID;
-                res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0] : null
-                res.data['Portfolio'] = { 'Id': portFolio };
-                res.data.DueDate = res?.data?.DueDate != null ? Moment(res?.data?.DueDate).format("DD-MM-YYYY") : null,
-                    res.data['siteType'] = AllItems.siteType
-
-                res.data.ClientCategory = clientcaterogiesdata2,
-                res.data.listName=AllItems.siteType,
-                res.data.listId= AllItems?.listId,
-                // CreateDate= new Date()
-                // res.data.Created = moment(CreateDate).format("DD/MM/YYYY");
-                res.data.Author = {
-                    Id: res?.data?.AuthorId
-                }
-                res.data['AllListId']=dynamicList 
-                res.data.TeamMembers = AllTeamMembers?.length > 0 ? AllTeamMembers : []
-                res.data.ResponsibleTeam = TeamLeaderws?.length > 0 ? TeamLeaderws : []
-                res.data.AssignedTo = AssignedToUser?.length > 0 ? AssignedToUser : []
-                res.Item_x0020_Type = ""
-              
-                setSharewebTask(res.data)
-                setIsPopupComponent(true)
-                
-                
-                
-            }
-            else {
-            
-                res.data['SiteIcon'] = AllItems.SiteIcon
-                res.data['listId'] = AllItems.listId
-                res.data['SharewebTaskType'] = { Title: 'Workstream' }
-                res.data['Shareweb_x0020_ID'] = SharewebID;
-                res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0] : null
-                res.data['Portfolio'] = { 'Id': portFolio };
-                res.data.DueDate = res?.data?.DueDate != null ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : null;
-                res.data['siteType'] = AllItems.siteType
-
-                res.data.ClientCategory = clientcaterogiesdata2,
-            //    CreateDate= new Date()
-            //     res.data.Created = moment(CreateDate).format("DD/MM/YYYY");
-                res.data.Author = {
-                    Id: res?.data?.AuthorId
-                }
-                res.data.TeamMembers = AllTeamMembers?.length > 0 ? AllTeamMembers : []
-                res.data.ResponsibleTeam = TeamLeaderws?.length > 0 ? TeamLeaderws : []
-                res.data.AssignedTo = AssignedToUser?.length > 0 ? AssignedToUser : []
-                res.Item_x0020_Type = ""
-                
-             
-                    setSharewebTask(res.data)
-                    closeTaskStatusUpdatePoup(res);
-                    
-            }
-
-
-
-        })
-
-    }
-    const deleteCategories = (id: any) => {
-        CategoriesData.map((catId: { Id: any; }, index: any) => {
-            if (id == catId.Id) {
-                CategoriesData.splice(index, 1)
-            }
-        })
-        setCategoriesData((CategoriesData: any) => ([...CategoriesData]));
-
-    }
-    const SelectPriority = (priority: any, e: any) => {
-        if (priority == '(1) High') {
-            setselectPriority('8')
-            setPriorityTask('(1) High')
-        }
-        if (priority == '(2) Normal') {
-            setselectPriority("4")
-            setPriorityTask('(2) Normal')
-        }
-        if (priority == '(3) Low') {
-            setselectPriority("1")
-            setPriorityTask('(3) Low')
-            
-        }
-    }
-    const SelectPriorityArray = (data: any, e: any) => {
-        if (e.target.value == '(1) High') {
-            data.selectPriority = '8'
-            data.Priorityy = e.target.value;
-            setPriorityTask('(1) High')
-        }
-        if (e.target.value == '(2) Normal') {
-            data.selectPriority = "4"
-            data.Priorityy = e.target.value;
-            setPriorityTask('(2) Normal')
-        }
-        if (e.target.value == '(3) Low') {
-            data.selectPriority = ("1")
-            data.Priorityy = e.target.value;
-            setPriorityTask('(3) Low')
-        }
-        setInputFields((inputFields: any) => [...inputFields]);
-    }
-    const PriorityArray = (e: any, data: any) => {
-        if (e.target.value == '1' || e.target.value == '2' || e.target.value == '3') {
-            data.selectPriority = (e.target.value)
-            // setPriorityy(true)
-        }
-        if (e.target.value == '4' || e.target.value == '5' || e.target.value == '6' || e.target.value == '7') {
-            data.selectPriority = (e.target.value)
-        }
-        if (e.target.value == '8' || e.target.value == '9' || e.target.value == '10') {
-            data.selectPriority = (e.target.value)
-        }
-        setInputFields((inputFields: any) => [...inputFields]);
-    }
-    const Priority = (e: any) => {
-        if (e.target.value == '1' || e.target.value == '2' || e.target.value == '3') {
-            setselectPriority(e.target.value)
-            setPriorityy(true)
-        }
-        if (e.target.value == '4' || e.target.value == '5' || e.target.value == '6' || e.target.value == '7') {
-            setselectPriority(e.target.value)
-            setPriorityy(true)
-        }
-        if (e.target.value == '8' || e.target.value == '9' || e.target.value == '10') {
-            setselectPriority(e.target.value)
-            setPriorityy(true)
-        }
-
-    }
-    const createChildAsTask = async (item: any, Type: any, index: any) => {
-        let NewDate = ''
-        var RelevantPortfolioIds: any = []
-        var clientcaterogiesdata2: any = [];
-        var AssignedToUser: any = [];
-        var AllTeamMembers: any = [];
-        var TeamLeaderws: any = [];
-        let LetestLevelData: any = []
-        let Tasklevel: any = ''
-        let TaskID = ''
-        let web = new Web(dynamicList.siteUrl);
-        let componentDetails: any = [];
-        componentDetails = await web.lists
-            .getById(AllItems?.listId)
-            .items
-            .select("Id,Title")
-            .orderBy("Id", false)
-            .top(1)
-            .get()
-        console.log(componentDetails)
-        var LatestId = componentDetails[0].Id + 1;
-
-        if (Task == undefined || Task == '')
-            Task = SelectedTasks[0];
-        if (TaskprofileId == '' || SelectedTasks.length > 0) {
-            TaskprofileId = SelectedTasks[0].Id;
-        }
-        var component = await web.lists
-            .getById(AllItems?.listId)
-            .items
-            .select("Id,Title,TaskType/Id,TaskType/Title,TaskLevel,TaskID")
-            .expand('TaskType')
-            .orderBy("Id", false)
-            .filter(`Id eq '${props.props.Id}'`)
-            .get()
-        console.log(component)
-        AllItems?.subRows?.forEach((vall: any) => {
-            if (vall?.TaskType?.Title == 'Task' || vall?.SharewebTaskType?.Title == 'Task') {
-                LetestLevelData.push(vall)
-            }
-
-        })
-        if (LetestLevelData.length == 0) {
-            Tasklevel = 1
-            TaskID = component[0]?.TaskID + '-T' + LatestId;
-        }
-        else {
-            Tasklevel = LetestLevelData.length + 1
-            TaskID = component[0]?.TaskID + '-T' + LatestId;;
-        }
-
-
-
-        var categoriesItem = '';
-        CategoriesData.map((category: any) => {
-            if (category.Title != undefined) {
-                categoriesItem = categoriesItem == "" ? category.Title : categoriesItem + ';' + category.Title;
-            }
-        })
-        var CategoryID: any = []
-        CategoriesData.map((category: any) => {
-            if (category.Id != undefined) {
-                CategoryID.push(category.Id)
-            }
-        })
-
-        if(AssignMembers?.TeamMemberUsers != undefined && AssignMembers.TeamMemberUsers.length>0){
-            AssignMembers.TeamMemberUsers.map((taskInfo: any) => {
-                TeamMemberIds.push(taskInfo.AssingedToUserId);
-                AllTeamMembers.push(taskInfo.AssingedToUser);
-            })
-           }
-           if(AssignMembers?.ResponsibleTeam != undefined && AssignMembers?.ResponsibleTeam.length>0){
-            AssignMembers.ResponsibleTeam.map((taskInfo: any) => {
-                ResponsibleTeamIds.push(taskInfo.AssingedToUserId);
-                TeamLeaderws.push(taskInfo.AssingedToUser)
-            })
-           }
-           if(AssignMembers?.AssignedTo != undefined && AssignMembers?.AssignedTo.length>0){
-            AssignMembers.AssignedTo.map((taskInfo: any) => {
-                AssignedToIds.push(taskInfo.AssingedToUserId);
-                AssignedToUser.push(taskInfo.AssingedToUser);
-            })
-           }
-           if(AssignMembers?.length == 0){
-            if (AllItems?.TeamMembers != undefined && AllItems?.TeamMembers?.length > 0) {
-                        AllItems?.TeamMembers.forEach((obj: any) => {
-                            TeamMemberIds.push(obj.Id);
-                            AllTeamMembers.push(obj);
-            
-                        })
-             }
-              if (AllItems?.ResponsibleTeam != undefined && AllItems?.ResponsibleTeam?.length > 0) {
-                AllItems?.ResponsibleTeam?.forEach((obj: any) => {
-                    ResponsibleTeamIds.push(obj.Id);
-                    TeamLeaderws.push(obj)
-                })
-            }
-            if(AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length > 0) {
-                        AllItems.AssignedTo.forEach((obj: any) => {
-                            AssignedToIds.push(obj.Id);
-                            AssignedToUser.push(obj);
-            
-                        })
-                    }
-           }
-        // if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length > 0) {
-        //     AllItems.AssignedTo.forEach((obj: any) => {
-        //         AssignedToIds.push(obj.Id);
-        //         AssignedToUser.push(obj)
-        //     })
-        // }
-        // if (isDropItemRes == true) {
-        //     if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
-        //         TaskAssignedTo.map((taskInfo) => {
-        //             AssignedToIds.push(taskInfo.Id);
-        //             AssignedToUser.push(taskInfo);
-        //         })
-        //     }
-        // }
-        // if (AllItems?.TeamMembers != undefined && AllItems?.TeamMembers?.length > 0) {
-        //     AllItems.TeamMembers.forEach((obj: any) => {
-        //         TeamMemberIds.push(obj.Id);
-        //         AllTeamMembers.push(obj)
-        //     })
-        // }
-        // if (isDropItem == true) {
-        //     if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
-        //         TaskTeamMembers.map((taskInfo) => {
-        //             TeamMemberIds.push(taskInfo.Id);
-        //             AllTeamMembers.push(taskInfo)
-        //         })
-        //     }
-        // }
-        // if (AllItems?.TeamLeader != undefined && AllItems?.TeamLeader?.length > 0) {
-        //     AllItems.TeamLeader.forEach((obj: any) => {
-        //         ResponsibleTeamIds.push(obj.Id);
-        //         TeamLeaderws.push(obj)
-        //     })
-        // }
-        // if (isDropItem == true) {
-        //     if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
-        //         TaskResponsibleTeam.map((taskInfo) => {
-        //             ResponsibleTeamIds.push(taskInfo.Id);
-        //             TeamLeaderws.push(taskInfo)
-        //         })
-        //     }
-        // }
-        if (props?.props != undefined && props?.props?.ClientCategory?.length > 0) {
-            if (props?.props?.ClientCategory2 != undefined && props?.props?.ClientCategory2?.results?.length > 0) {
-                props?.props?.ClientCategory2?.results?.map((items: any) => {
-                    InheritClientCategory.push(items.Id)
-                    clientcaterogiesdata2.push(items)
-                })
-            } else {
-                props.props.ClientCategory?.map((items: any) => {
-                    InheritClientCategory.push(items.Id)
-                    clientcaterogiesdata2.push(items)
-                })
-            }
-        }
-
-
-        await web.lists.getById(AllItems.listId).items.add({
-            Title: postData.Title != '' && postData.Title != undefined ? postData.Title : AllItems.Title,
-
-            Categories: categoriesItem ? categoriesItem : null,
-            Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
-             PortfolioId: AllItems?.Portfolio?.Id,
-            PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
-            TaskTypeId: SharewebTasknewTypeId,
-            SharewebCategoriesId: { "results": CategoryID },
-            ParentTaskId: AllItems.Id,
-            Body: AllItems.Description,
-            DueDate: myDate.editDate = myDate.editDate != null ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy") : null,
-            ItemRank:ItemRank,
-            Priority: PriorityTask != undefined && PriorityTask != ''? PriorityTask:AllItems.Priority,
-            AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
-            ResponsibleTeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
-            TeamMembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] },
-            ClientCategoryId: { "results": InheritClientCategory },
-            SiteCompositionSettings: props?.props?.SiteCompositionSettings != undefined ? props?.props?.SiteCompositionSettings : "",
-            ClientTime: props?.props?.ClientTime != null ? props?.props?.ClientTime : "",
-            TaskID: TaskID,
-            TaskLevel: Tasklevel
-
-        }).then((res: any) => {
-            console.log(res);
-            res.data['SiteIcon'] = AllItems?.SiteIcon
-            res.data['listId'] = AllItems?.listId
-            res.data['PortfolioType'] = portFolioTypeId != undefined ? portFolioTypeId[0] : null
-            res.data['Portfolio'] = { 'Id': portFolio };
-            res.data['TaskType'] = { 'Id': res.data?.TaskTypeId };
-            // res.DueDate = NewDate != '' && NewDate != undefined ? NewDate : undefined,
-            res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : null,
-                res.data['siteType'] = AllItems.siteType
-        // let createDate= new Date()
-        //     res.data.Created = moment(createDate).format("DD/MM/YYYY");
-            res.data.Author = {
-                Id: res?.data?.AuthorId
-            }
-            res.data.ClientCategory = clientcaterogiesdata2,
-                res.data.TeamMembers = AllTeamMembers?.length > 0 ? AllItems?.AllTeamMembers : []
-            res.data.ResponsibleTeam = TeamLeaderws.length > 0 ? TeamLeaderws : []
-            res.data.AssignedTo = AssignedToUser?.length > 0 ? AssignedToUser : []
-            res.Item_x0020_Type = ""
-            closeTaskStatusUpdatePoup(res);
-        })
-
-
-    }
-    const EditComponentPicker = (item: any) => {
-        setIsComponentPicker(true);
-        setSharewebCategory(item);
-
-    }
-    const EditComponent = (items: any) => {
-
-        setIsComponent(true);
-        setSharewebComponent(items);
-
-    }
-    const selectType = async (type: any) => {
-        if (type == 'Task') {
-            setcheckedWS(false)
-            setcheckedTask(true)
-        }
-        if (type == 'Workstream') {
-            setcheckedWS(true)
-            setcheckedTask(false)
-        }
-
-        let web = new Web(dynamicList?.siteUrl);
-        TaskTypeItems = await web.lists
-            .getById(dynamicList?.TaskTypeID)
-            .items
-            .select("Id,Title,Shareweb_x0020_Edit_x0020_Column,Prefix,Level")
-            .top(4999)
-            .get()
-        console.log(TaskTypeItems)
-        TaskTypeItems?.forEach((item: any) => {
-            if (item.Title == type) {
-                SharewebTasknewTypeId = item.Id;
-                SharewebTasknewType = item.Title;
-            }
-        })
-    }
-
+        setSelectedItem(props?.selectedItem)
+    }, [])
+    //-------- header section of popup
     const onRenderCustomHeaderMain = () => {
         return (
-            <div className={props?.props?.PortFolioType?.Id == 2?"d-flex full-width pb-1 serviepannelgreena":"d-flex full-width pb-1"} >
+            <div className={props?.props?.PortFolioType?.Id == 2 ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"} >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <h2 className='heading'>
                         {`Create Item`}
@@ -1342,463 +95,548 @@ return new Promise<void>((resolve, reject) => {
         );
     };
 
-
-    const SelectDate = (item: any) => {
-        let dates = new Date();
-        if (item == 'Today') {
-            setMyDate({ ...myDate, editDate: dates, selectDateName: item });
-        }
-        if (item == 'Tomorrow') {
-            setMyDate({ ...myDate, editDate: dates.setDate(dates.getDate() + 1), selectDateName: item })
-        }
-        if (item == 'This Week') {
-            setMyDate({ ...myDate, editDate: new Date(dates.setDate(dates.getDate() - dates.getDay() + 7)), selectDateName: item });
-        }
-        if (item == 'This Month') {
-            let lastDay = new Date(dates.getFullYear(), dates.getMonth() + 1, 0);
-            setMyDate({ ...myDate, editDate: lastDay, selectDateName: item });
-        }
-    }
-    const SelectChildDate = (Value: any, item: any) => {
-        let dates = new Date();
-        if (Value !== null && item === null) {
-            Value.editDate = item;
-            Value.selectDateName = item;
-        }
-        if (item == 'Today') {
-            Value.editDate = dates;
-            Value.selectDateName = item;
-        }
-        if (item == 'Tomorrow') {
-            Value.editDate = dates.setDate(dates.getDate() + 1);
-            Value.selectDateName = item;
-        }
-        if (item == 'This Week') {
-            Value.editDate = new Date(dates.setDate(dates.getDate() - dates.getDay() + 7));
-            Value.selectDateName = item;
-        }
-        if (item == 'This Month') {
-            let lastDay = new Date(dates.getFullYear(), dates.getMonth() + 1, 0);
-            Value.editDate = lastDay;
-            Value.selectDateName = item;
-        }
-        setInputFields((inputFields: any) => [...inputFields]);
-    }
-    const clickonDate = (Value: any, e: any) => {
-        let dates = new Date();
-        Value.editDate = e.target.value;
-
-        setInputFields((inputFields: any) => [...inputFields]);
-    }
+    // header section of popup close 
 
 
-    const AddchildItem = () => {
-        setShowChildData(true)
-        setInputFields([...inputFields, {
-            Title: '',
-            ItemRank: '',
-            Priority: '',
-            DueDate: '',
-            Description: ''
-        }])
-    }
-    const removeInputFields = (index: any) => {
-        const rows = [...inputFields];
-        rows.splice(index, 1);
-        setInputFields(rows);
-    }
 
-    const ChangePriorityStatusFunction = (e: any) => {
-        let value = e.target.value;
+
+
+    // --------  Start Change  Function of Radio Button-----
+
+
+
+    const handleRankChange = (value: any, index: any) => {
+        let allWSTasksRank = JSON.parse(JSON.stringify(inputFields));
+        allWSTasksRank[index].ItemRank = value;
+        setInputFields((prev: any) => allWSTasksRank);
+        setRefreshData(!refreshData)
+
+    };
+    const ChangePriorityStatusFunction = (value: any, index: any) => {
+
+        let allWSTasksPriority = JSON.parse(JSON.stringify(inputFields));
         if (Number(value) <= 10) {
-            setselectPriority(e.target.value)
-            if (e.target.value == '1' || e.target.value == '2' || e.target.value == '3') {
-               setPriorityTask('(1) Low')
-            }
-            if (e.target.value == '4' || e.target.value == '5' || e.target.value == '6' || e.target.value == '7') {
-                setPriorityTask('(2) Normal')
-            }
-            if (e.target.value == '8' || e.target.value == '9' || e.target.value == '10') {
-                setPriorityTask('(3) High')
-            }
+
+            allWSTasksPriority[index].Priority = value;
+            setInputFields((prev: any) => allWSTasksPriority);
         } else {
             alert("Priority Status not should be greater than 10");
-            setselectPriority('0')
+            allWSTasksPriority[index].Priority = '0';
         }
+        setRefreshData(!refreshData)
+    };
+    const dueDateFomated = (item: any) => {
+        let dates = new Date();
+        let newDate = new Date();
+        switch (item) {
+            case 'Today':
+                break;
+            case 'Tomorrow':
+                newDate.setDate(dates.getDate() + 1);
+                break;
+            case 'This Week':
+                newDate.setDate(dates.getDate() - dates.getDay() + 7);
+                break;
+            case 'This Month':
+                newDate = new Date(dates.getFullYear(), dates.getMonth() + 1, 0);
+                break;
+
+            default:
+                newDate = item;
+                break;
+
+        }
+
+        return newDate
     }
-    const changePriorityRank=(e:any)=>{
-        if(TaskItemRank != undefined && TaskItemRank.length>0){
-            TaskItemRank[0]?.forEach((val:any)=>{
-                if(val.rankTitle == e){
-                    setItemRank(val?.rank)
+
+    const handleDuedateChange = (type: any, index: any) => {
+        let allWSTasksDueDate = JSON.parse(JSON.stringify(inputFields));
+        allWSTasksDueDate[index].DueDate = dueDateFomated(type);
+        allWSTasksDueDate[index].selectDateName = type;
+        setInputFields((prev: any) => allWSTasksDueDate);
+        setRefreshData(!refreshData)
+    }
+    const changeDescription = (value: any, index: any) => {
+        // let FeedBackItem: any;
+        let allWSTasksDescription = JSON.parse(JSON.stringify(inputFields));
+        // let param: any = Moment(new Date().toLocaleString());
+        // FeedBackItem["Title"] = "FeedBackPicture" + param;
+        // FeedBackItem["FeedBackDescriptions"] = [];
+        // FeedBackItem.FeedBackDescriptions = [
+        //     {
+        //         Title: value
+        //     }
+        // ];
+        // FeedBackItem["ImageDate"] = "" + param;
+        // FeedBackItem["Completed"] = "";
+        allWSTasksDescription[index].Description = value;
+        setInputFields((prev: any) => allWSTasksDescription);
+        setRefreshData(!refreshData)
+    }
+    const chanageTitle = (value: any, index: any) => {
+        let allWSTasksTitle = JSON.parse(JSON.stringify(inputFields));
+        allWSTasksTitle[index].Title = value;
+        setInputFields((prev: any) => allWSTasksTitle);
+        setRefreshData(!refreshData)
+    }
+    // ---------Change  Function of Radio Button  End -----
+
+
+    //-------- teamMember call back---------
+
+    function DDComponentCallBack(TeamData: any) {
+        // setTeamConfig(dt)
+        if (selectedWSTaskIndex != null) {
+            let allWSTasks = JSON.parse(JSON.stringify(inputFields));
+            setRefreshData(!refreshData)
+            if (TeamData?.AssignedTo?.length > 0) {
+                let AssignedUser: any = [];
+                TeamData.AssignedTo?.map((arrayData: any) => {
+                    if (arrayData.AssingedToUser != null) {
+                        AssignedUser.push(arrayData.AssingedToUser);
+                    } else {
+                        AssignedUser.push(arrayData);
+                    }
+                });
+                allWSTasks[selectedWSTaskIndex].AssignedTo = AssignedUser;
+            } else {
+                allWSTasks[selectedWSTaskIndex].AssignedTo = [];
+            }
+            if (TeamData?.TeamMemberUsers?.length > 0) {
+                let teamMembers: any = [];
+                TeamData.TeamMemberUsers?.map((arrayData: any) => {
+                    if (arrayData.AssingedToUser != null) {
+                        teamMembers.push(arrayData.AssingedToUser);
+                    } else {
+                        teamMembers.push(arrayData);
+                    }
+                });
+                allWSTasks[selectedWSTaskIndex].TeamMember = teamMembers;
+            } else {
+                allWSTasks[selectedWSTaskIndex].TeamMember = [];
+            }
+            if (TeamData.ResponsibleTeam != undefined && TeamData.ResponsibleTeam.length > 0) {
+                let responsibleTeam: any = [];
+                TeamData.ResponsibleTeam?.map((arrayData: any) => {
+                    if (arrayData.AssingedToUser != null) {
+                        responsibleTeam.push(arrayData.AssingedToUser);
+                    } else {
+                        responsibleTeam.push(arrayData);
+                    }
+                });
+                allWSTasks[selectedWSTaskIndex].ResponsibleTeam = responsibleTeam;
+            } else {
+                allWSTasks[selectedWSTaskIndex].ResponsibleTeam = [];
+            }
+            setInputFields((prev: any) => allWSTasks);
+        }
+
+    }
+    //-----------TEAM MEMBER  callback  End -----------------
+
+
+
+    // -------------Save  and CREATE WORKSTREAM AND TASK  -----------
+
+    const createWandT = async () => {
+        let WorstreamLatestId: any;
+        let web = new Web(AllListId?.siteUrl);
+        if (selectedTaskType == 3) {
+
+            let componentDetails: any = [];
+            componentDetails = await web.lists
+                .getById(selectedItem.listId)
+                .items
+                .select("FolderID,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,TaskLevel,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,Priority,Created,Modified,TaskType/Id,TaskType/Title,ParentTask/Id,ParentTask/Title,Author/Id,Author/Title,Editor/Id,Editor/Title")
+                .expand("TaskType,ParentTask,Author,Editor,AssignedTo")
+                .filter(("TaskType/Title eq 'Workstream'") && ("ParentTask/Id eq '" + selectedItem?.Id + "'"))
+                .orderBy("Created", false)
+                .top(499)
+                .get()
+            console.log(componentDetails)
+            if (componentDetails?.length == 0) {
+                WorstreamLatestId = 1;
+            } else {
+                WorstreamLatestId = componentDetails.length + 1;
+            }
+        }
+        inputFields?.map((inputValue: any, index: any) => {
+            let taskLevel = WorstreamLatestId++;
+            let priorityRank = 4;
+            let priority = '';
+            if (inputValue?.Priority === '' || parseInt(inputValue?.Priority) <= 0) {
+                priority = '(2) Normal';
+            }
+            else {
+                priorityRank = parseInt(inputValue?.Priority);
+                if (priorityRank >= 8 && priorityRank <= 10) {
+                    priority = '(1) High';
+                }
+                if (priorityRank >= 4 && priorityRank <= 7) {
+                    priority = '(2) Normal';
+                }
+                if (priorityRank >= 1 && priorityRank <= 3) {
+                    priority = '(3) Low';
+                }
+            }
+            let FeedBackItem: any = {};
+            let param: any = Moment(new Date().toLocaleString());
+            FeedBackItem["Title"] = "FeedBackPicture" + param;
+            FeedBackItem["FeedBackDescriptions"] = [];
+            FeedBackItem.FeedBackDescriptions = [
+                { Title: inputValue?.Description }
+            ];
+            FeedBackItem["ImageDate"] = "" + param;
+            FeedBackItem["Completed"] = "";
+            let AssignedToIds: any = [];
+            let ResponsibleTeamIds: any = [];
+            let TeamMemberIds: any = [];
+            inputValue?.AssignedTo?.map((user: any) => {
+                AssignedToIds?.push(user?.Id)
+            })
+            inputValue?.TeamMember?.map((user: any) => {
+                TeamMemberIds?.push(user?.Id)
+            })
+            inputValue?.ResponsibleTeam?.map((user: any) => {
+                ResponsibleTeamIds?.push(user?.Id)
+            })
+            let CategoryID: any = [];
+            let Categories: any = '';
+            selectedItem?.TaskCategories?.map((cat: any) => {
+                CategoryID.push(cat?.Id)
+            })
+            let clientTime: any;
+            if (selectedItem?.ClientTime != undefined) {
+                if (typeof selectedItem?.ClientTime == "object") {
+
+                    clientTime = JSON.stringify(selectedItem?.ClientTime);
+                } else {
+
+                    clientTime = selectedItem?.ClientTime
+                }
+            }
+
+            let ClientCategory: any = []
+            if (ClientCategoriesData?.length > 0) {
+                ClientCategoriesData?.map((cat: any) => {
+                    ClientCategory.push(cat.Id)
+                })
+            }
+
+            let postdata = {
+                Title: inputValue?.Title,
+                Categories: selectedItem?.Categories != '' && selectedItem?.Categories != null ? selectedItem?.Categories : null,
+                TaskCategoriesId: { "results": CategoryID },
+                PriorityRank: priorityRank,
+                Priority: priority,
+                PortfolioId: selectedItem?.Portfolio?.Id,
+                // PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
+                TaskTypeId: selectedTaskType,
+                ParentTaskId: selectedItem.Id,
+                ItemRank: inputValue.ItemRank == '' ? null : inputValue.ItemRank,
+                DueDate: inputValue.DueDate != null && inputValue.DueDate != '' && inputValue.DueDate != undefined ? new Date(inputValue?.DueDate)?.toISOString() : null,
+                FeedBack: inputValue?.Description.length === 0 ? null : JSON.stringify([FeedBackItem]),
+                TaskID: selectedTaskType == 3 ? `${selectedItem?.TaskID}-W${taskLevel}` : null,
+                TaskLevel: selectedTaskType == 3 ? taskLevel : null,
+                // AssignedToId: { results: AssignedToIds?.length > 0 ? AssignedToIds : [] },
+                // ResponsibleTeamId: { results : ResponsibleTeamIds ?.length > 0 ? ResponsibleTeamIds: [] },
+                // TeamMembersId: { results: TeamMemberIds?.length > 0 ? TeamMemberIds : [] },
+                AssignedToId: { results: AssignedToIds },
+                ResponsibleTeamId: { results: ResponsibleTeamIds },
+                TeamMembersId: { results: TeamMemberIds },
+                SiteCompositionSettings:
+                    selectedItem?.SiteCompositionSettings != undefined ? selectedItem?.SiteCompositionSettings : null,
+                ClientTime: clientTime != undefined ? clientTime : null,
+                ClientCategoryId: { results: ClientCategory },
+            }
+            if (postdata?.ClientTime == false) {
+                postdata.ClientTime = null
+            }
+            web.lists.getById(selectedItem.listId).items.add(postdata).then((res: any) => {
+                console.log(res)
+                if (index == inputFields?.length - 1) {
+                    closeTaskStatusUpdatePoup(res);
                 }
             })
-        }
+
+
+
+        })
+
+
+
+
     }
+
+    // --------- END save  and CREATE WORKSTREAM AND TASK -----------
+
     return (
         <>
             <Panel
                 onRenderHeader={onRenderCustomHeaderMain}
                 type={PanelType.custom}
                 customWidth="900px"
-                isOpen={TaskStatuspopup}
-                onDismiss={closeTaskStatusUpdatePoup}
+                isOpen={true}
+                onDismiss={() => closeTaskStatusUpdatePoup("Close")}
                 isBlocking={false}
-                className={AllItems?.PortfolioType?.Color}
+            // className={AllItems?.PortfolioType?.Color}
             >
                 <div className="modal-body border p-2 active Create-Item">
                     <div className='row'>
                         {
-                            // ParentArray?.map((pare: any) => {
-                            //     return (
-                            //         <>
-                            <ul className='spfxbreadcrumb '>
-                                
-                                {/* <td className='list-none mx-2'>{`${pare.Title} >`}</td> */}
-                                {
-                                    ParentArray?.map((childsitem: any, index: any) => {
-                                        return (
-                                            <>
-                                                <li><a href='#'>{ParentArray.length - 1 == index ? `${childsitem?.Title}` : `${childsitem?.Title}`} </a> </li>
-                                            </>
-                                        )
-                                    })
-                                }
-                            </ul>
-                            //     </>
-                            // )
-                            // })
+                            // <ul className='spfxbreadcrumb '>
+
+
+                            //     {
+                            //         ParentArray?.map((childsitem: any, index: any) => {
+                            //             return (
+                            //                 <>
+                            //                     <li><a href='#'>{ParentArray.length - 1 == index ? `${childsitem?.Title}` : `${childsitem?.Title}`} </a> </li>
+                            //                 </>
+                            //             )
+                            //         })
+                            //     }
+                            // </ul>
+
                         }
                     </div>
                     <div className='row'>
                         <span className="col-sm-3 rediobutton ">
                             <span className='SpfxCheckRadio'>
-                                <input type="radio" checked={checkedWS} onClick={() => selectType('Workstream')} className="radio" /> Workstream
+                                <input type="radio"
+                                    checked={selectedTaskType == 3} onClick={() => setSelectedTaskType(3)}
+                                    className="radio" /> Workstream
                             </span>
                             <span className='SpfxCheckRadio'>
-                                <input type="radio" checked={checkedTask} onClick={() => selectType('Task')} className="radio" />Task
+                                <input type="radio"
+                                    checked={selectedTaskType == 2} onClick={() => setSelectedTaskType(2)}
+                                    className="radio" />Task
                             </span>
                         </span>
                     </div>
-                    <div className='row'>
-                        <div className="col-md-8">
-                            <input className="full-width searchbox_height" type="text"
-                                placeholder="Enter Child Item Title" defaultValue={AllItems?.Title} onChange={(e) => setPostData({ ...postData, Title: e.target.value })}
-                            />
-                        </div>
-
-                    </div>
-                    <div className='row mt-2'>
-                        <div className='col-sm-4'>
-                            <div className="input-group">
-                                <label className="full-width ">Item Rank</label>
-                                <select
-                                    className="full_width searchbox_height"
-                                    defaultValue={AllItems?.ItemRankTitle}
-                                  
-                                        onChange={(e) => changePriorityRank(e.target.value)}
-                                    
-                                >
-                                    <option>
-                                        {AllItems?.ItemRankTitle == undefined
-                                            ? "select Item Rank"
-                                            : AllItems.ItemRankTitle}
-                                    </option>
-                                    {TaskItemRank &&
-                                        TaskItemRank[0].map(function (h: any, i: any) {
-                                            return (
-                                                <option
-                                                    key={i}
-                                                    defaultValue={AllItems?.ItemRankTitle}
-                                                >
-                                                    {AllItems?.ItemRankTitle == h.rankTitle
-                                                        ? AllItems.ItemRankTitle
-                                                        : h.rankTitle}
-                                                </option>
-                                            );
-                                        })}
-                                </select>
-                            </div>
-                        </div>
-                        <div className='col-sm-4'>
-                            <div className='Create-Priority'>
-                                <label className="full-width">Priority
-                                    <span>
-                                        <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                            <span title="Edit" className="alignIcon svg__icon--info svg__iconbox"></span>
-
-                                            <div className="popover__content">
-                                                <span>
-
-                                                    8-10 = High Priority,<br />
-                                                    4-7 = Normal Priority,<br />
-                                                    1-3 = Low Priority
-                                                </span>
-
-                                            </div>
-
-                                        </div>
-                                    </span>
-
-                                </label>
-
-                                <input type="text" className="full-width searchbox_height" placeholder="Priority" 
-                                  value={selectPriority ? selectPriority : ''}
-                                  onChange={(e) => ChangePriorityStatusFunction(e)}
-                                     />
-                                <dl className='mt-1'>
-                                <dt className="form-check l-radio">
-                                            <input className="form-check-input"
-                                                name="radioPriority" type="radio"
-                                                checked={Number(selectPriority) <= 10 && Number(selectPriority) >= 8}
-                                                onChange={() => setselectPriority('8')}
-                                            />
-                                            <label className="form-check-label">High</label>
-                                        </dt>
-                                        <dt className="form-check l-radio">
-                                            <input className="form-check-input" name="radioPriority"
-                                                type="radio" checked={Number(selectPriority) <= 7 && Number(selectPriority) >= 4}
-                                                onChange={() => setselectPriority('4')}
-                                            />
-                                            <label className="form-check-label">Normal</label>
-                                        </dt>
-                                        <dt className="form-check l-radio">
-                                            <input className="form-check-input" name="radioPriority"
-                                                type="radio" checked={Number(selectPriority) <= 3 && Number(selectPriority) > 0}
-                                                onChange={() => setselectPriority('1')}
-                                            />
-                                            <label className="form-check-label">Low</label>
-                                        </dt>
-                                </dl>
-                            </div>
-
-                        </div>
-                        <div className='col-sm-4 position-relative'>
-                            <label className="full_width" ng-bind-html="GetColumnDetails('dueDate') | trustedHTML">Due Date</label>
-                            <input className="full-width searchbox_height"
-                                type="date"
-                                // value={myDate != null ? Moment(new Date(myDate)).format('YYYY-MM-DD') : ''}
-                                // onChange={(e) => setMyDate(`${e.target.value}`)}
-                                // dateFormat="dd/MM/yyyy"
-                                value={myDate.editDate != null ? Moment(new Date(myDate.editDate)).format('YYYY-MM-DD') : ""}
-                                onChange={(e: any) => setMyDate({ ...myDate, editDate: e.target.value })} />
-                            {myDate.editDate != null && <div className="input-close"><span className="svg__iconbox svg__icon--cross" onClick={() => setMyDate({ ...myDate, editDate: null, selectDateName: "" })}></span></div>}
-                            <dl className='mt-1'>
-                                <dt className="">
-                                    <label className='SpfxCheckRadio'>
-                                        <input className="radio" name="radioPriority2"
-                                            type="radio" value="(3) Low" checked={myDate.selectDateName == 'Today'} onClick={(e: any) => SelectDate('Today')} />Today
-                                    </label>
-                                </dt>
-                                <dt>
-                                    <label className='SpfxCheckRadio'>
-                                        <input className="radio" name="radioPriority2"
-                                            type="radio" value="(3) Low" checked={myDate.selectDateName == 'Tomorrow'} onClick={(e: any) => SelectDate('Tomorrow')} />Tomorrow
-                                    </label>
-                                </dt>
-                                <dt>
-                                    <label className='SpfxCheckRadio'>
-                                        <input className="radio" name="radioPriority2"
-                                            type="radio" value="(3) Low" checked={myDate.selectDateName == 'This Week'} onClick={(e: any) => SelectDate('This Week')} />This Week
-                                    </label>
-                                </dt>
-                                <dt>
-                                    <label className='SpfxCheckRadio'>
-                                        <input className="radio" name="radioPriority2"
-                                            type="radio" value="(3) Low" checked={myDate.selectDateName == 'This Month'} onClick={(e: any) => SelectDate('This Month')} />This Month
-                                    </label>
-                                </dt>
-                            </dl>
-                        </div>
-
-
-
-                    </div>
-                    <div className='row mt-2'>
-                        {AllItems != undefined && dynamicList != undefined && <TeamConfigurationCard ItemInfo={AllItems} AllListId={dynamicList} parentCallback={DDComponentCallBack}></TeamConfigurationCard>}
-                    </div>
-                    <div className='row'>
-                        <div className='col-sm-12 mt-1'>
-                            <label className='full_width'>Description</label>
-                            <textarea rows={4} className="ng-pristine ng-valid ng-empty ng-touched full_width" onChange={(e: any) => AllItems.Description = e.target.value}></textarea>
-                        </div>
-                    </div>
-
-
-                    {/* _________________Add More Item____________________________________________________________________________________________________________ */}
-
-                    {
-                        showChildData == true && inputFields?.map((data, index) => {
-                            const { Priority, DueDate, ItemRank, Description } = data;
+                    <div className={refreshData ? "oiujhgj0gu" : "gugggug"}>
+                        {inputFields?.map((multipleWSTask: any, WTindex: any) => {
                             return (
-                                <div>
-                                    <div className="border-bottom clearfix">
-                                        {(inputFields.length > 0) ? <a className="d-flex justify-content-end" onClick={removeInputFields}><span className='hreflink'>Clear section</span> </a> : ''}
-                                    </div>
+                                <div className="">
+                                    <div className='row'>
+                                        <div className="col-md-8">
+                                            <input className="full-width searchbox_height" type="text"
+                                                placeholder="Enter Child Item Title"
+                                                onChange={(e) => chanageTitle(e.target.value, WTindex)}
+                                            />
+                                        </div>
 
-                                    <div className="col-sm-8 pad0">
-                                        <label className="full-width"></label>
-                                        <input className="full-width searchbox_height" type="text"
-                                            placeholder="Enter Child Item Title" onChange={(e: any) => data.Title = e.target.value}
-                                        />
                                     </div>
-                                    <div className="row my-3" key={index}>
+                                    {/* <div className="border-bottom clearfix">
+                                        {(inputFields.length > 1) ? <a className="d-flex justify-content-end"
+                                        //  onClick={removeInputFields}
+                                         ><span className='hreflink'>Clear section</span> </a> : ''}
+                                    </div> */}
+                                    <div className='row mt-2'>
                                         <div className='col-sm-4'>
                                             <div className="input-group">
-                                                <label className="full-width">Item Rank</label>
-                                                <select
-                                                     className="full_width searchbox_height"
-                                                     defaultValue={data?.ItemRankTitle}
-                                                     onChange={(e) =>
-                                                         (data.ItemRankTitle = e.target.value)
-                                                     }
-                                                >
-                                                    <option>
-                                                        {data?.ItemRankTitle == undefined
-                                                            ? "select Item Rank"
-                                                            : data.ItemRankTitle}
-                                                    </option>
-                                                    {TaskItemRank &&
-                                                        TaskItemRank[0].map(function (h: any, i: any) {
-                                                            return (
-                                                                <option
-                                                                    key={i}
-                                                                    defaultValue={data?.ItemRankTitle}
-                                                                >
-                                                                    {data?.ItemRankTitle == h.rankTitle
-                                                                        ? data.ItemRankTitle
-                                                                        : h.rankTitle}
-                                                                </option>
-                                                            );
-                                                        })}
+                                                <label className='form-label full-width ps-0'>Item Rank</label>
+                                                <select value={multipleWSTask?.itemRank} onChange={(e: any) => { handleRankChange(e.target.value, WTindex) }} className='form-select'>
+                                                    {itemRanks?.map((rank: any) => (
+                                                        <option key={rank?.rank} value={rank?.rank}>{rank?.rankTitle}</option>
+                                                    ))}
                                                 </select>
                                             </div>
                                         </div>
+                                        <div className='col-sm-4'>
+                                            <div>
+                                                <fieldset>
+                                                    <label className="full-width">
+                                                        Priority
+                                                        <span>
+                                                            <div
+                                                                className="popover__wrapper ms-1"
+                                                                data-bs-toggle="tooltip"
+                                                                data-bs-placement="auto"
+                                                            >
+                                                                <span
+                                                                    title="Edit"
+                                                                    className="alignIcon svg__icon--info svg__iconbox"
+                                                                ></span>
 
-                                        <div className="col-sm-4">
-                                            <fieldset>
-                                                <label className="full-width">Priority
-                                                    <span>
-                                                        <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                            <span title="Edit" className="alignIcon svg__icon--info svg__iconbox"></span>
-
-                                                            <div className="popover__content">
-                                                                <span>
-
-                                                                    8-10 = High Priority,<br />
-                                                                    4-7 = Normal Priority,<br />
-                                                                    1-3 = Low Priority
-                                                                </span>
-
+                                                                <div className="popover__content">
+                                                                    <span>
+                                                                        8-10 = High Priority,
+                                                                        <br />
+                                                                        4-7 = Normal Priority,
+                                                                        <br />
+                                                                        1-3 = Low Priority
+                                                                    </span>
+                                                                </div>
                                                             </div>
-
-                                                        </div>
-                                                    </span></label>
-
-                                                <input type="text" className="full-width searchbox_height" placeholder="Priority"
-                                                    defaultValue={data.selectPriority} onClick={(e: any) => PriorityArray(data, e)} />
-                                                <div className="mt-2">
-                                                    <label>
-                                                        <input className="form-check-input  me-1" name={'radioPriority' + index}
-                                                            type="radio" value="(1) High"
-                                                            defaultChecked={data.Priorityy === "(1) High"} onClick={(e: any) => SelectPriorityArray(data, e)} />High
-                                                    </label>
-                                                </div>
-                                                <div className="">
-                                                    <label>
-                                                        <input className="form-check-input me-1" name={'radioPriority' + index}
-                                                            type="radio" value="(2) Normal"
-                                                            defaultChecked={data.Priorityy === "(2) Normal"} onClick={(e: any) => SelectPriorityArray(data, e)} />Normal
+                                                        </span>
                                                     </label>
 
-                                                </div>
-                                                <div className="">
-                                                    <label>
-                                                        <input className="form-check-input me-1" name={'radioPriority' + index}
-                                                            type="radio" value="(3) Low" defaultChecked={data.Priorityy === "(3) Low"} onClick={(e: any) => SelectPriorityArray(data, e)} />Low
-                                                    </label>
-                                                </div>
-                                            </fieldset>
+                                                    <div className="input-group">
+                                                        <input
+                                                            type="text"
+                                                            className="form-control"
+                                                            placeholder="Enter Priority"
+                                                            value={multipleWSTask?.Priority}
+                                                            onChange={(e) => ChangePriorityStatusFunction(e.target.value, WTindex)}
+                                                        />
+                                                    </div>
+
+                                                    <ul className={refreshData ? "p-0 mt-1" : "p-0 mt-1"}>
+                                                        <li className="form-check l-radio">
+                                                            <input
+                                                                className="form-check-input"
+                                                                name="radioPriority"
+                                                                type="radio"
+                                                                checked={
+                                                                    Number(multipleWSTask?.Priority) <= 10 &&
+                                                                    Number(multipleWSTask?.Priority) >= 8
+                                                                }
+                                                                onChange={() => ChangePriorityStatusFunction("8", WTindex)}
+                                                            />
+                                                            <label className="form-check-label">High</label>
+                                                        </li>
+                                                        <li className="form-check l-radio">
+                                                            <input
+                                                                className="form-check-input"
+                                                                name="radioPriority"
+                                                                type="radio"
+                                                                checked={
+                                                                    Number(multipleWSTask?.Priority) <= 7 &&
+                                                                    Number(multipleWSTask?.Priority) >= 4
+                                                                }
+                                                                onChange={() => ChangePriorityStatusFunction("4", WTindex)}
+                                                            />
+                                                            <label className="form-check-label">Normal</label>
+                                                        </li>
+                                                        <li className="form-check l-radio">
+                                                            <input
+                                                                className="form-check-input"
+                                                                name="radioPriority"
+                                                                type="radio"
+                                                                checked={
+                                                                    Number(multipleWSTask?.Priority) <= 3 &&
+                                                                    Number(multipleWSTask?.Priority) > 0
+                                                                }
+                                                                onChange={() => ChangePriorityStatusFunction("1", WTindex)}
+                                                            />
+                                                            <label className="form-check-label">Low</label>
+                                                        </li>
+                                                    </ul>
+                                                </fieldset>
+                                            </div>
+
                                         </div>
-
                                         <div className='col-sm-4 position-relative'>
-                                            <label className="full_width ng-binding" >Due Date</label>
+                                            <label className="full_width" ng-bind-html="GetColumnDetails('dueDate') | trustedHTML">Due Date</label>
                                             <input className="full-width searchbox_height"
-                                                // selected={date}
                                                 type="date"
                                                 // value={myDate != null ? Moment(new Date(myDate)).format('YYYY-MM-DD') : ''}
                                                 // onChange={(e) => setMyDate(`${e.target.value}`)}
-                                                value={data.editDate != null ? Moment(new Date(data.editDate)).format('YYYY-MM-DD') : ''}
-                                                onChange={(e: any) => clickonDate(data, e)} />
-                                            {data.editDate != null && <div className="input-close"><span className="svg__iconbox svg__icon--cross" onClick={(e: any) => SelectChildDate(data, null)} ></span></div>}
-                                            <div className="">
-                                                <label>
-                                                    <input className="form-check-input me-1" name={'radioPriority1' + index}
-                                                        type="radio" value="Today" checked={data.selectDateName == "Today"} onClick={(e: any) => SelectChildDate(data, 'Today')} />Today
-                                                </label>
-                                            </div>
-                                            <div className="">
-                                                <label>
-                                                    <input className="form-check-input me-1" name={'radioPriority1' + index}
-                                                        type="radio" value="Tomorrow" checked={data.selectDateName == 'Tomorrow'} onClick={(e: any) => SelectChildDate(data, 'Tomorrow')} />Tomorrow
-                                                </label>
-                                            </div>
-                                            <div className="">
-                                                <label>
-                                                    <input className="form-check-input me-1" name={'radioPriority1' + index}
-                                                        type="radio" value="This Week" defaultChecked={data.selectDateName == "This Week"} onClick={(e: any) => SelectChildDate(data, 'This Week')} />This Week
-                                                </label>
-                                            </div>
-                                            <div className="">
-                                                <label>
-                                                    <input className="form-check-input me-1" name={'radioPriority1' + index}
-                                                        type="radio" value="This Month" checked={data.selectDateName == "This Month"} onClick={(e: any) => SelectChildDate(data, 'This Month')} />This Month
-                                                </label>
-                                            </div>
+                                                // dateFormat="dd/MM/yyyy"
+                                                value={multipleWSTask.DueDate != null ? Moment(new Date(multipleWSTask.DueDate)).format('YYYY-MM-DD') : ""}
+                                                onChange={(e: any) => handleDuedateChange(e.target.value, WTindex)} />
+                                            {myDate.editDate != null && <div className="input-close"><span className="svg__iconbox svg__icon--cross" onClick={() => setMyDate({ ...myDate, editDate: null, selectDateName: "" })}></span></div>}
+                                            <dl className={refreshData ? 'mt-1' : "mt-1"}>
+                                                <dt className="">
+                                                    <label className='SpfxCheckRadio'>
+                                                        <input className="radio" name="radioPriority2"
+                                                            type="radio" value="(3) Low" checked={multipleWSTask.selectDateName == 'Today'} onClick={(e: any) => handleDuedateChange('Today', WTindex)} />Today
+                                                    </label>
+                                                </dt>
+                                                <dt>
+                                                    <label className='SpfxCheckRadio'>
+                                                        <input className="radio" name="radioPriority2"
+                                                            type="radio" value="(3) Low" checked={multipleWSTask.selectDateName == 'Tomorrow'} onClick={(e: any) => handleDuedateChange('Tomorrow', WTindex)} />Tomorrow
+                                                    </label>
+                                                </dt>
+                                                <dt>
+                                                    <label className='SpfxCheckRadio'>
+                                                        <input className="radio" name="radioPriority2"
+                                                            type="radio" value="(3) Low" checked={multipleWSTask.selectDateName == 'This Week'} onClick={(e: any) => handleDuedateChange('This Week', WTindex)} />This Week
+                                                    </label>
+                                                </dt>
+                                                <dt>
+                                                    <label className='SpfxCheckRadio'>
+                                                        <input className="radio" name="radioPriority2"
+                                                            type="radio" value="(3) Low" checked={multipleWSTask.selectDateName == 'This Month'} onClick={(e: any) => handleDuedateChange('This Month', WTindex)} />This Month
+                                                    </label>
+                                                </dt>
+                                            </dl>
                                         </div>
 
 
 
                                     </div>
-                                    <div className='row'>
-                                        <div className='col-sm-12 mt-1'>
-                                            {AllItems != undefined && dynamicList != undefined && <TeamConfigurationCard ItemInfo={AllItems} AllListId={dynamicList} parentCallback={DDComponentCallBack}></TeamConfigurationCard>}
-                                        </div>
+                                    <div className='row mt-2' onMouseEnter={() => { setSelectedWSTaskIndex(WTindex) }} onMouseLeave={() => { setSelectedWSTaskIndex(null) }}>
+                                        {selectedItem != undefined && AllListId != undefined &&
+                                            <TeamConfigurationCard
+                                                ItemInfo={selectedItem}
+                                                AllListId={AllListId}
+                                                parentCallback={DDComponentCallBack}
+                                            ></TeamConfigurationCard>}
                                     </div>
                                     <div className='row'>
                                         <div className='col-sm-12 mt-1'>
-                                            <label className='full-width searchbox_height'>Description</label>
-                                            <textarea rows={4} className="ng-pristine ng-valid ng-empty ng-touched full_width" onChange={(e: any) => data.Description = e.target.value}></textarea>
+                                            <label className='full_width'>Description</label>
+                                            <textarea rows={4} className="ng-pristine ng-valid ng-empty ng-touched full_width"
+                                                onChange={(e: any) => changeDescription(e.target.value, WTindex)}
+                                            ></textarea>
                                         </div>
                                     </div>
 
                                 </div>
                             )
-                        })
-                    }
-
-
+                        })}
+                    </div>
                 </div>
 
                 <a className='hyperlink' type="button" onClick={() => AddchildItem()}>
                     <span title="Edit" className="alignIcon svg__icon--Plus svg__iconbox"></span> Add More Child Items
                 </a>
                 <div className="modal-footer pt-1">
-                    {/* {(inputFields.length!==1)? <button className="btn btn-outline-danger" onClick={removeInputFields}>x</button>:''} */}
 
-                    {(inputFields.length === undefined || inputFields.length === 0) && <button type="button" className="btn btn-primary me-1" onClick={() => createWorkStream('CreatePopup')}>
-                        Create & OpenPopup
-                    </button>}
-                    <button type="button" className="btn btn-primary" onClick={() => createWorkStream('Create')}>
+
+                    {
+                        (inputFields.length === undefined || inputFields.length === 0)
+                        && <button type="button" className="btn btn-primary me-1"
+                        //   onClick={() => createWorkStream('CreatePopup')}
+                        >
+                            Create & OpenPopup
+                        </button>}
+                    <button type="button" className="btn btn-primary"
+                        onClick={() => createWandT()}
+                    >
                         Create
                     </button>
                 </div>
 
             </Panel>
-            {IsComponent && <ComponentPortPolioPopup props={SharewebComponent} AllListId={dynamicList}context={props.context} Call={Call}></ComponentPortPolioPopup>}
-            {IsComponentPicker && <Picker props={SharewebCategory} AllListId={dynamicList} Call={Call}></Picker>}
-            {IsPopupComponent && <EditTaskPopup Items={SharewebTask} AllListId={dynamicList}pageName ={"TaskFooterTable"}context={props?.context} Call={Call}></EditTaskPopup>}
+            {/* {IsComponent && <ComponentPortPolioPopup 
+            props={SharewebComponent} 
+            AllListId={dynamicList}
+            context={props.context} 
+            Call={Call}>
+                </ComponentPortPolioPopup>}
+            {IsComponentPicker && <Picker
+             props={SharewebCategory} 
+             AllListId={dynamicList} 
+             Call={Call}
+             >
+             </Picker>}
+            {
+            IsPopupComponent
+             && <EditTaskPopup
+             Items={SharewebTask} 
+             AllListId={dynamicList}
+             pageName ={"TaskFooterTable"}
+             context={props?.context} 
+             Call={Call}
+             >
+            </EditTaskPopup>} */}
         </>
     )
+
 }
-export default CreateWS; 
+export default CreateWS;

@@ -1256,19 +1256,20 @@ const AncTool = (props: any) => {
                                 <span onClick={() => cancelConfirmationPopup()}><i className="svg__iconbox svg__icon--cross crossBtn"></i></span>
                             </div>
                             <div className="modal-body p-2">
+                                <Col className='p-2'>
                                 <Col><span><strong>Folder :</strong> </span><a href={`${rootSiteName}${selectedPath?.displayPath}`} target="_blank" data-interception="off" className='hreflink'> {selectedPath?.displayPath} <span className="svg__iconbox svg__icon--folder ms-1 alignIcon "></span></a></Col>
                                 <Col className='mb-2'><strong>Metadata-Tag :</strong> <span>{props?.item?.Title}</span></Col>
 
                                 <Col className='Alltable mt-2'>
                                     <div>
-                                        <Table className='mb-0' hover responsive>
+                                        <Table className='table table-hover'>
                                             <thead className='fixed-Header top-0'>
                                                 <tr>
-                                                    <th>&nbsp;</th>
-                                                    <th>File Name</th>
-                                                    <th>Uploaded</th>
-                                                    <th>Tagged</th>
-                                                    <th>Share Link</th>
+                                                    <th className='pe-1' style={{width:"5%"}}>&nbsp;</th>
+                                                    <th className='pe-1' style={{width:"60%"}}>File Name</th>
+                                                    <th className='pe-1' style={{width:"10%"}}>Uploaded</th>
+                                                    <th className='pe-1' style={{width:"8%"}}>Tagged</th>
+                                                    <th className='pe-1'style={{width:"12%"}}>Share Link</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -1286,6 +1287,7 @@ const AncTool = (props: any) => {
                                         </Table>
                                     </div>
 
+                                </Col>
                                 </Col>
                             </div>
                             <footer className='text-end p-2'>
