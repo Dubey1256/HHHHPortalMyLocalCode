@@ -355,9 +355,42 @@ const CreateWS = (props: any) => {
             }
             web.lists.getById(selectedItem.listId).items.add(postdata).then((res: any) => {
                 console.log(res)
-                if (index == inputFields?.length - 1) {
-                    closeTaskStatusUpdatePoup(res);
+                let item: any = {};
+                if (res?.data) {
+                    item = res?.data;
+                    item = {
+                        ...item, ...{
+                            ClientCategory: ClientCategoriesData,
+                            AssignedTo: inputValue?.AssignedTo,
+                            DisplayCreateDate: moment(item.Created).format("DD/MM/YYYY"),
+                            DisplayDueDate: moment(item.DueDate).format("DD/MM/YYYY"),
+                            Portfolio: selectedItem?.Portfolio,
+                            siteUrl: selectedItem?.siteUrl,
+                            siteType: selectedItem?.siteType,
+                            listId: selectedItem?.listId,
+                            SiteIcon: selectedItem?.SiteIcon,
+                            ResponsibleTeam: inputValue?.ResponsibleTeam,
+                            TeamMembers: inputValue?.TeamMember,
+                            TeamLeader: inputValue?.ResponsibleTeam,
+                            FeedBack:
+                            inputValue?.Description?.length > 0
+                                ? [FeedBackItem]
+                                : null,
+                                Item_x0020_Type:'Task',
+                            Author: {
+                                Id: props?.context?.pageContext?.legacyPageContext?.userId
+                            }
+                        }
+                    }
+                    if (item.DisplayDueDate == "Invalid date" || "") {
+                        item.DisplayDueDate = item.DisplayDueDate.replaceAll(
+                            "Invalid date",
+                            ""
+                        );
+                    }
+                    res.data = item;
                 }
+                closeTaskStatusUpdatePoup(res);
             })
 
 
