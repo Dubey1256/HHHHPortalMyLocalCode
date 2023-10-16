@@ -585,128 +585,37 @@ const CreateActivity = (props: any) => {
                             TaskLevel: Tasklevel
                         })
                         .then((res: any) => {
-                            res.data.TaskID = selectedItem?.PortfolioStructureID + "-" + TaskID;
-                            res.data["SiteIcon"] = site.Item_x005F_x0020_Cover?.Url;
-                            res.data["listId"] = site?.listId;
-                            // (res.data["PortfolioType"] =
-                            //     portFolioTypeId == undefined ? null : portFolioTypeId[0]),
-                            //     (res.data["Portfolio"] = { Id: portFolio });
-                            res.data["TaskType"] = { Id: res.data.TaskTypeId };
-                            // res.data['TaskType'] =
-                            (res.data.DueDate = save.DueDate
-                                ? Moment(save.DueDate).format("MM-DD-YYYY")
-                                : null),
-                                (res.data["siteType"] = site.siteName);
-
-                            res.data.ParentTaskId = selectedItem.Id;
-                            res.data.ClientCategory = [];
-                            res.data.AssignedTo = [];
-                            res.data.TeamMembers = [];
-                            res.data.ResponsibleTeam = [];
-                            var MyData = res.data;
-                            if (res?.data?.TeamMembersId?.length > 0) {
-                                res.data?.TeamMembersId?.map((teamUser: any) => {
-                                    let elementFound = AllTaskUsers?.filter((User: any) => {
-                                        if (User?.AssingedToUser?.Id == teamUser) {
-                                            res.data.TeamMembers.push(User?.AssingedToUser);
+                            let item: any = {};
+                            if (res?.data) {
+                                item = res?.data;
+                                item = {
+                                    ...item, ...{
+                                        ClientCategory: ClientCategoriesData,
+                                        AssignedTo: TaskAssignedTo,
+                                        DisplayCreateDate: moment(item.Created).format("DD/MM/YYYY"),
+                                        DisplayDueDate: moment(item.DueDate).format("DD/MM/YYYY"),
+                                        Portfolio: selectedItem?.Portfolio,
+                                        TaskID: TaskID,
+                                        siteUrl: site?.siteUrl,
+                                        siteType: site?.Title,
+                                        listId: site?.listId,
+                                        SiteIcon: site?.Item_x005F_x0020_Cover?.Url,
+                                        ResponsibleTeam: TaskResponsibleTeam,
+                                        TeamMembers: TaskTeamMembers,
+                                        TeamLeader: TaskResponsibleTeam,
+                                        Author: {
+                                            Id: props?.context?.pageContext?.legacyPageContext?.userId
                                         }
-                                    });
-                                });
+                                    }
+                                }
+                                if (item.DisplayDueDate == "Invalid date" || "") {
+                                    item.DisplayDueDate = item.DisplayDueDate.replaceAll(
+                                        "Invalid date",
+                                        ""
+                                    );
+                                }
+                                res.data = item;
                             }
-                            if (res?.data?.ResponsibleTeamId?.length > 0) {
-                                res.data?.ResponsibleTeamId?.map((teamUser: any) => {
-                                    let elementFound = AllTaskUsers?.filter((User: any) => {
-                                        if (User?.AssingedToUser?.Id == teamUser) {
-                                            res.data.ResponsibleTeam.push(User?.AssingedToUser);
-                                        }
-                                    });
-                                });
-                            }
-                            if (res?.data?.AssignedToId?.length > 0) {
-                                res.data?.AssignedToId?.map((teamUser: any) => {
-                                    let elementFound = AllTaskUsers?.filter((User: any) => {
-                                        if (User?.AssingedToUser?.Id == teamUser) {
-                                            res.data.AssignedTo.push(User?.AssingedToUser);
-                                        }
-                                    });
-                                });
-                            }
-                            // if (res?.data?.ClientCategoryId?.length > 0) {
-                            //     res.data?.ClientCategoryId?.map((category: any) => {
-                            //         let elementFound = AllClientCategory?.filter(
-                            //             (metaCategory: any) => metaCategory?.Id == category
-                            //         );
-                            //         if (elementFound) {
-                            //             res.data.ClientCategory.push(elementFound[0]);
-                            //         }
-                            //     });
-                            // }
-                            res.data.Clientcategories = res.data.ClientCategory;
-
-                            let fileName: any = "";
-                            let tempArray: any = [];
-                            // let SiteUrl = SiteUrl;
-                            // if (TaskImages != undefined && TaskImages.length > 0) {
-                            //     TaskImages?.map(async (imgItem: any, index: number) => {
-                            //         if (
-                            //             imgItem.data_url != undefined &&
-                            //             imgItem.file != undefined
-                            //         ) {
-                            //             let date = new Date();
-                            //             let timeStamp = date.getTime();
-                            //             fileName =
-                            //                 "Image" +
-                            //                 "-" +
-                            //                 res.data.Title +
-                            //                 " " +
-                            //                 res.data.Title +
-                            //                 timeStamp +
-                            //                 ".jpg";
-                            //             let ImgArray = {
-                            //                 ImageName: fileName,
-                            //                 UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
-                            //                 imageDataUrl:
-                            //                     dynamicList?.siteUrl +
-                            //                     "/Lists/" +
-                            //                     res.data.siteType +
-                            //                     "/Attachments/" +
-                            //                     res?.data.Id +
-                            //                     "/" +
-                            //                     fileName,
-                            //                 ImageUrl: imgItem.data_url
-                            //             };
-                            //             tempArray.push(ImgArray);
-                            //         }
-                            //     });
-                            //     tempArray?.map((tempItem: any) => {
-                            //         tempItem.Checked = false;
-                            //     });
-                            //     var src = TaskImages[0].data_url?.split(",")[1];
-                            //     var byteArray = new Uint8Array(
-                            //         atob(src)
-                            //             ?.split("")
-                            //             ?.map(function (c) {
-                            //                 return c.charCodeAt(0);
-                            //             })
-                            //     );
-                            //         const data: any = byteArray;
-                            //         var fileData = "";
-                            //         for (var i = 0; i < byteArray.byteLength; i++) {
-                            //             fileData += String.fromCharCode(byteArray[i]);
-                            //         }
-                            //         if (res.data.listId != undefined) {
-                            //             let web = new Web(dynamicList?.siteUrl);
-                            //             let item = web.lists
-                            //                 .getById(res.data.listId)
-                            //                 .items.getById(res.data.Id);
-                            //             item.attachmentFiles.add(fileName, data).then((res) => {
-                            //                 console.log("Attachment added");
-
-                            //                 UpdateBasicImageInfoJSON(tempArray, MyData);
-                            //             });
-                            //         }
-                            //     }
-
                             if (selectedItem.PageType == "ProjectManagement") {
                                 props.Call();
                                 let url = `${AllListId.siteUrl}/SitePages/Task-Profile.aspx?taskId=${res.data.Id}&Site=${res.data.siteType}`;
@@ -716,8 +625,6 @@ const CreateActivity = (props: any) => {
                                 closeTaskStatusUpdatePoup(res);
                                 console.log(res);
                             }
-
-
                         });
 
 
@@ -830,128 +737,41 @@ const CreateActivity = (props: any) => {
                             TaskTypeId: 2
                         })
                         .then((res: any) => {
-                            res.data["SiteIcon"] = site.Item_x005F_x0020_Cover?.Url;
-                            res.data["listId"] = site?.listId;
-                            // (res.data["PortfolioType"] =
-                            //     portFolioTypeId == undefined ? null : portFolioTypeId[0]),
-                            //     (res.data["Portfolio"] = { Id: portFolio });
-                            res.data["TaskType"] = { Id: res.data.TaskTypeId };
-                            // res.data['TaskType'] =
-                            (res.data.DueDate = save?.DueDate
-                                ? Moment(save?.DueDate).format("MM-DD-YYYY")
-                                : null),
-                                (res.data["siteType"] = site.siteName);
-                            res.data.Author = {
-                                Id: res?.data?.AuthorId
-                            }
-                            res.data.ParentTaskId = selectedItem.Id;
-                            res.data.ClientCategory = [];
-                            res.data.AssignedTo = [];
-                            res.data.TeamMembers = [];
-                            res.data.ResponsibleTeam = [];
-                            var MyData = res.data;
-                            if (res?.data?.TeamMembersId?.length > 0) {
-                                res.data?.TeamMembersId?.map((teamUser: any) => {
-                                    let elementFound = AllTaskUsers?.filter((User: any) => {
-                                        if (User?.AssingedToUser?.Id == teamUser) {
-                                            res.data.TeamMembers.push(User?.AssingedToUser);
-                                        }
-                                    });
-                                });
-                            }
-                            if (res?.data?.ResponsibleTeamId?.length > 0) {
-                                res.data?.ResponsibleTeamId?.map((teamUser: any) => {
-                                    let elementFound = AllTaskUsers?.filter((User: any) => {
-                                        if (User?.AssingedToUser?.Id == teamUser) {
-                                            res.data.ResponsibleTeam.push(User?.AssingedToUser);
-                                        }
-                                    });
-                                });
-                            }
-                            if (res?.data?.AssignedToId?.length > 0) {
-                                res.data?.AssignedToId?.map((teamUser: any) => {
-                                    let elementFound = AllTaskUsers?.filter((User: any) => {
-                                        if (User?.AssingedToUser?.Id == teamUser) {
-                                            res.data.AssignedTo.push(User?.AssingedToUser);
-                                        }
-                                    });
-                                });
-                            }
-                            // if (res?.data?.ClientCategoryId?.length > 0) {
-                            //     res.data?.ClientCategoryId?.map((category: any) => {
-                            //         let elementFound = AllClientCategory?.filter(
-                            //             (metaCategory: any) => metaCategory?.Id == category
-                            //         );
-                            //         if (elementFound) {
-                            //             res.data.ClientCategory.push(elementFound[0]);
-                            //         }
-                            //     });
-                            // }
-                            res.data.Clientcategories = res.data.ClientCategory;
+                            let item: any = {};
+                            if (res?.data) {
+                                item = res?.data;
+                                item = {
+                                    ...item,
+                                    ClientCategory: ClientCategoriesData,
+                                    AssignedTo: TaskAssignedTo,
+                                    DisplayCreateDate: moment(item.Created).format("DD/MM/YYYY"),
+                                    DisplayDueDate: moment(item.DueDate).format("DD/MM/YYYY"),
+                                    Portfolio: selectedItem?.Portfolio,
+                                    siteUrl: site?.siteUrl,
+                                    siteType: site?.Title,
+                                    listId: site?.listId,
+                                    SiteIcon: site?.Item_x005F_x0020_Cover?.Url,
+                                    ResponsibleTeam: TaskResponsibleTeam,
+                                    FeedBack:
+                                        FeedbackPost?.length > 0
+                                            ? FeedbackPost
+                                            : null,
+                                    TeamMembers: TaskTeamMembers,
+                                    TeamLeader: TaskResponsibleTeam,
+                                    Author: {
+                                        Id: props?.context?.pageContext?.legacyPageContext?.userId
+                                    }
 
-                            let fileName: any = "";
-                            let tempArray: any = [];
-                            // let SiteUrl = SiteUrl;
-                            // if (TaskImages != undefined && TaskImages.length > 0) {
-                            //     TaskImages?.map(async (imgItem: any, index: number) => {
-                            //         if (
-                            //             imgItem.data_url != undefined &&
-                            //             imgItem.file != undefined
-                            //         ) {
-                            //             let date = new Date();
-                            //             let timeStamp = date.getTime();
-                            //             fileName =
-                            //                 "Image" +
-                            //                 "-" +
-                            //                 res.data.Title +
-                            //                 " " +
-                            //                 res.data.Title +
-                            //                 timeStamp +
-                            //                 ".jpg";
-                            //             let ImgArray = {
-                            //                 ImageName: fileName,
-                            //                 UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
-                            //                 imageDataUrl:
-                            //                     dynamicList?.siteUrl +
-                            //                     "/Lists/" +
-                            //                     res.data.siteType +
-                            //                     "/Attachments/" +
-                            //                     res?.data.Id +
-                            //                     "/" +
-                            //                     fileName,
-                            //                 ImageUrl: imgItem.data_url
-                            //             };
-                            //             tempArray.push(ImgArray);
-                            //         }
-                            //     });
-                            //     tempArray?.map((tempItem: any) => {
-                            //         tempItem.Checked = false;
-                            //     });
-                            //     var src = TaskImages[0].data_url?.split(",")[1];
-                            //     var byteArray = new Uint8Array(
-                            //         atob(src)
-                            //             ?.split("")
-                            //             ?.map(function (c) {
-                            //                 return c.charCodeAt(0);
-                            //             })
-                            //     );
-                            //     const data: any = byteArray;
-                            //     var fileData = "";
-                            //     for (var i = 0; i < byteArray.byteLength; i++) {
-                            //         fileData += String.fromCharCode(byteArray[i]);
-                            //     }
-                            //     if (res.data.listId != undefined) {
-                            //         let web = new Web(dynamicList?.siteUrl);
-                            //         let item = web.lists
-                            //             .getById(res.data.listId)
-                            //             .items.getById(res.data.Id);
-                            //         item.attachmentFiles.add(fileName, data).then((res) => {
-                            //             console.log("Attachment added");
 
-                            //             UpdateBasicImageInfoJSON(tempArray, MyData);
-                            //         });
-                            //     }
-                            // }
+                                }
+                                if (item.DisplayDueDate == "Invalid date" || "") {
+                                    item.DisplayDueDate = item.DisplayDueDate.replaceAll(
+                                        "Invalid date",
+                                        ""
+                                    );
+                                }
+                                res.data = item;
+                            }
 
                             if (selectedItem.PageType == "ProjectManagement") {
                                 props.Call();
