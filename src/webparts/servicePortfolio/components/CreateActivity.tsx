@@ -497,7 +497,7 @@ const CreateActivity = (props: any) => {
                             siteComp.Date = Moment(new Date().toLocaleString()).format("DD-MM-YYYY");
                         Sitestagging = JSON?.stringify([siteComp]);
                     }
-                    Sitestagging = selectedItem?.Sitestagging
+                 
                 }
             }
 
@@ -795,7 +795,7 @@ const CreateActivity = (props: any) => {
                                         siteComp.Date = Moment(new Date().toLocaleString()).format("DD-MM-YYYY");
                                     clientTime = JSON?.stringify([siteComp]);
                                 }
-                                clientTime = selectedItem?.ClientTime
+                               
                             }
                         }
 
