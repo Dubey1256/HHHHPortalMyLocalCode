@@ -6,6 +6,7 @@ import PageLoader from '../../../globalComponents/pageLoader';
 import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
 import { Web } from "sp-pnp-js";
 import * as Moment from 'moment';
+import EditComponentProtfolio from '../../EditPopupFiles/EditComponent';
 import EditInstituton from "../../EditPopupFiles/EditComponent";
 import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
 import * as globalCommon from "../../../globalComponents/globalCommon";
@@ -42,6 +43,7 @@ const HalfClientCategory = (props: any) => {
     const [selectedView, setSelectedView] = React.useState("MasterTask");
     const [isOpenEditPopup, setisOpenEditPopup] = React.useState(false);
     const [EditSiteCompositionStatus, setEditSiteCompositionStatus] = React.useState(false);
+    const [EditSiteCompositionMaster, setEditSiteCompositionMaster] = React.useState(false);
     const [AllSiteTasks, setAllSiteTasks]: any = React.useState([]);
     const [AllMasterTasks, setAllMasterTasks]: any = React.useState([]);
     const [passdata, setpassdata] = React.useState("");
@@ -732,7 +734,7 @@ const HalfClientCategory = (props: any) => {
                 size: 70,
                 cell: ({ row, getValue }) => (
                     <span className="d-flex">
-                        <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTaskItems} AllSitesTaskData={allSitesTasks} AllListId={AllListId}/>
+                        <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTaskItems} AllSitesTaskData={allSitesTasks} AllListId={AllListId} />
                     </span>
                 ),
             },
@@ -776,8 +778,8 @@ const HalfClientCategory = (props: any) => {
                     <div>
                         <span>{row?.original?.siteCompositionSearch}</span>
                         {/* {row?.original?.Sitestagging?.length > 0 ?
-                        <span title="Edit Site Composition" onClick={() => { setSelectedItem(row?.original), setEditSiteCompositionMaster(true) }} className="svg__iconbox svg__icon--editBox"></span>
-                        : ''} */}
+                            <span title="Edit Site Composition" onClick={() => { setSelectedItem(row?.original), setEditSiteCompositionMaster(true) }} className="svg__iconbox svg__icon--editBox"></span>
+                            : ''} */}
                     </div>
                 ),
                 id: 'siteCompositionSearch',
@@ -945,6 +947,10 @@ const HalfClientCategory = (props: any) => {
                 </EditInstituton>
             )}
             {EditSiteCompositionStatus ? <EditSiteComposition EditData={selectedItem} context={props?.props?.Context} AllListId={AllListId} Call={() => { CallBack('SiteComp') }} /> : ''}
+            {EditSiteCompositionMaster ?
+                <EditComponentProtfolio item={selectedItem} SelectD={AllListId} usedFor="Task-Popup" Calls={() => { CallBack('SiteComp') }} />
+                : null
+            }
             {pageLoaderActive ? <PageLoader /> : ''}
         </div>
     )
