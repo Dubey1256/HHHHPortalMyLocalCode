@@ -2141,21 +2141,24 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
 
                 </Row>
                 <Row className='ps-30 mt-2'>
-                  <div className="col">
-                    <label>Start Date</label>
-                    <span>
+                  <div className="col-2">
+                    <div className='input-group'>
+                    <label className='full_width'>Start Date</label>
+            
                       <DatePicker selected={this.state.startdate} onChange={(date: any) => this.setStartDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
                         className="form-control date-picker" popperPlacement="bottom-start" customInput={<this.ExampleCustomInput />}
+                      
                       />
-                    </span>
                   </div>
-                  <div className="col">
-                    <label>End Date</label>
-                    <span>
+                  </div>
+                  <div className="col-2">
+                  <div className='input-group'>
+                    <label className='full_width'>End Date</label>
                       <DatePicker selected={this.state.enddate} onChange={(date: any) => this.setEndDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
                         className="form-control date-picker" popperPlacement="bottom-start" customInput={<this.ExampleCustomInput />}
                       />
-                    </span>
+                   
+                    </div>
                   </div>
                   <div className='col'>
                     <div className='mt-1'>
