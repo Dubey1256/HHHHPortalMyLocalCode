@@ -549,39 +549,17 @@ function CreateTaskComponent(props: any) {
                     AllClientCategories?.push(metadata)
                 }
             })
-            Timing.sort((a: any, b: any) => {
-                return a?.SortOrder - b?.SortOrder;
-            });
-            SitesTypes.sort((a: any, b: any) => {
-                return a?.SortOrder - b?.SortOrder;
-            });
-            siteConfig.sort((a: any, b: any) => {
-                return a?.SortOrder - b?.SortOrder;
-            });
-            TaskTypes.sort((a: any, b: any) => {
-                return a?.SortOrder - b?.SortOrder;
-            });
-            Priority.sort((a: any, b: any) => {
-                return a?.SortOrder - b?.SortOrder;
-            });
-
-
-
-            // siteConfig = getSmartMetadataItemsByTaxType(AllMetadata, 'Sites')
-            // siteConfig?.map((site: any) => {
-            //     if (site?.Title !== undefined && site?.Title !== 'Foundation' && site?.Title !== 'Master Tasks' && site?.Title !== 'DRR' && site?.Title !== 'Health' && site?.Title !== 'Gender' && site?.Title !== 'SP Online' ) {
-            //         SitesTypes.push(site);
-            //     }
-            // })
+            Timing = sortDataOnOrder(Timing)
+            SitesTypes = sortDataOnOrder(SitesTypes)
+            siteConfig = sortDataOnOrder(siteConfig)
+            TaskTypes = sortDataOnOrder(TaskTypes)
+            Priority = sortDataOnOrder(Priority)
             if (SitesTypes?.length == 1) {
                 setActiveTile("siteType", "siteType", SitesTypes[0].Title)
                 setSiteType(SitesTypes)
             } else {
                 setSiteType(SitesTypes)
             }
-            // TaskTypes = getSmartMetadataItemsByTaxType(AllMetadata, 'Categories');
-            // Priority = getSmartMetadataItemsByTaxType(AllMetadata, 'Priority Rank');
-            // Timing = getSmartMetadataItemsByTaxType(AllMetadata, 'Timings');
             setTiming(Timing)
             setpriorityRank(Priority)
 
@@ -624,7 +602,11 @@ function CreateTaskComponent(props: any) {
         setTaskTypes(Task);
         await fetchBurgerMenuDetails();
     }
-
+    const sortDataOnOrder = (data: any) => {
+        return data?.sort((a: any, b: any) => {
+            return a?.SortOrder - b?.SortOrder;
+        });
+    }
     let LoadTaskUsers = async () => {
         let AllTaskUsers: any = [];
         try {
@@ -718,8 +700,8 @@ function CreateTaskComponent(props: any) {
             if (CategoryTitle !== undefined) {
                 CategoryTitle.split(';')?.map((cat: any) => {
                     if (cat.toLowerCase() === 'design') {
-                        AssignedToIds.push(301)
-                        TeamMembersIds.push(301);
+                        AssignedToIds.push(298)
+                        TeamMembersIds.push(298);
                         TeamMembersIds.push(49);
                         taskUsers?.map((User: any) => {
                             if (User.Title === 'Design' && burgerMenuTaskDetails.TaskType != "Design" && TeamMembersIds.length === 0 && User.AssingedToUserId != null && User.AssingedToUserId != '' && User.AssingedToUserId != undefined) {

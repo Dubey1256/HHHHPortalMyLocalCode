@@ -178,7 +178,7 @@ export default function DocumentSearchPage(Props: any) {
                             {/* {row?.original?.File_x0020_Type == 'flv' || row?.original?.File_x0020_Type == 'js' || row?.original?.File_x0020_Type == 'css' || row?.original?.File_x0020_Type == 'zip' || row?.original?.File_x0020_Type == 'aspx' || row?.original?.File_x0020_Type == 'mp4' || row?.original?.File_x0020_Type == 'jpg' || row?.original?.File_x0020_Type == 'png' || row?.original?.File_x0020_Type == 'gif' &&
                             <img src="/_layouts/15/images/icgen.gif?rev=23"></img>} */}
                         
-                        <a className='ms-1' target="_blank" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.FileLeafRef} </a>
+                        <a className='ms-1 wid90' target="_blank" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.FileLeafRef} </a>
                     </div>
                 ),
             },
@@ -195,7 +195,7 @@ export default function DocumentSearchPage(Props: any) {
                 ),
             },
             {
-                accessorKey: "Modified", placeholder: "Modified Date", header: "", size: 152,
+                accessorKey: "Modified", placeholder: "Modified Date", header: "", size: 172,
                 cell: ({ row }) => (
                     <>
                         {row?.original?.AllModifiedImages.map((item: any) => (
@@ -230,8 +230,10 @@ export default function DocumentSearchPage(Props: any) {
         //#Jsx Part By PB
         <> {AllDocs && <div>
             <div><h2 className='mt-2 heading'>Document Search</h2></div>
-            <div className='wrapper'>
-            <GlobalCommanTable columns={columns} data={AllDocs} showHeader={true} callBackData={callBackData} />
+            <div className='Alltable'>
+                <div className='wrapper'>
+                    <GlobalCommanTable columns={columns} data={AllDocs} showHeader={true} callBackData={callBackData} />
+                </div>
             </div>
         </div>}
             {isEditModalOpen ? <DocumentPopup closeEditPopup={closeEditPopup} pagecontext={PageContext} Id={selectedItemId} /> : ''}
