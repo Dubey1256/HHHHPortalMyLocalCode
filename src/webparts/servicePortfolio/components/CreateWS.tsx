@@ -40,10 +40,10 @@ const CreateWS = (props: any) => {
         DueDate: '',
         Description: [],
         AssignedTo: props?.selectedItem?.AssignedTo?.length > 0 ? props?.selectedItem?.AssignedTo : [],
-        TeamMember: props?.selectedItem?.TeamMember?.length > 0 ? props?.selectedItem?.TeamMember :  props?.selectedItem?.TeamMembers.length>0?props?.selectedItem?.TeamMembers:[],
-        ResponsibleTeam: props?.selectedItem?.ResponsibleTeam?.length > 0 ? props?.selectedItem?.ResponsibleTeam :props?.selectedItem?.TeamLeader.length>0?props?.selectedItem?.TeamLeader:[],
+        TeamMember: props?.selectedItem?.TeamMember?.length > 0 ? props?.selectedItem?.TeamMember : props?.selectedItem?.TeamMembers.length > 0 ? props?.selectedItem?.TeamMembers : [],
+        ResponsibleTeam: props?.selectedItem?.ResponsibleTeam?.length > 0 ? props?.selectedItem?.ResponsibleTeam : props?.selectedItem?.TeamLeader.length > 0 ? props?.selectedItem?.TeamLeader : [],
     }]);
-   
+
 
     const AddchildItem = () => {
         setInputFields([...inputFields, {
@@ -53,8 +53,8 @@ const CreateWS = (props: any) => {
             DueDate: '',
             Description: [],
             AssignedTo: props?.selectedItem?.AssignedTo?.length > 0 ? props?.selectedItem?.AssignedTo : [],
-            TeamMember: props?.selectedItem?.TeamMember?.length > 0 ? props?.selectedItem?.TeamMember :  props?.selectedItem?.TeamMembers?.length>0?props?.selectedItem?.TeamMembers:[],
-            ResponsibleTeam: props?.selectedItem?.ResponsibleTeam?.length > 0 ? props?.selectedItem?.ResponsibleTeam :props?.selectedItem?.TeamLeader?.length>0?props?.selectedItem?.TeamLeader:[],
+            TeamMember: props?.selectedItem?.TeamMember?.length > 0 ? props?.selectedItem?.TeamMember : props?.selectedItem?.TeamMembers?.length > 0 ? props?.selectedItem?.TeamMembers : [],
+            ResponsibleTeam: props?.selectedItem?.ResponsibleTeam?.length > 0 ? props?.selectedItem?.ResponsibleTeam : props?.selectedItem?.TeamLeader?.length > 0 ? props?.selectedItem?.TeamLeader : [],
         }])
         setRefreshData(!refreshData)
 
@@ -309,21 +309,21 @@ const CreateWS = (props: any) => {
             let clientTime: any;
             if (selectedItem?.ClientTime != undefined) {
                 if (typeof selectedItem?.ClientTime == "object") {
-                    
-                        clientTime = JSON.stringify(selectedItem?.ClientTime);
-                    } else {
-                   
-                        clientTime = selectedItem?.ClientTime
-                    }
-                } 
-            
-              let   ClientCategory:any=[]
-              if(ClientCategoriesData?.length>0){
-                ClientCategoriesData?.map((cat:any)=>{
+
+                    clientTime = JSON.stringify(selectedItem?.ClientTime);
+                } else {
+
+                    clientTime = selectedItem?.ClientTime
+                }
+            }
+
+            let ClientCategory: any = []
+            if (ClientCategoriesData?.length > 0) {
+                ClientCategoriesData?.map((cat: any) => {
                     ClientCategory.push(cat.Id)
                 })
-              }
-            
+            }
+
             let postdata = {
                 Title: inputValue?.Title,
                 Categories: selectedItem?.Categories != '' && selectedItem?.Categories != null ? selectedItem?.Categories : null,
@@ -334,9 +334,9 @@ const CreateWS = (props: any) => {
                 // PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
                 TaskTypeId: selectedTaskType,
                 ParentTaskId: selectedItem.Id,
-                ItemRank: inputValue.ItemRank,
-                DueDate: inputValue.DueDate != null ? Moment(inputValue?.DueDate).format("ddd, DD MMM yyyy") : null,
-                FeedBack: inputValue?.Description.length === 0 ? '' : JSON.stringify([FeedBackItem]),
+                ItemRank: inputValue.ItemRank == '' ? null : inputValue.ItemRank,
+                DueDate: inputValue.DueDate != null && inputValue.DueDate != '' && inputValue.DueDate != undefined ? new Date(inputValue?.DueDate)?.toISOString() : null,
+                FeedBack: inputValue?.Description.length === 0 ? null : JSON.stringify([FeedBackItem]),
                 TaskID: selectedTaskType == 3 ? `${selectedItem?.TaskID}-W${taskLevel}` : null,
                 TaskLevel: selectedTaskType == 3 ? taskLevel : null,
                 // AssignedToId: { results: AssignedToIds?.length > 0 ? AssignedToIds : [] },
@@ -346,12 +346,12 @@ const CreateWS = (props: any) => {
                 ResponsibleTeamId: { results: ResponsibleTeamIds },
                 TeamMembersId: { results: TeamMemberIds },
                 SiteCompositionSettings:
-                    selectedItem?.SiteCompositionSettings!=undefined? selectedItem?.SiteCompositionSettings:null,
-                ClientTime: clientTime!=undefined?clientTime:null,
+                    selectedItem?.SiteCompositionSettings != undefined ? selectedItem?.SiteCompositionSettings : null,
+                ClientTime: clientTime != undefined ? clientTime : null,
                 ClientCategoryId: { results: ClientCategory },
             }
-            if(postdata?.ClientTime==false){
-                postdata.ClientTime=null
+            if (postdata?.ClientTime == false) {
+                postdata.ClientTime = null
             }
             web.lists.getById(selectedItem.listId).items.add(postdata).then((res: any) => {
                 console.log(res)
@@ -599,12 +599,12 @@ const CreateWS = (props: any) => {
 
 
                     {
-                    (inputFields.length === undefined || inputFields.length === 0)
-                     && <button type="button" className="btn btn-primary me-1"
-                    //   onClick={() => createWorkStream('CreatePopup')}
-                      >
-                        Create & OpenPopup
-                    </button>}
+                        (inputFields.length === undefined || inputFields.length === 0)
+                        && <button type="button" className="btn btn-primary me-1"
+                        //   onClick={() => createWorkStream('CreatePopup')}
+                        >
+                            Create & OpenPopup
+                        </button>}
                     <button type="button" className="btn btn-primary"
                         onClick={() => createWandT()}
                     >
