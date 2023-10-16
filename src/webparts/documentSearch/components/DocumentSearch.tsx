@@ -18,7 +18,7 @@ export default class DocumentSearch extends React.Component<IDocumentSearchProps
     } = this.props;
 
     return (
-      <div className='Alltable'>
+      <div>
         <DocumentSearchPage Selectedprops={this.props} />
       </div>
     );
