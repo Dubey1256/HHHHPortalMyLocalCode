@@ -1226,7 +1226,14 @@ function TasksTable(props: any) {
           LoadAllSiteTasks={LoadAllSiteTasks}
           AllListId={props.AllListId}>
         </CreateActivity>}
-        {WSPopup && <CreateWS props={MeetingItems[MeetingItems.length - 1]} Call={Call} data={data} SelectedProp={props.AllListId}></CreateWS>}
+      {WSPopup && <CreateWS 
+      selectedItem={MeetingItems[MeetingItems.length - 1]} 
+      Call={Call}
+       data={data} 
+       TaskUsers={AllUsers}
+       AllListId={props.AllListId}
+        context={props.Context}
+        ></CreateWS>}
       {addModalOpen && <Panel headerText={` Create Component `} type={PanelType.medium} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
         <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} PropsValue={props} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
       </Panel>

@@ -2141,21 +2141,24 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
 
                 </Row>
                 <Row className='ps-30 mt-2'>
-                  <div className="col">
-                    <label>Start Date</label>
-                    <span>
+                  <div className="col-2">
+                    <div className='input-group'>
+                    <label className='full_width'>Start Date</label>
+            
                       <DatePicker selected={this.state.startdate} onChange={(date: any) => this.setStartDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
                         className="form-control date-picker" popperPlacement="bottom-start" customInput={<this.ExampleCustomInput />}
+                      
                       />
-                    </span>
                   </div>
-                  <div className="col">
-                    <label>End Date</label>
-                    <span>
+                  </div>
+                  <div className="col-2">
+                  <div className='input-group'>
+                    <label className='full_width'>End Date</label>
                       <DatePicker selected={this.state.enddate} onChange={(date: any) => this.setEndDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
                         className="form-control date-picker" popperPlacement="bottom-start" customInput={<this.ExampleCustomInput />}
                       />
-                    </span>
+                   
+                    </div>
                   </div>
                   <div className='col'>
                     <div className='mt-1'>
@@ -2209,10 +2212,10 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                             speed={2} trail={60} shadow={false} hwaccel={false} className="spinner" zIndex={2e9} top="28%" left="50%" scale={1.0} loadedClassName="loadedContent" />
                           <tbody>
                             <tr>
-                              <td valign="top">
+                              <td valign="top" className='pe-2'>
                                 <div>
                                   <label className='border-bottom full-width pb-1'>
-                                    <input id='chkAllCategory' defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} type="checkbox" className="form-check-input me-1" />
+                                    <input id='chkAllCategory' defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} type="checkbox" className="form-check-input me-2" />
                                     Client Category
                                   </label>
                                   <div className="custom-checkbox-tree">
@@ -2230,10 +2233,10 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                                   </div>
                                 </div>
                               </td>
-                              <td valign="top">
+                              <td valign="top" className='pe-1'>
                                 <div>
                                   <label className='border-bottom full-width pb-1'>
-                                    <input type="checkbox" id='chkAllSites' defaultChecked={this.state.checkedAllSites} onClick={(e) => this.SelectAllSits(e)} className="form-check-input me-1" />
+                                    <input type="checkbox" id='chkAllSites' defaultChecked={this.state.checkedAllSites} onClick={(e) => this.SelectAllSits(e)} className="form-check-input me-2" />
                                     Sites
                                   </label>
                                   <div className="custom-checkbox-tree">
