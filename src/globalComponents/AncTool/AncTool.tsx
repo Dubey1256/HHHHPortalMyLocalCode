@@ -1269,7 +1269,7 @@ const AncTool = (props: any) => {
                                                     <th className='pe-1' style={{width:"60%"}}>File Name</th>
                                                     <th className='pe-1' style={{width:"10%"}}>Uploaded</th>
                                                     <th className='pe-1' style={{width:"8%"}}>Tagged</th>
-                                                    <th className='pe-1'style={{width:"10%"}}>Share Link</th>
+                                                    <th className='pe-1'style={{width:"12%"}}>Share Link</th>
                                                 </tr>
                                             </thead>
                                             <tbody>

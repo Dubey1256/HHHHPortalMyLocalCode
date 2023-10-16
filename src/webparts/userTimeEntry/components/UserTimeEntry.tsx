@@ -2287,10 +2287,10 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                             speed={2} trail={60} shadow={false} hwaccel={false} className="spinner" zIndex={2e9} top="28%" left="50%" scale={1.0} loadedClassName="loadedContent" />
                           <tbody>
                             <tr>
-                              <td valign="top">
+                              <td valign="top" className='pe-2'>
                                 <div>
                                   <label className='border-bottom full-width pb-1'>
-                                    <input id='chkAllCategory' defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} type="checkbox" className="form-check-input me-1" />
+                                    <input id='chkAllCategory' defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} type="checkbox" className="form-check-input me-2" />
                                     Client Category
                                   </label>
                                   <div className="custom-checkbox-tree">
@@ -2308,10 +2308,10 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                                   </div>
                                 </div>
                               </td>
-                              <td valign="top">
+                              <td valign="top" className='pe-1'>
                                 <div>
                                   <label className='border-bottom full-width pb-1'>
-                                    <input type="checkbox" id='chkAllSites' defaultChecked={this.state.checkedAllSites} onClick={(e) => this.SelectAllSits(e)} className="form-check-input me-1" />
+                                    <input type="checkbox" id='chkAllSites' defaultChecked={this.state.checkedAllSites} onClick={(e) => this.SelectAllSits(e)} className="form-check-input me-2" />
                                     Sites
                                   </label>
                                   <div className="custom-checkbox-tree">
