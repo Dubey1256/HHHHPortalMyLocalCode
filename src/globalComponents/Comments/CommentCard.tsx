@@ -69,8 +69,10 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     this.params1 = new URLSearchParams(window.location.search);
     this.state = {
       Result: {},
-      listName: (this.params1.get('Site') != undefined ? this.params1.get('Site') : props?.listName),
-      itemID: (this.params1.get('taskId') != undefined ? Number(this.params1.get('taskId')) : props?.itemID),
+     // listName: (this.params1.get('Site') != undefined ? this.params1.get('Site') : props?.listName),
+     listName: ( props?.listName!=undefined? props?.listName:this.params1.get('Site') != undefined ? this.params1.get('Site') : null),
+     // itemID: (this.params1.get('taskId') != undefined ? Number(this.params1.get('taskId')) : props?.itemID),
+     itemID: (props?.itemID!=undefined?props?.itemID:this.params1.get('taskId') != undefined ? Number(this.params1.get('taskId')):null),
       listId: props.AllListId.listId,
       CommenttoPost: '',
       updateComment: false,

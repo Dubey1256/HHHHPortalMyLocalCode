@@ -40,6 +40,7 @@ const CreateActivity = (props: any) => {
     const [selectedSites, setSelectedSites] = React.useState([]);
     const [CategoriesData, setCategoriesData] = React.useState<any>([]);
     const [categorySearchKey, setCategorySearchKey] = React.useState("");
+    const [refreshData, setRefreshData] = React.useState(false);
     const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
     // const [IsClientPopup, setIsClientPopup] = React.useState(false);
     const [FeedbackPost, setFeedbackPost] = React.useState([])
@@ -68,10 +69,10 @@ const CreateActivity = (props: any) => {
         if (props?.selectedItem?.AssignedTo?.length > 0) {
             setTaskAssignedTo(props?.selectedItem?.AssignedTo)
         }
-        if (props?.selectedItem?.ResponsibleTeam?.length > 0) {
+        if (props?.selectedItem?.ResponsibleTeam?.length > 0 || props?.selectedItem?.TeamLeader?.length > 0) {
             setTaskResponsibleTeam(props?.ResponsibleTeam?.AssignedTo)
         }
-        if (props?.selectedItem?.TeamMembers?.length > 0) {
+        if (props?.selectedItem?.TeamMembers?.length > 0 || props?.selectedItem?.TeamMembers?.length > 0) {
             setTaskTeamMembers(props?.TeamMembers?.AssignedTo)
         }
         if (props?.selectedItem?.ClientCategory?.length > 0) {
@@ -82,6 +83,7 @@ const CreateActivity = (props: any) => {
         setSelectedItem(props?.selectedItem)
 
     }, [])
+    //***************** Load All task Users***************** */
     const getTaskUsers = async () => {
         if (AllListId?.TaskUsertListID != undefined) {
             let web = new Web(AllListId?.siteUrl);
@@ -108,6 +110,8 @@ const CreateActivity = (props: any) => {
         // console.log("all task user =====", taskUser)
     }
 
+    // Task User End   
+    //   ***************** Start Callback function for  open categories  popup ************************
     const Call = React.useCallback((item1: any, type: any) => {
         setIsComponentPicker(false);
         // setIsClientPopup(false);
@@ -115,6 +119,8 @@ const CreateActivity = (props: any) => {
             setCategoriesData(item1);
         }
     }, []);
+    //   ***************** End  Callback function for  open categories  popup ************************
+    // ************** start MAIN  Get smartmetadata function main function************************* 
     const GetSmartMetadata = async () => {
         SitesTypes = [];
         subCategories = [];
@@ -141,6 +147,13 @@ const CreateActivity = (props: any) => {
             setSiteType(SitesTypes)
         } else {
             setSiteType(SitesTypes)
+        }
+        if (props?.selectedItem?.NoteCall == "Task") {
+            SitesTypes.map((item: any) => {
+                if (item?.Title?.toLowerCase() == props?.selectedItem?.siteType?.toLowerCase()) {
+                    setSelectedSites([item]);
+                }
+            })
         }
         TaskTypes = getSmartMetadataItemsByTaxType(AllMetadata, 'Categories');
         let instantCat: any = [];
@@ -187,6 +200,7 @@ const CreateActivity = (props: any) => {
             })
         }
     }
+    // **************  Get smartmetadata function End ************************* 
     const changeTitle = (e: any) => {
         if (e.target.value.length > 56) {
             alert("Task Title is too long. Please chose a shorter name and enter the details into the task description.")
@@ -194,6 +208,8 @@ const CreateActivity = (props: any) => {
             setTaskTitle(e.target.value);
         }
     }
+
+    // *************** START  Select Tiles Function ********************************
     const setActiveTile = (site: any) => {
         let saveItem = selectedSites;
         if (saveItem?.some((item: any) => item?.Id == site?.Id)) {
@@ -209,9 +225,13 @@ const CreateActivity = (props: any) => {
                 saveItem?.push(site)
             }
         }
-        setSelectedSites(saveItem)
-    };
+        setSelectedSites((prev) => saveItem)
+        setRefreshData(!refreshData)
+        setSiteType((prev) => prev)
 
+    };
+    // *************** END   Select Tiles Function ********************************
+    // ****** THIS FUNCTION IS USE FOR CATROGIES AUTO SUGGESTION ************************
     const getChilds = (item: any, items: any) => {
         let parent = JSON.parse(JSON.stringify(item))
         parent.Newlabel = `${parent?.Title}`;
@@ -227,6 +247,7 @@ const CreateActivity = (props: any) => {
             }
         });
     }
+    // ****** THIS FUNCTION IS USE FOR CATROGIES AUTO SUGGESTION ************************
     let getSmartMetadataItemsByTaxType = (metadataItems: any, taxType: any) => {
         var Items: any = [];
         metadataItems?.map((taxItem: any) => {
@@ -239,6 +260,7 @@ const CreateActivity = (props: any) => {
         });
         return Items;
     }
+    // ****** THIS FUNCTION IS USE FOR CATROGIES AUTO SUGGESTION  END  ************************
     const onRenderCustomHeaderMain = () => {
         return (
             <>
@@ -450,7 +472,7 @@ const CreateActivity = (props: any) => {
                         ClientCategoriesData?.length > 0
                     ) {
                         ClientCategoriesData.map((val: any) => {
-                            if (site?.Title == "Shareweb") {
+                            if (site?.Title?.toLowerCase() == "shareweb") {
                                 ClientCategory.push(val?.Id);
                             }
                             else if (val?.Id != undefined && val?.siteName == site?.Title) {
@@ -464,7 +486,7 @@ const CreateActivity = (props: any) => {
 
                     if (selectedItem?.Sitestagging != undefined) {
                         if (typeof selectedItem?.Sitestagging == "object") {
-                            if (site?.Title == "Shareweb") {
+                            if (site?.Title?.toLowerCase() == "shareweb") {
                                 Sitestagging = JSON.stringify(selectedItem?.Sitestagging);
                             } else {
                                 var siteComp: any = {};
@@ -477,8 +499,8 @@ const CreateActivity = (props: any) => {
                             }
                             // clientTime = JSON.stringify(selectedItem?.ClientTime);
                         } else {
-                            if (site?.Title == "Shareweb") {
-                                Sitestagging = selectedItem?.ClientTime
+                            if (site?.Title?.toLowerCase() == "shareweb") {
+                                Sitestagging = selectedItem?.Sitestagging
                             } else {
                                 var siteComp: any = {};
                                 siteComp.SiteName = site?.Title,
@@ -732,7 +754,7 @@ const CreateActivity = (props: any) => {
                     let clientTime: any;
                     if (selectedItem?.ClientTime != undefined) {
                         if (typeof selectedItem?.ClientTime == "object") {
-                            if (site?.Title == "Shareweb") {
+                            if (site?.Title?.toLowerCase() == "shareweb") {
                                 clientTime = JSON.stringify(selectedItem?.ClientTime);
                             } else {
                                 var siteComp: any = {};
@@ -745,7 +767,7 @@ const CreateActivity = (props: any) => {
                             }
                             // clientTime = JSON.stringify(selectedItem?.ClientTime);
                         } else {
-                            if (site?.Title == "Shareweb") {
+                            if (site?.Title?.toLowerCase() == "shareweb") {
                                 clientTime = selectedItem?.ClientTime
                             } else {
                                 var siteComp: any = {};
@@ -1134,7 +1156,7 @@ const CreateActivity = (props: any) => {
                                                         <li
                                                             className={selectedSites?.some((selectedSite: any) => selectedSite?.Id == item?.Id) ? 'bgtile active text-center position-relative' : "position-relative bgtile text-center"} onClick={() => setActiveTile(item)} >
                                                             {/*  */}
-                                                            <a className=' text-decoration-none' >
+                                                            <a className={refreshData ? ' text-decoration-none ikkkkddd' : ' text-decoration-none lkjhgfdsa'} >
                                                                 <span className="icon-sites">
                                                                     {item.Item_x005F_x0020_Cover != undefined &&
                                                                         <img className="icon-sites"
@@ -1431,13 +1453,13 @@ const CreateActivity = (props: any) => {
 
 
                     </div>
-                    <footer className='col text-end mt-3'>
+                    <footer className={refreshData ? 'col text-end mt-3 lkjhgfds' : 'col text-end mt-3 kkkkk'}>
                         {
                             selectedSites?.map((site: any) => {
                                 return (
                                     <span className='ms-2'>
                                         {(site.Item_x005F_x0020_Cover !== undefined && site.Item_x005F_x0020_Cover?.Url !== undefined) &&
-                                            <img className="createTask-SiteIcon mx-2" style={{ width: '31.5px' }} title={site?.Title} src={site.Item_x005F_x0020_Cover.Url} />
+                                            <img className={refreshData ? "createTask-SiteIcon me-1 rdfgererg" : "createTask-SiteIcon me-1 erfrerg"} style={{ width: '31.5px' }} title={site?.Title} src={site.Item_x005F_x0020_Cover.Url} />
                                         }
                                     </span>
                                 )
