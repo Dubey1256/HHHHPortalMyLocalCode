@@ -7,7 +7,7 @@ import { FilePicker, IFilePickerResult } from '@pnp/spfx-controls-react/lib/File
 import { ITeamMembersProps } from "./ITeamMembersProps";
 import { ITeamMembersState } from "./ITeamMembersState";
 import * as pnp from 'sp-pnp-js';
-import { sp } from 'sp-pnp-js';
+import {Web, sp } from 'sp-pnp-js';
 import { List, Item } from '@pnp/sp/presets/all';
 import { SPHttpClient } from '@microsoft/sp-http';
 import { getSP } from "../../../spservices/pnpjsConfig"
@@ -63,6 +63,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
     private _sp: any;
     private _webSerRelURL: any;
     private roleDefId: any
+    private web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
     constructor(props: ITeamMembersProps) {
         super(props);
         this._sp = getSP();
@@ -236,7 +237,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         let filteredImages: any = []
         let _filteredImages: any = []
         //let filteredImages = await this.props.spService.getImages(this.props.imagesLibraryId, this.state.selImageFolder);
-        filteredImages = await pnp.sp.web.getFolderByServerRelativeUrl(`${this._webSerRelURL}/PublishingImages/${this.state.selImageFolder}`).files.get().then((files) => {
+        filteredImages = await this.web.getFolderByServerRelativeUrl(`${this._webSerRelURL}/PublishingImages/${this.state.selImageFolder}`).files.get().then((files) => {
             _filteredImages = files?.map((filteredImage: any) => ({
                 //Id: filteredImage.Id,
                 Name: filteredImage.Name,
@@ -502,6 +503,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         this.setState({
             taskItem: CreatetaskItem,
             showCreatePanel: true,
+            selTaskId:undefined,
             enableUser: true,
             enableSave: false
         });
@@ -936,7 +938,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
 
         var filteredImages: any = []
         //let filteredImages = await this.props.spService.getImages(this.props.imagesLibraryId, this.state.selImageFolder);
-        filteredImages = await pnp.sp.web.getFolderByServerRelativeUrl(`${this._webSerRelURL}/PublishingImages/${selFolderName}`).files.get().then((files) => {
+        filteredImages = await this.web.getFolderByServerRelativeUrl(`${this._webSerRelURL}/PublishingImages/${selFolderName}`).files.get().then((files) => {
             console.log(files)
             let _filteredImages = files?.map((filteredImage: any) => ({
                 //Id: filteredImage.Id,
