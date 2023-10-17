@@ -906,7 +906,7 @@ function TasksTable(props: any) {
                 </span>)}
 
               {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && (
-                <span title='Edit' onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit"></span>
+                <span title='Edit' onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit ml-auto"></span>
               )}
             </a>
             {getValue()}

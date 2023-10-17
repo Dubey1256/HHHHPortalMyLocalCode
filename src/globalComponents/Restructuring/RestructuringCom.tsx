@@ -12,6 +12,7 @@ const RestructuringCom = (props: any, ref: any) => {
   const [allData, setAllData]: any = React.useState([]);
   const [restructureItem, setRestructureItem]: any = React.useState([]);
   const [NewArrayBackup, setNewArrayBackup]: any = React.useState([]);
+  const [NewArrayAll, setNewArrayAll]: any = React.useState([]);
   const [ResturuningOpen, setResturuningOpen]: any = React.useState(false);
   const [newItemBackUp, setNewItemBackUp]: any = React.useState([]);
   const [checkSubChilds, setCheckSubChilds]: any = React.useState([]);
@@ -2203,26 +2204,27 @@ const RestructuringCom = (props: any, ref: any) => {
     array.forEach((obj: any) => {
       let object: any = {};
       if (obj.TaskID === item.TaskID && obj.Id === item.Id && (item?.Item_x0020_Type != 'Task' ? (item?.Item_x0020_Type == obj?.Item_x0020_Type) : (item?.TaskType?.Id == obj?.TaskType?.Id && item?.siteType == obj?.siteType))) {
-        object = { Title: obj?.Title, Id: obj.Id, TaskType: { Id: obj.TaskType?.Id == undefined ? '' : obj.TaskType?.Id }, Item_x0020_Type: obj.Item_x0020_Type, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle }
+        object = { Title: obj?.Title,siteType : obj?.siteType, Id: obj.Id, TaskType: { Id: obj.TaskType?.Id == undefined ? '' : obj.TaskType?.Id }, Item_x0020_Type: obj.Item_x0020_Type, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle }
         TestArray?.push(object);
       }
       if (obj.subRows != undefined && obj.subRows?.length > 0) {
         obj.subRows.forEach((sub: any) => {
           if (sub.TaskID === item.TaskID && sub.Id === item.Id && (item?.Item_x0020_Type != 'Task' ? (item?.Item_x0020_Type == sub?.Item_x0020_Type) : (item?.TaskType?.Id == sub?.TaskType?.Id && item?.siteType == sub?.siteType))) {
             object = {
-              Title: obj?.Title, TaskType: { Id: obj.TaskType?.Id == undefined ? '' : obj.TaskType?.Id }, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle,
-              newSubChild: { Title: sub?.Title, TaskType: { Id: sub.TaskType?.Id == undefined ? '' : sub.TaskType?.Id }, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle === undefined ? sub.SiteIcon : sub.SiteIconTitle }
+              Title: obj?.Title, siteType : obj?.siteType, TaskType: { Id: obj.TaskType?.Id == undefined ? '' : obj.TaskType?.Id }, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle,
+              newSubChild: { Title: sub?.Title, siteType : sub?.siteType, TaskType: { Id: sub.TaskType?.Id == undefined ? '' : sub.TaskType?.Id }, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle === undefined ? sub.SiteIcon : sub.SiteIconTitle }
             }
             TestArray?.push(object)
+            
           }
           if (sub.subRows != undefined && sub.subRows?.length > 0) {
             sub.subRows.forEach((newsub: any) => {
               if (newsub.TaskID === item.TaskID && newsub.Id === item.Id && (item?.Item_x0020_Type != 'Task' ? (item?.Item_x0020_Type == newsub?.Item_x0020_Type) : (item?.TaskType?.Id == newsub?.TaskType?.Id && item?.siteType == newsub?.siteType))) {
                 object = {
-                  Title: obj?.Title, TaskType: { Id: obj.TaskType?.Id == undefined ? '' : obj.TaskType?.Id }, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle,
+                  Title: obj?.Title,  siteType : obj?.siteType, TaskType: { Id: obj.TaskType?.Id == undefined ? '' : obj.TaskType?.Id }, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle,
                   newSubChild: {
-                    Title: sub?.Title, TaskType: { Id: sub.TaskType?.Id == undefined ? '' : sub.TaskType?.Id }, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle === undefined ? sub.SiteIcon : sub.SiteIconTitle,
-                    newFeatChild: { Title: newsub?.Title, TaskType: { Id: newsub.TaskType?.Id == undefined ? '' : newsub.TaskType?.Id }, Item_x0020_Type: newsub.Item_x0020_Type, Id: newsub.Id, siteIcon: newsub.SiteIconTitle === undefined ? newsub.SiteIcon : newsub.SiteIconTitle }
+                    Title: sub?.Title, siteType : sub?.siteType, TaskType: { Id: sub.TaskType?.Id == undefined ? '' : sub.TaskType?.Id }, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle === undefined ? sub.SiteIcon : sub.SiteIconTitle,
+                    newFeatChild: { Title: newsub?.Title, siteType : newsub?.siteType, TaskType: { Id: newsub.TaskType?.Id == undefined ? '' : newsub.TaskType?.Id }, Item_x0020_Type: newsub.Item_x0020_Type, Id: newsub.Id, siteIcon: newsub.SiteIconTitle === undefined ? newsub.SiteIcon : newsub.SiteIconTitle }
                   }
                 }
                 TestArray?.push(object)
@@ -2231,12 +2233,12 @@ const RestructuringCom = (props: any, ref: any) => {
                 newsub.subRows.forEach((activity: any) => {
                   if (activity.TaskID === item.TaskID && activity.Id === item.Id && (item?.Item_x0020_Type != 'Task' ? (item?.Item_x0020_Type == activity?.Item_x0020_Type) : (item?.TaskType?.Id == activity?.TaskType?.Id && item?.siteType == activity?.siteType))) {
                     object = {
-                      Title: obj?.Title, TaskType: { Id: obj.TaskType?.Id == undefined ? '' : obj.TaskType?.Id }, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle,
+                      Title: obj?.Title, siteType : obj?.siteType, TaskType: { Id: obj.TaskType?.Id == undefined ? '' : obj.TaskType?.Id }, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle,
                       newSubChild: {
-                        Title: sub?.Title, TaskType: { Id: sub.TaskType?.Id == undefined ? '' : sub.TaskType?.Id }, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle === undefined ? sub.SiteIcon : sub.SiteIconTitle,
+                        Title: sub?.Title, siteType : sub?.siteType, TaskType: { Id: sub.TaskType?.Id == undefined ? '' : sub.TaskType?.Id }, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle === undefined ? sub.SiteIcon : sub.SiteIconTitle,
                         newFeatChild: {
-                          Title: newsub?.Title, TaskType: { Id: newsub.TaskType?.Id == undefined ? '' : newsub.TaskType?.Id }, Item_x0020_Type: newsub.Item_x0020_Type, Id: newsub.Id, siteIcon: newsub.SiteIconTitle === undefined ? newsub.SiteIcon : newsub.SiteIconTitle,
-                          newActChild: { Title: activity?.Title, TaskType: { Id: activity.TaskType?.Id == undefined ? '' : activity.TaskType?.Id }, Item_x0020_Type: activity.Item_x0020_Type, Id: activity.Id, siteIcon: activity.SiteIcon, }
+                          Title: newsub?.Title, TaskType: { Id: newsub.TaskType?.Id == undefined ? '' : newsub.TaskType?.Id }, siteType : newsub?.siteType, Item_x0020_Type: newsub.Item_x0020_Type, Id: newsub.Id, siteIcon: newsub.SiteIconTitle === undefined ? newsub.SiteIcon : newsub.SiteIconTitle,
+                          newActChild: { Title: activity?.Title, TaskType: { Id: activity.TaskType?.Id == undefined ? '' : activity.TaskType?.Id }, siteType : activity?.siteType, Item_x0020_Type: activity.Item_x0020_Type, Id: activity.Id, siteIcon: activity.SiteIcon, }
                         }
                       }
                     }
@@ -2246,14 +2248,14 @@ const RestructuringCom = (props: any, ref: any) => {
                     activity?.subRows?.forEach((wrkstrm: any) => {
                       if (wrkstrm.TaskID === item.TaskID && wrkstrm.Id === item.Id && (item?.Item_x0020_Type != 'Task' ? (item?.Item_x0020_Type == wrkstrm?.Item_x0020_Type) : (item?.TaskType?.Id == wrkstrm?.TaskType?.Id && item?.siteType == wrkstrm?.siteType))) {
                         object = {
-                          Title: obj?.Title, TaskType: { Id: obj.TaskType?.Id == undefined ? '' : obj.TaskType?.Id }, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle,
+                          Title: obj?.Title, siteType : obj?.siteType, TaskType: { Id: obj.TaskType?.Id == undefined ? '' : obj.TaskType?.Id }, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle,
                           newSubChild: {
-                            Title: sub?.Title, TaskType: { Id: sub.TaskType?.Id == undefined ? '' : sub.TaskType?.Id }, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle === undefined ? sub.SiteIcon : sub.SiteIconTitle,
+                            Title: sub?.Title, siteType : sub?.siteType, TaskType: { Id: sub.TaskType?.Id == undefined ? '' : sub.TaskType?.Id }, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle === undefined ? sub.SiteIcon : sub.SiteIconTitle,
                             newFeatChild: {
-                              Title: newsub?.Title, TaskType: { Id: newsub.TaskType?.Id == undefined ? '' : newsub.TaskType?.Id }, Item_x0020_Type: newsub.Item_x0020_Type, Id: newsub.Id, siteIcon: newsub.SiteIconTitle === undefined ? newsub.SiteIcon : newsub.SiteIconTitle,
+                              Title: newsub?.Title,  siteType : newsub?.siteType, TaskType: { Id: newsub.TaskType?.Id == undefined ? '' : newsub.TaskType?.Id }, Item_x0020_Type: newsub.Item_x0020_Type, Id: newsub.Id, siteIcon: newsub.SiteIconTitle === undefined ? newsub.SiteIcon : newsub.SiteIconTitle,
                               newActChild: {
-                                Title: activity?.Title, TaskType: { Id: activity.TaskType?.Id == undefined ? '' : activity.TaskType?.Id }, Item_x0020_Type: activity.Item_x0020_Type, Id: activity.Id, siteIcon: activity.SiteIcon,
-                                newWrkChild: { Title: wrkstrm?.Title, TaskType: { Id: wrkstrm.TaskType?.Id == undefined ? '' : wrkstrm.TaskType?.Id }, Item_x0020_Type: wrkstrm.Item_x0020_Type, Id: wrkstrm.Id, siteIcon: wrkstrm.SiteIcon, }
+                                Title: activity?.Title, siteType : activity?.siteType,  TaskType: { Id: activity.TaskType?.Id == undefined ? '' : activity.TaskType?.Id }, Item_x0020_Type: activity.Item_x0020_Type, Id: activity.Id, siteIcon: activity.SiteIcon,
+                                newWrkChild: { Title: wrkstrm?.Title, siteType : wrkstrm?.siteType,  TaskType: { Id: wrkstrm.TaskType?.Id == undefined ? '' : wrkstrm.TaskType?.Id }, Item_x0020_Type: wrkstrm.Item_x0020_Type, Id: wrkstrm.Id, siteIcon: wrkstrm.SiteIcon, }
                               }
                             }
                           }
@@ -2392,7 +2394,7 @@ const RestructuringCom = (props: any, ref: any) => {
             items.Portfolio = Portfolio == null ? {} : Portfolio,
             items.TaskLevel = TaskLevel,
             items.TaskType = { Id : TaskTypeId, Level: TaskTypeId == 1 ? 1 : (TaskTypeId == 2 ? 3 : 2) , Title: TaskTypeId == 1 ? "Activity" : (TaskTypeId == 2 ? "Task" : "Workstream")},
-            items.TaskID = TaskTypeId == 2 ? newItemBackUp?.TaskId + '-' + TaskId : TaskId })
+            items.TaskID = TaskTypeId == 2 ? (newItemBackUp?.PortfolioStructureID == undefined ? newItemBackUp?.TaskID + '-' + TaskId : newItemBackUp?.PortfolioStructureID + '-' + TaskId ) : TaskId })
 
             let onceRender:any = true;
           array?.map((obj: any, index: any) => {
@@ -3148,11 +3150,24 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
                          </a>
                       </div>
                       {obj?.newSubChild != undefined && obj?.newSubChild != null ? <div className='alignCenter'> <BsArrowRightShort/> </div> : ''}
-                      {obj?.newSubChild ? <><div className='reStuMainTiles'> <a className='reStuTile'>{obj?.newSubChild?.siteIcon === "S" || obj?.newSubChild?.siteIcon === "F" ?  <span className="Dyicons me-1">{obj?.newSubChild?.siteIcon}</span> : <span className='mx-1'><img className='workmember' src={obj?.newSubChild?.siteIcon} /></span>} {obj?.newSubChild?.Title}</a> </div> {obj?.newSubChild?.newFeatChild != undefined && obj?.newSubChild?.newFeatChild != null ? <div className='alignCenter'> <BsArrowRightShort/> </div> : ''}</>: ''}
-                      {obj?.newSubChild?.newFeatChild ? <><div className='reStuMainTiles'> <a className='reStuTile'>{obj?.newSubChild?.newFeatChild?.siteIcon === "F" ? <span className="Dyicons me-1">{obj?.newSubChild?.newFeatChild?.siteIcon}</span> : <span className='mx-1'><img className='workmember' src={obj?.newSubChild?.newFeatChild?.siteIcon} /></span>} {obj?.newSubChild?.newFeatChild?.Title}</a></div>{obj?.newSubChild?.newFeatChild?.newActChild != undefined && obj?.newSubChild?.newFeatChild?.newActChild != null ? <div className='alignCenter'> <BsArrowRightShort/> </div> : ''}</> : ''}
-                      {obj?.newSubChild?.newFeatChild?.newActChild ? <><div className='reStuMainTiles'><a className='reStuTile'><img className='workmember' src={obj?.newSubChild?.newFeatChild?.newActChild?.siteIcon} /> {obj?.newSubChild?.newFeatChild?.newActChild?.Title}</a></div>{obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild != undefined && obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild != null ? <div className='alignCenter'> <BsArrowRightShort/> </div> : ''}</> : ''}
-                      {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild ? <><div className='reStuMainTiles'> <a className='reStuTile'> <img className='workmember' src={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.siteIcon} />  {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Title}</a></div>{obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild != undefined && obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild != null ? <div className='alignCenter'> <BsArrowRightShort/> </div> : ''}</> : ''}
-                      {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild ? <><div className='reStuMainTiles'> <a className='reStuTile'> <img className='workmember' src={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.siteIcon} />  {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.Title}</a></div></> : ''}
+                      {obj?.newSubChild ? <><div className='reStuMainTiles'> <a className='reStuTile' data-interception="off" target="_blank" href={obj?.newSubChild?.Title != "Others" ? (obj?.newSubChild.Item_x0020_Type != 'Task' ? (props?.contextValue?.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + obj?.newSubChild?.Id) : 
+                          (props?.contextValue?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + obj?.newSubChild?.Id + "&Site=" + restructuredItemarray[0]?.siteType)) : ""
+                          } >{obj?.newSubChild?.siteIcon === "S" || obj?.newSubChild?.siteIcon === "F" ?  <span className="Dyicons me-1">{obj?.newSubChild?.siteIcon}</span> : <span className='mx-1'><img className='workmember' src={obj?.newSubChild?.siteIcon} /></span>} {obj?.newSubChild?.Title}</a> </div> {obj?.newSubChild?.newFeatChild != undefined && obj?.newSubChild?.newFeatChild != null ? <div className='alignCenter'> <BsArrowRightShort/> </div> : ''}</>: ''}
+                      {obj?.newSubChild?.newFeatChild ? <><div className='reStuMainTiles'> <a className='reStuTile' data-interception="off" target="_blank" href={obj?.newSubChild?.newFeatChild?.Title != "Others" ? (obj?.newSubChild?.newFeatChild.Item_x0020_Type != 'Task' ? (props?.contextValue?.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + obj?.newSubChild?.newFeatChild?.Id) : 
+                          (props?.contextValue?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + obj?.newSubChild?.newFeatChild?.Id + "&Site=" + restructuredItemarray[0]?.siteType)) : ""
+                          }>{obj?.newSubChild?.newFeatChild?.siteIcon === "F" ? <span className="Dyicons me-1">{obj?.newSubChild?.newFeatChild?.siteIcon}</span> : <span className='mx-1'><img className='workmember' src={obj?.newSubChild?.newFeatChild?.siteIcon} /></span>} {obj?.newSubChild?.newFeatChild?.Title}</a></div>{obj?.newSubChild?.newFeatChild?.newActChild != undefined && obj?.newSubChild?.newFeatChild?.newActChild != null ? <div className='alignCenter'> <BsArrowRightShort/> </div> : ''}</> : ''}
+                      {obj?.newSubChild?.newFeatChild?.newActChild ? <><div className='reStuMainTiles'><a data-interception="off" target="_blank"
+                          href={obj?.newSubChild?.newFeatChild?.newActChild?.Title != "Others" ? (obj?.newSubChild?.newFeatChild?.newActChild.Item_x0020_Type != 'Task' ? (props?.contextValue?.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + obj?.newSubChild?.newFeatChild?.newActChild?.Id) : 
+                          (props?.contextValue?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + obj?.newSubChild?.newFeatChild?.newActChild?.Id + "&Site=" + restructuredItemarray[0]?.siteType)) : ""
+                          } className='reStuTile'><img className='workmember' src={obj?.newSubChild?.newFeatChild?.newActChild?.siteIcon} /> {obj?.newSubChild?.newFeatChild?.newActChild?.Title}</a></div>{obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild != undefined && obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild != null ? <div className='alignCenter'> <BsArrowRightShort/> </div> : ''}</> : ''}
+                      {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild ? <><div className='reStuMainTiles'> <a  data-interception="off" target="_blank"
+                          href={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Title != "Others" ? (obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild.Item_x0020_Type != 'Task' ? (props?.contextValue?.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Id) : 
+                          (props?.contextValue?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Id + "&Site=" + restructuredItemarray[0]?.siteType)) : ""
+                          } className='reStuTile'> <img className='workmember' src={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.siteIcon} />  {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Title}</a></div>{obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild != undefined && obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild != null ? <div className='alignCenter'> <BsArrowRightShort/> </div> : ''}</> : ''}
+                      {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild ? <><div className='reStuMainTiles'> <a data-interception="off" target="_blank"
+                          href={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.Title != "Others" ? (obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild.Item_x0020_Type != 'Task' ? (props?.contextValue?.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.Id) : 
+                          (props?.contextValue?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.Id + "&Site=" + restructuredItemarray[0]?.siteType)) : ""
+                          } className='reStuTile'> <img className='workmember' src={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.siteIcon} />  {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.Title}</a></div></> : ''}
                     </div>
                   );
                 })}
@@ -3168,7 +3183,7 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
                         target="_blank"
                         className="hreflink serviceColor_Active reStuTile"
                         href={obj?.Title != 'Others' ? (obj.Item_x0020_Type != 'Task' ? (props?.contextValue?.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + obj?.Id) : 
-                        (props?.contextValue?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + obj?.Id + "&Site=" +obj?.siteType)) : ''
+                        (props?.contextValue?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + obj?.Id + "&Site=" + obj?.siteType)) : ''
                         }
                       >
                         {
@@ -3180,11 +3195,26 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
                         
                       </a></div>
                       <div className='alignCenter'> <BsArrowRightShort/> </div>
-                      {obj?.newSubChild ? <> <div className='reStuMainTiles'><a className='reStuTile'> {obj?.newSubChild?.siteIcon === "S" || obj?.newSubChild?.siteIcon === "F" ? <span className="Dyicons">{obj?.newSubChild?.siteIcon}</span> : <span className='mx-1'><img className='workmember' src={obj?.newSubChild?.siteIcon} /></span>} {obj?.newSubChild?.Title}</a></div><div className='alignCenter'> <BsArrowRightShort/> </div></> : ''}
-                      {obj?.newSubChild?.newFeatChild ? <><div className='reStuMainTiles'><a className='reStuTile'>{obj?.newSubChild?.newFeatChild?.siteIcon === "F" ? <span className="Dyicons">{obj?.newSubChild?.newFeatChild?.siteIcon}</span> : <span className='mx-1'><img className='workmember' src={obj?.newSubChild?.newFeatChild?.siteIcon} /></span>} {obj?.newSubChild?.newFeatChild?.Title}</a></div><div className='alignCenter'> <BsArrowRightShort/> </div></> : ''}
-                      {obj?.newSubChild?.newFeatChild?.newActChild ? <><div className='reStuMainTiles'><a className='reStuTile'> <img className='workmember' src={obj?.newSubChild?.newFeatChild?.newActChild?.siteIcon} />{obj?.newSubChild?.newFeatChild?.newActChild?.Title}</a></div><div className='alignCenter'> <BsArrowRightShort/> </div></> : ''}
-                      {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild ? <> <div className='reStuMainTiles'><a className='reStuTile'><img className='workmember' src={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.siteIcon} />  {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Title}</a></div><div className='alignCenter'> <BsArrowRightShort/> </div></> : ''}
-                      {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild ? <> <div className='reStuMainTiles'><a className='reStuTile'><img className='workmember' src={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.siteIcon} />  {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.Title}</a></div><div className='alignCenter'> <BsArrowRightShort/> </div></> : ''}
+                      {obj?.newSubChild ? <> <div className='reStuMainTiles'><a data-interception="off"
+                        target="_blank" href={obj?.newSubChild?.Title != 'Others' ? (obj?.newSubChild.Item_x0020_Type != 'Task' ? (props?.contextValue?.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + obj?.newSubChild?.Id) : 
+                        (props?.contextValue?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + obj?.newSubChild?.Id + "&Site=" + obj?.newSubChild?.siteType)) : ''
+                        }  className='reStuTile'> {obj?.newSubChild?.siteIcon === "S" || obj?.newSubChild?.siteIcon === "F" ? <span className="Dyicons">{obj?.newSubChild?.siteIcon}</span> : <span className='mx-1'><img className='workmember' src={obj?.newSubChild?.siteIcon} /></span>} {obj?.newSubChild?.Title}</a></div><div className='alignCenter'> <BsArrowRightShort/> </div></> : ''}
+                      {obj?.newSubChild?.newFeatChild ? <><div className='reStuMainTiles'><a data-interception="off"
+                        target="_blank" href={obj?.newSubChild?.newFeatChild?.Title != 'Others' ? (obj?.newSubChild?.newFeatChild.Item_x0020_Type != 'Task' ? (props?.contextValue?.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + obj?.newSubChild?.newFeatChild?.Id) : 
+                        (props?.contextValue?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + obj?.newSubChild?.newFeatChild?.Id + "&Site=" + obj?.newSubChild?.newFeatChild?.siteType)) : ''
+                        } className='reStuTile'>{obj?.newSubChild?.newFeatChild?.siteIcon === "F" ? <span className="Dyicons">{obj?.newSubChild?.newFeatChild?.siteIcon}</span> : <span className='mx-1'><img className='workmember' src={obj?.newSubChild?.newFeatChild?.siteIcon} /></span>} {obj?.newSubChild?.newFeatChild?.Title}</a></div><div className='alignCenter'> <BsArrowRightShort/> </div></> : ''}
+                      {obj?.newSubChild?.newFeatChild?.newActChild ? <><div className='reStuMainTiles'><a data-interception="off"
+                        target="_blank" href={obj?.newSubChild?.newFeatChild?.newActChild?.Title != 'Others' ? (obj?.newSubChild?.newFeatChild?.newActChild.Item_x0020_Type != 'Task' ? (props?.contextValue?.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + obj?.newSubChild?.newFeatChild?.newActChild?.Id) : 
+                        (props?.contextValue?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + obj?.newSubChild?.newFeatChild?.newActChild?.Id + "&Site=" + obj?.newSubChild?.newFeatChild?.newActChild?.siteType)) : ''
+                        } className='reStuTile'> <img className='workmember' src={obj?.newSubChild?.newFeatChild?.newActChild?.siteIcon} />{obj?.newSubChild?.newFeatChild?.newActChild?.Title}</a></div><div className='alignCenter'> <BsArrowRightShort/> </div></> : ''}
+                      {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild ? <> <div className='reStuMainTiles'><a data-interception="off"
+                        target="_blank" href={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Title != 'Others' ? (obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild.Item_x0020_Type != 'Task' ? (props?.contextValue?.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Id) : 
+                        (props?.contextValue?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Id + "&Site=" + obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.siteType)) : ''
+                        } className='reStuTile'><img className='workmember' src={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.siteIcon} />  {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Title}</a></div><div className='alignCenter'> <BsArrowRightShort/> </div></> : ''}
+                      {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild ? <> <div className='reStuMainTiles'><a data-interception="off"
+                        target="_blank" href={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.Title != 'Others' ? (obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild.Item_x0020_Type != 'Task' ? (props?.contextValue?.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.Id) : 
+                        (props?.contextValue?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.Id + "&Site=" + obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.siteType)) : ''
+                        } className='reStuTile'><img className='workmember' src={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.siteIcon} />  {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.Title}</a></div><div className='alignCenter'> <BsArrowRightShort/> </div></> : ''}
                       {
                   RestructureChecked?.map((items: any) =>
                     <span>
