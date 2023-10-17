@@ -1626,7 +1626,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
           }
             <section className='row p-0'>
               <h2 className="heading d-flex ps-0 justify-content-between align-items-center">
-                <span>
+                <span className='alignCenter'>
                   {this.state.Result["SiteIcon"] != "" && <img className="imgWid29 pe-1 " title={this?.state?.Result?.siteType} src={this.state.Result["SiteIcon"]} />}
                   {this.state.Result["SiteIcon"] === "" && <img className="imgWid29 pe-1 " src="" />}
                   <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
@@ -1783,16 +1783,15 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
                       <dl>
                         <dt className='bg-Fa'>Created</dt>
-                        <dd className='bg-Ff'>
-                          {this.state.Result["Created"] != undefined && this.state.Result["Created"] != null ? moment(this.state.Result["Created"]).format("DD/MM/YYYY") : ""}  <span className='ms-1'>
+                        <dd className='bg-Ff alignCenter'>
+                          {this.state.Result["Created"] != undefined && this.state.Result["Created"] != null ? moment(this.state.Result["Created"]).format("DD/MM/YYYY") : ""} 
                             {this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 &&
-                              <a title={this.state.Result["Author"][0].Title} >
+                              <a title={this.state.Result["Author"][0].Title} className='alignCenter ms-1'>
                                 {this.state.Result["Author"][0].userImage !== "" && <img className="workmember" src={this.state.Result["Author"][0].userImage} ></img>}
                                 {this.state.Result["Author"][0].userImage === "" && <span className="workmember">{this.state.Result["Author"][0].Suffix}</span>}
                               </a>
 
                             }
-                          </span>
 
                         </dd>
                       </dl>
