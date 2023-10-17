@@ -175,17 +175,10 @@ export default function Sitecomposition(datas: any) {
 
   const ClosePopupCallBack = React.useCallback(() => {
     setEditSiteCompositionStatus(false);
-<<<<<<< HEAD
     datas.callback();
     // if (datas?.props?.ClientCategory?.results?.length > 0 || datas?.props.Sitestagging != undefined) {
     //   GetSmartMetaData(datas?.props?.ClientCategory?.results, datas?.props?.Sitestagging);
     // }
-=======
-    if (datas?.props?.ClientCategory?.results?.length > 0 || datas?.props.Sitestagging != undefined) {
-      GetSmartMetaData(datas?.props?.ClientCategory?.results, datas?.props?.Sitestagging);
-    }
-    setKey((prevKey) => prevKey + 1);
->>>>>>> b78226dff27cd2dc38ef47cbc602a6ca8af0432f
     // setRenderCount(renderCount + 1)
   }, [])
 
