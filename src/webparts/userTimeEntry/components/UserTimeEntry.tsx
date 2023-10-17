@@ -2031,7 +2031,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               })
               }
             </summary>
-            <Col>
+            <Col className='allfilter'>
               <details open className='p-0'>
                 <span className="pull-right" style={{ display: 'none' }}>
                   <input type="checkbox" className="" onClick={(e) => this.SelectAllGroupMember(e)} />
