@@ -21,6 +21,7 @@ let hhhsmartinfoId: any = [];
 let taskUser: any = [];
 let mastertaskdetails: any=[];
 let MovefolderItemUrl2 = "";
+let addSmartInfoPopupAddlinkDoc2=false;
 const SmartInformation = (props: any,ref:any) => {
   const [show, setShow] = useState(false);
   const [popupEdit, setpopupEdit] = useState(false);
@@ -124,11 +125,7 @@ const SmartInformation = (props: any,ref:any) => {
       .filter("ItemType eq 'User'")
       .expand('AssingedToUser')
       .get();
-    // taskUsers?.map((item: any, index: any) => {
-    //   if (this.props?.Context?.pageContext?._legacyPageContext?.userId === (item?.AssingedToUser?.Id) && item?.Company == "Smalsus") {
-    //     this.backGroundComment = true;
-    //   }
-    // })
+ 
     if (taskUsers.length > 0) {
       taskUser = taskUser.concat(taskUsers);
     }
@@ -218,9 +215,6 @@ const SmartInformation = (props: any,ref:any) => {
             }
             if (tagsmartinfo?.Id == items?.Id) {
 
-              // if (tagsmartinfo.Description != null && tagsmartinfo?.Description.includes("<p></p>")) {
-              //   tagsmartinfo.Description = null;
-              // }
               allSmartInformationglobal.push(tagsmartinfo);
 
             }
@@ -510,35 +504,7 @@ const SmartInformation = (props: any,ref:any) => {
               
    
              }
-            // if ((MovefolderItemUrl == "/Memberarea" || MovefolderItemUrl == "/EDA Only" || MovefolderItemUrl == "/Only For Me") && editvalue.SelectedFolder == "Public") {
-            //   if (folderCreated) {
-            //     var folderName = MovefolderItemUrl.split('/')[1];
-            //     await sp.web.lists.getById(props?.AllListId?.SmartInformationListID)
-            //       .items.add({
-            //         FileSystemObjectType: 1,
-            //         ContentTypeId: '0x0120',
-            //         FileLeafRef: folderName,
-            //         FileDirRef: folderName,
-
-            //       })
-            //       .then(async (data: any) => {
-            //         console.log(data)
-            //         MovefolderItemUrl2 = `/${data.data.Id}_.000`;
-
-            //       }).catch((error: any) => {
-            //         console.log(error)
-            //       })
-            //   }
-            //   let movedata = await web
-            //     .getFileByServerRelativeUrl(`${movefolderurl}/${editvalue?.Id}_.000`).moveTo(`${movefolderurl}${MovefolderItemUrl2}/${editvalue?.Id}_.000`);
-            //   console.log(movedata);
-            // }
-            // if ((MovefolderItemUrl == "/SmartInformation" || MovefolderItemUrl == "/EDA Only") && (editvalue.SelectedFolder == "Only For Me" || editvalue.SelectedFolder == "EDA Only")) {
-            //   // MovefolderItemUrl2=""
-            //   let movedata = await web
-            //     .getFileByServerRelativeUrl(`${movefolderurl}/${MovefolderItemUrl2}/${editvalue?.Id}_.000`).moveTo(`${movefolderurl}${""}/${editvalue?.Id}_.000`);
-            //   console.log(movedata);
-            // }
+            
             GetResult();
             handleClose();
           })
@@ -555,46 +521,7 @@ const SmartInformation = (props: any,ref:any) => {
             console.log(res);
             
             setPostSmartInfo(res)
-            // if (MovefolderItemUrl == "/Memberarea" || MovefolderItemUrl == "/EDA Only" || MovefolderItemUrl == "/Only For Me") {
-
-            //   // =========== folder create ===========================
-            //   if (folderCreated) {
-            //     var folderName = MovefolderItemUrl.split('/')[1];
-            //     await sp.web.lists.getById(props?.AllListId?.SmartInformationListID)
-            //       .items.add({
-            //         FileSystemObjectType: 1,
-            //         ContentTypeId: '0x0120',
-            //         FileLeafRef: folderName,
-            //         FileDirRef: folderName,
-
-            //       })
-            //       .then(async (data: any) => {
-            //         console.log(data)
-            //         await sp.web.lists.getById(res.data.Id).update({
-
-            //           Title: folderName,
-
-            //           FileLeafRef: folderName
-
-            //         }).then((res) => {
-
-            //           console.log(res)
-            //           //MovefolderItemUrl2 = `/${data.data.Id}_.000`;
-
-            //         })
-                 
-
-            //       }).catch((error: any) => {
-            //         console.log(error)
-            //       })
-            //   }
-
-            //   //================== move  items inside folder=============
-            //   let movedata = await web
-            //     .getFileByServerRelativeUrl(`${movefolderurl}/${res?.data?.ID}_.000`).moveTo(`${movefolderurl}${MovefolderItemUrl2}/${res?.data?.ID}_.000`);
-            //   console.log(movedata);
-
-            // }
+            
             hhhsmartinfoId.push(res?.data?.ID)
             await web.lists.getByTitle(props?.listName)
               // await web.lists.getById(props.AllListId.SiteTaskListID)
@@ -606,7 +533,7 @@ const SmartInformation = (props: any,ref:any) => {
                 }
               ).then(async (data: any) => {
                 console.log(data);
-               if(props.showHide==="projectManagement"){
+               if(props.showHide==="projectManagement"&& addSmartInfoPopupAddlinkDoc2==false){
                 console.log(props.RemarkData)
                 let backupremarkdata=props?.RemarkData
                res.data.InfoType={}
@@ -624,8 +551,12 @@ const SmartInformation = (props: any,ref:any) => {
                
              
                }
-                GetResult();
-                handleClose();
+               
+                if(addSmartInfoPopupAddlinkDoc2==false){
+                   GetResult();
+                  handleClose();
+                }
+               
                
 
               }).catch((err) => {
@@ -642,6 +573,7 @@ const SmartInformation = (props: any,ref:any) => {
       alert("plese fill the Title")
       // setallSetValue({...allValue,AstricMesaage:true})
       setaddSmartInfoPopupAddlinkDoc(false)
+      addSmartInfoPopupAddlinkDoc2=false;
     }
 
 
@@ -694,28 +626,7 @@ const SmartInformation = (props: any,ref:any) => {
 
   //========delete function documents  list items ==================
 
-  const deleteDocumentsData = async (DeletItemId: any) => {
-    console.log(DeletItemId);
-    const web = new Web(props?.AllListId?.siteUrl);
-    // await web.lists.getByTitle("SmartInformation")
-    var text: any = "are you sure want to Delete";
-    if (confirm(text) == true) {
-      await web.lists.getById(props?.AllListId?.DocumentsListID)
-        .items.getById(DeletItemId).recycle()
-        .then((res: any) => {
-          console.log(res);
-          GetResult();
-          handleClose();
-          setEditdocpanel(false);
-        })
-        .catch((err) => {
-          console.log(err.message);
-        });
-    }
-
-
-  };
-
+ 
   //======== add document when i click to add document in profile page =========.
 
   const addDocument = async (Status: any, items: any) => {
@@ -725,11 +636,12 @@ const SmartInformation = (props: any,ref:any) => {
     }
     else {
       setaddSmartInfoPopupAddlinkDoc(true);
+      addSmartInfoPopupAddlinkDoc2=true;
       await saveSharewebItem();
-      if (addSmartInfoPopupAddlinkDoc) {
+      // if (addSmartInfoPopupAddlinkDoc) {
         alert('Information saved now items can be attached.');
         setshowAdddocument(true)
-      }
+      // }
 
     }
 

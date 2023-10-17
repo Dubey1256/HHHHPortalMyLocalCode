@@ -1987,6 +1987,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 <CreateActivity
                     Call={Call}
                     AllListId={ContextValue}
+                    context={ContextValue.Context}
                     TaskUsers={AllUsers}
                     AllClientCategory={AllClientCategory}
                     LoadAllSiteTasks={LoadAllSiteTasks}
@@ -2017,6 +2018,7 @@ function TeamPortlioTable(SelectedProp: any) {
                   AllListId={ContextValue}
                  TaskUsers={AllUsers}
                 data={data}
+                context={ContextValue.Context}
                ></CreateWS>)}
             {IsTask && (
                 <EditTaskPopup
