@@ -97,30 +97,14 @@ const EmailComponent = (props: any) => {
 
       <div id='htmlMailBodyEmail' style={{ display: 'none' }}>
         {props.statusUpdateMailSendStatus != undefined && props.statusUpdateMailSendStatus == false ?
-          <div>
-            <div style={{ marginTop: "2pt" }}>Hi,</div>
-            {props.CreatedApprovalTask != undefined && props.CreatedApprovalTask == true ?
-              <>
-                <div style={{ marginTop: "2pt" }}>
-                  {props?.items.TaskCreatorData[0].Title} has created a Task which requires your Approval.Please take your time and review:
-                  Please note that you still have 1 tasks left to approve.<br /> You can find all pending approval tasks on your task dashboard or the approval page.
-                  <p>
-                    <a href={`${props.items["siteUrl"]}/SitePages/TaskDashboard.aspx`} target="_blank" data-interception="off">Your Task Dashboard</a>
-                    <a style={{ marginLeft: "20px" }} href={`${props.items["siteUrl"]}/SitePages/TaskManagement.aspx?SmartfavoriteId=101&smartfavorite=All%20Approval%20Tasks`} target="_blank" data-interception="off">Your Approval Page</a>
-                  </p>
-                </div>
-              </> :
-              <>  {props.ApprovalTaskStatus != undefined && props.ApprovalTaskStatus == true &&
-                <div style={{ marginTop: "2pt" }}>Your task has been Approved by {props.CurrentUser[0].Title}, team will process it further. Refer Approval Comments.</div>
-              }
-                {props.ApprovalTaskStatus != undefined && props.ApprovalTaskStatus == false &&
-                  <div style={{ marginTop: "2pt" }}>Your task has been Rejected by {props.CurrentUser[0].Title}. Refer Reject Comments.</div>}
-              </>
-            }
-            <div style={{ marginTop: "11.25pt" }}>
-              <a href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props.items.Id}&Site=${props?.items?.siteType}`} target="_blank" data-interception="off">{props.items["Title"]}</a><u></u><u></u>
-            </div>
-          </div>
+         <div style={{ marginTop: "2pt" }}>
+         {props?.items.TaskCreatorData[0].Title} has created a Task but {props?.items.currentUser[0]?.Title}  has sent you for approval. Please take your time and review:
+         Please note that you still have 1 tasks left to approve.<br /> You can find all pending approval tasks on your task dashboard or the approval page.
+         <p>
+           <a href={`${props.items["siteUrl"]}/SitePages/TaskDashboard.aspx`} target="_blank" data-interception="off">Your Task Dashboard</a>
+           <a style={{ marginLeft: "20px" }} href={`${props.items["siteUrl"]}/SitePages/TaskManagement.aspx?SmartfavoriteId=101&smartfavorite=All%20Approval%20Tasks`} target="_blank" data-interception="off">Your Approval Page</a>
+         </p>
+       </div>
           : <div style={{ marginTop: "11.25pt" }}>
             <div style={{ marginTop: "2pt" }}>Hi,</div>
             <div style={{ marginTop: "5pt" }}>your task has been Acknowledge by {props.CurrentUser[0].Title}, team will process it further.</div>
