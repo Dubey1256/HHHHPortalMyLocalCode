@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styles from './DocumentSearch.module.scss';
+// import styles from './DocumentSearch.module.scss';
 import { IDocumentSearchProps } from './IDocumentSearchProps';
 import { escape } from '@microsoft/sp-lodash-subset';
 import DocumentSearchPage from './DocumentSearchPage'
@@ -18,7 +18,7 @@ export default class DocumentSearch extends React.Component<IDocumentSearchProps
     } = this.props;
 
     return (
-      <div className='Alltable'>
+      <div>
         <DocumentSearchPage Selectedprops={this.props} />
       </div>
     );
