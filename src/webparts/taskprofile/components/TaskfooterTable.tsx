@@ -39,8 +39,9 @@ import { Web, sp } from 'sp-pnp-js';
 import HighlightableCell from '../../../globalComponents/GroupByReactTableComponents/highlight';
 
 import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
-import ReactPopperTooltip from '../../../globalComponents/Hierarchy-Popper-tooltip';
+import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
+import ReactPopperTooltip from '../../../globalComponents/Hierarchy-Popper-tooltip';
 var AllTasks: any = [];
 let AllTasksRendar: any = [];
 let siteConfig: any = [];
@@ -57,6 +58,7 @@ let siteIconAllTask: any = [];
 let finalData: any = [];
 let childRefdata: any;
 let TasksItem: any = [];
+let AllTasksData :any=[];
 function IndeterminateCheckbox(
   {
     indeterminate,
@@ -124,7 +126,7 @@ function TasksTable(props: any) {
   const [SharewebTimeComponent, setSharewebTimeComponent] = React.useState([]);
   const [AllClientCategory, setAllClientCategory] = React.useState([])
   const [count, setCount] = React.useState(0);
-  const [AllMasterTasksData, setAllMasterTasksData] = React.useState([])
+  const [AllMasterTasksData, setAllMasterTasksData] = React.useState(props?.AllSiteTasksAndMaster)
   const [ActivityDisable, setActivityDisable] = React.useState(false);
   const [addModalOpen, setAddModalOpen] = React.useState(false);
 
@@ -231,7 +233,7 @@ function TasksTable(props: any) {
 
 
   const LoadAllSiteTasks = async function (filter: any) {
-    let AllTasksData: any = [];
+     AllTasksData = [];
     let Counter = 0;
     if (siteConfig != undefined && siteConfig?.length > 0) {
       const batch = sp.createBatch();
@@ -266,6 +268,7 @@ function TasksTable(props: any) {
                 });
               }
               AllTasks = AllTasks.concat(AllTasksMatches);
+              AllTasksData=AllTasksData.concat(AllTasksMatches);
               AllTasks = $.grep(AllTasks, function (type: any) {
                 return type.isDrafted == false;
               });
@@ -403,18 +406,16 @@ function TasksTable(props: any) {
                   }
                   result["Item_x0020_Type"] = "Task";
                 })
-                let allParentTasks = $.grep(AllTasks, function (type: any) { return (type.ParentTask != undefined && type.ParentTask.Id === props.props.Id) && (type.TaskType != undefined && type.TaskType.Title != 'Workstream') });
+                let allParentTasks = $.grep(AllTasks, function (type: any) { return (type.ParentTask != undefined && type.ParentTask.Id === props.props.Id && type?.siteType==props?.props?.siteType ) && (type.TaskType != undefined && type.TaskType.Title != 'Workstream') });
                 if (props.props.TaskType != undefined && props.props.TaskType != undefined && props.props.TaskType === 'Activities')
-                  allworkstreamTasks = $.grep(AllTasks, function (task: any) { return (task.TaskType != undefined && task.TaskType.Title === 'Workstream') });
+                  allworkstreamTasks = $.grep(AllTasks, function (task: any) { return (task.TaskType != undefined && task.TaskType.Title === 'Workstream' && task?.siteType==props?.props?.siteType) });
 
                 if (allworkstreamTasks != undefined && allworkstreamTasks?.length > 0) {
                   allworkstreamTasks.forEach((obj: any) => {
                     if (obj.Id != undefined) {
                       AllTasks.forEach((task: any) => {
-                        if (task?.ParentTask != undefined && obj?.Id === task?.ParentTask?.Id) {
-
+                        if (task?.ParentTask != undefined && obj?.Id === task?.ParentTask?.Id && task?.siteType==props?.props?.siteType) {
                           obj.subRows = obj?.subRows != undefined ? obj?.subRows : []
-
                           obj.subRows.push(task)
                         }
 
@@ -452,7 +453,7 @@ function TasksTable(props: any) {
   };
 
   const GetComponents = async (Item: any) => {
-    var filt = "Id eq " + Item?.Portfolio?.Id + "";
+    // var filt = "Id eq " + Item?.Portfolio?.Id + "";
     let web = new Web(props?.AllListId?.siteUrl);
     let compo = [];
     compo = await web.lists
@@ -461,12 +462,14 @@ function TasksTable(props: any) {
       .select("ID", "Id", "Title", "Mileage", "PortfolioType/Id", "PortfolioType/Title", "PortfolioType/Color", "Item_x0020_Type",
       ).expand('PortfolioType')
 
-      .top(4999)
-      .filter(filt)
-      .get()
-    componentDetails = compo[0]
+      // .top(4999)
+      // .filter(filt)
+      .getAll()
+    componentDetails = compo?.filter((items:any)=>{
+      items.Id==Item?.Portfolio?.Id
+    })
     setAllMasterTasksData(compo)
-    IsUpdated = componentDetails?.PortfoliType?.Title;
+    IsUpdated = componentDetails[0]?.PortfoliType?.Title;
 
 
     console.log(componentDetails);
@@ -504,74 +507,7 @@ function TasksTable(props: any) {
     var MainId: any = ''
     let ParentTaskId: any;
     if (childItem != undefined && childItem.data?.ItmesDelete == undefined) {
-      // let  TeamLeaderUser2:any=[];
-      // TeamLeaderUser2=TeamLeaderUser2.concat(childItem?.data?.ResponsibleTeam)
-      // TeamLeaderUser2=TeamLeaderUser2.concat(childItem?.data?.TeamMembers)
-      // TeamLeaderUser2=TeamLeaderUser2.concat(childItem?.data?.AssignedTo)
-      childItem.data.TeamLeaderUser = [];
-      childItem.data.DisplayCreateDate = moment(childItem?.data?.Created).format("DD/MM/YYYY")
-      childItem.data.DisplayDueDate = childItem?.data?.DueDate
-      childItem.data.Item_x0020_Type = "Task";
-      if (
-        childItem?.data?.AssignedTo != undefined &&
-        childItem?.data?.AssignedTo?.length > 0
-      ) {
-        $.map(childItem?.data?.AssignedTo, (Assig: any) => {
-          if (Assig?.Id != undefined) {
-            $.map(taskUsers, (users: any) => {
-              if (
-                Assig.Id != undefined &&
-                users.AssingedToUser != undefined &&
-                Assig.Id == users.AssingedToUser.Id
-              ) {
-                users.ItemCover = users.Item_x0020_Cover;
-                childItem?.data?.TeamLeaderUser.push(users);
-                childItem.data.AllTeamName += users.Title + ";";
-              }
-            });
-          }
-        });
-      }
-      if (
-        childItem?.data?.ResponsibleTeam != undefined &&
-        childItem?.data?.ResponsibleTeam?.length > 0
-      ) {
-        $.map(childItem?.data?.ResponsibleTeam, (Assig: any) => {
-          if (Assig?.Id != undefined) {
-            $.map(taskUsers, (users: any) => {
-              if (
-                Assig.Id != undefined &&
-                users.AssingedToUser != undefined &&
-                Assig.Id == users.AssingedToUser.Id
-              ) {
-                users.ItemCover = users.Item_x0020_Cover;
-                childItem?.data?.TeamLeaderUser.push(users);
-                childItem.data.AllTeamName += users.Title + ";";
-              }
-            });
-          }
-        });
-      }
-      if (
-        childItem?.data?.TeamMembers != undefined &&
-        childItem?.data?.TeamMembers?.length > 0
-      ) {
-        $.map(childItem?.data?.TeamMembers, (Assig: any) => {
-          if (Assig?.Id != undefined) {
-            $.map(taskUsers, (users: any) => {
-              if (
-                Assig?.Id != undefined &&
-                users?.AssingedToUser != undefined &&
-                Assig?.Id == users.AssingedToUser.Id
-              ) {
-                users.ItemCover = users.Item_x0020_Cover;
-                childItem?.data?.TeamLeaderUser.push(users);
-                childItem.data.AllTeamName += users.Title + ";";
-              }
-            });
-          }
-        });
-      }
+ 
 
 
       childItem.data['flag'] = true;
@@ -581,9 +517,7 @@ function TasksTable(props: any) {
       if (childItem.data.PortfolioId != undefined) {
         MainId = childItem.data.PortfolioId
       }
-      // if (childItem.data.ComponentId != undefined && childItem.data.ComponentId.length > 0) {
-      //   MainId = childItem.data.ComponentId[0]
-      // }
+     
       if (childItem.data.ParentTaskId != undefined && childItem.data.ParentTaskId != "") {
         ParentTaskId = childItem.data.ParentTaskId;
       }
@@ -772,7 +706,9 @@ function TasksTable(props: any) {
         cell: ({ row, getValue }) => (
           <div>
             {row?.original?.TitleNew != "Tasks" ?
-              <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={props?.AllListId} />
+              <span className="d-flex">
+              <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={props?.AllMasterTasks} AllSitesTaskData={props?.AllSiteTasks} AllListId={props.AllListId} />
+          </span>
               : ''}
           </div>
         ),
@@ -1047,8 +983,8 @@ function TasksTable(props: any) {
         let parentcat: any = [];
 
         if (data2?.ClientTime != null && data2?.ClientTime != undefined) {
-          if(typeof data2?.ClientTime =="object"){
-            data2.ClientTime= JSON.stringify(data2?.ClientTime );
+          if (typeof data2?.ClientTime == "object") {
+            data2.ClientTime = JSON.stringify(data2?.ClientTime);
           }
 
         } else {
@@ -1226,7 +1162,14 @@ function TasksTable(props: any) {
           LoadAllSiteTasks={LoadAllSiteTasks}
           AllListId={props.AllListId}>
         </CreateActivity>}
-        {WSPopup && <CreateWS props={MeetingItems[MeetingItems.length - 1]} Call={Call} data={data} SelectedProp={props.AllListId}></CreateWS>}
+      {WSPopup && <CreateWS
+        selectedItem={MeetingItems[MeetingItems.length - 1]}
+        Call={Call}
+        data={data}
+        TaskUsers={AllUsers}
+        AllListId={props.AllListId}
+        context={props.Context}
+      ></CreateWS>}
       {addModalOpen && <Panel headerText={` Create Component `} type={PanelType.medium} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
         <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} PropsValue={props} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
       </Panel>
