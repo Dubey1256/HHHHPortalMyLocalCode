@@ -1821,7 +1821,7 @@ function PortfolioTable(SelectedProp: any) {
       setIsOpenActivity(false);
       setIsOpenWorkstream(false);
       setActivityPopup(false);
-      if (res.data.Portfolio.Id != null && res?.data?.Portfolio?.Id === SelectedProp?.props?.Id && res.data.TaskTypeId === 2 && (res.data.PortfolioType.Id === 1 || res.data.PortfolioType.Id === 2 || res.data.PortfolioType.Id === 3)) {
+      if (res?.data?.Portfolio?.Id != null && res?.data?.Portfolio?.Id === SelectedProp?.props?.Id && res?.data?.TaskTypeId === 2 && (res?.data?.PortfolioType?.Id === 1 || res?.data?.PortfolioType?.Id === 2 || res?.data?.PortfolioType?.Id === 3)) {
         const checkother = copyDtaArray.filter((item: any) => item.Title === "Others");
         if (checkother?.length === 0) {
           let temp: any = {};
@@ -1850,20 +1850,20 @@ function PortfolioTable(SelectedProp: any) {
       }
       if (res?.data?.PortfolioId === SelectedProp?.props?.Id) {
         copyDtaArray.forEach((val: any) => {
-          if (res?.data?.TaskType?.Id === 1) {
+          if (res?.data?.TaskTypeId === 1) {
             val.subRows = val.subRows ?? [];
             val.subRows.push(res.data);
           }
 
           if (val?.subRows) {
             val?.subRows?.forEach((ele: any) => {
-              if (res?.data?.TaskType?.Id === 3 && (res?.data?.ParentTask?.Id === ele?.Id || res?.data?.ParentTaskId === ele?.Id)) {
+              if (res?.data?.TaskTypeId === 3 && (res?.data?.ParentTask?.Id === ele?.Id || res?.data?.ParentTaskId === ele?.Id)) {
                 ele.subRows = ele.subRows ?? [];
                 ele?.subRows?.push(res.data);
               }
               if (ele?.subRows) {
                 ele?.subRows?.forEach((elev: any) => {
-                  if (res?.data?.TaskType?.Id === 2 && (res?.data?.ParentTask?.Id === elev?.Id || res?.data?.ParentTaskId === elev?.Id)) {
+                  if (res?.data?.TaskTypeId === 2 && (res?.data?.ParentTask?.Id === elev?.Id || res?.data?.ParentTaskId === elev?.Id)) {
                     elev.subRows = elev.subRows ?? [];
                     elev?.subRows?.push(res.data);
                   }
