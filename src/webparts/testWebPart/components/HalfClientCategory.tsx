@@ -177,17 +177,20 @@ const HalfClientCategory = (props: any) => {
             return '';
         }
     }
+    const sortAccordingSite = (data: any, key: any) => {
+        return data?.sort((a: any, b: any) => {
+            const orderA = siteSortOrder[a[key]?.toLowerCase()] || Infinity;
+            const orderB = siteSortOrder[b[key]?.toLowerCase()] || Infinity;
+            return orderA - orderB;
+        });
+    }
     function siteCompositionDetails(jsonStr: any): any {
         let totalPercent: number = 0;
         let result: string[] = [];
         try {
             const data = JSON.parse(jsonStr);
             if (data?.length > 0) {
-                const sortedData = data?.sort((a: any, b: any) => {
-                    const orderA = siteSortOrder[a?.Title?.toLowerCase()] || Infinity;
-                    const orderB = siteSortOrder[b?.Title?.toLowerCase()] || Infinity;
-                    return orderA - orderB;
-                });
+                const sortedData = sortAccordingSite(data, 'Title')
                 sortedData?.forEach((site: any, index: number) => {
                     if (site?.SiteName || site?.Title) {
                         let parsedValue: number = parseFloat(site?.ClienTimeDescription || '0');
@@ -294,10 +297,11 @@ const HalfClientCategory = (props: any) => {
                                     });
                                 });
                             }
-                            if (items?.ClientCategory?.length > 0) {
+                            if( items?.ClientCategory?.length>0){
                                 items?.ClientCategory?.map((dataCat: any) => {
                                     const matchingItem = AllMetadata?.find((elem: any) => elem?.Id === dataCat?.Id);
                                     if (matchingItem) {
+                                        dataCat.siteName = matchingItem?.siteName
                                         const titles = [];
                                         if (matchingItem?.Parent == null) {
                                             titles.push(matchingItem?.Title);     // No parent, push the title directly
@@ -312,6 +316,7 @@ const HalfClientCategory = (props: any) => {
                                         dataCat.Color_x0020_Tag = matchingItem.Color_x0020_Tag;
                                     }
                                 });
+                                items.ClientCategory = sortAccordingSite(items.ClientCategory, 'siteName')
                             }
                             if (items?.ClientCatTitle?.length > 0) {
                                 items.CCSearch = items?.ClientCatTitle?.join(' ; ');
@@ -410,23 +415,28 @@ const HalfClientCategory = (props: any) => {
                     items.siteUrl = AllListId?.siteUrl;
                     items.listId = AllListId?.MasterTaskListID;
                     items.ClientCatTitle = [];
-                    items?.ClientCategory?.map((dataCat: any) => {
-                        const matchingItem = AllMetadata?.find((elem: any) => elem?.Id === dataCat?.Id);
-                        if (matchingItem) {
-                            const titles = [];
-                            if (matchingItem?.Parent == null) {
-                                titles.push(matchingItem?.Title);     // No parent, push the title directly
-                            } else {
-                                const parentTitles = getParentTitles(matchingItem?.Parent?.Id);     // Has parent, get the parent titles recursively
-                                titles.push(...parentTitles, matchingItem?.Title);
+                    if( items?.ClientCategory?.length>0){
+                        items?.ClientCategory?.map((dataCat: any) => {
+                            const matchingItem = AllMetadata?.find((elem: any) => elem?.Id === dataCat?.Id);
+                            if (matchingItem) {
+                                dataCat.siteName = matchingItem?.siteName
+                                const titles = [];
+                                if (matchingItem?.Parent == null) {
+                                    titles.push(matchingItem?.Title);     // No parent, push the title directly
+                                } else {
+                                    const parentTitles = getParentTitles(matchingItem?.Parent?.Id);     // Has parent, get the parent titles recursively
+                                    titles.push(...parentTitles, matchingItem?.Title);
+                                }
+                                if (titles?.length > 0) {
+                                    dataCat.Titles = titles?.join(' > ');
+                                    items.ClientCatTitle.push(dataCat.Titles)
+                                }  // Set the titles array to the dataCat
+                                dataCat.Color_x0020_Tag = matchingItem.Color_x0020_Tag;
                             }
-                            if (titles?.length > 0) {
-                                dataCat.Titles = titles?.join(' > ');
-                                items.ClientCatTitle.push(dataCat.Titles)
-                            }  // Set the titles array to the dataCat
-                            dataCat.Color_x0020_Tag = matchingItem.Color_x0020_Tag;
-                        }
-                    });
+                        });
+                        items.ClientCategory = sortAccordingSite(items.ClientCategory, 'siteName')
+                    }
+                  
                     if (items?.ClientCatTitle?.length > 0) {
                         items.CCSearch = items?.ClientCatTitle?.join(' ; ');
                     } else {
@@ -528,7 +538,7 @@ const HalfClientCategory = (props: any) => {
                 accessorKey: "",
                 placeholder: "",
                 hasCheckbox: true,
-                size: 20,
+                size: 120,
                 id: 'Id',
             },
             {
@@ -723,7 +733,7 @@ const HalfClientCategory = (props: any) => {
                 accessorKey: "",
                 placeholder: "",
                 hasCheckbox: true,
-                size: 20,
+                size: 95,
                 id: 'Id',
             },
             {
