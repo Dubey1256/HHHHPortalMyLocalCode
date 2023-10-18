@@ -1,30 +1,24 @@
 import * as React from 'react';
 import Popup from 'reactjs-popup';
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FaCommentAlt, FaQuestion, FaBars } from 'react-icons/fa';
 //import { MdHelp } from 'react-icons/md';
 import { BiMenu } from 'react-icons/bi';
-
 import { Web } from "sp-pnp-js";
 import Feedback from 'react-bootstrap/esm/Feedback';
-import CreateMeetingPopup from './CreateMeetingPopup';
-var completeUrl=''
+import CallNotes from './CreateMeetingPopup';
+var completeUrl = ''
 var PageUrl = ''
 var Test = ''
 var Href = ''
 var FeedBackURl: any = ''
-var ComponentData:any={
-  Id:null,
-  Title:null,
-  Portfolio_x0020_Type:null
+var ComponentData: any = {
+  Id: null,
+  Title: null,
+  Portfolio_x0020_Type: null
 }
 function Tooltip(props: any) {
-
-
-  const [projectId, setprojectId] = React.useState(null)
-  const [IsComponent, setIsComponent] = React.useState(false);
+  const [OpenCallNotes, setOpenCallNotes] = React.useState(false);
   const [SharewebComponent, setSharewebComponent] = React.useState('');
-  const [IsTask, setIsTask] = React.useState(false);
   const isServiceTask = props.IsServiceTask;
 
   // React.useEffect(() => {
@@ -33,107 +27,107 @@ function Tooltip(props: any) {
   const feedbackInitial = async (itemType: any) => {
     getQueryVariable((e: any) => e)
     if (itemType === 'HHHH Feedback SP') {
-     
-      
+
+
       if (PageUrl != undefined && PageUrl != null) {
-      
-    
-          let res=[];
-          const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
-          if(props?.ComponentId!=undefined){
-            res = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items
+
+
+        let res = [];
+        const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+        if (props?.ComponentId != undefined) {
+          res = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items
             .select("Id,Title")
             .filter("Id eq " + props?.ComponentId)
             .get();
-            ComponentData=res[0]
-          }else{
-            res = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items
+          ComponentData = res[0]
+        } else {
+          res = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items
             .select("Id,Title")
             .filter("FoundationPageUrl eq '" + PageUrl + "'")
             .get();
-            ComponentData=res[0]
-          }
-       
-          if (ComponentData?.Id != undefined) {
-            window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?ComponentID=` + ComponentData?.Id + "&Siteurl=" + Href);
-          }
-      
+          ComponentData = res[0]
+        }
+
+        if (ComponentData?.Id != undefined) {
+          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?ComponentID=` + ComponentData?.Id + "&Siteurl=" + Href);
+        }
+
 
       }
     }
     if (itemType === 'HHHH Bug') {
       if (PageUrl != undefined && PageUrl != null) {
-     
-          let res=[];
-          const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
-          if(props?.ComponentId!=undefined){
-            res = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items
+
+        let res = [];
+        const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+        if (props?.ComponentId != undefined) {
+          res = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items
             .select("Id,Title")
             .filter("Id eq " + props?.ComponentId)
             .get();
-            ComponentData=res[0]
-          }else{
-            res = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items
+          ComponentData = res[0]
+        } else {
+          res = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items
             .select("Id,Title")
             .filter("FoundationPageUrl eq '" + PageUrl + "'")
             .get();
-            ComponentData=res[0]
-          }
-        
+          ComponentData = res[0]
+        }
+
         if (ComponentData?.Id != undefined) {
-          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?ComponentID=${ComponentData?.Id}` + "&ComponentTitle=" + ComponentData?.Title +"&TaskType=Bug"+ "&Siteurl=" + Href);
+          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?ComponentID=${ComponentData?.Id}` + "&ComponentTitle=" + ComponentData?.Title + "&TaskType=Bug" + "&Siteurl=" + Href);
         }
         else {
-          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?ComponentTitle=${ComponentData?.Title}`+"&TaskType=Bug"+ "&Siteurl=" + Href);
+          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?ComponentTitle=${ComponentData?.Title}` + "&TaskType=Bug" + "&Siteurl=" + Href);
         }
 
       }
     }
     if (itemType === 'HHHH Design') {
       if (PageUrl != undefined && PageUrl != null) {
-     
-          let res=[];
-          const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
-          if(props?.ComponentId!=undefined){
-            res = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items
+
+        let res = [];
+        const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+        if (props?.ComponentId != undefined) {
+          res = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items
             .select("Id,Title")
             .filter("Id eq " + props?.ComponentId)
             .get();
-            ComponentData=res[0]
-          }else{
-            res = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items
+          ComponentData = res[0]
+        } else {
+          res = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items
             .select("Id,Title")
             .filter("FoundationPageUrl eq '" + PageUrl + "'")
             .get();
-            ComponentData=res[0]
-          }
-      
+          ComponentData = res[0]
+        }
+
         if (ComponentData?.Id != undefined) {
-          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?ComponentID=${ComponentData?.Id}` + "&ComponentTitle=" + ComponentData?.Title+"&TaskType=Design" + "&Siteurl=" + Href);
+          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?ComponentID=${ComponentData?.Id}` + "&ComponentTitle=" + ComponentData?.Title + "&TaskType=Design" + "&Siteurl=" + Href);
         }
         else {
-          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?ComponentTitle=${ComponentData?.Title}`+"&TaskType=Design"+ "&Siteurl=" + Href);
+          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?ComponentTitle=${ComponentData?.Title}` + "&TaskType=Design" + "&Siteurl=" + Href);
         }
       }
     }
     if (itemType === 'HHHH Quick') {
       if (PageUrl != undefined && PageUrl != null) {
-       
-          let res=[];
-          const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
-          if(props?.ComponentId!=undefined){
-            res = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items
+
+        let res = [];
+        const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+        if (props?.ComponentId != undefined) {
+          res = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items
             .select("Id,Title")
             .filter("Id eq " + props?.ComponentId)
             .get();
-            ComponentData=res[0]
-          }else{
-            res = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items
+          ComponentData = res[0]
+        } else {
+          res = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items
             .select("Id,Title")
             .filter("FoundationPageUrl eq '" + PageUrl + "'")
             .get();
-            ComponentData=res[0]
-          }
+          ComponentData = res[0]
+        }
         if (ComponentData?.Id != undefined) {
           window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateQuickTask.aspx?ComponentID=` + ComponentData?.Id + "&ComponentTitle=" + ComponentData?.Title + "&Siteurl=" + Href);
         }
@@ -145,23 +139,23 @@ function Tooltip(props: any) {
     }
     if (itemType === 'HHHH Component Page') {
       if (PageUrl != undefined && PageUrl != null) {
-     
-          let res=[];
-          const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
-          if(props?.ComponentId!=undefined){
-            res = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items
+
+        let res = [];
+        const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+        if (props?.ComponentId != undefined) {
+          res = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items
             .select("Id,Title")
             .filter("Id eq " + props?.ComponentId)
             .get();
-            ComponentData=res[0]
-          }else{
-            res = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items
+          ComponentData = res[0]
+        } else {
+          res = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items
             .select("Id,Title")
             .filter("FoundationPageUrl eq '" + PageUrl + "'")
             .get();
-            ComponentData=res[0]
-          }
-       
+          ComponentData = res[0]
+        }
+
         if (ComponentData?.Id != undefined) {
           window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${ComponentData?.Id}`);
         }
@@ -172,14 +166,21 @@ function Tooltip(props: any) {
     }
     if (itemType === 'Call Notes') {
       if (PageUrl != undefined && PageUrl != null) {
-     
+        let res = [];
         const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
-
-        const res = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items
-          .select("Id,Title,Portfolio_x0020_Type")
-          .filter("FoundationPageUrl eq '" + PageUrl + "'")
-          .get();
-          ComponentData=res[0];
+        if (props?.ComponentId != undefined) {
+          res = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items
+            .select("Id,Title")
+            .filter("Id eq " + props?.ComponentId)
+            .get();
+          ComponentData = res[0]
+        } else {
+          res = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items
+            .select("Id,Title")
+            .filter("FoundationPageUrl eq '" + PageUrl + "'")
+            .get();
+          ComponentData = res[0]
+        }
         console.log(res)
         if (ComponentData?.Id != undefined) {
           var componentID = ComponentData.Id
@@ -195,7 +196,7 @@ function Tooltip(props: any) {
 
       }
       setSharewebComponent(Component);
-      setIsComponent(true);
+      setOpenCallNotes(true);
 
 
     }
@@ -207,7 +208,7 @@ function Tooltip(props: any) {
   let currentUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP'
 
 
- 
+
   function getQueryVariable(variable: any) {
 
     var query = window.location.search.substring(1);
@@ -225,15 +226,14 @@ function Tooltip(props: any) {
     let foundationPageIndex = foundationUrl.indexOf("sitepages")
     foundationUrl = foundationUrl.slice(foundationPageIndex).join("/")
     PageUrl = foundationUrl.toLowerCase().split('?')[0];
-    PageUrl='/'+PageUrl;
-    PageUrl=PageUrl.split('#')[0];
+    PageUrl = '/' + PageUrl;
+    PageUrl = PageUrl.split('#')[0];
     console.log(vars)
     return (false);
   }
 
   const Call = React.useCallback(() => {
-    setIsComponent(false);
-    setIsTask(false);
+    setOpenCallNotes(false);
   }, []);
 
 
@@ -253,7 +253,7 @@ function Tooltip(props: any) {
         className='feedbackpanel'
       >
         {/* {isShown && ( */}
-        <div className={isServiceTask ? 'dropdown-menu show dropdown-menu-end toolmenubox serviepannelgreena' :'dropdown-menu show dropdown-menu-end toolmenubox'}>
+        <div className={isServiceTask ? 'dropdown-menu show dropdown-menu-end toolmenubox serviepannelgreena' : 'dropdown-menu show dropdown-menu-end toolmenubox'}>
           <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Feedback SP')}> <span className="svg__iconbox  svg__icon--Comments"></span> HHHH Feedback SP</a>
           <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Bug')}> <span className="svg__iconbox  svg__icon--Comments"></span> HHHH Bug</a>
           <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Design')}> <span className="svg__iconbox  svg__icon--Comments"></span> HHHH Design</a>
@@ -268,7 +268,7 @@ function Tooltip(props: any) {
 
       </Popup>
 
-      {IsComponent && <CreateMeetingPopup Item={SharewebComponent} Call={Call}></CreateMeetingPopup>}
+      {OpenCallNotes && <CallNotes Item={SharewebComponent} callback={Call} />}
     </>
   )
 
