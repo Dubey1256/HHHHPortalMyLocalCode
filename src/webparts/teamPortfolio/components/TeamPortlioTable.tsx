@@ -263,7 +263,7 @@ function TeamPortlioTable(SelectedProp: any) {
                         "TaskID", "ResponsibleTeam/Id", "ResponsibleTeam/Title", "ParentTask/TaskID", "TaskType/Level", "PriorityRank", "TeamMembers/Title", "FeedBack", "Title", "Id", "ID", "DueDate", "Comments", "Categories", "Status", "Body",
                         "PercentComplete", "ClientCategory", "Priority", "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/PortfolioStructureID", "Portfolio/Title",
                         "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
-                        "Created", "Modified",
+                        "Created", "Modified", "IsTodaysTask", "workingThisWeek"
                     )
                     .expand(
                         "ParentTask", "Portfolio", "TaskType", "ClientCategory", "TeamMembers", "ResponsibleTeam", "AssignedTo", "Editor", "Author",
@@ -394,7 +394,7 @@ function TeamPortlioTable(SelectedProp: any) {
                                 result.ProjectId = result?.Project?.Id;
                                 result.projectStructerId = result?.Project?.PortfolioStructureID
                                 const title = result?.Project?.Title || '';
-                                const formattedDueDate = Moment(result?.Project?.DueDate).format('YYYY-MM');
+                                const formattedDueDate = Moment(result?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
                                 result.joinedData = [];
                                 if (result?.projectStructerId && title || formattedDueDate) {
                                     result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
@@ -1405,7 +1405,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 ),
                 cell: ({ row, getValue }) => (
                     <>
-                        {row?.original?.isRestructureActive && row?.original?.Title != "Others" && (
+                        {row?.original?.isRestructureActive && (
                             <span className="Dyicons p-1" title="Restructure" style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} onClick={() => callChildFunction(row?.original)}>
                                 <span className="svg__iconbox svg__icon--re-structure"> </span>
                                 {/* <img
@@ -1769,8 +1769,15 @@ function TeamPortlioTable(SelectedProp: any) {
     const onRenderCustomHeaderMain = () => {
         return (
             <div className="d-flex full-width pb-1">
-                <div className="subheading">
-                    <span className="siteColor">{`Create Item`}</span>
+                <div
+                    style={{
+                        marginRight: "auto",
+                        fontSize: "20px",
+                        fontWeight: "600",
+                        marginLeft: "20px",
+                    }}
+                >
+                    <span>{`Create Item`}</span>
                 </div>
                 <Tooltip ComponentId={1746} />
             </div>
@@ -1874,7 +1881,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 onDismiss={closeActivity}
                 isBlocking={false}
             >
-                <div className="modal-body">
+                <div className="modal-body bg-f5f5 clearfix">
                     <div
                         className={
                             IsUpdated == "Events Portfolio"
@@ -1998,7 +2005,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     portfolioTypeData={portfolioTypeData}
                 />
             )}
-            {isOpenWorkstream && (
+            {/* {isOpenWorkstream && (
                 <CreateWS
                     props={checkedList}
                     Call={Call}
@@ -2008,7 +2015,15 @@ function TeamPortlioTable(SelectedProp: any) {
                     SelectedProp={SelectedProp}
                     portfolioTypeData={portfolioTypeData}
                 ></CreateWS>
-            )}
+            )} */}
+            {isOpenWorkstream && (
+                <CreateWS
+                    selectedItem={checkedList}
+                    Call={Call}
+                    AllListId={ContextValue}
+                    TaskUsers={AllUsers}
+                    data={data}>
+                </CreateWS>)}
             {IsTask && (
                 <EditTaskPopup
                     Items={SharewebTask}

@@ -37,7 +37,13 @@ const TeamSmartFilter = (item: any) => {
     const [filterGroupsData, setFilterGroups] = React.useState([]);
     const [allStites, setAllStites] = React.useState([]);
     const [allFilterClintCatogryData, setFilterClintCatogryData] = React.useState([]);
-    const [filterInfo, setFilterInfo] = React.useState('');
+    const [CategoriesandStatusInfo, setCategoriesandStatusInfo] = React.useState('');
+    const [sitesCountInfo, setsitesCountInfo] = React.useState('');
+    const [projectCountInfo, setprojectCountInfo] = React.useState('');
+    const [clientCategoryCountInfo, setclientCategoryCountInfo] = React.useState('');
+    const [teamMembersCountInfo, setteamMembersCountInfo] = React.useState('');
+    const [dateCountInfo, setdateCountInfo] = React.useState('');
+
     const rerender = React.useReducer(() => ({}), {})[1]
     const [flatView, setFlatView] = React.useState(false);
 
@@ -81,6 +87,10 @@ const TeamSmartFilter = (item: any) => {
     const [isCreatedBy, setIsCreatedBy] = React.useState(false);
     const [isModifiedby, setIsModifiedby] = React.useState(false);
     const [isAssignedto, setIsAssignedto] = React.useState(false);
+    const [isTeamLead, setIsTeamLead] = React.useState(false);
+    const [isTeamMember, setIsTeamMember] = React.useState(false);
+    const [isTodaysTask, setIsTodaysTask] = React.useState(false);
+    // const [isWorkingThisWeek, setIsWorkingThisWeek] = React.useState(false);
     //*******************************************************Teams Section End********************************************************************/
 
     //*******************************************************Key Word Section********************************************************************/
@@ -206,9 +216,9 @@ const TeamSmartFilter = (item: any) => {
 
 
 
-    let filterGroups: any = [{ Title: 'Portfolio', values: [], checked: [], checkedObj: [], expanded: [] },
+    let filterGroups: any = [{ Title: 'Portfolio Type', values: [], checked: [], checkedObj: [], expanded: [] },
     {
-        Title: 'Type', values: [], checked: [], checkedObj: [], expanded: []
+        Title: 'Task Type', values: [], checked: [], checkedObj: [], expanded: []
     },
     // {
     //     Title: 'Client Category', values: [], checked: [], checkedObj: [], expanded: []
@@ -439,39 +449,50 @@ const TeamSmartFilter = (item: any) => {
 
     const headerCountData = (() => {
         let filterInfo = '';
-        let tempFilterInfo: any = []
+        let CategoriesandStatus = "";
+        let sitesCount = "";
+        let projectCount = "";
+        let clientCategoryCount = "";
+        let teamMembersCount = "";
+        let dateCount = "";
+        let CategoriesandStatusInfo: any = [];
+        let sitesCountInfo: any = [];
+        let projectCountInfo: any = [];
+        let clientCategoryCountInfo: any = [];
+        let teamMembersCountInfo: any = [];
+        let dateCountInfo: any = [];
         if (filterGroupsData?.length > 0) {
             filterGroupsData?.forEach((element: any) => {
                 if (element?.checked?.length > 0)
-                    tempFilterInfo.push(element.Title + ' : (' + element.checked.length + ')')
+                    CategoriesandStatusInfo.push(element.Title + ' : (' + element.checked.length + ')')
             });
-            filterInfo = tempFilterInfo.join(' | ');
+            CategoriesandStatus = CategoriesandStatusInfo.join(' | ');
         }
         if (allStites?.length > 0) {
             allStites?.forEach((element: any) => {
                 if (element?.checked?.length > 0)
-                    tempFilterInfo.push(element.Title + ' : (' + element.checked.length + ')')
+                    sitesCountInfo.push(element.Title + ' : (' + element.checked.length + ')')
             });
-            filterInfo = tempFilterInfo.join(' | ');
+            sitesCount = sitesCountInfo.join(' | ');
         }
 
         if (allFilterClintCatogryData?.length > 0) {
             allFilterClintCatogryData?.forEach((element: any) => {
                 if (element?.checked?.length > 0)
-                    tempFilterInfo.push(element.Title + ' : (' + element.checked.length + ')')
+                    clientCategoryCountInfo.push(element.Title + ' : (' + element.checked.length + ')')
             });
-            filterInfo = tempFilterInfo.join(' | ');
+            clientCategoryCount = clientCategoryCountInfo.join(' | ');
         }
         if (selectedProject?.length > 0) {
-            tempFilterInfo.push("Project" + ' : (' + selectedProject?.length + ')')
-            filterInfo = tempFilterInfo.join(' | ');
+            projectCountInfo.push("Project" + ' : (' + selectedProject?.length + ')')
+            projectCount = projectCountInfo.join(' | ');
         }
         if (TaskUsersData?.length > 0) {
             TaskUsersData?.forEach((element: any) => {
                 if (element?.checked?.length > 0)
-                    tempFilterInfo.push(element.Title + ' : (' + element.checked.length + ')')
+                    teamMembersCountInfo.push(element.Title + ' : (' + element.checked.length + ')')
             });
-            filterInfo = tempFilterInfo.join(' | ');
+            teamMembersCount = teamMembersCountInfo.join(' | ');
         }
         let trueCount = 0;
         if (isCreatedDateSelected) {
@@ -484,10 +505,15 @@ const TeamSmartFilter = (item: any) => {
             trueCount++;
         }
         if (trueCount > 0) {
-            tempFilterInfo.push("Date" + ' : (' + trueCount + ')')
-            filterInfo = tempFilterInfo.join(' | ');
+            dateCountInfo.push("Date" + ' : (' + trueCount + ')')
+            dateCount = dateCountInfo.join(' | ');
         }
-        setFilterInfo(filterInfo)
+        setCategoriesandStatusInfo(CategoriesandStatus)
+        setsitesCountInfo(sitesCount)
+        setprojectCountInfo(projectCount)
+        setclientCategoryCountInfo(clientCategoryCount)
+        setteamMembersCountInfo(teamMembersCount)
+        setdateCountInfo(dateCount)
     })
     React.useEffect(() => {
         headerCountData()
@@ -841,10 +867,10 @@ const TeamSmartFilter = (item: any) => {
         let clientCategory: any[] = [];
         let Categories: any[] = [];
         filterGroupsData.forEach(function (filter) {
-            if (filter.Title === 'Portfolio' && filter.checked.length > 0 && filter.checkedObj.length > 0) {
+            if (filter.Title === 'Portfolio Type' && filter.checked.length > 0 && filter.checkedObj.length > 0) {
                 filter.checkedObj.map(function (port: any) { return portFolio.push(port); });
             }
-            else if (filter.Title === 'Type' && filter.checked.length > 0 && filter.checkedObj.length > 0) {
+            else if (filter.Title === 'Task Type' && filter.checked.length > 0 && filter.checkedObj.length > 0) {
                 filter.checkedObj.map(function (elem1: any) { return type.push(elem1); });
             }
             // else if (filter.Title === 'Client Category' && filter.checked.length > 0 && filter.checkedObj.length > 0) {
@@ -893,18 +919,21 @@ const TeamSmartFilter = (item: any) => {
                 updatedCheckDateSection(data, startDate, endDate)
             );
         }
-        const filteredTaskData = allTastsData.filter((data: any) =>
-            updatedCheckMatch(data, 'siteType', 'Title', site) &&
-            updatedCheckTaskType(data, type) &&
-            updatedCheckProjectMatch(data, selectedProject) &&
-            updatedCheckMatch(data, 'percentCompleteValue', 'TaskStatus', percentComplete) &&
-            updatedCheckMatch(data, 'ClientCategory', 'Title', clientCategory) &&
-            updatedCheckCategoryMatch(data, Categories) &&
-            updatedCheckTeamMembers(data, teamMember) &&
-            updatedKeyWordData(data, keyWordSearchTearm) &&
-            updatedCheckDateSection(data, startDate, endDate) &&
-            updatedCheckPriority(data, priorityType)
-        );
+        let filteredTaskData: any = [];
+        if (type.length > 0) {
+            filteredTaskData = allTastsData.filter((data: any) =>
+                updatedCheckMatch(data, 'siteType', 'Title', site) &&
+                updatedCheckTaskType(data, type) &&
+                updatedCheckProjectMatch(data, selectedProject) &&
+                updatedCheckMatch(data, 'percentCompleteValue', 'TaskStatus', percentComplete) &&
+                updatedCheckMatch(data, 'ClientCategory', 'Title', clientCategory) &&
+                updatedCheckCategoryMatch(data, Categories) &&
+                updatedCheckTeamMembers(data, teamMember) &&
+                updatedKeyWordData(data, keyWordSearchTearm) &&
+                updatedCheckDateSection(data, startDate, endDate) &&
+                updatedCheckPriority(data, priorityType)
+            );
+        }
         let allFinalResult = filteredMasterTaskData.concat(filteredTaskData);
         setFinalArray(allFinalResult);
         setFirstTimecallFilterGroup(false);
@@ -980,7 +1009,7 @@ const TeamSmartFilter = (item: any) => {
                     return true;
                 }
             }
-            if (isAssignedto === true) {
+            if (isAssignedto === true && isTodaysTask === false) {
                 if (data?.AssignedTo.length > 0) {
                     let result = data?.AssignedTo?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ')));
                     if (result === true) {
@@ -989,7 +1018,31 @@ const TeamSmartFilter = (item: any) => {
                 }
 
             }
-            if (isCreatedBy === false && isModifiedby === false && isAssignedto === false) {
+            if (isTeamLead === true) {
+                if (data?.ResponsibleTeam.length > 0) {
+                    let result = data?.ResponsibleTeam?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ')));
+                    if (result === true) {
+                        return true;
+                    }
+                }
+            }
+            if (isTeamMember === true) {
+                if (data?.TeamMembers?.length > 0) {
+                    let result = data?.TeamMembers?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ')));
+                    if (result === true) {
+                        return true;
+                    }
+                }
+            }
+            if (isTodaysTask === true && isAssignedto === true || isTodaysTask === true && isAssignedto === false) {
+                if (data?.IsTodaysTask === true) {
+                    let result = data?.AssignedTo?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ') && data?.IsTodaysTask === true));
+                    if (result === true) {
+                        return true;
+                    }
+                }
+            }
+            if (isCreatedBy === false && isModifiedby === false && isAssignedto === false && isTeamMember === false && isTeamLead === false && isTodaysTask === false) {
                 let result = data?.TeamLeaderUser?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ')));
                 if (result === true) {
                     return true;
@@ -1127,12 +1180,24 @@ const TeamSmartFilter = (item: any) => {
         setUpdatedSmartFilter(false);
         setFinalArray([]);
         setFlatView(false);
+        setIsTeamLead(false);
+        setIsTeamMember(false);
+        setIsTodaysTask(false);
         // setPreSet(false);
     };
-    const UpdateFilterData = () => {
-        item?.setLoaded(false);
-        setUpdatedSmartFilter(true);
-        FilterDataOnCheck();
+    const UpdateFilterData = (event: any) => {
+        if (event === "udateClickTrue") {
+            item?.setLoaded(false);
+            setUpdatedSmartFilter(true);
+            FilterDataOnCheck();
+        } else if (event === "udateClickFalse" && updatedSmartFilter === true) {
+            item?.setLoaded(false);
+            setUpdatedSmartFilter(true);
+            FilterDataOnCheck();
+        } else if (event === "udateClickFalse" && updatedSmartFilter === false) {
+            item?.setLoaded(false);
+            FilterDataOnCheck();
+        }
     };
 
     const showSmartFilter = (value: any) => {
@@ -1255,10 +1320,10 @@ const TeamSmartFilter = (item: any) => {
         setIconIndex((prevIndex) => (prevIndex + 1) % 4);
     };
     const icons = [
-        <SlArrowRight style={{ color: `${portfolioColor}`, width: '12px', marginTop:'-3px' }} />,
-        <SlArrowDown style={{ color: `${portfolioColor}`, width: '12px' , marginTop:'-3px'}} />,
-        <SlArrowRight style={{ color: `${portfolioColor}`, width: '12px' , marginTop:'-3px'}} />,
-        <AiOutlineUp style={{ color: `${portfolioColor}`, width: '12px' , marginTop:'-3px'}} />,
+        <SlArrowRight style={{ color: `${portfolioColor}`, width: '12px', marginTop: '-3px' }} />,
+        <SlArrowDown style={{ color: `${portfolioColor}`, width: '12px', marginTop: '-3px' }} />,
+        <SlArrowRight style={{ color: `${portfolioColor}`, width: '12px', marginTop: '-3px' }} />,
+        <AiOutlineUp style={{ color: `${portfolioColor}`, width: '12px', marginTop: '-3px' }} />,
     ];
 
     //*************************************************** Portfolio Items & Task Items selected ***************************************************************** */
@@ -1357,7 +1422,7 @@ const TeamSmartFilter = (item: any) => {
             localStorage.setItem('timeEntryIndex', dataString);
         }
         console.log("timeEntryIndex", timeEntryIndex)
-        UpdateFilterData();
+        UpdateFilterData("udateClickFalse");
         return allTastsData;
     };
 
@@ -1372,7 +1437,7 @@ const TeamSmartFilter = (item: any) => {
                 }
             })
             console.log("timeEntryIndexLocalStorage", timeEntryIndexLocalStorage)
-            UpdateFilterData();
+            FilterDataOnCheck();
             return allTastsData;
         }
     };
@@ -1513,15 +1578,15 @@ const TeamSmartFilter = (item: any) => {
             <input
                 type="text"
                 id="datepicker"
-                className="form-control date-picker"
+                className="form-control date-picker ps-2"
                 placeholder="DD/MM/YYYY"
                 defaultValue={value}
             />
             <span
                 style={{
                     position: "absolute",
-                    top: "50%",
-                    right: "0px",
+                    top: "58%",
+                    right: "8px",
                     transform: "translateY(-50%)",
                     cursor: "pointer"
                 }}
@@ -1724,26 +1789,6 @@ const TeamSmartFilter = (item: any) => {
     const handleSwitchToggle = () => {
         setFlatView(!flatView);
     };
-    // const handleDatePreSetChange = () => {
-    //     let storedDataStartDate: any
-    //     let storedDataEndDate: any
-    //     try {
-    //         storedDataStartDate = JSON.parse(localStorage.getItem('startDate'));
-    //         storedDataEndDate = JSON.parse(localStorage.getItem('endDate'))
-    //     } catch (error) {
-
-    //     }
-    //     if (storedDataStartDate && storedDataStartDate != null && storedDataStartDate != "Invalid Date" && storedDataEndDate && storedDataEndDate != null && storedDataEndDate != "Invalid Date") {
-    //         setStartDate(new Date(storedDataStartDate));
-    //         setEndDate(new Date(storedDataEndDate));
-    //     }
-    //     setSelectedFilter('')
-    //     setPreSet(true);
-    //     setIsCreatedDateSelected(true);
-    //     setIsModifiedDateSelected(true);
-    //     setIsDueDateSelected(true);
-    //     rerender();
-    // }
     const preSetIconClick = () => {
         // setPreSet(true);
 
@@ -1752,39 +1797,63 @@ const TeamSmartFilter = (item: any) => {
 
     ///////////end/////////////////////
     //*******************************************************************Key Word Section ****************************/
-    // React.useEffect(() => {
-    //     switch (selectedKeyWordFilter) {
-    //         case "Allwords":
-    //         setKeyWordSelected('Allwords')
-    //             break;
-    //         case "Anywords":
-    //             setKeyWordSelected('Anywords')
-    //             break;
-    //         case "ExactPhrase":
-    //             setKeyWordSelected('ExactPhrase')
-    //             break;
-    //         default:
-    //             setKeyWordSelected('Allwords')
-    //             break;
-    //     }
-    // }, [selectedKeyWordFilter]);
     const handleInputChange = (e: any) => {
         const { value } = e.target;
         setKeyWordSearchTearm(value);
     };
     //*******************************************************************Key Word Section End****************************/
+    const checkIcons = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+    <rect x="0.5" y="0.5" width="15" height="15" fill="${portfolioColor}" stroke="${portfolioColor}"/>
+    <path d="M5 8L7 10L11 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  `;
+    const checkBoxIcon = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+    <rect x="0.5" y="0.5" width="15" height="15" fill="white" stroke="#CCCCCC"/>
+    </svg>
+  `;
+    const halfCheckBoxIcons = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+    <rect x="0.5" y="0.5" width="15" height="15" fill="${portfolioColor}" stroke="${portfolioColor}"/>
+    <path fill-rule="evenodd" clip-rule="evenodd" d="M4 8.25V8.25C4 8.94036 4.55964 9.5 5.25 9.5H8.375H11.5C12.1904 9.5 12.75 8.94036 12.75 8.25V8.25V8.25C12.75 7.55964 12.1904 7 11.5 7H8.375H5.25C4.55964 7 4 7.55964 4 8.25V8.25Z" fill="white"/>
+    </svg>
+    `;
+
+    const checkBoxColor = () => {
+        setTimeout(() => {
+            const inputElement = document.getElementsByClassName('custom-checkbox-tree');
+            if (inputElement) {
+                for (let j = 0; j < inputElement.length; j++) {
+                    const checkboxContainer = inputElement[j]
+                    const childElements = checkboxContainer.getElementsByClassName('rct-text');
+                    const childElements2 = checkboxContainer.getElementsByClassName('rct-title');
+                    for (let i = 0; i < childElements.length; i++) {
+                        const checkbox = childElements[i];
+                        const lable: any = childElements2[i];
+                        if (lable?.innerHTML === "Other" || lable?.innerHTML === "DA E+E") {
+                            checkbox.classList.add('smartFilterAddedMargingClass');
+                        }
+                    }
+                }
+            }
+        }, 200);
+    }
+    React.useEffect(() => {
+        checkBoxColor();
+    }, [iscategoriesAndStatusExpendShow, isClientCategory]);
     return (
         <>
-            <section className='smartFilter bg-light border mb-2 col row'>
-                <section className="ContentSection p-0 smartFilterSection">
+            <section className='smartFilter bg-light row border mb-2 col'>
+                <section className="p-0 smartFilterSection">
                     <div className="px-2 py-1">
                         <div className="togglebox">
                             <div className='alignCenter justify-content-between col-sm-12'>
                                 <div className='alignCenter col-sm-8'>
                                     <div className='' style={{ color: `${portfolioColor}` }} onClick={() => { toggleIcon(); toggleAllExpendCloseUpDown(iconIndex) }}>
-                                        {icons[iconIndex]} <a className="f-16 fw-semibold hreflink ms-1 pe-2 allfilter">All Filters - </a>
+                                        {icons[iconIndex]} <span className="f-16 fw-semibold hreflink ms-1 pe-2 allfilter ">All Filters</span>
                                     </div>
-                                    <div className="ms-1" style={{ color: "#333" }}>{filterInfo}</div>
+                                    {/* <div className="ms-1 f-16" style={{ color: "#333" }}>{filterInfo}</div> */}
                                 </div>
                                 <div className='alignCenter col-sm-4'>
                                     <div className='ml-auto alignCenter'>
@@ -1793,81 +1862,83 @@ const TeamSmartFilter = (item: any) => {
                                             <input checked={flatView} onChange={handleSwitchToggle} type="checkbox" id="checkbox" />
                                             {flatView === true ? <div className="slider round" title='Switch to Groupby View' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }}></div> : <div title='Switch to Flat-View' className="slider round"></div>}
                                         </label>
-                                        <button className='btn btn-primary me-1 px-3 py-1' onClick={UpdateFilterData}>Update Filter</button>
+                                        <button className='btn btn-primary me-1 px-3 py-1' onClick={() => UpdateFilterData("udateClickTrue")}>Update Filter</button>
                                         <button className='btn  btn-default px-3 py-1' onClick={ClearFilter}> Clear Filters</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div >
+                    </div>
                 </section>
-                {collapseAll == false ? <section className="ContentSection smartFilterSection row pe-0 mb-1">
-                    <div className="p-2 pe-0">
+                {collapseAll == false ? <section className="smartFilterSection p-0 mb-1">
+                    <div className="px-2">
                         <div className="togglebox">
-                            <div className="togglebox">
+                            <label className="toggler full_width active">
                                 <span className='full-width' style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter("isKeywordsExpendShow")}>
-                                    {isKeywordsExpendShow === true ?
-                                        <SlArrowDown style={{ color: `${portfolioColor}`, width: '12px' }} /> : <SlArrowRight style={{ color: `${portfolioColor}`, width: '12px' }} />}
-                                    <span className='ms-1'>Keywords</span>
+                                    <div className='alignCenter'>
+                                        {isKeywordsExpendShow === true ?
+                                            <SlArrowDown style={{ color: "#555555", width: '12px' }} /> : <SlArrowRight style={{ color: "#555555", width: '12px' }} />}
+                                        <span className='ms-2 f-16'>Keywords</span>
+                                        {/* <div className="ms-2 f-14" style={{ color: "#333333" }}>{filterInfo}</div> */}
+                                    </div>
                                     <hr className='ms-3' />
                                 </span>
-                                {isKeywordsExpendShow === true ? <div className='mt-2 ps-3'>
-                                    <div className='d-flex justify-content-between'>
-                                        <div className='col-md-12'><input className='full-width' placeholder='Keywords' type='text' value={keyWordSearchTearm} onChange={handleInputChange}></input> </div>
-                                    </div>
-                                    <div className='d-flex justify-content-between'>
-                                        <div className='mt-2'>
-                                            <label className='SpfxCheckRadio  me-3'>
-                                                <input className='radio' type='radio' value="Allwords" checked={selectedKeyWordFilter === "Allwords"} onChange={() => setKeyWordSelected("Allwords")} />All words
-                                            </label>
-                                            <label className='SpfxCheckRadio   me-3'>
-                                                <input className='radio' type='radio' value="Anywords" checked={selectedKeyWordFilter === "Anywords"} onChange={() => setKeyWordSelected("Anywords")} />Any words
-                                            </label>
-                                            <label className='SpfxCheckRadio  me-3'>
-                                                <input className='radio' type='radio' value="ExactPhrase" checked={selectedKeyWordFilter === "ExactPhrase"} onChange={() => setKeyWordSelected("ExactPhrase")} />Exact Phrase
-                                            </label>
-                                            <span className='m-2'> | </span>
-                                            <label className='SpfxCheckRadio'>
-                                                <input className='radio' type='radio' value="Title" checked={selectedKeyDefultTitle === "Title"} onChange={() => setSelectedKeyDefultTitle("Title")} />Title
-                                            </label>
-                                            {/* <label className='SpfxCheckRadio '>
+                            </label>
+                            {isKeywordsExpendShow === true ? <div className='mb-3 ps-3'>
+                                <div className='col-7 p-0'>
+                                    <div className='input-group alignCenter'>
+                                        <label className="full-width form-label"></label>
+                                        <input className="form-control" placeholder='Keywords' type='text' value={keyWordSearchTearm} onChange={handleInputChange}></input>
+                                    </div></div>
+                                <div className='alignCenter mt-1'>
+                                    <label className='SpfxCheckRadio me-2'>
+                                        <input className='radio me-1' type='radio' value="Allwords" checked={selectedKeyWordFilter === "Allwords"} onChange={() => setKeyWordSelected("Allwords")} /> All words
+                                    </label>
+                                    <label className='SpfxCheckRadio me-2'>
+                                        <input className='radio me-1' type='radio' value="Anywords" checked={selectedKeyWordFilter === "Anywords"} onChange={() => setKeyWordSelected("Anywords")} /> Any words
+                                    </label>
+                                    <label className='SpfxCheckRadio'>
+                                        <input className='radio me-1' type='radio' value="ExactPhrase" checked={selectedKeyWordFilter === "ExactPhrase"} onChange={() => setKeyWordSelected("ExactPhrase")} /> Exact Phrase
+                                    </label>
+                                    <span className='mx-4'> | </span>
+                                    <label className='SpfxCheckRadio'>
+                                        <input className='radio me-2' type='radio' value="Title" checked={selectedKeyDefultTitle === "Title"} onChange={() => setSelectedKeyDefultTitle("Title")} />Title
+                                    </label>
+                                    {/* <label className='SpfxCheckRadio '>
                                             <input className='radio' type='radio' value="Allfields" /> All fields
                                         </label> */}
-                                            <span className='m-2'>|</span>
-                                            <label className='SpfxCheckRadio  me-3'>
-                                                <input className='form-check-input me-1' type='checkbox' id='Component' value='Component' checked={isPortfolioItems} onChange={() => setIsPortfolioItems(!isPortfolioItems)} />Portfolio Items
-                                            </label>
-                                            <span className='m-2'>|</span>
-                                            <label className='SpfxCheckRadio '>
-                                                <input className='form-check-input me-1' type='checkbox' id='Task' value='Task' checked={isTaskItems} onChange={() => setIsTaskItems(!isTaskItems)} />Task Items
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div> : ''}
-                            </div>
+                                    <span className='mx-4'>|</span>
+                                    <input className='form-check-input me-1' type='checkbox' id='Component' value='Component' checked={isPortfolioItems} onChange={() => setIsPortfolioItems(!isPortfolioItems)} />Portfolio Items
+                                    <span className='mx-4'>|</span>
+                                    <input className='form-check-input me-1' type='checkbox' id='Task' value='Task' checked={isTaskItems} onChange={() => setIsTaskItems(!isTaskItems)} />Task Items
 
+
+                                </div>
+                            </div> : ''}
                         </div>
                     </div >
                 </section> : ''}
 
-
-                {collapseAll == false ? <section className="ContentSection smartFilterSection row pe-0 mb-1">
-                    <div className="p-2 pe-0">
+                {collapseAll == false ? <section className="smartFilterSection p-0 mb-1">
+                    <div className="px-2">
                         <div className="togglebox">
-                            <div className="togglebox">
-                                <span>
-                                    <label className="toggler full_width mb-10 active">
-                                        <span className='full-width' style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter("isProjectExpendShow")}>
-                                            {isProjectExpendShow === true ?
-                                                <SlArrowDown style={{ color: `${portfolioColor}`, width: '12px' }} /> : <SlArrowRight style={{ color: `${portfolioColor}`, width: '12px' }} />}
-                                            <span className='ms-1'>Project</span>
-                                            <hr className='ms-3' />
-                                        </span>
-                                    </label>
-                                    {isProjectExpendShow === true ? <div className='mt-2 ps-3'>
-                                        <div className='d-flex justify-content-between'>
-                                            <div className="col-12">
-                                                <div className="input-group">
+                            <label className="toggler full_width active">
+                                <span className='full-width' style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter("isProjectExpendShow")}>
+                                    <div className='alignCenter'>
+                                        {isProjectExpendShow === true ?
+                                            <SlArrowDown style={{ color: "#555555", width: '12px' }} /> : <SlArrowRight style={{ color: "#555555", width: '12px' }} />}
+                                        <span className='ms-2 f-16'>Project</span> <div className="ms-2 f-14" style={{ color: "#333333" }}>{projectCountInfo ? '-' + projectCountInfo : ''}</div>
+                                    </div>
+
+                                    <hr className='ms-3' />
+                                </span>
+                            </label>
+                            {isProjectExpendShow === true ? <div className='mb-3 ps-3'>
+                                <div className='d-flex justify-content-between'>
+                                    <div className="col-12">
+                                        <div className='d-flex'>
+                                            <div className="col-7 p-0">
+                                                <div className="input-group alignCenter">
                                                     <label className="full-width form-label"></label>
                                                     <input type="text"
                                                         className="form-control"
@@ -1875,154 +1946,82 @@ const TeamSmartFilter = (item: any) => {
                                                         value={ProjectSearchKey}
                                                         onChange={(e) => autoSuggestionsForProject(e)}
                                                     />
-
-                                                    <span className="input-group-text mt--10" onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" >
-                                                        <span className="svg__iconbox svg__icon--editBox mt--10"></span>
-                                                    </span>
                                                 </div>
-                                                {SearchedProjectData?.length > 0 ? (
-                                                    <div className="SmartTableOnTaskPopup">
-                                                        <ul className="list-group">
-                                                            {SearchedProjectData.map((item: any) => {
-                                                                return (
-                                                                    <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={item.id} onClick={() => SelectProjectFromAutoSuggestion(item)} >
-                                                                        <a>{item.Title}</a>
-                                                                    </li>
-                                                                )
-                                                            }
-                                                            )}
-                                                        </ul>
-                                                    </div>) : null}
-                                                {selectedProject != undefined && selectedProject.length > 0 ?
-                                                    <div>
-                                                        {selectedProject.map((ProjectData: any, index: any) => {
-                                                            return (
-                                                                <div className="block w-100">
-                                                                    <a className="hreflink wid90" target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}>
-                                                                        {ProjectData.Title}
-                                                                    </a>
-                                                                    <span onClick={() => RemoveSelectedProject(index)} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"></span>
-                                                                </div>
-                                                            )
-                                                        })}
-                                                    </div> : null}
                                             </div>
-                                        </div>
-                                    </div> : ''}
-                                </span>
-                            </div>
-
-                        </div>
-                    </div >
-                </section> : ''} 
-
-
-
-
-                {collapseAll == false ? <section className="ContentSection smartFilterSection pe-0  row mb-1">
-                    <div className="pe-0 p-2">
-                        <div className="togglebox">
-                            <div className="togglebox">
-                                <span>
-                                    <label className="toggler full_width mb-10 active">
-                                        <span className='full-width' style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter("isSitesExpendShow")}>
-                                            {isSitesExpendShow === true ?
-                                                <SlArrowDown style={{ color: `${portfolioColor}`, width: '12px' }} /> : <SlArrowRight style={{ color: `${portfolioColor}`, width: '12px' }} />}
-                                            <span className='ms-1'>Sites</span>
-                                            <hr className='ms-3' />
-                                        </span>
-                                    </label>
-                                    {isSitesExpendShow === true ? <div className="togglecontent mt-2 ps-3" style={{ display: "block" }}>
-                                        <div className="col-sm-12 pad0">
-                                            <div className="togglecontent">
-                                                <table width="100%" className="indicator_search">
-                                                    <tr className=''>
-                                                        {allStites != null && allStites.length > 0 &&
-                                                            allStites?.map((Group: any, index: any) => {
-                                                                return (
-                                                                    <td valign="top" style={{ width: '33.3%' }}>
-                                                                        <fieldset className='smartFilterStyle ps-2'>
-                                                                            <legend className='SmartFilterHead'>
-                                                                                <span className="mparent d-flex" style={{ borderBottom: "1.5px solid" + portfolioColor, color: portfolioColor }}>
-                                                                                    <input className={"form-check-input cursor-pointer"}
-                                                                                        style={Group?.values?.length === Group?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
-                                                                                        type="checkbox"
-                                                                                        checked={Group?.values?.length === Group?.checked?.length ? true : Group.selectAllChecked}
-                                                                                        onChange={(e) => handleSelectAll(index, e.target.checked, "filterSites")}
-                                                                                    />
-                                                                                    <div className="mx-1">{Group.Title}</div>
-                                                                                </span>
-                                                                            </legend>
-                                                                            <div className="custom-checkbox-tree">
-                                                                                <CheckboxTree
-                                                                                    nodes={Group.values}
-                                                                                    checked={Group.checked}
-                                                                                    expanded={expanded}
-                                                                                    onCheck={checked => onCheck(checked, index, "filterSites")}
-                                                                                    onExpand={expanded => setExpanded(expanded)}
-                                                                                    nativeCheckboxes={false}
-                                                                                    showNodeIcon={false}
-                                                                                    checkModel={'all'}
-                                                                                    icons={{
-                                                                                        check: (<AiFillCheckSquare style={{ color: `${portfolioColor}`, height: "18px", width: "18px" }} />),
-                                                                                        uncheck: (<AiOutlineBorder style={{ height: "18px", color: "rgba(0,0,0,.29)", width: "18px" }} />),
-                                                                                        halfCheck: (<AiFillMinusSquare style={{ color: `${portfolioColor}`, height: "18px", width: "18px" }} />),
-                                                                                        expandOpen: <SlArrowDown style={{ color: `${portfolioColor}` }} />,
-                                                                                        expandClose: <SlArrowRight style={{ color: `${portfolioColor}` }} />,
-                                                                                        parentClose: null,
-                                                                                        parentOpen: null,
-                                                                                        leaf: null,
-                                                                                    }}
-                                                                                />
-                                                                            </div>
-                                                                        </fieldset>
-                                                                    </td>
-                                                                )
-                                                            })
-                                                        }
-                                                    </tr>
-                                                </table>
+                                            <div className="col-5 p-0 mt-1" onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" >
+                                                {/* <span className="svg__iconbox svg__icon--editBox mt--10"></span> */}
+                                                <div className='ms-2' role='button' style={{ color: `${portfolioColor}` }}>Select Project</div>
                                             </div>
                                         </div>
 
-                                    </div> : ""}
-                                </span>
-                            </div>
 
+                                        {SearchedProjectData?.length > 0 ? (
+                                            <div className="SmartTableOnTaskPopup col-sm-7">
+                                                <ul className="list-group">
+                                                    {SearchedProjectData.map((item: any) => {
+                                                        return (
+                                                            <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={item.id} onClick={() => SelectProjectFromAutoSuggestion(item)} >
+                                                                <a>{item.Title}</a>
+                                                            </li>
+                                                        )
+                                                    }
+                                                    )}
+                                                </ul>
+                                            </div>) : null}
+                                        {selectedProject != undefined && selectedProject.length > 0 ?
+                                            <div>
+                                                {selectedProject.map((ProjectData: any, index: any) => {
+                                                    return (
+                                                        <div className="block w-100">
+                                                            <a className="hreflink wid90" target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}>
+                                                                {ProjectData.Title}
+                                                            </a>
+                                                            <span onClick={() => RemoveSelectedProject(index)} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"></span>
+                                                        </div>
+                                                    )
+                                                })}
+                                            </div> : null}
+                                    </div>
+                                </div>
+                            </div> : ''}
                         </div>
                     </div >
                 </section> : ''}
 
-                {collapseAll == false ? <section className="ContentSection smartFilterSection row pe-0 mb-1">
-                    <div className="p-2 pe-0">
+                {collapseAll == false ? <section className="smartFilterSection p-0 mb-1">
+                    <div className="px-2">
                         <div className="togglebox">
                             <span>
-                                <label className="toggler full_width mb-10 active">
-                                    <span className='full-width' style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter("iscategoriesAndStatusExpendShow")}>
-                                        {iscategoriesAndStatusExpendShow === true ?
-                                            <SlArrowDown style={{ color: `${portfolioColor}`, width: '12px' }} /> : <SlArrowRight style={{ color: `${portfolioColor}`, width: '12px' }} />}
-                                        <span className='ms-1'>Categories and Status</span><hr className='ms-3' />
+                                <label className="toggler full_width active">
+                                    <span className='full-width' style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter("isSitesExpendShow")}>
+                                        <div className='alignCenter'>
+                                            {isSitesExpendShow === true ?
+                                                <SlArrowDown style={{ color: "#555555", width: '12px' }} /> : <SlArrowRight style={{ color: "#555555", width: '12px' }} />}
+                                            <span className='ms-2 f-16'>Sites</span><div className="ms-2 f-14" style={{ color: "#333333" }}>{sitesCountInfo ? '- ' + sitesCountInfo : ''}</div>
+                                        </div>
+
+                                        <hr className='ms-3' />
                                     </span>
                                 </label>
-                                {iscategoriesAndStatusExpendShow === true ? <div className="togglecontent mt-2 ps-3" style={{ display: "block" }}>
+                                {isSitesExpendShow === true ? <div className="togglecontent mb-3 ps-3" style={{ display: "block" }}>
                                     <div className="col-sm-12 pad0">
                                         <div className="togglecontent">
                                             <table width="100%" className="indicator_search">
                                                 <tr className=''>
-                                                    {filterGroupsData != null && filterGroupsData.length > 0 &&
-                                                        filterGroupsData?.map((Group: any, index: any) => {
+                                                    {allStites != null && allStites.length > 0 &&
+                                                        allStites?.map((Group: any, index: any) => {
                                                             return (
-                                                                <td valign="top" style={{ width: '14.2%' }}>
-                                                                    <fieldset className='smartFilterStyle ps-2'>
+                                                                <td valign="top" style={{ width: '33.3%' }}>
+                                                                    <fieldset className='pe-3 smartFilterStyle'>
                                                                         <legend className='SmartFilterHead'>
                                                                             <span className="mparent d-flex" style={{ borderBottom: "1.5px solid" + portfolioColor, color: portfolioColor }}>
                                                                                 <input className={"form-check-input cursor-pointer"}
-                                                                                    style={Group.selectAllChecked == undefined && Group?.values?.length === Group?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
+                                                                                    style={Group?.values?.length === Group?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
                                                                                     type="checkbox"
-                                                                                    checked={Group.selectAllChecked == undefined && Group?.values?.length === Group?.checked?.length ? true : Group.selectAllChecked}
-                                                                                    onChange={(e) => handleSelectAll(index, e.target.checked, "FilterCategoriesAndStatus")}
+                                                                                    checked={Group?.values?.length === Group?.checked?.length ? true : Group.selectAllChecked}
+                                                                                    onChange={(e) => handleSelectAll(index, e.target.checked, "filterSites")}
                                                                                 />
-                                                                                <div className="mx-1">{Group.Title}</div>
+                                                                                <div className="fw-semibold fw-medium mx-1 text-dark">{Group.Title}</div>
                                                                             </span>
                                                                         </legend>
                                                                         <div className="custom-checkbox-tree">
@@ -2030,15 +2029,18 @@ const TeamSmartFilter = (item: any) => {
                                                                                 nodes={Group.values}
                                                                                 checked={Group.checked}
                                                                                 expanded={expanded}
-                                                                                onCheck={checked => onCheck(checked, index, "FilterCategoriesAndStatus")}
+                                                                                onCheck={checked => onCheck(checked, index, "filterSites")}
                                                                                 onExpand={expanded => setExpanded(expanded)}
                                                                                 nativeCheckboxes={false}
                                                                                 showNodeIcon={false}
                                                                                 checkModel={'all'}
                                                                                 icons={{
-                                                                                    check: (<AiFillCheckSquare style={{ color: `${portfolioColor}`, height: "18px", width: "18px" }} />),
-                                                                                    uncheck: (<AiOutlineBorder style={{ height: "18px", color: "rgba(0,0,0,.29)", width: "18px" }} />),
-                                                                                    halfCheck: (<AiFillMinusSquare style={{ color: `${portfolioColor}`, height: "18px", width: "18px" }} />),
+                                                                                    // check: (<AiFillCheckSquare style={{ color: `${portfolioColor}`, height: "18px", width: "18px" }} />),
+                                                                                    // uncheck: (<AiOutlineBorder style={{ height: "18px", color: "rgba(0,0,0,.29)", width: "18px" }} />),
+                                                                                    // halfCheck: (<AiFillMinusSquare style={{ color: `${portfolioColor}`, height: "18px", width: "18px" }} />),
+                                                                                    check: (<div className='checkBoxIcons' dangerouslySetInnerHTML={{ __html: checkIcons }} />),
+                                                                                    uncheck: (<div className='checkBoxIcons' dangerouslySetInnerHTML={{ __html: checkBoxIcon }} />),
+                                                                                    halfCheck: (<div className='checkBoxIcons' dangerouslySetInnerHTML={{ __html: halfCheckBoxIcons }} />),
                                                                                     expandOpen: <SlArrowDown style={{ color: `${portfolioColor}` }} />,
                                                                                     expandClose: <SlArrowRight style={{ color: `${portfolioColor}` }} />,
                                                                                     parentClose: null,
@@ -2063,290 +2065,372 @@ const TeamSmartFilter = (item: any) => {
                     </div >
                 </section> : ''}
 
-
-
-
-
-                {collapseAll == false ? <section className="ContentSection smartFilterSection row pe-0 mb-1">
-                    <div className="p-2 pe-0">
+                {collapseAll == false ? <section className="smartFilterSection p-0 mb-1">
+                    <div className="px-2">
                         <div className="togglebox">
-                            <div className="togglebox">
-                                <span>
-                                    <label className="toggler full_width mb-10 active">
-                                        <span className='full-width' style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter("isClientCategory")}>
-                                            {isClientCategory === true ?
-                                                <SlArrowDown style={{ color: `${portfolioColor}`, width: '12px' }} /> : <SlArrowRight style={{ color: `${portfolioColor}`, width: '12px' }} />}
-                                            <span className='ms-1'>Client Category</span><hr className='ms-3' />
-                                        </span>
-                                    </label>
-                                    {isClientCategory === true ? <div className="togglecontent mt-2 ps-3" style={{ display: "block" }}>
-                                        <div className="col-sm-12">
-                                            <div className="togglecontent">
-                                                <table width="100%" className="indicator_search">
-                                                    <tr className=''>
-                                                        {allFilterClintCatogryData != null && allFilterClintCatogryData.length > 0 &&
-                                                            allFilterClintCatogryData?.map((Group: any, index: any) => {
-                                                                return (
-                                                                    <td valign="top" style={{ width: '14.2%' }}>
-                                                                        <fieldset className='smartFilterStyle ps-2'>
-                                                                            <legend className='SmartFilterHead'>
-                                                                                <span className="mparent d-flex" style={{ borderBottom: "1.5px solid" + portfolioColor, color: portfolioColor }}>
-                                                                                    <input className={"form-check-input cursor-pointer"}
-                                                                                        style={Group.selectAllChecked == undefined && Group?.values?.length === Group?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
-                                                                                        type="checkbox"
-                                                                                        checked={Group.selectAllChecked == undefined && Group?.values?.length === Group?.checked?.length ? true : Group.selectAllChecked}
-                                                                                        onChange={(e) => handleSelectAll(index, e.target.checked, "ClintCatogry")}
-                                                                                    />
-                                                                                    <div className="mx-1">{Group.Title}</div>
-                                                                                </span>
-                                                                            </legend>
-                                                                            <div className="custom-checkbox-tree">
-                                                                                <CheckboxTree
-                                                                                    nodes={Group.values}
-                                                                                    checked={Group.checked}
-                                                                                    expanded={expanded}
-                                                                                    onCheck={checked => onCheck(checked, index, "ClintCatogry")}
-                                                                                    onExpand={expanded => setExpanded(expanded)}
-                                                                                    nativeCheckboxes={false}
-                                                                                    showNodeIcon={false}
-                                                                                    checkModel={'all'}
-                                                                                    icons={{
-                                                                                        check: (<AiFillCheckSquare style={{ color: `${portfolioColor}`, height: "18px", width: "18px" }} />),
-                                                                                        uncheck: (<AiOutlineBorder style={{ height: "18px", color: "rgba(0,0,0,.29)", width: "18px" }} />),
-                                                                                        halfCheck: (<AiFillMinusSquare style={{ color: `${portfolioColor}`, height: "18px", width: "18px" }} />),
-                                                                                        expandOpen: <SlArrowDown style={{ color: `${portfolioColor}` }} />,
-                                                                                        expandClose: <SlArrowRight style={{ color: `${portfolioColor}` }} />,
-                                                                                        parentClose: null,
-                                                                                        parentOpen: null,
-                                                                                        leaf: null,
-                                                                                    }}
+                            <label className="toggler full_width active">
+                                <span className='full-width' style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter("iscategoriesAndStatusExpendShow")}>
+                                    <div className='alignCenter'>
+                                        {iscategoriesAndStatusExpendShow === true ?
+                                            <SlArrowDown style={{ color: "#555555", width: '12px' }} /> : <SlArrowRight style={{ color: "#555555", width: '12px' }} />}
+                                        <span className='ms-2 f-16'>Categories and Status</span><div className="ms-2 f-14" style={{ color: "#333333" }}>{CategoriesandStatusInfo ? '- ' + CategoriesandStatusInfo : ''}</div>
+                                    </div>
+                                    <hr className='ms-3' />
+                                </span>
+                            </label>
+                            {iscategoriesAndStatusExpendShow === true ? <div className="togglecontent mb-3 ps-3" style={{ display: "block" }}>
+                                <div className="col-sm-12 pad0">
+                                    <div className="togglecontent">
+                                        <table width="100%" className="indicator_search">
+                                            <tr className=''>
+                                                {filterGroupsData != null && filterGroupsData.length > 0 &&
+                                                    filterGroupsData?.map((Group: any, index: any) => {
+                                                        return (
+                                                            <td valign="top" style={{ width: '14.2%' }}>
+                                                                <fieldset className='smartFilterStyle pe-3'>
+                                                                    <legend className='SmartFilterHead'>
+                                                                        <span className="mparent d-flex" style={{ borderBottom: "1.5px solid" + portfolioColor, color: portfolioColor }}>
+                                                                            <input className={"form-check-input cursor-pointer"}
+                                                                                style={Group.selectAllChecked == undefined && Group?.values?.length === Group?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
+                                                                                type="checkbox"
+                                                                                checked={Group.selectAllChecked == undefined && Group?.values?.length === Group?.checked?.length ? true : Group.selectAllChecked}
+                                                                                onChange={(e) => handleSelectAll(index, e.target.checked, "FilterCategoriesAndStatus")}
+                                                                            />
+                                                                            <div className="fw-semibold fw-medium mx-1 text-dark">{Group.Title}</div>
+                                                                        </span>
+                                                                    </legend>
+                                                                    <div className="custom-checkbox-tree">
+                                                                        <CheckboxTree
+                                                                            nodes={Group.values}
+                                                                            checked={Group.checked}
+                                                                            expanded={expanded}
+                                                                            onCheck={checked => onCheck(checked, index, "FilterCategoriesAndStatus")}
+                                                                            onExpand={expanded => setExpanded(expanded)}
+                                                                            nativeCheckboxes={false}
+                                                                            showNodeIcon={false}
+                                                                            checkModel={'all'}
+                                                                            icons={{
+
+                                                                                // check: (<AiFillCheckSquare style={{ color: `${portfolioColor}`, height: "18px", width: "18px" }} />),
+                                                                                // uncheck: (<AiOutlineBorder style={{ height: "18px", color: "rgba(0,0,0,.29)", width: "18px" }} />),
+                                                                                // halfCheck: (<AiFillMinusSquare style={{ color: `${portfolioColor}`, height: "18px", width: "18px" }} />),
+                                                                                check: (<div className='checkBoxIcons' dangerouslySetInnerHTML={{ __html: checkIcons }} />),
+                                                                                uncheck: (<div className='checkBoxIcons' dangerouslySetInnerHTML={{ __html: checkBoxIcon }} />),
+                                                                                halfCheck: (<div className='checkBoxIcons' dangerouslySetInnerHTML={{ __html: halfCheckBoxIcons }} />),
+                                                                                expandOpen: <SlArrowDown style={{ color: `${portfolioColor}` }} />,
+                                                                                expandClose: <SlArrowRight style={{ color: `${portfolioColor}` }} />,
+                                                                                parentClose: null,
+                                                                                parentOpen: null,
+                                                                                leaf: null,
+                                                                            }}
+                                                                        />
+                                                                    </div>
+                                                                </fieldset>
+                                                            </td>
+                                                        )
+                                                    })
+                                                }
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+
+                            </div> : ""}
+                        </div>
+                    </div >
+                </section> : ''}
+
+                {collapseAll == false ? <section className="smartFilterSection p-0 mb-1">
+                    <div className="px-2">
+                        <div className="togglebox">
+                            <label className="toggler full_width active">
+                                <span className='full-width' style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter("isClientCategory")}>
+                                    <div className='alignCenter'>
+                                        {isClientCategory === true ?
+                                            <SlArrowDown style={{ color: "#555555", width: '12px' }} /> : <SlArrowRight style={{ color: "#555555", width: '12px' }} />}
+                                        <span className='ms-2 f-16'>Client Category</span><div className="ms-2 f-14" style={{ color: "#333333" }}>{clientCategoryCountInfo ? '- ' + clientCategoryCountInfo : ''}</div>
+                                    </div>
+                                    <hr className='ms-3' />
+                                </span>
+                            </label>
+                            {isClientCategory === true ? <div className="togglecontent mb-3 ps-3" style={{ display: "block" }}>
+                                <div className="col-sm-12">
+                                    <div className="togglecontent">
+                                        <table width="100%" className="indicator_search">
+                                            <tr className=''>
+                                                <td valign="top" className='row'>
+                                                    {allFilterClintCatogryData != null && allFilterClintCatogryData.length > 0 &&
+                                                        allFilterClintCatogryData?.map((Group: any, index: any) => {
+                                                            return (
+                                                                <div className='col-sm-4 mb-3 ps-0'>
+                                                                    <fieldset className='smartFilterStyle ps-2'>
+                                                                        <legend className='SmartFilterHead'>
+                                                                            <span className="mparent d-flex" style={{ borderBottom: "1.5px solid" + portfolioColor, color: portfolioColor }}>
+                                                                                <input className={"form-check-input cursor-pointer"}
+                                                                                    style={Group.selectAllChecked == undefined && Group?.values?.length === Group?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
+                                                                                    type="checkbox"
+                                                                                    checked={Group.selectAllChecked == undefined && Group?.values?.length === Group?.checked?.length ? true : Group.selectAllChecked}
+                                                                                    onChange={(e) => handleSelectAll(index, e.target.checked, "ClintCatogry")}
                                                                                 />
-                                                                            </div>
-                                                                        </fieldset>
-                                                                    </td>
-                                                                )
-                                                            })
-                                                        }
-                                                    </tr>
-                                                </table>
-                                            </div>
-                                        </div>
-
-                                    </div> : ""}
-                                </span>
-                            </div>
-
-                        </div>
-                    </div >
-                </section> : ''}
-
-
-
-
-
-                {collapseAll == false ? <section className="ContentSection smartFilterSection pe-0 row mb-1">
-                    <div className="p-2 pe-0">
-                        <div className="togglebox">
-                            <div className="togglebox">
-                                <span>
-                                    <label className="toggler full_width mb-10 active">
-                                        <span className='full_width' style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter("isTeamMembersExpendShow")}>
-                                            {isTeamMembersExpendShow === true ?
-                                                <SlArrowDown style={{ color: `${portfolioColor}`, width: '12px' }} /> : <SlArrowRight style={{ color: `${portfolioColor}`, width: '12px' }} />}
-                                            <span className='ms-1'>Team Members</span><hr className='ms-3' />
-                                        </span>
-                                    </label>
-                                    {isTeamMembersExpendShow === true ? <div className="togglecontent mt-2 ps-3" style={{ display: "block" }}>
-                                        <Col className='mb-2 '>
-                                            <label className='me-2'>
-                                                <input className='form-check-input' type="checkbox" value="isCretaedBy" checked={isCreatedBy} onChange={() => setIsCreatedBy(!isCreatedBy)} /> Created by
-                                            </label>
-                                            <label className='me-2'>
-                                                <input className='form-check-input' type="checkbox" value="isModifiedBy" checked={isModifiedby} onChange={() => setIsModifiedby(!isModifiedby)} /> Modified by
-                                            </label>
-                                            <label className='me-2'>
-                                                <input className='form-check-input' type="checkbox" value="isAssignedBy" checked={isAssignedto} onChange={() => setIsAssignedto(!isAssignedto)} /> Working Member
-                                            </label>
-                                        </Col>
-                                        <div className="col-sm-12 pad0">
-                                            <div className="togglecontent mt-1">
-                                                <table width="100%" className="indicator_search">
-                                                    <tr className=''>
-                                                        <td valign="top" className='row'>
-                                                            {TaskUsersData != null && TaskUsersData.length > 0 &&
-                                                                TaskUsersData?.map((Group: any, index: any) => {
-                                                                    return (
-                                                                        <div className='col-sm-3 mb-3'>
-                                                                            <fieldset className='smartFilterStyle ps-2'>
-                                                                                <legend className='SmartFilterHead'>
-                                                                                    <span className="mparent d-flex" style={{ borderBottom: "1.5px solid" + portfolioColor, color: portfolioColor }}>
-                                                                                        <input className={"form-check-input cursor-pointer"}
-                                                                                            style={Group.selectAllChecked == undefined && Group?.values?.length === Group?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
-                                                                                            type="checkbox"
-                                                                                            checked={Group.selectAllChecked == undefined && Group?.values?.length === Group?.checked?.length ? true : Group.selectAllChecked}
-                                                                                            onChange={(e) => handleSelectAll(index, e.target.checked, "FilterTeamMembers")}
-                                                                                        />
-                                                                                        <div className="mx-1">{Group.Title}</div>
-                                                                                    </span>
-                                                                                </legend>
-                                                                                <div className="custom-checkbox-tree">
-                                                                                    <CheckboxTree
-                                                                                        nodes={Group.values}
-                                                                                        checked={Group.checked}
-                                                                                        expanded={expanded}
-                                                                                        onCheck={checked => onCheck(checked, index, 'FilterTeamMembers')}
-                                                                                        onExpand={expanded => setExpanded(expanded)}
-                                                                                        nativeCheckboxes={false}
-                                                                                        showNodeIcon={false}
-                                                                                        checkModel={'all'}
-                                                                                        icons={{
-                                                                                            check: (<AiFillCheckSquare style={{ color: `${portfolioColor}`, height: "18px", width: "18px" }} />),
-                                                                                            uncheck: (<AiOutlineBorder style={{ height: "18px", color: "rgba(0,0,0,.29)", width: "18px" }} />),
-                                                                                            halfCheck: (<AiFillMinusSquare style={{ color: `${portfolioColor}`, height: "18px", width: "18px" }} />),
-                                                                                            expandOpen: <SlArrowDown style={{ color: `${portfolioColor}` }} />,
-                                                                                            expandClose: <SlArrowRight style={{ color: `${portfolioColor}` }} />,
-                                                                                            parentClose: null,
-                                                                                            parentOpen: null,
-                                                                                            leaf: null,
-                                                                                        }}
-                                                                                    />
-                                                                                </div>
-                                                                            </fieldset>
+                                                                                <div className="fw-semibold fw-medium mx-1 text-dark">{Group.Title}</div>
+                                                                            </span>
+                                                                        </legend>
+                                                                        <div className="custom-checkbox-tree">
+                                                                            <CheckboxTree
+                                                                                nodes={Group.values}
+                                                                                checked={Group.checked}
+                                                                                expanded={expanded}
+                                                                                onCheck={checked => onCheck(checked, index, "ClintCatogry")}
+                                                                                onExpand={expanded => setExpanded(expanded)}
+                                                                                nativeCheckboxes={false}
+                                                                                showNodeIcon={false}
+                                                                                checkModel={'all'}
+                                                                                icons={{
+                                                                                    // check: (<AiFillCheckSquare style={{ color: `${portfolioColor}`, height: "18px", width: "18px" }} />),
+                                                                                    // uncheck: (<AiOutlineBorder style={{ height: "18px", color: "rgba(0,0,0,.29)", width: "18px" }} />),
+                                                                                    // halfCheck: (<AiFillMinusSquare style={{ color: `${portfolioColor}`, height: "18px", width: "18px" }} />),
+                                                                                    check: (<div className='checkBoxIcons' dangerouslySetInnerHTML={{ __html: checkIcons }} />),
+                                                                                    uncheck: (<div className='checkBoxIcons' dangerouslySetInnerHTML={{ __html: checkBoxIcon }} />),
+                                                                                    halfCheck: (<div className='checkBoxIcons' dangerouslySetInnerHTML={{ __html: halfCheckBoxIcons }} />),
+                                                                                    expandOpen: <SlArrowDown style={{ color: `${portfolioColor}`, height: "1em", width: "1em" }} />,
+                                                                                    expandClose: <SlArrowRight style={{ color: `${portfolioColor}`, height: "1em", width: "1em" }} />,
+                                                                                    parentClose: null,
+                                                                                    parentOpen: null,
+                                                                                    leaf: null,
+                                                                                }}
+                                                                            />
                                                                         </div>
-                                                                    )
-                                                                })
-                                                            }
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                            </div>
-                                        </div>
+                                                                    </fieldset>
+                                                                </div>
 
-                                    </div> : ""}
+                                                            )
+                                                        })
+                                                    }
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+
+                            </div> : ""}
+                        </div>
+
+                    </div>
+                </section> : ''}
+
+                {collapseAll == false ? <section className="smartFilterSection p-0 mb-1">
+                    <div className="px-2">
+                        <div className="togglebox">
+                            <label className="toggler full_width active">
+                                <span className='full_width' style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter("isTeamMembersExpendShow")}>
+                                    <div className='alignCenter'>
+                                        {isTeamMembersExpendShow === true ?
+                                            <SlArrowDown style={{ color: "#555555", width: '12px' }} /> : <SlArrowRight style={{ color: "#555555", width: '12px' }} />}
+                                        <span className='ms-2 f-16'>Team Members</span><div className="ms-2 f-14" style={{ color: "#333333" }}>{teamMembersCountInfo ? '- ' + teamMembersCountInfo : ''}</div>
+                                    </div>
+                                    <hr className='ms-3' />
                                 </span>
-                            </div>
+                            </label>
+                            {isTeamMembersExpendShow === true ? <div className="togglecontent mb-3 ps-3" style={{ display: "block" }}>
+                                <Col className='mb-2 '>
+                                    <label className='me-2'>
+                                        <input className='form-check-input' type="checkbox" value="isCretaedBy" checked={isCreatedBy} onChange={() => setIsCreatedBy(!isCreatedBy)} /> Created by
+                                    </label>
+                                    <label className='me-2'>
+                                        <input className='form-check-input' type="checkbox" value="isModifiedBy" checked={isModifiedby} onChange={() => setIsModifiedby(!isModifiedby)} /> Modified by
+                                    </label>
+                                    <label className='me-2'>
+                                        <input className='form-check-input' type="checkbox" value="isAssignedBy" checked={isAssignedto} onChange={() => setIsAssignedto(!isAssignedto)} /> Working Member
+                                    </label>
+                                    <label className='me-2'>
+                                        <input className='form-check-input' type="checkbox" value="isTeamLead" checked={isTeamLead} onChange={() => setIsTeamLead(!isTeamLead)} /> Team Lead
+                                    </label>
+                                    <label className='me-2'>
+                                        <input className='form-check-input' type="checkbox" value="isTeamMember" checked={isTeamMember} onChange={() => setIsTeamMember(!isTeamMember)} /> Team Member
+                                    </label>
+                                    <label className='me-2'>
+                                        <input className='form-check-input' type="checkbox" value="isTodaysTask" checked={isTodaysTask} onChange={() => setIsTodaysTask(!isTodaysTask)} /> Working Today
+                                    </label>
+                                </Col>
+                                <div className="col-sm-12 pad0">
+                                    <div className="togglecontent mt-1">
+                                        <table width="100%" className="indicator_search">
+                                            <tr className=''>
+                                                <td valign="top" className='row'>
+                                                    {TaskUsersData != null && TaskUsersData.length > 0 &&
+                                                        TaskUsersData?.map((Group: any, index: any) => {
+                                                            return (
+                                                                <div className='col-sm-3 mb-3 ps-0'>
+                                                                    <fieldset className='smartFilterStyle ps-2'>
+                                                                        <legend className='SmartFilterHead'>
+                                                                            <span className="mparent d-flex" style={{ borderBottom: "1.5px solid" + portfolioColor, color: portfolioColor }}>
+                                                                                <input className={"form-check-input cursor-pointer"}
+                                                                                    style={Group.selectAllChecked == undefined && Group?.values?.length === Group?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
+                                                                                    type="checkbox"
+                                                                                    checked={Group.selectAllChecked == undefined && Group?.values?.length === Group?.checked?.length ? true : Group.selectAllChecked}
+                                                                                    onChange={(e) => handleSelectAll(index, e.target.checked, "FilterTeamMembers")}
+                                                                                />
+                                                                                <div className="fw-semibold fw-medium mx-1 text-dark">{Group.Title}</div>
+                                                                            </span>
+                                                                        </legend>
+                                                                        <div className="custom-checkbox-tree">
+                                                                            <CheckboxTree
+                                                                                nodes={Group.values}
+                                                                                checked={Group.checked}
+                                                                                expanded={expanded}
+                                                                                onCheck={checked => onCheck(checked, index, 'FilterTeamMembers')}
+                                                                                onExpand={expanded => setExpanded(expanded)}
+                                                                                nativeCheckboxes={false}
+                                                                                showNodeIcon={false}
+                                                                                checkModel={'all'}
+                                                                                icons={{
+                                                                                    // check: (<AiFillCheckSquare style={{ color: `${portfolioColor}`, height: "18px", width: "18px" }} />),
+                                                                                    // uncheck: (<AiOutlineBorder style={{ height: "18px", color: "rgba(0,0,0,.29)", width: "18px" }} />),
+                                                                                    // halfCheck: (<AiFillMinusSquare style={{ color: `${portfolioColor}`, height: "18px", width: "18px" }} />),
+                                                                                    check: (<div dangerouslySetInnerHTML={{ __html: checkIcons }} />),
+                                                                                    uncheck: (<div dangerouslySetInnerHTML={{ __html: checkBoxIcon }} />),
+                                                                                    halfCheck: (<div dangerouslySetInnerHTML={{ __html: halfCheckBoxIcons }} />),
+                                                                                    expandOpen: <SlArrowDown style={{ color: `${portfolioColor}` }} />,
+                                                                                    expandClose: <SlArrowRight style={{ color: `${portfolioColor}` }} />,
+                                                                                    parentClose: null,
+                                                                                    parentOpen: null,
+                                                                                    leaf: null,
+                                                                                }}
+                                                                            />
+                                                                        </div>
+                                                                    </fieldset>
+                                                                </div>
+                                                            )
+                                                        })
+                                                    }
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
 
+                            </div> : ""}
                         </div>
                     </div >
                 </section> : ''}
 
-                {collapseAll == false ? <section className="ContentSection smartFilterSection pe-0 row">
-                    <div className="p-2 pe-0">
+                {collapseAll == false ? <section className="smartFilterSection p-0 mb-1">
+                    <div className="px-2">
                         <div className="togglebox">
-                            <div className="togglebox">
-                                <span>
-                                    <label className="toggler full_width mb-10 active">
-                                        <span className="full-width" style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter("isDateExpendShow")}>
-                                            {isDateExpendShow === true ?
-                                                <SlArrowDown style={{ color: `${portfolioColor}`, width: '12px' }} /> : <SlArrowRight style={{ color: `${portfolioColor}`, width: '12px' }} />}
-                                            <span className='ms-1'>Date</span><hr className='ms-3' />
-                                        </span>
-                                    </label>
-                                    {isDateExpendShow === true ? <div className="togglecontent mt-2 ps-3" style={{ display: "block" }}>
-                                        <div className="col-sm-12">
-                                            <Col className='mb-2 '>
-                                                <label className="me-2">
-                                                    <input className="form-check-input" type="checkbox" value="isCretaedDate" checked={isCreatedDateSelected} onChange={() => setIsCreatedDateSelected(!isCreatedDateSelected)} />{" "}
-                                                    Created Date
-                                                </label>
-                                                <label className="me-2">
-                                                    <input
-                                                        className="form-check-input" type="checkbox" value="isModifiedDate" checked={isModifiedDateSelected} onChange={() => setIsModifiedDateSelected(!isModifiedDateSelected)} />{" "}
-                                                    Modified Date
-                                                </label>
-                                                <label className="me-2">
-                                                    <input className="form-check-input" type="checkbox" value="isDueDate" checked={isDueDateSelected} onChange={() => setIsDueDateSelected(!isDueDateSelected)} />{" "}
-                                                    Due Date
-                                                </label>
-                                            </Col>
-                                            <Col>
-                                                <span className='SpfxCheckRadio  me-2'>
-                                                    <input type="radio" name="dateFilter" value="today" checked={selectedFilter === "today"} onChange={handleDateFilterChange} />
-                                                    <label className='ms-1'>Today</label>
-                                                </span>
-                                                <span className='SpfxCheckRadio  me-2'>
-                                                    <input type="radio" name="dateFilter" value="yesterday" checked={selectedFilter === "yesterday"} onChange={handleDateFilterChange} />
-                                                    <label className='ms-1'>Yesterday</label>
-                                                </span >
-                                                <span className='SpfxCheckRadio  me-2'>
-                                                    <input type="radio" name="dateFilter" value="thisweek" checked={selectedFilter === "thisweek"} onChange={handleDateFilterChange} />
-                                                    <label className='ms-1'>This Week</label>
-                                                </span>
-                                                <span className='SpfxCheckRadio  me-2'>
-                                                    <input type="radio" name="dateFilter" value="last7days" checked={selectedFilter === "last7days"} onChange={handleDateFilterChange} />
-                                                    <label className='ms-1'>Last 7 Days</label>
-                                                </span>
-                                                <span className='SpfxCheckRadio  me-2'>
-                                                    <input type="radio" name="dateFilter" value="thismonth" checked={selectedFilter === "thismonth"} onChange={handleDateFilterChange} />
-                                                    <label className='ms-1'>This Month</label>
-                                                </span>
-                                                <span className='SpfxCheckRadio  me-2'>
-                                                    <input type="radio" name="dateFilter" value="last30days" checked={selectedFilter === "last30days"} onChange={handleDateFilterChange} />
-                                                    <label className='ms-1'>Last 30 Days</label>
-                                                </span>
-                                                <span className='SpfxCheckRadio  me-2'>
-                                                    <input type="radio" name="dateFilter" value="thisyear" checked={selectedFilter === "thisyear"} onChange={handleDateFilterChange} />
-                                                    <label className='ms-1'>This Year</label>
-                                                </span>
-                                                <span className='SpfxCheckRadio  me-2'>
-                                                    <input type="radio" name="dateFilter" value="lastyear" checked={selectedFilter === "lastyear"} onChange={handleDateFilterChange} />
-                                                    <label className='ms-1'>Last Year</label>
-                                                </span>
-                                                <span className='SpfxCheckRadio  me-2'>
-                                                    <input type="radio" name="dateFilter" value="custom" onChange={handleDateFilterChange}
-                                                        checked={selectedFilter === "custom" || (startDate !== null && endDate !== null && !selectedFilter)} />
-                                                    <label className='ms-1'>Custom</label>
-                                                </span>
-                                                <span className='SpfxCheckRadio  me-2'>
-                                                    <input type="radio" name="dateFilter" value="Pre-set" onChange={handleDateFilterChange}
-                                                        checked={selectedFilter === "Pre-set"} />
-                                                    <label className='ms-1'>Pre-set <span style={{ backgroundColor: `${portfolioColor}` }} onClick={() => preSetIconClick()} className="svg__iconbox svg__icon--editBox alignIcon hreflink"></span></label>
-                                                </span>
+                            <label className="toggler full_width active">
+                                <span className="full-width" style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter("isDateExpendShow")}>
+                                    <div className='alignCenter'>
+                                        {isDateExpendShow === true ?
+                                            <SlArrowDown style={{ color: "#555555", width: '12px' }} /> : <SlArrowRight style={{ color: "#555555", width: '12px' }} />}
+                                        <span className='ms-2 f-16'>Date</span><div className="ms-2 f-14" style={{ color: "#333333" }}>{dateCountInfo ? '- ' + dateCountInfo : ''}</div>
+                                    </div>
 
-                                            </Col>
-                                            <div className="container">
-                                                <Row className="mt-2">
-                                                    <div className="col-sm-5 dateformate p-0">
-                                                        <label>Start Date</label>
-                                                        <div className="input-group">
-                                                            <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
-                                                                className="form-control date-picker" popperPlacement="bottom-start" customInput={<ExampleCustomInput />}
-                                                                renderCustomHeader={({ date, changeYear, changeMonth, decreaseMonth, increaseMonth, prevMonthButtonDisabled, nextMonthButtonDisabled
-                                                                }) => (<div style={{ margin: 10, display: "flex", justifyContent: "center" }}>
-                                                                    <button onClick={decreaseMonth} disabled={prevMonthButtonDisabled}>{"<"}</button>
-                                                                    <select value={date.getFullYear()} onChange={({ target: { value } }: any) => changeYear(value)}>{years.map((option) => (<option key={option} value={option}>{option}</option>))}</select>
-                                                                    <select value={months[date.getMonth()]} onChange={({ target: { value } }) => changeMonth(months.indexOf(value))}>{months.map((option) => (<option key={option} value={option}>{option} </option>))}</select>
-                                                                    <button onClick={increaseMonth} disabled={nextMonthButtonDisabled} >{">"}</button>
-                                                                </div>
-                                                                )}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-sm-5 dateformate">
-                                                        <label>End Date</label>
-                                                        <div className="input-group">
-                                                            <DatePicker selected={endDate} onChange={(date) => setEndDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
-                                                                className="form-control date-picker" popperPlacement="bottom-start" customInput={<ExampleCustomInput />}
-                                                                renderCustomHeader={({ date, changeYear, changeMonth, decreaseMonth, increaseMonth, prevMonthButtonDisabled, nextMonthButtonDisabled
-                                                                }) => (<div style={{ margin: 10, display: "flex", justifyContent: "center" }}>
-                                                                    <button onClick={decreaseMonth} disabled={prevMonthButtonDisabled}>{"<"}</button>
-                                                                    <select value={date.getFullYear()} onChange={({ target: { value } }: any) => changeYear(value)}>{years.map((option) => (<option key={option} value={option}>{option}</option>))}</select>
-                                                                    <select value={months[date.getMonth()]} onChange={({ target: { value } }) => changeMonth(months.indexOf(value))}>{months.map((option) => (<option key={option} value={option}>{option} </option>))}</select>
-                                                                    <button onClick={increaseMonth} disabled={nextMonthButtonDisabled} >{">"}</button>
-                                                                </div>
-                                                                )}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-sm-2">
-                                                        <label className="hreflink pt-4" title="Clear Date Filters" onClick={clearDateFilters} ><strong>Clear</strong></label>
-                                                    </div>
-                                                </Row>
-                                            </div>
-                                        </div>
-                                    </div> : ""}
+                                    <hr className='ms-3' />
                                 </span>
-                            </div>
+                            </label>
+                            {isDateExpendShow === true ? <div className="togglecontent mb-3 ps-3" style={{ display: "block" }}>
+                                <div className="col-sm-12">
+                                    <Col className='mb-2 '>
+                                        <label className="me-2">
+                                            <input className="form-check-input" type="checkbox" value="isCretaedDate" checked={isCreatedDateSelected} onChange={() => setIsCreatedDateSelected(!isCreatedDateSelected)} />{" "}
+                                            Created Date
+                                        </label>
+                                        <label className="me-2">
+                                            <input
+                                                className="form-check-input" type="checkbox" value="isModifiedDate" checked={isModifiedDateSelected} onChange={() => setIsModifiedDateSelected(!isModifiedDateSelected)} />{" "}
+                                            Modified Date
+                                        </label>
+                                        <label className="me-2">
+                                            <input className="form-check-input" type="checkbox" value="isDueDate" checked={isDueDateSelected} onChange={() => setIsDueDateSelected(!isDueDateSelected)} />{" "}
+                                            Due Date
+                                        </label>
+                                    </Col>
+                                    <Col>
+                                        <span className='SpfxCheckRadio  me-2'>
+                                            <input type="radio" name="dateFilter" className='radio' value="today" checked={selectedFilter === "today"} onChange={handleDateFilterChange} />
+                                            <label className='ms-1'>Today</label>
+                                        </span>
+                                        <span className='SpfxCheckRadio  me-2'>
+                                            <input type="radio" name="dateFilter" value="yesterday" className='radio' checked={selectedFilter === "yesterday"} onChange={handleDateFilterChange} />
+                                            <label className='ms-1'>Yesterday</label>
+                                        </span >
+                                        <span className='SpfxCheckRadio  me-2'>
+                                            <input type="radio" name="dateFilter" value="thisweek" className='radio' checked={selectedFilter === "thisweek"} onChange={handleDateFilterChange} />
+                                            <label className='ms-1'>This Week</label>
+                                        </span>
+                                        <span className='SpfxCheckRadio  me-2'>
+                                            <input type="radio" name="dateFilter" value="last7days" className='radio' checked={selectedFilter === "last7days"} onChange={handleDateFilterChange} />
+                                            <label className='ms-1'>Last 7 Days</label>
+                                        </span>
+                                        <span className='SpfxCheckRadio  me-2'>
+                                            <input type="radio" name="dateFilter" value="thismonth" className='radio' checked={selectedFilter === "thismonth"} onChange={handleDateFilterChange} />
+                                            <label className='ms-1'>This Month</label>
+                                        </span>
+                                        <span className='SpfxCheckRadio  me-2'>
+                                            <input type="radio" name="dateFilter" value="last30days" className='radio' checked={selectedFilter === "last30days"} onChange={handleDateFilterChange} />
+                                            <label className='ms-1'>Last 30 Days</label>
+                                        </span>
+                                        <span className='SpfxCheckRadio  me-2'>
+                                            <input type="radio" name="dateFilter" value="thisyear" className='radio' checked={selectedFilter === "thisyear"} onChange={handleDateFilterChange} />
+                                            <label className='ms-1'>This Year</label>
+                                        </span>
+                                        <span className='SpfxCheckRadio  me-2'>
+                                            <input type="radio" name="dateFilter" value="lastyear" className='radio' checked={selectedFilter === "lastyear"} onChange={handleDateFilterChange} />
+                                            <label className='ms-1'>Last Year</label>
+                                        </span>
+                                        <span className='SpfxCheckRadio  me-2'>
+                                            <input type="radio" name="dateFilter" value="custom" className='radio' onChange={handleDateFilterChange}
+                                                checked={selectedFilter === "custom" || (startDate !== null && endDate !== null && !selectedFilter)} />
+                                            <label className='ms-1'>Custom</label>
+                                        </span>
+                                        <span className='SpfxCheckRadio  me-2'>
+                                            <input type="radio" name="dateFilter" value="Pre-set" className='radio' onChange={handleDateFilterChange}
+                                                checked={selectedFilter === "Pre-set"} />
+                                            <label className='ms-1'>Pre-set <span style={{ backgroundColor: `${portfolioColor}` }} onClick={() => preSetIconClick()} className="svg__iconbox svg__icon--editBox alignIcon hreflink"></span></label>
+                                        </span>
+
+                                    </Col>
+                                    <div className="px-2">
+                                        <Row className="mt-2">
+                                            <div className="col-2 dateformate p-0" style={{ width: "160px" }}>
+                                                <div className="input-group ps-1">
+                                                    <label className='mb-1 form-label full-width'>Start Date</label>
+                                                    <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
+                                                        className="form-control date-picker" popperPlacement="bottom-start" customInput={<ExampleCustomInput />}
+                                                        renderCustomHeader={({ date, changeYear, changeMonth, decreaseMonth, increaseMonth, prevMonthButtonDisabled, nextMonthButtonDisabled
+                                                        }) => (<div style={{ margin: 10, display: "flex", justifyContent: "center" }}>
+                                                            <button onClick={decreaseMonth} disabled={prevMonthButtonDisabled}>{"<"}</button>
+                                                            <select value={date.getFullYear()} onChange={({ target: { value } }: any) => changeYear(value)}>{years.map((option) => (<option key={option} value={option}>{option}</option>))}</select>
+                                                            <select value={months[date.getMonth()]} onChange={({ target: { value } }) => changeMonth(months.indexOf(value))}>{months.map((option) => (<option key={option} value={option}>{option} </option>))}</select>
+                                                            <button onClick={increaseMonth} disabled={nextMonthButtonDisabled} >{">"}</button>
+                                                        </div>
+                                                        )}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="col-2 dateformate pe-0" style={{ width: "160px" }}>
+                                                <div className="input-group">
+                                                    <label className='mb-1 form-label full-width'>End Date</label>
+                                                    <DatePicker selected={endDate} onChange={(date) => setEndDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
+                                                        className="form-control date-picker" popperPlacement="bottom-start" customInput={<ExampleCustomInput />}
+                                                        renderCustomHeader={({ date, changeYear, changeMonth, decreaseMonth, increaseMonth, prevMonthButtonDisabled, nextMonthButtonDisabled
+                                                        }) => (<div style={{ margin: 10, display: "flex", justifyContent: "center" }}>
+                                                            <button onClick={decreaseMonth} disabled={prevMonthButtonDisabled}>{"<"}</button>
+                                                            <select value={date.getFullYear()} onChange={({ target: { value } }: any) => changeYear(value)}>{years.map((option) => (<option key={option} value={option}>{option}</option>))}</select>
+                                                            <select value={months[date.getMonth()]} onChange={({ target: { value } }) => changeMonth(months.indexOf(value))}>{months.map((option) => (<option key={option} value={option}>{option} </option>))}</select>
+                                                            <button onClick={increaseMonth} disabled={nextMonthButtonDisabled} >{">"}</button>
+                                                        </div>
+                                                        )}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="col-sm-2 mt-2">
+                                                <label className="hreflink pt-4" title="Clear Date Filters" onClick={clearDateFilters} ><strong>Clear</strong></label>
+                                            </div>
+                                        </Row>
+                                    </div>
+                                </div>
+                            </div> : ""}
 
                         </div>
                     </div >
