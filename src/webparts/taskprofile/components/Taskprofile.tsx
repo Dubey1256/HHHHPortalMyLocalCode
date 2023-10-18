@@ -1543,6 +1543,30 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     }
   };
 
+  //****** remove extra space in folora editor  */
+
+  private cleanHTML=(html: any) =>{
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    const paragraphs = div.querySelectorAll('p');
+
+    // Filter out empty <p> tags
+    paragraphs.forEach((p) => {
+        if (p.innerText.trim() === '') {
+            p.parentNode.removeChild(p); // Remove empty <p> tags
+        }
+    });
+    const brTags = div.querySelectorAll('br');
+    if (brTags.length > 1) {
+      for (let i = brTags.length - 1; i > 0; i--) {
+        brTags[i].parentNode.removeChild(brTags[i]);
+      }
+    }
+  
+    return div.innerHTML;
+}
+ //******* End */
+
   public render(): React.ReactElement<ITaskprofileProps> {
     buttonId = this.generateButtonId();
     const {
@@ -2062,7 +2086,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                             // title={fbData.ApproverData != undefined && fbData.ApproverData.length > 0 ? fbData.ApproverData[fbData.ApproverData.length - 1].isShowLight : ""}
                                             >
 
-                                              <span dangerouslySetInnerHTML={{ __html: fbData?.Title?.replace(/\n/g, "<br>") }}></span>
+                                              <span dangerouslySetInnerHTML={{ __html: this.cleanHTML(fbData?.Title) }}></span>
                                               <div className="col">
                                                 {fbData['Comments'] != null && fbData['Comments']?.length > 0 && fbData['Comments']?.map((fbComment: any, k: any) => {
                                                   return <div className={fbComment.isShowLight != undefined && fbComment.isApprovalComment ? `col add_cmnt my-1 ${fbComment.isShowLight}` : "col add_cmnt my-1"} title={fbComment.isShowLight != undefined ? fbComment.isShowLight : ""}>
@@ -2095,7 +2119,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                                 <span className='svg__iconbox svg__icon--trash'></span></a>
                                                             </span>
                                                           </div>
-                                                          <div><span dangerouslySetInnerHTML={{ __html: fbComment?.Title.replace(/\n/g, "<br>") }}></span></div>
+                                                          <div><span dangerouslySetInnerHTML={{ __html:this.cleanHTML(fbComment?.Title)  }}></span></div>
                                                         </div>
                                                       </div>
                                                       <div className="col-12 ps-3 pe-0 mt-1">
@@ -2123,7 +2147,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                                       <span className='svg__iconbox svg__icon--trash'></span></a>
                                                                   </span>
                                                                 </div>
-                                                                <div><span dangerouslySetInnerHTML={{ __html: replymessage?.Title.replace(/\n/g, "<br>") }}></span></div>
+                                                                <div><span dangerouslySetInnerHTML={{ __html:this.cleanHTML(replymessage?.Title)  }}></span></div>
                                                               </div>
                                                             </div>
 
@@ -2224,7 +2248,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                               <div className="border p-2 full-width text-break"
                                               // title={fbSubData?.ApproverData != undefined && fbSubData?.ApproverData?.length > 0 ? fbSubData?.ApproverData[fbSubData?.ApproverData.length - 1]?.isShowLight : ""}
                                               >
-                                                <span ><span dangerouslySetInnerHTML={{ __html: fbSubData?.Title?.replace(/\n/g, "<br>") }}></span></span>
+                                                <span ><span dangerouslySetInnerHTML={{ __html: this.cleanHTML(fbSubData?.Title)  }}></span></span>
                                                 <div className="feedbackcomment col-sm-12 PadR0 mt-10">
                                                   {fbSubData?.Comments != null && fbSubData.Comments.length > 0 && fbSubData?.Comments?.map((fbComment: any, k: any) => {
                                                     return <div className={fbComment?.isShowLight != undefined && fbComment.isApprovalComment ? `col-sm-12  mb-2 add_cmnt my-1 ${fbComment?.isShowLight}` : "col-sm-12  mb-2 add_cmnt my-1 "} title={fbComment?.isShowLight != undefined ? fbComment?.isShowLight : ""}>
@@ -2257,7 +2281,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                                 ><span className='svg__iconbox svg__icon--trash'></span></a>
                                                               </span>
                                                             </div>
-                                                            <div ><span dangerouslySetInnerHTML={{ __html: fbComment?.Title.replace(/\n/g, "<br>") }}></span></div>
+                                                            <div ><span dangerouslySetInnerHTML={{ __html: this.cleanHTML(fbComment?.Title)}}></span></div>
                                                           </div>
                                                         </div>
                                                         <div className="col-12 ps-3 pe-0 mt-1">
@@ -2286,7 +2310,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                                         <span className='svg__iconbox svg__icon--trash'></span></a>
                                                                     </span>
                                                                   </div>
-                                                                  <div><span dangerouslySetInnerHTML={{ __html: replymessage?.Title.replace(/\n/g, "<br>") }}></span></div>
+                                                                  <div><span dangerouslySetInnerHTML={{ __html: this.cleanHTML(replymessage?.Title) }}></span></div>
                                                                 </div>
                                                               </div>
 
