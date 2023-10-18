@@ -772,7 +772,7 @@ const EditTaskPopup = (Items: any) => {
                     let ApprovalCheck = item.Categories.search("Approval");
                     let OnlyCompletedCheck = item.Categories.search("Only Completed");
                     let DesignCheck: any;
-                    if (item.Categories == "Design") {
+                    if (item.Categories == "Design" || item.Categories == "Design;" ) {
                         DesignCheck = item.Categories.search("Design")
                     }
                     if (phoneCheck >= 0) {
