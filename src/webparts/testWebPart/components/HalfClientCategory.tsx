@@ -15,7 +15,8 @@ import GlobalCommanTable from "../../../globalComponents/GroupByReactTableCompon
 import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import EditSiteComposition from '../../../globalComponents/EditTaskPopup/EditSiteComposition';
-
+import TeamSmartFilter from '../../../globalComponents/SmartFilterGolobalBomponents/TeamSmartFilter';
+import Loader from "react-loader";
 var siteConfig: any = []
 var AllTaskUsers: any = []
 var Idd: number;
@@ -34,6 +35,8 @@ var isShowTimeEntry: any = "";
 var AllMetadata: any = [];
 let BackUpAllCCTask: any = [];
 var isShowSiteCompostion: any = "";
+let ProjectData: any = [];
+let portfolioColor: any = "#000069";
 const HalfClientCategory = (props: any) => {
     const [pageLoaderActive, setPageLoader] = React.useState(false)
     const [protectedView, setProtectedView] = React.useState(false)
@@ -49,6 +52,12 @@ const HalfClientCategory = (props: any) => {
     const [passdata, setpassdata] = React.useState("");
     const [selectedItem, setSelectedItem]: any = React.useState(null);
     const [currentUserData, setCurrentUserData]: any = React.useState({});
+    const [smartAllFilterData, setAllSmartFilterData] = React.useState([])
+    const [smartTimeTotalFunction, setSmartTimeTotalFunction] = React.useState(null);
+    const [filterCounters, setFilterCounters] = React.useState(false);
+    const [loaded, setLoaded] = React.useState(false);
+    const [AllSiteTasksData, setAllSiteTasksData]: any = React.useState([]);
+    const [AllMasterTasksData, setAllMasterTasksData]: any = React.useState([]);
     React.useEffect(() => {
         try {
             $("#spPageCanvasContent").removeClass();
@@ -281,7 +290,6 @@ const HalfClientCategory = (props: any) => {
                                 items["ProjectTitle"] = '';
                                 items["ProjectPriority"] = 0;
                             }
-
                             items.TeamMembersSearch = "";
                             items.AssignedToIds = [];
                             if (items.AssignedTo != undefined) {
@@ -297,7 +305,7 @@ const HalfClientCategory = (props: any) => {
                                     });
                                 });
                             }
-                            if( items?.ClientCategory?.length>0){
+                            if (items?.ClientCategory?.length > 0) {
                                 items?.ClientCategory?.map((dataCat: any) => {
                                     const matchingItem = AllMetadata?.find((elem: any) => elem?.Id === dataCat?.Id);
                                     if (matchingItem) {
@@ -380,6 +388,7 @@ const HalfClientCategory = (props: any) => {
                         })
                         console.log(BackUpAllCCTask)
                         setAllSiteTasks(BackUpAllCCTask);
+                        setAllSiteTasksData(BackUpAllCCTask);
                         setPageLoader(false);
                         GetMasterData();
                         allSitesTasks = BackUpAllCCTask;
@@ -404,10 +413,11 @@ const HalfClientCategory = (props: any) => {
             AllMasterTaskItems = [];
             // var AllUsers: any = []
             AllMasterTaskItems = await web.lists.getById(AllListId?.MasterTaskListID).items
-                .select("Deliverables,PortfolioStructureID,ClientCategory/Id,ClientCategory/Title,TechnicalExplanations,ValueAdded,Categories,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,SiteCompositionSettings,ClientTime,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title")
+                .select("Deliverables,PortfolioStructureID,ClientCategory/Id,ClientCategory/Title,TechnicalExplanations,ValueAdded,Categories,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,SiteCompositionSettings,ClientTime,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,PortfolioType/Id,PortfolioType/Color,PortfolioType/IdRange,PortfolioType/Title")
                 .filter("Item_x0020_Type ne 'Project'")
-                .expand("ComponentCategory,ClientCategory,AssignedTo,AttachmentFiles,Author,Editor,TeamMembers,TaskCategories,Parent").top(4999).getAll();
+                .expand("ComponentCategory,ClientCategory,AssignedTo,AttachmentFiles,Author,Editor,TeamMembers,TaskCategories,Parent,PortfolioType").top(4999).getAll();
 
+            ProjectData = AllMasterTaskItems?.filter((projectItem: any) => projectItem.Item_x0020_Type === "Project")
             AllMasterTaskItems.map((items: any) => {
                 if (items?.ClientCategory?.length > 0 || items?.SiteCompositionSettings != undefined || items?.Sitestagging != undefined) {
                     items.ShowTeamsIcon = false
@@ -415,7 +425,7 @@ const HalfClientCategory = (props: any) => {
                     items.siteUrl = AllListId?.siteUrl;
                     items.listId = AllListId?.MasterTaskListID;
                     items.ClientCatTitle = [];
-                    if( items?.ClientCategory?.length>0){
+                    if (items?.ClientCategory?.length > 0) {
                         items?.ClientCategory?.map((dataCat: any) => {
                             const matchingItem = AllMetadata?.find((elem: any) => elem?.Id === dataCat?.Id);
                             if (matchingItem) {
@@ -436,7 +446,7 @@ const HalfClientCategory = (props: any) => {
                         });
                         items.ClientCategory = sortAccordingSite(items.ClientCategory, 'siteName')
                     }
-                  
+
                     if (items?.ClientCatTitle?.length > 0) {
                         items.CCSearch = items?.ClientCatTitle?.join(' ; ');
                     } else {
@@ -492,13 +502,16 @@ const HalfClientCategory = (props: any) => {
             })
             setPageLoader(false);
             setAllMasterTasks(AllCSFMasterTasks)
+            setAllMasterTasksData(AllCSFMasterTasks)
             //  console.log(AllCSFMasterTasks);
 
         } else {
             alert('Master Task List Id Not Available')
         }
 
-    }
+    };
+
+
     const getComponentasString = function (results: any) {
         var component = "";
         $.each(results, function (cmp: any) {
@@ -531,6 +544,41 @@ const HalfClientCategory = (props: any) => {
             setSelectedItem(null)
         }
     }
+    ////////////////////////////////////////// Smart filter Part//////////////////////
+    React.useEffect(() => {
+        if (AllSiteTasks.length > 0 && AllMasterTasks.length > 0) {
+            setFilterCounters(true);
+        }
+    }, [AllSiteTasks.length > 0 && AllMasterTasks.length > 0])
+
+
+
+    const smartFiltercallBackData = React.useCallback((filterData, updatedSmartFilter, smartTimeTotal, flatView) => {
+        if (filterData.length > 0 && smartTimeTotal) {
+            let filterDataBackup = JSON.parse(JSON.stringify(filterData));
+            setAllSmartFilterData(filterDataBackup);
+            setSmartTimeTotalFunction(() => smartTimeTotal);
+        } else if (filterData.length === 0) {
+            setAllSiteTasks([]);
+            setAllMasterTasks([]);
+            setLoaded(true);
+        }
+    }, []);
+
+    React.useEffect(() => {
+        if (smartAllFilterData?.length > 0) {
+            let findAllProtFolioData = smartAllFilterData?.filter((elem: any) => elem?.PortfolioType?.Id != undefined && elem?.TaskType === undefined);
+            let findAllTaskData = smartAllFilterData?.filter((elem: any) => elem?.PortfolioType?.Id === undefined && elem?.TaskType != undefined);
+            setAllSiteTasks(findAllTaskData);
+            setAllMasterTasks(findAllProtFolioData);
+            setLoaded(true);
+        }
+    }, [smartAllFilterData]);
+
+
+
+
+    ////////////////////////////////////////// Smart filter Part End//////////////////////
 
     const columns = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
@@ -901,21 +949,44 @@ const HalfClientCategory = (props: any) => {
                 size: 35,
             }
         ],
-        [AllCSFMasterTasks]
+        [AllMasterTasks]
     );
     const filterProtectedView = (checked: any) => {
         if (!checked) {
+            AllCSFMasterTasks = AllMasterTasks;
+            BackUpAllCCTask = AllSiteTasks;
             setAllMasterTasks(AllCSFMasterTasks?.filter((item: any) => item?.isProtectedItem == true))
             setAllSiteTasks(BackUpAllCCTask?.filter((item: any) => item?.isProtectedItem == true))
             setProtectedView(!checked)
         } else {
-            setAllMasterTasks(AllCSFMasterTasks)
-            setAllSiteTasks(BackUpAllCCTask)
+            setAllMasterTasks(AllCSFMasterTasks);
+            setAllSiteTasks(BackUpAllCCTask);
             setProtectedView(!checked)
         }
     }
     return (
         <div className='TaskView-Any-CC'>
+
+            <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1}
+                color={"#000069"}
+                speed={2}
+                trail={60}
+                shadow={false}
+                hwaccel={false}
+                className="spinner"
+                zIndex={2e9}
+                top="28%"
+                left="50%"
+                scale={1.0}
+                loadedClassName="loadedContent"
+            />
+
+
+            <section className="ContentSection smartFilterSection">
+                <div className="togglecontent mt-1">
+                    {filterCounters == true ? <TeamSmartFilter ProjectData={ProjectData} setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} ContextValue={AllListId} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
+                </div>
+            </section>
             <div className='ProjectOverViewRadioFlat  d-flex justify-content-between'>
                 <dl className='alignCenter gap-2 mb-0'>
                     <dt className='form-check l-radio'>
@@ -929,7 +1000,6 @@ const HalfClientCategory = (props: any) => {
                     </dt>
 
                 </dl>
-
             </div>
             <div className="Alltable p-2">
                 {selectedView == 'MasterTask' ? <div>
