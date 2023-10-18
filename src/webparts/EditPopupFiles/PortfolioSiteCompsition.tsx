@@ -1298,7 +1298,7 @@ const SiteCompositionComponent = (Props: any) => {
                                     }
                                     return (
                                         <tr
-                                            className={siteData?.StartEndDateValidation ? "Disabled-Link bg-th" : 'hreflink'}
+                                            className={siteData?.StartEndDateValidation ? "Disabled-Link border-1 bg-th" : 'hreflink border-1'}
                                         >
                                             <td scope="row" className="m-0 p-1 align-middle" style={{ width: "3%" }}>
                                                 {checkBoxStatus ? <input
