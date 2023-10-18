@@ -260,9 +260,9 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
             )}
             {openWS && (
                 <CreateWS
-                    props={checkedData}
+                selectedItem={checkedData}
                     Call={Call}
-                    SelectedProp={AllListId}
+                    AllListId={AllListId}
                 ></CreateWS>
             )}
         </>

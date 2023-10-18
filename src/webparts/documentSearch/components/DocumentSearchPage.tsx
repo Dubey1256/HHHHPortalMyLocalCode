@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Web } from 'sp-pnp-js';
-import styles from './DocumentSearch.module.scss';
+// import styles from './DocumentSearch.module.scss';
 // import GlobalCommanTable from '../../../GlobalCommon/GlobalCommanTable';
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import { ColumnDef } from '@tanstack/react-table';
@@ -105,36 +105,23 @@ export default function DocumentSearchPage(Props: any) {
     //#endregion 
     //#region code to apply react/10stack global table BY PB
     const columns = React.useMemo<ColumnDef<any, unknown>[]>(() =>
-        [{
-            accessorKey: '',
-            canSort: false,
-            placeholder: '',
-            header: '',
-            size: 15,
-            id: 'row.original',
-            cell: ({ row }) => (
-                <>
-                    {row?.original?.SiteIcon}
-                </>
-            ),
-        },
-        {
-            accessorKey: "Title", placeholder: "Title", header: "",
-            cell: ({ row }) => (
-                <>
-                    <a target="_blank" href={row?.original?.FileDirRef}>
-                        <span className="alignIcon svg__iconbox svg__icon--folder"></span>
-                    </a>
-                    {row?.original?.Title != undefined && row?.original?.Title != null && row?.original?.Title != '' ? <a target="_blank" href={row?.original?.FileDirRef}> {row?.original?.Title} </a> : <a target="_blank" href={row?.original?.FileDirRef}> {row?.original?.FileLeafRef} </a>}
-                </>
-            ),
-        },
-        {
-            accessorKey: "FileLeafRef", placeholder: "Document Url", header: "",
-            cell: ({ row }) => (
-                <>
-                    <a>
-                        {/* {row?.original?.File_x0020_Type == 'pdf' &&
+        [
+            {
+                accessorKey: "Title", placeholder: "Title", header: "",
+                cell: ({ row }) => (
+                    <>
+                        <a target="_blank" href={row?.original?.FileDirRef}>
+                            <span className="alignIcon svg__iconbox svg__icon--folder"></span>
+                        </a>
+                        {row?.original?.Title != undefined && row?.original?.Title != null && row?.original?.Title != '' ? <a target="_blank" href={row?.original?.FileDirRef}> {row?.original?.Title} </a> : <a target="_blank" href={row?.original?.FileDirRef}> {row?.original?.FileLeafRef} </a>}
+                    </>
+                ),
+            },
+            {
+                accessorKey: "FileLeafRef", placeholder: "Document Url", header: "",
+                cell: ({ row }) => (
+                    <div className='alignCenter'>
+                            {/* {row?.original?.File_x0020_Type == 'pdf' &&
                             <span className="alignIcon  svg__iconbox svg__icon--folder"></span>
                         }
                         {row?.original?.File_x0020_Type == 'docx' &&
@@ -177,70 +164,77 @@ export default function DocumentSearchPage(Props: any) {
                             <span className={`alignIcon  svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`}></span>
                         }
                          */}
-                        {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'aspx' && <span className={`alignIcon svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`}></span>}
-                        {row?.original?.File_x0020_Type == 'rar' && <span className="alignIcon  svg__iconbox svg__icon--zip "></span>}
-                        {row?.original?.File_x0020_Type == 'aspx' || row?.original?.File_x0020_Type == 'msg' && <span className="alignIcon  svg__iconbox svg__icon--unknownFile "></span>}
-                        {row?.original?.File_x0020_Type == 'jpeg' || row?.original?.File_x0020_Type == 'jpg' && <span className="alignIcon  svg__iconbox svg__icon--jpeg "></span>}
-                        {row?.original?.File_x0020_Type == 'docx' || row?.original?.File_x0020_Type == 'doc' && <span className="alignIcon  svg__iconbox svg__icon--docx "></span>}
-                        {/* <img src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/24/icon_pdf_16.jpg`}></img> */}
+                            {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'aspx' && <span className={`wid30 svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`}></span>}
+                            {row?.original?.File_x0020_Type == 'rar' && <span className="wid30 svg__iconbox svg__icon--zip "></span>}
+                            {row?.original?.File_x0020_Type == 'aspx' || row?.original?.File_x0020_Type == 'msg' || row?.original?.File_x0020_Type == 'apk' ? <span className="wid30 svg__iconbox svg__icon--unknownFile "></span> : ''}
+                            {row?.original?.File_x0020_Type == 'jpeg' || row?.original?.File_x0020_Type == 'jpg' ? <span className="wid30 svg__iconbox svg__icon--jpeg "></span> : ''}
+                            {row?.original?.File_x0020_Type == 'doc' || row?.original?.File_x0020_Type == 'docx' ? <span className="wid30 svg__iconbox svg__icon--docx "></span> : ''}
+                            {row?.original?.File_x0020_Type == 'jfif' ? <span className="wid30 svg__iconbox svg__icon--jpeg "></span> : ''}
+                            {/* <img src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/24/icon_pdf_16.jpg`}></img> */}
 
-                        {/* {row?.original?.File_x0020_Type != 'flv' && row?.original?.File_x0020_Type != 'js' && row?.original?.File_x0020_Type != 'css' && row?.original?.File_x0020_Type != 'zip' && row?.original?.File_x0020_Type != 'aspx' && row?.original?.File_x0020_Type != 'mp4' && row?.original?.File_x0020_Type != 'pdf' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'png' && row?.original?.File_x0020_Type != 'gif' &&
+                            {/* {row?.original?.File_x0020_Type != 'flv' && row?.original?.File_x0020_Type != 'js' && row?.original?.File_x0020_Type != 'css' && row?.original?.File_x0020_Type != 'zip' && row?.original?.File_x0020_Type != 'aspx' && row?.original?.File_x0020_Type != 'mp4' && row?.original?.File_x0020_Type != 'pdf' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'png' && row?.original?.File_x0020_Type != 'gif' &&
                             <img src={`/_layouts/15/images/ic${row?.original?.File_x0020_Type}.png`}></img>} */}
 
-                        {/* {row?.original?.File_x0020_Type == 'flv' || row?.original?.File_x0020_Type == 'js' || row?.original?.File_x0020_Type == 'css' || row?.original?.File_x0020_Type == 'zip' || row?.original?.File_x0020_Type == 'aspx' || row?.original?.File_x0020_Type == 'mp4' || row?.original?.File_x0020_Type == 'jpg' || row?.original?.File_x0020_Type == 'png' || row?.original?.File_x0020_Type == 'gif' &&
+                            {/* {row?.original?.File_x0020_Type == 'flv' || row?.original?.File_x0020_Type == 'js' || row?.original?.File_x0020_Type == 'css' || row?.original?.File_x0020_Type == 'zip' || row?.original?.File_x0020_Type == 'aspx' || row?.original?.File_x0020_Type == 'mp4' || row?.original?.File_x0020_Type == 'jpg' || row?.original?.File_x0020_Type == 'png' || row?.original?.File_x0020_Type == 'gif' &&
                             <img src="/_layouts/15/images/icgen.gif?rev=23"></img>} */}
-                    </a>
-                    <a target="_blank" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.FileLeafRef} </a>
-                </>
-            ),
-        },
-        {
-            accessorKey: "Created", placeholder: "Created Date", header: "", size: 120,
-            cell: ({ row }) => (
-                <>
-                    {row?.original?.AllCreatedImages.map((item: any) => (
-                        <a target="_blank" href={`${PageContext.context._pageContext._web.serverRelativeUrl}/SitePages/TaskDashboard.aspx?UserId=${item.UserId}&Name=${item.Title}`}>
-                            {row?.original?.Created} {item?.UserImage != undefined && item?.UserImage != '' ? <img title={item?.Title} className="workmember" src={item?.UserImage}></img> : <img title={item?.Title} className="workmember" src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg`}></img>}
-                        </a>
-                    ))}
-                </>
-            ),
-        },
-        {
-            accessorKey: "Modified", placeholder: "Modified Date", header: "", size: 152,
-            cell: ({ row }) => (
-                <>
-                    {row?.original?.AllModifiedImages.map((item: any) => (
-                        <a target="_blank" href={`${PageContext.context._pageContext._web.serverRelativeUrl}/SitePages/TaskDashboard.aspx?UserId=${item.UserId}&Name=${item.Title}`}>
-                            {row?.original?.Modified} {item?.UserImage != undefined && item?.UserImage != '' ? <img title={item?.Title} className="workmember" src={item?.UserImage}></img> : <img title={item?.Title} className="workmember" src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg`}></img>}
-                        </a>
-                    ))}
-                </>
-            ),
-        },
-        {
+                        
+                        <a className='ms-1 wid90' target="_blank" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.FileLeafRef} </a>
+                    </div>
+                ),
+            },
+            {
+                accessorKey: "Created", placeholder: "Created Date", header: "", size: 120,
+                cell: ({ row }) => (
+                    <>
+                        {row?.original?.AllCreatedImages.map((item: any) => (
+                            <a target="_blank" href={`${PageContext.context._pageContext._web.serverRelativeUrl}/SitePages/TaskDashboard.aspx?UserId=${item.UserId}&Name=${item.Title}`}>
+                                {row?.original?.Created} {item?.UserImage != undefined && item?.UserImage != '' ? <img title={item?.Title} className="workmember" src={item?.UserImage}></img> : <img title={item?.Title} className="workmember" src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg`}></img>}
+                            </a>
+                        ))}
+                    </>
+                ),
+            },
+            {
+                accessorKey: "Modified", placeholder: "Modified Date", header: "", size: 172,
+                cell: ({ row }) => (
+                    <>
+                        {row?.original?.AllModifiedImages.map((item: any) => (
+                            <a target="_blank" href={`${PageContext.context._pageContext._web.serverRelativeUrl}/SitePages/TaskDashboard.aspx?UserId=${item.UserId}&Name=${item.Title}`}>
+                                {row?.original?.Modified} {item?.UserImage != undefined && item?.UserImage != '' ? <img title={item?.Title} className="workmember" src={item?.UserImage}></img> : <img title={item?.Title} className="workmember" src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg`}></img>}
+                            </a>
+                        ))}
+                    </>
+                ),
+            },
+            {
 
-            cell: ({ row }) => (
-                <>
-                    <a onClick={() => EditItem(row.original.Id)} title="Edit"><span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink"></span></a>
-                    <a onClick={() => deleteData(row.original)}><span title="Remove Task" className="svg__iconbox svg__icon--cross dark hreflink"></span></a>
-                </>
-            ),
-            accessorKey: '',
-            canSort: false,
-            placeholder: '',
-            header: '',
-            id: 'row.original',
-            size: 50,
-        },
+                cell: ({ row }) => (
+                    <div className='alignCenter'>
+                        <a onClick={() => EditItem(row.original.Id)} title="Edit"><span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink me-1"></span></a>
+                        <a onClick={() => deleteData(row.original)}><span title="Remove Task" className="svg__iconbox svg__icon--cross dark hreflink"></span></a>
+                    </div>
+                ),
+                accessorKey: '',
+                canSort: false,
+                placeholder: '',
+                header: '',
+                id: 'row.original',
+                size: 50,
+            },
         ],
         [AllDocs]);
     const callBackData = React.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => { }, []);
     //#endregion
     return (
+        
         //#Jsx Part By PB
         <> {AllDocs && <div>
-            <GlobalCommanTable columns={columns} data={AllDocs} showHeader={true} callBackData={callBackData} />
+            <div><h2 className='mt-2 heading'>Document Search</h2></div>
+            <div className='Alltable'>
+                <div className='wrapper'>
+                    <GlobalCommanTable columns={columns} data={AllDocs} showHeader={true} callBackData={callBackData} />
+                </div>
+            </div>
         </div>}
             {isEditModalOpen ? <DocumentPopup closeEditPopup={closeEditPopup} pagecontext={PageContext} Id={selectedItemId} /> : ''}
         </>
