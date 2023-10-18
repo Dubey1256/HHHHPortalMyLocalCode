@@ -99,8 +99,8 @@ const TeamSmartFilter = (item: any) => {
     const [keyWordSearchTearm, setKeyWordSearchTearm] = React.useState("");
     //*******************************************************Key Word Section End********************************************************************/
     //*************************************************** Portfolio Items & Task Items selected ***************************************************************** */
-    const [isPortfolioItems, setIsPortfolioItems] = React.useState(false);
-    const [isTaskItems, setIsTaskItems] = React.useState(false);
+    const [isPortfolioItems, setIsPortfolioItems] = React.useState(true);
+    const [isTaskItems, setIsTaskItems] = React.useState(true);
     //*************************************************** Portfolio Items & Task Items End ***************************************************************** */
     ///// Year Range Using Piker ////////
     const [years, setYear] = React.useState([])
@@ -297,13 +297,21 @@ const TeamSmartFilter = (item: any) => {
                     "expanded": [],
                     "values": []
                 };
-
                 if (e.children !== undefined && e.children.length > 0) {
                     catogryValue.values = e.children.filter((child: any) => child.Id !== undefined);
                 }
                 clintCatogryData.push(catogryValue);
             })
         }
+        if (clintCatogryData?.length > 0) {
+            clintCatogryData.forEach((elem: any) => {
+                if (elem.Title === "Other") {
+                    const Blank: any = { Id:0, Title: "Blank", Parent: { Id: 576, Title: "Other" }, TaxType: "Client Category", ParentId: 576, ParentID: null, ID: 0, label: "Blank", checked: true };
+                    elem.values.push(Blank);
+                }
+            });
+        }
+
 
         SitesData?.forEach((element: any) => {
             if (element.Title != 'Master Tasks' && (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined))) {
@@ -913,7 +921,8 @@ const TeamSmartFilter = (item: any) => {
         if (portFolio.length > 0) {
             filteredMasterTaskData = allMasterTasksData.filter((data: any) =>
                 updatedCheckMatch(data, 'Item_x0020_Type', 'Title', portFolio) &&
-                updatedCheckMatch(data, 'ClientCategory', 'Title', clientCategory) &&
+                // updatedCheckMatch(data, 'ClientCategory', 'Title', clientCategory) &&
+                updatedCheckClintCategoryMatch(data, clientCategory) &&
                 updatedCheckTeamMembers(data, teamMember) &&
                 updatedKeyWordData(data, keyWordSearchTearm) &&
                 updatedCheckDateSection(data, startDate, endDate)
@@ -926,7 +935,8 @@ const TeamSmartFilter = (item: any) => {
                 updatedCheckTaskType(data, type) &&
                 updatedCheckProjectMatch(data, selectedProject) &&
                 updatedCheckMatch(data, 'percentCompleteValue', 'TaskStatus', percentComplete) &&
-                updatedCheckMatch(data, 'ClientCategory', 'Title', clientCategory) &&
+                // updatedCheckMatch(data, 'ClientCategory', 'Title', clientCategory) &&
+                updatedCheckClintCategoryMatch(data, clientCategory) &&
                 updatedCheckCategoryMatch(data, Categories) &&
                 updatedCheckTeamMembers(data, teamMember) &&
                 updatedKeyWordData(data, keyWordSearchTearm) &&
@@ -940,7 +950,27 @@ const TeamSmartFilter = (item: any) => {
         console.log(filteredMasterTaskData);
         console.log(filteredTaskData);
     };
+    const updatedCheckClintCategoryMatch = (data: any, clientCategory: any) => {
+        try {
+            if (clientCategory.length === 0) {
+                return true;
+            }
+            if (data?.ClientCategory?.length > 0 && data?.ClientCategory != undefined && data?.ClientCategory != null) {
+                let result = data?.ClientCategory?.some((item: any) => clientCategory.some((filter: any) => filter.Title === item.Title));
+                if (result === true) {
+                    return true;
+                }
+            } else {
+                let result = clientCategory.some((filter: any) => filter.Title === "Blank" && data?.ClientCategory?.length == 0)
+                if (result === true) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (error) {
 
+        }
+    };
     const updatedCheckMatch = (data: any, ItemProperty: any, FilterProperty: any, filterArray: any) => {
         try {
             if (filterArray.length === 0) {
@@ -972,6 +1002,7 @@ const TeamSmartFilter = (item: any) => {
                     return true;
                 }
             }
+            return false;
         } catch (error) {
 
         }
@@ -1327,54 +1358,48 @@ const TeamSmartFilter = (item: any) => {
     ];
 
     //*************************************************** Portfolio Items & Task Items selected ***************************************************************** */
-    // React.useEffect(()=>{
-    //     if(isPortfolioItems === true){
-    //         filterGroups?.map((elem:any)=>{
-    //             if(elem?.Title === "Portfolio"){
+    // React.useEffect(() => {
+    //     if (isPortfolioItems === true) {
+    //         filterGroups?.map((elem: any) => {
+    //             if (elem?.Title === "Portfolio Type") {
     //                 smartmetaDataDetails.forEach((element: any) => {
     //                     if (element.TaxType == 'Task Types') {
     //                         filterGroups[0].values.push(element);
     //                         filterGroups[0].checked.push(element.Id)
     //                     }
     //                     filterGroups[0].checkedObj = GetCheckedObject(filterGroups[0].values, filterGroups[0].checked);
-    //                     AllSites?.forEach((element: any, index: any) => {
-    //                         element.checkedObj = GetCheckedObject(element.values, element.checked)
-    //                     });
-    //                     if (element.TaxType == 'Type') {
-    //                         filterGroups[1].values.push(element);
-    //                         filterGroups[1].checked.push(element.Id)
-    //                     }
-    //                     filterGroups[0].checkedObj = GetCheckedObject(filterGroups[0].values, filterGroups[0].checked);
     //                 })
     //             }
-    //         }) 
-    //     }else{
-
+    //         })
+    //     } else {
+    //         filterGroups[0].checkedObj = filterGroups[0].checkedObj=[];
+    //         filterGroups[0].checked= filterGroups[0].checked=[];
     //     }
-    //     if(isTaskItems === true){
-    //         filterGroups?.map((elem:any)=>{
-    //             if(elem?.Title === "Type"){
-    //                 smartmetaDataDetails.forEach((element: any) => {
-    //                     if (element.TaxType == 'Task Types') {
-    //                         filterGroups[0].values.push(element);
-    //                         filterGroups[0].checked.push(element.Id)
-    //                     }
-    //                     filterGroups[0].checkedObj = GetCheckedObject(filterGroups[0].values, filterGroups[0].checked);
-    //                     AllSites?.forEach((element: any, index: any) => {
-    //                         element.checkedObj = GetCheckedObject(element.values, element.checked)
-    //                     });
-    //                     if (element.TaxType == 'Type') {
-    //                         filterGroups[1].values.push(element);
-    //                         filterGroups[1].checked.push(element.Id)
-    //                     }
-    //                     filterGroups[0].checkedObj = GetCheckedObject(filterGroups[0].values, filterGroups[0].checked);
-    //                 })
-    //             }
-    //         }) 
-    //     }
-    //     filterGroupsData
-    //     setFilterGroups
-    // },[isPortfolioItems,isTaskItems])
+    //     // if (isTaskItems === true) {
+    //     //     filterGroups?.map((elem: any) => {
+    //     //         if (elem?.Title === "Task Type") {
+    //     //             smartmetaDataDetails.forEach((element: any) => {
+    //     //                 if (element.TaxType == 'Task Types') {
+    //     //                     filterGroups[0].values.push(element);
+    //     //                     filterGroups[0].checked.push(element.Id)
+    //     //                 }
+    //     //                 filterGroups[0].checkedObj = GetCheckedObject(filterGroups[0].values, filterGroups[0].checked);
+    //     //                 AllSites?.forEach((element: any, index: any) => {
+    //     //                     element.checkedObj = GetCheckedObject(element.values, element.checked)
+    //     //                 });
+    //     //                 if (element.TaxType == 'Task Type') {
+    //     //                     filterGroups[1].values.push(element);
+    //     //                     filterGroups[1].checked.push(element.Id)
+    //     //                 }
+    //     //                 filterGroups[0].checkedObj = GetCheckedObject(filterGroups[0].values, filterGroups[0].checked);
+    //     //             })
+    //     //         }
+    //     //     })
+    //     // }
+    //     // filterGroupsData
+    //     // setFilterGroups
+    //     // isTaskItems
+    // }, [isPortfolioItems])
     //*************************************************** Portfolio Items & Task Items End ***************************************************************** */
 
     //*************************************************************smartTimeTotal*********************************************************************/
