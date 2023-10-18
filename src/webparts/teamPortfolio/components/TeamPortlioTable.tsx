@@ -320,8 +320,18 @@ function TeamPortlioTable(SelectedProp: any) {
                             }
 
                             result.chekbox = false;
-                            if (result?.Body != undefined) {
-                                result.descriptionsSearch = result?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
+                            // if (result?.Body != undefined) {
+                            //     result.descriptionsSearch = result?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
+                            // }
+                            if (result?.FeedBack != undefined) {
+                                let feedbackdata: any = JSON.parse(result?.FeedBack);
+                                feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
+                                    let copyTitle = child?.Title?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, "");
+                                    if (copyTitle != undefined && copyTitle != null && copyTitle != "") {
+                                        result.descriptionsSearch = copyTitle
+                                    }
+                                }
+                                )
                             }
                             try {
                                 if (result?.Comments != null && result?.Comments != undefined) {
@@ -2018,15 +2028,15 @@ function TeamPortlioTable(SelectedProp: any) {
                 ></CreateWS>
             )} */}
 
-                {isOpenWorkstream && (
-                   <CreateWS
-               selectedItem={checkedList}
-                  Call={Call}
-                  AllListId={ContextValue}
-                 TaskUsers={AllUsers}
-                data={data}
-                context={ContextValue.Context}
-               ></CreateWS>)}
+            {isOpenWorkstream && (
+                <CreateWS
+                    selectedItem={checkedList}
+                    Call={Call}
+                    AllListId={ContextValue}
+                    TaskUsers={AllUsers}
+                    data={data}
+                    context={ContextValue.Context}
+                ></CreateWS>)}
             {IsTask && (
                 <EditTaskPopup
                     Items={SharewebTask}
