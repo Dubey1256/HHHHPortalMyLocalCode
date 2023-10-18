@@ -30,6 +30,7 @@ const CreateWS = (props: any) => {
     const [myDate, setMyDate] = React.useState({ editDate: null, selectDateName: '' });
     const [selectedItem, setSelectedItem]: any = React.useState({})
     const [selectedTaskType, setSelectedTaskType] = React.useState(3)
+    const [ParentArray, setParentArray] = React.useState([]);
     const [ClientCategoriesData, setClientCategoriesData] = React.useState<any>(
         []
     );
@@ -40,8 +41,8 @@ const CreateWS = (props: any) => {
         DueDate: '',
         Description: [],
         AssignedTo: props?.selectedItem?.AssignedTo?.length > 0 ? props?.selectedItem?.AssignedTo : [],
-        TeamMember: props?.selectedItem?.TeamMember?.length > 0 ? props?.selectedItem?.TeamMember : props?.selectedItem?.TeamMembers.length > 0 ? props?.selectedItem?.TeamMembers : [],
-        ResponsibleTeam: props?.selectedItem?.ResponsibleTeam?.length > 0 ? props?.selectedItem?.ResponsibleTeam : props?.selectedItem?.TeamLeader.length > 0 ? props?.selectedItem?.TeamLeader : [],
+        TeamMember: props?.selectedItem?.TeamMember?.length > 0 ? props?.selectedItem?.TeamMember : props?.selectedItem?.TeamMembers?.length > 0 ? props?.selectedItem?.TeamMembers : [],
+        ResponsibleTeam: props?.selectedItem?.ResponsibleTeam?.length > 0 ? props?.selectedItem?.ResponsibleTeam : props?.selectedItem?.TeamLeader?.length > 0 ? props?.selectedItem?.TeamLeader : [],
     }]);
 
 
@@ -80,7 +81,49 @@ const CreateWS = (props: any) => {
             }
         }
         setSelectedItem(props?.selectedItem)
+        GetParentHierarchy(props?.selectedItem)
+
     }, [])
+   //************ breadcrum start */
+    const GetParentHierarchy = async (Item: any) => {
+        const parentdata: any = []
+        // parentdata.push()
+        // return new Promise((resolve, reject) => {
+        if (Item.Parent != null || Item?.Portfolio != undefined ) {
+
+            var filt: any = "Id eq " + (Item.Parent != null || undefined ? Item?.Parent?.Id : Item?.Portfolio?.Id) + "";
+
+        }
+        let web = new Web(AllListId?.siteUrl);
+        let compo = [];
+        web.lists
+            .getById(AllListId?.MasterTaskListID)
+            .items
+            .select("ID", "Id", "Title", "Mileage", "ItemType", "Parent/Id", "Parent/Title"
+            ).expand("Parent")
+
+            .top(4999)
+            .filter(filt)
+            .get().then((comp: any) => {
+
+                console.log(comp)
+                parentdata.push(comp[0])
+                parentdata.push(Item)
+                //  if(comp[0].Parent!=undefined){
+                // GetParentHierarchy(comp[0])
+                //  }else{
+                setParentArray(parentdata)
+                // resolve(parentdata)
+                //  }
+
+            }).catch((error: any) => {
+                console.log(error)
+                // reject(error)
+            });
+        // })
+
+    }
+     // ***** bread crum end ***********
     //-------- header section of popup
     const onRenderCustomHeaderMain = () => {
         return (
@@ -216,7 +259,7 @@ const CreateWS = (props: any) => {
             } else {
                 allWSTasks[selectedWSTaskIndex].TeamMember = [];
             }
-            if (TeamData.ResponsibleTeam != undefined && TeamData.ResponsibleTeam.length > 0) {
+            if (TeamData.ResponsibleTeam != undefined && TeamData.ResponsibleTeam?.length > 0) {
                 let responsibleTeam: any = [];
                 TeamData.ResponsibleTeam?.map((arrayData: any) => {
                     if (arrayData.AssingedToUser != null) {
@@ -258,7 +301,7 @@ const CreateWS = (props: any) => {
             if (componentDetails?.length == 0) {
                 WorstreamLatestId = 1;
             } else {
-                WorstreamLatestId = componentDetails.length + 1;
+                WorstreamLatestId = componentDetails?.length + 1;
             }
         }
         inputFields?.map((inputValue: any, index: any) => {
@@ -336,7 +379,7 @@ const CreateWS = (props: any) => {
                 ParentTaskId: selectedItem.Id,
                 ItemRank: inputValue.ItemRank == '' ? null : inputValue.ItemRank,
                 DueDate: inputValue.DueDate != null && inputValue.DueDate != '' && inputValue.DueDate != undefined ? new Date(inputValue?.DueDate)?.toISOString() : null,
-                FeedBack: inputValue?.Description.length === 0 ? null : JSON.stringify([FeedBackItem]),
+                FeedBack: inputValue?.Description?.length === 0 ? null : JSON.stringify([FeedBackItem]),
                 TaskID: selectedTaskType == 3 ? `${selectedItem?.TaskID}-W${taskLevel}` : null,
                 TaskLevel: selectedTaskType == 3 ? taskLevel : null,
                 // AssignedToId: { results: AssignedToIds?.length > 0 ? AssignedToIds : [] },
@@ -355,9 +398,42 @@ const CreateWS = (props: any) => {
             }
             web.lists.getById(selectedItem.listId).items.add(postdata).then((res: any) => {
                 console.log(res)
-                if (index == inputFields?.length - 1) {
-                    closeTaskStatusUpdatePoup(res);
+                let item: any = {};
+                if (res?.data) {
+                    item = res?.data;
+                    item = {
+                        ...item, ...{
+                            ClientCategory: ClientCategoriesData,
+                            AssignedTo: inputValue?.AssignedTo,
+                            DisplayCreateDate: moment(item.Created).format("DD/MM/YYYY"),
+                            DisplayDueDate: moment(item.DueDate).format("DD/MM/YYYY"),
+                            Portfolio: selectedItem?.Portfolio,
+                            siteUrl: selectedItem?.siteUrl,
+                            siteType: selectedItem?.siteType,
+                            listId: selectedItem?.listId,
+                            SiteIcon: selectedItem?.SiteIcon,
+                            ResponsibleTeam: inputValue?.ResponsibleTeam,
+                            TeamMembers: inputValue?.TeamMember,
+                            TeamLeader: inputValue?.ResponsibleTeam,
+                            FeedBack:
+                            inputValue?.Description?.length > 0
+                                ? [FeedBackItem]
+                                : null,
+                                Item_x0020_Type:'Task',
+                            Author: {
+                                Id: props?.context?.pageContext?.legacyPageContext?.userId
+                            }
+                        }
+                    }
+                    if (item.DisplayDueDate == "Invalid date" || "") {
+                        item.DisplayDueDate = item.DisplayDueDate.replaceAll(
+                            "Invalid date",
+                            ""
+                        );
+                    }
+                    res.data = item;
                 }
+                closeTaskStatusUpdatePoup(res);
             })
 
 
@@ -385,19 +461,19 @@ const CreateWS = (props: any) => {
                 <div className="modal-body border p-2 active Create-Item">
                     <div className='row'>
                         {
-                            // <ul className='spfxbreadcrumb '>
+                            <ul className='spfxbreadcrumb '>
 
 
-                            //     {
-                            //         ParentArray?.map((childsitem: any, index: any) => {
-                            //             return (
-                            //                 <>
-                            //                     <li><a href='#'>{ParentArray.length - 1 == index ? `${childsitem?.Title}` : `${childsitem?.Title}`} </a> </li>
-                            //                 </>
-                            //             )
-                            //         })
-                            //     }
-                            // </ul>
+                                {
+                                    ParentArray?.map((childsitem: any, index: any) => {
+                                        return (
+                                            <>
+                                                <li><a href='#'>{ParentArray.length - 1 == index ? `${childsitem?.Title}` : `${childsitem?.Title}`} </a> </li>
+                                            </>
+                                        )
+                                    })
+                                }
+                            </ul>
 
                         }
                     </div>
@@ -599,7 +675,7 @@ const CreateWS = (props: any) => {
 
 
                     {
-                        (inputFields.length === undefined || inputFields.length === 0)
+                        (inputFields?.length === undefined || inputFields?.length === 0)
                         && <button type="button" className="btn btn-primary me-1"
                         //   onClick={() => createWorkStream('CreatePopup')}
                         >

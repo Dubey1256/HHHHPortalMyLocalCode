@@ -4,6 +4,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import "react-datepicker/dist/react-datepicker-cssmodules.css";
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import Tooltip from '../Tooltip';
+import { noAuto } from '@fortawesome/fontawesome-svg-core';
 function PreSetDatePikerPannel(props: any) {
     const [startDateLocalStorage, setStartDateLocalStorage] = React.useState<any>(localStorage.getItem('startDate'));
     const [endDateLocalStorage, setEndDateLocalStorage] = React.useState<any>(localStorage.getItem('endDate'));
@@ -12,10 +13,10 @@ function PreSetDatePikerPannel(props: any) {
 
     React.useEffect(() => {
         if (startDateLocalStorage && endDateLocalStorage) {
-          const preSetStartDate = JSON.parse(startDateLocalStorage)
-          const preSetEndDate = JSON.parse(endDateLocalStorage)
-          setStartDate(new Date(preSetStartDate));
-          setEndDate(new Date(preSetEndDate));
+            const preSetStartDate = JSON.parse(startDateLocalStorage)
+            const preSetEndDate = JSON.parse(endDateLocalStorage)
+            setStartDate(new Date(preSetStartDate));
+            setEndDate(new Date(preSetEndDate));
         }
     }, [startDateLocalStorage, endDateLocalStorage])
 
@@ -59,13 +60,18 @@ function PreSetDatePikerPannel(props: any) {
     };
 
     const handleChangeData = () => {
-        props?.PreSetPikerCallBack(startDate, endDate);
-        if (startDate && endDate) {
-            let startDatas = JSON.stringify(startDate);
-            localStorage.setItem('startDate', startDatas);
-            let endDates = JSON.stringify(endDate);
-            localStorage.setItem('endDate', endDates);
+        if (startDate != undefined && endDate != undefined && startDate?.getTime() > endDate?.getTime()) {
+            alert('End date should be greater than start date.')
+        } else {
+            props?.PreSetPikerCallBack(startDate, endDate);
+            if (startDate && endDate) {
+                let startDatas = JSON.stringify(startDate);
+                localStorage.setItem('startDate', startDatas);
+                let endDates = JSON.stringify(endDate);
+                localStorage.setItem('endDate', endDates);
+            }
         }
+
     };
 
     const ExampleCustomInput = React.forwardRef(({ value, onClick }: any, ref: any) => (
@@ -95,7 +101,9 @@ function PreSetDatePikerPannel(props: any) {
     return (
         <>
             <Panel
+                className='PresetDate'
                 type={PanelType.custom}
+    
                 customWidth="490px"
                 isOpen={props?.isOpen}
                 onDismiss={setModalIsOpenToFalse}
@@ -107,7 +115,7 @@ function PreSetDatePikerPannel(props: any) {
                     <div className="d-flex pb-3 border-bottom">
                         <div className="col-sm-4 pe-3">
                             <label className='form-label w-100'>Start Date</label>
-                            <DatePicker selected={startDate} selectsStart startDate={startDate} endDate={endDate} onChange={(date) => setStartDate(date)} dateFormat="dd/MM/yyyy" customInput={<ExampleCustomInput/>} />
+                            <DatePicker selected={startDate} selectsStart startDate={startDate} endDate={endDate} onChange={(date) => setStartDate(date)} dateFormat="dd/MM/yyyy" customInput={<ExampleCustomInput />} />
                         </div>
                         <div className="col-sm-8 session-control-buttons alignCenter">
                             <div className="col-sm-4 pe-2 text-center">
@@ -157,10 +165,11 @@ function PreSetDatePikerPannel(props: any) {
                     </div>
                 </div>
                 <footer className='modal-footer'>
+                    <button onClick={() => handleChangeData()} className="btn btn-primary ms-1">OK</button>
                     <button type="button" className="btn btn-default ms-1" style={{ backgroundColor: `${props?.portfolioColor}`, borderColor: `${props?.portfolioColor}` }} onClick={setModalIsOpenToFalse}>
                         Cancel
                     </button>
-                    <button onClick={() => handleChangeData()} className="btn btn-primary ms-1">OK</button>
+
                 </footer>
             </Panel>
         </>

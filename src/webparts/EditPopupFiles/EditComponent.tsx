@@ -41,7 +41,9 @@ var AllClientCategoryDataBackup: any = [];
 let AutoCompleteItemsArray: any = [];
 var AllClientCategory: any = [];
 let ShowCategoryDatabackup: any = [];
-
+let subCategories: any = [];
+let IsapprovalTask = false;
+let CategoryAllData:any = [];
 function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
   if (SelectD != undefined && SelectD?.siteUrl != undefined) {
     web = new Web(SelectD?.siteUrl);
@@ -52,6 +54,10 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
     }
     RequireData = SelectD.SelectedProp;
     web = new Web(RequireData?.siteUrl);
+  }
+  let categoryitem:any=[];
+  if(item.Categories != undefined){
+    categoryitem = item.Categories.split(';')
   }
   const [CompoenetItem, setComponent] = React.useState([]);
   const [update, setUpdate] = React.useState(0);
@@ -106,6 +112,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
   const [categorySearchKey, setCategorySearchKey] = React.useState("");
   const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
   const [imagetab, setImagetab] = React.useState(false);
+  const [instantCategories, setInstantCategories] = React.useState([])
 
   function imageta() {
     setImagetab(true);
@@ -121,7 +128,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
     [editorState]
   );
   const setModalIsOpenToFalse = () => {
-    EditComponentCallback();
+    EditComponentCallback("Close");
     setModalIsOpen(false);
   };
 
@@ -165,19 +172,19 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
       }
     }
     if (functionType == "Close") {
-      if (type == "Service") {
+      if (type == "Multi") {
         setIsService(false);
       } else {
         setIsComponent(false);
       }
     } else {
-      if (type == "Component") {
+      if (type == "Multi") {
         if (item1 != undefined && item1.length > 0) {
           setLinkedComponentData(item1);
           console.log("Popup component linkedComponent", item1.linkedComponent);
         }
       }
-      if (type == "Service") {
+      if (type == "Single") {
         if (item1 != undefined && item1.length > 0) {
           setLinkedComponentData(item1);
           console.log("Popup component linkedComponent", item1.linkedComponent);
@@ -639,9 +646,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
         item.DueDate = moment(item.DueDate).format("MM-DD-YYYY");
         // setDate(item.DueDate);
       }
-      if (item.TaskCategories != null) {
-        setCategoriesData(item.TaskCategories);
-      }
+      // if (item.TaskCategories != null) {
+      //   setCategoriesData(item.TaskCategories);
+      // }
       if (item.TaskCategories != null) {
         item.TaskCategories.forEach(function (type: any) {
           CheckCategory.forEach(function (val: any) {
@@ -755,8 +762,12 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
   const TaskItemRank: any = [];
   const site: any = [];
   const siteDetail: any = [];
+  
   const GetSmartmetadata = async () => {
     let smartmetaDetails = [];
+    subCategories = [];
+        var TaskTypes: any = []
+        var Task: any = []
     smartmetaDetails = await web.lists
       //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
       .getById(RequireData.SmartMetadataListID)
@@ -790,10 +801,48 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
         }
       });
     }
+     TaskTypes = getSmartMetadataItemsByTaxType(smartmetaDetails, 'Categories');
+    let instantCat: any = [];
+        TaskTypes?.map((cat: any) => {
+            cat.ActiveTile = false;
+            getChilds(cat, TaskTypes);
+            if (cat?.ParentID !== undefined && cat?.ParentID === 0 && cat?.Title !== 'Phone') {
+                Task.push(cat);
+            }
+            if (cat?.Title == 'Phone' || cat?.Title == 'Email Notification' || cat?.Title == 'Immediate' || cat?.Title == 'Approval') {
+                instantCat.push(cat)
+            }
+            if (cat?.Parent?.Id !== undefined && cat?.Parent?.Id !== 0 && cat?.IsVisible) {
+                subCategories.push(cat);
+            }
+        })
+        setInstantCategories(instantCat)
+        let uniqueArray: any = [];
+        AutoCompleteItemsArray.map((currentObject: any) => {
+            if (!uniqueArray.find((obj: any) => obj.Id === currentObject.Id)) {
+                uniqueArray.push(currentObject)
+            }
+        })
+        AutoCompleteItemsArray = uniqueArray;
+        Task?.map((taskItem: any) => {
+            subCategories?.map((item: any) => {
+                if (taskItem?.Id === item?.Parent?.Id) {
+                    try {
+                        item.ActiveTile = false;
+                        item.SubTaskActTile = item?.Title?.replace(/\s/g, "");
+                    } catch (error) {
+                        console.log(error);
+                    }
+                }
+            })
+        })
+
+       
     setsiteDetails(siteDetail);
     getMasterTaskListTasks();
   };
-
+ 
+ 
   React.useEffect(() => {
     GetTaskUsers();
     getAllSitesData();
@@ -881,9 +930,79 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
 
     console.log(componentDetails);
   };
-  function EditComponentCallback() {
-    Calls();
+  function EditComponentCallback(res:any) {
+    if(res ==="Close"){
+      Calls(res);
+    }else{
+
+    
+    const date = moment(res?.Created);
+    const formattedDate = date.format('DD-MM-YYYY');
+    const datedue = moment(res?.DueDate);
+    const formattedDateDue = datedue.format('DD-MM-YYYY');
+    if (TaskAssignedTo!= undefined && TaskAssignedTo?.length > 0) {
+      $.map(TaskAssignedTo, (Assig: any) => {
+        if (Assig.Id != undefined) {
+          $.map(AllUsers, (users: any) => {
+            if (
+              Assig.Id != undefined &&
+              users.AssingedToUser != undefined &&
+              Assig.Id == users.AssingedToUser.Id
+            ) {
+              users.ItemCover = users.Item_x0020_Cover;
+              res?.TeamLeaderUser?.push(users);
+            }
+          });
+        }
+      });
+    }
+   
+    if (TaskTeamMembers != undefined && TaskTeamMembers.length > 0) {
+      $.map(TaskTeamMembers, (Assig: any) => {
+        if (Assig.Id != undefined) {
+          $.map(AllUsers, (users: any) => {
+            if (
+              Assig.Id != undefined &&
+              users.AssingedToUser != undefined &&
+              Assig.Id == users.AssingedToUser.Id
+            ) {
+              users.ItemCover = users.Item_x0020_Cover;
+              res?.TeamLeaderUser?.push(users);
+            }
+          });
+        }
+      });
+    }
+// ClientCategory
+if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 ){
+ const clientarray= res?.ClientCategory?.results?.filter((item:any)=> item.Title != undefined)
+  res.ClientCategory =clientarray;
+}
+    res.DisplayCreateDate = formattedDate;
+    
+    if(formattedDateDue === "Invalid date"){
+      res.DisplayDueDate = "";
+    }else{
+      res.DisplayDueDate = formattedDateDue;
+    }
+    res.TaskID = item.TaskID;
+    res.SiteIconTitle = item.SiteIconTitle;
+    res.Item_x0020_Type = item.Item_x0020_Type;
+    res.isRestructureActive = item.isRestructureActive;
+    res.ItemRank = item.ItemRank;
+    res.PercentComplete = item.PercentComplete;
+    res.PortfolioType = item.PortfolioType;
+    res.SiteIcon = undefined;
+    res.siteUrl = RequireData?.siteUrl;
+    Calls(res);
   }
+  }
+
+
+
+  
+
+
   let mentionUsers: any = [];
   //  mentionUsers = this.taskUsers.map((i:any)=>{
   //     return({id : i.Title,display: i.Title})
@@ -1151,6 +1270,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
     var item: any = {};
     var smartComponentsIds: any[] = [];
     var RelevantPortfolioIds = "";
+    let PortfolioIds:any[]=[];
     let TotalCompositionsValue: any = 0;
     var Items = EditData;
     if (SiteTaggingData?.length > 0) {
@@ -1222,42 +1342,61 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
           ) {
             $.each(linkedComponentData, function (index: any, smart: any) {
               RelevantPortfolioIds = smart.Id;
+              PortfolioIds.push(smart.Id)
             });
           }
         });
       }
-      if (isDropItemRes == true) {
-        if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
-          TaskAssignedTo.map((taskInfo) => {
-            AssignedToIds.push(taskInfo.Id);
-          });
-        }
-      } else {
-        if (
-          EditData?.AssignedTo != undefined &&
-          EditData?.AssignedTo?.length > 0
-        ) {
-          EditData?.AssignedTo.map((taskInfo: any) => {
-            AssignedToIds.push(taskInfo.Id);
-          });
-        }
-      }
-      if (isDropItem == true) {
-        if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
-          TaskTeamMembers.map((taskInfo) => {
+
+
+      if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
+        TaskTeamMembers?.map((taskInfo) => {
             TeamMemberIds.push(taskInfo.Id);
-          });
-        }
-      } else {
-        if (
-          EditData?.TeamMembers != undefined &&
-          EditData?.TeamMembers?.length > 0
-        ) {
-          EditData?.TeamMembers.map((taskInfo: any) => {
-            TeamMemberIds.push(taskInfo.Id);
-          });
-        }
-      }
+        })
+    }else{
+      TeamMemberIds=[];
+    }
+    if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
+      TaskAssignedTo?.map((taskInfo) => {
+          AssignedToIds.push(taskInfo.Id);
+      })
+  }else{
+    AssignedToIds=[];
+  }
+
+
+      // if (isDropItemRes == true) {
+      //   if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
+      //     TaskAssignedTo.map((taskInfo) => {
+      //       AssignedToIds.push(taskInfo.Id);
+      //     });
+      //   }
+      // } else {
+      //   if (
+      //     EditData?.AssignedTo != undefined &&
+      //     EditData?.AssignedTo?.length > 0
+      //   ) {
+      //     EditData?.AssignedTo.map((taskInfo: any) => {
+      //       AssignedToIds.push(taskInfo.Id);
+      //     });
+      //   }
+      // }
+      // if (isDropItem == true) {
+      //   if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
+      //     TaskTeamMembers.map((taskInfo) => {
+      //       TeamMemberIds.push(taskInfo.Id);
+      //     });
+      //   }
+      // } else {
+      //   if (
+      //     EditData?.TeamMembers != undefined &&
+      //     EditData?.TeamMembers?.length > 0
+      //   ) {
+      //     EditData?.TeamMembers.map((taskInfo: any) => {
+      //       TeamMemberIds.push(taskInfo.Id);
+      //     });
+      //   }
+      // }
 
       // if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
       //     TaskResponsibleTeam.map((taskInfo) => {
@@ -1333,6 +1472,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
           // ClientCategoryId: { "results": RelevantPortfolioIds },
           ServicePortfolioId:
             RelevantPortfolioIds != "" ? RelevantPortfolioIds : null,
+          PortfoliosId:{results:(PortfolioIds?.length != 0 ? PortfolioIds : [])},
           Synonyms: JSON.stringify(Items["Synonyms"]),
           Package: Items.Package,
           AdminStatus: Items.AdminStatus,
@@ -1353,6 +1493,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                 ? EditData?.Item_x002d_Image?.Url
                 : ""
           },
+          // ClientActivity:,
           ComponentLink: {
             Description:
               Items.ComponentLink != undefined ? Items.ComponentLink : null,
@@ -1394,7 +1535,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
           }
         })
         .then((res: any) => {
+
           console.log(res);
+          EditComponentCallback(Items)
           setModalIsOpenToFalse();
         });
     }
@@ -1590,7 +1733,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                         src={
                           EditData?.Portfolio_x0020_Type == "Service"
                             ? "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png"
-                            : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/component_icon.png"
+                            : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feature_icon.png"
                         }
                       />
                       {EditData?.Title}
@@ -1654,7 +1797,16 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
         .then((i: any) => {
           console.log(i);
           setComponent((EditData) => [...EditData]);
+         
           setModalIsOpenToFalse();
+            var ItmesDelete: any = {
+                data: {
+                    Id: item.Id,
+                    ItmesDelete: true
+                }
+            }
+            Calls(ItmesDelete);
+        
           item.showProgressBar();
         });
     }
@@ -1735,7 +1887,18 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
       .top(4999)
       .expand("Author,Editor")
       .get();
-
+     CategoryAllData = MetaData?.filter((item:any)=> item?.TaxType === "Categories")
+     let MyCategoriesd:any = [];
+     if(CategoryAllData?.length>0 && categoryitem?.length>0){
+      CategoryAllData.map((item:any)=>{
+        categoryitem.map((items:any)=>{
+          if(item.Title===items){
+           MyCategoriesd.push(item) ;
+          }
+        })
+      })
+     }
+     setCategoriesData(MyCategoriesd);
     siteConfig = getSmartMetadataItemsByTaxType(MetaData, "Sites");
     siteConfig?.map((site: any) => {
       if (
@@ -2206,6 +2369,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
       setApprovalStatus(false);
     }
   };
+   
+// For first time 
+
 
   const selectedCategoryTrue = (type: any) => {
     if (type == "Phone") {
@@ -2224,13 +2390,41 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
       setApprovalStatus(true);
     }
   };
+  
+
   const imageTabCallBack = React.useCallback((data: any) => {
     setEditData(data);
     console.log(EditData);
     console.log(data);
     // setEditdocumentsData(data);
   }, []);
-  return (
+
+  React.useEffect(()=>{
+    const categoryd = item?.Categories?.split(';')
+    categoryd?.map((item:any)=>{
+      selectedCategoryTrue(item);
+    })
+    
+  },[])
+
+
+
+  
+  const selectSubTaskCategory = (title: any, Id: any, item: any) => {
+    let mycategorydata:any=[];
+    if(item.ActiveTile){
+      item.ActiveTile = false;
+      mycategorydata =  CategoriesData.filter((item,index)=> (item.Id !== Id));
+      setCategoriesData(prev=>mycategorydata);
+    }else{
+      mycategorydata =  CategoriesData;
+      mycategorydata.push(item);
+      setCategoriesData(prev=>mycategorydata);
+    }
+      // = !item.ActiveTile;
+
+}
+    return (
     <>
       {console.log("All Done")}
       <Panel
@@ -2408,50 +2602,31 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                           {EditData?.Portfolio_x0020_Type == "Service" && (
                             <div className="input-group">
                               <label className="form-label full-width">
-                                Component Portfolio
+                                Portfolio Item
                               </label>
                               <input type="text" className="form-control" />
                               <span className="input-group-text">
-                                <svg
-                                  onClick={(e) =>
+                                <span  onClick={(e) =>
                                     EditComponent(EditData, "Component")
-                                  }
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 48 48"
-                                  fill="none"
-                                >
-                                  <path
-                                    fill-rule="evenodd"
-                                    clip-rule="evenodd"
-                                    d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z"
-                                    fill="#333333"
-                                  />
-                                </svg>
+                                  } className="svg__iconbox svg__icon--editBox">
+
+                                  </span>
+                          
                               </span>
                             </div>
                           )}
                           {EditData?.Portfolio_x0020_Type == "Component" && (
                             <div className="input-group">
                               <label className="form-label full-width">
-                                Service Portfolio
+                                Portfolio Item
                               </label>
                               <input type="text" className="form-control" />
                               <span className="input-group-text">
-                                <svg
-                                  onClick={(e) =>
+                                <span  onClick={(e) =>
                                     EditComponent(EditData, "Service")
-                                  }
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 48 48"
-                                  fill="none"
-                                >
-                                  <path
-                                    fill-rule="evenodd"
-                                    clip-rule="evenodd"
-                                    d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z"
-                                    fill="#333333"
-                                  />
-                                </svg>
+                                  } className="svg__iconbox svg__icon--editBox">
+                                    
+                                  </span>
                               </span>
                             </div>
                           )}
@@ -3046,174 +3221,115 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                           </div>
                         </div>
                       </div>
-                      <div className="col">
-                        <div className="col-sm-11  inner-tabb">
-                          <div className="row mt-2">
-                            <div className="col-sm-12">
-                              <div className="col-sm-12 padding-0 input-group">
-                                <label className="full_width">Categories</label>
+                      <div className="row mt-2">
+                                <div className="col-sm-12">
+                                    <div className="col-sm-12 padding-0 input-group">
+                                        <label className="full_width">Categories</label>
 
-                                {/* <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e)} /> */}
-
-                                <input
-                                  type="text"
-                                  className="ui-autocomplete-input form-control"
-                                  id="txtCategories"
-                                  value={categorySearchKey}
-                                  onChange={(e) =>
-                                    autoSuggestionsForCategory(e)
-                                  }
-                                />
-
-                                <span
-                                  onClick={() => EditComponentPicker(item)}
-                                  className="input-group-text"
-                                  title="Status Popup"
-                                >
-                                  <span
-                                    title="Edit Task"
-                                    className="svg__iconbox svg__icon--editBox"
-                                  ></span>
-                                </span>
-                                {/* <span className="input-group-text">
-                                  <a className="hreflink" title="Edit Categories">
-                                      <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png"
-                                      onClick={() => EditComponentPicker(item)} />
-
-                                  </a>
-
-                                </span> */}
-                              </div>
-                            </div>
-                          </div>
-
-                          {SearchedCategoryData?.length > 0 ? (
-                            <div className="SmartTableOnTaskPopup">
-                              <ul className="list-group">
-                                {SearchedCategoryData.map((item: any) => {
-                                  return (
-                                    <li
-                                      className="hreflink list-group-item rounded-0 list-group-item-action"
-                                      key={item.id}
-                                      onClick={() =>
-                                        setSelectedCategoryData(
-                                          [item],
-                                          "For-Auto-Search"
-                                        )
-                                      }
-                                    >
-                                      <a>{item.Newlabel}</a>
-                                    </li>
-                                  );
-                                })}
-                              </ul>
-                            </div>
-                          ) : null}
-
-                          <div className="col">
-                            <div className="col">
-                              <div className="form-check">
-                                <input
-                                  className="form-check-input rounded-0"
-                                  name="Phone"
-                                  type="checkbox"
-                                  checked={PhoneStatus}
-                                  value={`${PhoneStatus}`}
-                                  onClick={(e) =>
-                                    CategoryChange(e, "Phone", 199)
-                                  }
-                                />
-
-                                <label className="form-check-label">
-                                  Phone
-                                </label>
-                              </div>
-
-                              <div className="form-check">
-                                <input
-                                  className="form-check-input rounded-0"
-                                  type="checkbox"
-                                  checked={EmailStatus}
-                                  value={`${EmailStatus}`}
-                                  onClick={(e) =>
-                                    CategoryChange(e, "Email Notification", 276)
-                                  }
-                                />
-
-                                <label>Email Notification</label>
-                              </div>
-
-                              <div className="form-check">
-                                <input
-                                  className="form-check-input rounded-0"
-                                  type="checkbox"
-                                  checked={ImmediateStatus}
-                                  value={`${ImmediateStatus}`}
-                                  onClick={(e) =>
-                                    CategoryChange(e, "Immediate", 228)
-                                  }
-                                />
-
-                                <label>Immediate</label>
-                              </div>
-                            </div>
-
-                            <div className="form-check ">
-                              <label className="full-width">Approval</label>
-
-                              <input
-                                type="checkbox"
-                                className="form-check-input rounded-0"
-                                name="Approval"
-                                checked={ApprovalStatus}
-                                value={`${ApprovalStatus}`}
-                                onClick={(e) =>
-                                  CategoryChange(e, "Approval", 227)
-                                }
-                              />
-                            </div>
-                          </div>
-
-                          {CategoriesData != undefined ? (
-                            <div>
-                              {CategoriesData?.map(
-                                (type: any, index: number) => {
-                                  return (
-                                    <>
-                                      {type.Title != "Phone" &&
-                                        type.Title != "Email Notification" &&
-                                        type.Title != "Approval" &&
-                                        type.Title != "Immediate" && (
-                                          <div className="block d-flex full-width justify-content-between mb-1 p-2">
-                                            <a
-                                              style={{
-                                                color: "#fff !important"
-                                              }}
-                                              target="_blank"
-                                              data-interception="off"
-                                              href={`${RequireData?.siteUrl}/SitePages/Portfolio-Profile.aspx?${item?.Id}`}
-                                            >
-                                              {type.Title}
+                                        <input
+                                            type="text"
+                                            className="ui-autocomplete-input form-control"
+                                            id="txtCategories"
+                                            value={categorySearchKey}
+                                            onChange={(e) => autoSuggestionsForCategory(e)}
+                                        />
+                                        <span className="input-group-text">
+                                            <a className="hreflink" title="Edit Categories">
+                                                <img
+                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png"
+                                                    onClick={() => EditComponentPicker(item)}
+                                                />
                                             </a>
+                                        </span>
 
-                                            <span
-                                              className="bg-light svg__iconbox svg__icon--cross"
-                                              onClick={() =>
-                                                deleteCategories(type?.Id)
-                                              }
-                                            ></span>
+                                    </div>
+                                    {
+                                        instantCategories?.map((item: any) => {
+                                            return (
+                                                <div className="form-check">
+                                                    <input
+                                                        className="form-check-input rounded-0"
+                                                        type="checkbox"
+                                                        checked={CategoriesData?.some((selectedCat: any) => selectedCat?.Id == item?.Id)}
+                                                        onClick={() =>
+                                                            selectSubTaskCategory(item?.Title, item?.Id, item)
+                                                        }
+                                                    />
+                                                    <label>{item?.Title}</label>
+                                                </div>
+                                            )
+                                        })
+                                    }
+                                    {SearchedCategoryData?.length > 0 ? (
+                                        <div className="SmartTableOnTaskPopup">
+                                            <ul className="list-group">
+                                                {SearchedCategoryData.map((item: any) => {
+                                                    return (
+                                                        <li
+                                                            className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                            key={item.id}
+                                                            onClick={() =>
+                                                                setSelectedCategoryData([item], "For-Auto-Search")
+                                                            }
+                                                        >
+                                                            <a>{item.Newlabel}</a>
+                                                        </li>
+                                                    );
+                                                })}
+                                            </ul>
+                                        </div>
+                                    ) : null}
+                                </div>
+                                {CategoriesData != undefined ? (
+                                    <div>
+                                        {CategoriesData?.map((type: any, index: number) => {
+                                            return (
+                                                <>
+                                                    {!instantCategories?.some((selectedCat: any) => selectedCat?.Title == type?.Title) && (
+                                                        <div className="block d-flex full-width justify-content-between mb-1 p-2">
+                                                            <a
+                                                                style={{ color: "#fff !important" }}
+                                                                target="_blank"
+                                                                data-interception="off"
+                                                                href={`${SelectD.siteUrl}/SitePages/Portfolio-Profile.aspx?${item?.Id}`}
+                                                            >
+                                                                {type.Title}
+                                                            </a>
+                                                            <span
+                                                                className="bg-light svg__iconbox svg__icon--cross"
+                                                                onClick={() => deleteCategories(type?.Id)}
+                                                            ></span>
+                                                            {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
+                                                        </div>
+                                                    )}
+                                                </>
+                                            );
+                                        })}
+                                    </div>
+                                ) : null}
+                                {/* <div className="col-sm-12">
+                                    <div className="col-sm-12 padding-0 input-group">
+                                        <label className="full_width">Client Category</label>
+                                        <input
+                                            type="text"
+                                            className="ui-autocomplete-input form-control"
+                                            id="txtCategories"
+                                        />
 
-                                            {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
-                                          </div>
-                                        )}
-                                    </>
-                                  );
-                                }
-                              )}
+                                        <span className="input-group-text">
+                                            <a className="hreflink" title="Edit Categories">
+                                                <img
+                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png"
+                                                    onClick={() => EditClientCategory(selectedItem)}
+                                                />
+                                            </a>
+                                        </span>
+                                    </div>
+
+                                </div> */}
+
                             </div>
-                          ) : null}
-                        </div>
-                      </div>
+                           
                     </div>
                     <div className="col-sm-4  ">
                       <CommentCard
@@ -3826,9 +3942,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                     Created{" "}
                     <span ng-bind="EditData?.Created | date:'MM-DD-YYYY'">
                       {" "}
-                      {EditData?.Created != null
-                        ? moment(EditData?.Created).format("MM-DD-YYYY MM:SS")
-                        : ""}
+                      {EditData.Created ? moment(EditData.Created).format("DD/MM/YYYY") : ""}
                     </span>{" "}
                     by
                     <span className="panel-title ps-1">
@@ -3840,9 +3954,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                   <div className="text-left">
                     Last modified{" "}
                     <span>
-                      {EditData?.Modified != null
-                        ? moment(EditData?.Modified).format("MM-DD-YYYY MM:SS")
-                        : ""}
+                    {EditData.Modified ? moment(EditData.Modified).format("DD/MM/YYYY") : ''}
                     </span>{" "}
                     by{" "}
                     <span className="panel-title">
@@ -3949,20 +4061,22 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
               ></ComponentPortPolioPopup>
             )} */}
             {IsComponent ? (
-              <ServiceComponentPortfolioPopup
-                props={SharewebComponent}
-                Dynamic={RequireData}
-                Call={Call}
-                ComponentType={"Service"}
-              ></ServiceComponentPortfolioPopup>
+                <ServiceComponentPortfolioPopup
+                            props={SharewebComponent}
+                            Dynamic={RequireData}
+                            ComponentType={"Component"}
+                            Call={Call}
+                            selectionType={"Single"}
+                        />
             ) : null}
             {IsService ? (
               <ServiceComponentPortfolioPopup
-                props={SharewebComponent}
-                Dynamic={RequireData}
-                Call={Call}
-                ComponentType={"Component"}
-              ></ServiceComponentPortfolioPopup>
+                            props={SharewebComponent}
+                            Dynamic={RequireData}
+                            Call={Call}
+                            ComponentType={"Component"}
+                            selectionType={"Multi"}
+                        />
             ) : null}
             {IsComponentPicker && (
               <Picker

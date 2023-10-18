@@ -7,7 +7,7 @@ import Tooltip from '../globalComponents/Tooltip'
 var myarray4: any = [];
 let ClientTimeArray: any[] = [];
 var SiteTypeBackupArray: any = [];
-import * as Moment from 'moment';
+
 
 
 export default function Sitecomposition(datas: any) {
@@ -18,6 +18,9 @@ export default function Sitecomposition(datas: any) {
   const [selectedClientCategory, setselectedClientCategory] = React.useState([]);
   const [AllSitesData, setAllSitesData] = React.useState([]);
   const [renderCount, setRenderCount] = React.useState(0);
+  const [key, setKey] = React.useState(0); // Add a key state
+
+
   let BackupSiteTaggingData: any = [];
   let BackupClientCategory: any = [];
   let siteUrl: any = datas?.sitedata?.siteUrl;
@@ -172,20 +175,22 @@ export default function Sitecomposition(datas: any) {
 
   const ClosePopupCallBack = React.useCallback(() => {
     setEditSiteCompositionStatus(false);
-    if (datas?.props?.ClientCategory?.results?.length > 0 || datas?.props.Sitestagging != undefined) {
-      GetSmartMetaData(datas?.props?.ClientCategory?.results, datas?.props?.Sitestagging);
-    }
+    datas.callback();
+    // if (datas?.props?.ClientCategory?.results?.length > 0 || datas?.props.Sitestagging != undefined) {
+    //   GetSmartMetaData(datas?.props?.ClientCategory?.results, datas?.props?.Sitestagging);
+    // }
     // setRenderCount(renderCount + 1)
   }, [])
 
   const SiteCompositionCallBack = React.useCallback((Data: any, Type: any) => {
-    datas.props.Sitestagging = Data.ClientTime?.length > 0 ? JSON.stringify(Data.ClientTime) :[];
+    datas.props.Sitestagging = Data.ClientTime?.length > 0 ? JSON.stringify(Data.ClientTime) : [];
     datas.props.ClientCategory.results = Data.selectedClientCategory;
+    setKey((prevKey) => prevKey + 1);
   }, [])
   return (
     <>
-      <dl className="Sitecomposition">
-        <div className='dropdown'>
+      <dl key={key} className="Sitecomposition">
+        <div  className='dropdown'>
           <a className="sitebutton bg-fxdark d-flex "
           >
             <span onClick={() => showhideComposition()} >
@@ -212,11 +217,14 @@ export default function Sitecomposition(datas: any) {
                       {Number(cltime?.ClienTimeDescription).toFixed(2)}%
                     </span>
                   }
-                  {cltime.ClientCategory != undefined && cltime.ClientCategory.length > 0 ? cltime.ClientCategory?.map((clientcat: any) => {
-                    return (
-                      <span>{clientcat.Title}</span>
-                    )
-                  }) : null}
+                  <span>
+                    {cltime.ClientCategory != undefined && cltime.ClientCategory.length > 0 ? cltime.ClientCategory?.map((clientcat: any) => {
+                      return (
+                        <span>{clientcat.Title}</span>
+                      )
+
+                    }) : null}
+                  </span>
                 </li>
               })}
             </ul>
@@ -239,6 +247,7 @@ export default function Sitecomposition(datas: any) {
             SiteTypes={AllSitesData}
             ClientTime={datas?.props?.siteCompositionData != undefined ? datas.props.siteCompositionData : []}
             SiteCompositionSettings={datas?.props?.SiteCompositionSettings}
+            selectedComponent={datas?.props}
             // currentListName={EditData.siteType}
             callBack={SiteCompositionCallBack}
             isServiceTask={datas?.props?.Portfolio_x0020_Type == "Service" ? true : false}

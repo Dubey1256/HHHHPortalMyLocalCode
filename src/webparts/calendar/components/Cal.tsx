@@ -132,7 +132,7 @@ const App = (props: any) => {
   const [m, setm]: any = React.useState(false);
   const [events, setEvents]: any = React.useState([]);
   let compareData: any = [];
-  // const [isOpen, setIsOpen]:any = React.useState(false);
+  // const [isOpsetIsOpen]:any = React.useState(false);
   // const [name, setName]:any = React.useState('');
   const [startDate, setStartDate]: any = React.useState(null);
   const [endDate, setEndDate]: any = React.useState(null);
@@ -209,6 +209,7 @@ const App = (props: any) => {
             fontSize: "20px",
             fontWeight: "600",
             marginLeft: "20px"
+            
           }}
         >
           <span>
@@ -425,8 +426,12 @@ const App = (props: any) => {
   const openm = () => {
     setm(true);
   };
-  const closem = () => {
-    setm(false);
+  const closem = (e:any) => {    
+    if( e != undefined && e?.type === 'mousedown' )
+     setm(true);
+    else
+     setm(false);
+
     setInputValueName("");
     setStartDate(null);
     setEndDate(null);
@@ -619,7 +624,7 @@ const App = (props: any) => {
         .then((i: any) => {
           //console.log(i);
           void getData();
-          closem();
+           closem(undefined);
           closeModal();
           void getData();
         });
@@ -637,7 +642,7 @@ const App = (props: any) => {
           if (newRecurrenceEvent) {
             await saveRecurrenceEvent();
             void getData();
-            closem();
+             closem(undefined);
             setIsChecked(false);
             setSelectedTime(selectedTime);
             setSelectedTimeEnd(selectedTimeEnd);
@@ -709,7 +714,7 @@ const App = (props: any) => {
             .then((res: any) => {
               //console.log(res);
               void getData();
-              closem();
+               closem(undefined);
               setIsChecked(false);
               setSelectedTime(selectedTime);
               setSelectedTimeEnd(selectedTimeEnd);
@@ -1149,7 +1154,7 @@ const App = (props: any) => {
     if (editRecurrenceEvent) {
       await saveRecurrenceEvent();
       void getData();
-      closem();
+      closem(undefined);
       setIsChecked(false);
       setSelectedTime(selectedTime);
       setSelectedTimeEnd(selectedTimeEnd);
@@ -1220,7 +1225,7 @@ const App = (props: any) => {
       .then((i: any) => {
         //console.log(i);
         void getData();
-        closem();
+        closem(undefined);
         setSelectedTime(startTime);
         setSelectedTimeEnd(endTime);
       });
@@ -1460,7 +1465,7 @@ const App = (props: any) => {
   };
 
   const closeModal = () => {
-    setIsOpen(false);
+    setIsOpen(false);    
   };
   const emailCallback = React.useCallback(() => {
     getData();
@@ -1492,7 +1497,7 @@ const App = (props: any) => {
   React.useEffect(() => {
     //void getSPCurrentTimeOffset();
     void getData();
-  }, []);
+  }, [m]);
 
   return (
     <div>
@@ -1554,7 +1559,7 @@ const App = (props: any) => {
           headerText={`Leaves of ${dt}`}
           isOpen={isOpen}
           onDismiss={closeModal}
-          // isFooterAtBottom={true}
+          /// isFooterAtBottom={true}
           type={PanelType.medium}
           closeButtonAriaLabel="Close"
         >
@@ -1595,7 +1600,7 @@ const App = (props: any) => {
       <Panel
         onRenderHeader={onRenderCustomHeader}
         isOpen={m}
-        onDismiss={closem}
+        onDismiss={(e:any)=>closem(e)}
         // isFooterAtBottom={true}
         type={PanelType.medium}
         closeButtonAriaLabel="Close"
@@ -1850,6 +1855,7 @@ const App = (props: any) => {
               type="button"
               className="btn btn-default  px-3"
               onClick={closem}
+              
             >
               Cancel
             </button>
@@ -1860,6 +1866,7 @@ const App = (props: any) => {
         ) : (
           ""
         )}
+        
       </Panel>
     </div>
   );
