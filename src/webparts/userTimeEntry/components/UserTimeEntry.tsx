@@ -2056,15 +2056,14 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                           </label>
                           <div className='d-flex'>
                             {users.childs.length > 0 && users.childs.map((item: any, i: number) => {
-                              return <div className="alignCenter">
+                              return item.AssingedToUser != undefined && <div className="alignCenter">
                                 {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined ?
                                   <span>
                                     <img id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg seclected-Image ProirityAssignedUserPhoto' : 'ProirityAssignedUserPhoto'} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
                                       title={item.AssingedToUser.Title}
                                       src={item.Item_x0020_Cover.Url} />
                                   </span> :
-                                  <span className={item?.AssingedToUserId == user?.Id ? 'activeimg seclected-Image suffix_Usericon' : 'suffix_Usericon'} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
-                                    title={item?.AssingedToUser?.Title}
+                                  <span className={item?.AssingedToUserId == user?.Id ? 'activeimg seclected-Image suffix_Usericon' : 'suffix_Usericon'} title={item.Title} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
                                   >{item?.Suffix}</span>
                                 }
                               </div>
@@ -2141,24 +2140,21 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
 
                 </Row>
                 <Row className='ps-30 mt-2'>
-                  <div className="col-2">
-                    <div className='input-group'>
-                    <label className='full_width'>Start Date</label>
-            
+                  <div className="col">
+                    <label>Start Date</label>
+                    <span>
                       <DatePicker selected={this.state.startdate} onChange={(date: any) => this.setStartDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
                         className="form-control date-picker" popperPlacement="bottom-start" customInput={<this.ExampleCustomInput />}
-                      
                       />
+                    </span>
                   </div>
-                  </div>
-                  <div className="col-2">
-                  <div className='input-group'>
-                    <label className='full_width'>End Date</label>
+                  <div className="col">
+                    <label>End Date</label>
+                    <span>
                       <DatePicker selected={this.state.enddate} onChange={(date: any) => this.setEndDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
                         className="form-control date-picker" popperPlacement="bottom-start" customInput={<this.ExampleCustomInput />}
                       />
-                   
-                    </div>
+                    </span>
                   </div>
                   <div className='col'>
                     <div className='mt-1'>
@@ -2212,10 +2208,10 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                             speed={2} trail={60} shadow={false} hwaccel={false} className="spinner" zIndex={2e9} top="28%" left="50%" scale={1.0} loadedClassName="loadedContent" />
                           <tbody>
                             <tr>
-                              <td valign="top" className='pe-2'>
+                              <td valign="top">
                                 <div>
                                   <label className='border-bottom full-width pb-1'>
-                                    <input id='chkAllCategory' defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} type="checkbox" className="form-check-input me-2" />
+                                    <input id='chkAllCategory' defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} type="checkbox" className="form-check-input me-1" />
                                     Client Category
                                   </label>
                                   <div className="custom-checkbox-tree">
@@ -2233,10 +2229,10 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                                   </div>
                                 </div>
                               </td>
-                              <td valign="top" className='pe-1'>
+                              <td valign="top">
                                 <div>
                                   <label className='border-bottom full-width pb-1'>
-                                    <input type="checkbox" id='chkAllSites' defaultChecked={this.state.checkedAllSites} onClick={(e) => this.SelectAllSits(e)} className="form-check-input me-2" />
+                                    <input type="checkbox" id='chkAllSites' defaultChecked={this.state.checkedAllSites} onClick={(e) => this.SelectAllSits(e)} className="form-check-input me-1" />
                                     Sites
                                   </label>
                                   <div className="custom-checkbox-tree">

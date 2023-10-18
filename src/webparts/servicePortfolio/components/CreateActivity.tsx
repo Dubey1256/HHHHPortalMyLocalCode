@@ -69,11 +69,15 @@ const CreateActivity = (props: any) => {
         if (props?.selectedItem?.AssignedTo?.length > 0) {
             setTaskAssignedTo(props?.selectedItem?.AssignedTo)
         }
-        if (props?.selectedItem?.ResponsibleTeam?.length > 0 || props?.selectedItem?.TeamLeader?.length > 0) {
-            setTaskResponsibleTeam(props?.ResponsibleTeam?.AssignedTo)
+        if (props?.selectedItem?.ResponsibleTeam?.length > 0 ) {
+            setTaskResponsibleTeam(props?.selectedItem?.ResponsibleTeam)
+        }else if(props?.selectedItem?.TeamLeader?.length > 0){
+            setTaskTeamMembers(props?.selectedItem?.TeamLeader)
         }
-        if (props?.selectedItem?.TeamMembers?.length > 0 || props?.selectedItem?.TeamMembers?.length > 0) {
-            setTaskTeamMembers(props?.TeamMembers?.AssignedTo)
+        if (props?.selectedItem?.TeamMembers?.length > 0 ) {
+            setTaskTeamMembers(props?.selectedItem?.TeamMembers )
+        }else if(props?.selectedItem?.TeamMember?.length > 0){
+            setTaskTeamMembers(props?.selectedItem?.TeamMember)
         }
         if (props?.selectedItem?.ClientCategory?.length > 0) {
             setClientCategoriesData(props?.selectedItem?.ClientCategory)
