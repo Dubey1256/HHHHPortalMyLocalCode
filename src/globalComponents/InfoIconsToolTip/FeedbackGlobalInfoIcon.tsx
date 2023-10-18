@@ -7,20 +7,38 @@ const FeedbackGlobalInfoIcon = (props: any) => {
             setResultData(props?.FeedBack)
         }
     }, [props != undefined])
+    function cleanHTML(html: any) {
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        const paragraphs = div.querySelectorAll('p');
+
+        // Filter out empty <p> tags
+        paragraphs.forEach((p) => {
+            if (p.innerText.trim() === '') {
+                p.parentNode.removeChild(p); // Remove empty <p> tags
+            }
+        });
+        const brTags = div.querySelectorAll('br');
+    if (brTags.length > 1) {
+      for (let i = brTags.length - 1; i > 0; i--) {
+        brTags[i].parentNode.removeChild(brTags[i]);
+      }
+    }
+
+        return div.innerHTML;
+    }
+
     return (
         <>
 
             <div className={"Addcomment " + "manage_gap"}>
                 {resultData?.length > 0 && resultData?.map((fbData: any, i: any) => {
                     let userdisplay: any = [];
-                    // userdisplay.push({ Title: props?.props?.userDisplayName })
-
-
                     if (fbData != null && fbData != undefined && fbData?.Title != "") {
 
                         try {
                             if (fbData?.Title != undefined) {
-                                fbData.Title = fbData?.Title?.replace(/\n/g, '<br/>');
+                                fbData.Title = cleanHTML(fbData?.Title)
 
                             }
                         } catch (e) {
@@ -61,7 +79,7 @@ const FeedbackGlobalInfoIcon = (props: any) => {
                                             <div className="border p-2 full-width text-break"
                                                 title={fbData.ApproverData != undefined && fbData?.ApproverData.length > 0 ? fbData.ApproverData[fbData.ApproverData.length - 1].isShowLight : ""}>
 
-                                                <span dangerouslySetInnerHTML={{ __html: fbData?.Title?.replace(/\n/g, "<br />") }}></span>
+                                                <span dangerouslySetInnerHTML={{ __html: cleanHTML(fbData?.Title) }}></span>
                                                 <div className="col">
                                                     {fbData['Comments'] != null && fbData['Comments']?.length > 0 && fbData['Comments']?.map((fbComment: any, k: any) => {
                                                         return <div className={fbComment.isShowLight != undefined && fbComment.isApprovalComment ? `col add_cmnt my-1 ${fbComment.isShowLight}` : "col add_cmnt my-1"}>
@@ -73,7 +91,7 @@ const FeedbackGlobalInfoIcon = (props: any) => {
                                                                     </div>
                                                                     <div className="col-11 pe-0" >
 
-                                                                        <div><span dangerouslySetInnerHTML={{ __html: fbComment?.Title.replace(/\n/g, "<br />") }}></span></div>
+                                                                        <div><span dangerouslySetInnerHTML={{ __html:cleanHTML(fbComment?.Title)  }}></span></div>
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-12 ps-3 pe-0">
@@ -86,7 +104,7 @@ const FeedbackGlobalInfoIcon = (props: any) => {
                                                                                 </div>
                                                                                 <div className="col-11 pe-0" >
 
-                                                                                    <div><span dangerouslySetInnerHTML={{ __html: replymessage?.Title.replace(/\n/g, "<br />") }}></span></div>
+                                                                                    <div><span dangerouslySetInnerHTML={{ __html:cleanHTML(replymessage?.Title)  }}></span></div>
                                                                                 </div>
                                                                             </div>
                                                                          )
@@ -140,7 +158,7 @@ const FeedbackGlobalInfoIcon = (props: any) => {
 
                                                 <div className="border p-2 full-width text-break"
                                                     title={fbSubData?.ApproverData != undefined && fbSubData?.ApproverData?.length > 0 ? fbSubData?.ApproverData[fbSubData?.ApproverData.length - 1]?.isShowLight : ""}>
-                                                    <span ><span dangerouslySetInnerHTML={{ __html: fbSubData?.Title?.replace(/\n/g, "<br />") }}></span></span>
+                                                    <span ><span dangerouslySetInnerHTML={{ __html:cleanHTML(fbSubData?.Title) }}></span></span>
                                                     <div className="feedbackcomment col-sm-12 PadR0 mt-10">
                                                         {fbSubData?.Comments != null && fbSubData.Comments.length > 0 && fbSubData?.Comments?.map((fbComment: any, k: any) => {
                                                             return <div className={fbComment?.isShowLight != undefined && fbComment.isApprovalComment ? `col-sm-12  mb-2 add_cmnt my-1 ${fbComment?.isShowLight}` : "col-sm-12  mb-2 add_cmnt my-1 "}>
@@ -152,7 +170,7 @@ const FeedbackGlobalInfoIcon = (props: any) => {
                                                                         </div>
                                                                         <div className="col-sm-11 pad0" key={k}>
 
-                                                                            <div ><span dangerouslySetInnerHTML={{ __html: fbComment?.Title.replace(/\n/g, "<br />") }}></span></div>
+                                                                            <div ><span dangerouslySetInnerHTML={{ __html: cleanHTML(fbComment?.Title) }}></span></div>
                                                                         </div>
                                                                     </div>
                                                                     <div className="col-12 ps-3 pe-0">
@@ -165,7 +183,7 @@ const FeedbackGlobalInfoIcon = (props: any) => {
                                                                                     </div>
                                                                                     <div className="col-11 pe-0" >
 
-                                                                                        <div><span dangerouslySetInnerHTML={{ __html: replymessage?.Title.replace(/\n/g, "<br />") }}></span></div>
+                                                                                        <div><span dangerouslySetInnerHTML={{ __html: cleanHTML(replymessage?.Title)}}></span></div>
                                                                                     </div>
                                                                                 </div>
 
@@ -189,7 +207,7 @@ const FeedbackGlobalInfoIcon = (props: any) => {
                                             {fbData?.heading}
                                         </div>
                                         <div className='border p-1'>
-                                            <span dangerouslySetInnerHTML={{ __html: fbData?.Title?.replace(/\n/g, "<br />") }}></span>
+                                            <span dangerouslySetInnerHTML={{ __html: cleanHTML(fbData?.Title) }}></span>
                                         </div>
 
                                     </div>
