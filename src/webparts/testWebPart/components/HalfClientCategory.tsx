@@ -591,7 +591,7 @@ const HalfClientCategory = (props: any) => {
                 accessorKey: "",
                 placeholder: "",
                 hasCheckbox: true,
-                size: 120,
+                size: 25,
                 id: 'Id',
             },
             {
@@ -599,7 +599,7 @@ const HalfClientCategory = (props: any) => {
                 placeholder: "Id",
                 resetColumnFilters: false,
                 resetSorting: false,
-                size: 70,
+                size: 120,
                 cell: ({ row, getValue }) => (
                     <span className="d-flex">
                         <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTaskItems} AllSitesTaskData={allSitesTasks} AllListId={AllListId} />
@@ -786,7 +786,7 @@ const HalfClientCategory = (props: any) => {
                 accessorKey: "",
                 placeholder: "",
                 hasCheckbox: true,
-                size: 95,
+                size: 25,
                 id: 'Id',
             },
             {
@@ -794,7 +794,7 @@ const HalfClientCategory = (props: any) => {
                 placeholder: "Id",
                 resetColumnFilters: false,
                 resetSorting: false,
-                size: 70,
+                size: 95,
                 cell: ({ row, getValue }) => (
                     <span className="d-flex">
                         <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTaskItems} AllSitesTaskData={allSitesTasks} AllListId={AllListId} />
@@ -1036,7 +1036,7 @@ const HalfClientCategory = (props: any) => {
                   <Sitecomposition props={selectedItem} isDirectPopup={EditSiteCompositionMaster} callback={() => { CallBack('master') }} sitedata={AllListId} />
                 : null
             }
-            {pageLoaderActive ? <PageLoader /> : ''}
+            {/* {pageLoaderActive ? <PageLoader /> : ''} */}
         </div>
     )
 }
