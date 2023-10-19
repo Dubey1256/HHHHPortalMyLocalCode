@@ -55,7 +55,9 @@ const SmartInformation = (props: any,ref:any) => {
   const [folderCreated, setFolderCreated] = useState(true)
   // const [taskUser,setTaskUser]=useState([]);
   const handleClose = () => {
- 
+    if(addSmartInfoPopupAddlinkDoc2==false){
+
+   
     setpopupEdit(false);
     setshowAdddocument(false);
     setSelectedTilesTitle("")
@@ -66,6 +68,7 @@ const SmartInformation = (props: any,ref:any) => {
       console.log(props.remarkData)
       props.setRemark(false)
      }
+    }
   }
   const handleClosedoc = () => {
     setEditdocpanel(false)
@@ -776,8 +779,13 @@ const SmartInformation = (props: any,ref:any) => {
         } else {
           alert("Document(s) upload successfully");
         }
-
+        addSmartInfoPopupAddlinkDoc2=false;
         handleClose();
+        if(props.showHide==="projectManagement"){
+        if(props?.callback!=undefined||null){
+                props?.callback()
+              }
+            }
         GetResult();
         setshowAdddocument(false)
       })
@@ -801,7 +809,7 @@ const SmartInformation = (props: any,ref:any) => {
         .then((res: any) => {
           console.log(res);
           alert("task created")
-
+          addSmartInfoPopupAddlinkDoc2=false;
           GetResult();
           handleClose();
           setshowAdddocument(false)
@@ -1013,7 +1021,10 @@ const SmartInformation = (props: any,ref:any) => {
     console.log(data)
     setEditdocumentsData(data);
   }, [])
-
+const closeDoc=()=>{
+  addSmartInfoPopupAddlinkDoc2=false;
+  handleClose()
+}
   return (
     <div>
       
@@ -1210,7 +1221,7 @@ const SmartInformation = (props: any,ref:any) => {
         isOpen={showAdddocument}
         type={PanelType.custom}
         customWidth="1091px"
-        onDismiss={handleClose}>
+        onDismiss={closeDoc}>
         <div >
 
           <div className='bg-ee d-flex justify-content-center py-4 text-center'>
@@ -1270,7 +1281,7 @@ const SmartInformation = (props: any,ref:any) => {
             </div>
             <div className='mt-2 text-end' >
               <button className='btn btn-primary mx-3 text-end ' onClick={(e) => onUploadDocumentFunction("uploadFile", "UploadDocument")}>upload</button>
-              <Button className='btn btn-default text-end  btn btn-primary' onClick={() => handleClose()}>
+              <Button className='btn btn-default text-end  btn btn-primary' onClick={() => closeDoc()}>
                 Cancel
               </Button> </div>
           </div>}
@@ -1287,7 +1298,7 @@ const SmartInformation = (props: any,ref:any) => {
                 <span>{allValue?.emailDragdrop != "" ? allValue?.emailDragdrop : ""}</span>
               </div>
             </DragDropFiles>
-            <div className='text-lg-end mt-2'><Button className='btn btn-default text-end  btn btn-primary' onClick={() => handleClose()}>Cancel</Button></div>
+            <div className='text-lg-end mt-2'><Button className='btn btn-default text-end  btn btn-primary' onClick={() =>closeDoc()}>Cancel</Button></div>
           </div>}
           {SelectedTilesTitle === "CreateLink" && <div><div className="card mt-3 ">
             <div className="card-header">

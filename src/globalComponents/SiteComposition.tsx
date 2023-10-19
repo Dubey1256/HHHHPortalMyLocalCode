@@ -11,6 +11,7 @@ var SiteTypeBackupArray: any = [];
 
 
 export default function Sitecomposition(datas: any) {
+  const [isDirectPopup, setIsDirectPopup] = React.useState(false);
   const [show, setshows] = React.useState(false);
   const [EditSiteCompositionStatus, setEditSiteCompositionStatus] = React.useState(false);
   const [showComposition, setshowComposition] = React.useState(true);
@@ -27,24 +28,40 @@ export default function Sitecomposition(datas: any) {
   const ServicesTaskCheck: any = false;
   React.useEffect(() => {
     getsmartmetadataIcon();
-    if (datas?.props?.ClientCategory?.results?.length > 0 || datas?.props.Sitestagging != undefined) {
-      GetSmartMetaData(datas?.props?.ClientCategory?.results, datas?.props?.Sitestagging);
+    if (datas?.props.Sitestagging != undefined) {
+      if (datas?.props?.ClientCategory?.length > 0) {
+        GetSmartMetaData(datas?.props?.ClientCategory, datas?.props?.Sitestagging);
+      } else if (datas?.props?.ClientCategory?.results?.length > 0)
+        GetSmartMetaData(datas?.props?.ClientCategory?.results, datas?.props?.Sitestagging);
     }
     // if (datas?.props?.ClientCategory?.results?.length > 0) {
     //   setselectedClientCategory(datas.props.ClientCategory.results);
     // }
-    if (datas?.props.Sitestagging != undefined) {
-      datas.props.siteCompositionData = JSON.parse(datas?.props.Sitestagging);
+    if (datas?.props?.Sitestagging != undefined) {
+      if (typeof datas.props.Sitestagging != "object") {
+        datas.props.siteCompositionData = JSON.parse(datas?.props.Sitestagging);
+      } else {
+        datas.props.siteCompositionData = datas.props.Sitestagging;
+      }
+
     } else {
       datas.props.siteCompositionData = [];
     }
 
   }, [])
+  React.useEffect(() => {
+    if (datas?.isDirectPopup == true) {
+      setIsDirectPopup(true)
+      setEditSiteCompositionStatus(true)
+    }
+  }, [datas?.isDirectPopup])
   const GetSmartMetaData = async (ClientCategory: any, ClientTime: any) => {
     const array2: any[] = [];
     let ClientTime2: any[] = [];
-    if (ClientTime != null) {
+    if (ClientTime != null && typeof ClientTime != "object") {
       ClientTime2 = JSON.parse(ClientTime);
+    } else {
+      ClientTime2 = ClientTime;
     }
     ClientTimeArray = ClientTime2.filter((item: any) => item?.Title != "Gender")
     const web = new Web(datas?.sitedata?.siteUrl);
@@ -189,8 +206,8 @@ export default function Sitecomposition(datas: any) {
   }, [])
   return (
     <>
-      <dl key={key} className="Sitecomposition">
-        <div  className='dropdown'>
+      {!isDirectPopup && (<dl key={key} className="Sitecomposition">
+        <div className='dropdown'>
           <a className="sitebutton bg-fxdark d-flex "
           >
             <span onClick={() => showhideComposition()} >
@@ -230,17 +247,18 @@ export default function Sitecomposition(datas: any) {
             </ul>
           </div>
         </div>
-      </dl>
+      </dl>)}
+
       <Panel
         onRenderHeader={onRenderCustomCalculateSC}
         isOpen={EditSiteCompositionStatus}
-        onDismiss={() => setEditSiteCompositionStatus(false)}
+        onDismiss={() => ClosePopupCallBack()}
         isBlocking={EditSiteCompositionStatus}
         type={PanelType.custom}
         customWidth="1024px"
       >
         <div className={ServicesTaskCheck ? "serviepannelgreena pt-3" : "pt-3"}>
-          {EditSiteCompositionStatus ? <SiteCompositionComponent
+          {EditSiteCompositionStatus && AllSitesData?.length > 0 ? <SiteCompositionComponent
             AllListId={datas?.sitedata}
             ItemId={datas?.props?.Id}
             siteUrls={siteUrl}
