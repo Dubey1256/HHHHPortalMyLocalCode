@@ -383,10 +383,11 @@ const SiteCompositionComponent = (Props: any) => {
             SiteCompositionObject.ClientTime = tempData;
             SiteTaggingFinalData = tempData;
             // CallBack(SiteCompositionObject, "dataExits");
-            ChangeSiteCompositionInstant("Proportional");
             setIsPortfolioComposition(false);
             setCheckBoxStatus(false);
             setIsSCProtected(false);
+            refreshSiteCompositionConfigurations();
+            ChangeSiteCompositionInstant("Proportional");
         }
         if (Type == "Manual") {
             // makeSiteCompositionConfigurations();
@@ -398,8 +399,9 @@ const SiteCompositionComponent = (Props: any) => {
             setIsPortfolioComposition(false);
             setCheckBoxStatus(false);
             setIsSCProtected(false);
-            ChangeSiteCompositionInstant("Manual");
             SiteTaggingFinalData = ClientTimeData;
+            refreshSiteCompositionConfigurations();
+            ChangeSiteCompositionInstant("Manual");
         }
 
         if (Type == "Protected") {
@@ -520,10 +522,9 @@ const SiteCompositionComponent = (Props: any) => {
             })
             console.log("All data ====", SiteTaggingFinalData);
         }
-        if (UsedFor == "Manual" || UsedFor == "Proportional") {
+        if (UsedFor == "Manual") {
             SiteTypes?.map((SiteData: any) => {
                 ClientTimeData?.map((STItems: any) => {
-                    SiteTaggingFinalData.push(STItems);
                     if (SiteData.Title == STItems.Title || (SiteData.Title ==
                         "DA E+E" && STItems.Title == "ALAKDigital")) {
                         SiteData.ClienTimeDescription = STItems.ClienTimeDescription;
@@ -533,7 +534,19 @@ const SiteCompositionComponent = (Props: any) => {
                 })
                 TempSiteCompsotion.push(SiteData)
             })
-            console.log("All data ====", SiteTaggingFinalData);
+        }
+        if (UsedFor == "Proportional") {
+            SiteTypes?.map((SiteData: any) => {
+                ClientTimeData?.map((STItems: any) => {
+                    if (SiteData.Title == STItems.Title || (SiteData.Title ==
+                        "DA E+E" && STItems.Title == "ALAKDigital")) {
+                        SiteData.ClienTimeDescription = STItems.ClienTimeDescription;
+                        SiteData.BtnStatus = true;
+                        SiteData.Date = STItems.Date;
+                    }
+                })
+                TempSiteCompsotion.push(SiteData)
+            })
         }
         setSiteTypes([...TempSiteCompsotion]);
     }
