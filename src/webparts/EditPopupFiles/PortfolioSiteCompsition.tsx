@@ -29,6 +29,7 @@ let MasterTaskListData: any = [];
 let SiteTaskListData: any = [];
 var MasterTaskListId: any;
 let SelectedFromTable: any = [];
+let ClientTimeDataBackup: any = [];
 const SiteCompositionComponent = (Props: any) => {
     const SiteData = Props.SiteTypes;
     var SitesTaggingData: any = Props.SitesTaggingData;
@@ -131,6 +132,7 @@ const SiteCompositionComponent = (Props: any) => {
     }
 
     useEffect(() => {
+        ClientTimeDataBackup = Props.ClientTime != undefined ? JSON.parse(JSON.stringify(Props.ClientTime)) : [];
         setSiteTypes(SiteData);
         let tempData: any = [];
         let tempData2: any = [];
@@ -524,7 +526,7 @@ const SiteCompositionComponent = (Props: any) => {
         }
         if (UsedFor == "Manual") {
             SiteTypes?.map((SiteData: any) => {
-                ClientTimeData?.map((STItems: any) => {
+                ClientTimeDataBackup?.map((STItems: any) => {
                     if (SiteData.Title == STItems.Title || (SiteData.Title ==
                         "DA E+E" && STItems.Title == "ALAKDigital")) {
                         SiteData.ClienTimeDescription = STItems.ClienTimeDescription;
@@ -1725,11 +1727,18 @@ const SiteCompositionComponent = (Props: any) => {
                         </tbody>
                         : null}
                 </table>
-                <footer className="bg-e9 d-flex justify-content-end p-1">
-                    <div className="bg-body col-sm-2 p-1">
-                        <div className="">{isPortfolioComposition == true || ProportionalStatus == false ? `${TotalPercent} %` : "100%"}</div>
+                <footer className="bg-e9 alignCenter justify-content-between p-1">
+                    <div className="col-sm-6">
+                        <a className="hreflink" target="_blank" data-interception="off" href={`${siteUrls}/Lists/Master%20Tasks/EditForm.aspx?ID=${ItemId}&?#Sitestagging`}>
+                            Open-Out-Of-The-Box
+                        </a>
                     </div>
-                    <button className="btn ms-1 btn-primary px-4" onClick={UpdateSiteTaggingAndClientCategory}>Save</button>
+                    <div className="d-flex justify-content-end col-sm-6">
+                        <div className="bg-body col-sm-2 p-1">
+                            <div className="">{isPortfolioComposition == true || ProportionalStatus == false ? `${TotalPercent} %` : "100%"}</div>
+                        </div>
+                        <button className="btn ms-1 btn-primary px-4" onClick={UpdateSiteTaggingAndClientCategory}>Save</button>
+                    </div>
                 </footer>
             </div>
             {/* ********************* this Client Category Popup panel ****************** */}
