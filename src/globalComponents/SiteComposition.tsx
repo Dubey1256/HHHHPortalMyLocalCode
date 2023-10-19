@@ -185,7 +185,7 @@ export default function Sitecomposition(datas: any) {
             Edit Site Composition
           </span>
         </div>
-        <Tooltip ComponentId="1626" />
+        <Tooltip ComponentId="1268" />
       </div>
     )
   }
@@ -266,7 +266,6 @@ export default function Sitecomposition(datas: any) {
             ClientTime={datas?.props?.siteCompositionData != undefined ? datas.props.siteCompositionData : []}
             SiteCompositionSettings={datas?.props?.SiteCompositionSettings}
             selectedComponent={datas?.props}
-            // currentListName={EditData.siteType}
             callBack={SiteCompositionCallBack}
             isServiceTask={datas?.props?.Portfolio_x0020_Type == "Service" ? true : false}
             usedFor={"Component-Profile"}
