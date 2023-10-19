@@ -386,6 +386,8 @@ const SiteCompositionComponent = (Props: any) => {
             setIsPortfolioComposition(false);
             setCheckBoxStatus(false);
             setIsSCProtected(false);
+            refreshSiteCompositionConfigurations();
+            ChangeSiteCompositionInstant("Proportional");
         }
         if (Type == "Manual") {
             // makeSiteCompositionConfigurations();
@@ -398,6 +400,8 @@ const SiteCompositionComponent = (Props: any) => {
             setCheckBoxStatus(false);
             setIsSCProtected(false);
             SiteTaggingFinalData = ClientTimeData;
+            refreshSiteCompositionConfigurations();
+            ChangeSiteCompositionInstant("Manual");
         }
 
         if (Type == "Protected") {
@@ -501,9 +505,6 @@ const SiteCompositionComponent = (Props: any) => {
                 })
                 TempSiteCompsotion.push(SiteData)
             })
-            // StandardComposition.map((DataItem1: any) => {
-            //     SiteTaggingFinalData.push(DataItem1);
-            // })
             console.log("All data ====", SiteTaggingFinalData);
         }
         if (UsedFor == "Delux") {
@@ -519,11 +520,33 @@ const SiteCompositionComponent = (Props: any) => {
                 })
                 TempSiteCompsotion.push(SiteData)
             })
-            // DeluxComposition.map((DataItem1: any) => {
-            //     SiteTaggingFinalData.push(DataItem1);
-            // })
             console.log("All data ====", SiteTaggingFinalData);
-            // SiteTaggingFinalData = DeluxComposition;
+        }
+        if (UsedFor == "Manual") {
+            SiteTypes?.map((SiteData: any) => {
+                ClientTimeData?.map((STItems: any) => {
+                    if (SiteData.Title == STItems.Title || (SiteData.Title ==
+                        "DA E+E" && STItems.Title == "ALAKDigital")) {
+                        SiteData.ClienTimeDescription = STItems.ClienTimeDescription;
+                        SiteData.BtnStatus = true;
+                        SiteData.Date = STItems.Date;
+                    }
+                })
+                TempSiteCompsotion.push(SiteData)
+            })
+        }
+        if (UsedFor == "Proportional") {
+            SiteTypes?.map((SiteData: any) => {
+                ClientTimeData?.map((STItems: any) => {
+                    if (SiteData.Title == STItems.Title || (SiteData.Title ==
+                        "DA E+E" && STItems.Title == "ALAKDigital")) {
+                        SiteData.ClienTimeDescription = STItems.ClienTimeDescription;
+                        SiteData.BtnStatus = true;
+                        SiteData.Date = STItems.Date;
+                    }
+                })
+                TempSiteCompsotion.push(SiteData)
+            })
         }
         setSiteTypes([...TempSiteCompsotion]);
     }
@@ -1298,7 +1321,7 @@ const SiteCompositionComponent = (Props: any) => {
                                     }
                                     return (
                                         <tr
-                                            className={siteData?.StartEndDateValidation ? "Disabled-Link bg-th" : 'hreflink'}
+                                            className={siteData?.StartEndDateValidation ? "Disabled-Link border-1 bg-th" : 'hreflink border-1'}
                                         >
                                             <td scope="row" className="m-0 p-1 align-middle" style={{ width: "3%" }}>
                                                 {checkBoxStatus ? <input

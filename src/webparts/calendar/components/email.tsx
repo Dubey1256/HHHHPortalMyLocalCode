@@ -5,7 +5,6 @@ import { IEmailProperties } from "@pnp/sp/sputilities";
 import { Web } from "sp-pnp-js";
 import { spfi, SPFx as spSPFx } from "@pnp/sp";
 import { BorderBottomSharp } from "@material-ui/icons";
-import { sendEmail } from "../../../globalComponents/globalCommon";
 import 'core-js/es/object/values';
 
 let matchedData:any;
