@@ -1127,15 +1127,15 @@ const ProjectManagementMain = (props: any) => {
                                     className="circularImage rounded-circle "
                                     src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Icon_Project.png"
                                   />
-                                  <>
-                                    <a>{`${Masterdata?.PortfolioStructureID} - ${Masterdata?.Title}`} </a>
-                                  </>
+                                  <a>{`${Masterdata?.PortfolioStructureID} - ${Masterdata?.Title}`} </a>
+                                  <span
+                                    onClick={() => EditComponentPopup(Masterdata)}
+                                    className="mx-2 svg__iconbox svg__icon--edit hreflink alignIcon"
+                                    title="Edit Project"
+                                  ></span>
+
                                 </h2>
-                                <span
-                                  onClick={() => EditComponentPopup(Masterdata)}
-                                  className="mx-2 svg__iconbox svg__icon--edit"
-                                  title="Edit Project"
-                                ></span>
+
                               </div>
                               <div>
                                 <div className="d-flex">
