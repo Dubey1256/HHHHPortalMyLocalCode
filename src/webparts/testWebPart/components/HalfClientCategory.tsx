@@ -1006,7 +1006,7 @@ const HalfClientCategory = (props: any) => {
 
                 </dl>
             </div>
-            <div className="Alltable p-2">
+            <div className="Alltable">
                 {selectedView == 'MasterTask' ? <div>
                     <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId} columns={columnsMaster} data={AllMasterTasks} showPagination={true} callBackData={CallBack} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} />
 

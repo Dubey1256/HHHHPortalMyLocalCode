@@ -21,6 +21,7 @@ import CommentCard from "../../../globalComponents/Comments/CommentCard";
 import SmartInformation from "../../taskprofile/components/SmartInformation";
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import { BiCommentDetail } from "react-icons/bi";
+import { BsTag, BsTagFill } from "react-icons/bs";
 //import { BsXCircleFill, BsCheckCircleFill } from "react-icons/bs";
 var QueryId: any = "";
 let smartPortfoliosData: any = [];
@@ -941,8 +942,7 @@ const ProjectManagementMain = (props: any) => {
               style={{ marginLeft: '6px' }}
               title='Un-Tag Task From Project'
               onClick={() => untagTask(row?.original)}
-              className="alignIcon  svg__iconbox svg__icon--cross dark hreflink"
-            ></span>
+            ><BsTagFill/></span>
           </span>
         ),
         id: 'Actions',
