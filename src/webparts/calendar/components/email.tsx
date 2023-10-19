@@ -5,7 +5,6 @@ import { IEmailProperties } from "@pnp/sp/sputilities";
 import { Web } from "sp-pnp-js";
 import { spfi, SPFx as spSPFx } from "@pnp/sp";
 import { BorderBottomSharp } from "@material-ui/icons";
-import { sendEmail } from "../../../globalComponents/globalCommon";
 import 'core-js/es/object/values';
 
 let matchedData:any;
@@ -189,15 +188,23 @@ const data = props.data;
   const qaleavetotal =  AllTaskuser.filter((qaleave:any)=>(qaleave?.UserGroupId===11));
   const designttotal =  AllTaskuser.filter((designt:any)=>(designt?.UserGroupId===10));
 
-  data?.map((items:any)=>{
-    Juniordevavailabel = juniortotal?.length - items?.Juniordev?.length ;
-    smalsusleadavailabel = smalleadtotal?.length - items?.smalsuslead?.length ;
-    hhhhteamavailabel = hhhteamtotal?.length - items?.hhhhteam?.length ;
-    seniordevavailabel = seniodevtotal?.length - items?.seniordev?.length ;
-    qateamavailabel = qaleavetotal?.length - items?.qateam?.length ;
-    designteamavailabel = designttotal?.length - items?.designteam?.length ;
-    
-  })
+
+
+  
+  const juniordevleave = data.filter((item:any)=> item.Juniordev.length != 0);
+  Juniordevavailabel = juniortotal.length - juniordevleave.length;
+  const smalleadleave = data.filter((item:any)=> item.smalsuslead.length != 0);
+  smalsusleadavailabel = smalleadtotal.length - smalleadleave.length;
+  const hhhhteamleave = data.filter((item:any)=> item.hhhhteam.length != 0);
+  hhhhteamavailabel = hhhteamtotal.length - hhhhteamleave.length;
+  const seniordevleave = data.filter((item:any)=> item.seniordev.length != 0);
+  seniordevavailabel = seniodevtotal.length - seniordevleave.length;
+  const qateamleave = data.filter((item:any)=> item.qateam.length != 0);
+  qateamavailabel = qaleavetotal.length - qateamleave.length;
+  const designteamleave = data.filter((item:any)=> item.designteam.length != 0);
+  designteamavailabel = designttotal.length - designteamleave.length;
+
+
 
   return (
     

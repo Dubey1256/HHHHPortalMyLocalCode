@@ -14,7 +14,18 @@ import { IParentPortfolioViewProps } from './components/IParentPortfolioViewProp
 
 export interface IParentPortfolioViewWebPartProps {
   description: string;
-  MasterTaskListID:any;
+  TaskUsertListID:string;
+  SmartMetadataListID:string;
+  MasterTaskListID :string;
+  TaskTimeSheetListID:string;
+  DocumentsListID:string;
+  SmartHelptListID:string;
+  PortFolioTypeID:string;
+  SmartInformationListID:string;
+  TaskTypeID:string;
+  isShowTimeEntry:string;
+  isShowSiteCompostion:string;
+  context:any;
 }
 
 export default class ParentPortfolioViewWebPart extends BaseClientSideWebPart<IParentPortfolioViewWebPartProps> {
@@ -28,16 +39,28 @@ export default class ParentPortfolioViewWebPart extends BaseClientSideWebPart<IP
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
+        siteUrl: this.context.pageContext.web.absoluteUrl,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        MasterTaskListID: this.properties.MasterTaskListID,
+        TaskUsertListID: this.properties.TaskUsertListID,
+        SmartMetadataListID: this.properties.SmartMetadataListID,
+        SmartHelptListID: this.properties.SmartHelptListID,
+        PortFolioTypeID:this.properties.PortFolioTypeID,
+        MasterTaskListID:this.properties.MasterTaskListID,
+        TaskTimeSheetListID:this.properties.TaskTimeSheetListID,
+        DocumentsListID:this.properties.DocumentsListID,
+        SmartInformationListID:this.properties.SmartInformationListID,
+        TaskTypeID:this.properties.TaskTypeID,
+        isShowTimeEntry:this.properties.isShowTimeEntry,
+        isShowSiteCompostion:this.properties.isShowSiteCompostion,
+        context:this.context,
       }
     );
 
     ReactDom.render(element, this.domElement);
   }
-
+ 
   protected onInit(): Promise<void> {
     return this._getEnvironmentMessage().then(message => {
       this._environmentMessage = message;
@@ -111,8 +134,38 @@ export default class ParentPortfolioViewWebPart extends BaseClientSideWebPart<IP
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
                 }),
+                PropertyPaneTextField('TaskUsertListID',{
+                  label:'TaskUserListID'
+                }),
+                PropertyPaneTextField('SmartMetadataListID',{
+                  label:'SmartMetadataListID'
+                }),
                 PropertyPaneTextField('MasterTaskListID',{
                   label:'MasterTaskListID'
+                }),
+                PropertyPaneTextField('TaskTimeSheetListID',{
+                  label:'TaskTimeSheetListID'
+                }),
+                PropertyPaneTextField('DocumentsListID',{
+                  label:'DocumentsListID'
+                }),
+                PropertyPaneTextField('SmartInformationListID',{
+                  label:'SmartInformationListID'
+                }),
+                PropertyPaneTextField('TaskTypeID',{
+                  label:'TaskTypeID'
+                }),
+                PropertyPaneTextField('SmartHelptListID',{
+                  label:'SmartHelptListID'
+                }),
+                PropertyPaneTextField('PortFolioTypeID',{
+                  label:'PortFolioTypeID'
+                }),
+                PropertyPaneTextField('isShowTimeEntry',{
+                  label:'isShowTimeEntry'
+                }),
+                PropertyPaneTextField('isShowSiteCompostion',{
+                  label:'isShowSiteCompostion'
                 })
               ]
             }

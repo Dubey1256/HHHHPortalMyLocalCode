@@ -24,7 +24,7 @@ const SiteCompositionComponent = (Props: any) => {
     const usedFor = Props.usedFor;
     const ItemId = SelectedTaskDetails?.Id;
     const ServicesTaskCheck = Props.isServiceTask;
-    const SiteCompositionSettings = (SelectedTaskDetails?.SiteCompositionSettings != undefined ? JSON.parse(SelectedTaskDetails?.SiteCompositionSettings) : [{ Proportional: true, Manual: false, Portfolio: false, localSiteComposition: false }]);
+    const SiteCompositionSettings = (SelectedTaskDetails?.SiteCompositionSettings != undefined ? JSON.parse(SelectedTaskDetails?.SiteCompositionSettings) : [{ Proportional: false, Manual: true, Portfolio: false, localSiteComposition: false }]);
     const SelectedClientCategoryFromProps = SelectedTaskDetails?.ClientCategory;
     const [SiteTypes, setSiteTypes] = useState([]);
     const [selectedSiteCount, setSelectedSiteCount] = useState(Props.ClientTime != undefined || Props.ClientTime != null ? Props.ClientTime?.length : 0);
@@ -121,17 +121,14 @@ const SiteCompositionComponent = (Props: any) => {
             setSiteTypes(tempData2);
         }
 
-        // if (isPortfolioConncted && SiteCompositionSettings != undefined && SiteCompositionSettings.length > 0) {
-        //     const object = { ...SiteCompositionSettings[0], Proportional: false, Manual: false, Portfolio: true }
-        //     SiteCompositionSettings[0] = object;
-        //     setCheckBoxStatus(true);
-        // }
-
         if (SiteCompositionSettings != undefined && SiteCompositionSettings.length > 0) {
             if (SiteCompositionSettings[0].Proportional) {
                 setProportionalStatus(true);
             }
-            if (SiteCompositionSettings[0].Manual) {
+            if (SiteCompositionSettings[0].Manual || SiteCompositionSettings[0].Delux || SiteCompositionSettings[0].Standard) {
+                if (SiteCompositionSettings[0].Delux || SiteCompositionSettings[0].Standard) {
+                    setIsPortfolioComposition(true);
+                }
                 setProportionalStatus(false);
             }
             if (SiteCompositionSettings[0].Portfolio) {
@@ -1223,8 +1220,6 @@ const SiteCompositionComponent = (Props: any) => {
                         </tbody>
                         : null}
                 </table>
-
-
                 <footer className="bg-e9  d-flex justify-content-end full-width py-1">
                     <div className="bg-body col-sm-1 p-1 alignCenter">
                         <div className="">{isPortfolioComposition == true || ProportionalStatus == false ? `${TotalPercent} %` : "100%"}</div>

@@ -348,6 +348,14 @@
       ]
 
     },
+    "site-data-backup-tool-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/siteDataBackupTool/SiteDataBackupToolWebPart.js",
+          "manifest": "./src/webparts/siteDataBackupTool/SiteDataBackupToolWebPart.manifest.json"
+        }
+      ]
+    },
     "home-page-web-part": {
       "components": [
         {
@@ -406,6 +414,7 @@
     "FeedbackWebPartStrings": "lib/webparts/TimeReport/loc/{locale}.js",
     "HomePageWebPartStrings": "lib/webparts/homePage/loc/{locale}.js",
     "TaskStepsWebPartStrings": "lib/webparts/taskSteps/loc/{locale}.js",
+    "SiteDataBackupToolWebPartStrings": "lib/webparts/siteDataBackupTool/loc/{locale}.js",
     "SmartmetadataportfolioWebPartStrings": "lib/webparts/smartmetadataportfolio/loc/{locale}.js",
     "HrToolWebPartStrings": "lib/webparts/hrTool/loc/{locale}.js",
     "ParentPortfolioViewWebPartStrings": "lib/webparts/parentPortfolioView/loc/{locale}.js",

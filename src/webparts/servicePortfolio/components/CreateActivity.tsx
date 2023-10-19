@@ -69,11 +69,15 @@ const CreateActivity = (props: any) => {
         if (props?.selectedItem?.AssignedTo?.length > 0) {
             setTaskAssignedTo(props?.selectedItem?.AssignedTo)
         }
-        if (props?.selectedItem?.ResponsibleTeam?.length > 0 || props?.selectedItem?.TeamLeader?.length > 0) {
-            setTaskResponsibleTeam(props?.ResponsibleTeam?.AssignedTo)
+        if (props?.selectedItem?.ResponsibleTeam?.length > 0 ) {
+            setTaskResponsibleTeam(props?.selectedItem?.ResponsibleTeam)
+        }else if(props?.selectedItem?.TeamLeader?.length > 0){
+            setTaskTeamMembers(props?.selectedItem?.TeamLeader)
         }
-        if (props?.selectedItem?.TeamMembers?.length > 0 || props?.selectedItem?.TeamMembers?.length > 0) {
-            setTaskTeamMembers(props?.TeamMembers?.AssignedTo)
+        if (props?.selectedItem?.TeamMembers?.length > 0 ) {
+            setTaskTeamMembers(props?.selectedItem?.TeamMembers )
+        }else if(props?.selectedItem?.TeamMember?.length > 0){
+            setTaskTeamMembers(props?.selectedItem?.TeamMember)
         }
         if (props?.selectedItem?.ClientCategory?.length > 0) {
             setClientCategoriesData(props?.selectedItem?.ClientCategory)
@@ -606,6 +610,7 @@ const CreateActivity = (props: any) => {
                                         Author: {
                                             Id: props?.context?.pageContext?.legacyPageContext?.userId
                                         }
+                                        
                                     }
                                 }
                                 if (item.DisplayDueDate == "Invalid date" || "") {
@@ -734,7 +739,11 @@ const CreateActivity = (props: any) => {
                             ,
                             ClientTime: clientTime != undefined ? clientTime : Sitestagging != undefined ? Sitestagging : null,
                             TaskID: TaskID,
-                            TaskTypeId: 2
+                            TaskTypeId: 2,
+                            TaskType: {
+                                Title: 'Task' ,
+                                Id:2
+                            }
                         })
                         .then((res: any) => {
                             let item: any = {};
@@ -760,10 +769,15 @@ const CreateActivity = (props: any) => {
                                     TeamLeader: TaskResponsibleTeam,
                                     Author: {
                                         Id: props?.context?.pageContext?.legacyPageContext?.userId
+                                    },
+                                    ParentTask:selectedItem,
+                                    TaskType: {
+                                        Title: 'Task',
+                                        Id: 2
                                     }
 
-
                                 }
+                                item.TaskID = globalCommon?.GetTaskId(item);
                                 if (item.DisplayDueDate == "Invalid date" || "") {
                                     item.DisplayDueDate = item.DisplayDueDate.replaceAll(
                                         "Invalid date",

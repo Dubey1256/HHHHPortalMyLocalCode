@@ -7,10 +7,11 @@ import Tooltip from '../globalComponents/Tooltip'
 var myarray4: any = [];
 let ClientTimeArray: any[] = [];
 var SiteTypeBackupArray: any = [];
-import * as Moment from 'moment';
+
 
 
 export default function Sitecomposition(datas: any) {
+  const [isDirectPopup, setIsDirectPopup] = React.useState(false);
   const [show, setshows] = React.useState(false);
   const [EditSiteCompositionStatus, setEditSiteCompositionStatus] = React.useState(false);
   const [showComposition, setshowComposition] = React.useState(true);
@@ -18,30 +19,49 @@ export default function Sitecomposition(datas: any) {
   const [selectedClientCategory, setselectedClientCategory] = React.useState([]);
   const [AllSitesData, setAllSitesData] = React.useState([]);
   const [renderCount, setRenderCount] = React.useState(0);
+  const [key, setKey] = React.useState(0); // Add a key state
+
+
   let BackupSiteTaggingData: any = [];
   let BackupClientCategory: any = [];
   let siteUrl: any = datas?.sitedata?.siteUrl;
   const ServicesTaskCheck: any = false;
   React.useEffect(() => {
     getsmartmetadataIcon();
-    if (datas?.props?.ClientCategory?.results?.length > 0 || datas?.props.Sitestagging != undefined) {
-      GetSmartMetaData(datas?.props?.ClientCategory?.results, datas?.props?.Sitestagging);
+    if (datas?.props.Sitestagging != undefined) {
+      if (datas?.props?.ClientCategory?.length > 0) {
+        GetSmartMetaData(datas?.props?.ClientCategory, datas?.props?.Sitestagging);
+      } else if (datas?.props?.ClientCategory?.results?.length > 0)
+        GetSmartMetaData(datas?.props?.ClientCategory?.results, datas?.props?.Sitestagging);
     }
     // if (datas?.props?.ClientCategory?.results?.length > 0) {
     //   setselectedClientCategory(datas.props.ClientCategory.results);
     // }
-    if (datas?.props.Sitestagging != undefined) {
-      datas.props.siteCompositionData = JSON.parse(datas?.props.Sitestagging);
+    if (datas?.props?.Sitestagging != undefined) {
+      if (typeof datas.props.Sitestagging != "object") {
+        datas.props.siteCompositionData = JSON.parse(datas?.props.Sitestagging);
+      } else {
+        datas.props.siteCompositionData = datas.props.Sitestagging;
+      }
+
     } else {
       datas.props.siteCompositionData = [];
     }
 
   }, [])
+  React.useEffect(() => {
+    if (datas?.isDirectPopup == true) {
+      setIsDirectPopup(true)
+      setEditSiteCompositionStatus(true)
+    }
+  }, [datas?.isDirectPopup])
   const GetSmartMetaData = async (ClientCategory: any, ClientTime: any) => {
     const array2: any[] = [];
     let ClientTime2: any[] = [];
-    if (ClientTime != null) {
+    if (ClientTime != null && typeof ClientTime != "object") {
       ClientTime2 = JSON.parse(ClientTime);
+    } else {
+      ClientTime2 = ClientTime;
     }
     ClientTimeArray = ClientTime2.filter((item: any) => item?.Title != "Gender")
     const web = new Web(datas?.sitedata?.siteUrl);
@@ -165,26 +185,28 @@ export default function Sitecomposition(datas: any) {
             Edit Site Composition
           </span>
         </div>
-        <Tooltip ComponentId="1626" />
+        <Tooltip ComponentId="1268" />
       </div>
     )
   }
 
   const ClosePopupCallBack = React.useCallback(() => {
     setEditSiteCompositionStatus(false);
-    if (datas?.props?.ClientCategory?.results?.length > 0 || datas?.props.Sitestagging != undefined) {
-      GetSmartMetaData(datas?.props?.ClientCategory?.results, datas?.props?.Sitestagging);
-    }
+    datas.callback();
+    // if (datas?.props?.ClientCategory?.results?.length > 0 || datas?.props.Sitestagging != undefined) {
+    //   GetSmartMetaData(datas?.props?.ClientCategory?.results, datas?.props?.Sitestagging);
+    // }
     // setRenderCount(renderCount + 1)
   }, [])
 
   const SiteCompositionCallBack = React.useCallback((Data: any, Type: any) => {
-    datas.props.Sitestagging = Data.ClientTime?.length > 0 ? JSON.stringify(Data.ClientTime) :[];
+    datas.props.Sitestagging = Data.ClientTime?.length > 0 ? JSON.stringify(Data.ClientTime) : [];
     datas.props.ClientCategory.results = Data.selectedClientCategory;
+    setKey((prevKey) => prevKey + 1);
   }, [])
   return (
     <>
-      <dl className="Sitecomposition">
+      {!isDirectPopup && (<dl key={key} className="Sitecomposition">
         <div className='dropdown'>
           <a className="sitebutton bg-fxdark d-flex "
           >
@@ -212,34 +234,38 @@ export default function Sitecomposition(datas: any) {
                       {Number(cltime?.ClienTimeDescription).toFixed(2)}%
                     </span>
                   }
-                  {cltime.ClientCategory != undefined && cltime.ClientCategory.length > 0 ? cltime.ClientCategory?.map((clientcat: any) => {
-                    return (
-                      <span>{clientcat.Title}</span>
-                    )
-                  }) : null}
+                  <span>
+                    {cltime.ClientCategory != undefined && cltime.ClientCategory.length > 0 ? cltime.ClientCategory?.map((clientcat: any) => {
+                      return (
+                        <span>{clientcat.Title}</span>
+                      )
+
+                    }) : null}
+                  </span>
                 </li>
               })}
             </ul>
           </div>
         </div>
-      </dl>
+      </dl>)}
+
       <Panel
         onRenderHeader={onRenderCustomCalculateSC}
         isOpen={EditSiteCompositionStatus}
-        onDismiss={() => setEditSiteCompositionStatus(false)}
+        onDismiss={() => ClosePopupCallBack()}
         isBlocking={EditSiteCompositionStatus}
         type={PanelType.custom}
         customWidth="1024px"
       >
         <div className={ServicesTaskCheck ? "serviepannelgreena pt-3" : "pt-3"}>
-          {EditSiteCompositionStatus ? <SiteCompositionComponent
+          {EditSiteCompositionStatus && AllSitesData?.length > 0 ? <SiteCompositionComponent
             AllListId={datas?.sitedata}
             ItemId={datas?.props?.Id}
             siteUrls={siteUrl}
             SiteTypes={AllSitesData}
             ClientTime={datas?.props?.siteCompositionData != undefined ? datas.props.siteCompositionData : []}
             SiteCompositionSettings={datas?.props?.SiteCompositionSettings}
-            // currentListName={EditData.siteType}
+            selectedComponent={datas?.props}
             callBack={SiteCompositionCallBack}
             isServiceTask={datas?.props?.Portfolio_x0020_Type == "Service" ? true : false}
             usedFor={"Component-Profile"}

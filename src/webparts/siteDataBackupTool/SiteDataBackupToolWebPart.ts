@@ -8,44 +8,33 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as strings from 'EmployeDashBoardWebPartStrings';
-import EmployeDashBoard from './components/EmployeDashBoard';
-import { IEmployeDashBoardProps } from './components/IEmployeDashBoardProps';
+import * as strings from 'SiteDataBackupToolWebPartStrings';
+import SiteDataBackupTool from './components/SiteDataBackupTool';
+import { ISiteDataBackupToolProps } from './components/ISiteDataBackupToolProps';
 
-export interface IEmployeDashBoardWebPartProps {
-  Announcements: 'F3CAD36C-EEF6-492D-B81F-9B441FDF218E';
+export interface ISiteDataBackupToolWebPartProps {
   description: string;
-  siteUrl : any;
-  Context:any;
-  TaskUsertListID: 'b318ba84-e21d-4876-8851-88b94b9dc300';
-  SmartMetadataListID: '01a34938-8c7e-4ea6-a003-cee649e8c67a';
-  MasterTaskListID:'EC34B38F-0669-480A-910C-F84E92E58ADF';
-  TaskTimeSheetListID:'11D52F95-4231-4852-AFDE-884D548C7F1B';
+  SPBackupConfigListUrl: string
+  SPBackupConfigListID: string
 }
 
-export default class EmployeDashBoardWebPart extends BaseClientSideWebPart<IEmployeDashBoardWebPartProps> {
+export default class SiteDataBackupToolWebPart extends BaseClientSideWebPart<ISiteDataBackupToolWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<IEmployeDashBoardProps> = React.createElement(
-      EmployeDashBoard,
+    const element: React.ReactElement<ISiteDataBackupToolProps> = React.createElement(
+      SiteDataBackupTool,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        pageContext: this.context.pageContext,
-        Context: this.context,
-        siteUrl: this.context.pageContext.web.absoluteUrl,
-        TaskUsertListID: this.properties.TaskUsertListID,
-        SmartMetadataListID: this.properties.SmartMetadataListID,
-        MasterTaskListID: this.properties.MasterTaskListID,
-        TaskTimeSheetListID: this.properties.TaskTimeSheetListID,
-        Announcements: this.properties.Announcements
-       }
+        SPBackupConfigListUrl: this.context.pageContext.web.absoluteUrl,
+        SPBackupConfigListID: this.properties.SPBackupConfigListID,
+      }
     );
 
     ReactDom.render(element, this.domElement);
@@ -122,42 +111,9 @@ export default class EmployeDashBoardWebPart extends BaseClientSideWebPart<IEmpl
             {
               groupName: strings.BasicGroupName,
               groupFields: [
-                PropertyPaneTextField('description', {
-                  label: strings.DescriptionFieldLabel
+                PropertyPaneTextField('SPBackupConfigListID', {
+                  label: 'SPBackupConfigListID'
                 }),
-                PropertyPaneTextField('SmartMetadataListID', {
-                  label: "SmartMetadataListID"
-                }),
-                PropertyPaneTextField("TaskUsertListID", {
-                  label: "Task User List"
-                }),
-                PropertyPaneTextField("Announcements", {
-                  label: "Announcements"
-                }),
-                PropertyPaneTextField("MasterTaskListID", {
-                  label: "MasterTaskListID"
-                }),
-                PropertyPaneTextField("TaskTimeSheetListID", {
-                  label: "TaskTimeSheetListID"
-                }),
-                // PropertyPaneTextField('MasterTaskListID', {
-                //   label: "MasterTaskListID"
-                // }),
-                // PropertyPaneTextField('SmartInformationListID', {
-                //   label: 'SmartInformationListID'
-                // }),
-                // PropertyPaneTextField('DocumentsListID', {
-                //   label: "DocumentsListID"
-                // }),
-                // PropertyPaneTextField('TaskTimeSheetListID', {
-                //   label: "TaskTimeSheetListID"
-                // }),
-                // PropertyPaneTextField('TimeEntry', {
-                //   label: "TimeEntry"
-                // }),
-                // PropertyPaneTextField('SiteCompostion', {
-                //   label: "SiteCompostion"
-                // }),
               ]
             }
           ]

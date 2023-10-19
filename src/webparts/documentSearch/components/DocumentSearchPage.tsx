@@ -164,12 +164,12 @@ export default function DocumentSearchPage(Props: any) {
                             <span className={`alignIcon  svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`}></span>
                         }
                          */}
-                            {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'aspx' && <span className={`wid30 svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`}></span>}
-                            {row?.original?.File_x0020_Type == 'rar' && <span className="wid30 svg__iconbox svg__icon--zip "></span>}
-                            {row?.original?.File_x0020_Type == 'aspx' || row?.original?.File_x0020_Type == 'msg' || row?.original?.File_x0020_Type == 'apk' ? <span className="wid30 svg__iconbox svg__icon--unknownFile "></span> : ''}
-                            {row?.original?.File_x0020_Type == 'jpeg' || row?.original?.File_x0020_Type == 'jpg' ? <span className="wid30 svg__iconbox svg__icon--jpeg "></span> : ''}
-                            {row?.original?.File_x0020_Type == 'doc' || row?.original?.File_x0020_Type == 'docx' ? <span className="wid30 svg__iconbox svg__icon--docx "></span> : ''}
-                            {row?.original?.File_x0020_Type == 'jfif' ? <span className="wid30 svg__iconbox svg__icon--jpeg "></span> : ''}
+                            {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'aspx' && <span className={`svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`}></span>}
+                            {row?.original?.File_x0020_Type == 'rar' && <span className=" svg__iconbox svg__icon--zip "></span>}
+                            {row?.original?.File_x0020_Type == 'aspx' || row?.original?.File_x0020_Type == 'msg' || row?.original?.File_x0020_Type == 'apk' ? <span className="svg__iconbox svg__icon--unknownFile "></span> : ''}
+                            {row?.original?.File_x0020_Type == 'jpeg' || row?.original?.File_x0020_Type == 'jpg' ? <span className=" svg__iconbox svg__icon--jpeg "></span> : ''}
+                            {row?.original?.File_x0020_Type == 'doc' || row?.original?.File_x0020_Type == 'docx' ? <span className=" svg__iconbox svg__icon--docx "></span> : ''}
+                            {row?.original?.File_x0020_Type == 'jfif' ? <span className="svg__iconbox svg__icon--jpeg "></span> : ''}
                             {/* <img src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/24/icon_pdf_16.jpg`}></img> */}
 
                             {/* {row?.original?.File_x0020_Type != 'flv' && row?.original?.File_x0020_Type != 'js' && row?.original?.File_x0020_Type != 'css' && row?.original?.File_x0020_Type != 'zip' && row?.original?.File_x0020_Type != 'aspx' && row?.original?.File_x0020_Type != 'mp4' && row?.original?.File_x0020_Type != 'pdf' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'png' && row?.original?.File_x0020_Type != 'gif' &&

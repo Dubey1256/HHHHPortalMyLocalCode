@@ -303,20 +303,22 @@ function TasksTable(props: any) {
                   if (result.FeedBack != undefined) {
                     let feedbackdata: any = JSON.parse(result?.FeedBack);
 
-                    let FeedbackdatatinfoIcon: any =
+                    let FeedbackdatatinfoIcon: any =[];
                       feedbackdata[0]?.FeedBackDescriptions?.map(
-                        (child: any) =>
-                          child?.Title +
-                          " " +
-                          child?.Subtext?.map((subChild: any) => subChild?.Title).join(
-                            " "
-                          )
-                      ).join(" ");
-
-                    result.descriptionsSearch.push(FeedbackdatatinfoIcon)
-                    // FeedbackdatatinfoIcon.replace("undefined", "")
-                    //   .replace(/(<([^>]+)>)/gi, "")
-                    //   .replace(/\n/g, "");
+                        (child: any) =>{
+                         let  copyTitle=child?.Title.replace(
+                            /(<([^>]+)>)/gi,
+                            ""
+                          ).replace(/\n/g, "");
+                           if(copyTitle!=undefined && copyTitle!=null&& copyTitle!=""){
+                            result.descriptionsSearch.push(copyTitle);
+                           }
+                         
+                        }
+                        )
+                       
+                        //result.descriptionsSearch.push(FeedbackdatatinfoIcon[0])
+                  
                   }
 
                   if (result?.Comments != null) {
@@ -904,7 +906,7 @@ function TasksTable(props: any) {
                 </span>)}
 
               {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && (
-                <span title='Edit' onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit"></span>
+                <span title='Edit' onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit ml-auto"></span>
               )}
             </a>
             {getValue()}
@@ -1160,7 +1162,9 @@ function TasksTable(props: any) {
           TaskUsers={AllUsers}
           AllClientCategory={AllClientCategory}
           LoadAllSiteTasks={LoadAllSiteTasks}
-          AllListId={props.AllListId}>
+          AllListId={props.AllListId}
+          context={props.Context}>
+        
         </CreateActivity>}
       {WSPopup && <CreateWS
         selectedItem={MeetingItems[MeetingItems.length - 1]}

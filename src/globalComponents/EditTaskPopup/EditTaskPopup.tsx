@@ -72,6 +72,7 @@ var MigrationListId = ''
 var newGeneratedId: any = ''
 var siteUrl = ''
 var listName = ''
+var isApprovalByStatus = false;
 let ApprovalStatusGlobal: any = false;
 let SiteCompositionPrecentageValue: any = 0;
 
@@ -771,7 +772,7 @@ const EditTaskPopup = (Items: any) => {
                     let ApprovalCheck = item.Categories.search("Approval");
                     let OnlyCompletedCheck = item.Categories.search("Only Completed");
                     let DesignCheck: any;
-                    if (item.Categories == "Design") {
+                    if (item.Categories == "Design" || item.Categories == "Design;" ) {
                         DesignCheck = item.Categories.search("Design")
                     }
                     if (phoneCheck >= 0) {
@@ -1468,7 +1469,14 @@ const EditTaskPopup = (Items: any) => {
         setShareWebTypeData(tempArray2);
     }
     const CategoryChange = (e: any, typeValue: any, IdValue: any) => {
-        let statusValue: any = e.target.value;
+        isApprovalByStatus = false;
+        if(e == 'false'){
+            var statusValue: any = e
+            isApprovalByStatus = true;
+        }
+        else{
+            var statusValue: any = e.target.value;
+        }
         let type: any = typeValue;
         let Id: any = IdValue;
         CategoryChangeUpdateFunction(statusValue, type, Id)
@@ -1494,7 +1502,10 @@ const EditTaskPopup = (Items: any) => {
             }
         } else {
             // if (tempCategoryData != undefined) {
-            let CheckTaggedCategory = tempCategoryData?.includes(type)
+                if(tempCategoryData == undefined){
+                    tempCategoryData = ''
+                }
+                var CheckTaggedCategory = tempCategoryData?.includes(type)
             if (CheckTaggedCategory == false) {
                 let CheckTaagedCategory: any = true;
                 let category: any = tempCategoryData + ";" + type;
@@ -1528,8 +1539,35 @@ const EditTaskPopup = (Items: any) => {
                     setImmediateStatus(true)
                 }
                 if (type == "Approval") {
+                    isApprovalByStatus = true;
+                  
+                    var tempArray:any=[]
+                    if (currentUserData != undefined && currentUserData.length > 0) {
+                        currentUserData.map((dataItem: any) => {
+                            dataItem?.Approver.map((items:any)=>{
+                                tempArray.push(items);
+                            })
+                           
+                        })
+                    } 
+                    // else if (TaskCreatorApproverBackupArray != undefined && TaskCreatorApproverBackupArray.length > 0) {
+                    //     TaskCreatorApproverBackupArray.map((dataItem: any) => {
+                    //         tempArray.push(dataItem);
+                    //     })
+                    // }
+                    const finalData = tempArray.filter((val: any, id: any, array: any) => {
+                        return array.indexOf(val) == id;
+                    });
+
+                  
+                    EditData.TaskApprovers = finalData;
+                    EditData.CurrentUserData = currentUserData
+                    setApproverData(finalData); 
                     setApprovalStatus(true);
-                    setApproverData(TaskApproverBackupArray);
+                    // if(isApprovalByStatus == false){
+                    //     setApproverData(TaskApproverBackupArray);
+                    // }
+                   
                     Items.sendApproverMail = true;
                     StatusOptions?.map((item: any) => {
                         if (item.value == 1) {
@@ -1544,6 +1582,7 @@ const EditTaskPopup = (Items: any) => {
                 if (type == "Only Completed") {
                     setOnlyCompletedStatus(true)
                 }
+                
             }
             // }
         }
@@ -1839,7 +1878,7 @@ const EditTaskPopup = (Items: any) => {
                     if (EditData.siteType == 'Offshore Tasks') {
                         setWorkingMember(36);
                     } else if (DesignStatus) {
-                        setWorkingMember(298);
+                        setWorkingMember(301);
                     } else {
                         setWorkingMember(42);
                     }
@@ -1907,6 +1946,11 @@ const EditTaskPopup = (Items: any) => {
                 setTaskAssignedTo(finalData);
                 setTaskTeamMembers(finalData);
                 setApproverData(finalData);
+                var e:any =  'false'
+                EditData.TaskApprovers = finalData;
+                EditData.CurrentUserData = currentUserData
+                CategoryChange(e, "Approval", 227)
+
             }
             if (StatusData.value == 2) {
                 setInputFieldDisable(true)
@@ -1956,7 +2000,7 @@ const EditTaskPopup = (Items: any) => {
                 if (EditData.siteType == 'Offshore Tasks') {
                     setWorkingMember(36);
                 } else if (DesignStatus) {
-                    setWorkingMember(298);
+                    setWorkingMember(301);
                 } else {
                     setWorkingMember(42);
                 }
@@ -2048,6 +2092,20 @@ const EditTaskPopup = (Items: any) => {
     // ******************** This is Task All Details Update Function  ***************************
 
     const UpdateTaskInfoFunction = async (usedFor: any) => {
+
+        if(isApprovalByStatus == true){
+            let web = new Web(siteUrls);
+            web.lists.getById(AllListIdData.listId).items.getById(Items.Items.Id).update({
+                ApproveeId: currentUserData[0].AssingedToUserId,
+                
+            }).then((res: any) => {
+                console.log(res);
+    
+            });
+        }
+        
+
+
         if (IsSendAttentionMsgStatus) {
             let txtComment = `You have been tagged as ${SendCategoryName} in the below task by ${Items.context.pageContext._user.displayName}`;
             let TeamMsg = txtComment + `</br> <a href=${window.location.href}>${EditData.TaskId}-${EditData.Title}</a>`
@@ -2114,6 +2172,7 @@ const EditTaskPopup = (Items: any) => {
                     if (TaskDetailsFromCall != undefined && TaskDetailsFromCall.length > 0) {
                         TaskDetailsFromCall[0].TaskCreatorData = EditData.TaskCreatorData;
                         TaskDetailsFromCall[0].TaskApprovers = EditData.TaskApprovers;
+                        TaskDetailsFromCall[0].currentUser = EditData.CurrentUserData;
                         TaskDetailsFromCall[0].FeedBack = JSON.parse(TaskDetailsFromCall[0].FeedBack)
                         TaskDetailsFromCall[0].siteType = EditData.siteType;
                         TaskDetailsFromCall[0].siteUrl = siteUrls;

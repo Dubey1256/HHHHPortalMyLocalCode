@@ -10,8 +10,7 @@ export default function ParentportfolioPage(props: any) {
     const [editPopUpOpen, setEditPopUpOpen] = useState(false);
     const [listIds, setlistIds] = React.useState<any>([]);
     const [Portfoliotyped, setPortfoliotyped] = useState([]);
-
-    var baseUrl = props.props.context.pageContext.web.absoluteUrl;
+    var storeAllMetaData: any
     const getComponentItem = () => {
         const sitesId = {
             TaskUsertListID: props?.props?.TaskUsertListID,
@@ -22,20 +21,27 @@ export default function ParentportfolioPage(props: any) {
             SmartHelptListID: props?.props?.SmartHelptListID,
             PortFolioTypeID: props?.props?.PortFolioTypeID,
             SiteCompostion: props?.props?.isShowSiteCompostion,
-            siteUrl: baseUrl,
-            Context: props?.props?.context
+            siteUrl: props?.props?.siteUrl,
+            // Context: props?.props?.context
         }
         setlistIds(sitesId)
-        let web = new Web(baseUrl);
-        web.lists.getById(props.props.MasterTaskListID).items.select("Id", "Title", "ClientCategory/Id", "ClientCategory/Title", "HelpStatus", "DueDate", "Item_x0020_Type", "PortfolioType/Id", "PortfolioType/Title", "Parent/Id", "Parent/Title").expand("Parent,ClientCategory,PortfolioType").top(4999).getAll().then((response: any) => {
-            response = response.filter((itemFilter: any) => { return (itemFilter.Item_x0020_Type == 'SubComponent' || itemFilter.Item_x0020_Type == 'Feature') })
+        const LoadAllMetaDataAndTasks = () => {
+            let web = new Web(props?.props?.siteUrl);
+            web.lists.getById(props?.props?.SmartMetadataListID).items.getAll().then((response: any) => {
+                storeAllMetaData = response;
+            })
+        }
+        LoadAllMetaDataAndTasks();
+        let web = new Web(props?.props?.siteUrl);
+        web.lists.getById(props?.props?.MasterTaskListID).items.select("Id", "Title", "ClientCategory/Id", "ClientCategory/Title", "HelpStatus", "DueDate", "Item_x0020_Type", "PortfolioType/Id", "PortfolioType/Title", "Parent/Id", "Parent/Title").expand("Parent,ClientCategory,PortfolioType").top(4999).getAll().then((response: any) => {
+            response = response?.filter((itemFilter: any) => { return (itemFilter?.Item_x0020_Type == 'SubComponent' || itemFilter?.Item_x0020_Type == 'Feature') })
             var data: any = []
             response.map((item: any) => {
                 if (item?.Parent == null) {
-                    if (item.ClientCategory != undefined && item.ClientCategory.length > 0) {
+                    if (item?.ClientCategory != undefined && item?.ClientCategory?.length > 0) {
                         item.ClientCategoryTitle = item.ClientCategory[0].Title;
                     }
-                    data.push(item)
+                    data?.push(item)
                 }
             })
             setListData(data);
@@ -43,24 +49,16 @@ export default function ParentportfolioPage(props: any) {
         }).catch((error: any) => {
             console.error(error);
         });
-
     }
     const closeEditComponent = (item: any) => {
         setEditPopUpOpen(false)
         getComponentItem();
-
     }
-
     const editComponentPopUp = (editComponentValue: any) => {
         setEditPopUpOpen(true)
         setPortfoliotyped(editComponentValue?.PortfolioType?.Title)
         setEditValue(editComponentValue);
     }
-
-    // const updateItem = (updata: any) => {
-    //     setEditPopUpOpen(true);
-    //     setEditValue(updata);
-    // }
     const columns = React.useMemo<ColumnDef<any, unknown>[]>(() =>
         [
             {
@@ -74,7 +72,7 @@ export default function ParentportfolioPage(props: any) {
             },
             {
                 cell: (({ row }) => (
-                    <a target='blank' href=''>{row.original.Item_x0020_Type === "SubComponent" ? <div className="alignCenter"><div title="SubComponent" className="Dyicons" style={{ backgroundColor: "rgb(0, 0, 102)" }}>S</div></div> : <div className="alignCenter"><div title="feature" className="Dyicons" style={{ backgroundColor: "rgb(0, 0, 102)" }}>F</div></div>}
+                    <a target='blank' href=''>{row?.original?.Item_x0020_Type === "SubComponent" ? <div className="alignCenter"><div title="SubComponent" className="Dyicons" style={{ backgroundColor: "rgb(0, 0, 102)" }}>S</div></div> : <div className="alignCenter"><div title="feature" className="Dyicons" style={{ backgroundColor: "rgb(0, 0, 102)" }}>F</div></div>}
                     </a>
                 )),
                 accessorKey: "",
@@ -94,8 +92,8 @@ export default function ParentportfolioPage(props: any) {
             },
             {
                 cell: (({ row }) => (
-                    <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row.original.Id}`}>
-                        {row.original.Title}
+                    <a data-interception="off" target='_blank' href={`${props?.props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.Id}`}>
+                        {row?.original?.Title}
                     </a>
                 )),
                 accessorFn: (row) => row?.Title,
@@ -116,6 +114,9 @@ export default function ParentportfolioPage(props: any) {
                 size: 90,
             },
             {
+                cell: (({ row }) => (
+                    <ShowClintCatogory clintData={row?.original} AllMetadata={storeAllMetaData} />
+                )),
                 accessorFn: (row) => row?.ClientCategoryTitle,
                 placeholder: "ClientCategory",
                 id: "ClientCategoryTitle",
@@ -152,17 +153,17 @@ export default function ParentportfolioPage(props: any) {
                 size: 30,
                 cell: ({ row, getValue }) => (
                     <div className='text-end'>
-                        <a onClick={() => editComponentPopUp(row.original)}><span title="Edit Task" className='alignIcon svg__iconbox svg__icon--edit hreflink'></span></a>
+                        <a onClick={() => editComponentPopUp(row?.original)}><span title="Edit Task" className='alignIcon svg__iconbox svg__icon--edit hreflink'></span></a>
                         {getValue}
                     </div>
                 ),
             },
         ], [listData]);
     useEffect(() => {
-        
+
         getComponentItem();
     }, []);
-    const callBackData = React.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => {
+    const callBackData = React?.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => {
     }, []);
 
     return (
