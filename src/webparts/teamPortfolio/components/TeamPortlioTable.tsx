@@ -1794,8 +1794,6 @@ function TeamPortlioTable(SelectedProp: any) {
         );
     };
     //-------------------------------------------------------------End---------------------------------------------------------------------------------
-
-
     return (
         <div id="ExandTableIds" style={{}}>
             <section className="ContentSection smartFilterSection">

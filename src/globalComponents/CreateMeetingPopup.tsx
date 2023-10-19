@@ -138,8 +138,6 @@ export default function CallNotes({ callback }: any) {
         // setSave(saveItem);
     }, [])
 
-
-
     const addNewTextField = (itm: any) => {
         let feedbackDetails: any = []
         let firstTask: any = []
