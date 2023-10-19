@@ -3,6 +3,7 @@ import {
     ColumnDef,
 } from "@tanstack/react-table";
 import PageLoader from '../../../globalComponents/pageLoader';
+import Sitecomposition from "../../../globalComponents/SiteComposition";
 import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
 import { Web } from "sp-pnp-js";
 import * as Moment from 'moment';
@@ -543,6 +544,10 @@ const HalfClientCategory = (props: any) => {
             setEditSiteCompositionStatus(false);
             setSelectedItem(null)
         }
+        if (item == 'master') {
+            setEditSiteCompositionMaster(false);
+            setSelectedItem(null)
+        }
     }
     ////////////////////////////////////////// Smart filter Part//////////////////////
     React.useEffect(() => {
@@ -586,7 +591,7 @@ const HalfClientCategory = (props: any) => {
                 accessorKey: "",
                 placeholder: "",
                 hasCheckbox: true,
-                size: 120,
+                size: 25,
                 id: 'Id',
             },
             {
@@ -594,7 +599,7 @@ const HalfClientCategory = (props: any) => {
                 placeholder: "Id",
                 resetColumnFilters: false,
                 resetSorting: false,
-                size: 70,
+                size: 120,
                 cell: ({ row, getValue }) => (
                     <span className="d-flex">
                         <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTaskItems} AllSitesTaskData={allSitesTasks} AllListId={AllListId} />
@@ -781,7 +786,7 @@ const HalfClientCategory = (props: any) => {
                 accessorKey: "",
                 placeholder: "",
                 hasCheckbox: true,
-                size: 95,
+                size: 25,
                 id: 'Id',
             },
             {
@@ -789,7 +794,7 @@ const HalfClientCategory = (props: any) => {
                 placeholder: "Id",
                 resetColumnFilters: false,
                 resetSorting: false,
-                size: 70,
+                size: 95,
                 cell: ({ row, getValue }) => (
                     <span className="d-flex">
                         <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTaskItems} AllSitesTaskData={allSitesTasks} AllListId={AllListId} />
@@ -835,9 +840,9 @@ const HalfClientCategory = (props: any) => {
                 cell: ({ row }) => (
                     <div>
                         <span>{row?.original?.siteCompositionSearch}</span>
-                        {/* {row?.original?.Sitestagging?.length > 0 ?
+                        {row?.original?.Sitestagging?.length > 0 ?
                             <span title="Edit Site Composition" onClick={() => { setSelectedItem(row?.original), setEditSiteCompositionMaster(true) }} className="svg__iconbox svg__icon--editBox"></span>
-                            : ''} */}
+                            : ''}
                     </div>
                 ),
                 id: 'siteCompositionSearch',
@@ -1028,10 +1033,10 @@ const HalfClientCategory = (props: any) => {
             )}
             {EditSiteCompositionStatus ? <EditSiteComposition EditData={selectedItem} context={props?.props?.Context} AllListId={AllListId} Call={() => { CallBack('SiteComp') }} /> : ''}
             {EditSiteCompositionMaster ?
-                <EditComponentProtfolio item={selectedItem} SelectD={AllListId} usedFor="Task-Popup" Calls={() => { CallBack('SiteComp') }} />
+                  <Sitecomposition props={selectedItem} isDirectPopup={EditSiteCompositionMaster} callback={() => { CallBack('master') }} sitedata={AllListId} />
                 : null
             }
-            {pageLoaderActive ? <PageLoader /> : ''}
+            {/* {pageLoaderActive ? <PageLoader /> : ''} */}
         </div>
     )
 }

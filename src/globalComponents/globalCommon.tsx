@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import pnp, { Web } from "sp-pnp-js";
 import "@pnp/sp/sputilities";
 import * as moment from 'moment';
+import { SPFI, SPFx as spSPFx } from "@pnp/sp";
 import { GlobalConstants } from '../globalComponents/LocalCommon';
 import { PageContext } from "@microsoft/sp-page-context";
 import { spfi } from "@pnp/sp/presets/all";
@@ -829,90 +830,45 @@ export const makePostDataForApprovalProcess = async (postData: any) => {
     return Promise;
 
 }
-export const GetImmediateTaskNotificationEmails = async (item: any, isLoadNotification: any, rootsite: any) => {
-    let pageContent = await pageContext()
+const GetImmediateTaskNotificationEmails = async (item: any, isLoadNotification: any, taskUsers: any) => {
     var isLoadNotification = isLoadNotification;
     var CurrentItem = item;
     var Allmail: any[] = [];
-    var query = ''
-    if ((item != undefined) && (item.PercentComplete == 80 || item.PercentComplete == 93)) {
-        query = "Id,Title,IsTaskNotifications,AssingedToUser/Title,AssingedToUser/EMail,AssingedToUser/Name,AssingedToUser/Id&$expand=AssingedToUser&$filter=TaskStatusNotification eq " + item?.PercentComplete + "";
-    }
-    if ((item?.PercentComplete == 80 && item?.newCategories == 'Immediate') || (item?.PercentComplete == 90 && item?.newCategories == 'Immediate') || (item?.PercentComplete == 90 && item?.newCategories == 'Email Notification')) {
-        query = "Id,Title,IsTaskNotifications,AssingedToUser/Title,AssingedToUser/EMail,AssingedToUser/Name,AssingedToUser/Id&$expand=AssingedToUser&$filter=TaskStatusNotification eq " + item?.PercentComplete + " or AssingedToUser/Id eq " + item?.Author?.Id + "";
-    }
-    if (item?.PercentComplete == 5 && item?.newCategories == 'Immediate') {
-        query = "Id,Title,IsTaskNotifications,AssingedToUser/Title,AssingedToUser/EMail,AssingedToUser/Name,AssingedToUser/Id&$expand=AssingedToUser&$filter= AssingedToUser/Id eq " + item?.Author?.Id + "";
-    }
-    if (item == undefined) {
-        query = "Id,Title,IsTaskNotifications,Email,AssingedToUser/Title,AssingedToUser/EMail,AssingedToUser/Name,AssingedToUser/Id&$expand=AssingedToUser&$filter=IsTaskNotifications eq 1"
+    try {
+        if (taskUsers?.length > 0) {
+            var Allusers = taskUsers
+            if (item != undefined && isLoadNotification != undefined && isLoadNotification != '' && isLoadNotification == 'ApprovalMail') {
+                Allusers.map((user: any) => {
+                    if (CurrentItem?.AuthorId == user?.AssingedToUserId) {
+                        if (user?.Approver?.length > 0)
+                            user.Approver.map((approver: any) => {
+                                Allmail.push(approver?.Name?.split('|')[2]);
+                            })
+                    }
+                })
+            } else if (item != undefined && isLoadNotification != undefined && isLoadNotification != '' && isLoadNotification == 'Immediate') {
+                Allusers.map((user: any) => {
+                    if (user?.IsTaskNotifications == true) {
+                        if (user?.AssingedToUser?.EMail != undefined)
+                            Allmail.push(user?.AssingedToUser?.EMail);
+                    }
+                })
+            }
 
-    }
-    if (item?.TeamLeadersId != undefined) {
-        var filter = '';
-        if (item?.TeamLeadersId != undefined) {
-            item.TeamLeadersId.map((UserId: any, indexing: any) => {
-                if (item.TeamLeadersId.length - 1 != indexing)
-                    filter = filter + 'AssingedToUser/Id eq ' + UserId + ' or ';
-                else
-                    filter = filter + 'AssingedToUser/Id eq ' + UserId;
-            })
+
+            if (Allmail == undefined || Allmail.length == 0 && isLoadNotification == 'ApprovalMail')
+                alert("User has no Approver to send an email");
+
+
         } else {
-            item.TeamLeadersId.map((UserId: any, indexing: any) => {
-                if (item.TeamLeadersId.length - 1 != indexing)
-                    filter = filter + 'AssingedToUser/Id eq ' + UserId + ' or ';
-                else
-                    filter = filter + 'AssingedToUser/Id eq ' + UserId;
-            })
+
+            if (isLoadNotification == 'ApprovalMail')
+                alert("User has no Approver to send an email");
         }
-        query = "Id,Title,IsTaskNotifications,AssingedToUser/Title,AssingedToUser/EMail,Email,AssingedToUser/Name,AssingedToUser/Id&$expand=AssingedToUser&$filter=" + filter;
+        return Allmail;
+    } catch (error) {
+        console.log(error)
     }
-    else if (item?.TeamLeadersId?.length == 0 && isLoadNotification == 'ApprovalMail') {
-        query = "Id,Title,IsTaskNotifications,AssingedToUserId,Approver/Title,Approver/EMail,Email,Approver/Name,Approver/Id&$expand=Approver";
-    }
-    if (query != undefined && query != '') {
-        var listID = rootsite != undefined ? rootsite.TaskUserlistId : GlobalConstants.ADMIN_TASK_USERS_LISTID;
-        await getData(rootsite != undefined ? rootsite.SiteUrl : pageContent?.WebFullUrl, listID, query)
-            .then((data: any) => {
-                var Allusers = data?.data
-                if (item != undefined && item.TeamLeadersId != undefined && isLoadNotification != undefined && isLoadNotification != '' && isLoadNotification == 'ApprovalMail') {
-                    Allusers.map((user: any) => {
-                        if (CurrentItem?.Author?.Id == user?.AssingedToUserId) {
-                            if (user?.Approver?.results?.length > 0)
-                                user.Approver.results.map((approver: any) => {
-                                    Allmail.push(approver?.EMail);
-                                })
-                        }
-                    })
-                }
-                else {
-                    Allusers.map((user: any) => {
-                        if (user?.Email != null || user?.Email != undefined) {
-                            Allmail.push(user?.Email);
-                        }
-                        else if (user.AssingedToUser != undefined) {
-                            if (user.AssingedToUser.EMail != null || user.AssingedToUser.EMail != undefined) {
-                                Allmail.push(user?.AssingedToUser?.EMail);
-                            }
-                        }
-                    })
-                }
-                if (Allmail == undefined || Allmail.length == 0 && isLoadNotification == 'ApprovalMail')
-                    alert("User has no Approver to send an email");
-                Promise.resolve(Allmail);
-
-            },
-                function (error) {
-                    Promise.reject();
-                });
-    }
-    else {
-        Promise.resolve(Allmail);
-
-        if (isLoadNotification == 'ApprovalMail')
-            alert("User has no Approver to send an email");
-    }
-    return Promise;
 
 }
 
@@ -1043,43 +999,43 @@ export const ConvertLocalTOServerDate = async (LocalDateTime: any, dtformat: any
 
 // }
 
-export const sendImmediateEmailNotifications = async (itemId: any, siteUrl: any, listId: any, item: any, RecipientMail: any, isLoadNotification: any, rootSite: any) => {
-    await GetImmediateTaskNotificationEmails(item, isLoadNotification, rootSite)
+export const sendImmediateEmailNotifications = async (itemId: any, siteUrl: any, listId: any, item: any, RecipientMail: any, isLoadNotification: any, taskUsers: any, Context: any) => {
+    await GetImmediateTaskNotificationEmails(item, isLoadNotification, taskUsers)
         .then(async (ToEmails: any) => {
             if (isLoadNotification == false)
                 ToEmails = [];
-            if (RecipientMail?.Email != undefined && ToEmails?.length == 0) {
-                ToEmails.push(RecipientMail.Email)
-            }
-            if (ToEmails.length > 0) {
+
+            if (ToEmails?.length > 0 || RecipientMail?.length > 0) {
                 var query = '';
                 query += "AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,Component/Id,Component/Title,Component/ItemType,ComponentLink,Categories,FeedBack,ComponentLink,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,Services/Id,Services/Title,Events/Id,Events/Title,TaskType/Id,TaskType/Title,TaskID,CompletedDate,TaskLevel,TaskLevel&$expand=AssignedTo,Component,AttachmentFiles,Author,Editor,TaskCategories,TaskType,Services,Events&$filter=Id eq " + itemId;
                 await getData(siteUrl, listId, query)
                     .then(async (data: any) => {
-                        data?.data?.map((item: any) => {
-                            item.PercentageCompleted = item?.PercentComplete < 1 ? item?.PercentComplete * 100 : item?.PercentComplete;
-                            item.PercentComplete = item?.PercentComplete < 1 ? item?.PercentComplete * 100 : item?.PercentComplete;
-                            if (item.PercentageCompleted != undefined) {
-                                item.PercentageCompleted = parseInt((item?.PercentageCompleted).toFixed(0));
+                        data?.map((task: any) => {
+                            task.PercentageCompleted = task?.PercentComplete < 1 ? task?.PercentComplete * 100 : task?.PercentComplete;
+                            task.PercentComplete = task?.PercentComplete < 1 ? task?.PercentComplete * 100 : task?.PercentComplete;
+                            if (task.PercentageCompleted != undefined) {
+                                task.PercentageCompleted = parseInt((task?.PercentageCompleted).toFixed(0));
                             }
-                            if (item.PercentComplete != undefined) {
-                                item.PercentComplete = parseInt((item?.PercentComplete).toFixed(0));
+                            if (task.PercentComplete != undefined) {
+                                task.PercentComplete = parseInt((task?.PercentComplete).toFixed(0));
                             }
-                            item.taskLeader = 'None';
-                            if (item?.AssignedTo?.results?.length > 0)
-                                item.taskLeader = getMultiUserValues(item);
-                        })
-                        var UpdateItem = data?.data[0];
-                        if (item?.PercentComplete != undefined) {
-                            item.PercentComplete = item.PercentComplete < 1 ? item.PercentComplete * 100 : item.PercentComplete;
-                            item.PercentComplete = parseInt((item.PercentComplete).toFixed(0));
+                            task.taskLeader = 'None';
+                            if (task?.AssignedTo?.length > 0)
+                                task.taskLeader = getMultiUserValues(task);
 
-                            item.PercentageCompleted = item.PercentComplete;
-                        }
-                        if (item?.siteType != undefined) {
-                            item.siteType = item.siteType.replace(/_x0020_/g, ' ');
-                        }
-                        var siteType = getListNameFromItemProperties(UpdateItem);
+                            if (task?.PercentComplete != undefined) {
+                                task.PercentComplete = task.PercentComplete < 1 ? task.PercentComplete * 100 : task.PercentComplete;
+                                task.PercentComplete = parseInt((task.PercentComplete).toFixed(0));
+
+                                task.PercentageCompleted = task.PercentComplete;
+                            }
+                            if (task?.siteType != undefined) {
+                                task.siteType = task.siteType.replace(/_x0020_/g, ' ');
+                            }
+                        })
+
+                        var UpdateItem = data[0];
+                        var siteType = item?.siteType;
                         UpdateItem.siteType = '';
                         if (UpdateItem.siteType == '') {
                             if (siteType != undefined) {
@@ -1087,7 +1043,7 @@ export const sendImmediateEmailNotifications = async (itemId: any, siteUrl: any,
                             }
                             UpdateItem.siteType = siteType;
                         }
-                        UpdateItem.TaskID = getTaskId(UpdateItem);
+                        UpdateItem.TaskID = GetTaskId(UpdateItem);
                         if (UpdateItem?.Author != undefined) {
                             UpdateItem.Author1 = '';
                             UpdateItem.Author1 = UpdateItem.Author.Title;
@@ -1099,29 +1055,29 @@ export const sendImmediateEmailNotifications = async (itemId: any, siteUrl: any,
                         } else
                             UpdateItem.Editor1 = '';
                         if (UpdateItem?.ComponentLink?.Url != undefined)
-                            UpdateItem.URL = UpdateItem.ComponentLink.Url;
+                            UpdateItem.URL = UpdateItem?.ComponentLink?.Url;
                         else
                             UpdateItem.URL = '';
 
                         if (UpdateItem?.DueDate != undefined)
-                            UpdateItem.DueDate = ConvertLocalTOServerDate(UpdateItem.DueDate, 'DD-MMM-YYYY');
+                            UpdateItem.DueDate = moment(new Date(UpdateItem.DueDate)).format('DD/MM/YYYY')
                         else
                             UpdateItem.DueDate = '';
                         if (UpdateItem?.StartDate != undefined)
-                            UpdateItem.StartDate = ConvertLocalTOServerDate(UpdateItem.StartDate, 'DD-MMM-YYYY');
+                            UpdateItem.StartDate = moment(new Date(UpdateItem.StartDate)).format('DD/MM/YYYY')
                         else
                             UpdateItem.StartDate = '';
                         if (UpdateItem?.CompletedDate != undefined)
-                            UpdateItem.CompletedDate = ConvertLocalTOServerDate(UpdateItem.CompletedDate, 'DD-MMM-YYYY');
+                            UpdateItem.CompletedDate = moment(new Date(UpdateItem.CompletedDate)).format('DD/MM/YYYY')
                         else
                             UpdateItem.CompletedDate = '';
 
                         if (UpdateItem?.Created != undefined)
-                            UpdateItem.Created = ConvertLocalTOServerDate(UpdateItem.Created, 'DD-MMM-YYYY');
+                            UpdateItem.Created = moment(new Date(UpdateItem.Created)).format('DD/MM/YYYY')
                         else
                             UpdateItem.Created = '';
                         if (UpdateItem?.Modified != undefined)
-                            UpdateItem.Modified = ConvertLocalTOServerDate(UpdateItem.Modified, 'DD-MMM-YYYY');
+                            UpdateItem.Modified = moment(new Date(UpdateItem.Modified)).format('DD/MM/YYYY')
                         else
                             UpdateItem.Modified = '';
                         if (UpdateItem?.PercentComplete != undefined)
@@ -1141,21 +1097,19 @@ export const sendImmediateEmailNotifications = async (itemId: any, siteUrl: any,
                         else
                             UpdateItem.Title = '';
                         UpdateItem.AssignedToTitle = '';
-                        if (UpdateItem?.AssignedTo?.results != undefined) {
-                            UpdateItem.AssignedTo.results.map((item: any) => {
+                        if (UpdateItem?.AssignedTo != undefined) {
+                            UpdateItem.AssignedTo.map((item: any) => {
                                 UpdateItem.AssignedToTitle += item.Title + ';';
                             })
                         }
                         UpdateItem.ComponentName = '';
-                        if (UpdateItem?.Component?.results != undefined) {
-                            UpdateItem.Component.results.map((item: any) => {
-                                UpdateItem.ComponentName += item.Title + ';';
-                            })
+                        if (UpdateItem?.Portfolio?.Id != undefined) {
+                            UpdateItem.ComponentName += UpdateItem?.Portfolio.Title
                         }
                         UpdateItem.Category = '';
                         UpdateItem.Categories = '';
-                        if (UpdateItem?.TaskCategories?.results != undefined) {
-                            UpdateItem.TaskCategories.results.map((item: any) => {
+                        if (UpdateItem?.TaskCategories != undefined) {
+                            UpdateItem.TaskCategories.map((item: any) => {
                                 UpdateItem.Categories += item.Title + ';';
                                 UpdateItem.Category += item.Title + ',';
                             })
@@ -1255,8 +1209,8 @@ export const sendImmediateEmailNotifications = async (itemId: any, siteUrl: any,
                             }
 
                         }
-                        let pageContent = await pageContext()
-                        var siteUrl = pageContent?.SiteFullUrl + '/sp';
+                        let pageContent = Context
+                        var siteUrl = pageContent?.pageContext?.web?.absoluteUrl;
                         var Name = '';
                         var OtherDetails = '';
                         let Subject: any = '';
@@ -1269,88 +1223,12 @@ export const sendImmediateEmailNotifications = async (itemId: any, siteUrl: any,
                         var ApprovalDashboard = '';
                         var TaskDashBoardTitle = '';
                         var ApprovalDashboardTitle = '';
-                        var CC = [];
+                        var CC: any[] = [];
                         if (item == undefined) {
                             //Subject = "[" + siteType + "-Task] " + UpdateItem.Title + "(" + UpdateItem.Category + ")";
                             Subject = "[" + siteType + " - " + UpdateItem?.Category + " (" + UpdateItem?.PercentComplete + "%)] " + UpdateItem?.Title + "";
                         }
-                        else {
-                            if (item?.PercentComplete == 5 && item?.newCategories == 'Immediate') {
 
-                                Subject = "[" + item?.siteType + " - " + item?.newCategories + " (" + item?.PercentComplete + "%)] " + item?.Title + "";
-                            }
-                            if (item?.TeamLeadersId?.length > 0 && item?.CategoriesType == undefined && item?.isApprovalRejection == undefined) {
-
-                                Subject = "[" + item?.siteType + " - " + UpdateItem?.Category + " (" + item?.PercentComplete + "%)] " + item?.Title + "";
-                            }
-                            if ((item != undefined && (item?.PercentComplete == 80 && item.newCategories == undefined) || (item.PercentComplete == 80 && item.newCategories != undefined && item.newCategories != 'Immediate' && item.newCategories != 'Email Notification'))) {
-
-                                Subject = "[" + item?.siteType + " - " + UpdateItem?.Category + " (" + item?.PercentComplete + "%)] " + item?.Title + "";
-                            }
-                            if (item != undefined && item?.PercentComplete == 93) {
-                                if (item?.newCategories == undefined || item?.newCategories == null)
-                                    item.newCategories = '';
-
-                                Subject = "[" + item?.siteType + " - " + item?.newCategories + " (" + item?.PercentComplete + "%)] " + item?.Title + "";
-                            }
-                            if ((item != undefined && (item?.PercentComplete == 80 && item?.newCategories != undefined && item?.newCategories == 'Immediate'))) {
-
-                                Subject = "[" + item?.siteType + " - " + item?.newCategories + " (" + item?.PercentComplete + "%)] " + item?.Title + "";
-                            }
-
-                            if ((item != undefined && (item?.PercentComplete == 90 && item?.newCategories != undefined && item?.newCategories == 'Email Notification'))) {
-
-                                CC.push("deepak@hochhuth-consulting.de");
-                                Subject = "[" + item?.siteType + " - " + item?.newCategories + " (" + item?.PercentComplete + "%)] " + item?.Title + "";
-                            }
-                            if ((item != undefined && (item.PercentComplete == 90 && item.newCategories != undefined && item.newCategories == 'Immediate'))) {
-                                CC.push("deepak@hochhuth-consulting.de");
-                                Subject = "[" + item?.siteType + " - " + item?.newCategories + " (" + item?.PercentComplete + "%)] " + item?.Title + "";
-                            }
-                            if ((item?.CategoriesType?.toLowerCase()).indexOf('draft') > -1 || (item?.CategoriesType?.toLowerCase()).indexOf('approval') > -1 && item?.PercentComplete == 1) {
-                                CC = [];
-                                if (item.CategoriesType != undefined && item.CategoriesType != '')
-                                    item.CategoriesType = item?.CategoriesType?.replaceAll(';', ',')
-                                Subject = "[" + item?.siteType + " - " + item?.CategoriesType + " (" + item?.PercentComplete + "%)] " + item?.Title + "";
-                                TaskDescriptionStart = 'Hi,';
-                                TaskDescription = UpdateItem?.Author1 + ' has created a Task which requires your Approval.Please take your time and review:';
-                                if (item?.TotalApprovalTask != undefined && item?.TotalApprovalTask != 0)
-                                    NoOfApprovalTask = 'Please note that you still have ' + item?.TotalApprovalTask + ' tasks left to approve.You can find all pending approval tasks on your task dashboard or the approval page.';
-                                TaskDashBoardURl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskDashboard.aspx';
-                                ApprovalDashboard = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskManagement.aspx?SmartfavoriteId=101&smartfavorite=All%20Approval%20Tasks';
-                                var TaskDashBoardTitle = 'Your Task Dashboard';
-                                var ApprovalDashboardTitle = 'Your Approval Page';
-
-                            }
-                            if ((item != undefined && (item?.isApprovalRejection != undefined && item?.isApprovalRejection))) {
-                                CC = [];
-                                Subject = "[" + item?.siteType + " (" + item?.PercentComplete + "%)] " + item?.Title + " Approved";
-                                TaskDescriptionStart = 'Hi,';
-                                TaskDescription = 'Your task has been approved by ' + item?.ApproverName + ', team will process it further. Refer Approval Comments.';
-                                TaskComments = item?.TaskComments;
-                                ApprovalRejectionComments = '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Approval Comments:</b> </td><td colspan="7" style="border: 1px solid #ccc;background: #fafafa;"><span style="font-size: 13px; margin-left:13px">' +
-                                    TaskComments + '</span> </td>' +
-                                    '</tr>'
-                            }
-                            if ((item != undefined && (item?.isApprovalRejection != undefined && !item?.isApprovalRejection))) {
-                                CC = [];
-                                Subject = "[" + item?.siteType + " (" + item?.PercentComplete + "%)] " + item?.Title + " Rejected";
-                                TaskDescriptionStart = 'Hi,';
-                                TaskDescription = 'Your task has been rejected by ' + item?.ApproverName + '. Refer Reject Comments.';
-                                TaskComments = item.TaskComments;
-                                ApprovalRejectionComments = '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Rejection Comments:</b> </td><td colspan="7" style="border: 1px solid #ccc;background: #fafafa;"><span style="font-size: 13px; margin-left:13px">' +
-                                    TaskComments + '</span> </td>' +
-                                    '</tr>';
-                            }
-                            //------
-                            if (item?.PercentComplete == 2 && item?.Categories != undefined && RecipientMail != undefined) {
-                                CC = [];
-                                Subject = "[" + item?.siteType + " - Immediate - Follow up(2 %)] " + item?.Title;
-                                TaskDescriptionStart = "Hi " + RecipientMail?.Title + ",";
-                                TaskDescription = 'Your immediate attention required on this task please review and respond ASAP.';
-                            }
-                            //---------
-                        }
                         if (Subject == undefined || Subject == '') {
                             if (UpdateItem?.PercentComplete != undefined && UpdateItem?.PercentComplete != '' && UpdateItem?.PercentComplete != 1 && UpdateItem?.Category != undefined && UpdateItem?.Category != '' && UpdateItem?.Category.toLowerCase('approval') > -1)
                                 item.CategoriesType = item?.Category?.replace('Approval,', '')
@@ -1366,19 +1244,22 @@ export const sendImmediateEmailNotifications = async (itemId: any, siteUrl: any,
                             Subject = Subject?.replaceAll('Complex Approval', '')
                             Subject = Subject?.replaceAll(',,', ',')
                         }
-                        if (UpdateItem?.PercentComplete == 1 && UpdateItem?.Category?.toLowerCase().indexOf('approval') > -1) {
+                        if (UpdateItem?.PercentComplete == 1 && UpdateItem?.Category?.toLowerCase()?.indexOf('approval') > -1) {
                             //Subject = Subject.replaceAll('Approval,', '')
                             //if (Subject.indexOf('Normal Approval') <= -1 && Subject.indexOf('Quick Approval') <= -1 && Subject.indexOf('Complex Approval') <= -1)
                             //    Subject = Subject.replaceAll('Approval', '')
                             //Subject = Subject.replaceAll(',,', ',')
                             Subject = "[" + siteType + " - " + "Approval" + "] " + UpdateItem?.Title + "";
-                            if (UpdateItem?.Category?.toLowerCase().indexOf('email notification') > -1 && UpdateItem?.Category?.toLowerCase().indexOf('immediate') > -1) {
+                            if(isLoadNotification=='Client Task'){
+                                Subject = "[" + siteType + " - Client Task ] " + UpdateItem?.Title + "";
+                            }
+                            if (UpdateItem?.Category?.toLowerCase()?.indexOf('email notification') > -1 && UpdateItem?.Category?.toLowerCase().indexOf('immediate') > -1) {
                                 Subject = "[" + siteType + " - " + "Approval,Email notification,Immediate" + "] " + UpdateItem?.Title + "";
                             }
-                            else if (UpdateItem?.Category?.toLowerCase().indexOf('email notification') > -1) {
+                            else if (UpdateItem?.Category?.toLowerCase()?.indexOf('email notification') > -1) {
                                 Subject = "[" + siteType + " - " + "Approval,Email notification" + "] " + UpdateItem?.Title + "";
                             }
-                            else if (UpdateItem?.Category?.toLowerCase().indexOf('immediate') > -1) {
+                            else if (UpdateItem?.Category?.toLowerCase()?.indexOf('immediate') > -1) {
                                 Subject = "[" + siteType + " - " + "Approval,Immediate" + "] " + UpdateItem?.Title + "";
                             }
                         }
@@ -1474,6 +1355,8 @@ export const sendImmediateEmailNotifications = async (itemId: any, siteUrl: any,
                         if (CC.length > 1)
                             CC.splice(1, 1);
                         //'<tr><td colspan="7" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;flex-basis: 100%;background-color: #fff;font-weight: normal;font-size: 13px;color: #000;margin-left: 2px;border: 1px solid #ccc;">' + UpdateItem.Description + '</td></tr>' +
+
+                        //'<tr><td colspan="7" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;flex-basis: 100%;background-color: #fff;font-weight: normal;font-size: 13px;color: #000;margin-left: 2px;border: 1px solid #ccc;">' + UpdateItem.Description + '</td></tr>' +
                         if (RecipientMail?.length > 0) {
                             if (ToEmails == undefined) {
                                 ToEmails = [];
@@ -1489,7 +1372,7 @@ export const sendImmediateEmailNotifications = async (itemId: any, siteUrl: any,
                             body = body,
                             subject = Subject,
                             ReplyTo = "deepak@hochhuth-consulting.de";
-                        sendEmail(from, to, body, subject, ReplyTo, cc);
+                        SendEmailFinal(to, subject, body, Context);
                     }, function (error) {
                         console.log(error);
                     })
@@ -1498,22 +1381,24 @@ export const sendImmediateEmailNotifications = async (itemId: any, siteUrl: any,
 
             function (error) { });
 }
-export const sendEmail = async (from: any, to: any, body: any, subject: any, ReplyTo: any, cc: any) => {
+const SendEmailFinal = async (to: any, subject: any, body: any, Context: any) => {
+    let sp = spfi().using(spSPFx(Context));
+    sp.utility.sendEmail({
+        //Body of Email  
+        Body: body,
+        //Subject of Email  
+        Subject: subject,
+        //Array of string for To of Email  
+        To: to,
+        AdditionalHeaders: {
+            "content-type": "text/html"
+        },
+    }).then(() => {
+        console.log("Email Sent!");
 
-    let result;
-    try {
-        result = (await sp.utility.sendEmail({
-            To: ['abhishek.tiwari@smalsus.com'],
-            Subject: subject,
-            Body: body
-        }));
-    }
-    catch (error) {
-        return Promise.reject(error);
-    }
-
-    return result;
-
+    }).catch((err) => {
+        console.log(err.message);
+    });
 }
 export const getPortfolio = async (type: any) => {
     let result;
@@ -1814,12 +1699,12 @@ export const GetCompleteTaskId = (Item: any) => {
     if (TaskType?.Title === 'Activities' || TaskType?.Title === 'Workstream') {
         taskIds += taskIds.length > 0 ? `-${TaskID}` : `${TaskID}`;
     }
-    if ( ParentTask?.TaskID && TaskType?.Title === 'Task' ) {
+    if (ParentTask?.TaskID && TaskType?.Title === 'Task') {
         taskIds += taskIds.length > 0 ? `-${ParentTask?.TaskID}-T${Id}` : `${ParentTask?.TaskID}-T${Id}`;
-    } else if(ParentTask?.TaskID ==undefined && TaskType?.Title === 'Task') {
+    } else if (ParentTask?.TaskID == undefined && TaskType?.Title === 'Task') {
         taskIds += taskIds.length > 0 ? `-T${Id}` : `T${Id}`;
-    }else if (taskIds?.length<=0){
-        taskIds +=  `T${Id}`;
+    } else if (taskIds?.length <= 0) {
+        taskIds += `T${Id}`;
     }
     return taskIds;
 };
@@ -1829,65 +1714,65 @@ export const GetTaskId = (Item: any) => {
     if (TaskType?.Title === 'Activities' || TaskType?.Title === 'Workstream') {
         taskIds += taskIds.length > 0 ? `-${TaskID}` : `${TaskID}`;
     }
-    if ( ParentTask?.TaskID!=undefined && TaskType?.Title === 'Task' ) {
+    if (ParentTask?.TaskID != undefined && TaskType?.Title === 'Task') {
         taskIds += taskIds.length > 0 ? `-${ParentTask?.TaskID}-T${Id}` : `${ParentTask?.TaskID}-T${Id}`;
-    } else if ( ParentTask?.TaskID==undefined && TaskType?.Title === 'Task' ){
+    } else if (ParentTask?.TaskID == undefined && TaskType?.Title === 'Task') {
         taskIds += taskIds.length > 0 ? `-T${Id}` : `T${Id}`;
-    }else if (taskIds?.length<=0){
-        taskIds +=  `T${Id}`;
+    } else if (taskIds?.length <= 0) {
+        taskIds += `T${Id}`;
     }
     return taskIds;
 };
 export const findTaskHierarchy = (
-  row: any,
-  AllMatsterAndTaskData: any
+    row: any,
+    AllMatsterAndTaskData: any
 ): any[] => {
-  let createGrouping = (row: any): any[] => {
-    for (let i = 0; i < AllMatsterAndTaskData.length; i++) {
-      let Object = AllMatsterAndTaskData[i];
-      // if (Object?.Item_x0020_Type?.toLowerCase() != 'task') {
-      //     Object.SiteIconTitle = Object?.Item_x0020_Type?.charAt(0);
-      // }
-      if (
-        Object.Id === row?.ParentTask?.Id &&
-        row?.siteType === Object?.siteType
-      ) {
-        Object.subRows = [];
-        Object.subRows.push(row);
-        return createGrouping(Object);
-      } else if (Object.Id === row?.Parent?.Id) {
-        Object.subRows = [];
-        Object.subRows.push(row);
-        return createGrouping(Object);
-      } else if (
-        row?.Component != undefined &&
-        row?.Component?.length > 0 &&
-        Object.Id === row?.Component[0]?.Id
-      ) {
-        Object.subRows = [];
-        Object.subRows.push(row);
-        return createGrouping(Object);
-      } else if (
-        row?.Services != undefined &&
-        row?.Services?.length > 0 &&
-        Object.Id === row?.Services[0]?.Id
-      ) {
-        Object.subRows = [];
-        Object.subRows.push(row);
-        return createGrouping(Object);
-      } else if (
-        row?.Portfolio != undefined &&
-        Object.Id === row?.Portfolio?.Id &&
-        row?.ParentTask?.Id == undefined
-      ) {
-        Object.subRows = [];
-        Object.subRows.push(row);
-        return createGrouping(Object);
-      }
-    }
-    return [row];
-  };
-  return createGrouping(row);
+    let createGrouping = (row: any): any[] => {
+        for (let i = 0; i < AllMatsterAndTaskData.length; i++) {
+            let Object = AllMatsterAndTaskData[i];
+            // if (Object?.Item_x0020_Type?.toLowerCase() != 'task') {
+            //     Object.SiteIconTitle = Object?.Item_x0020_Type?.charAt(0);
+            // }
+            if (
+                Object.Id === row?.ParentTask?.Id &&
+                row?.siteType === Object?.siteType
+            ) {
+                Object.subRows = [];
+                Object.subRows.push(row);
+                return createGrouping(Object);
+            } else if (Object.Id === row?.Parent?.Id) {
+                Object.subRows = [];
+                Object.subRows.push(row);
+                return createGrouping(Object);
+            } else if (
+                row?.Component != undefined &&
+                row?.Component?.length > 0 &&
+                Object.Id === row?.Component[0]?.Id
+            ) {
+                Object.subRows = [];
+                Object.subRows.push(row);
+                return createGrouping(Object);
+            } else if (
+                row?.Services != undefined &&
+                row?.Services?.length > 0 &&
+                Object.Id === row?.Services[0]?.Id
+            ) {
+                Object.subRows = [];
+                Object.subRows.push(row);
+                return createGrouping(Object);
+            } else if (
+                row?.Portfolio != undefined &&
+                Object.Id === row?.Portfolio?.Id &&
+                row?.ParentTask?.Id == undefined
+            ) {
+                Object.subRows = [];
+                Object.subRows.push(row);
+                return createGrouping(Object);
+            }
+        }
+        return [row];
+    };
+    return createGrouping(row);
 };
 
 export const loadAllTimeEntry = async (timesheetListConfig: any) => {
@@ -1909,5 +1794,7 @@ export const loadAllTimeEntry = async (timesheetListConfig: any) => {
             return AllTimeEntry
         }
 
-    } 
+    }
 }
+
+
