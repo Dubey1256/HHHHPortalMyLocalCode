@@ -11,7 +11,6 @@ export default function ParentportfolioPage(props: any) {
     const [listIds, setlistIds] = React.useState<any>([]);
     const [Portfoliotyped, setPortfoliotyped] = useState([]);
     var storeAllMetaData: any
-    var baseUrl = props?.props?.context?.pageContext?.web?.absoluteUrl;
     const getComponentItem = () => {
         const sitesId = {
             TaskUsertListID: props?.props?.TaskUsertListID,
@@ -22,18 +21,18 @@ export default function ParentportfolioPage(props: any) {
             SmartHelptListID: props?.props?.SmartHelptListID,
             PortFolioTypeID: props?.props?.PortFolioTypeID,
             SiteCompostion: props?.props?.isShowSiteCompostion,
-            siteUrl: baseUrl,
-            Context: props?.props?.context
+            siteUrl: props?.props?.siteUrl,
+            // Context: props?.props?.context
         }
         setlistIds(sitesId)
         const LoadAllMetaDataAndTasks = () => {
-            let web = new Web(baseUrl);
+            let web = new Web(props?.props?.siteUrl);
             web.lists.getById(props?.props?.SmartMetadataListID).items.getAll().then((response: any) => {
                 storeAllMetaData = response;
             })
         }
         LoadAllMetaDataAndTasks();
-        let web = new Web(baseUrl);
+        let web = new Web(props?.props?.siteUrl);
         web.lists.getById(props?.props?.MasterTaskListID).items.select("Id", "Title", "ClientCategory/Id", "ClientCategory/Title", "HelpStatus", "DueDate", "Item_x0020_Type", "PortfolioType/Id", "PortfolioType/Title", "Parent/Id", "Parent/Title").expand("Parent,ClientCategory,PortfolioType").top(4999).getAll().then((response: any) => {
             response = response?.filter((itemFilter: any) => { return (itemFilter?.Item_x0020_Type == 'SubComponent' || itemFilter?.Item_x0020_Type == 'Feature') })
             var data: any = []
@@ -93,7 +92,7 @@ export default function ParentportfolioPage(props: any) {
             },
             {
                 cell: (({ row }) => (
-                    <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.Id}`}>
+                    <a data-interception="off" target='_blank' href={`${props?.props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.Id}`}>
                         {row?.original?.Title}
                     </a>
                 )),
