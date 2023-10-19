@@ -317,10 +317,7 @@ function TasksTable(props: any) {
                   
 
                   if (result?.Comments != null) {
-                    result.commentsSearch = result?.Comments.replace(
-                      /(<([^>]+)>)/gi,
-                      ""
-                    ).replace(/\n/g, "");
+                    result.commentsSearch = result?.Comments?.replace(/(<([^>]+)>)/gi,"").replace(/\n/g, "");
                   }
                   if (
                     result.AssignedTo != undefined &&
@@ -901,7 +898,7 @@ function TasksTable(props: any) {
                 </span>)}
 
               {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && (
-                <span title='Edit' onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit ml-auto"></span>
+                <span title='Edit' onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit"></span>
               )}
             </a>
             {getValue()}
