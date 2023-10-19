@@ -27,7 +27,7 @@ const WorldClock = () => {
     Time:""
    }]);
   const [time, setTime] = useState('Loading...');
-console.log(countryDetails)
+// console.log(countryDetails)
   
   useEffect(() => {
   
@@ -39,7 +39,7 @@ console.log(countryDetails)
     
       const response = await axios.get('https://ipinfo.io/json');
       const { CurrentcountryLogin } = response.data;
-    console.log(response.data)
+    // console.log(response.data)
     let data=countryDetails;
     data?.map((item:any)=>{
       if( response.data.country=="IN"&&item.country=="India"){
@@ -60,7 +60,7 @@ console.log(countryDetails)
        
      var data= [...countryDetails];
      const I = new Date();
-     console.log(I)
+    //  console.log(I)
      const localTime2 = I.getTime();
      const localOffset2 = I.getTimezoneOffset() * 60000;
      
@@ -78,7 +78,7 @@ console.log(countryDetails)
      const offset = isDaylightSavingTime ? 2 : 1;
      const germany = utc2 + (3600000 * offset);
      const germanyTimeNow = new Date(germany).toLocaleString('en-US', { hour12: true });
-     console.log("Current time in Germany:", germanyTimeNow);
+    //  console.log("Current time in Germany:", germanyTimeNow);
   
   
      
@@ -87,7 +87,7 @@ console.log(countryDetails)
      const offset1 = isDaylightSavingTime1 ? 2 : 1;
      const switzerland = utc2 + (3600000 * offset1);
      const switzerlandTimeNow = new Date(switzerland).toLocaleString('en-US', { hour12: true });
-     console.log("Current time in Switzerland:", switzerlandTimeNow);
+    //  console.log("Current time in Switzerland:", switzerlandTimeNow);
      
     
     
@@ -115,7 +115,7 @@ console.log(countryDetails)
         item .Time=switzerlandTimeNow.split(',')[1]
       }
       if(item.country=="India"){
-    console.log(currentTimeInIndia)
+    // console.log(currentTimeInIndia)
         item .Time= currentTimeInIndia
       }
    })
