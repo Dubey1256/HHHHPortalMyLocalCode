@@ -1913,7 +1913,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         style={{
           position: "absolute",
           top: "50%",
-          right: "0px",
+          right: "5px",
           transform: "translateY(-50%)",
           cursor: "pointer"
         }}
@@ -2020,19 +2020,20 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     } = this.props;
     return (
       <div id="TimeSheet-Section">
-        <div className="p-0  " style={{ verticalAlign: "top" }}><h2 className="heading d-flex justify-content-between align-items-center"><span> <a>Timesheet</a> </span><span className="text-end fs-6"><a target="_blank" data-interception="off" href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/UserTimeEntry-Old.aspx`}>Old UserTimeEntry</a></span></h2></div>
+        <div className="p-0  " style={{ verticalAlign: "top" }}><h2 className="heading d-flex justify-content-between align-items-center"><span> <a>Timesheet Management</a> </span><span className="text-end fs-6"><a target="_blank" data-interception="off" href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/UserTimeEntry-Old.aspx`}>Old UserTimeEntry</a></span></h2></div>
         <Col className='smartFilter bg-light border mb-3 '>
-          <details className='p-0 m-0' open>
-            <summary className='hyperlink'><a className="hreflink pull-left mr-5 pe-2 ">All Filters - <span className='me-1'>Task User :</span> </a>
+          <details className='p-0 m-0 allfilter' open>
+            <summary className='hyperlink'><a className="fw-semibold hreflink mr-5 pe-2 pull-left ">All Filters - <span className='me-1 fw-normal'>Task User :</span> </a>
               {this.state.ImageSelectedUsers != null && this.state.ImageSelectedUsers.length > 0 && this.state.ImageSelectedUsers.map((user: any, i: number) => {
                 return <span>
                   <img className="AssignUserPhoto mr-5" title={user.AssingedToUser.Title} src={user?.Item_x0020_Cover?.Url} />
                 </span>
               })
               }
+               {/* <span className="pull-right"><a href="#">Add Smart Favorite</a></span> */}
             </summary>
-            <Col>
-              <details open className='p-0'>
+            <Col className='subfilters'>
+              <details open className='p-0 m-0'>
                 <span className="pull-right" style={{ display: 'none' }}>
                   <input type="checkbox" className="" onClick={(e) => this.SelectAllGroupMember(e)} />
                   <label>Select All </label>
@@ -2042,7 +2043,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                   <hr></hr>
                 </summary>
                 <div style={{ display: "block" }}>
-                  <div className="taskTeamBox ps-40 ">
+                  <div className="taskTeamBox ps-30 ">
                     {this.state.taskUsers != null && this.state.taskUsers.length > 0 && this.state.taskUsers.map((users: any, i: number) => {
                       return users?.childs?.length > 0 && <div className="top-assign">
                         <div className="team ">
@@ -2077,7 +2078,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
 
                 </div>
               </details>
-              <details open>
+              <details className='m-0' open>
                 <summary className='hyperlink'>
                   Date
                   <hr></hr>
@@ -2140,21 +2141,25 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
 
                 </Row>
                 <Row className='ps-30 mt-2'>
-                  <div className="col">
-                    <label>Start Date</label>
+                  <div className="col-2">
+                    <div className='input-group'>
+                    <label className='full-width'>Start Date</label>
                     <span>
                       <DatePicker selected={this.state.startdate} onChange={(date: any) => this.setStartDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
                         className="form-control date-picker" popperPlacement="bottom-start" customInput={<this.ExampleCustomInput />}
                       />
                     </span>
+                    </div>
                   </div>
-                  <div className="col">
-                    <label>End Date</label>
+                  <div className="col-2">
+                    <div className='input-group'>
+                    <label className='full-width'>End Date</label>
                     <span>
                       <DatePicker selected={this.state.enddate} onChange={(date: any) => this.setEndDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
                         className="form-control date-picker" popperPlacement="bottom-start" customInput={<this.ExampleCustomInput />}
                       />
                     </span>
+                    </div>
                   </div>
                   <div className='col'>
                     <div className='mt-1'>
@@ -2274,7 +2279,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               </div>
             </Col>
           </details>
-        </Col>
+        </Col>git
         {
           this.state.AllTimeEntry != undefined && this.state.AllTimeEntry.length > 0 &&
           <div className='col'>
