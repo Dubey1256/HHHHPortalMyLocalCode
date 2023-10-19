@@ -262,7 +262,7 @@ export default function Sitecomposition(datas: any) {
         onRenderHeader={onRenderCustomCalculateSC}
         isOpen={EditSiteCompositionStatus}
         onDismiss={() => ClosePopupCallBack()}
-        isBlocking={EditSiteCompositionStatus}
+        isBlocking={false}
         type={PanelType.custom}
         customWidth="1024px"
       >

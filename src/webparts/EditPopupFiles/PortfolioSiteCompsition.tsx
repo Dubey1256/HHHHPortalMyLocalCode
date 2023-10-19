@@ -1724,7 +1724,7 @@ const SiteCompositionComponent = (Props: any) => {
                 </table>
                 <footer className="bg-e9 alignCenter justify-content-between p-1">
                     <div className="col-sm-6">
-                        <a className="hreflink" target="_blank" data-interception="off" href={`${siteUrls}/Lists/Master%20Tasks/EditForm.aspx?ID=${ItemId}&?#SiteCompositionSettings`}>
+                        <a className="hreflink ms-2" target="_blank" data-interception="off" href={`${siteUrls}/Lists/Master%20Tasks/EditForm.aspx?ID=${ItemId}&?#SiteCompositionSettings`}>
                             Open-Out-Of-The-Box
                         </a>
                     </div>
@@ -1741,7 +1741,7 @@ const SiteCompositionComponent = (Props: any) => {
                 onRenderHeader={onRenderCustomClientCategoryHeader}
                 isOpen={ClientCategoryPopupStatus}
                 onDismiss={closeClientCategoryPopup}
-                isBlocking={ClientCategoryPopupStatus}
+                isBlocking={false}
                 type={PanelType.custom}
                 customWidth="850px"
                 onRenderFooter={onRenderFooter}
@@ -1913,7 +1913,7 @@ const SiteCompositionComponent = (Props: any) => {
                     onRenderHeader={onRenderComponentChildrenHeader}
                     isOpen={ComponentChildrenPopupStatus}
                     onDismiss={closeComponentChildrenPopup}
-                    isBlocking={ComponentChildrenPopupStatus}
+                    isBlocking={false}
                     type={PanelType.custom}
                     customWidth="950px"
                     onRenderFooter={onRenderFooterComponentChildren}
