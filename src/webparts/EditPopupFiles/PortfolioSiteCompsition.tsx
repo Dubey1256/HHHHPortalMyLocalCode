@@ -29,6 +29,7 @@ let MasterTaskListData: any = [];
 let SiteTaskListData: any = [];
 var MasterTaskListId: any;
 let SelectedFromTable: any = [];
+let ClientTimeDataBackup: any = [];
 const SiteCompositionComponent = (Props: any) => {
     const SiteData = Props.SiteTypes;
     var SitesTaggingData: any = Props.SitesTaggingData;
@@ -131,6 +132,7 @@ const SiteCompositionComponent = (Props: any) => {
     }
 
     useEffect(() => {
+        ClientTimeDataBackup = Props.ClientTime != undefined ? JSON.parse(JSON.stringify(Props.ClientTime)) : [];
         setSiteTypes(SiteData);
         let tempData: any = [];
         let tempData2: any = [];
@@ -283,10 +285,8 @@ const SiteCompositionComponent = (Props: any) => {
             SiteTypes?.map((SiteData: any) => {
                 if (SiteData.Title == SiteName) {
                     SiteData.ClienTimeDescription = e.target.value;
-                    TempArray.push(SiteData);
-                } else {
-                    TempArray.push(SiteData);
                 }
+                TempArray.push(SiteData);
             })
         }
         setSiteTypes(TempArray);
@@ -310,7 +310,7 @@ const SiteCompositionComponent = (Props: any) => {
             SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
         }
         // callBack(SiteCompositionObject);
-        callBack(SiteCompositionObject, "dataExits");
+        // callBack(SiteCompositionObject, "dataExits");
     }
 
 
@@ -399,7 +399,7 @@ const SiteCompositionComponent = (Props: any) => {
             setIsPortfolioComposition(false);
             setCheckBoxStatus(false);
             setIsSCProtected(false);
-            SiteTaggingFinalData = ClientTimeData;
+            SiteTaggingFinalData = ClientTimeDataBackup;
             refreshSiteCompositionConfigurations();
             ChangeSiteCompositionInstant("Manual");
         }
@@ -505,26 +505,10 @@ const SiteCompositionComponent = (Props: any) => {
                 })
                 TempSiteCompsotion.push(SiteData)
             })
-            console.log("All data ====", SiteTaggingFinalData);
         }
         if (UsedFor == "Delux") {
             SiteTypes?.map((SiteData: any) => {
                 DeluxComposition?.map((STItems: any) => {
-                    SiteTaggingFinalData.push(STItems);
-                    if (SiteData.Title == STItems.Title || (SiteData.Title ==
-                        "DA E+E" && STItems.Title == "ALAKDigital")) {
-                        SiteData.ClienTimeDescription = STItems.ClienTimeDescription;
-                        SiteData.BtnStatus = true;
-                        SiteData.Date = STItems.Date;
-                    }
-                })
-                TempSiteCompsotion.push(SiteData)
-            })
-            console.log("All data ====", SiteTaggingFinalData);
-        }
-        if (UsedFor == "Manual") {
-            SiteTypes?.map((SiteData: any) => {
-                ClientTimeData?.map((STItems: any) => {
                     if (SiteData.Title == STItems.Title || (SiteData.Title ==
                         "DA E+E" && STItems.Title == "ALAKDigital")) {
                         SiteData.ClienTimeDescription = STItems.ClienTimeDescription;
@@ -538,6 +522,19 @@ const SiteCompositionComponent = (Props: any) => {
         if (UsedFor == "Proportional") {
             SiteTypes?.map((SiteData: any) => {
                 ClientTimeData?.map((STItems: any) => {
+                    if (SiteData.Title == STItems.Title || (SiteData.Title ==
+                        "DA E+E" && STItems.Title == "ALAKDigital")) {
+                        SiteData.ClienTimeDescription = STItems.ClienTimeDescription;
+                        SiteData.BtnStatus = true;
+                        SiteData.Date = STItems.Date;
+                    }
+                })
+                TempSiteCompsotion.push(SiteData)
+            })
+        }
+        if (UsedFor == "Manual") {
+            SiteTypes?.map((SiteData: any) => {
+                ClientTimeDataBackup?.map((STItems: any) => {
                     if (SiteData.Title == STItems.Title || (SiteData.Title ==
                         "DA E+E" && STItems.Title == "ALAKDigital")) {
                         SiteData.ClienTimeDescription = STItems.ClienTimeDescription;
@@ -803,7 +800,7 @@ const SiteCompositionComponent = (Props: any) => {
         if (SiteTaggingFinalData?.length > 0) {
             SitesTaggingData = SiteTaggingFinalData
         } else {
-            SitesTaggingData = ClientTimeData;
+            SitesTaggingData = ClientTimeDataBackup;
         }
         if (SiteClientCatgeoryFinalData?.length > 0) {
             ClientCategoryData = SiteClientCatgeoryFinalData
@@ -886,7 +883,7 @@ const SiteCompositionComponent = (Props: any) => {
             try {
                 let web = new Web(AllListIdData.siteUrl);
                 await web.lists.getById(AllListIdData.MasterTaskListID).items.getById(ItemId).update({
-                    Sitestagging: SiteTaggingJSON?.length > 0 ? JSON.stringify(SiteTaggingJSON) : JSON.stringify(ClientTimeData),
+                    Sitestagging: SiteTaggingJSON?.length > 0 ? JSON.stringify(SiteTaggingJSON) : JSON.stringify(ClientTimeDataBackup),
                     ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] },
                     SiteCompositionSettings: (SiteCompositionSettingData != undefined && SiteCompositionSettingData.length > 0) ? JSON.stringify(SiteCompositionSettingData) : SiteCompositionSettings,
                 }).then(() => {
@@ -1725,11 +1722,18 @@ const SiteCompositionComponent = (Props: any) => {
                         </tbody>
                         : null}
                 </table>
-                <footer className="bg-e9 d-flex justify-content-end p-1">
-                    <div className="bg-body col-sm-2 p-1">
-                        <div className="">{isPortfolioComposition == true || ProportionalStatus == false ? `${TotalPercent} %` : "100%"}</div>
+                <footer className="bg-e9 alignCenter justify-content-between p-1">
+                    <div className="col-sm-6">
+                        <a className="hreflink" target="_blank" data-interception="off" href={`${siteUrls}/Lists/Master%20Tasks/EditForm.aspx?ID=${ItemId}&?#SiteCompositionSettings`}>
+                            Open-Out-Of-The-Box
+                        </a>
                     </div>
-                    <button className="btn ms-1 btn-primary px-4" onClick={UpdateSiteTaggingAndClientCategory}>Save</button>
+                    <div className="d-flex justify-content-end col-sm-6">
+                        <div className="bg-body col-sm-2 p-1">
+                            <div className="">{isPortfolioComposition == true || ProportionalStatus == false ? `${TotalPercent} %` : "100%"}</div>
+                        </div>
+                        <button className="btn ms-1 btn-primary px-4" onClick={UpdateSiteTaggingAndClientCategory}>Save</button>
+                    </div>
                 </footer>
             </div>
             {/* ********************* this Client Category Popup panel ****************** */}
