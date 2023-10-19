@@ -383,6 +383,7 @@ const SiteCompositionComponent = (Props: any) => {
             SiteCompositionObject.ClientTime = tempData;
             SiteTaggingFinalData = tempData;
             // CallBack(SiteCompositionObject, "dataExits");
+            ChangeSiteCompositionInstant("Proportional");
             setIsPortfolioComposition(false);
             setCheckBoxStatus(false);
             setIsSCProtected(false);
@@ -397,6 +398,7 @@ const SiteCompositionComponent = (Props: any) => {
             setIsPortfolioComposition(false);
             setCheckBoxStatus(false);
             setIsSCProtected(false);
+            ChangeSiteCompositionInstant("Manual");
             SiteTaggingFinalData = ClientTimeData;
         }
 
@@ -501,9 +503,6 @@ const SiteCompositionComponent = (Props: any) => {
                 })
                 TempSiteCompsotion.push(SiteData)
             })
-            // StandardComposition.map((DataItem1: any) => {
-            //     SiteTaggingFinalData.push(DataItem1);
-            // })
             console.log("All data ====", SiteTaggingFinalData);
         }
         if (UsedFor == "Delux") {
@@ -519,11 +518,22 @@ const SiteCompositionComponent = (Props: any) => {
                 })
                 TempSiteCompsotion.push(SiteData)
             })
-            // DeluxComposition.map((DataItem1: any) => {
-            //     SiteTaggingFinalData.push(DataItem1);
-            // })
             console.log("All data ====", SiteTaggingFinalData);
-            // SiteTaggingFinalData = DeluxComposition;
+        }
+        if (UsedFor == "Manual" || UsedFor == "Proportional") {
+            SiteTypes?.map((SiteData: any) => {
+                ClientTimeData?.map((STItems: any) => {
+                    SiteTaggingFinalData.push(STItems);
+                    if (SiteData.Title == STItems.Title || (SiteData.Title ==
+                        "DA E+E" && STItems.Title == "ALAKDigital")) {
+                        SiteData.ClienTimeDescription = STItems.ClienTimeDescription;
+                        SiteData.BtnStatus = true;
+                        SiteData.Date = STItems.Date;
+                    }
+                })
+                TempSiteCompsotion.push(SiteData)
+            })
+            console.log("All data ====", SiteTaggingFinalData);
         }
         setSiteTypes([...TempSiteCompsotion]);
     }
