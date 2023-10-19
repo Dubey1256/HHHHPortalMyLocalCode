@@ -36,7 +36,7 @@ var allSmartInfo: any = [];
 var AllSitesAllTasks: any = [];
 var AllListId: any = {};
 var backupAllTasks: any = [];
-let groupedComponentData:any=[];
+let groupedComponentData: any = [];
 var MasterListData: any = []
 let taskTaggedComponents: any = []
 let TaggedPortfoliosToProject: any = [];
@@ -364,6 +364,7 @@ const ProjectManagementMain = (props: any) => {
 
   const tagAndCreateCallBack = React.useCallback(() => {
     setIsTaggedCompTask(false)
+    setCreateTaskId({ portfolioData: null, portfolioType: null })
     LoadAllSiteTasks();
   }, []);
   const CreateTask = React.useCallback(() => {
@@ -492,26 +493,63 @@ const ProjectManagementMain = (props: any) => {
           });
           let setCount = siteConfig?.length
           if (arraycount === setCount) {
-            AllTask?.map((childTask: any) => {
-              if (childTask?.ParentTask?.Id) {
-                AllTask?.map((parentTask: any) => {
-                  if (parentTask?.Id == childTask?.ParentTask?.Id && parentTask?.isFlag != true) {
-                    parentTask.isFlag = true;
-                    parentTask.subRows.push(childTask);
-                    childTask.removeFlag = true;
-                    if (parentTask?.ParentTask?.Id) {
-                      getChilds(parentTask, AllTask);
-                    }
-                  }
-                });
+            backupAllTasks = JSON.parse(JSON.stringify(AllTask));
+            setAllTasks(backupAllTasks);
+            let allActivities: any = []
+            allActivities = AllTask.filter((task: any) => {
+              if (task?.TaskType?.Id == 1) {
+                task.isTaskPushed = true;
+                return true
+              } else {
+                return false
               }
             });
+            allActivities?.map((Activity: any) => {
+              Activity.subRows = AllTask.filter((workstream: any) => {
+                if (workstream?.ParentTask?.Id == Activity?.Id && workstream?.TaskType?.Id == 3) {
+                  workstream.isTaskPushed = true;
+                  return true
+                } else {
+                  return false
+                }
+              });
+              Activity?.subRows?.map((workstream: any) => {
+                workstream.subRows = AllTask.filter((task: any) => {
+                  if (task?.ParentTask?.Id == workstream?.Id && task?.TaskType?.Id == 2) {
+                    task.isTaskPushed = true;
+                    return true
+                  } else {
+                    return false
+                  }
+                });
+              })
+            })
+            let allWorkStream: any = []
+            allWorkStream = AllTask.filter((task: any) => {
+              if (task?.TaskType?.Id == 3 && task?.isTaskPushed !== true) {
+                task.isTaskPushed = true;
+                return true
+              } else {
+                return false
+              }
+            });
+            allWorkStream?.map((workstream: any) => {
+              workstream.subRows = AllTask.filter((task: any) => {
+                if (task?.ParentTask?.Id == workstream?.Id && task?.TaskType?.Id == 2 && task?.isTaskPushed !== true) {
+                  task.isTaskPushed = true;
+                  return true
+                } else {
+                  return false
+                }
+              });
+            })
+            allActivities = allActivities.concat(allWorkStream);
+            AllTask = AllTask.filter((item: any) => item?.isTaskPushed !== true);
+            allActivities = allActivities.concat(AllTask);
 
-            AllTask = AllTask.filter((item: any) => item.removeFlag !== true);
-            setAllTasks(AllTask);
-            setData(AllTask);
+            setData(allActivities);
             setTaskTaggedPortfolios(taskTaggedComponents)
-            backupAllTasks = AllTask;
+
           }
 
         });
@@ -942,7 +980,7 @@ const ProjectManagementMain = (props: any) => {
               style={{ marginLeft: '6px' }}
               title='Un-Tag Task From Project'
               onClick={() => untagTask(row?.original)}
-            ><BsTagFill/></span>
+            ><BsTagFill /></span>
           </span>
         ),
         id: 'Actions',
@@ -963,11 +1001,9 @@ const ProjectManagementMain = (props: any) => {
       if (createTaskId?.portfolioData?.Id != portfolio?.Id) {
         setCreateTaskId({ portfolioData: portfolio, portfolioType: 'Component' });
         setIsTaggedCompTask(true);
-        setSidebarStatus({ ...sidebarStatus, sideBarFilter: true });
       } else if (createTaskId?.portfolioData?.Id == portfolio?.Id) {
         setCreateTaskId({ portfolioData: null, portfolioType: null })
         setIsTaggedCompTask(true);
-        setSidebarStatus({ ...sidebarStatus, sideBarFilter: false });
       }
     }
     setSelectedItem(portfolio)
@@ -1264,15 +1300,15 @@ const ProjectManagementMain = (props: any) => {
 
                     <div>
                       <div className="TableSection">
-                      <div className="Alltable">
-                        <div className="section-event ps-0">
-                          <div className="wrapper project-management-Table">
+                        <div className="Alltable">
+                          <div className="section-event ps-0">
+                            <div className="wrapper project-management-Table">
 
-                            <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} columns={column2} data={data} callBackData={callBackData} TaskUsers={AllUser} showHeader={true} expendedTrue={false} />
+                              <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} columns={column2} data={data} callBackData={callBackData} TaskUsers={AllUser} showHeader={true} expendedTrue={false} />
+                            </div>
+
                           </div>
-
                         </div>
-                      </div>
                       </div>
                     </div>
                     <div id="SpfxProgressbar" style={{ display: "none" }}>
