@@ -987,7 +987,7 @@ const HalfClientCategory = (props: any) => {
             />
 
 
-            <section className="ContentSection smartFilterSection">
+            <section className="ContentSection SmartFilterWidth smartFilterSection">
                 <div className="togglecontent mt-1">
                     {filterCounters == true ? <TeamSmartFilter ProjectData={ProjectData} setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} ContextValue={AllListId} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
                 </div>
@@ -1006,7 +1006,7 @@ const HalfClientCategory = (props: any) => {
 
                 </dl>
             </div>
-            <div className="Alltable p-2">
+            <div className="Alltable">
                 {selectedView == 'MasterTask' ? <div>
                     <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId} columns={columnsMaster} data={AllMasterTasks} showPagination={true} callBackData={CallBack} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} />
 

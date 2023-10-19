@@ -411,8 +411,18 @@ function PortfolioTable(SelectedProp: any) {
                   ).toFixed(0);
                   result.chekbox = false;
                   if (result?.FeedBack != undefined) {
-                    result.descriptionsSearch = JSON.parse(result?.FeedBack)
+                    let feedbackdata = JSON.parse(result?.FeedBack)
+                    feedbackdata[0]?.FeedBackDescriptions?.map(
+                      (child: any) =>{
+                       let  copyTitle=child?.Title?.replace( /(<([^>]+)>)/gi,"")?.replace(/\n/g, "");
+                         if(copyTitle!=undefined && copyTitle!=null&& copyTitle!=""){
+                          result.descriptionsSearch = copyTitle;
+                         }
+                       
+                      }
+                      )
                   }
+                 
                   if (result?.Comments != null) {
                     result.commentsSearch = result?.Comments.replace(
                       /(<([^>]+)>)/gi,
@@ -1821,7 +1831,7 @@ function PortfolioTable(SelectedProp: any) {
       setIsOpenActivity(false);
       setIsOpenWorkstream(false);
       setActivityPopup(false);
-      if (res?.data?.Portfolio?.Id != null && res?.data?.Portfolio?.Id === SelectedProp?.props?.Id && res?.data?.TaskTypeId === 2 && (res?.data?.PortfolioType?.Id === 1 || res?.data?.PortfolioType?.Id === 2 || res?.data?.PortfolioType?.Id === 3)) {
+      if (res?.data?.PortfolioId != null && res?.data?.PortfolioId === SelectedProp?.props?.Id &&res?.data?.TaskTypeId === 2 && res?.data?.ParentTaskId===null ) {
         const checkother = copyDtaArray.filter((item: any) => item.Title === "Others");
         if (checkother?.length === 0) {
           let temp: any = {};
@@ -1848,32 +1858,38 @@ function PortfolioTable(SelectedProp: any) {
           checkother[0]?.subRows?.push(res.data)
         }
       }
-      if (res?.data?.PortfolioId === SelectedProp?.props?.Id) {
-        copyDtaArray.forEach((val: any) => {
-          if (res?.data?.TaskTypeId === 1) {
-            val.subRows = val.subRows ?? [];
-            val.subRows.push(res.data);
-          }
-
-          if (val?.subRows) {
-            val?.subRows?.forEach((ele: any) => {
-              if (res?.data?.TaskTypeId === 3 && (res?.data?.ParentTask?.Id === ele?.Id || res?.data?.ParentTaskId === ele?.Id)) {
-                ele.subRows = ele.subRows ?? [];
-                ele?.subRows?.push(res.data);
-              }
-              if (ele?.subRows) {
-                ele?.subRows?.forEach((elev: any) => {
-                  if (res?.data?.TaskTypeId === 2 && (res?.data?.ParentTask?.Id === elev?.Id || res?.data?.ParentTaskId === elev?.Id)) {
-                    elev.subRows = elev.subRows ?? [];
-                    elev?.subRows?.push(res.data);
-                  }
-                });
-              }
-
-            });
-          }
-        });
+      if (res?.data?.PortfolioId === SelectedProp?.props?.Id || res?.data?.TaskTypeId != null) {
+        if(copyDtaArray?.length === 0){
+          copyDtaArray.push(res.data);
+        }else{
+          copyDtaArray.forEach((val: any) => {
+            if (res?.data?.ParentTask?.Id === val?.Id || res?.data?.ParentTaskId === val?.Id) {
+              val.subRows = val.subRows ?? [];
+              val.subRows.push(res.data);
+            }
+  
+            if (val?.subRows) {
+              val?.subRows?.forEach((ele: any) => {
+                if (res?.data?.ParentTask?.Id === ele?.Id || res?.data?.ParentTaskId === ele?.Id) {
+                  ele.subRows = ele.subRows ?? [];
+                  ele?.subRows?.push(res.data);
+                }
+                if (ele?.subRows) {
+                  ele?.subRows?.forEach((elev: any) => {
+                    if (res?.data?.ParentTask?.Id === elev?.Id || res?.data?.ParentTaskId === elev?.Id) {
+                      elev.subRows = elev.subRows ?? [];
+                      elev?.subRows?.push(res.data);
+                    }
+                  });
+                }
+  
+              });
+            }
+          });
+       
+        }
       }
+
       copyDtaArray?.forEach((val: any) => {
 
         if (res?.data?.PortfolioId == val.Id) {
@@ -1905,6 +1921,16 @@ function PortfolioTable(SelectedProp: any) {
                               Sub.subRows === undefined ? [] : Sub.subRows;
 
                             Sub.subRows.push(res.data);
+                          }else{
+                            Sub?.subRows?.forEach((nextsub:any)=>{
+                              if (res?.data?.PortfolioId == nextsub.Id) {
+                                nextsub.subRows =
+                                nextsub.subRows === undefined ? [] : nextsub.subRows;
+    
+                                nextsub.subRows.push(res.data);
+                              }
+                            })
+                            
                           }
                         });
                       }
@@ -1916,6 +1942,9 @@ function PortfolioTable(SelectedProp: any) {
           });
         }
       });
+
+
+      // For the resolve the 
 
       renderData = [];
       renderData = renderData.concat(copyDtaArray);
@@ -2291,6 +2320,7 @@ function PortfolioTable(SelectedProp: any) {
       Call={Call}
       AllListId={ContextValue}
       TaskUsers={AllUsers}
+      context={ContextValue.Context}
       AllClientCategory={AllClientCategory}
       LoadAllSiteTasks={LoadAllSiteTasks}
       selectedItem={checkedList != null && checkedList?.Id != undefined? checkedList: SelectedProp.props} portfolioTypeData={portfolioTypeData}
@@ -2300,6 +2330,7 @@ function PortfolioTable(SelectedProp: any) {
         <CreateWS
         selectedItem={checkedList}
         Call={Call}
+        context={ContextValue.Context}
         AllListId={ContextValue}
         TaskUsers={AllUsers}
         data={data}

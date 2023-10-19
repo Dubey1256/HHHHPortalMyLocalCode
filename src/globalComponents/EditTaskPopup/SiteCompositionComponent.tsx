@@ -1220,8 +1220,6 @@ const SiteCompositionComponent = (Props: any) => {
                         </tbody>
                         : null}
                 </table>
-
-
                 <footer className="bg-e9  d-flex justify-content-end full-width py-1">
                     <div className="bg-body col-sm-1 p-1 alignCenter">
                         <div className="">{isPortfolioComposition == true || ProportionalStatus == false ? `${TotalPercent} %` : "100%"}</div>
