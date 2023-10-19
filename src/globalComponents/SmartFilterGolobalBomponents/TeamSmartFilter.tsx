@@ -306,7 +306,7 @@ const TeamSmartFilter = (item: any) => {
         if (clintCatogryData?.length > 0) {
             clintCatogryData.forEach((elem: any) => {
                 if (elem.Title === "Other") {
-                    const Blank: any = { Id:0, Title: "Blank", Parent: { Id: 576, Title: "Other" }, TaxType: "Client Category", ParentId: 576, ParentID: null, ID: 0, label: "Blank", checked: true };
+                    const Blank: any = { Id: 0, Title: "Blank", value: 0,  Parent: { Id: 576, Title: "Other" }, TaxType: "Client Category", ParentId: 576, ParentID: null, ID: 0, label: "Blank", checked: true };
                     elem.values.push(Blank);
                 }
             });
@@ -1869,7 +1869,7 @@ const TeamSmartFilter = (item: any) => {
     }, [iscategoriesAndStatusExpendShow, isClientCategory]);
     return (
         <>
-            <section className='smartFilter bg-light row border mb-2 col'>
+            <section className='smartFilter bg-light border mb-2 col'>
                 <section className="p-0 smartFilterSection">
                     <div className="px-2 py-1">
                         <div className="togglebox">
