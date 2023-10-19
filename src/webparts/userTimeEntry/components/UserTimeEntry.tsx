@@ -2279,7 +2279,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               </div>
             </Col>
           </details>
-        </Col>
+        </Col>git
         {
           this.state.AllTimeEntry != undefined && this.state.AllTimeEntry.length > 0 &&
           <div className='col'>
