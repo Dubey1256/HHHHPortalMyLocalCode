@@ -210,7 +210,7 @@ const SiteCompositionComponent = (Props: any) => {
             }
         }
         getChildDataForSelectedTask()
-    }, [])
+    }, [SelectedClientCategoryFromProps])
 
 
 
