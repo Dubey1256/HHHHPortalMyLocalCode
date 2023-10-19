@@ -987,7 +987,7 @@ const HalfClientCategory = (props: any) => {
             />
 
 
-            <section className="ContentSection smartFilterSection">
+            <section className="ContentSection SmartFilterWidth smartFilterSection">
                 <div className="togglecontent mt-1">
                     {filterCounters == true ? <TeamSmartFilter ProjectData={ProjectData} setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} ContextValue={AllListId} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
                 </div>
