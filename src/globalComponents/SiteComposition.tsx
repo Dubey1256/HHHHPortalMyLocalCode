@@ -200,15 +200,15 @@ export default function Sitecomposition(datas: any) {
   }, [])
 
   const SiteCompositionCallBack = React.useCallback((Data: any, Type: any) => {
-    datas.props.Sitestagging = Data.ClientTime?.length > 0 ? JSON.stringify(Data.ClientTime) : [];
-    datas.props.ClientCategory.results = Data.selectedClientCategory;
+    // datas.props.Sitestagging = Data.ClientTime?.length > 0 ? JSON.stringify(Data.ClientTime) : [];
+    // datas.props.ClientCategory.results = Data.selectedClientCategory;
     // if (datas?.props.Sitestagging != undefined) {
     //   if (datas?.props?.ClientCategory?.length > 0 || datas?.props.Sitestagging != undefined) {
     //     GetSmartMetaData(datas?.props?.ClientCategory, datas?.props?.Sitestagging);
     //   } else if (datas?.props?.ClientCategory?.results?.length > 0 || datas?.props.Sitestagging != undefined)
     //     GetSmartMetaData(datas?.props?.ClientCategory?.results, datas?.props?.Sitestagging);
     // }
-    setKey((prevKey) => prevKey + 1);
+    // setKey((prevKey) => prevKey + 1);
   }, [])
   return (
     <>
@@ -262,7 +262,7 @@ export default function Sitecomposition(datas: any) {
         onRenderHeader={onRenderCustomCalculateSC}
         isOpen={EditSiteCompositionStatus}
         onDismiss={() => ClosePopupCallBack()}
-        isBlocking={EditSiteCompositionStatus}
+        isBlocking={false}
         type={PanelType.custom}
         customWidth="1024px"
       >
