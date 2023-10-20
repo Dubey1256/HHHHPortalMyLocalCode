@@ -26,6 +26,7 @@ import SmartFilterSearchGlobal from "../../../globalComponents/SmartFilterGoloba
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import TeamSmartFilter from "../../../globalComponents/SmartFilterGolobalBomponents/TeamSmartFilter";
+import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 //import RestructuringCom from "../../../globalComponents/Restructuring/RestructuringCom";
 var filt: any = "";
 var ContextValue: any = {};
@@ -259,6 +260,18 @@ function TeamPortlioTable(SelectedProp: any) {
         }
     }
 
+    const findUserByName = (name: any) => {
+        const user = AllUsers.filter(
+            (user: any) => user?.AssingedToUser?.Id === name
+        );
+        let Image: any;
+        if (user[0]?.Item_x0020_Cover != undefined) {
+            Image = user[0].Item_x0020_Cover.Url;
+        } else { Image = "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"; }
+        return user ? Image : null;
+    };
+
+
 
     const LoadAllSiteTasks = function () {
         let AllTasksData: any = [];
@@ -318,11 +331,18 @@ function TeamPortlioTable(SelectedProp: any) {
                             if (result?.Created != null && result?.Created != undefined) {
                                 result.serverCreatedDate = new Date(result?.Created).setHours(0, 0, 0, 0)
                             }
-                            result.DueDate = Moment(result.DueDate).format("DD/MM/YYYY");
-
-                            if (result.DueDate == "Invalid date" || "") {
-                                result.DueDate = result.DueDate.replaceAll("Invalid date", "");
+                            result.DisplayCreateDate = Moment(result.Created).format("DD/MM/YYYY");
+                            if (result.DisplayCreateDate == "Invalid date" || "") {
+                                result.DisplayCreateDate = result.DisplayCreateDate.replaceAll("Invalid date", "");
                             }
+                            if (result.Author) {
+                                result.Author.autherImage = findUserByName(result.Author?.Id)
+                            }
+                            result.DisplayDueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
+                            if (result.DisplayDueDate == "Invalid date" || "") {
+                                result.DisplayDueDate = result?.DisplayDueDate.replaceAll("Invalid date", "");
+                            }
+
                             result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
 
                             if (result.PercentComplete != undefined && result.PercentComplete != '' && result.PercentComplete != null) {
@@ -495,9 +515,16 @@ function TeamPortlioTable(SelectedProp: any) {
             if (result?.Created != null && result?.Created != undefined) {
                 result.serverCreatedDate = new Date(result?.Created).setHours(0, 0, 0, 0)
             }
-            result.DueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
-            if (result.DueDate == "Invalid date" || "") {
-                result.DueDate = result?.DueDate.replaceAll("Invalid date", "");
+            result.DisplayCreateDate = Moment(result.Created).format("DD/MM/YYYY");
+            if (result.DisplayCreateDate == "Invalid date" || "") {
+                result.DisplayCreateDate = result.DisplayCreateDate.replaceAll("Invalid date", "");
+            }
+            result.DisplayDueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
+            if (result.DisplayDueDate == "Invalid date" || "") {
+                result.DisplayDueDate = result?.DisplayDueDate.replaceAll("Invalid date", "");
+            }
+            if (result.Author) {
+                result.Author.autherImage = findUserByName(result.Author?.Id)
             }
             result.PercentComplete = (result?.PercentComplete * 100).toFixed(0) === "0" ? "" : (result?.PercentComplete * 100).toFixed(0);
             if (result.PercentComplete != undefined && result.PercentComplete != '' && result.PercentComplete != null) {
@@ -1208,7 +1235,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 accessorFn: (row) => row?.TaskID,
                 cell: ({ row, getValue }) => (
                     <>
-                        <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={ContextValue} />
+                        <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} singleLevel={true} masterTaskData={AllMasterTasksData} AllSitesTaskData={AllSiteTasksData} />
                     </>
                 ),
                 id: "TaskID",
@@ -1217,7 +1244,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 resetColumnFilters: false,
                 isColumnDefultSortingAsc: isColumnDefultSortingAsc,
                 // isColumnDefultSortingAsc:true,
-                size: 195,
+                size: 190,
             },
             {
                 accessorFn: (row) => row?.Title,
@@ -1255,7 +1282,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "Title",
                 resetColumnFilters: false,
                 header: "",
-                size: 400,
+                size: 500,
             },
             {
                 accessorFn: (row) => row?.projectStructerId + "." + row?.ProjectTitle,
@@ -1284,7 +1311,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "Task Type",
                 header: "",
                 resetColumnFilters: false,
-                size: 120,
+                size: 130,
                 id: "TaskTypeValue",
             },
 
@@ -1299,7 +1326,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "Client Category",
                 header: "",
                 resetColumnFilters: false,
-                size: 100,
+                size: 95,
             },
             {
                 accessorFn: (row) => row?.AllTeamName,
@@ -1336,27 +1363,67 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 size: 42,
             },
-            {
-                accessorKey: "DueDate",
-                placeholder: "Due Date",
-                header: "",
-                resetColumnFilters: false,
-                size: 91,
-                id: "DueDate",
-            },
             // {
-            //     accessorFn: (row) => row.DueDate,
-            //     cell: ({ row, getValue }) => (
-            //         <div>{getValue()}</div>
-            //     ),
-
-            //     sortFn,
+            //     accessorKey: "DueDate",
             //     placeholder: "Due Date",
             //     header: "",
             //     resetColumnFilters: false,
             //     size: 91,
             //     id: "DueDate",
             // },
+            {
+                accessorFn: (row) => row?.DueDate,
+                cell: ({ row }) => (
+                    <span className='ms-1'>{row?.original?.DisplayDueDate} </span>
+
+                ),
+                filterFn: (row: any, columnName: any, filterValue: any) => {
+                    if (row?.original?.DisplayDueDate?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
+                id: 'DueDate',
+                resetColumnFilters: false,
+                resetSorting: false,
+                placeholder: "DueDate",
+                header: "",
+                size: 91,
+            },
+            {
+                accessorFn: (row) => row?.Created,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        {row?.original?.Created == null ? ("") : (
+                            <>
+                                <div className='ms-1'>{row?.original?.DisplayCreateDate} </div>
+                                {row?.original?.Author != undefined &&
+                                    <>
+                                        <a href={`${ContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                                            target="_blank" data-interception="off">
+                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.Author?.autherImage} />
+                                        </a>
+                                    </>
+                                }
+                            </>
+                        )}
+                    </div>
+                ),
+                id: 'Created',
+                resetColumnFilters: false,
+                resetSorting: false,
+                placeholder: "Created",
+                filterFn: (row: any, columnName: any, filterValue: any) => {
+                    if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
+                header: "",
+                size: 125
+            },
             {
                 accessorKey: "descriptionsSearch",
                 placeholder: "descriptionsSearch",
