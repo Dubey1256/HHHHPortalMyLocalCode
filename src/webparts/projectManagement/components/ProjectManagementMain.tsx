@@ -506,7 +506,7 @@ const ProjectManagementMain = (props: any) => {
             });
             allActivities?.map((Activity: any) => {
               Activity.subRows = AllTask.filter((workstream: any) => {
-                if (workstream?.ParentTask?.Id == Activity?.Id && workstream?.TaskType?.Id == 3) {
+                if (workstream?.ParentTask?.Id == Activity?.Id && (workstream?.TaskType?.Id == 3 || workstream?.TaskType?.Id == 2)) {
                   workstream.isTaskPushed = true;
                   return true
                 } else {
@@ -514,14 +514,16 @@ const ProjectManagementMain = (props: any) => {
                 }
               });
               Activity?.subRows?.map((workstream: any) => {
-                workstream.subRows = AllTask.filter((task: any) => {
-                  if (task?.ParentTask?.Id == workstream?.Id && task?.TaskType?.Id == 2) {
-                    task.isTaskPushed = true;
-                    return true
-                  } else {
-                    return false
-                  }
-                });
+                if (workstream?.TaskType?.Id == 3) {
+                  workstream.subRows = AllTask.filter((task: any) => {
+                    if (task?.ParentTask?.Id == workstream?.Id && task?.TaskType?.Id == 2) {
+                      task.isTaskPushed = true;
+                      return true
+                    } else {
+                      return false
+                    }
+                  });
+                }
               })
             })
             let allWorkStream: any = []
@@ -1127,15 +1129,15 @@ const ProjectManagementMain = (props: any) => {
                                     className="circularImage rounded-circle "
                                     src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Icon_Project.png"
                                   />
-                                  <a>{`${Masterdata?.PortfolioStructureID} - ${Masterdata?.Title}`} </a>
-                                  <span
-                                    onClick={() => EditComponentPopup(Masterdata)}
-                                    className="mx-2 svg__iconbox svg__icon--edit hreflink alignIcon"
-                                    title="Edit Project"
-                                  ></span>
-
+                                  <>
+                                    <a>{`${Masterdata?.PortfolioStructureID} - ${Masterdata?.Title}`} </a>
+                                  </>
                                 </h2>
-
+                                <span
+                                  onClick={() => EditComponentPopup(Masterdata)}
+                                  className="mx-2 svg__iconbox svg__icon--edit"
+                                  title="Edit Project"
+                                ></span>
                               </div>
                               <div>
                                 <div className="d-flex">
