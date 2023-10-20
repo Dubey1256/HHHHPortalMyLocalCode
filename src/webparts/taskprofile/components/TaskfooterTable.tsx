@@ -303,10 +303,10 @@ function TasksTable(props: any) {
                   if (result?.FeedBack != undefined) {
                     let DiscriptionSearchData: any = '';
                     let feedbackdata: any = JSON.parse(result?.FeedBack)
-                    DiscriptionSearchData = feedbackdata[0].FeedBackDescriptions.map((child: any) => {
-                        const childText = child.Title?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '');
-                        const subtextText = (child.Subtext || []).map((elem: any) =>
-                            elem.Title?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '')
+                    DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
+                        const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
+                        const subtextText = (child?.Subtext || [])?.map((elem: any) =>
+                            elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')
                         ).join('');
                         return childText + subtextText;
                     }).join('');
