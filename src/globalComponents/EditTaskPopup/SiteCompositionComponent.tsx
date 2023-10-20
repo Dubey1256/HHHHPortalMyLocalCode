@@ -1223,15 +1223,15 @@ const SiteCompositionComponent = (Props: any) => {
                
                 <footer className="bg-e9 alignCenter justify-content-between p-1">
                     <div className="col-sm-6">
-                        <a className="hreflink" target="_blank" data-interception="off" href={`${siteUrls}/Lists/${currentListName}/EditForm.aspx?ID=${ItemId}&?#SiteCompositionSettings`}>
+                        <a className="hreflink ms-2" target="_blank" data-interception="off" href={`${siteUrls}/Lists/${currentListName}/EditForm.aspx?ID=${ItemId}&?#ClientTime`}>
                             Open-Out-Of-The-Box
                         </a>
                     </div>
                     <div className="d-flex justify-content-end col-sm-6">
-                        <div className="bg-body col-sm-1 p-1 alignCenter">
+                        <div className="bg-body col-sm-2 p-1 alignCenter">
                             <div className="">{isPortfolioComposition == true || ProportionalStatus == false ? `${TotalPercent} %` : "100%"}</div>
                         </div>
-                        <div className="bg-body col-sm-1 mx-1 p-1 alignCenter">
+                        <div className="bg-body col-sm-2 mx-1 p-1 alignCenter">
                             <div className="">{TotalTime ? TotalTime.toFixed(0) : 0}</div>
                         </div>
                         <div className="me-1">

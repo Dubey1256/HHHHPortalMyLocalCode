@@ -166,8 +166,9 @@ const SiteCompositionComponent = (Props: any) => {
             })
             if (tempData != undefined && tempData.length > 0) {
                 tempData?.map((data: any) => {
-                    if (ClientTimeData?.length > 0) {
-                        ClientTimeData?.map((ClientItem: any) => {
+                    let TempArryaSc: any = JSON.parse(JSON.stringify(ClientTimeDataBackup));
+                    if (TempArryaSc?.length > 0) {
+                        TempArryaSc?.map((ClientItem: any) => {
                             if (ClientItem.Title == data.Title || (ClientItem.Title ==
                                 "DA E+E" && data.Title == "ALAKDigital")) {
                                 data.ClienTimeDescription = ClientItem.ClienTimeDescription;
@@ -241,9 +242,9 @@ const SiteCompositionComponent = (Props: any) => {
                         SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
                         SiteTaggingFinalData = tempDataForRemove;
                         if (tempDataForRemove?.length > 0) {
-                            callBack(SiteCompositionObject, "dataExits");
+                            // callBack(SiteCompositionObject, "dataExits");
                         } else {
-                            callBack(SiteCompositionObject, "dataDeleted")
+                            // callBack(SiteCompositionObject, "dataDeleted")
                         }
 
                     } else {
@@ -269,7 +270,7 @@ const SiteCompositionComponent = (Props: any) => {
                         SiteCompositionObject.ClientTime = tempData;
                         SiteCompositionObject.selectedClientCategory = SelectedClientCategoryBackupArray;
                         SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
-                        callBack(SiteCompositionObject, "dataExits");
+                        // callBack(SiteCompositionObject, "dataExits");
                         // callBack(SiteCompositionObject);
                     }
                 }
@@ -361,7 +362,7 @@ const SiteCompositionComponent = (Props: any) => {
             SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
         }
         setSiteTypes(TempArray);
-        callBack(SiteCompositionObject, "dataExits");
+        // callBack(SiteCompositionObject, "dataExits");
     }
 
 
@@ -451,8 +452,8 @@ const SiteCompositionComponent = (Props: any) => {
         SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
         SiteCompositionObject.ClientTime = ClientTimeData;
         SiteSettingsFinalData = SiteCompositionSettings;
-        setSiteCompositionSettings([...SiteCompositionSettings]);
-        callBack(SiteCompositionObject, "dataExits");
+        // setSiteCompositionSettings([...SiteCompositionSettings]);
+        // callBack(SiteCompositionObject, "dataExits");
     }
     const refreshSiteCompositionConfigurations = () => {
         let TempArray: any = [];
@@ -771,7 +772,7 @@ const SiteCompositionComponent = (Props: any) => {
             SiteCompositionObject.selectedClientCategory = TempArray;
             SiteClientCatgeoryFinalData = TempArray;
         }
-        callBack(SiteCompositionObject, "dataExits");
+        // callBack(SiteCompositionObject, "dataExits");
         AutoCompleteItemsArray = [];
         SelectedClientCategoryBackupArray = [];
         closeClientCategoryPopup();
@@ -1724,7 +1725,7 @@ const SiteCompositionComponent = (Props: any) => {
                 </table>
                 <footer className="bg-e9 alignCenter justify-content-between p-1">
                     <div className="col-sm-6">
-                        <a className="hreflink" target="_blank" data-interception="off" href={`${siteUrls}/Lists/Master%20Tasks/EditForm.aspx?ID=${ItemId}&?#SiteCompositionSettings`}>
+                        <a className="hreflink ms-2" target="_blank" data-interception="off" href={`${siteUrls}/Lists/Master%20Tasks/EditForm.aspx?ID=${ItemId}&?#SiteCompositionSettings`}>
                             Open-Out-Of-The-Box
                         </a>
                     </div>
@@ -1741,7 +1742,7 @@ const SiteCompositionComponent = (Props: any) => {
                 onRenderHeader={onRenderCustomClientCategoryHeader}
                 isOpen={ClientCategoryPopupStatus}
                 onDismiss={closeClientCategoryPopup}
-                isBlocking={ClientCategoryPopupStatus}
+                isBlocking={false}
                 type={PanelType.custom}
                 customWidth="850px"
                 onRenderFooter={onRenderFooter}
@@ -1913,7 +1914,7 @@ const SiteCompositionComponent = (Props: any) => {
                     onRenderHeader={onRenderComponentChildrenHeader}
                     isOpen={ComponentChildrenPopupStatus}
                     onDismiss={closeComponentChildrenPopup}
-                    isBlocking={ComponentChildrenPopupStatus}
+                    isBlocking={false}
                     type={PanelType.custom}
                     customWidth="950px"
                     onRenderFooter={onRenderFooterComponentChildren}
