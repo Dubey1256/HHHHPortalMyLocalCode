@@ -565,17 +565,7 @@ function Portfolio({ SelectedProp,TaskUser }: any) {
             item.siteUrl = ContextValue.siteUrl;
 
             item.listId = ContextValue.MasterTaskListID;
-            item.show = true;
-            item.showl = true;
-            item.shows = true;
-            item.showj = true;
-            item.showm = true;
-            item.showb = true;
-            item.showhelp = true;
-            item.showQues = true;
-            item.showtech = true;
-            item.showHelp = true;
-            item.showk = true;
+           
             if (item.FolderID != undefined) {
               folderId = item.FolderID;
               let urln = `${web}/_api/lists/getbyid('${ContextValue.DocumentsListID}')/items?$select=Id,Title,FileDirRef,FileLeafRef,ServerUrl,FSObjType,EncodedAbsUrl&$filter=Id eq ${folderId}`;
@@ -690,24 +680,16 @@ function Portfolio({ SelectedProp,TaskUser }: any) {
       let web = new Web(ContextValue?.siteUrl);
 
       componentDetails = await web.lists
-        .getById(ContextValue.MasterTaskListID)
-        .items.select("Item_x0020_Type", "Title", "Id", "PercentComplete")
-        .filter("Item_x0020_Type  eq 'Project'")
-        .top(4000)
-        .get();
+      .getById(ContextValue.MasterTaskListID)
+      .items.select("Item_x0020_Type", "Title", "Id", "PercentComplete", "Portfolios/Id", "Portfolios/Title")
+      .expand("Portfolios")
+      .filter("Item_x0020_Type eq 'Project' and Portfolios/Id eq " + ID)
+      .top(4000)
+      .get();
+    
 
       // Project Data for HHHH Project Management
-      componentDetails.map((num: any) => {
-        let num2;
-        if (num.Component != undefined) {
-          num.Component.map((compID: any) => {
-            if (compID.Id == ID) {
-              num2 = num;
-              filterdata.push(num2);
-            }
-          });
-        }
-      });
+      filterdata = componentDetails;
     };
     GetListItems();
     
@@ -1431,9 +1413,9 @@ const  contextCall = (data: any, path: any, component: any) => {
                         <details open>
                           <summary className="alignCenter">
                             <label className="toggler full_width">
-                              <a className="pull-left">
+                             
                                 HHHH Project Management
-                              </a>
+                              
                             </label>
                           </summary>
                           <div className="border border-top-0 p-2">
@@ -1464,7 +1446,7 @@ const  contextCall = (data: any, path: any, component: any) => {
                         <details open>
                           <summary className="alignCenter">
                             <label className="toggler full_width">
-                              <a className="pull-left">Description</a>
+                              Description
                             </label>
                           </summary>
                           <div className="border border-top-0 p-2">
@@ -1484,7 +1466,7 @@ const  contextCall = (data: any, path: any, component: any) => {
                         <details open>
                           <summary className="alignCenter">
                             <label className="toggler full_width">
-                              <a className="pull-left">Short Description</a>
+                              Short Description
                             </label>
                           </summary>
                           <div className="border border-top-0 p-2">
@@ -1504,19 +1486,19 @@ const  contextCall = (data: any, path: any, component: any) => {
                         <details open>
                           <summary className="alignCenter">
                             <label className="toggler full_width">
-                              <a className="pull-left"> Question Description</a>
+                          Question Description
                             </label>
                           </summary>
                           <div className="border border-top-0 p-2">
                             {AllQuestion.map((item) => (
                               <>
-                                <details open>
+                                <details >
                                   <summary className="alignCenter bg-body">
                                     <label className="toggler full_width">
-                                      <a className="pull-left">
-                                        {" "}
+                                      
+                                       
                                         {item?.Title}
-                                      </a>
+                                     
                                     </label>
                                   </summary>
                                   <div className="border border-top-0 p-2">
@@ -1539,19 +1521,18 @@ const  contextCall = (data: any, path: any, component: any) => {
                         <details open>
                           <summary className="alignCenter">
                             <label className="toggler full_width">
-                              <a className="pull-left"> Help Description</a>
+                               Help Description
                             </label>
                           </summary>
                           <div className="border border-top-0 p-2">
                             {AllHelp.map((item) => (
                               <>
-                                <details open>
+                                <details >
                                   <summary className="alignCenter bg-body">
                                     <label className="toggler full_width">
-                                      <a className="pull-left">
-                                        {" "}
+                                    
                                         {item?.Title}
-                                      </a>
+                                     
                                     </label>
                                   </summary>
                                   <div className="border border-top-0 p-2">
@@ -1575,7 +1556,7 @@ const  contextCall = (data: any, path: any, component: any) => {
                         <details open>
                           <summary className="alignCenter">
                             <label className="toggler full_width">
-                              <a className="pull-left">Background</a>
+                              Background
                             </label>
                           </summary>
                           <div className="border border-top-0 p-2">
@@ -1594,7 +1575,7 @@ const  contextCall = (data: any, path: any, component: any) => {
                         <details open>
                           <summary className="alignCenter">
                             <label className="toggler full_width">
-                              <a className="pull-left">Idea</a>
+                              Idea
                             </label>
                           </summary>
                           <div className="border border-top-0 p-2">
@@ -1613,7 +1594,7 @@ const  contextCall = (data: any, path: any, component: any) => {
                         <details open>
                           <summary className="alignCenter">
                             <label className="toggler full_width">
-                              <a className="pull-left">Value Added</a>
+                              Value Added
                             </label>
                           </summary>
                           <div className="border border-top-0 p-2">
@@ -1632,7 +1613,7 @@ const  contextCall = (data: any, path: any, component: any) => {
                         <details open>
                           <summary className="alignCenter">
                             <label className="toggler full_width">
-                              <a className="pull-left">Help Information</a>
+                              Help Information
                             </label>
                           </summary>
                           <div className="border border-top-0 p-2">
@@ -1651,7 +1632,7 @@ const  contextCall = (data: any, path: any, component: any) => {
                         <details open>
                           <summary className="alignCenter">
                             <label className="toggler full_width">
-                              <a className="pull-left">Technical Explanation</a>
+                              Technical Explanation
                             </label>
                           </summary>
                           <div className="border border-top-0 p-2">
@@ -1670,7 +1651,7 @@ const  contextCall = (data: any, path: any, component: any) => {
                         <details open>
                           <summary className="alignCenter">
                             <label className="toggler full_width">
-                              <a className="pull-left">Deliverables</a>
+                              Deliverables
                             </label>
                           </summary>
                           <div className="border border-top-0 p-2">
