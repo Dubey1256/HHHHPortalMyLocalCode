@@ -410,6 +410,7 @@ function PortfolioTable(SelectedProp: any) {
                     result.PercentComplete * 100
                   ).toFixed(0);
                   result.chekbox = false;
+                  
                   if (result?.FeedBack != undefined) {
                     let feedbackdata = JSON.parse(result?.FeedBack)
                     feedbackdata[0]?.FeedBackDescriptions?.map(

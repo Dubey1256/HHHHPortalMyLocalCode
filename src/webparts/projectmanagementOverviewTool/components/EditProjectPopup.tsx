@@ -514,6 +514,7 @@ function EditProjectPopup(item: any) {
         "Author/Id",
         "Author/Title",
         "Editor/Id",
+        "ResponsibleTeam/Id","ResponsibleTeam/Title",
         "Editor/Title",
         "ClientCategory/Id",
         "ClientCategory/Title"
@@ -526,6 +527,7 @@ function EditProjectPopup(item: any) {
         "AttachmentFiles",
         "Author",
         "Editor",
+        "ResponsibleTeam",
         "TeamMembers",
         "SharewebComponent",
         "TaskCategories",
@@ -1036,32 +1038,23 @@ function EditProjectPopup(item: any) {
         CategoryID.push(category.Id);
       }
     });
-
     if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
-      AssignedToIds = []
-      TaskAssignedTo.map((taskInfo) => {
-        AssignedToIds.push(taskInfo.Id);
-      });
-    } else {
-      AssignedToIds = []
-    }
-    if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
-      TeamMemberIds = [];
-      TaskTeamMembers.map((taskInfo) => {
+      TaskAssignedTo?.map((taskInfo) => {
+          AssignedToIds.push(taskInfo.Id);
+      })
+  }
 
+  if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
+    TaskTeamMembers?.map((taskInfo) => {
         TeamMemberIds.push(taskInfo.Id);
-      });
-    } else {
-      TeamMemberIds = []
-    }
-    if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
-      ResponsibleTeamIds = []
-      TaskResponsibleTeam.map((taskInfo) => {
-        ResponsibleTeamIds.push(taskInfo.Id);
-      });
-    } else {
-      ResponsibleTeamIds = []
-    }
+    })
+}
+
+if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
+  TaskResponsibleTeam?.map((taskInfo) => {
+      ResponsibleTeamIds.push(taskInfo.Id);
+  })
+}
     let selectedPortfoliosData: any[] = [];
     if (projectTaggedPortfolios !== undefined && projectTaggedPortfolios.length > 0) {
       $.each(projectTaggedPortfolios, function (index: any, smart: any) {
@@ -1209,48 +1202,56 @@ function EditProjectPopup(item: any) {
   const DDComponentCallBack = (dt: any) => {
     setTeamConfig(dt);
     console.log(TeamConfig);
-    if (dt?.AssignedTo?.length > 0) {
-      let tempArray: any = [];
-      dt.AssignedTo?.map((arrayData: any) => {
+  //  Changes
+  if (dt?.AssignedTo?.length > 0) {
+    let tempArray: any = [];
+    dt.AssignedTo?.map((arrayData: any) => {
         if (arrayData.AssingedToUser != null) {
-          tempArray.push(arrayData.AssingedToUser);
+            tempArray.push(arrayData.AssingedToUser)
         } else {
-          tempArray.push(arrayData);
+            tempArray.push(arrayData);
         }
-      });
-      setTaskAssignedTo(tempArray);
-      console.log("Team Config  assigadf=====", tempArray);
-    } else {
-      setTaskAssignedTo([])
-    }
-    if (dt?.TeamMemberUsers?.length > 0) {
-      let tempArray: any = [];
-      dt.TeamMemberUsers?.map((arrayData: any) => {
+    })
+    setTaskAssignedTo(tempArray);
+    EditData.AssignedTo = tempArray;
+} else {
+    setTaskAssignedTo([]);
+    EditData.AssignedTo = [];
+}
+if (dt?.TeamMemberUsers?.length > 0) {
+    let tempArray: any = [];
+    dt.TeamMemberUsers?.map((arrayData: any) => {
         if (arrayData.AssingedToUser != null) {
-          tempArray.push(arrayData.AssingedToUser);
+            tempArray.push(arrayData.AssingedToUser)
         } else {
-          tempArray.push(arrayData);
+            tempArray.push(arrayData);
         }
-      });
-      setTaskTeamMembers(tempArray);
-      console.log("Team Config member=====", tempArray);
-    } else {
-      setTaskTeamMembers([]);
-    }
-    if (dt?.ResponsibleTeam?.length > 0) {
-      let tempArray: any = [];
-      dt.ResponsibleTeam?.map((arrayData: any) => {
+    })
+    setTaskTeamMembers(tempArray);
+    EditData.TeamMembers = tempArray;
+} else {
+    setTaskTeamMembers([]);
+    EditData.TeamMembers = [];
+}
+if (dt?.ResponsibleTeam?.length > 0) {
+    let tempArray: any = [];
+    dt.ResponsibleTeam?.map((arrayData: any) => {
         if (arrayData.AssingedToUser != null) {
-          tempArray.push(arrayData.AssingedToUser);
+            tempArray.push(arrayData.AssingedToUser)
         } else {
-          tempArray.push(arrayData);
+            tempArray.push(arrayData);
         }
-      });
-      setTaskResponsibleTeam(tempArray);
-      console.log("Team Config reasponsible ===== ", tempArray);
-    } else {
-      setTaskResponsibleTeam([]);
-    }
+    })
+    setTaskResponsibleTeam(tempArray);
+    EditData.ResponsibleTeam = tempArray;
+} else {
+    setTaskResponsibleTeam([]);
+    EditData.ResponsibleTeam = [];
+}
+
+
+  // ChangesEnd
+
   };
   const deleteCategories = (id: any) => {
     CategoriesData.map((catId, index) => {

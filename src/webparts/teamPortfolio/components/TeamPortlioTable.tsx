@@ -19,13 +19,14 @@ import { ColumnDef } from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 import Loader from "react-loader";
-// import { Bars } from 'react-loader-spinner'
+import { Bars } from 'react-loader-spinner'
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 import SmartFilterSearchGlobal from "../../../globalComponents/SmartFilterGolobalBomponents/SmartFilterGlobalComponents";
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import TeamSmartFilter from "../../../globalComponents/SmartFilterGolobalBomponents/TeamSmartFilter";
+import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 //import RestructuringCom from "../../../globalComponents/Restructuring/RestructuringCom";
 var filt: any = "";
 var ContextValue: any = {};
@@ -250,6 +251,28 @@ function TeamPortlioTable(SelectedProp: any) {
             console.error("Error fetching portfolio icons:", error);
         }
     };
+
+    function removeHtmlAndNewline(text: any) {
+        if (text) {
+            return text.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
+        } else {
+            return ''; // or any other default value you prefer
+        }
+    }
+
+    const findUserByName = (name: any) => {
+        const user = AllUsers.filter(
+            (user: any) => user?.AssingedToUser?.Id === name
+        );
+        let Image: any;
+        if (user[0]?.Item_x0020_Cover != undefined) {
+            Image = user[0].Item_x0020_Cover.Url;
+        } else { Image = "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"; }
+        return user ? Image : null;
+    };
+
+
+
     const LoadAllSiteTasks = function () {
         let AllTasksData: any = [];
         let Counter = 0;
@@ -308,11 +331,18 @@ function TeamPortlioTable(SelectedProp: any) {
                             if (result?.Created != null && result?.Created != undefined) {
                                 result.serverCreatedDate = new Date(result?.Created).setHours(0, 0, 0, 0)
                             }
-                            result.DueDate = Moment(result.DueDate).format("DD/MM/YYYY");
-
-                            if (result.DueDate == "Invalid date" || "") {
-                                result.DueDate = result.DueDate.replaceAll("Invalid date", "");
+                            result.DisplayCreateDate = Moment(result.Created).format("DD/MM/YYYY");
+                            if (result.DisplayCreateDate == "Invalid date" || "") {
+                                result.DisplayCreateDate = result.DisplayCreateDate.replaceAll("Invalid date", "");
                             }
+                            if (result.Author) {
+                                result.Author.autherImage = findUserByName(result.Author?.Id)
+                            }
+                            result.DisplayDueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
+                            if (result.DisplayDueDate == "Invalid date" || "") {
+                                result.DisplayDueDate = result?.DisplayDueDate.replaceAll("Invalid date", "");
+                            }
+
                             result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
 
                             if (result.PercentComplete != undefined && result.PercentComplete != '' && result.PercentComplete != null) {
@@ -320,19 +350,19 @@ function TeamPortlioTable(SelectedProp: any) {
                             }
 
                             result.chekbox = false;
-                            // if (result?.Body != undefined) {
-                            //     result.descriptionsSearch = result?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
-                            // }
                             if (result?.FeedBack != undefined) {
-                                let feedbackdata: any = JSON.parse(result?.FeedBack);
-                                feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
-                                    let copyTitle = child?.Title?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, "");
-                                    if (copyTitle != undefined && copyTitle != null && copyTitle != "") {
-                                        result.descriptionsSearch = copyTitle
-                                    }
-                                }
-                                )
+                                let DiscriptionSearchData: any = '';
+                                let feedbackdata: any = JSON.parse(result?.FeedBack)
+                                DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
+                                    const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '');
+                                    const subtextText = (child?.Subtext || [])?.map((elem: any) =>
+                                        elem.Title?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '')
+                                    ).join('');
+                                    return childText + subtextText;
+                                }).join('');
+                                result.descriptionsSearch = DiscriptionSearchData
                             }
+
                             try {
                                 if (result?.Comments != null && result?.Comments != undefined) {
                                     const cleanedComments = result?.Comments?.replace(/[^\x20-\x7E]/g, '');
@@ -444,7 +474,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 "DueDate", "Body", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
                 "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete",
                 "ResponsibleTeam/Id", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
-                "Created", "Modified", "Deliverables", "TechnicalExplanations", "Short_x0020_Description_x0020_On", "Help_x0020_Information", "AdminNotes",
+                "Created", "Modified", "Deliverables", "TechnicalExplanations", "Help_x0020_Information", "AdminNotes", "Background", "Idea", "ValueAdded",
             )
             .expand(
                 "Parent", "PortfolioType", "AssignedTo", "ClientCategory", "TeamMembers", "ResponsibleTeam", "Editor", "Author"
@@ -485,18 +515,24 @@ function TeamPortlioTable(SelectedProp: any) {
             if (result?.Created != null && result?.Created != undefined) {
                 result.serverCreatedDate = new Date(result?.Created).setHours(0, 0, 0, 0)
             }
-            result.DueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
-            if (result.DueDate == "Invalid date" || "") {
-                result.DueDate = result?.DueDate.replaceAll("Invalid date", "");
+            result.DisplayCreateDate = Moment(result.Created).format("DD/MM/YYYY");
+            if (result.DisplayCreateDate == "Invalid date" || "") {
+                result.DisplayCreateDate = result.DisplayCreateDate.replaceAll("Invalid date", "");
+            }
+            result.DisplayDueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
+            if (result.DisplayDueDate == "Invalid date" || "") {
+                result.DisplayDueDate = result?.DisplayDueDate.replaceAll("Invalid date", "");
+            }
+            if (result.Author) {
+                result.Author.autherImage = findUserByName(result.Author?.Id)
             }
             result.PercentComplete = (result?.PercentComplete * 100).toFixed(0) === "0" ? "" : (result?.PercentComplete * 100).toFixed(0);
-
             if (result.PercentComplete != undefined && result.PercentComplete != '' && result.PercentComplete != null) {
                 result.percentCompleteValue = parseInt(result?.PercentComplete);
             }
-
-            if (result?.Short_x0020_Description_x0020_On != undefined) {
-                result.descriptionsSearch = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
+            if (result?.Deliverables != undefined || result.Short_x0020_Description_x0020_On != undefined || result.TechnicalExplanations != undefined || result.Body != undefined || result.AdminNotes != undefined || result.ValueAdded != undefined
+                || result.Idea != undefined || result.Background != undefined) {
+                result.descriptionsSearch = `${removeHtmlAndNewline(result.Deliverables)} ${removeHtmlAndNewline(result.Short_x0020_Description_x0020_On)} ${removeHtmlAndNewline(result.TechnicalExplanations)} ${removeHtmlAndNewline(result.Body)} ${removeHtmlAndNewline(result.AdminNotes)} ${removeHtmlAndNewline(result.ValueAdded)} ${removeHtmlAndNewline(result.Idea)} ${removeHtmlAndNewline(result.Background)}`;
             }
             try {
                 if (result?.Comments != null && result?.Comments != undefined) {
@@ -1123,18 +1159,6 @@ function TeamPortlioTable(SelectedProp: any) {
         setclickFlatView(false);
         setData(groupByButtonClickData);
     }
-
-
-
-
-
-
-
-
-
-
-
-
     const setTableHeight = () => {
         const table = document.getElementById('runtimeTable');
         const screenHeight = window.innerHeight;
@@ -1211,7 +1235,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 accessorFn: (row) => row?.TaskID,
                 cell: ({ row, getValue }) => (
                     <>
-                        <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={ContextValue} />
+                        <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} singleLevel={true} masterTaskData={AllMasterTasksData} AllSitesTaskData={AllSiteTasksData} />
                     </>
                 ),
                 id: "TaskID",
@@ -1220,7 +1244,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 resetColumnFilters: false,
                 isColumnDefultSortingAsc: isColumnDefultSortingAsc,
                 // isColumnDefultSortingAsc:true,
-                size: 195,
+                size: 190,
             },
             {
                 accessorFn: (row) => row?.Title,
@@ -1258,7 +1282,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "Title",
                 resetColumnFilters: false,
                 header: "",
-                size: 400,
+                size: 500,
             },
             {
                 accessorFn: (row) => row?.projectStructerId + "." + row?.ProjectTitle,
@@ -1287,7 +1311,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "Task Type",
                 header: "",
                 resetColumnFilters: false,
-                size: 120,
+                size: 130,
                 id: "TaskTypeValue",
             },
 
@@ -1302,7 +1326,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "Client Category",
                 header: "",
                 resetColumnFilters: false,
-                size: 100,
+                size: 95,
             },
             {
                 accessorFn: (row) => row?.AllTeamName,
@@ -1339,27 +1363,67 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 size: 42,
             },
-            {
-                accessorKey: "DueDate",
-                placeholder: "Due Date",
-                header: "",
-                resetColumnFilters: false,
-                size: 91,
-                id: "DueDate",
-            },
             // {
-            //     accessorFn: (row) => row.DueDate,
-            //     cell: ({ row, getValue }) => (
-            //         <div>{getValue()}</div>
-            //     ),
-
-            //     sortFn,
+            //     accessorKey: "DueDate",
             //     placeholder: "Due Date",
             //     header: "",
             //     resetColumnFilters: false,
             //     size: 91,
             //     id: "DueDate",
             // },
+            {
+                accessorFn: (row) => row?.DueDate,
+                cell: ({ row }) => (
+                    <span className='ms-1'>{row?.original?.DisplayDueDate} </span>
+
+                ),
+                filterFn: (row: any, columnName: any, filterValue: any) => {
+                    if (row?.original?.DisplayDueDate?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
+                id: 'DueDate',
+                resetColumnFilters: false,
+                resetSorting: false,
+                placeholder: "DueDate",
+                header: "",
+                size: 91,
+            },
+            {
+                accessorFn: (row) => row?.Created,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        {row?.original?.Created == null ? ("") : (
+                            <>
+                                <div className='ms-1'>{row?.original?.DisplayCreateDate} </div>
+                                {row?.original?.Author != undefined &&
+                                    <>
+                                        <a href={`${ContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                                            target="_blank" data-interception="off">
+                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.Author?.autherImage} />
+                                        </a>
+                                    </>
+                                }
+                            </>
+                        )}
+                    </div>
+                ),
+                id: 'Created',
+                resetColumnFilters: false,
+                resetSorting: false,
+                placeholder: "Created",
+                filterFn: (row: any, columnName: any, filterValue: any) => {
+                    if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
+                header: "",
+                size: 125
+            },
             {
                 accessorKey: "descriptionsSearch",
                 placeholder: "descriptionsSearch",
@@ -1674,7 +1738,7 @@ function TeamPortlioTable(SelectedProp: any) {
             setIsOpenActivity(false)
             setIsOpenWorkstream(false)
             setActivityPopup(false)
-        } else {
+        } else if (res?.data) {
             childRef?.current?.setRowSelection({});
             setIsComponent(false);
             setIsTask(false);
@@ -1734,6 +1798,7 @@ function TeamPortlioTable(SelectedProp: any) {
             refreshData();
         }
     }
+
     // new change////
     const CreateActivityPopup = (type: any) => {
         if (checkedList?.TaskType === undefined) {
@@ -1794,6 +1859,8 @@ function TeamPortlioTable(SelectedProp: any) {
         );
     };
     //-------------------------------------------------------------End---------------------------------------------------------------------------------
+
+
     return (
         <div id="ExandTableIds" style={{}}>
             <section className="ContentSection smartFilterSection">
@@ -2002,7 +2069,6 @@ function TeamPortlioTable(SelectedProp: any) {
                 <CreateActivity
                     Call={Call}
                     AllListId={ContextValue}
-                    context={ContextValue.Context}
                     TaskUsers={AllUsers}
                     AllClientCategory={AllClientCategory}
                     LoadAllSiteTasks={LoadAllSiteTasks}
@@ -2025,16 +2091,14 @@ function TeamPortlioTable(SelectedProp: any) {
                     portfolioTypeData={portfolioTypeData}
                 ></CreateWS>
             )} */}
-
             {isOpenWorkstream && (
                 <CreateWS
                     selectedItem={checkedList}
                     Call={Call}
                     AllListId={ContextValue}
                     TaskUsers={AllUsers}
-                    data={data}
-                    context={ContextValue.Context}
-                ></CreateWS>)}
+                    data={data}>
+                </CreateWS>)}
             {IsTask && (
                 <EditTaskPopup
                     Items={SharewebTask}

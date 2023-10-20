@@ -28,7 +28,7 @@ import TasksTable from './TaskfooterTable';
 import EmailComponenet from './emailComponent';
 import EditSiteComposition from '../../../globalComponents/EditTaskPopup/EditSiteComposition'
 import AncTool from '../../../globalComponents/AncTool/AncTool'
-
+import { myContextValue } from '../../../globalComponents/globalCommon'
 import Tooltip from '../../../globalComponents/Tooltip'
 import ApprovalHistoryPopup from '../../../globalComponents/EditTaskPopup/ApprovalHistoryPopup';
 import { Modal, Panel, PanelType } from 'office-ui-fabric-react';
@@ -38,7 +38,7 @@ import EODReportComponent from '../../../globalComponents/EOD Report Component/E
 
 
 // import {MyContext} from './myContext'
-const MyContext: any = React.createContext<any>({})
+// const MyContext: any = React.createContext<any>({})
 var ClientTimeArray: any = [];
 var TaskIdCSF: any = "";
 var TaskIdAW = "";
@@ -1587,7 +1587,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       document.title = "Task Profile"
     }
     return (
-      <MyContext.Provider value={{ ...MyContext, FunctionCall: this.contextCall, keyDoc: this.state.keydoc, FileDirRef: this.state.FileDirRef }}>
+      <myContextValue.Provider value={{ ...myContextValue, FunctionCall: this.contextCall, keyDoc: this.state.keydoc, FileDirRef: this.state.FileDirRef }}>
         <div
         //  style={{color:`${this.state.Result["serviceComponentColor"]}`}}
         >
@@ -2470,7 +2470,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
               </div>
             </section></section>
           <section className='TableContentSection'>
-            {console.log("context data ================", MyContext)}
+            {console.log("context data ================", myContextValue)}
 
             <div className="row">
               {this.state.Result != undefined && this.state.Result.Id != undefined && this.state.Result.TaskType != "" && this.state.Result.TaskType != undefined && this.state.Result.TaskType != 'Task' ? <TasksTable props={this.state.Result} AllMasterTasks={this.masterTaskData} AllSiteTasks={this.allDataOfTask} AllListId={AllListId} Context={this.props?.Context} /> : ''}
@@ -2550,9 +2550,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
           {this.state?.emailcomponentopen && countemailbutton == 0 && <EmailComponenet approvalcallback={() => { this.approvalcallback() }} Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus} currentUser={this?.currentUser} items={this.state?.Result} />}
           {this.state?.OpenEODReportPopup ? <EODReportComponent TaskDetails={this.state.Result} siteUrl={this.props?.siteUrl} Callback={() => { this.EODReportComponentCallback() }} /> : null}
         </div>
-      </MyContext.Provider>
+      </myContextValue.Provider>
     );
   }
 }
 export default Taskprofile
-export { MyContext }
+export { myContextValue }

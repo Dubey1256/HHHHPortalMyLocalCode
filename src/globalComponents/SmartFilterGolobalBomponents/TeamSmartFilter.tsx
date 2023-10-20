@@ -216,10 +216,10 @@ const TeamSmartFilter = (item: any) => {
 
 
 
-    let filterGroups: any = [{ Title: 'Portfolio Type', values: [], checked: [], checkedObj: [], expanded: [] },
-    {
-        Title: 'Task Type', values: [], checked: [], checkedObj: [], expanded: []
-    },
+    let filterGroups: any = [{ Title: 'Type', values: [], checked: [], checkedObj: [], expanded: [], selectAllChecked: true },
+    // {
+    //     Title: 'Task Type', values: [], checked: [], checkedObj: [], expanded: []
+    // },
     // {
     //     Title: 'Client Category', values: [], checked: [], checkedObj: [], expanded: []
     // }, 
@@ -254,13 +254,19 @@ const TeamSmartFilter = (item: any) => {
         smartmetaDataDetails.forEach((element: any) => {
             element.label = element.Title;
             element.value = element.Id;
+            // if (element.TaxType == 'Task Types') {
+            //     filterGroups[0].values.push(element);
+            //     filterGroups[0].checked.push(element.Id)
+            // }
+            // if (element.TaxType == 'Type') {
+            //     filterGroups[1].values.push(element);
+            //     filterGroups[1].checked.push(element.Id)
+            // }
             if (element.TaxType == 'Task Types') {
-                filterGroups[0].values.push(element);
-                filterGroups[0].checked.push(element.Id)
+                Type.push(element)
             }
             if (element.TaxType == 'Type') {
-                filterGroups[1].values.push(element);
-                filterGroups[1].checked.push(element.Id)
+                Type.push(element)
             }
             if (element.TaxType == 'Sites' || element.TaxType == 'Sites Old') {
                 SitesData.push(element);
@@ -306,13 +312,11 @@ const TeamSmartFilter = (item: any) => {
         if (clintCatogryData?.length > 0) {
             clintCatogryData.forEach((elem: any) => {
                 if (elem.Title === "Other") {
-                    const Blank: any = { Id: 0, Title: "Blank", value: 0,  Parent: { Id: 576, Title: "Other" }, TaxType: "Client Category", ParentId: 576, ParentID: null, ID: 0, label: "Blank", checked: true };
+                    const Blank: any = { Id: 0, Title: "Blank", value: 0, Parent: { Id: 576, Title: "Other" }, TaxType: "Client Category", ParentId: 576, ParentID: null, ID: 0, label: "Blank", checked: true };
                     elem.values.push(Blank);
                 }
             });
         }
-
-
         SitesData?.forEach((element: any) => {
             if (element.Title != 'Master Tasks' && (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined))) {
                 element.values = [],
@@ -323,35 +327,28 @@ const TeamSmartFilter = (item: any) => {
                 getChildsSites(element, SitesData);
             }
         })
-
-
         PrecentComplete?.forEach((element: any) => {
             if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
                 element.value = element.Id;
                 element.label = element.Title;
                 getChildsBasedOn(element, PrecentComplete);
-                filterGroups[2].values.push(element);
+                filterGroups[1].values.push(element);
             }
         })
-
-
-        // ClientCategory?.forEach((element: any) => {
-        //     if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
-        //         element.value = element.Id;
-        //         element.label = element.Title;
-        //         getChildsBasedOn(element, ClientCategory);
-        //         filterGroups[2].values.push(element);
-        //     }
-        // })
-
-
+        Type?.forEach((element: any) => {
+            if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
+                element.value = element.Id;
+                element.label = element.Title;
+                getChildsBasedOn(element, Type);
+                filterGroups[0].values.push(element);
+            }
+        })
         PriorityData?.forEach((element: any) => {
             if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
                 element.value = element.Id;
                 element.label = element.Title;
-                // element.selectAllChecked = true
                 getChildsBasedOn(element, PriorityData);
-                filterGroups[3].values.push(element);
+                filterGroups[2].values.push(element);
             }
         })
 
@@ -359,20 +356,10 @@ const TeamSmartFilter = (item: any) => {
             if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
                 element.value = element.Id;
                 element.label = element.Title;
-                // element.selectAllChecked = true
                 getChildsBasedOn(element, Categories);
-                filterGroups[4].values.push(element);
+                filterGroups[3].values.push(element);
             }
         })
-        // item?.portfolioTypeData?.forEach((element: any) => {
-        //     element.value = element.Id;
-        //     element.label = element.Title;
-        //     filterGroups[6].checked.push(element.Id)
-        //     filterGroups[6].values.push(element);
-        // })
-
-
-
         filterGroups.forEach((element: any, index: any) => {
             element.checkedObj = GetCheckedObject(element.values, element.checked)
         });
@@ -434,14 +421,17 @@ const TeamSmartFilter = (item: any) => {
             if (item.Title == "Completed" || item.Title == "90% Task completed" || item.Title == "93% For Review" || item.Title == "96% Follow-up later" || item.Title == "100% Closed" || item.Title == "99% Completed") {
             }
             else {
-                filterGroups[2].checked.push(item.Id);
+                filterGroups[1].checked.push(item.Id);
             }
         }
         if (item.TaxType == 'Priority') {
-            filterGroups[3].checked.push(item.Id)
+            filterGroups[2].checked.push(item.Id)
         }
         if (item.TaxType == 'Categories') {
-            filterGroups[4].checked.push(item.Id)
+            filterGroups[3].checked.push(item.Id)
+        }
+        if (item.TaxType == 'Task Types' || item.TaxType == "Type") {
+            filterGroups[0].checked.push(item.Id)
         }
     }
     // const getFilterInfo = () => {
@@ -609,16 +599,19 @@ const TeamSmartFilter = (item: any) => {
             arr?.forEach((element: any) => {
                 if (value == element.Id) {
                     checkObj.push({
-                        Id: element.Id,
-                        Title: element.Title
+                        Id: element.ItemType === "User" ? element?.AssingedToUser?.Id : element.Id,
+                        Title: element.Title,
+                        TaxType: element.TaxType ? element.TaxType : ''
                     })
                 }
                 if (element.children != undefined && element.children.length > 0) {
                     element.children.forEach((chElement: any) => {
                         if (value == chElement.Id) {
                             checkObj.push({
-                                Id: chElement.Id,
-                                Title: chElement.Title
+                                Id: chElement.ItemType === "User" ? chElement?.AssingedToUser?.Id : chElement.Id,
+                                // Id: chElement.Id,
+                                Title: chElement.Title,
+                                TaxType: element.TaxType ? element.TaxType : ''
                             })
                         }
                     });
@@ -875,11 +868,22 @@ const TeamSmartFilter = (item: any) => {
         let clientCategory: any[] = [];
         let Categories: any[] = [];
         filterGroupsData.forEach(function (filter) {
+
             if (filter.Title === 'Portfolio Type' && filter.checked.length > 0 && filter.checkedObj.length > 0) {
                 filter.checkedObj.map(function (port: any) { return portFolio.push(port); });
             }
             else if (filter.Title === 'Task Type' && filter.checked.length > 0 && filter.checkedObj.length > 0) {
                 filter.checkedObj.map(function (elem1: any) { return type.push(elem1); });
+            }
+
+            if (filter.Title === 'Type' && filter.checked.length > 0 && filter.checkedObj.length > 0) {
+                filter?.checkedObj?.map((elem: any) => {
+                    if (elem.TaxType === 'Task Types') {
+                        portFolio.push(elem);
+                    } else if (elem.TaxType === 'Type') {
+                        type.push(elem);
+                    }
+                })
             }
             // else if (filter.Title === 'Client Category' && filter.checked.length > 0 && filter.checkedObj.length > 0) {
             //     filter.checkedObj.map(function (elem: any) { return clientCategory.push(elem); });
@@ -1042,7 +1046,8 @@ const TeamSmartFilter = (item: any) => {
             }
             if (isAssignedto === true && isTodaysTask === false) {
                 if (data?.AssignedTo.length > 0) {
-                    let result = data?.AssignedTo?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ')));
+                    // let result = data?.AssignedTo?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ')));
+                    let result = data?.AssignedTo?.some((elem0: any) => teamMembers.some((filter: any) => filter?.Id === elem0?.Id));
                     if (result === true) {
                         return true;
                     }
@@ -1051,7 +1056,9 @@ const TeamSmartFilter = (item: any) => {
             }
             if (isTeamLead === true) {
                 if (data?.ResponsibleTeam.length > 0) {
-                    let result = data?.ResponsibleTeam?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ')));
+                    // let result = data?.ResponsibleTeam?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ')));
+                    let result = data?.ResponsibleTeam?.some((elem: any) => teamMembers.some((filter: any) => filter?.Id === elem?.Id));
+
                     if (result === true) {
                         return true;
                     }
@@ -1059,7 +1066,8 @@ const TeamSmartFilter = (item: any) => {
             }
             if (isTeamMember === true) {
                 if (data?.TeamMembers?.length > 0) {
-                    let result = data?.TeamMembers?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ')));
+                    // let result = data?.TeamMembers?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ')));
+                    let result = data?.TeamMembers?.some((elem1: any) => teamMembers.some((filter: any) => filter?.Id === elem1?.Id));
                     if (result === true) {
                         return true;
                     }
@@ -1067,14 +1075,15 @@ const TeamSmartFilter = (item: any) => {
             }
             if (isTodaysTask === true && isAssignedto === true || isTodaysTask === true && isAssignedto === false) {
                 if (data?.IsTodaysTask === true) {
-                    let result = data?.AssignedTo?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ') && data?.IsTodaysTask === true));
+                    // let result = data?.AssignedTo?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ') && data?.IsTodaysTask === true));
+                    let result = data?.AssignedTo?.some((elem2: any) => teamMembers.some((filter: any) => filter?.Id === elem2?.Id && data?.IsTodaysTask === true));
                     if (result === true) {
                         return true;
                     }
                 }
             }
             if (isCreatedBy === false && isModifiedby === false && isAssignedto === false && isTeamMember === false && isTeamLead === false && isTodaysTask === false) {
-                let result = data?.TeamLeaderUser?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ')));
+                let result = data?.TeamLeaderUser?.some((elem3: any) => teamMembers.some((filter: any) => filter?.Id === elem3?.Id));
                 if (result === true) {
                     return true;
                 }
@@ -1876,7 +1885,7 @@ const TeamSmartFilter = (item: any) => {
                             <div className='alignCenter justify-content-between col-sm-12'>
                                 <div className='alignCenter col-sm-8'>
                                     <div className='' style={{ color: `${portfolioColor}` }} onClick={() => { toggleIcon(); toggleAllExpendCloseUpDown(iconIndex) }}>
-                                        {icons[iconIndex]} <span className="f-16 fw-semibold hreflink ms-1 pe-2 allfilter ">All Filters</span>
+                                        {icons[iconIndex]} <span className="f-16 fw-semibold hreflink ms-1 pe-2 allfilter ">SmartFilters</span>
                                     </div>
                                     {/* <div className="ms-1 f-16" style={{ color: "#333" }}>{filterInfo}</div> */}
                                 </div>
@@ -2485,6 +2494,7 @@ const TeamSmartFilter = (item: any) => {
                 : null
             }
             <>{PreSetPanelIsOpen && <PreSetDatePikerPannel isOpen={PreSetPanelIsOpen} PreSetPikerCallBack={PreSetPikerCallBack} portfolioColor={portfolioColor} />}</>
+            {/* <>{(isSmartFavorites || opensmartfavorite) && <SmartFavorite PageContext={PageContext} selectedFavoritefilteritem={selectedFavoritefilteritem} filterItems={filterItems} isSmartFavorites={isSmartFavorites} opensmartfavorite={opensmartfavorite} Createmodified={Createmodified} callback={SmartfavcallBack} />}  </> */}
         </>
     )
 
