@@ -54,26 +54,45 @@ export default function InfoIconsToolTip({ Discription, row }: any) {
 
             try {
                 let addToFeedbackArray = (value: any, heading: any) => {
+                   value=  cleanHTML(value)
                     if (value !== undefined && value != null) {
                         const obj = {
-                            Title: cleanHTML(value),
+                            Title: value,
                             heading,
                         };
                         feedback.push(obj);
                         hoverTitleShow = obj;
                         setfeedbackArray(feedback);
                         if (newAction == "hover" && heading === "Short Description") {
+                            if(hoverTitleShow?.Title==""){
+                                hoverTitleShow.Title="Short Description is not available in this. Please click to see other details" 
+                            }
                             setshowHoverTitle(hoverTitleShow?.Title)
                         }
                     }
                 }
-                addToFeedbackArray(row?.Short_x0020_Description_x0020_On, "Short Description");
-                addToFeedbackArray(row?.Background, "Background");
-                addToFeedbackArray(row?.Body, "Description");
-                addToFeedbackArray(row?.AdminNotes, "AdminNotes");
-                addToFeedbackArray(row?.TechnicalExplanations, "Technical Explanations");
-                addToFeedbackArray(row?.Deliverables, "Deliverables");
-                if (row?.FeedBack !== undefined) {
+                if(row?.Short_x0020_Description_x0020_On!=undefined){
+                    addToFeedbackArray(row?.Short_x0020_Description_x0020_On, "Short Description");
+                }
+                if(row?.Background!=undefined){
+                    addToFeedbackArray(row?.Background, "Background");
+                } if(row?.Body!=undefined){
+                    addToFeedbackArray(row?.Body, "Description");
+                } if(row?.AdminNotes!=undefined){
+                    addToFeedbackArray(row?.AdminNotes, "AdminNotes");
+                } if(row?.TechnicalExplanations!=undefined){
+                    addToFeedbackArray(row?.TechnicalExplanations, "Technical Explanations");
+                }
+                if(row?.Deliverables!=undefined){
+                    addToFeedbackArray(row?.Deliverables, "Deliverables");
+                }
+                if(row?.Deliverables!=undefined){
+                    addToFeedbackArray(row?.Deliverables, "Idea");
+                }
+                if(row?.ValueAdded!=undefined){
+                    addToFeedbackArray(row?.ValueAdded, "ValueAdded");
+                }
+               if (row?.FeedBack !== undefined) {
                     feedback = JSON.parse(row.FeedBack);
                     hoverTitleShow = feedback[0].FeedBackDescriptions[0];
                     hoverTitleShow = {
@@ -88,7 +107,7 @@ export default function InfoIconsToolTip({ Discription, row }: any) {
                 }
 
             } catch (error) {
-
+            console.log(error)
             }
         }
 
