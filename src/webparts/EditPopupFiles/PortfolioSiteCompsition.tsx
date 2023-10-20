@@ -166,8 +166,9 @@ const SiteCompositionComponent = (Props: any) => {
             })
             if (tempData != undefined && tempData.length > 0) {
                 tempData?.map((data: any) => {
-                    if (ClientTimeData?.length > 0) {
-                        ClientTimeData?.map((ClientItem: any) => {
+                    let TempArryaSc: any = JSON.parse(JSON.stringify(ClientTimeDataBackup));
+                    if (TempArryaSc?.length > 0) {
+                        TempArryaSc?.map((ClientItem: any) => {
                             if (ClientItem.Title == data.Title || (ClientItem.Title ==
                                 "DA E+E" && data.Title == "ALAKDigital")) {
                                 data.ClienTimeDescription = ClientItem.ClienTimeDescription;
@@ -209,7 +210,7 @@ const SiteCompositionComponent = (Props: any) => {
             }
         }
         getChildDataForSelectedTask()
-    }, [])
+    }, [SelectedClientCategoryFromProps])
 
 
 
@@ -241,9 +242,9 @@ const SiteCompositionComponent = (Props: any) => {
                         SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
                         SiteTaggingFinalData = tempDataForRemove;
                         if (tempDataForRemove?.length > 0) {
-                            callBack(SiteCompositionObject, "dataExits");
+                            // callBack(SiteCompositionObject, "dataExits");
                         } else {
-                            callBack(SiteCompositionObject, "dataDeleted")
+                            // callBack(SiteCompositionObject, "dataDeleted")
                         }
 
                     } else {
@@ -269,7 +270,7 @@ const SiteCompositionComponent = (Props: any) => {
                         SiteCompositionObject.ClientTime = tempData;
                         SiteCompositionObject.selectedClientCategory = SelectedClientCategoryBackupArray;
                         SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
-                        callBack(SiteCompositionObject, "dataExits");
+                        // callBack(SiteCompositionObject, "dataExits");
                         // callBack(SiteCompositionObject);
                     }
                 }
@@ -285,10 +286,8 @@ const SiteCompositionComponent = (Props: any) => {
             SiteTypes?.map((SiteData: any) => {
                 if (SiteData.Title == SiteName) {
                     SiteData.ClienTimeDescription = e.target.value;
-                    TempArray.push(SiteData);
-                } else {
-                    TempArray.push(SiteData);
                 }
+                TempArray.push(SiteData);
             })
         }
         setSiteTypes(TempArray);
@@ -312,7 +311,7 @@ const SiteCompositionComponent = (Props: any) => {
             SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
         }
         // callBack(SiteCompositionObject);
-        callBack(SiteCompositionObject, "dataExits");
+        // callBack(SiteCompositionObject, "dataExits");
     }
 
 
@@ -363,7 +362,7 @@ const SiteCompositionComponent = (Props: any) => {
             SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
         }
         setSiteTypes(TempArray);
-        callBack(SiteCompositionObject, "dataExits");
+        // callBack(SiteCompositionObject, "dataExits");
     }
 
 
@@ -401,7 +400,7 @@ const SiteCompositionComponent = (Props: any) => {
             setIsPortfolioComposition(false);
             setCheckBoxStatus(false);
             setIsSCProtected(false);
-            SiteTaggingFinalData = ClientTimeData;
+            SiteTaggingFinalData = ClientTimeDataBackup;
             refreshSiteCompositionConfigurations();
             ChangeSiteCompositionInstant("Manual");
         }
@@ -453,8 +452,8 @@ const SiteCompositionComponent = (Props: any) => {
         SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
         SiteCompositionObject.ClientTime = ClientTimeData;
         SiteSettingsFinalData = SiteCompositionSettings;
-        setSiteCompositionSettings([...SiteCompositionSettings]);
-        callBack(SiteCompositionObject, "dataExits");
+        // setSiteCompositionSettings([...SiteCompositionSettings]);
+        // callBack(SiteCompositionObject, "dataExits");
     }
     const refreshSiteCompositionConfigurations = () => {
         let TempArray: any = [];
@@ -507,26 +506,10 @@ const SiteCompositionComponent = (Props: any) => {
                 })
                 TempSiteCompsotion.push(SiteData)
             })
-            console.log("All data ====", SiteTaggingFinalData);
         }
         if (UsedFor == "Delux") {
             SiteTypes?.map((SiteData: any) => {
                 DeluxComposition?.map((STItems: any) => {
-                    SiteTaggingFinalData.push(STItems);
-                    if (SiteData.Title == STItems.Title || (SiteData.Title ==
-                        "DA E+E" && STItems.Title == "ALAKDigital")) {
-                        SiteData.ClienTimeDescription = STItems.ClienTimeDescription;
-                        SiteData.BtnStatus = true;
-                        SiteData.Date = STItems.Date;
-                    }
-                })
-                TempSiteCompsotion.push(SiteData)
-            })
-            console.log("All data ====", SiteTaggingFinalData);
-        }
-        if (UsedFor == "Manual") {
-            SiteTypes?.map((SiteData: any) => {
-                ClientTimeDataBackup?.map((STItems: any) => {
                     if (SiteData.Title == STItems.Title || (SiteData.Title ==
                         "DA E+E" && STItems.Title == "ALAKDigital")) {
                         SiteData.ClienTimeDescription = STItems.ClienTimeDescription;
@@ -540,6 +523,19 @@ const SiteCompositionComponent = (Props: any) => {
         if (UsedFor == "Proportional") {
             SiteTypes?.map((SiteData: any) => {
                 ClientTimeData?.map((STItems: any) => {
+                    if (SiteData.Title == STItems.Title || (SiteData.Title ==
+                        "DA E+E" && STItems.Title == "ALAKDigital")) {
+                        SiteData.ClienTimeDescription = STItems.ClienTimeDescription;
+                        SiteData.BtnStatus = true;
+                        SiteData.Date = STItems.Date;
+                    }
+                })
+                TempSiteCompsotion.push(SiteData)
+            })
+        }
+        if (UsedFor == "Manual") {
+            SiteTypes?.map((SiteData: any) => {
+                ClientTimeDataBackup?.map((STItems: any) => {
                     if (SiteData.Title == STItems.Title || (SiteData.Title ==
                         "DA E+E" && STItems.Title == "ALAKDigital")) {
                         SiteData.ClienTimeDescription = STItems.ClienTimeDescription;
@@ -776,7 +772,7 @@ const SiteCompositionComponent = (Props: any) => {
             SiteCompositionObject.selectedClientCategory = TempArray;
             SiteClientCatgeoryFinalData = TempArray;
         }
-        callBack(SiteCompositionObject, "dataExits");
+        // callBack(SiteCompositionObject, "dataExits");
         AutoCompleteItemsArray = [];
         SelectedClientCategoryBackupArray = [];
         closeClientCategoryPopup();
@@ -805,7 +801,7 @@ const SiteCompositionComponent = (Props: any) => {
         if (SiteTaggingFinalData?.length > 0) {
             SitesTaggingData = SiteTaggingFinalData
         } else {
-            SitesTaggingData = ClientTimeData;
+            SitesTaggingData = ClientTimeDataBackup;
         }
         if (SiteClientCatgeoryFinalData?.length > 0) {
             ClientCategoryData = SiteClientCatgeoryFinalData
@@ -888,7 +884,7 @@ const SiteCompositionComponent = (Props: any) => {
             try {
                 let web = new Web(AllListIdData.siteUrl);
                 await web.lists.getById(AllListIdData.MasterTaskListID).items.getById(ItemId).update({
-                    Sitestagging: SiteTaggingJSON?.length > 0 ? JSON.stringify(SiteTaggingJSON) : JSON.stringify(ClientTimeData),
+                    Sitestagging: SiteTaggingJSON?.length > 0 ? JSON.stringify(SiteTaggingJSON) : JSON.stringify(ClientTimeDataBackup),
                     ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] },
                     SiteCompositionSettings: (SiteCompositionSettingData != undefined && SiteCompositionSettingData.length > 0) ? JSON.stringify(SiteCompositionSettingData) : SiteCompositionSettings,
                 }).then(() => {
@@ -1729,7 +1725,7 @@ const SiteCompositionComponent = (Props: any) => {
                 </table>
                 <footer className="bg-e9 alignCenter justify-content-between p-1">
                     <div className="col-sm-6">
-                        <a className="hreflink" target="_blank" data-interception="off" href={`${siteUrls}/Lists/Master%20Tasks/EditForm.aspx?ID=${ItemId}&?#Sitestagging`}>
+                        <a className="hreflink ms-2" target="_blank" data-interception="off" href={`${siteUrls}/Lists/Master%20Tasks/EditForm.aspx?ID=${ItemId}&?#SiteCompositionSettings`}>
                             Open-Out-Of-The-Box
                         </a>
                     </div>
@@ -1746,7 +1742,7 @@ const SiteCompositionComponent = (Props: any) => {
                 onRenderHeader={onRenderCustomClientCategoryHeader}
                 isOpen={ClientCategoryPopupStatus}
                 onDismiss={closeClientCategoryPopup}
-                isBlocking={ClientCategoryPopupStatus}
+                isBlocking={false}
                 type={PanelType.custom}
                 customWidth="850px"
                 onRenderFooter={onRenderFooter}
@@ -1918,7 +1914,7 @@ const SiteCompositionComponent = (Props: any) => {
                     onRenderHeader={onRenderComponentChildrenHeader}
                     isOpen={ComponentChildrenPopupStatus}
                     onDismiss={closeComponentChildrenPopup}
-                    isBlocking={ComponentChildrenPopupStatus}
+                    isBlocking={false}
                     type={PanelType.custom}
                     customWidth="950px"
                     onRenderFooter={onRenderFooterComponentChildren}
