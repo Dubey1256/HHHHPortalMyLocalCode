@@ -609,6 +609,10 @@ const CreateActivity = (props: any) => {
                                         DisplayDueDate: moment(item.DueDate).format("DD/MM/YYYY"),
                                         Portfolio: selectedItem?.Portfolio,
                                         TaskID: TaskID,
+                                        FeedBack:
+                                        FeedbackPost?.length > 0
+                                            ? JSON.stringify(FeedbackPost)
+                                            : null,
                                         siteUrl: site?.siteUrl?.Url,
                                         siteType: site?.Title,
                                         listId: site?.listId,
@@ -621,6 +625,18 @@ const CreateActivity = (props: any) => {
                                         }
 
                                     }
+                                }
+                                if (item?.FeedBack != undefined) {
+                                    let DiscriptionSearchData: any = '';
+                                    let feedbackdata: any =JSON.parse(item?.FeedBack);
+                                    DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
+                                        const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
+                                        const subtextText = (child?.Subtext || [])?.map((elem: any) =>
+                                            elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')
+                                        ).join('');
+                                        return childText + subtextText;
+                                    }).join('');
+                                    item.descriptionsSearch = DiscriptionSearchData
                                 }
                                 if (categoriesItem?.indexOf('Immediate') > -1 || categoriesItem?.indexOf("Email Notification") > -1) {
                                     let listID = '3BBA0B9A-4A9F-4CE0-BC15-61F4F550D556'
@@ -797,7 +813,7 @@ const CreateActivity = (props: any) => {
                                     ResponsibleTeam: TaskResponsibleTeam,
                                     FeedBack:
                                         FeedbackPost?.length > 0
-                                            ? FeedbackPost
+                                            ? JSON.stringify([FeedbackPost])
                                             : null,
                                     TeamMembers: TaskTeamMembers,
                                     TeamLeader: TaskResponsibleTeam,
@@ -810,6 +826,18 @@ const CreateActivity = (props: any) => {
                                         Id: 2
                                     }
 
+                                }
+                                if (item?.FeedBack != undefined) {
+                                    let DiscriptionSearchData: any = '';
+                                    let feedbackdata: any =JSON.parse(item?.FeedBack);
+                                    DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
+                                        const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
+                                        const subtextText = (child?.Subtext || [])?.map((elem: any) =>
+                                            elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')
+                                        ).join('');
+                                        return childText + subtextText;
+                                    }).join('');
+                                    item.descriptionsSearch = DiscriptionSearchData
                                 }
                                 item.TaskID = globalCommon?.GetTaskId(item);
                                 if (categoriesItem?.indexOf('Immediate') > -1 || categoriesItem?.indexOf("Email Notification") > -1) {

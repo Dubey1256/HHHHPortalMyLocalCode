@@ -216,10 +216,10 @@ const TeamSmartFilter = (item: any) => {
 
 
 
-    let filterGroups: any = [{ Title: 'Portfolio Type', values: [], checked: [], checkedObj: [], expanded: [] },
-    {
-        Title: 'Task Type', values: [], checked: [], checkedObj: [], expanded: []
-    },
+    let filterGroups: any = [{ Title: 'Type', values: [], checked: [], checkedObj: [], expanded: [], selectAllChecked: true },
+    // {
+    //     Title: 'Task Type', values: [], checked: [], checkedObj: [], expanded: []
+    // },
     // {
     //     Title: 'Client Category', values: [], checked: [], checkedObj: [], expanded: []
     // }, 
@@ -254,13 +254,19 @@ const TeamSmartFilter = (item: any) => {
         smartmetaDataDetails.forEach((element: any) => {
             element.label = element.Title;
             element.value = element.Id;
+            // if (element.TaxType == 'Task Types') {
+            //     filterGroups[0].values.push(element);
+            //     filterGroups[0].checked.push(element.Id)
+            // }
+            // if (element.TaxType == 'Type') {
+            //     filterGroups[1].values.push(element);
+            //     filterGroups[1].checked.push(element.Id)
+            // }
             if (element.TaxType == 'Task Types') {
-                filterGroups[0].values.push(element);
-                filterGroups[0].checked.push(element.Id)
+                Type.push(element)
             }
             if (element.TaxType == 'Type') {
-                filterGroups[1].values.push(element);
-                filterGroups[1].checked.push(element.Id)
+                Type.push(element)
             }
             if (element.TaxType == 'Sites' || element.TaxType == 'Sites Old') {
                 SitesData.push(element);
@@ -311,8 +317,6 @@ const TeamSmartFilter = (item: any) => {
                 }
             });
         }
-
-
         SitesData?.forEach((element: any) => {
             if (element.Title != 'Master Tasks' && (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined))) {
                 element.values = [],
@@ -323,35 +327,28 @@ const TeamSmartFilter = (item: any) => {
                 getChildsSites(element, SitesData);
             }
         })
-
-
         PrecentComplete?.forEach((element: any) => {
             if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
                 element.value = element.Id;
                 element.label = element.Title;
                 getChildsBasedOn(element, PrecentComplete);
-                filterGroups[2].values.push(element);
+                filterGroups[1].values.push(element);
             }
         })
-
-
-        // ClientCategory?.forEach((element: any) => {
-        //     if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
-        //         element.value = element.Id;
-        //         element.label = element.Title;
-        //         getChildsBasedOn(element, ClientCategory);
-        //         filterGroups[2].values.push(element);
-        //     }
-        // })
-
-
+        Type?.forEach((element: any) => {
+            if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
+                element.value = element.Id;
+                element.label = element.Title;
+                getChildsBasedOn(element, Type);
+                filterGroups[0].values.push(element);
+            }
+        })
         PriorityData?.forEach((element: any) => {
             if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
                 element.value = element.Id;
                 element.label = element.Title;
-                // element.selectAllChecked = true
                 getChildsBasedOn(element, PriorityData);
-                filterGroups[3].values.push(element);
+                filterGroups[2].values.push(element);
             }
         })
 
@@ -359,20 +356,10 @@ const TeamSmartFilter = (item: any) => {
             if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
                 element.value = element.Id;
                 element.label = element.Title;
-                // element.selectAllChecked = true
                 getChildsBasedOn(element, Categories);
-                filterGroups[4].values.push(element);
+                filterGroups[3].values.push(element);
             }
         })
-        // item?.portfolioTypeData?.forEach((element: any) => {
-        //     element.value = element.Id;
-        //     element.label = element.Title;
-        //     filterGroups[6].checked.push(element.Id)
-        //     filterGroups[6].values.push(element);
-        // })
-
-
-
         filterGroups.forEach((element: any, index: any) => {
             element.checkedObj = GetCheckedObject(element.values, element.checked)
         });
@@ -434,14 +421,17 @@ const TeamSmartFilter = (item: any) => {
             if (item.Title == "Completed" || item.Title == "90% Task completed" || item.Title == "93% For Review" || item.Title == "96% Follow-up later" || item.Title == "100% Closed" || item.Title == "99% Completed") {
             }
             else {
-                filterGroups[2].checked.push(item.Id);
+                filterGroups[1].checked.push(item.Id);
             }
         }
         if (item.TaxType == 'Priority') {
-            filterGroups[3].checked.push(item.Id)
+            filterGroups[2].checked.push(item.Id)
         }
         if (item.TaxType == 'Categories') {
-            filterGroups[4].checked.push(item.Id)
+            filterGroups[3].checked.push(item.Id)
+        }
+        if (item.TaxType == 'Task Types' || item.TaxType == "Type") {
+            filterGroups[0].checked.push(item.Id)
         }
     }
     // const getFilterInfo = () => {
@@ -610,7 +600,8 @@ const TeamSmartFilter = (item: any) => {
                 if (value == element.Id) {
                     checkObj.push({
                         Id: element.ItemType === "User" ? element?.AssingedToUser?.Id : element.Id,
-                        Title: element.Title
+                        Title: element.Title,
+                        TaxType: element.TaxType ? element.TaxType : ''
                     })
                 }
                 if (element.children != undefined && element.children.length > 0) {
@@ -619,7 +610,8 @@ const TeamSmartFilter = (item: any) => {
                             checkObj.push({
                                 Id: chElement.ItemType === "User" ? chElement?.AssingedToUser?.Id : chElement.Id,
                                 // Id: chElement.Id,
-                                Title: chElement.Title
+                                Title: chElement.Title,
+                                TaxType: element.TaxType ? element.TaxType : ''
                             })
                         }
                     });
@@ -876,11 +868,22 @@ const TeamSmartFilter = (item: any) => {
         let clientCategory: any[] = [];
         let Categories: any[] = [];
         filterGroupsData.forEach(function (filter) {
+
             if (filter.Title === 'Portfolio Type' && filter.checked.length > 0 && filter.checkedObj.length > 0) {
                 filter.checkedObj.map(function (port: any) { return portFolio.push(port); });
             }
             else if (filter.Title === 'Task Type' && filter.checked.length > 0 && filter.checkedObj.length > 0) {
                 filter.checkedObj.map(function (elem1: any) { return type.push(elem1); });
+            }
+
+            if (filter.Title === 'Type' && filter.checked.length > 0 && filter.checkedObj.length > 0) {
+                filter?.checkedObj?.map((elem: any) => {
+                    if (elem.TaxType === 'Task Types') {
+                        portFolio.push(elem);
+                    } else if (elem.TaxType === 'Type') {
+                        type.push(elem);
+                    }
+                })
             }
             // else if (filter.Title === 'Client Category' && filter.checked.length > 0 && filter.checkedObj.length > 0) {
             //     filter.checkedObj.map(function (elem: any) { return clientCategory.push(elem); });
@@ -2491,6 +2494,7 @@ const TeamSmartFilter = (item: any) => {
                 : null
             }
             <>{PreSetPanelIsOpen && <PreSetDatePikerPannel isOpen={PreSetPanelIsOpen} PreSetPikerCallBack={PreSetPikerCallBack} portfolioColor={portfolioColor} />}</>
+            {/* <>{(isSmartFavorites || opensmartfavorite) && <SmartFavorite PageContext={PageContext} selectedFavoritefilteritem={selectedFavoritefilteritem} filterItems={filterItems} isSmartFavorites={isSmartFavorites} opensmartfavorite={opensmartfavorite} Createmodified={Createmodified} callback={SmartfavcallBack} />}  </> */}
         </>
     )
 

@@ -181,7 +181,7 @@ const EODReportComponent = (TaskDetails: any) => {
                                 <td scope="col">Deployed</td>
                                 <td scope="col">QA Review</td>
                                 <td scope="col">In Progress</td>
-                                <td scope="col">Remarkss</td>
+                                <td scope="col">Remarks</td>
                             </tr>
                         </thead>
                         {FeedBackArrayData?.length > 0 ?
@@ -190,14 +190,13 @@ const EODReportComponent = (TaskDetails: any) => {
                                     return (
                                         <tr className="border-bottom">
                                             <td style={{ width: "10%" }} className="p-1 ps-3 fw-bold" scope="row">{FeedbackItem.CommentIndex}</td>
-                                            <td style={{ width: "40%" }} className="p-1" dangerouslySetInnerHTML={{
+                                            <td style={{ width: "30%" }} className="p-1" dangerouslySetInnerHTML={{
                                                 __html: FeedbackItem.Title?.replace(/<[^>]*>/g, '')
                                             }} ></td>
                                             <td
                                                 style={{ width: "10%" }}
                                                 className="text-center p-1"
                                                 onClick={() => updateFeedbackJSON("Completed", FeedbackItem.Completed ? false : true, Index, FeedbackItem)}
-
                                             >
                                                 {FeedbackItem.Completed != undefined ? FeedbackItem.Completed ? <span className="checkCircleFill"><BsCheckCircleFill /></span>
                                                     :
@@ -218,7 +217,7 @@ const EODReportComponent = (TaskDetails: any) => {
                                                 }
                                             </td>
                                             <td
-                                                style={{ width: "10%" }}
+                                                style={{ width: "16%" }}
                                                 className="text-center p-1"
                                                 onClick={() => updateFeedbackJSON("QAReview", FeedbackItem.QAReview ? false : true, Index, FeedbackItem)}
                                             >
@@ -228,7 +227,7 @@ const EODReportComponent = (TaskDetails: any) => {
                                                     : <span className="xCircleFill"><BsXCircleFill /></span>}
                                             </td>
                                             <td
-                                                style={{ width: "10%" }}
+                                                style={{ width: "14%" }}
                                                 className="text-center p-1"
                                                 onClick={() => updateFeedbackJSON("InProgress", FeedbackItem.InProgress ? false : true, Index, FeedbackItem)}
 

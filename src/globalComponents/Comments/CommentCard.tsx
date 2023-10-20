@@ -859,7 +859,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                           </div>
 
                           <div className="media-text">
-                            {cmtData.Header != '' && <h6 className="userid m-0"><a className="ng-binding">{cmtData?.Header}</a></h6>}
+                            {cmtData.Header != '' && <h6 className="userid m-0"><a className="align-top">{cmtData?.Header}</a></h6>}
                             <p className='m-0'><span dangerouslySetInnerHTML={{ __html: cmtData?.Description }}></span></p>
                           </div>
 
@@ -1058,8 +1058,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
               onDismiss={() => this.setState({
                 isCalloutVisible: false
               })} setInitialFocus>
-              <Text block variant="xLarge" className='subheading m-0 f-15'>
-                Comment Reply
+              <Text block variant="xLarge" className='siteColor f-15 fw-semibold'>
+             Comment Reply
               </Text>
               <Text block variant="small">
                 <div className="d-flex my-2">
@@ -1073,14 +1073,15 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                 <Stack
                   className='modal-footer'
                   gap={8} horizontal>
-                  <button className='btn btn-default'
+            
+                  <button className='btn btn-primary'
+                    onClick={this.SaveReplyMessageFunction}
+                  >Save</button>
+                        <button className='btn btn-default'
                     onClick={() => this.setState({
                       isCalloutVisible: false
                     })}
                   >Cancel</button>
-                  <button className='btn btn-primary'
-                    onClick={this.SaveReplyMessageFunction}
-                  >Save</button>
                 </Stack>
               </FocusZone>
             </FocusTrapCallout>
