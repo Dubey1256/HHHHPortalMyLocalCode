@@ -256,6 +256,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                     selectedItem={checkedData}
                     Call={Call}
                     AllListId={AllListId}
+                    context={AllListId?.Context}
                 ></CreateActivity>
             )}
             {openWS && (
@@ -263,6 +264,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                 selectedItem={checkedData}
                     Call={Call}
                     AllListId={AllListId}
+                    context={AllListId?.Context}
                 ></CreateWS>
             )}
         </>
