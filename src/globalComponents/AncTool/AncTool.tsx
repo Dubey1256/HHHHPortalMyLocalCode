@@ -91,7 +91,9 @@ const AncTool = (props: any) => {
         Href = Href.toLowerCase().split('?')[0]
         Href = Href.split('#')[0];
         siteName = params.get("Site");
-
+        if ((siteName == undefined || siteName == '' || siteName?.length == 0) && props?.listName == "Master Tasks") {
+            siteName = 'SharewebTask'
+        }
         if (siteName?.length > 0) {
             if (siteName === "Offshore Tasks") {
                 siteName = "OffShoreTask";
@@ -207,7 +209,7 @@ const AncTool = (props: any) => {
                     file.docType = 'mail'
                     file.EncodedAbsUrl = file?.Url?.Url
                 }
-                if (file?.File_x0020_Type == 'jpg'||file?.File_x0020_Type == 'jfif') {
+                if (file?.File_x0020_Type == 'jpg' || file?.File_x0020_Type == 'jfif') {
                     file.docType = 'jpeg'
                 }
                 if (file?.File_x0020_Type == 'doc') {
@@ -1037,24 +1039,24 @@ const AncTool = (props: any) => {
                                                                         <th ></th>
                                                                         <th className='p-1'>Type</th>
                                                                         <th className='p-1'>Title</th>
-                                                                        <th style={{width:'85px'}} className='p-1'>Item Rank</th>
+                                                                        <th style={{ width: '85px' }} className='p-1'>Item Rank</th>
 
                                                                     </tr>
 
                                                                 </thead>
                                                                 <tbody className='Scrolling'>
                                                                     {ExistingFiles?.map((file: any) => {
-                                                                        if(!AllReadytagged?.some((doc: any) => file?.Id == doc?.Id)){
+                                                                        if (!AllReadytagged?.some((doc: any) => file?.Id == doc?.Id)) {
                                                                             return (
                                                                                 <tr>
                                                                                     <td><input type="checkbox" className='form-check-input hreflink' checked={AllReadytagged?.some((doc: any) => file.Id == doc.Id)} onClick={() => { tagSelectedDoc(file) }} /></td>
                                                                                     <td><span className={`alignIcon  svg__iconbox svg__icon--${file?.docType}`} title={file?.File_x0020_Type}></span></td>
                                                                                     <td><a href={file?.EncodedAbsUrl} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
-                                                                                    <td style={{textAlign:'center'}}>{file?.ItemRank}</td>
+                                                                                    <td style={{ textAlign: 'center' }}>{file?.ItemRank}</td>
                                                                                 </tr>
                                                                             )
                                                                         }
-                                                                        
+
                                                                     })}
 
 
@@ -1090,7 +1092,7 @@ const AncTool = (props: any) => {
                                                     {selectedFile ? <p>Selected file: {selectedFile.name}</p> : <p>Drag and drop file here </p>}
                                                 </div>
 
-                                                <Col  className='text-center pb-2'>OR</Col>
+                                                <Col className='text-center pb-2'>OR</Col>
                                                 <Row className='mb-2 px-2'>
                                                     <input type="file" onChange={handleFileInputChange} className='full-width' />
                                                 </Row>
@@ -1240,8 +1242,8 @@ const AncTool = (props: any) => {
                         </div>
                     </div>
                     <footer className='text-end p-2'>
-                       
-                        
+
+
                         <button className="btn btnPrimary" disabled={renamedFileName?.length > 0 ? false : true} onClick={() => { CreateNewAndTag() }}>Create</button>
                         <button className='btn btn-default ms-1' onClick={() => cancelNewCreateFile()}>Cancel</button>
                     </footer>
@@ -1249,7 +1251,7 @@ const AncTool = (props: any) => {
             </Modal>
             {ShowConfirmation ?
                 <div className="modal Anc-Confirmation-modal" >
-                    <div className="modal-dialog modal-mg rounded-0 " style={{maxWidth:"700px"}}>
+                    <div className="modal-dialog modal-mg rounded-0 " style={{ maxWidth: "700px" }}>
                         <div className="modal-content rounded-0">
                             <div className="modal-header">
                                 <h5 className="modal-title">Upload Documents - Confirmation</h5>
@@ -1257,37 +1259,37 @@ const AncTool = (props: any) => {
                             </div>
                             <div className="modal-body p-2">
                                 <Col className='p-1'>
-                                <Col><span><strong>Folder :</strong> </span><a href={`${rootSiteName}${selectedPath?.displayPath}`} target="_blank" data-interception="off" className='hreflink'> {selectedPath?.displayPath} <span className="svg__iconbox svg__icon--folder ms-1 alignIcon "></span></a></Col>
-                                <Col className='mb-2'><strong>Metadata-Tag :</strong> <span>{props?.item?.Title}</span></Col>
+                                    <Col><span><strong>Folder :</strong> </span><a href={`${rootSiteName}${selectedPath?.displayPath}`} target="_blank" data-interception="off" className='hreflink'> {selectedPath?.displayPath} <span className="svg__iconbox svg__icon--folder ms-1 alignIcon "></span></a></Col>
+                                    <Col className='mb-2'><strong>Metadata-Tag :</strong> <span>{props?.item?.Title}</span></Col>
 
-                                <Col className='Alltable mt-2'>
-                                    <div>
-                                        <Table className='table table-hover'>
-                                            <thead className='fixed-Header top-0'>
-                                                <tr>
-                                                    <th className='pe-1' style={{width:"5%"}}>&nbsp;</th>
-                                                    <th className='pe-1' style={{width:"60%"}}>File Name</th>
-                                                    <th className='pe-1' style={{width:"10%"}}>Uploaded</th>
-                                                    <th className='pe-1' style={{width:"8%"}}>Tagged</th>
-                                                    <th className='pe-1'style={{width:"12%"}}>Share Link</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td><span className={`svg__iconbox svg__icon--${UploadedDocDetails?.docType}`}></span></td>
-                                                    <td><a href={UploadedDocDetails?.link} target="_blank" data-interception="off" className='hreflink'>{UploadedDocDetails?.fileName}</a>{`(${UploadedDocDetails?.size})`}</td>
-                                                    <td>{UploadedDocDetails?.uploaded == true ? <span className='alignIcon  svg__iconbox svg__icon--Completed' style={{width:"15px"}}></span> : <span className='alignIcon  svg__iconbox svg__icon--cross' ></span>}</td>
-                                                    <td>{UploadedDocDetails?.tagged == true ? <span className='alignIcon  svg__iconbox svg__icon--Completed' style={{width:"15px"}}></span> : <span className='alignIcon  svg__iconbox svg__icon--cross'></span>}</td>
-                                                    <td>{UploadedDocDetails?.uploaded == true ? <>
-                                                        <span className='me-3 alignIcon  svg__iconbox svg__icon--link hreflink' title='Copy Link' data-bs-toggle="popover" data-bs-content="Link Copied" onClick={() => { navigator.clipboard.writeText(UploadedDocDetails?.link); }}></span>
-                                                        <span className='alignIcon  svg__iconbox svg__icon--mail hreflink' title='Share In Mail' onClick={() => { window.open(`mailto:?&subject=${props?.item?.Title}&body=${UploadedDocDetails?.link}`) }}></span>
-                                                    </> : <></>}</td>
-                                                </tr>
-                                            </tbody>
-                                        </Table>
-                                    </div>
+                                    <Col className='Alltable mt-2'>
+                                        <div>
+                                            <Table className='table table-hover'>
+                                                <thead className='fixed-Header top-0'>
+                                                    <tr>
+                                                        <th className='pe-1' style={{ width: "5%" }}>&nbsp;</th>
+                                                        <th className='pe-1' style={{ width: "60%" }}>File Name</th>
+                                                        <th className='pe-1' style={{ width: "10%" }}>Uploaded</th>
+                                                        <th className='pe-1' style={{ width: "8%" }}>Tagged</th>
+                                                        <th className='pe-1' style={{ width: "12%" }}>Share Link</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td><span className={`svg__iconbox svg__icon--${UploadedDocDetails?.docType}`}></span></td>
+                                                        <td><a href={UploadedDocDetails?.link} target="_blank" data-interception="off" className='hreflink'>{UploadedDocDetails?.fileName}</a>{`(${UploadedDocDetails?.size})`}</td>
+                                                        <td>{UploadedDocDetails?.uploaded == true ? <span className='alignIcon  svg__iconbox svg__icon--Completed' style={{ width: "15px" }}></span> : <span className='alignIcon  svg__iconbox svg__icon--cross' ></span>}</td>
+                                                        <td>{UploadedDocDetails?.tagged == true ? <span className='alignIcon  svg__iconbox svg__icon--Completed' style={{ width: "15px" }}></span> : <span className='alignIcon  svg__iconbox svg__icon--cross'></span>}</td>
+                                                        <td>{UploadedDocDetails?.uploaded == true ? <>
+                                                            <span className='me-3 alignIcon  svg__iconbox svg__icon--link hreflink' title='Copy Link' data-bs-toggle="popover" data-bs-content="Link Copied" onClick={() => { navigator.clipboard.writeText(UploadedDocDetails?.link); }}></span>
+                                                            <span className='alignIcon  svg__iconbox svg__icon--mail hreflink' title='Share In Mail' onClick={() => { window.open(`mailto:?&subject=${props?.item?.Title}&body=${UploadedDocDetails?.link}`) }}></span>
+                                                        </> : <></>}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </Table>
+                                        </div>
 
-                                </Col>
+                                    </Col>
                                 </Col>
                             </div>
                             <footer className='text-end p-2'>
@@ -1301,7 +1303,7 @@ const AncTool = (props: any) => {
                 AllListId={props.AllListId}
                 Context={props?.Context}
                 taskTitle={props?.item?.Title}
-                listName={props?.item?.siteType}
+                listName={props?.item?.siteType!=undefined?props?.item?.siteType:'Master Tasks'}
                 showHide={"projectManagement"}
                 setRemark={setRemark}
                 editSmartInfo={editSmartInfo}
