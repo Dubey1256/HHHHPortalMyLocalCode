@@ -279,7 +279,7 @@ function TasksTable(props: any) {
                   result.AllTeamName =
                     result.AllTeamName === undefined ? "" : result.AllTeamName;
                   result.chekbox = false;
-                  result.descriptionsSearch = "";
+                  result.descriptionsSearch = '';
                   result.commentsSearch = "";
                   result.DueDate = moment(result.DueDate).format("DD/MM/YYYY");
                   result.DisplayDueDate = moment(result.DueDate).format("DD/MM/YYYY");
@@ -300,21 +300,18 @@ function TasksTable(props: any) {
                     result.PercentComplete * 100
                   ).toFixed(0);
                   result.chekbox = false;
-
-
                   if (result?.FeedBack != undefined) {
                     let DiscriptionSearchData: any = '';
                     let feedbackdata: any = JSON.parse(result?.FeedBack)
-                    DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
-                        const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
-                        const subtextText = (child?.Subtext || [])?.map((elem: any) =>
-                            elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')
+                    DiscriptionSearchData = feedbackdata[0].FeedBackDescriptions.map((child: any) => {
+                        const childText = child.Title?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '');
+                        const subtextText = (child.Subtext || []).map((elem: any) =>
+                            elem.Title?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '')
                         ).join('');
                         return childText + subtextText;
                     }).join('');
                     result.descriptionsSearch = DiscriptionSearchData
                 }
-                  
 
                   if (result?.Comments != null) {
                     result.commentsSearch = result?.Comments?.replace(/(<([^>]+)>)/gi,"").replace(/\n/g, "");
@@ -731,7 +728,7 @@ function TasksTable(props: any) {
               <FaCompressArrowsAlt style={{ height: '11px', width: '20px' }} /> : ''}
             {row?.original?.subRows?.length > 0 ?
               <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
-            {row?.original?.descriptionsSearch?.length > 0 && <InfoIconsToolTip
+            {row?.original?.descriptionsSearch!='' && <InfoIconsToolTip
               Discription={row?.original?.descriptionsSearch}
               row={row?.original}
             />}
