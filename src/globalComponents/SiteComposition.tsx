@@ -31,8 +31,11 @@ export default function Sitecomposition(datas: any) {
     if (datas?.props.Sitestagging != undefined) {
       if (datas?.props?.ClientCategory?.length > 0) {
         GetSmartMetaData(datas?.props?.ClientCategory, datas?.props?.Sitestagging);
-      } else if (datas?.props?.ClientCategory?.results?.length > 0)
+      } else if (datas?.props?.ClientCategory?.results?.length > 0) {
         GetSmartMetaData(datas?.props?.ClientCategory?.results, datas?.props?.Sitestagging);
+      } else {
+        GetSmartMetaData(datas?.props?.ClientCategory?.results, datas?.props?.Sitestagging);
+      }
     }
     // if (datas?.props?.ClientCategory?.results?.length > 0) {
     //   setselectedClientCategory(datas.props.ClientCategory.results);
@@ -185,7 +188,7 @@ export default function Sitecomposition(datas: any) {
             Edit Site Composition
           </span>
         </div>
-        <Tooltip ComponentId="1626" />
+        <Tooltip ComponentId="1268" />
       </div>
     )
   }
@@ -193,22 +196,25 @@ export default function Sitecomposition(datas: any) {
   const ClosePopupCallBack = React.useCallback(() => {
     setEditSiteCompositionStatus(false);
     datas.callback();
-    // if (datas?.props?.ClientCategory?.results?.length > 0 || datas?.props.Sitestagging != undefined) {
-    //   GetSmartMetaData(datas?.props?.ClientCategory?.results, datas?.props?.Sitestagging);
-    // }
-    // setRenderCount(renderCount + 1)
+    setRenderCount(renderCount + 1);
   }, [])
 
   const SiteCompositionCallBack = React.useCallback((Data: any, Type: any) => {
-    datas.props.Sitestagging = Data.ClientTime?.length > 0 ? JSON.stringify(Data.ClientTime) : [];
-    datas.props.ClientCategory.results = Data.selectedClientCategory;
-    setKey((prevKey) => prevKey + 1);
+    // datas.props.Sitestagging = Data.ClientTime?.length > 0 ? JSON.stringify(Data.ClientTime) : [];
+    // datas.props.ClientCategory.results = Data.selectedClientCategory;
+    // if (datas?.props.Sitestagging != undefined) {
+    //   if (datas?.props?.ClientCategory?.length > 0 || datas?.props.Sitestagging != undefined) {
+    //     GetSmartMetaData(datas?.props?.ClientCategory, datas?.props?.Sitestagging);
+    //   } else if (datas?.props?.ClientCategory?.results?.length > 0 || datas?.props.Sitestagging != undefined)
+    //     GetSmartMetaData(datas?.props?.ClientCategory?.results, datas?.props?.Sitestagging);
+    // }
+    // setKey((prevKey) => prevKey + 1);
   }, [])
   return (
     <>
       {!isDirectPopup && (<dl key={key} className="Sitecomposition">
         <div className='dropdown'>
-          <a className="sitebutton bg-fxdark d-flex "
+          <a className="sitebutton bg-fxdark d-flex"
           >
             <span onClick={() => showhideComposition()} >
               {showComposition ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}
@@ -225,24 +231,27 @@ export default function Sitecomposition(datas: any) {
           >
             <ul>
               {ClientTimeArray?.map((cltime: any, i: any) => {
-                return <li className="Sitelist">
-                  <span>
-                    <img style={{ width: "22px" }} src={`${GetSiteIcon(cltime?.Title)}`} />
-                  </span>
-                  {cltime?.ClienTimeDescription != undefined &&
-                    <span>
-                      {Number(cltime?.ClienTimeDescription).toFixed(2)}%
-                    </span>
-                  }
-                  <span>
-                    {cltime.ClientCategory != undefined && cltime.ClientCategory.length > 0 ? cltime.ClientCategory?.map((clientcat: any) => {
-                      return (
-                        <span>{clientcat.Title}</span>
-                      )
-
-                    }) : null}
-                  </span>
-                </li>
+                if (cltime.Title != "CompositionHistoryArray") {
+                  return (
+                    <li className="Sitelist">
+                      <span>
+                        <img style={{ width: "22px" }} src={`${GetSiteIcon(cltime?.Title)}`} />
+                      </span>
+                      {cltime?.ClienTimeDescription != undefined &&
+                        <span>
+                          {Number(cltime?.ClienTimeDescription).toFixed(2)}%
+                        </span>
+                      }
+                      <span className="d-inline">
+                        {cltime.ClientCategory != undefined && cltime.ClientCategory.length > 0 ? cltime.ClientCategory?.map((clientcat: any, Index: any) => {
+                          return (
+                            <p className={Index == cltime.ClientCategory?.length - 1 ? "mb-0" : "mb-0 border-bottom"}>{clientcat.Title}</p>
+                          )
+                        }) : null}
+                      </span>
+                    </li>
+                  )
+                }
               })}
             </ul>
           </div>
@@ -253,7 +262,7 @@ export default function Sitecomposition(datas: any) {
         onRenderHeader={onRenderCustomCalculateSC}
         isOpen={EditSiteCompositionStatus}
         onDismiss={() => ClosePopupCallBack()}
-        isBlocking={EditSiteCompositionStatus}
+        isBlocking={false}
         type={PanelType.custom}
         customWidth="1024px"
       >
@@ -266,7 +275,6 @@ export default function Sitecomposition(datas: any) {
             ClientTime={datas?.props?.siteCompositionData != undefined ? datas.props.siteCompositionData : []}
             SiteCompositionSettings={datas?.props?.SiteCompositionSettings}
             selectedComponent={datas?.props}
-            // currentListName={EditData.siteType}
             callBack={SiteCompositionCallBack}
             isServiceTask={datas?.props?.Portfolio_x0020_Type == "Service" ? true : false}
             usedFor={"Component-Profile"}

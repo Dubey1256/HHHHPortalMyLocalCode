@@ -825,7 +825,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                 <div>
                   <ul className="list-unstyled">
                     {this.state.Result["Comments"] != null && this.state.Result["Comments"].length > 0 && this.state.Result["Comments"]?.slice(0, 3)?.map((cmtData: any, i: any) => {
-                      return cmtData?.Description&&<li className="media border p-1 my-1">
+                      return cmtData?.Description&&<li className="media  p-1 my-1">
 
                         <div className="media-bodyy">
                           <div className="d-flex justify-content-between align-items-center">
@@ -904,9 +904,9 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                         <div className="commentMedia">
                           {cmtData?.ReplyMessages != null && cmtData?.ReplyMessages != undefined && cmtData?.ReplyMessages?.length > 0 &&
                             <div>
-                              <ul className="list-unstyled">
+                              <ul className="list-unstyled subcomment">
                                 {cmtData?.ReplyMessages != null && cmtData?.ReplyMessages?.length > 0 && cmtData?.ReplyMessages?.map((ReplyMsg: any, j: any) => {
-                                  return <li className="media border p-1 my-1">
+                                  return <li className="media  p-1 my-1">
 
                                     <div className="media-bodyy">
                                       <div className="d-flex justify-content-between align-items-center">
@@ -961,7 +961,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
           type={PanelType.custom}
           customWidth="500px"
-
           onRenderHeader={this.customHeaderforEditCommentpopup}
           onDismiss={(e) => this.CloseModal(e)}
         > <div className={color ? "serviepannelgreena" : ""}>

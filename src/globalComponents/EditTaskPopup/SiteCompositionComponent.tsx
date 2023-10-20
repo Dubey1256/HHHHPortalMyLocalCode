@@ -1220,19 +1220,25 @@ const SiteCompositionComponent = (Props: any) => {
                         </tbody>
                         : null}
                 </table>
-
-
-                <footer className="bg-e9  d-flex justify-content-end full-width py-1">
-                    <div className="bg-body col-sm-1 p-1 alignCenter">
-                        <div className="">{isPortfolioComposition == true || ProportionalStatus == false ? `${TotalPercent} %` : "100%"}</div>
+               
+                <footer className="bg-e9 alignCenter justify-content-between p-1">
+                    <div className="col-sm-6">
+                        <a className="hreflink ms-2" target="_blank" data-interception="off" href={`${siteUrls}/Lists/${currentListName}/EditForm.aspx?ID=${ItemId}&?#ClientTime`}>
+                            Open-Out-Of-The-Box
+                        </a>
                     </div>
-                    <div className="bg-body col-sm-1 mx-1 p-1 alignCenter">
-                        <div className="">{TotalTime ? TotalTime.toFixed(0) : 0}</div>
-                    </div>
-                    <div className="me-1">
-                        <button className="btn btn-primary px-4 " onClick={UpdateSiteTaggingAndClientCategory} style={usedFor == 'Task-Profile' ? { display: 'block' } : { display: 'none' }}>
-                            Save
-                        </button>
+                    <div className="d-flex justify-content-end col-sm-6">
+                        <div className="bg-body col-sm-2 p-1 alignCenter">
+                            <div className="">{isPortfolioComposition == true || ProportionalStatus == false ? `${TotalPercent} %` : "100%"}</div>
+                        </div>
+                        <div className="bg-body col-sm-2 mx-1 p-1 alignCenter">
+                            <div className="">{TotalTime ? TotalTime.toFixed(0) : 0}</div>
+                        </div>
+                        <div className="me-1">
+                            <button className="btn btn-primary px-4 " onClick={UpdateSiteTaggingAndClientCategory} style={usedFor == 'Task-Profile' ? { display: 'block' } : { display: 'none' }}>
+                                Save
+                            </button>
+                        </div>
                     </div>
                 </footer>
                 {/* ********************* this Client Category panel ****************** */}

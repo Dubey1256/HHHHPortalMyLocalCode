@@ -483,7 +483,8 @@ const TaggedComponentTask = (props: any) => {
                 type={PanelType.large}
                 isOpen={true}
                 onDismiss={() => callBack()}
-                isBlocking={false}>
+                isBlocking={true}>
+
               
                 <CreateTaskFromProject
                     projectItem={props?.projectItem}
