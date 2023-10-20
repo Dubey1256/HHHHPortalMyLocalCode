@@ -2198,10 +2198,11 @@ const EditTaskPopup = (Items: any) => {
                             })
 
                         }
-                        if (ApproverData[0].Id == currentUserId) {
-                            EditData.TaskApprovers = []
+                        if (ApproverData != undefined && ApproverData.length > 0) {
+                            if (ApproverData[0].Id == currentUserId) {
+                                EditData.TaskApprovers = []
+                            }
                         }
-
 
 
 
