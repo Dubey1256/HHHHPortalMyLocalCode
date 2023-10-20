@@ -11,16 +11,35 @@ const EmailComponent = (props: any) => {
     sendEmail(props.emailStatus);
   }, [])
   console.log(props);
+
   const sendEmail = async (send: any) => {
     let mention_To: any = [];
     const sendMailToTaskCreatore = () => {
-      mention_To.push(props?.items.TaskCreatorData[0].Email);
+      if(props?.items.Approvee != undefined){
+        props?.AllTaskUser.filter((ele:any)=>{
+          if(ele?.AssingedToUser?.Id == props?.items?.Approvee?.Id){
+            mention_To.push(ele?.Email);
+          }
+        })
+       
+      }
+      else{
+        mention_To.push(props?.items.TaskCreatorData[0].Email);
+      }
+     
     }
     const sendMailToTaskApprover = () => {
       if (props?.items.TaskApprovers != undefined && props?.items.TaskApprovers.length > 0) {
         props?.items.TaskApprovers.map((ApproverData: any) => {
-          let tempEmail = ApproverData.Name;
-          mention_To.push(tempEmail.substring(18, tempEmail.length))
+          if(ApproverData.Company == undefined){
+            let tempEmail = ApproverData.Name;
+            mention_To.push(tempEmail?.substring(18, tempEmail.length))
+          }
+          else{
+            let tempEmail = ApproverData?.Email;
+            mention_To.push(tempEmail)
+          }
+          
         })
       }
     }
@@ -98,7 +117,7 @@ const EmailComponent = (props: any) => {
       <div id='htmlMailBodyEmail' style={{ display: 'none' }}>
         {props.statusUpdateMailSendStatus != undefined && props.statusUpdateMailSendStatus == false ?
          <div style={{ marginTop: "2pt" }}>
-         {props?.items.TaskCreatorData[0].Title} has created a Task but {props?.items.currentUser[0]?.Title}  has sent you for approval. Please take your time and review:
+         {props?.items.TaskCreatorData[0].Title} has created a Task but {props?.CurrentUser[0]?.Title}  has sent you for approval. Please take your time and review:
          Please note that you still have 1 tasks left to approve.<br /> You can find all pending approval tasks on your task dashboard or the approval page.
          <p>
            <a href={`${props.items["siteUrl"]}/SitePages/TaskDashboard.aspx`} target="_blank" data-interception="off">Your Task Dashboard</a>
@@ -107,7 +126,7 @@ const EmailComponent = (props: any) => {
        </div>
           : <div style={{ marginTop: "11.25pt" }}>
             <div style={{ marginTop: "2pt" }}>Hi,</div>
-            <div style={{ marginTop: "5pt" }}>your task has been Acknowledge by {props.CurrentUser[0].Title}, team will process it further.</div>
+            <div style={{ marginTop: "5pt" }}>your task has been Acknowledge by {props.CurrentUser[0]?.Title}, team will process it further.</div>
             <div style={{ marginTop: "5pt" }}>Have a nice day {props?.items.TaskCreatorData[0].Title}.</div>
             <div style={{ marginTop: "10pt" }}>
               <a href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props.items.Id}&Site=${props?.items?.siteType}`} target="_blank" data-interception="off">{props.items["Title"]}</a><u></u><u></u>
