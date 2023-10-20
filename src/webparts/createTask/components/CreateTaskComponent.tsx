@@ -3,11 +3,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import { Web, sp } from "sp-pnp-js";
-import pnp, { PermissionKind } from "sp-pnp-js";
+import pnp from "sp-pnp-js";
 import "@pnp/sp/sputilities";
 let feedback: any = null;
-import { IEmailProperties } from "@pnp/sp/sputilities";
-import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import * as moment from 'moment';
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
@@ -674,7 +672,7 @@ function CreateTaskComponent(props: any) {
         let currentUserId = loggedInUser?.AssingedToUserId
         var AssignedToIds: any[] = [];
         let MailArrayTitle: any[] = [];
-        let AssignedIds: any = [];
+        let ResponsibleIds: any = [];
         let Tasks: any = []
         if (save.taskName.length <= 0) {
             alert("Please Enter The Task Name")
@@ -702,7 +700,7 @@ function CreateTaskComponent(props: any) {
                     if (cat.toLowerCase() === 'design') {
                         AssignedToIds.push(298)
                         TeamMembersIds.push(298);
-                        TeamMembersIds.push(49);
+                        ResponsibleIds.push(49);
                         taskUsers?.map((User: any) => {
                             if (User.Title === 'Design' && burgerMenuTaskDetails.TaskType != "Design" && TeamMembersIds.length === 0 && User.AssingedToUserId != null && User.AssingedToUserId != '' && User.AssingedToUserId != undefined) {
                                 TeamMembersIds.push(User.AssingedToUserId);
@@ -741,10 +739,17 @@ function CreateTaskComponent(props: any) {
                             if (User.Title != undefined && MailName.Title != undefined && User.Title.toLowerCase().indexOf(MailName.Title.toLowerCase()) > -1 && User.ItemType != 'Group') {
                                 RecipientMail.push(User);
                             }
+                            if (MailName?.Title == 'Design' && loggedInUser?.AssingedToUserId != 49 && User?.Title == 'Robert Ungethuem') {
+                                RecipientMail.push(User);
+                            }
+                            if (burgerMenuTaskDetails?.SDCTaskId?.length > 0 && (User?.Title == 'Stefan Hochhuth' || User?.Title == 'Robert Ungethuem')) {
+                                RecipientMail.push(User);
+                            }
                         });
                     }
                 });
             }
+
             let selectedCC: any = [];
             let postClientTime: any;
             let siteCompositionDetails: any;
@@ -841,7 +846,7 @@ function CreateTaskComponent(props: any) {
                         "DueDate": save.DueDate,
                         "Mileage": save.Mileage,
                         PercentComplete: 0,
-                        ResponsibleTeamId: { "results": AssignedIds },
+                        ResponsibleTeamId: { "results": ResponsibleIds },
                         PortfolioId: portfolioId,
                         TeamMembersId: { "results": TeamMembersIds },
                         // SharewebComponentId: { "results": $scope.SharewebComponent },
@@ -864,8 +869,8 @@ function CreateTaskComponent(props: any) {
                     };
                     if (CategoryTitle?.toLowerCase().indexOf('approval') > -1)
                         item.PercentComplete = 0;
-                    if (AssignedIds.length > 0) {
-                        var ResponsibleTeam = AssignedIds;
+                    if (ResponsibleIds.length > 0) {
+                        var ResponsibleTeam = ResponsibleIds;
                         if (!(CategoryTitle?.toLowerCase().indexOf('bug') > -1)) {
                             if (currentUserId == 23 || currentUserId == 41) {
                                 ResponsibleTeam.push(14);
@@ -892,6 +897,7 @@ function CreateTaskComponent(props: any) {
                     await web.lists.getById(selectedSite?.listId).items.add(item).then(async (data) => {
                         let newTitle = data?.data?.Title
                         let CreatedTaskID = data?.data?.Id
+                        data.data.siteType = save.siteType;
                         if (CategoryTitle?.indexOf('Immediate') > -1 || CategoryTitle?.indexOf("Email Notification") > -1) {
                             let listID = '3BBA0B9A-4A9F-4CE0-BC15-61F4F550D556'
                             var postData = {
@@ -901,30 +907,40 @@ function CreateTaskComponent(props: any) {
                                 "Site": save.siteType
                             };
                             await createTaskByListId(selectedSite?.siteUrl?.Url, listID, postData, save.siteType)
-                            await sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, undefined, 'Immediate', undefined).then((response: any) => {
+                            await globalCommon?.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, undefined, 'Immediate', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
                                 console.log(response);
                             });;
                         }
                         if (CategoryTitle?.indexOf('Immediate') < -1) {
                             setSendApproverMail(true);
                         }
-                        if (CategoryTitle?.indexOf("Approval") > -1) {
-                            setSendApproverMail(true);
-                            sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, RecipientMail, 'ApprovalMail', undefined).then((response: any) => {
-                                console.log(response);
-                            });
-                        }
+                        let SDCRecipientMail: any = []
+                        // if (burgerMenuTaskDetails?.SDCTaskId?.length > 0) {
+                        //     taskUsers?.map((User: any) => {
+                        //         if (User?.Title == 'Stefan Hochhuth' || User?.Title == 'Robert Ungethuem') {
+                        //             SDCRecipientMail.push(User);
+                        //         }
+                        //     });
+                        //     globalCommon.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, SDCRecipientMail, 'Client Task', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
+                        //         console.log(response);
+                        //     });
+                        // }
                         if (CategoryTitle?.indexOf("Design") > -1) {
                             setSendApproverMail(true);
-                            sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, RecipientMail, 'DesignMail', undefined).then((response: any) => {
+                            globalCommon.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, RecipientMail, 'DesignMail', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
                                 console.log(response);
                             });
                         }
-                        if (RecipientMail?.length > 0) {
-
+                        if (CategoryTitle?.indexOf("Approval") > -1) {
+                            setSendApproverMail(true);
+                            globalCommon.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, RecipientMail, 'ApprovalMail', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
+                                console.log(response);
+                            });
                         }
+
+
                         data.data.siteUrl = selectedSite?.siteUrl?.Url;
-                        data.data.siteType = save.siteType;
+
                         data.data.listId = selectedSite?.listId;
                         // taskCreated = true;
                         createdTask.Id = data?.data?.Id
@@ -1474,460 +1490,7 @@ function CreateTaskComponent(props: any) {
     }, [])
 
     // Approver Category Email 
-    const SendEmailFinal = async (to: any, subject: any, body: any) => {
-        let sp = spfi().using(spSPFx(props?.SelectedProp?.Context));
-        sp.utility.sendEmail({
-            //Body of Email  
-            Body: body,
-            //Subject of Email  
-            Subject: subject,
-            //Array of string for To of Email  
-            To: to,
-            AdditionalHeaders: {
-                "content-type": "text/html"
-            },
-        }).then(() => {
-            console.log("Email Sent!");
 
-        }).catch((err) => {
-            console.log(err.message);
-        });
-    }
-    const getData = async (url: any, listId: any, query: any) => {
-        const web = new Web(url);
-        let result;
-        try {
-            result = (await web.lists.getById(listId).items.select(query).getAll());
-        }
-        catch (error) {
-            return Promise.reject(error);
-        }
-
-        return result;
-
-    }
-    const sendImmediateEmailNotifications = async (itemId: any, siteUrl: any, listId: any, item: any, RecipientMail: any, isLoadNotification: any, rootSite: any) => {
-        await GetImmediateTaskNotificationEmails(item, isLoadNotification, rootSite)
-            .then(async (ToEmails: any) => {
-                try {
-                    if (isLoadNotification == false)
-                        ToEmails = [];
-                    if (RecipientMail?.length > 0) {
-                        if (ToEmails == undefined || isLoadNotification == 'DesignMail') {
-                            ToEmails = [];
-                        }
-                        RecipientMail.map((mail: any) => {
-                            ToEmails.push(mail?.Email);
-                        })
-                    }
-                    if (ToEmails.length > 0) {
-                        var query = '';
-                        query += "AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,ComponentLink,Categories,FeedBack,ComponentLink,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,TaskCategories/Id,TaskCategories/Title,TaskType/Id,TaskType/Title,TaskID,CompletedDate,TaskLevel,TaskLevel,ParentTask/TaskID,ParentTask/Title,ParentTask/Id&$expand=AssignedTo,AttachmentFiles,ParentTask,Author,Editor,TaskCategories,TaskType,Portfolio&$filter=Id eq " + itemId;
-                        await getData(siteUrl, listId, query)
-                            .then(async (data: any) => {
-                                data?.map((item: any) => {
-                                    item.PercentageCompleted = item?.PercentComplete < 1 ? item?.PercentComplete * 100 : item?.PercentComplete;
-                                    item.PercentComplete = item?.PercentComplete < 1 ? item?.PercentComplete * 100 : item?.PercentComplete;
-                                    if (item.PercentageCompleted != undefined) {
-                                        item.PercentageCompleted = parseInt((item?.PercentageCompleted).toFixed(0));
-                                    }
-                                    if (item.PercentComplete != undefined) {
-                                        item.PercentComplete = parseInt((item?.PercentComplete).toFixed(0));
-                                    }
-                                    item.taskLeader = 'None';
-                                    if (item?.AssignedTo?.length > 0)
-                                        item.taskLeader = globalCommon.getMultiUserValues(item);
-
-                                    if (item?.PercentComplete != undefined) {
-                                        item.PercentComplete = item.PercentComplete < 1 ? item.PercentComplete * 100 : item.PercentComplete;
-                                        item.PercentComplete = parseInt((item.PercentComplete).toFixed(0));
-
-                                        item.PercentageCompleted = item.PercentComplete;
-                                    }
-                                    if (item?.siteType != undefined) {
-                                        item.siteType = item.siteType.replace(/_x0020_/g, ' ');
-                                    }
-                                })
-
-                                var UpdateItem = data[0];
-                                var siteType = save.siteType;
-                                UpdateItem.siteType = '';
-                                if (UpdateItem.siteType == '') {
-                                    if (siteType != undefined) {
-                                        siteType = siteType.replace(/_x0020_/g, '%20');
-                                    }
-                                    UpdateItem.siteType = siteType;
-                                }
-                                UpdateItem.TaskID = globalCommon.GetTaskId(UpdateItem);
-                                if (UpdateItem?.Author != undefined) {
-                                    UpdateItem.Author1 = '';
-                                    UpdateItem.Author1 = UpdateItem.Author.Title;
-                                } else
-                                    UpdateItem.Editor1 = '';
-                                if (UpdateItem?.Editor != undefined) {
-                                    UpdateItem.Editor1 = '';
-                                    UpdateItem.Editor1 = UpdateItem.Editor.Title;
-                                } else
-                                    UpdateItem.Editor1 = '';
-                                if (UpdateItem?.ComponentLink?.Url != undefined)
-                                    UpdateItem.URL = UpdateItem?.ComponentLink?.Url;
-                                else
-                                    UpdateItem.URL = '';
-
-                                if (UpdateItem?.DueDate != undefined)
-                                    UpdateItem.DueDate = moment(new Date(UpdateItem.DueDate)).format('DD/MM/YYYY')
-                                else
-                                    UpdateItem.DueDate = '';
-                                if (UpdateItem?.StartDate != undefined)
-                                    UpdateItem.StartDate = moment(new Date(UpdateItem.StartDate)).format('DD/MM/YYYY')
-                                else
-                                    UpdateItem.StartDate = '';
-                                if (UpdateItem?.CompletedDate != undefined)
-                                    UpdateItem.CompletedDate = moment(new Date(UpdateItem.CompletedDate)).format('DD/MM/YYYY')
-                                else
-                                    UpdateItem.CompletedDate = '';
-
-                                if (UpdateItem?.Created != undefined)
-                                    UpdateItem.Created = moment(new Date(UpdateItem.Created)).format('DD/MM/YYYY')
-                                else
-                                    UpdateItem.Created = '';
-                                if (UpdateItem?.Modified != undefined)
-                                    UpdateItem.Modified = moment(new Date(UpdateItem.Modified)).format('DD/MM/YYYY')
-                                else
-                                    UpdateItem.Modified = '';
-                                if (UpdateItem?.PercentComplete != undefined)
-                                    UpdateItem.PercentComplete = UpdateItem.PercentComplete;
-                                else
-                                    UpdateItem.PercentComplete = '';
-                                if (UpdateItem?.Priority != undefined)
-                                    UpdateItem.Priority = UpdateItem.Priority;
-                                else
-                                    UpdateItem.Priority = '';
-                                if (UpdateItem?.Body != undefined)
-                                    UpdateItem.Body = $.parseHTML(UpdateItem.Body)[0]?.textContent;
-                                else
-                                    UpdateItem.Body = '';
-                                if (UpdateItem?.Title != undefined)
-                                    UpdateItem.Title = UpdateItem.Title;
-                                else
-                                    UpdateItem.Title = '';
-                                UpdateItem.AssignedToTitle = '';
-                                if (UpdateItem?.AssignedTo != undefined) {
-                                    UpdateItem.AssignedTo.map((item: any) => {
-                                        UpdateItem.AssignedToTitle += item.Title + ';';
-                                    })
-                                }
-                                UpdateItem.ComponentName = '';
-                                if (UpdateItem?.Portfolio?.Id != undefined) {
-                                    UpdateItem.ComponentName += UpdateItem?.Portfolio.Title
-                                }
-                                UpdateItem.Category = '';
-                                UpdateItem.Categories = '';
-                                if (UpdateItem?.TaskCategories != undefined) {
-                                    UpdateItem.TaskCategories.map((item: any) => {
-                                        UpdateItem.Categories += item.Title + ';';
-                                        UpdateItem.Category += item.Title + ',';
-                                    })
-                                }
-                                var pos = UpdateItem?.Category?.lastIndexOf(',');
-                                UpdateItem.Category = UpdateItem?.Category?.substring(0, pos) + UpdateItem?.Category?.substring(pos + 1);
-                                var Commentdata = [];
-                                UpdateItem.AllComments = '';
-                                if (UpdateItem?.Comments != undefined) {
-                                    Commentdata = JSON.parse(UpdateItem.Comments);
-                                    Commentdata.map((comment: any) => {
-                                        UpdateItem.AllComments += '<div colspan="6" style="padding: 9px;border: 1px solid #ccc;background: #fbfbfb;color: #000;margin-top:5px;">' +
-                                            '<span>' +
-                                            '<div style="margin-bottom:5px;">' +
-                                            comment?.AuthorName +
-                                            ' - ' +
-                                            comment?.Created +
-                                            '</div>' +
-                                            comment?.Title +
-                                            '</span>' +
-                                            '</div>'
-                                    })
-                                }
-                                UpdateItem.Description = '';
-                                if (UpdateItem?.Body != undefined && UpdateItem?.Body != '')
-                                    UpdateItem.Description = UpdateItem.Body;
-                                if (UpdateItem?.FeedBack != undefined) {
-                                    try {
-                                        var Description = JSON.parse(UpdateItem?.FeedBack);
-                                        if (Description?.length > 0) {
-                                            UpdateItem.Description = '';
-                                            Description[0]?.FeedBackDescriptions?.map((description: any, index: any) => {
-                                                var index1 = index + 1;
-                                                var Comment = '';
-                                                if (description?.Comments?.length > 0) {
-                                                    description.Comments.map((val: any) => {
-                                                        Comment += '<div colspan="6" style="padding: 9px;border: 1px solid #ccc;background: #fbfbfb;color: #000;margin-top:5px;">' +
-                                                            '<span>' +
-                                                            '<div style="margin-bottom:5px;">' +
-                                                            val?.AuthorName +
-                                                            ' - ' +
-                                                            val?.Created +
-                                                            '</div>' +
-                                                            val?.Title +
-                                                            '</span>' +
-                                                            '</div>'
-
-                                                    })
-
-                                                }
-                                                UpdateItem.Description += '<tr><td colspan="1" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;font-size: 13px;flex-basis: 27px !important;border: 1px solid #ccc;"><span>' + index1 + '</span>' +
-                                                    '</td>' +
-                                                    '<td colspan="11" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;flex-basis: 100%;background-color: #fff;font-weight: normal;font-size: 13px;color: #000;margin-left: 2px;border: 1px solid #ccc;">' +
-                                                    '<span>' +
-                                                    description?.Title +
-                                                    '</span>' +
-                                                    Comment +
-                                                    '</td>' +
-                                                    '</tr>';
-                                                if (description?.Subtext?.length > 0) {
-                                                    description.Subtext.map((Childdescription: any, Childindex: any) => {
-                                                        var Childindex1 = Childindex + 1;
-                                                        var ChildComment = '';
-                                                        if (Childdescription?.Comments?.length > 0) {
-                                                            description.Comments.map((Childval: any) => {
-                                                                ChildComment += '<div colspan="6" style="padding: 9px;border: 1px solid #ccc;background: #fbfbfb;color: #000;margin-top:5px;">' +
-                                                                    '<span>' +
-                                                                    '<div style="margin-bottom:5px;">' +
-                                                                    Childval?.AuthorName +
-                                                                    ' - ' +
-                                                                    Childval?.Created +
-                                                                    '</div>' +
-                                                                    Childval?.Title +
-                                                                    '</span>' +
-                                                                    '</div>'
-
-                                                            })
-
-                                                        }
-                                                        UpdateItem.Description += '<tr><td colspan="1" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;font-size: 13px;flex-basis: 27px !important;border: 1px solid #ccc;"><span>' + index1 + '.' + Childindex1 + '</span>' +
-                                                            '</td>' +
-                                                            '<td colspan="11" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;flex-basis: 100%;background-color: #fff;font-weight: normal;font-size: 13px;color: #000;margin-left: 2px;border: 1px solid #ccc;">' +
-                                                            '<span>' +
-                                                            Childdescription?.Title +
-                                                            '</span>' +
-                                                            ChildComment +
-                                                            '</td>' +
-                                                            '</tr>';
-                                                    });
-
-                                                }
-                                            });
-                                        }
-                                        //$scope.AdditionalTimeSpent.push(item.AdditionalTime[0]);
-                                    } catch (e) {
-                                        console.log(e)
-                                    }
-
-                                }
-                                let pageContent = await pageContext()
-                                var siteUrl = pageContent?.SiteFullUrl + '/sp';
-                                var Name = '';
-                                var OtherDetails = '';
-                                let Subject: any = '';
-                                var TaskDescriptionStart = '';
-                                var NoOfApprovalTask = '';
-                                var TaskDescription = '';
-                                var ApprovalRejectionComments = '';
-                                var TaskComments = '';
-                                var TaskDashBoardURl = '';
-                                var ApprovalDashboard = '';
-                                var TaskDashBoardTitle = '';
-                                var ApprovalDashboardTitle = '';
-                                var CC: any[] = [];
-                                if (item == undefined) {
-                                    //Subject = "[" + siteType + "-Task] " + UpdateItem.Title + "(" + UpdateItem.Category + ")";
-                                    Subject = "[" + siteType + " - " + UpdateItem?.Category + " (" + UpdateItem?.PercentComplete + "%)] " + UpdateItem?.Title + "";
-                                }
-
-                                if (Subject == undefined || Subject == '') {
-                                    if (UpdateItem?.PercentComplete != undefined && UpdateItem?.PercentComplete != '' && UpdateItem?.PercentComplete != 1 && UpdateItem?.Category != undefined && UpdateItem?.Category != '' && UpdateItem?.Category.toLowerCase('approval') > -1)
-                                        item.CategoriesType = item?.Category?.replace('Approval,', '')
-                                    Subject = "[" + siteType + " - " + UpdateItem?.Category + " (" + UpdateItem?.PercentComplete + "%)] " + UpdateItem?.Title + "";
-                                }
-                                if (UpdateItem?.PercentComplete != 1) {
-                                    Subject = Subject?.replaceAll('Approval,', '')
-                                    Subject = Subject?.replaceAll('Normal Approval,', '')
-                                    Subject = Subject?.replaceAll('Normal Approval', '')
-                                    Subject = Subject?.replaceAll('Quick Approval,', '')
-                                    Subject = Subject?.replaceAll('Quick Approval', '')
-                                    Subject = Subject?.replaceAll('Complex Approval,', '')
-                                    Subject = Subject?.replaceAll('Complex Approval', '')
-                                    Subject = Subject?.replaceAll(',,', ',')
-                                }
-                                if (UpdateItem?.PercentComplete == 1 && UpdateItem?.Category?.toLowerCase()?.indexOf('approval') > -1) {
-                                    //Subject = Subject.replaceAll('Approval,', '')
-                                    //if (Subject.indexOf('Normal Approval') <= -1 && Subject.indexOf('Quick Approval') <= -1 && Subject.indexOf('Complex Approval') <= -1)
-                                    //    Subject = Subject.replaceAll('Approval', '')
-                                    //Subject = Subject.replaceAll(',,', ',')
-                                    Subject = "[" + siteType + " - " + "Approval" + "] " + UpdateItem?.Title + "";
-                                    if (UpdateItem?.Category?.toLowerCase()?.indexOf('email notification') > -1 && UpdateItem?.Category?.toLowerCase().indexOf('immediate') > -1) {
-                                        Subject = "[" + siteType + " - " + "Approval,Email notification,Immediate" + "] " + UpdateItem?.Title + "";
-                                    }
-                                    else if (UpdateItem?.Category?.toLowerCase()?.indexOf('email notification') > -1) {
-                                        Subject = "[" + siteType + " - " + "Approval,Email notification" + "] " + UpdateItem?.Title + "";
-                                    }
-                                    else if (UpdateItem?.Category?.toLowerCase()?.indexOf('immediate') > -1) {
-                                        Subject = "[" + siteType + " - " + "Approval,Immediate" + "] " + UpdateItem?.Title + "";
-                                    }
-                                }
-                                var body =
-                                    '<div>' +
-                                    '</div>' +
-                                    '<div style="margin-top:4px">' +
-                                    TaskDescriptionStart +
-                                    '</div>' +
-                                    '<div style="margin-top:6px">' +
-                                    TaskDescription +
-                                    '</div>'
-                                    + '<div style="margin-top:10px">' +
-                                    NoOfApprovalTask +
-                                    '</div>'
-                                    + '<div style="margin-top:10px;">' +
-                                    '<a style="padding-right: 17px;" href =' + TaskDashBoardURl + '>' + TaskDashBoardTitle + '</a>' +
-                                    '<a href =' + ApprovalDashboard + '>' + ApprovalDashboardTitle + '</a>' +
-                                    '</div>'
-                                    + '<div style="margin-top:15px">' +
-                                    '<a href =' + siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + UpdateItem?.Id + '&Site=' + siteType + '>' +
-                                    UpdateItem?.Title + '</a>' +
-                                    '</div>' +
-                                    '<table style="width:100%">' +
-                                    '<tbody>' +
-                                    '<td style="width:70%;vertical-align: top;">' +
-                                    '<table style="width:99%;">' +
-                                    '<tbody>' +
-                                    '<tr>'
-                                    + '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Task Id:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-                                    UpdateItem?.TaskID + '</span></td>' +
-                                    '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Component:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-                                    UpdateItem?.ComponentName + '</span> </td>' +
-                                    '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Priority:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-                                    UpdateItem?.Priority + '</span> </td>' +
-                                    '</tr>' +
-                                    '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Start Date:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-                                    UpdateItem?.StartDate + '</span></td>' +
-                                    '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Completion Date:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-                                    UpdateItem?.CompletedDate + '</span> </td>' +
-                                    '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Due Date:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-                                    UpdateItem?.DueDate + '</span> </td>' +
-                                    '</tr>' +
-                                    '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Team Members:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-                                    UpdateItem?.AssignedToTitle + '</span></td>' +
-                                    '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Created By:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-                                    UpdateItem?.Author1 + '</span> </td>' +
-                                    '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Created:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-                                    UpdateItem?.Created + '</span> </td>' +
-                                    '</tr>' +
-                                    '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Categories:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-                                    UpdateItem?.Categories + '</span></td>' +
-                                    '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Status:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-                                    UpdateItem?.Status + '</span> </td>' +
-                                    '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">% Complete:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-                                    UpdateItem?.PercentComplete + '%</span> </td>' +
-                                    '</tr>' +
-                                    '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">URL:</b> </td><td colspan="7" style="border: 1px solid #ccc;background: #fafafa;"><span style="font-size: 13px; margin-left:13px">' +
-                                    UpdateItem?.URL + '</span> </td>' +
-                                    '</tr>' +
-                                    ApprovalRejectionComments +
-                                    '</tr> ' +
-                                    '</tr>' +
-                                    '</tr>' +
-                                    '<tr>' +
-                                    '</tbody>' +
-                                    '</table>' +
-                                    '<table style="width:99%;margin-top: 10px;">' +
-                                    '<tbody>' +
-                                    '<tr>' + UpdateItem?.Description + '</tr>' +
-                                    '</tbody>' +
-                                    '</table>' +
-                                    '</td>' +
-                                    '<td style="width:22%">' +
-                                    '<table style="border:1px solid #ddd;border-radius:4px;margin-bottom:25%;width:100%">' +
-                                    '<tbody>' +
-                                    '<tr>' +
-                                    '<td style="color:#333; background-color:#f5f5f5;border-bottom:1px solid #ddd">Comments:' + '</td>' +
-                                    '</tr>' +
-                                    '<tr>' +
-                                    '<td>' + UpdateItem?.AllComments + '</td>' +
-                                    '</tr>' +
-                                    '</tbody>' +
-                                    '</table>' +
-                                    '</td>' +
-                                    '</tr>' +
-                                    '</tbody>' +
-                                    '</table>' +
-                                    '</td>' +
-                                    '</tr>' +
-                                    '</tbody>' +
-                                    '</table>';
-                                if (CC.length > 1)
-                                    CC.splice(1, 1);
-                                //'<tr><td colspan="7" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;flex-basis: 100%;background-color: #fff;font-weight: normal;font-size: 13px;color: #000;margin-left: 2px;border: 1px solid #ccc;">' + UpdateItem.Description + '</td></tr>' +
-
-                                var from = '',
-                                    to = ToEmails,
-                                    cc = CC,
-                                    body = body,
-                                    subject = Subject,
-                                    ReplyTo = "deepak@hochhuth-consulting.de";
-                                // sendEmail(from, to, body, subject, ReplyTo, cc);
-                                SendEmailFinal(to, subject, body)
-                            }, function (error) {
-                                console.log(error);
-                            })
-                    }
-                } catch (error) {
-                    console.log(error)
-                }
-            },
-
-                function (error) { });
-    }
-    const GetImmediateTaskNotificationEmails = async (item: any, isLoadNotification: any, rootsite: any) => {
-        var isLoadNotification = isLoadNotification;
-        var CurrentItem = item;
-        var Allmail: any[] = [];
-        try {
-            if (taskUsers?.length > 0) {
-                var Allusers = taskUsers
-                if (item != undefined && isLoadNotification != undefined && isLoadNotification != '' && isLoadNotification == 'ApprovalMail') {
-                    Allusers.map((user: any) => {
-                        if (CurrentItem?.AuthorId == user?.AssingedToUserId) {
-                            if (user?.Approver?.length > 0)
-                                user.Approver.map((approver: any) => {
-                                    Allmail.push(approver?.Name?.split('|')[2]);
-                                })
-                        }
-                    })
-                } else if (item != undefined && isLoadNotification != undefined && isLoadNotification != '' && isLoadNotification == 'Immediate') {
-                    Allusers.map((user: any) => {
-                        if (user?.IsTaskNotifications == true) {
-                            if (user?.AssingedToUser?.EMail != undefined)
-                                Allmail.push(user?.AssingedToUser?.EMail);
-                        }
-                    })
-                }
-
-
-                if (Allmail == undefined || Allmail.length == 0 && isLoadNotification == 'ApprovalMail')
-                    alert("User has no Approver to send an email");
-
-
-            } else {
-
-                if (isLoadNotification == 'ApprovalMail')
-                    alert("User has no Approver to send an email");
-            }
-            return Allmail;
-        } catch (error) {
-            console.log(error)
-        }
-
-    }
     const changeTitle = (e: any) => {
         if (e.target.value.length > 56) {
             alert("Task Title is too long. Please chose a shorter name and enter the details into the task description.")
@@ -2001,7 +1564,7 @@ function CreateTaskComponent(props: any) {
                                             )
                                         }) : null}
                                         <span className="input-group-text">
-                                            <span onClick={(e) => EditPortfolio(save, 'Component')} style={{ backgroundColor: 'white' }} className="svg__iconbox svg__icon--editBox dark"></span>
+                                            <span onClick={(e) => EditPortfolio(save, 'Component')} style={{ backgroundColor: 'white' }} className="svg__iconbox svg__icon--edit"></span>
                                             {/* <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                         onClick={(e) => EditComponent(save, 'Component')} /> */}
                                         </span>

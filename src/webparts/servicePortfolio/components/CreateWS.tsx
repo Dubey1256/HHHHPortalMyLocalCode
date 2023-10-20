@@ -3,6 +3,7 @@ import DatePicker from "react-datepicker";
 import { Web } from "sp-pnp-js";
 import * as $ from 'jquery';
 import "bootstrap/dist/css/bootstrap.min.css";
+import * as globalCommon from '../../../globalComponents/globalCommon';
 import TeamConfigurationCard from '../../../globalComponents/TeamConfiguration/TeamConfiguration';
 // import ComponentPortPolioPopup from '../../EditPopupFiles/ComponentPortfolioSelection';
 // import Picker from '../../../globalComponents/EditTaskPopup/SmartMetaDataPicker';
@@ -12,6 +13,7 @@ import Tooltip from '../../../globalComponents/Tooltip';
 import { data } from 'jquery';
 import moment from 'moment';
 import React from 'react';
+import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 let AllListId: any = {};
 const itemRanks: any = [
     { rankTitle: 'Select Item Rank', rank: null },
@@ -31,6 +33,8 @@ const CreateWS = (props: any) => {
     const [selectedItem, setSelectedItem]: any = React.useState({})
     const [selectedTaskType, setSelectedTaskType] = React.useState(3)
     const [ParentArray, setParentArray] = React.useState([]);
+    const [SharewebTask, setSharewebTask] = React.useState<any>();
+    const [IsPopupComponent, setIsPopupComponent] = React.useState(false)
     const [ClientCategoriesData, setClientCategoriesData] = React.useState<any>(
         []
     );
@@ -84,12 +88,12 @@ const CreateWS = (props: any) => {
         GetParentHierarchy(props?.selectedItem)
 
     }, [])
-   //************ breadcrum start */
+    //************ breadcrum start */
     const GetParentHierarchy = async (Item: any) => {
         const parentdata: any = []
         // parentdata.push()
         // return new Promise((resolve, reject) => {
-        if (Item.Parent != null || Item?.Portfolio != undefined ) {
+        if (Item.Parent != null || Item?.Portfolio != undefined) {
 
             var filt: any = "Id eq " + (Item.Parent != null || undefined ? Item?.Parent?.Id : Item?.Portfolio?.Id) + "";
 
@@ -123,7 +127,7 @@ const CreateWS = (props: any) => {
         // })
 
     }
-     // ***** bread crum end ***********
+    // ***** bread crum end ***********
     //-------- header section of popup
     const onRenderCustomHeaderMain = () => {
         return (
@@ -282,7 +286,7 @@ const CreateWS = (props: any) => {
 
     // -------------Save  and CREATE WORKSTREAM AND TASK  -----------
 
-    const createWandT = async () => {
+    const createWandT = async (type: any) => {
         let WorstreamLatestId: any;
         let web = new Web(AllListId?.siteUrl);
         if (selectedTaskType == 3) {
@@ -416,15 +420,21 @@ const CreateWS = (props: any) => {
                             TeamMembers: inputValue?.TeamMember,
                             TeamLeader: inputValue?.ResponsibleTeam,
                             FeedBack:
-                            inputValue?.Description?.length > 0
-                                ? [FeedBackItem]
-                                : null,
-                                Item_x0020_Type:'Task',
+                                inputValue?.Description?.length > 0
+                                    ? [FeedBackItem]
+                                    : null,
+                            Item_x0020_Type: 'Task',
                             Author: {
                                 Id: props?.context?.pageContext?.legacyPageContext?.userId
+                            },
+                            ParentTask:selectedItem,
+                            TaskType: {
+                                Title: selectedTaskType == 2 ? 'Task' : 'Workstream',
+                                Id: selectedTaskType
                             }
                         }
                     }
+                    item.TaskID = globalCommon.GetTaskId(item);
                     if (item.DisplayDueDate == "Invalid date" || "") {
                         item.DisplayDueDate = item.DisplayDueDate.replaceAll(
                             "Invalid date",
@@ -432,8 +442,16 @@ const CreateWS = (props: any) => {
                         );
                     }
                     res.data = item;
+                    if (type == "createopenpopup") {
+                        setSharewebTask(res.data);
+                        setIsPopupComponent(true)
+
+                    } else {
+                        closeTaskStatusUpdatePoup(res);
+                    }
+
                 }
-                closeTaskStatusUpdatePoup(res);
+                // closeTaskStatusUpdatePoup(res);
             })
 
 
@@ -446,6 +464,25 @@ const CreateWS = (props: any) => {
     }
 
     // --------- END save  and CREATE WORKSTREAM AND TASK -----------
+
+
+
+    const removeInputFields = (index: any) => {
+        let allData = JSON.parse(JSON.stringify(inputFields));
+        allData.splice(index, 1)
+        setInputFields(allData)
+    }
+
+    //**** Callbackfunction for openeditpopup */
+    const Call = (items: any) => {
+        setIsPopupComponent(false)
+        let wsData = { data: SharewebTask }
+
+        closeTaskStatusUpdatePoup(wsData);
+
+    }
+
+    //**End Callbackfunction for openeditpopup  */
 
     return (
         <>
@@ -495,6 +532,11 @@ const CreateWS = (props: any) => {
                         {inputFields?.map((multipleWSTask: any, WTindex: any) => {
                             return (
                                 <div className="">
+                                    {WTindex != 0 && <div className="border-bottom mb-3 mt-1 clearfix">
+                                        {(inputFields.length > 1) ? <a className="d-flex justify-content-end"
+                                            onClick={() => removeInputFields(WTindex)}
+                                        ><span className='hreflink'>Clear section</span> </a> : ''}
+                                    </div>}
                                     <div className='row'>
                                         <div className="col-md-8">
                                             <input className="full-width searchbox_height" type="text"
@@ -504,11 +546,7 @@ const CreateWS = (props: any) => {
                                         </div>
 
                                     </div>
-                                    {/* <div className="border-bottom clearfix">
-                                        {(inputFields.length > 1) ? <a className="d-flex justify-content-end"
-                                        //  onClick={removeInputFields}
-                                         ><span className='hreflink'>Clear section</span> </a> : ''}
-                                    </div> */}
+
                                     <div className='row mt-2'>
                                         <div className='col-sm-4'>
                                             <div className="input-group">
@@ -563,8 +601,9 @@ const CreateWS = (props: any) => {
                                                         <li className="form-check l-radio">
                                                             <input
                                                                 className="form-check-input"
-                                                                name="radioPriority"
+                                                                name={`radioPriority${WTindex}`}
                                                                 type="radio"
+                                                                id={WTindex}
                                                                 checked={
                                                                     Number(multipleWSTask?.Priority) <= 10 &&
                                                                     Number(multipleWSTask?.Priority) >= 8
@@ -608,16 +647,14 @@ const CreateWS = (props: any) => {
                                             <label className="full_width" ng-bind-html="GetColumnDetails('dueDate') | trustedHTML">Due Date</label>
                                             <input className="full-width searchbox_height"
                                                 type="date"
-                                                // value={myDate != null ? Moment(new Date(myDate)).format('YYYY-MM-DD') : ''}
-                                                // onChange={(e) => setMyDate(`${e.target.value}`)}
-                                                // dateFormat="dd/MM/yyyy"
+
                                                 value={multipleWSTask.DueDate != null ? Moment(new Date(multipleWSTask.DueDate)).format('YYYY-MM-DD') : ""}
                                                 onChange={(e: any) => handleDuedateChange(e.target.value, WTindex)} />
                                             {myDate.editDate != null && <div className="input-close"><span className="svg__iconbox svg__icon--cross" onClick={() => setMyDate({ ...myDate, editDate: null, selectDateName: "" })}></span></div>}
                                             <dl className={refreshData ? 'mt-1' : "mt-1"}>
                                                 <dt className="">
                                                     <label className='SpfxCheckRadio'>
-                                                        <input className="radio" name="radioPriority2"
+                                                        <input className="radio" name={`radioPriority2${WTindex}`} id={WTindex}
                                                             type="radio" value="(3) Low" checked={multipleWSTask.selectDateName == 'Today'} onClick={(e: any) => handleDuedateChange('Today', WTindex)} />Today
                                                     </label>
                                                 </dt>
@@ -672,17 +709,13 @@ const CreateWS = (props: any) => {
                     <span title="Edit" className="alignIcon svg__icon--Plus svg__iconbox"></span> Add More Child Items
                 </a>
                 <div className="modal-footer pt-1">
-
-
-                    {
-                        (inputFields?.length === undefined || inputFields?.length === 0)
-                        && <button type="button" className="btn btn-primary me-1"
-                        //   onClick={() => createWorkStream('CreatePopup')}
-                        >
-                            Create & OpenPopup
-                        </button>}
+                    <button type="button" className="btn btn-primary me-1"
+                        disabled={inputFields?.length > 1 ? true : false} onClick={() => createWandT("createopenpopup")}
+                    >
+                        Create & OpenPopup
+                    </button>
                     <button type="button" className="btn btn-primary"
-                        onClick={() => createWandT()}
+                        onClick={() => createWandT("create")}
                     >
                         Create
                     </button>
@@ -700,17 +733,17 @@ const CreateWS = (props: any) => {
              AllListId={dynamicList} 
              Call={Call}
              >
-             </Picker>}
+             </Picker>} */}
             {
-            IsPopupComponent
-             && <EditTaskPopup
-             Items={SharewebTask} 
-             AllListId={dynamicList}
-             pageName ={"TaskFooterTable"}
-             context={props?.context} 
-             Call={Call}
-             >
-            </EditTaskPopup>} */}
+                IsPopupComponent
+                && <EditTaskPopup
+                    Items={SharewebTask}
+                    AllListId={AllListId}
+                    pageName={"TaskFooterTable"}
+                    context={props?.context}
+                    Call={Call}
+                >
+                </EditTaskPopup>}
         </>
     )
 

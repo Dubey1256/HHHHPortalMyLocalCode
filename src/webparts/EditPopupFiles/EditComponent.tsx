@@ -113,7 +113,6 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
   const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
   const [imagetab, setImagetab] = React.useState(false);
   const [instantCategories, setInstantCategories] = React.useState([])
-
   function imageta() {
     setImagetab(true);
   }
@@ -2409,21 +2408,53 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
 
 
 
+  // const selectSubTaskCategory = (title: any, Id: any, item: any) => {
+  //   setCategoriesData((prevCategoriesData) => {
+  //     let itemIndex = -1;
   
-  const selectSubTaskCategory = (title: any, Id: any, item: any) => {
-    let mycategorydata:any=[];
-    if(item.ActiveTile){
-      item.ActiveTile = false;
-      mycategorydata =  CategoriesData.filter((item,index)=> (item.Id !== Id));
-      setCategoriesData(prev=>mycategorydata);
-    }else{
-      mycategorydata =  CategoriesData;
-      mycategorydata.push(item);
-      setCategoriesData(prev=>mycategorydata);
-    }
-      // = !item.ActiveTile;
-
-}
+  //     for (let i = 0; i < prevCategoriesData.length; i++) {
+  //       if (prevCategoriesData[i].Id === Id) {
+  //         itemIndex = i;
+  //         break;
+  //       }
+  //     }
+  
+  //     const updatedCategoriesData = [...prevCategoriesData];
+  
+  //     if (itemIndex !== -1) {
+  //       updatedCategoriesData[itemIndex].ActiveTile = !updatedCategoriesData[itemIndex].ActiveTile;
+  //     } else {
+  //       item.ActiveTile = true;
+  //       updatedCategoriesData.push(item);
+  //     }
+  
+  //     return updatedCategoriesData;
+  //   });
+  // };
+  
+  const toggleCategorySelection = function (item:any) {
+    setCategoriesData(function (prevCategoriesData) {
+      var itemIndex = -1;
+  
+      for (var i = 0; i < prevCategoriesData.length; i++) {
+        if (prevCategoriesData[i].Id === item.Id) {
+          itemIndex = i;
+          break;
+        }
+      }
+  
+      if (itemIndex !== -1) {
+        // Category is already selected, so remove it.
+        var updatedCategoriesData = prevCategoriesData.slice(); // Create a shallow copy.
+        updatedCategoriesData.splice(itemIndex, 1);
+        return updatedCategoriesData;
+      } else {
+        // Category is not selected, so add it.
+        return prevCategoriesData.concat([item]);
+      }
+    });
+  };
+  
     return (
     <>
       {console.log("All Done")}
@@ -3244,22 +3275,23 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
 
                                     </div>
                                     {
-                                        instantCategories?.map((item: any) => {
-                                            return (
-                                                <div className="form-check">
-                                                    <input
-                                                        className="form-check-input rounded-0"
-                                                        type="checkbox"
-                                                        checked={CategoriesData?.some((selectedCat: any) => selectedCat?.Id == item?.Id)}
-                                                        onClick={() =>
-                                                            selectSubTaskCategory(item?.Title, item?.Id, item)
-                                                        }
-                                                    />
-                                                    <label>{item?.Title}</label>
-                                                </div>
-                                            )
+                                        instantCategories?.map((item: any, index: any) => {
+                                          const isChecked = CategoriesData?.some((selectedCat: any) => selectedCat?.Id === item?.Id);
+
+                                          return (
+                                            <div key={index} className="form-check">
+                                              <input
+                                                className="form-check-input rounded-0"
+                                                type="checkbox"
+                                                checked={isChecked}
+                                                onChange={() => toggleCategorySelection(item)}
+                                              />
+                                              <label>{item?.Title}</label>
+                                            </div>
+                                          );
                                         })
-                                    }
+                                      }
+
                                     {SearchedCategoryData?.length > 0 ? (
                                         <div className="SmartTableOnTaskPopup">
                                             <ul className="list-group">

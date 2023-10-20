@@ -22,14 +22,14 @@ const EditSiteComposition = (Props: any) => {
         getAllSitesData();
         if (EditData.ClientCategory?.length > 0) {
             EditData.ClientCategory?.map((itemData: any) => {
-                if (itemData.siteName?.length > 2) {   
+                if (itemData.siteName?.length > 2) {
                 } else {
                     itemData.siteName = itemData.SiteName;
                 }
                 selectedClientCategory.push(itemData);
             })
         }
-       
+
     }, [])
 
     //  ******************  This is All Site Details Get Data Call From Backend **************
@@ -145,9 +145,9 @@ const EditSiteComposition = (Props: any) => {
         return (
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"} >
                 <div className="subheading siteColor">
-                        Edit Site Composition
+                    Edit Site Composition
                 </div>
-                <Tooltip ComponentId="1626" />
+                <Tooltip ComponentId="1268" />
             </div>
         )
     }

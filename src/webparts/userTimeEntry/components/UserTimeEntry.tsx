@@ -20,6 +20,7 @@ import * as globalCommon from "../../../globalComponents/globalCommon";
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import Tooltip from '../../../globalComponents/Tooltip';
 import PreSetDatePikerPannel from "../../../globalComponents/SmartFilterGolobalBomponents/PreSetDatePiker"
+import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 var AllListId: any;
 var AllPortfolios: any[] = [];
 var AllPortfolioType = [{ 'Title': 'Component', 'Selected': true, }, { 'Title': 'Service', 'Selected': true, }];
@@ -58,6 +59,8 @@ export interface IUserTimeEntryState {
   IsCheckedComponent: boolean;
   IsCheckedService: boolean;
   selectedRadio: any,
+  IsTimeEntry: boolean,
+  SharewebTimeComponent: any,
 }
 var user: any = ''
 var userIdByQuery: any = ''
@@ -102,9 +105,14 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       IsCheckedComponent: true,
       IsCheckedService: true,
       selectedRadio: 'ThisWeek',
+      IsTimeEntry: false,
+      SharewebTimeComponent: {}
     }
     this.OpenPresetDatePopup = this.OpenPresetDatePopup.bind(this);
     this.SelectedPortfolioItem = this.SelectedPortfolioItem.bind(this);
+    this.EditDataTimeEntryData = this.EditDataTimeEntryData.bind(this);
+    this.TimeEntryCallBack = this.TimeEntryCallBack.bind(this);
+
     this.GetResult();
   }
   private SelectedProp = this.props;
@@ -1758,6 +1766,22 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       AllTimeEntry
     })
   }
+  private EditDataTimeEntryData = (e: any, item: any) => {
+    item.Id = item?.TaskItemID;
+    item.ID = item?.TaskItemID
+    item.Title = item?.TaskTitle
+    this.setState({
+      IsTimeEntry: true
+    })
+    this.setState({
+      SharewebTimeComponent: item
+    })
+  };
+  private TimeEntryCallBack() {
+    this.setState({
+      IsTimeEntry: false
+    })
+  }
   private EditComponentPopup = (item: any) => {
     item["siteUrl"] = this.props?.Context?.pageContext?.web?.absoluteUrl;
     item["listName"] = "Master Tasks";
@@ -1879,7 +1903,23 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         placeholder: "Time",
         header: "",
         size: 90,
-      }, {
+      },
+      {
+        cell: (info: any) => (
+          <>
+            <a className="alignCenter" onClick={(e) => this.EditDataTimeEntryData(e, info?.row?.original)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet">
+              <span className="svg__iconbox svg__icon--clock dark" data-bs-toggle="tooltip" data-bs-placement="bottom"></span>
+            </a></>
+        ),
+        id: 'AllEntry',
+        accessorKey: "",
+        canSort: false,
+        resetSorting: false,
+        resetColumnFilters: false,
+        placeholder: "",
+        size: 55
+      },
+      {
         cell: (info: any) => (
           <span
             title="Edit Task"
@@ -1913,7 +1953,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         style={{
           position: "absolute",
           top: "50%",
-          right: "0px",
+          right: "5px",
           transform: "translateY(-50%)",
           cursor: "pointer"
         }}
@@ -2020,258 +2060,265 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     } = this.props;
     return (
       <div id="TimeSheet-Section">
-        <div className="p-0  " style={{ verticalAlign: "top" }}><h2 className="heading d-flex justify-content-between align-items-center"><span> <a>Timesheet</a> </span><span className="text-end fs-6"><a target="_blank" data-interception="off" href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/UserTimeEntry-Old.aspx`}>Old UserTimeEntry</a></span></h2></div>
+        <div className="p-0  " style={{ verticalAlign: "top" }}><h2 className="heading d-flex justify-content-between align-items-center"><span> <a>Timesheet Management</a> </span><span className="text-end fs-6"><a target="_blank" data-interception="off" href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/UserTimeEntry-Old.aspx`}>Old UserTimeEntry</a></span></h2></div>
         <Col className='smartFilter bg-light border mb-3 '>
-          <details className='p-0 m-0' open>
-            <summary className='hyperlink'><a className="hreflink pull-left mr-5 pe-2 ">All Filters - <span className='me-1'>Task User :</span> </a>
+          <details className='p-0 m-0 allfilter' open>
+            <summary className='hyperlink'><a className="fw-semibold hreflink mr-5 pe-2 pull-left ">All Filters - <span className='me-1 fw-normal'>Task User :</span> </a>
               {this.state.ImageSelectedUsers != null && this.state.ImageSelectedUsers.length > 0 && this.state.ImageSelectedUsers.map((user: any, i: number) => {
                 return <span>
                   <img className="AssignUserPhoto mr-5" title={user.AssingedToUser.Title} src={user?.Item_x0020_Cover?.Url} />
                 </span>
               })
               }
+              {/* <span className="pull-right"><a href="#">Add Smart Favorite</a></span> */}
             </summary>
-            <Col>
-              <details open className='p-0'>
-                <span className="pull-right" style={{ display: 'none' }}>
-                  <input type="checkbox" className="" onClick={(e) => this.SelectAllGroupMember(e)} />
-                  <label>Select All </label>
-                </span>
-                <summary className='hyperlink'>
-                  Team members
-                  <hr></hr>
-                </summary>
-                <div style={{ display: "block" }}>
-                  <div className="taskTeamBox ps-40 ">
-                    {this.state.taskUsers != null && this.state.taskUsers.length > 0 && this.state.taskUsers.map((users: any, i: number) => {
-                      return users?.childs?.length > 0 && <div className="top-assign">
-                        <div className="team ">
-                          <label className="BdrBtm">
-                            <input style={{ display: 'none' }} className="" type="checkbox" onClick={(e) => this.SelectedGroup(e, users)} />
-                            {users.childs.length > 0 &&
-                              <>
-                                {users.Title}
-                              </>
-                            }
-                          </label>
-                          <div className='d-flex'>
-                            {users.childs.length > 0 && users.childs.map((item: any, i: number) => {
-                              return item.AssingedToUser != undefined && <div className="alignCenter">
-                                {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined ?
-                                  <span>
-                                    <img id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg seclected-Image ProirityAssignedUserPhoto' : 'ProirityAssignedUserPhoto'} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
-                                      title={item.AssingedToUser.Title}
-                                      src={item.Item_x0020_Cover.Url} />
-                                  </span> :
-                                  <span className={item?.AssingedToUserId == user?.Id ? 'activeimg seclected-Image suffix_Usericon' : 'suffix_Usericon'} title={item.Title} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
-                                  >{item?.Suffix}</span>
-                                }
-                              </div>
-                            })}
+            <Col className='allfilter'>
+              <Col className='subfilters'>
+                <details open className='p-0 m-0'>
+                  <span className="pull-right" style={{ display: 'none' }}>
+                    <input type="checkbox" className="" onClick={(e) => this.SelectAllGroupMember(e)} />
+                    <label>Select All </label>
+                  </span>
+                  <summary className='hyperlink'>
+                    Team members
+                    <hr></hr>
+                  </summary>
+                  <div style={{ display: "block" }}>
+                    <div className="taskTeamBox ps-30 ">
+                      {this.state.taskUsers != null && this.state.taskUsers.length > 0 && this.state.taskUsers.map((users: any, i: number) => {
+                        return users?.childs?.length > 0 && <div className="top-assign">
+                          <div className="team ">
+                            <label className="BdrBtm">
+                              <input style={{ display: 'none' }} className="" type="checkbox" onClick={(e) => this.SelectedGroup(e, users)} />
+                              {users.childs.length > 0 &&
+                                <>
+                                  {users.Title}
+                                </>
+                              }
+                            </label>
+                            <div className='d-flex'>
+                              {users.childs.length > 0 && users.childs.map((item: any, i: number) => {
+                                return item.AssingedToUser != undefined && <div className="alignCenter">
+                                  {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined ?
+                                    <span>
+                                      <img id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg seclected-Image ProirityAssignedUserPhoto' : 'ProirityAssignedUserPhoto'} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
+                                        title={item.AssingedToUser.Title}
+                                        src={item.Item_x0020_Cover.Url} />
+                                    </span> :
+                                    <span className={item?.AssingedToUserId == user?.Id ? 'activeimg seclected-Image suffix_Usericon' : 'suffix_Usericon'} title={item.Title} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
+                                    >{item?.Suffix}</span>
+                                  }
+                                </div>
+                              })}
+                            </div>
                           </div>
                         </div>
+                      })
+                      }
+                    </div>
+
+                  </div>
+                </details>
+                <details className='m-0' open>
+                  <summary className='hyperlink'>
+                    Date
+                    <hr></hr>
+                  </summary>
+                  <Row className="ps-30">
+                    <div>
+                      <div className="col TimeReportDays">
+                        <span className='SpfxCheckRadio me-2'>
+                          <input type="radio" className="radio" name="dateSelection" id="rdCustom" value="Custom" checked={this.state.selectedRadio === "Custom" || (this.state.startdate !== null && this.state.enddate !== null && !this.state.selectedRadio)} onClick={() => this.selectDate('Custom')} />
+                          <label>Custom</label>
+                        </span>
+                        <span className='SpfxCheckRadio me-2'>
+                          <input type="radio" name="dateSelection" value="today" id="rdToday" checked={this.state.selectedRadio === "today"} onClick={() => this.selectDate('today')} className="radio" />
+                          <label>Today</label>
+                        </span>
+                        <span className='SpfxCheckRadio me-2'>
+                          <input type="radio" name="dateSelection" value="yesterday" id="rdYesterday" checked={this.state.selectedRadio === "yesterday"} onClick={() => this.selectDate('yesterday')} className="radio" />
+                          <label> Yesterday </label>
+                        </span>
+                        <span className='SpfxCheckRadio me-2'>
+                          <input type="radio" name="dateSelection" defaultChecked={true} id="rdThisWeek" value="ThisWeek" checked={this.state.selectedRadio === "ThisWeek"} onClick={() => this.selectDate('ThisWeek')} className="radio" />
+                          <label> This Week</label>
+                        </span>
+                        <span className='SpfxCheckRadio me-2'>
+                          <input type="radio" name="dateSelection" value="LastWeek" id="rdLastWeek" checked={this.state.selectedRadio === "LastWeek"} onClick={() => this.selectDate('LastWeek')} className="radio" />
+                          <label> Last Week</label>
+                        </span>
+                        <span className='SpfxCheckRadio me-2'>
+                          <input type="radio" name="dateSelection" id="rdThisMonth" value="EntrieMonth" checked={this.state.selectedRadio === "EntrieMonth"} onClick={() => this.selectDate('EntrieMonth')} className="radio" />
+                          <label>This Month</label>
+                        </span>
+                        <span className='SpfxCheckRadio me-2'>
+                          <input type="radio" name="dateSelection" id="rdLastMonth" value="LastMonth" checked={this.state.selectedRadio === "LastMonth"} onClick={() => this.selectDate('LastMonth')} className="radio" />
+                          <label>Last Month</label>
+                        </span>
+                        <span className='SpfxCheckRadio me-2'>
+                          <input type="radio" name="dateSelection" value="Last3Month" checked={this.state.selectedRadio === "Last3Month"} onClick={() => this.selectDate('Last3Month')} className="radio" />
+                          <label>Last 3 Months</label>
+                        </span>
+                        <span className='SpfxCheckRadio me-2'>
+                          <input type="radio" name="dateSelection" value="EntrieYear" checked={this.state.selectedRadio === "rdEntrieYear"} onClick={() => this.selectDate('EntrieYear')} className="radio" />
+                          <label>This Year</label>
+                        </span>
+                        <span className='SpfxCheckRadio me-2'>
+                          <input type="radio" name="dateSelection" value="LastYear" checked={this.state.selectedRadio === "LastYear"} onClick={() => this.selectDate('LastYear')} className="radio" />
+                          <label>Last Year</label>
+                        </span>
+                        <span className='SpfxCheckRadio me-2'>
+                          <input type="radio" name="dateSelection" value="AllTime" checked={this.state.selectedRadio === "AllTime"} onClick={() => this.selectDate('AllTime')} className="radio" />
+                          <label>All Time</label>
+                        </span>
+                        <span className='SpfxCheckRadio me-2'>
+                          <input type="radio" name="dateSelection" value="Presettime" checked={this.state.selectedRadio === "Presettime"} onClick={() => this.selectDate('Presettime')} className="radio" />
+                          <label>Pre-set</label>
+                          <span className="svg__iconbox svg__icon--editBox alignIcon hreflink" onClick={() => this.OpenPresetDatePopup()}></span>
+                        </span>
+
                       </div>
-                    })
-                    }
-                  </div>
-
-                </div>
-              </details>
-              <details open>
-                <summary className='hyperlink'>
-                  Date
-                  <hr></hr>
-                </summary>
-                <Row className="ps-30">
-                  <div>
-                    <div className="col TimeReportDays">
-                      <span className='SpfxCheckRadio me-2'>
-                        <input type="radio" className="radio" name="dateSelection" id="rdCustom" value="Custom" checked={this.state.selectedRadio === "Custom" || (this.state.startdate !== null && this.state.enddate !== null && !this.state.selectedRadio)} onClick={() => this.selectDate('Custom')} />
-                        <label>Custom</label>
-                      </span>
-                      <span className='SpfxCheckRadio me-2'>
-                        <input type="radio" name="dateSelection" value="today" id="rdToday" checked={this.state.selectedRadio === "today"} onClick={() => this.selectDate('today')} className="radio" />
-                        <label>Today</label>
-                      </span>
-                      <span className='SpfxCheckRadio me-2'>
-                        <input type="radio" name="dateSelection" value="yesterday" id="rdYesterday" checked={this.state.selectedRadio === "yesterday"} onClick={() => this.selectDate('yesterday')} className="radio" />
-                        <label> Yesterday </label>
-                      </span>
-                      <span className='SpfxCheckRadio me-2'>
-                        <input type="radio" name="dateSelection" defaultChecked={true} id="rdThisWeek" value="ThisWeek" checked={this.state.selectedRadio === "ThisWeek"} onClick={() => this.selectDate('ThisWeek')} className="radio" />
-                        <label> This Week</label>
-                      </span>
-                      <span className='SpfxCheckRadio me-2'>
-                        <input type="radio" name="dateSelection" value="LastWeek" id="rdLastWeek" checked={this.state.selectedRadio === "LastWeek"} onClick={() => this.selectDate('LastWeek')} className="radio" />
-                        <label> Last Week</label>
-                      </span>
-                      <span className='SpfxCheckRadio me-2'>
-                        <input type="radio" name="dateSelection" id="rdThisMonth" value="EntrieMonth" checked={this.state.selectedRadio === "EntrieMonth"} onClick={() => this.selectDate('EntrieMonth')} className="radio" />
-                        <label>This Month</label>
-                      </span>
-                      <span className='SpfxCheckRadio me-2'>
-                        <input type="radio" name="dateSelection" id="rdLastMonth" value="LastMonth" checked={this.state.selectedRadio === "LastMonth"} onClick={() => this.selectDate('LastMonth')} className="radio" />
-                        <label>Last Month</label>
-                      </span>
-                      <span className='SpfxCheckRadio me-2'>
-                        <input type="radio" name="dateSelection" value="Last3Month" checked={this.state.selectedRadio === "Last3Month"} onClick={() => this.selectDate('Last3Month')} className="radio" />
-                        <label>Last 3 Months</label>
-                      </span>
-                      <span className='SpfxCheckRadio me-2'>
-                        <input type="radio" name="dateSelection" value="EntrieYear" checked={this.state.selectedRadio === "rdEntrieYear"} onClick={() => this.selectDate('EntrieYear')} className="radio" />
-                        <label>This Year</label>
-                      </span>
-                      <span className='SpfxCheckRadio me-2'>
-                        <input type="radio" name="dateSelection" value="LastYear" checked={this.state.selectedRadio === "LastYear"} onClick={() => this.selectDate('LastYear')} className="radio" />
-                        <label>Last Year</label>
-                      </span>
-                      <span className='SpfxCheckRadio me-2'>
-                        <input type="radio" name="dateSelection" value="AllTime" checked={this.state.selectedRadio === "AllTime"} onClick={() => this.selectDate('AllTime')} className="radio" />
-                        <label>All Time</label>
-                      </span>
-                      <span className='SpfxCheckRadio me-2'>
-                        <input type="radio" name="dateSelection" value="Presettime" checked={this.state.selectedRadio === "Presettime"} onClick={() => this.selectDate('Presettime')} className="radio" />
-                        <label>Pre-set</label>
-                        <span className="svg__iconbox svg__icon--editBox alignIcon hreflink" onClick={() => this.OpenPresetDatePopup()}></span>
-                      </span>
-
                     </div>
-                  </div>
 
-                </Row>
-                <Row className='ps-30 mt-2'>
-                  <div className="col">
-                    <label>Start Date</label>
-                    <span>
-                      <DatePicker selected={this.state.startdate} onChange={(date: any) => this.setStartDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
-                        className="form-control date-picker" popperPlacement="bottom-start" customInput={<this.ExampleCustomInput />}
-                      />
-                    </span>
-                  </div>
-                  <div className="col">
-                    <label>End Date</label>
-                    <span>
-                      <DatePicker selected={this.state.enddate} onChange={(date: any) => this.setEndDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
-                        className="form-control date-picker" popperPlacement="bottom-start" customInput={<this.ExampleCustomInput />}
-                      />
-                    </span>
-                  </div>
-                  <div className='col'>
-                    <div className='mt-1'>
-                      <label className='full_width'>Portfolio Item</label>
-                      <label> <input type="checkbox" checked={this.state?.IsCheckedComponent} className="form-check-input" onClick={(e) => this.SelectedPortfolioItem(e, 'Component')} /> Component</label>
-                      <label><input type="checkbox" checked={this.state?.IsCheckedService} className="form-check-input ml-12" onClick={(e) => this.SelectedPortfolioItem(e, 'Service')} /> Service</label>
+                  </Row>
+                  <Row className='ps-30 mt-2'>
+                    <div className="col-2">
+                      <div className='input-group'>
+                        <label className='full-width'>Start Date</label>
+                        <span>
+                          <DatePicker selected={this.state.startdate} onChange={(date: any) => this.setStartDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
+                            className="form-control date-picker" popperPlacement="bottom-start" customInput={<this.ExampleCustomInput />}
+                          />
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </Row>
-              </details>
-              <div id="showFilterBox" className="col mb-2 p-0 ">
-                <div className="togglebox">
-                  <details open>
-                    <summary className='hyperlink'>
-                      SmartSearch – Filters
-                      <hr></hr>
-                      <span>
-                        {this.state.checkedAll && this.state.filterItems != null && this.state.filterItems.length > 0 &&
-                          this.state.filterItems.map((obj: any) => {
-                            return <span> {obj.Title}
-                              <span>
-                                : ({this.getAllSubChildenCount(obj)})
+                    <div className="col-2">
+                      <div className='input-group'>
+                        <label className='full-width'>End Date</label>
+                        <span>
+                          <DatePicker selected={this.state.enddate} onChange={(date: any) => this.setEndDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
+                            className="form-control date-picker" popperPlacement="bottom-start" customInput={<this.ExampleCustomInput />}
+                          />
+                        </span>
+                      </div>
+                    </div>
+                    <div className='col'>
+                      <div className='mt-1'>
+                        <label className='full_width'>Portfolio Item</label>
+                        <label> <input type="checkbox" checked={this.state?.IsCheckedComponent} className="form-check-input" onClick={(e) => this.SelectedPortfolioItem(e, 'Component')} /> Component</label>
+                        <label><input type="checkbox" checked={this.state?.IsCheckedService} className="form-check-input ml-12" onClick={(e) => this.SelectedPortfolioItem(e, 'Service')} /> Service</label>
+                      </div>
+                    </div>
+                  </Row>
+                </details>
+                <div id="showFilterBox" className="col mb-2 p-0 ">
+                  <div className="togglebox">
+                    <details open>
+                      <summary className='hyperlink'>
+                        SmartSearch – Filters
+                        <hr></hr>
+                        <span>
+                          {this.state.checkedAll && this.state.filterItems != null && this.state.filterItems.length > 0 &&
+                            this.state.filterItems.map((obj: any) => {
+                              return <span> {obj.Title}
+                                <span>
+                                  : ({this.getAllSubChildenCount(obj)})
+                                </span>
                               </span>
-                            </span>
-                          })
-                        }
-                        {this.state.checkedAllSites && this.state.filterSites != null && this.state.filterSites.length > 0 &&
-                          this.state.filterSites.map((obj: any) => {
-                            return <span> {obj.Title}
-                              <span>
-                                : ({this.getAllSubChildenCount(obj)})
+                            })
+                          }
+                          {this.state.checkedAllSites && this.state.filterSites != null && this.state.filterSites.length > 0 &&
+                            this.state.filterSites.map((obj: any) => {
+                              return <span> {obj.Title}
+                                <span>
+                                  : ({this.getAllSubChildenCount(obj)})
+                                </span>
                               </span>
-                            </span>
-                          })
-                        }
-                        {this.state.checkedParentNode != null && !this.state.checkedAll && this.state.checkedParentNode.length > 0 &&
-                          this.state.checkedParentNode.map((obj: any) => {
-                            return <span> {obj.Title}
-                              <span>
-                                : ({this.getAllSubChildenCount(obj)})
+                            })
+                          }
+                          {this.state.checkedParentNode != null && !this.state.checkedAll && this.state.checkedParentNode.length > 0 &&
+                            this.state.checkedParentNode.map((obj: any) => {
+                              return <span> {obj.Title}
+                                <span>
+                                  : ({this.getAllSubChildenCount(obj)})
+                                </span>
                               </span>
-                            </span>
-                          })
-                        }
-                      </span>
-                    </summary>
-                    <div className="togglecontent ps-30" style={{ display: "block" }}>
-                      <div className="smartSearch-Filter-Section">
-                        <table width="100%" className="indicator_search">
-                          <Loader loaded={this.state.loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1} color={portfolioColor ? portfolioColor : "#000066"}
-                            speed={2} trail={60} shadow={false} hwaccel={false} className="spinner" zIndex={2e9} top="28%" left="50%" scale={1.0} loadedClassName="loadedContent" />
-                          <tbody>
-                            <tr>
-                              <td valign="top">
-                                <div>
-                                  <label className='border-bottom full-width pb-1'>
-                                    <input id='chkAllCategory' defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} type="checkbox" className="form-check-input me-1" />
-                                    Client Category
-                                  </label>
-                                  <div className="custom-checkbox-tree">
-                                    <CheckboxTree
-                                      nodes={this.state.filterItems}
-                                      checked={this.state.checked}
-                                      expanded={this.state.expanded}
-                                      onCheck={checked => this.setState({ checked })}
-                                      onExpand={expanded => this.setState({ expanded })}
-                                      nativeCheckboxes={true}
-                                      showNodeIcon={false}
-                                      checkModel={'all'}
-                                      icons={{ expandOpen: <SlArrowDown />, expandClose: <SlArrowRight />, parentClose: null, parentOpen: null, leaf: null, }}
-                                    />
+                            })
+                          }
+                        </span>
+                      </summary>
+                      <div className="togglecontent ps-30" style={{ display: "block" }}>
+                        <div className="smartSearch-Filter-Section">
+                          <table width="100%" className="indicator_search">
+                            <Loader loaded={this.state.loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1} color={portfolioColor ? portfolioColor : "#000066"}
+                              speed={2} trail={60} shadow={false} hwaccel={false} className="spinner" zIndex={2e9} top="28%" left="50%" scale={1.0} loadedClassName="loadedContent" />
+                            <tbody>
+                              <tr>
+                                <td valign="top">
+                                  <div>
+                                    <label className='border-bottom full-width pb-1'>
+                                      <input id='chkAllCategory' defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} type="checkbox" className="form-check-input me-1" />
+                                      Client Category
+                                    </label>
+                                    <div className="custom-checkbox-tree">
+                                      <CheckboxTree
+                                        nodes={this.state.filterItems}
+                                        checked={this.state.checked}
+                                        expanded={this.state.expanded}
+                                        onCheck={checked => this.setState({ checked })}
+                                        onExpand={expanded => this.setState({ expanded })}
+                                        nativeCheckboxes={true}
+                                        showNodeIcon={false}
+                                        checkModel={'all'}
+                                        icons={{ expandOpen: <SlArrowDown />, expandClose: <SlArrowRight />, parentClose: null, parentOpen: null, leaf: null, }}
+                                      />
+                                    </div>
                                   </div>
-                                </div>
-                              </td>
-                              <td valign="top">
-                                <div>
-                                  <label className='border-bottom full-width pb-1'>
-                                    <input type="checkbox" id='chkAllSites' defaultChecked={this.state.checkedAllSites} onClick={(e) => this.SelectAllSits(e)} className="form-check-input me-1" />
-                                    Sites
-                                  </label>
-                                  <div className="custom-checkbox-tree">
-                                    <CheckboxTree
-                                      nodes={this.state.filterSites}
-                                      checked={this.state.checkedSites}
-                                      expanded={this.state.expandedSites}
-                                      onCheck={checkedSites => this.setState({ checkedSites })}
-                                      onExpand={expandedSites => this.setState({ expandedSites })}
-                                      nativeCheckboxes={true}
-                                      showNodeIcon={false}
-                                      checkModel={'all'}
-                                      icons={{
-                                        expandOpen: <SlArrowDown />,
-                                        expandClose: <SlArrowRight />,
-                                        parentClose: null,
-                                        parentOpen: null,
-                                        leaf: null,
-                                      }}
-                                    />
+                                </td>
+                                <td valign="top">
+                                  <div>
+                                    <label className='border-bottom full-width pb-1'>
+                                      <input type="checkbox" id='chkAllSites' defaultChecked={this.state.checkedAllSites} onClick={(e) => this.SelectAllSits(e)} className="form-check-input me-1" />
+                                      Sites
+                                    </label>
+                                    <div className="custom-checkbox-tree">
+                                      <CheckboxTree
+                                        nodes={this.state.filterSites}
+                                        checked={this.state.checkedSites}
+                                        expanded={this.state.expandedSites}
+                                        onCheck={checkedSites => this.setState({ checkedSites })}
+                                        onExpand={expandedSites => this.setState({ expandedSites })}
+                                        nativeCheckboxes={true}
+                                        showNodeIcon={false}
+                                        checkModel={'all'}
+                                        icons={{
+                                          expandOpen: <SlArrowDown />,
+                                          expandClose: <SlArrowRight />,
+                                          parentClose: null,
+                                          parentOpen: null,
+                                          leaf: null,
+                                        }}
+                                      />
+                                    </div>
                                   </div>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                        <div className="col text-end mb-2 ">
+                          <button type="button" className="btnCol btn btn-primary me-1" onClick={(e) => this.updatefilter(true)}>
+                            Update Filters
+                          </button>
+                          <button type="button" className="btn btn-default me-1" onClick={() => this.ClearFilters()}>
+                            Clear Filters
+                          </button>
+                        </div>
                       </div>
-                      <div className="col text-end mb-2 ">
-                        <button type="button" className="btnCol btn btn-primary me-1" onClick={(e) => this.updatefilter(true)}>
-                          Update Filters
-                        </button>
-                        <button type="button" className="btn btn-default me-1" onClick={() => this.ClearFilters()}>
-                          Clear Filters
-                        </button>
-                      </div>
-                    </div>
-                  </details>
+                    </details>
+                  </div>
                 </div>
-              </div>
+              </Col>
             </Col>
           </details>
         </Col>
@@ -2310,7 +2357,15 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           this.state.IsPresetPopup &&
           (<PreSetDatePikerPannel isOpen={this.state.IsPresetPopup} PreSetPikerCallBack={this.PreSetPikerCallBack} portfolioColor={portfolioColor} ></PreSetDatePikerPannel>)
         }
-      </div >
+        {this.state.IsTimeEntry && (
+          <TimeEntryPopup
+            props={this.state.SharewebTimeComponent}
+            CallBackTimeEntry={this.TimeEntryCallBack}
+            Context={this?.props?.Context}
+          ></TimeEntryPopup>
+        )}
+
+      </div>
     );
   }
 }

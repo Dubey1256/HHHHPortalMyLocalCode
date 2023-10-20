@@ -69,14 +69,14 @@ const CreateActivity = (props: any) => {
         if (props?.selectedItem?.AssignedTo?.length > 0) {
             setTaskAssignedTo(props?.selectedItem?.AssignedTo)
         }
-        if (props?.selectedItem?.ResponsibleTeam?.length > 0 ) {
+        if (props?.selectedItem?.ResponsibleTeam?.length > 0) {
             setTaskResponsibleTeam(props?.selectedItem?.ResponsibleTeam)
-        }else if(props?.selectedItem?.TeamLeader?.length > 0){
+        } else if (props?.selectedItem?.TeamLeader?.length > 0) {
             setTaskTeamMembers(props?.selectedItem?.TeamLeader)
         }
-        if (props?.selectedItem?.TeamMembers?.length > 0 ) {
-            setTaskTeamMembers(props?.selectedItem?.TeamMembers )
-        }else if(props?.selectedItem?.TeamMember?.length > 0){
+        if (props?.selectedItem?.TeamMembers?.length > 0) {
+            setTaskTeamMembers(props?.selectedItem?.TeamMembers)
+        } else if (props?.selectedItem?.TeamMember?.length > 0) {
             setTaskTeamMembers(props?.selectedItem?.TeamMember)
         }
         if (props?.selectedItem?.ClientCategory?.length > 0) {
@@ -95,7 +95,7 @@ const CreateActivity = (props: any) => {
             taskUser = await web.lists
                 .getById(AllListId?.TaskUsertListID)
                 .items
-                .select("Id,UserGroupId,Suffix,Title,technicalGroup,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,UserGroup/Id,ItemType,Approver/Id,Approver/Title,Approver/Name")
+                .select("Id,UserGroupId,Suffix,Title,IsTaskNotifications,IsApprovalMail,CategoriesItemsJson,technicalGroup,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,UserGroup/Id,ItemType,Approver/Id,Approver/Title,Approver/Name")
                 .top(5000)
                 .expand("AssingedToUser,Approver, UserGroup")
                 .get();
@@ -196,6 +196,9 @@ const CreateActivity = (props: any) => {
             })
         })
 
+        if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve all') {
+            IsapprovalTask = true
+        }
         if (IsapprovalTask == true) {
             subCategories?.map((item: any) => {
                 if (item?.Title == "Approval" && !item.ActiveTile) {
@@ -430,6 +433,9 @@ const CreateActivity = (props: any) => {
             }
             var categoriesItem = "";
             var CategoryID: any = [];
+            let AssignedToIds: any = [];
+            let TeamMemberIds: any = [];
+            let ResponsibleTeamIds: any = [];
             CategoriesData.map((category: any) => {
                 if (category.Title != undefined) {
                     categoriesItem =
@@ -438,10 +444,13 @@ const CreateActivity = (props: any) => {
                             : categoriesItem + ";" + category.Title;
                     CategoryID.push(category.Id);
                 }
+                if (category.Title == 'Design') {
+                    AssignedToIds.push(298)
+                    TeamMemberIds = [298];
+                    ResponsibleTeamIds = [49]
+                }
             });
-            let AssignedToIds: any = [];
-            let TeamMemberIds: any = [];
-            let ResponsibleTeamIds: any = [];
+
             if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
                 TaskAssignedTo.map((taskInfo: any) => {
                     AssignedToIds.push(taskInfo.Id);
@@ -588,7 +597,7 @@ const CreateActivity = (props: any) => {
                             TaskID: TaskID,
                             TaskLevel: Tasklevel
                         })
-                        .then((res: any) => {
+                        .then(async (res: any) => {
                             let item: any = {};
                             if (res?.data) {
                                 item = res?.data;
@@ -600,7 +609,7 @@ const CreateActivity = (props: any) => {
                                         DisplayDueDate: moment(item.DueDate).format("DD/MM/YYYY"),
                                         Portfolio: selectedItem?.Portfolio,
                                         TaskID: TaskID,
-                                        siteUrl: site?.siteUrl,
+                                        siteUrl: site?.siteUrl?.Url,
                                         siteType: site?.Title,
                                         listId: site?.listId,
                                         SiteIcon: site?.Item_x005F_x0020_Cover?.Url,
@@ -610,7 +619,33 @@ const CreateActivity = (props: any) => {
                                         Author: {
                                             Id: props?.context?.pageContext?.legacyPageContext?.userId
                                         }
+
                                     }
+                                }
+                                if (categoriesItem?.indexOf('Immediate') > -1 || categoriesItem?.indexOf("Email Notification") > -1) {
+                                    let listID = '3BBA0B9A-4A9F-4CE0-BC15-61F4F550D556'
+                                    var postData = {
+                                        __metadata: { 'type': 'SP.Data.ImmediateNotificationsListItem' },
+                                        "Title": TaskTitle,
+                                        "TaskId": TaskID,
+                                        "Site": site?.Title
+                                    };
+                                    await globalCommon.addData(AllListId?.siteUrl, listID, postData)
+                                    await globalCommon?.sendImmediateEmailNotifications(item?.Id, site?.siteUrl?.Url, site?.listId, item, undefined, 'Immediate', AllTaskUsers, props?.context).then((response: any) => {
+                                        console.log(response);
+                                    });;
+                                }
+                                if (categoriesItem?.indexOf("Design") > -1) {
+                                    setSendApproverMail(true);
+                                    await globalCommon?.sendImmediateEmailNotifications(item?.Id, site?.siteUrl?.Url, site?.listId, item, undefined, 'DesignMail', AllTaskUsers, props?.context).then((response: any) => {
+                                        console.log(response);
+                                    });
+                                }
+                                if (categoriesItem?.indexOf("Approval") > -1) {
+                                    setSendApproverMail(true);
+                                    await globalCommon?.sendImmediateEmailNotifications(item?.Id, site?.siteUrl?.Url, site?.listId, item, undefined, 'ApprovalMail', AllTaskUsers, props?.context).then((response: any) => {
+                                        console.log(response);
+                                    });
                                 }
                                 if (item.DisplayDueDate == "Invalid date" || "") {
                                     item.DisplayDueDate = item.DisplayDueDate.replaceAll(
@@ -738,9 +773,13 @@ const CreateActivity = (props: any) => {
                             ,
                             ClientTime: clientTime != undefined ? clientTime : Sitestagging != undefined ? Sitestagging : null,
                             TaskID: TaskID,
-                            TaskTypeId: 2
+                            TaskTypeId: 2,
+                            TaskType: {
+                                Title: 'Task',
+                                Id: 2
+                            }
                         })
-                        .then((res: any) => {
+                        .then(async (res: any) => {
                             let item: any = {};
                             if (res?.data) {
                                 item = res?.data;
@@ -751,7 +790,7 @@ const CreateActivity = (props: any) => {
                                     DisplayCreateDate: moment(item.Created).format("DD/MM/YYYY"),
                                     DisplayDueDate: moment(item.DueDate).format("DD/MM/YYYY"),
                                     Portfolio: selectedItem?.Portfolio,
-                                    siteUrl: site?.siteUrl,
+                                    siteUrl: site?.siteUrl?.Url,
                                     siteType: site?.Title,
                                     listId: site?.listId,
                                     SiteIcon: site?.Item_x005F_x0020_Cover?.Url,
@@ -764,10 +803,41 @@ const CreateActivity = (props: any) => {
                                     TeamLeader: TaskResponsibleTeam,
                                     Author: {
                                         Id: props?.context?.pageContext?.legacyPageContext?.userId
+                                    },
+                                    ParentTask: selectedItem,
+                                    TaskType: {
+                                        Title: 'Task',
+                                        Id: 2
                                     }
 
-
                                 }
+                                item.TaskID = globalCommon?.GetTaskId(item);
+                                if (categoriesItem?.indexOf('Immediate') > -1 || categoriesItem?.indexOf("Email Notification") > -1) {
+                                    let listID = '3BBA0B9A-4A9F-4CE0-BC15-61F4F550D556'
+                                    var postData = {
+                                        __metadata: { 'type': 'SP.Data.ImmediateNotificationsListItem' },
+                                        "Title": TaskTitle,
+                                        "TaskId": TaskID,
+                                        "Site": site?.Title
+                                    };
+                                    await globalCommon.addData(AllListId?.siteUrl, listID, postData)
+                                    await globalCommon?.sendImmediateEmailNotifications(item?.Id, site?.siteUrl?.Url, site?.listId, item, undefined, 'Immediate', AllTaskUsers, props?.context).then((response: any) => {
+                                        console.log(response);
+                                    });;
+                                }
+                                if (categoriesItem?.indexOf("Design") > -1) {
+                                    setSendApproverMail(true);
+                                    await globalCommon?.sendImmediateEmailNotifications(item?.Id, site?.siteUrl?.Url, site?.listId, item, undefined, 'DesignMail', AllTaskUsers, props?.context).then((response: any) => {
+                                        console.log(response);
+                                    });
+                                }
+                                if (categoriesItem?.indexOf("Approval") > -1) {
+                                    setSendApproverMail(true);
+                                    await globalCommon?.sendImmediateEmailNotifications(item?.Id, site?.siteUrl?.Url, site?.listId, item, undefined, 'ApprovalMail', AllTaskUsers, props?.context).then((response: any) => {
+                                        console.log(response);
+                                    });
+                                }
+
                                 if (item.DisplayDueDate == "Invalid date" || "") {
                                     item.DisplayDueDate = item.DisplayDueDate.replaceAll(
                                         "Invalid date",
@@ -823,30 +893,32 @@ const CreateActivity = (props: any) => {
             setSearchedCategoryData([]);
         }
     };
-    const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
-        setCategorySearchKey("");
-        setIsComponentPicker(false);
-        let data: any = CategoriesData;
-        if (selectCategoryData[0].Id != undefined) {
-            data?.push(selectCategoryData[0]);
-        }
-        let uniqueData: any = [];
-        data?.map((item: any) => {
-            if (!uniqueData.find((secItem: any) => secItem?.Id == item?.Id)) {
-                uniqueData.push(item)
-            }
-        })
-
-        setCategoriesData((CategoriesData: any) => [...uniqueData]);
-        setSearchedCategoryData([]);
-    };
+    // const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
+    //     setCategorySearchKey("");
+    //     let item = selectCategoryData[0]
+    //     setIsComponentPicker(false);
+    //     let data: any = CategoriesData;
+    //     if (selectCategoryData[0].Id != undefined) {
+    //         data?.push(selectCategoryData[0]);
+    //     }
+    //     let uniqueData: any = [];
+    //     data?.map((item: any) => {
+    //         if (!uniqueData.find((secItem: any) => secItem?.Id == item?.Id)) {
+    //             uniqueData.push(item)
+    //         }
+    //     })
+    //     selectSubTaskCategory(item?.Title, item?.Id, item)
+    //     // setCategoriesData((CategoriesData: any) => [...uniqueData]);
+    //     setSearchedCategoryData([]);
+    // };
     //End
 
     // select category Functionality
 
     const selectSubTaskCategory = (title: any, Id: any, item: any) => {
-
-
+        setCategorySearchKey("");
+        setIsComponentPicker(false);
+        setSearchedCategoryData([]);
         if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve all but selected items' && !IsapprovalTask) {
             try {
                 let selectedApprovalCat = JSON.parse(loggedInUser?.CategoriesItemsJson)
@@ -908,23 +980,21 @@ const CreateActivity = (props: any) => {
                     if (User.Role == 'Developer' && User.Title == 'Design Team') {
 
                         AssignedToUsers.filter((item: any) => item != User.Id)
-                        AssignedToUsers.push(User.Id);
+                        AssignedToUsers.push(User);
                         flag = false;
                     }
 
 
                 });
-                AssignedToUsers.push(301)
-                setTaskAssignedTo(AssignedToUsers)
-                setTaskTeamMembers([301, 49]);
+
             }
             if (title?.indexOf('Support') > -1) {
                 var flag = true;
                 let AssignedToUsers: any = [];
                 AllTaskUsers?.map((User: any) => {
                     if (User.Role == 'Developer' && User.Title == 'Support') {
-                        AssignedToUsers.filter((item: any) => item != User.Id)
-                        AssignedToUsers.push(User.Id);
+                        AssignedToUsers.filter((item: any) => item?.Id != User.Id)
+                        AssignedToUsers.push(User);
                         flag = false;
                     }
                 });
@@ -939,17 +1009,18 @@ const CreateActivity = (props: any) => {
             }
             return selectCAT; // Return the original value if no change is needed
         }));
+      
         setCategoriesData(TaskCategories)
 
     }
-    const deleteCategories = (id: any) => {
-        CategoriesData.map((catId: { Id: any }, index: any) => {
-            if (id == catId.Id) {
-                CategoriesData.splice(index, 1);
-            }
-        });
-        setCategoriesData((CategoriesData: any) => [...CategoriesData]);
-    };
+    // const deleteCategories = (id: any) => {
+    //     CategoriesData.map((catId: { Id: any }, index: any) => {
+    //         if (id == catId.Id) {
+    //             CategoriesData.splice(index, 1);
+    //         }
+    //     });
+    //     setCategoriesData((CategoriesData: any) => [...CategoriesData]);
+    // };
     //End
     return (
         <>
@@ -1179,7 +1250,8 @@ const CreateActivity = (props: any) => {
                                                             className="hreflink list-group-item rounded-0 list-group-item-action"
                                                             key={item.id}
                                                             onClick={() =>
-                                                                setSelectedCategoryData([item], "For-Auto-Search")
+                                                                selectSubTaskCategory(item?.Title, item?.Id, item)
+                                                                // setSelectedCategoryData([item], "For-Auto-Search")
                                                             }
                                                         >
                                                             <a>{item.Newlabel}</a>
@@ -1207,7 +1279,7 @@ const CreateActivity = (props: any) => {
                                                             </a>
                                                             <span
                                                                 className="bg-light svg__iconbox svg__icon--cross"
-                                                                onClick={() => deleteCategories(type?.Id)}
+                                                                onClick={() =>  selectSubTaskCategory(type?.Title, type?.Id, type)}
                                                             ></span>
                                                             {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
                                                         </div>
