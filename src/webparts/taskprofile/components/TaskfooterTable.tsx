@@ -279,7 +279,7 @@ function TasksTable(props: any) {
                   result.AllTeamName =
                     result.AllTeamName === undefined ? "" : result.AllTeamName;
                   result.chekbox = false;
-                  result.descriptionsSearch = [];
+                  result.descriptionsSearch = "";
                   result.commentsSearch = "";
                   result.DueDate = moment(result.DueDate).format("DD/MM/YYYY");
                   result.DisplayDueDate = moment(result.DueDate).format("DD/MM/YYYY");
@@ -300,21 +300,21 @@ function TasksTable(props: any) {
                     result.PercentComplete * 100
                   ).toFixed(0);
                   result.chekbox = false;
-                  if (result.FeedBack != undefined) {
-                    let feedbackdata: any = JSON.parse(result?.FeedBack);
 
-                    // let FeedbackdatatinfoIcon: any =[];
-                      feedbackdata[0]?.FeedBackDescriptions?.map(
-                        (child: any) =>{
-                         let  copyTitle=child?.Title?.replace( /(<([^>]+)>)/gi,"")?.replace(/\n/g, "");
-                           if(copyTitle!=undefined && copyTitle!=null&& copyTitle!=""){
-                            result.descriptionsSearch.push(copyTitle);
-                           }
-                         
-                        }
-                        )
-                       
-                  }
+
+                  if (result?.FeedBack != undefined) {
+                    let DiscriptionSearchData: any = '';
+                    let feedbackdata: any = JSON.parse(result?.FeedBack)
+                    DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
+                        const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
+                        const subtextText = (child?.Subtext || [])?.map((elem: any) =>
+                            elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')
+                        ).join('');
+                        return childText + subtextText;
+                    }).join('');
+                    result.descriptionsSearch = DiscriptionSearchData
+                }
+                  
 
                   if (result?.Comments != null) {
                     result.commentsSearch = result?.Comments?.replace(/(<([^>]+)>)/gi,"").replace(/\n/g, "");
