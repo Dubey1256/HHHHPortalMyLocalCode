@@ -1814,16 +1814,16 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
   }
   private createTableColumns() {
     let dt = [
-      {
-        accessorKey: "",
-        placeholder: "",
-        hasCheckbox: false,
-        hasCustomExpanded: false,
-        hasExpanded: false,
-        isHeaderNotAvlable: true,
-        size: 55,
-        id: 'Id',
-      },
+      // {
+      //   accessorKey: "",
+      //   placeholder: "",
+      //   hasCheckbox: false,
+      //   hasCustomExpanded: false,
+      //   hasExpanded: false, 
+      //   isHeaderNotAvlable: true,
+      //   size: 55,
+      //   id: 'Id',
+      // },
       {
         accessorFn: (info: any) => info?.Site,
         cell: (info: any) => <span>
@@ -1834,7 +1834,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         header: "",
         resetSorting: false,
         resetColumnFilters: false,
-        size: 90
+        size: 55
       },
       {
         accessorKey: "DisplayTaskId",
@@ -1852,7 +1852,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           href={this.props.Context.pageContext.web.absoluteUrl + "/SitePages/Task-Profile.aspx?taskId=" + info.row.original.TaskItemID + "&Site=" + info.row.original.siteType}>
           {info.row.original.TaskTitle}
         </a>,
-        size: 175,
+        size: 275,
       },
       {
         accessorKey: "ClientCategory",
@@ -1866,7 +1866,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         id: "PercentComplete",
         placeholder: "%",
         header: "",
-        size: 90,
+        size: 35,
       },
       {
         accessorKey: 'ComponentTitle',
@@ -1880,7 +1880,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           className="svg__iconbox svg__icon--edit alignIcon"
           onClick={(e) => this.EditComponentPopup(info.row?.original?.PortfolioItem)}>
           </span></>,
-        size: 100,
+        size: 275,
       },
 
       {
@@ -1888,21 +1888,21 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         id: "Description",
         placeholder: "Time Description",
         header: "",
-        size: 175,
+        //size: 175,
       },
       {
         accessorKey: "TimeEntryDate",
         id: "TimeEntryDate",
         placeholder: "Time Entry",
         header: "",
-        size: 175,
+        size: 91,
       },
       {
         accessorKey: "TaskTime",
         id: "TaskTime",
         placeholder: "Time",
         header: "",
-        size: 90,
+        size: 45,
       },
       {
         cell: (info: any) => (
@@ -1917,7 +1917,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         resetSorting: false,
         resetColumnFilters: false,
         placeholder: "",
-        size: 55
+        size: 25
       },
       {
         cell: (info: any) => (
@@ -1933,7 +1933,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         resetSorting: false,
         resetColumnFilters: false,
         placeholder: "",
-        size: 55
+        size: 25
       }
     ]
     this.setState({
@@ -2060,7 +2060,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     } = this.props;
     return (
       <div id="TimeSheet-Section">
-        <div className="p-0  " style={{ verticalAlign: "top" }}><h2 className="heading d-flex justify-content-between align-items-center"><span> <a>Timesheet Management</a> </span><span className="text-end fs-6"><a target="_blank" data-interception="off" href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/UserTimeEntry-Old.aspx`}>Old UserTimeEntry</a></span></h2></div>
+        <div className="p-0  " style={{ verticalAlign: "top" }}><h2 className="heading d-flex justify-content-between align-items-center"><span> <a>All Timesheets</a> </span><span className="text-end fs-6"><a target="_blank" data-interception="off" href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/UserTimeEntry-Old.aspx`}>Old UserTimeEntry</a></span></h2></div>
         <Col className='smartFilter bg-light border mb-3 '>
           <details className='p-0 m-0 allfilter' open>
             <summary className='hyperlink'><a className="fw-semibold hreflink mr-5 pe-2 pull-left ">All Filters - <span className='me-1 fw-normal'>Task User :</span> </a>
@@ -2127,51 +2127,51 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                   <Row className="ps-30">
                     <div>
                       <div className="col TimeReportDays">
-                        <span className='SpfxCheckRadio me-2'>
+                        <span className='SpfxCheckRadio '>
                           <input type="radio" className="radio" name="dateSelection" id="rdCustom" value="Custom" checked={this.state.selectedRadio === "Custom" || (this.state.startdate !== null && this.state.enddate !== null && !this.state.selectedRadio)} onClick={() => this.selectDate('Custom')} />
                           <label>Custom</label>
                         </span>
-                        <span className='SpfxCheckRadio me-2'>
+                        <span className='SpfxCheckRadio '>
                           <input type="radio" name="dateSelection" value="today" id="rdToday" checked={this.state.selectedRadio === "today"} onClick={() => this.selectDate('today')} className="radio" />
                           <label>Today</label>
                         </span>
-                        <span className='SpfxCheckRadio me-2'>
+                        <span className='SpfxCheckRadio '>
                           <input type="radio" name="dateSelection" value="yesterday" id="rdYesterday" checked={this.state.selectedRadio === "yesterday"} onClick={() => this.selectDate('yesterday')} className="radio" />
                           <label> Yesterday </label>
                         </span>
-                        <span className='SpfxCheckRadio me-2'>
+                        <span className='SpfxCheckRadio '>
                           <input type="radio" name="dateSelection" defaultChecked={true} id="rdThisWeek" value="ThisWeek" checked={this.state.selectedRadio === "ThisWeek"} onClick={() => this.selectDate('ThisWeek')} className="radio" />
                           <label> This Week</label>
                         </span>
-                        <span className='SpfxCheckRadio me-2'>
+                        <span className='SpfxCheckRadio '>
                           <input type="radio" name="dateSelection" value="LastWeek" id="rdLastWeek" checked={this.state.selectedRadio === "LastWeek"} onClick={() => this.selectDate('LastWeek')} className="radio" />
                           <label> Last Week</label>
                         </span>
-                        <span className='SpfxCheckRadio me-2'>
+                        <span className='SpfxCheckRadio '>
                           <input type="radio" name="dateSelection" id="rdThisMonth" value="EntrieMonth" checked={this.state.selectedRadio === "EntrieMonth"} onClick={() => this.selectDate('EntrieMonth')} className="radio" />
                           <label>This Month</label>
                         </span>
-                        <span className='SpfxCheckRadio me-2'>
+                        <span className='SpfxCheckRadio '>
                           <input type="radio" name="dateSelection" id="rdLastMonth" value="LastMonth" checked={this.state.selectedRadio === "LastMonth"} onClick={() => this.selectDate('LastMonth')} className="radio" />
                           <label>Last Month</label>
                         </span>
-                        <span className='SpfxCheckRadio me-2'>
+                        <span className='SpfxCheckRadio'>
                           <input type="radio" name="dateSelection" value="Last3Month" checked={this.state.selectedRadio === "Last3Month"} onClick={() => this.selectDate('Last3Month')} className="radio" />
                           <label>Last 3 Months</label>
                         </span>
-                        <span className='SpfxCheckRadio me-2'>
+                        <span className='SpfxCheckRadio'>
                           <input type="radio" name="dateSelection" value="EntrieYear" checked={this.state.selectedRadio === "rdEntrieYear"} onClick={() => this.selectDate('EntrieYear')} className="radio" />
                           <label>This Year</label>
                         </span>
-                        <span className='SpfxCheckRadio me-2'>
+                        <span className='SpfxCheckRadio'>
                           <input type="radio" name="dateSelection" value="LastYear" checked={this.state.selectedRadio === "LastYear"} onClick={() => this.selectDate('LastYear')} className="radio" />
                           <label>Last Year</label>
                         </span>
-                        <span className='SpfxCheckRadio me-2'>
+                        <span className='SpfxCheckRadio'>
                           <input type="radio" name="dateSelection" value="AllTime" checked={this.state.selectedRadio === "AllTime"} onClick={() => this.selectDate('AllTime')} className="radio" />
                           <label>All Time</label>
                         </span>
-                        <span className='SpfxCheckRadio me-2'>
+                        <span className='SpfxCheckRadio'>
                           <input type="radio" name="dateSelection" value="Presettime" checked={this.state.selectedRadio === "Presettime"} onClick={() => this.selectDate('Presettime')} className="radio" />
                           <label>Pre-set</label>
                           <span className="svg__iconbox svg__icon--editBox alignIcon hreflink" onClick={() => this.OpenPresetDatePopup()}></span>

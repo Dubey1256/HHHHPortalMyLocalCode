@@ -1001,7 +1001,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
                   </div>
                   {this.state.Result["Comments"] != null && this.state.Result["Comments"]?.length > 0 && this.state.Result["Comments"]?.map((cmtData: any, i: any) => {
-                    return <div className="border p-1 mb-2">
+                    return <div className="p-1 mb-2">
                       <div>
                         <div className='d-flex justify-content-between align-items-center'>
                           <span className='comment-date'>
