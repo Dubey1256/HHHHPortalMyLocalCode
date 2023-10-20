@@ -26,6 +26,9 @@ const itemRanks: any = [
     { rankTitle: '(1) Archive', rank: 1 },
     { rankTitle: '(0) No Show', rank: 0 }
 ]
+let AllTaskUsers:any=[];
+let loggedInUser: any = {};
+let IsapprovalTask = false
 const CreateWS = (props: any) => {
     const [refreshData, setRefreshData]: any = React.useState(false)
     const [selectedWSTaskIndex, setSelectedWSTaskIndex]: any = React.useState(null)
@@ -79,6 +82,7 @@ const CreateWS = (props: any) => {
     //---- close popup end -------
     React.useEffect(() => {
         AllListId = props?.AllListId;
+  
         if (props?.selectedItem?.ClientCategory?.length > 0) {
             if (ClientCategoriesData?.length == 0) {
                 setClientCategoriesData(props?.selectedItem?.ClientCategory)
@@ -87,7 +91,38 @@ const CreateWS = (props: any) => {
         setSelectedItem(props?.selectedItem)
         GetParentHierarchy(props?.selectedItem)
 
+//***************** Load All task Users***************** */
+ const getTaskUsers = async () => {
+    if (AllListId?.TaskUsertListID != undefined) {
+        let web = new Web(AllListId?.siteUrl);
+        let taskUser = [];
+        taskUser = await web.lists
+            .getById(AllListId?.TaskUsertListID)
+            .items
+            .select("Id,UserGroupId,Suffix,Title,IsTaskNotifications,IsApprovalMail,CategoriesItemsJson,technicalGroup,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,UserGroup/Id,ItemType,Approver/Id,Approver/Title,Approver/Name")
+            .top(5000)
+            .expand("AssingedToUser,Approver, UserGroup")
+            .get();
+        try {
+            taskUser?.map((user: any) => {
+                if (props?.context?.pageContext?.legacyPageContext?.userId == user?.AssingedToUser?.Id) {
+                    loggedInUser = user;
+                }
+            })
+        } catch (error) {
+            console.log(error)
+        }
+
+        AllTaskUsers = taskUser;
+     }
+  }
+  if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve all') {
+    IsapprovalTask = true
+}
+    // console.log("all task user =====", taskUser)
     }, [])
+
+
     //************ breadcrum start */
     const GetParentHierarchy = async (Item: any) => {
         const parentdata: any = []
@@ -352,7 +387,11 @@ const CreateWS = (props: any) => {
             let Categories: any = '';
             selectedItem?.TaskCategories?.map((cat: any) => {
                 CategoryID.push(cat?.Id)
+                
             })
+            if(IsapprovalTask){
+                CategoryID.push(277)
+            }
             let clientTime: any;
             if (selectedItem?.ClientTime != undefined) {
                 if (typeof selectedItem?.ClientTime == "object") {
@@ -400,7 +439,7 @@ const CreateWS = (props: any) => {
             if (postdata?.ClientTime == false) {
                 postdata.ClientTime = null
             }
-            web.lists.getById(selectedItem.listId).items.add(postdata).then((res: any) => {
+            web.lists.getById(selectedItem.listId).items.add(postdata).then(async (res: any) => {
                 console.log(res)
                 let item: any = {};
                 if (res?.data) {
@@ -440,6 +479,13 @@ const CreateWS = (props: any) => {
                             "Invalid date",
                             ""
                         );
+                    }
+
+                    if (IsapprovalTask) {
+                       
+                        await globalCommon?.sendImmediateEmailNotifications(item?.Id, selectedItem?.siteUrl, selectedItem.listId, item, undefined, 'ApprovalMail', AllTaskUsers, props?.context).then((response: any) => {
+                            console.log(response);
+                        });
                     }
                     res.data = item;
                     if (type == "createopenpopup") {

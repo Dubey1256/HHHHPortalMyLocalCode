@@ -372,7 +372,14 @@
         }
       ]
     },
- 
+    "last-modidied-items-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/lastModidiedItems/LastModidiedItemsWebPart.js",
+          "manifest": "./src/webparts/lastModidiedItems/LastModidiedItemsWebPart.manifest.json"
+        }
+      ]
+    },
     "meeting-over-view-page-web-part": {
       "components": [
         {
@@ -441,6 +448,7 @@
     "TaskDashboardHhhhWebPartStrings": "lib/webparts/taskDashboardHhhh/loc/{locale}.js",
     "CreatedByTablesWebPartStrings": "lib/webparts/createdByTables/loc/{locale}.js",
     "CalendarWebPartStrings": "lib/webparts/calendar/loc/{locale}.js",
+    "LastModidiedItemsWebPartStrings": "lib/webparts/lastModidiedItems/loc/{locale}.js",
     "TeamleaderDashboardWebPartStrings": "lib/webparts/teamleaderDashboard/loc/{locale}.js",
     "TestWebPartWebPartStrings": "lib/webparts/testWebPart/loc/{locale}.js",
     "RootDashboardWebPartStrings": "lib/webparts/rootDashboard/loc/{locale}.js",

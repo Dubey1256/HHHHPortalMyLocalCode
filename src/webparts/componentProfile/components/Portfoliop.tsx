@@ -2099,12 +2099,6 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                               </div>
                             </div>
 
-                            {/* <img
-                            alt={imageArray[0]?.ImageName}
-                            style={{ width: "280px", height: "145px" }}
-                            src={imageArray[0]?.ImageUrl}
-                          />
-                          <p>{imageArray[0]?.UploadeDate} {imageArray[0]?.UserName}</p> */}
                           </div>
                         )}
                     </>
@@ -2125,17 +2119,7 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
                     );
                   })}
                 </div>
-                {/* <div className='mb-3 card' ng-if="isOwner==true">
-                                        <div className='card-header'>
-                                            <div className='card-actions float-end'>  <Tooltip ComponentId='324'/></div>
-                                            <div className="mb-0 card-title h5">Add & Connect Tool</div>
-                                        </div> 
-                                        <div className='card-body'>
-                                            <div className="border-bottom pb-2"> <a ng-click="TagItems();">
-                                                Click here to add more content
-                                            </a></div>
-                                        </div>
-                                    </div> */}
+              
                 {Folderdatas != undefined && (
                   <>
                     {Folderdatas.map((item: any) => {
