@@ -2917,6 +2917,11 @@ const EditTaskPopup = (Items: any) => {
         let fileName: any = '';
         let tempArray: any = [];
         let SiteUrl = siteUrls;
+
+        if (Items.Items.siteType == "Offshore Tasks") {
+            Items.Items.siteType = "SharewebQA";
+        }
+
         imageList?.map(async (imgItem: any, index: number) => {
             if (imgItem.data_url != undefined && imgItem.file != undefined) {
                 let date = new Date()
