@@ -197,7 +197,6 @@ const EODReportComponent = (TaskDetails: any) => {
                                                 style={{ width: "10%" }}
                                                 className="text-center p-1"
                                                 onClick={() => updateFeedbackJSON("Completed", FeedbackItem.Completed ? false : true, Index, FeedbackItem)}
-
                                             >
                                                 {FeedbackItem.Completed != undefined ? FeedbackItem.Completed ? <span className="checkCircleFill"><BsCheckCircleFill /></span>
                                                     :
