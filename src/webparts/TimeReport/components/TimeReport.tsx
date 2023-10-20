@@ -1268,44 +1268,45 @@ var ReportDate = new Date(a1)
         <>
         <section className='ContentSection'>
             <div className='row'>
-                <div className='col-sm-3 text-primary'>
-                    <h3 className="heading">Time Report
-                        <span>
-                            <img src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditComponentPopup()} /></span>
-                    </h3>
+                <div className='col-sm-3 ps-0'>
+                    <h2 className="heading">Time Report
+                        <a className='ms-1'>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="25" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
+                    </a>
+                    </h2>
                 </div>
-                <div className='col-sm-9 text-primary'>
+                <div className='col-sm-9 pe-0'>
                     <h6 className='pull-right'><b><a  data-interception="off"
                     target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TimeReport-old.aspx">Old Time Report</a></b>
                     </h6>
                 </div>
             </div>
             <div className='row'>
-                <div className='col-7 showDate'>
+                <div className='col-7 showDate ps-0'>
 
                     <input type='date' value={Moment(selectdate!= undefined?selectdate:defaultDate).format("YYYY-MM-DD")} max="9999-12-31 mx-3" onChange={(e) => setSelectDate(e.target.value)} />
-                    <label className='mx-2 SpfxCheckRadio'>
+                    <label className='SpfxCheckRadio'>
                         <input type="radio" name="Custom" checked={checkedCustom} onClick={() => selectType('Custom')} className="radio" />Custom
                     </label>
-                    <label className='mx-2 SpfxCheckRadio'>
+                    <label className='SpfxCheckRadio'>
                         <input type="radio"  name="Yesterday" checked={checkedWS} onClick={() => selectType('Yesterday')} className="radio" />Yesterday
                     </label>
-                    <label className='mx-2 SpfxCheckRadio'>
+                    <label className='SpfxCheckRadio'>
                         <input type="radio" name="Today" checked={checkedTask} onClick={() => selectType('Today')} className="radio" />Today
                     </label>
                     <button className='btnCol btn btn-primary' type="submit" onClick={() => GeneratedTask()}>Generate TimeSheet</button>
 
 
                 </div>
-                <div className='col-sm-5'>
+                <div className='col-sm-5 pe-0'>
                     <table className='table table-hover showTime'>
                         <thead>
                             <tr>
-                                <th className='border bg-light'><strong>Team</strong></th>
-                                <th className='border'><strong>Total Employees</strong></th>
-                                <th className='border'><strong>Employees on leave</strong></th>
-                                <th className='border'><strong>Hours</strong></th>                                
-                                <th className='border'><strong>Leave Hours</strong></th>
+                                <th className='border bg-light fw-bold align-middle'>Team</th>
+                                <th className='border fw-bold align-middle'>Total Employees</th>
+                                <th className='border fw-bold align-middle'>Employees on leave</th>
+                                <th className='border fw-bold align-middle'>Hours</th>                                
+                                <th className='border fw-bold align-middle'>Leave Hours</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1317,14 +1318,14 @@ var ReportDate = new Date(a1)
                                 <td className='border'>{DesignMemberleaveHours}</td>
                             </tr>
                             <tr>
-                                <td className='border bg-light'>Development</td>                                
+                                <td className='border bg-light fw-bold'>Development</td>                                
                                 <td className='border'>{TotalDevelopmentMember}</td>
                                 <td className='border'>{DevelopmentMembers}</td>
                                 <td className='border'>{DevloperTime.toFixed(2)}</td>
                                 <td className='border'>{DevelopmentleaveHours}</td>
                             </tr>
                             <tr>
-                                <td className='border bg-light'> QA</td>                                
+                                <td className='border bg-light fw-bold'> QA</td>                                
                                 <td className='border'>{TotalQAMember}</td>
                                 <td className='border'>{QAMembers}</td>
                                 <td className='border'>{QATime.toFixed(2)}</td>
@@ -1332,11 +1333,11 @@ var ReportDate = new Date(a1)
                             </tr>
                            
                             <tr>
-                                <td className='border bg-light'> <strong>Total</strong></td>                                
-                                <td className='border'>{TotalDevelopmentMember + TotalDesignMember + TotalQAMember}</td>
-                                <td className='border'>{leaveUsers}</td>
-                                <td className='border'>{TotleTaskTime?.toFixed(2)}</td>
-                                <td className='border'>{DesignMemberleaveHours + DevelopmentleaveHours + QAleaveHours}</td>
+                                <td className='border bg-light fw-bold'>Total</td>                                
+                                <td className='border fw-bold'>{TotalDevelopmentMember + TotalDesignMember + TotalQAMember}</td>
+                                <td className='border fw-bold'>{leaveUsers}</td>
+                                <td className='border fw-bold'>{TotleTaskTime?.toFixed(2)}</td>
+                                <td className='border fw-bold'>{DesignMemberleaveHours + DevelopmentleaveHours + QAleaveHours}</td>
                             </tr>
 
                         </tbody>

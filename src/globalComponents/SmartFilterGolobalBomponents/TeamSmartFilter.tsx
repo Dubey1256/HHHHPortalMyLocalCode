@@ -306,7 +306,7 @@ const TeamSmartFilter = (item: any) => {
         if (clintCatogryData?.length > 0) {
             clintCatogryData.forEach((elem: any) => {
                 if (elem.Title === "Other") {
-                    const Blank: any = { Id: 0, Title: "Blank", value: 0,  Parent: { Id: 576, Title: "Other" }, TaxType: "Client Category", ParentId: 576, ParentID: null, ID: 0, label: "Blank", checked: true };
+                    const Blank: any = { Id: 0, Title: "Blank", value: 0, Parent: { Id: 576, Title: "Other" }, TaxType: "Client Category", ParentId: 576, ParentID: null, ID: 0, label: "Blank", checked: true };
                     elem.values.push(Blank);
                 }
             });
@@ -609,7 +609,7 @@ const TeamSmartFilter = (item: any) => {
             arr?.forEach((element: any) => {
                 if (value == element.Id) {
                     checkObj.push({
-                        Id: element.Id,
+                        Id: element.ItemType === "User" ? element?.AssingedToUser?.Id : element.Id,
                         Title: element.Title
                     })
                 }
@@ -617,7 +617,8 @@ const TeamSmartFilter = (item: any) => {
                     element.children.forEach((chElement: any) => {
                         if (value == chElement.Id) {
                             checkObj.push({
-                                Id: chElement.Id,
+                                Id: chElement.ItemType === "User" ? chElement?.AssingedToUser?.Id : chElement.Id,
+                                // Id: chElement.Id,
                                 Title: chElement.Title
                             })
                         }
@@ -1042,7 +1043,8 @@ const TeamSmartFilter = (item: any) => {
             }
             if (isAssignedto === true && isTodaysTask === false) {
                 if (data?.AssignedTo.length > 0) {
-                    let result = data?.AssignedTo?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ')));
+                    // let result = data?.AssignedTo?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ')));
+                    let result = data?.AssignedTo?.some((elem0: any) => teamMembers.some((filter: any) => filter?.Id === elem0?.Id));
                     if (result === true) {
                         return true;
                     }
@@ -1051,7 +1053,9 @@ const TeamSmartFilter = (item: any) => {
             }
             if (isTeamLead === true) {
                 if (data?.ResponsibleTeam.length > 0) {
-                    let result = data?.ResponsibleTeam?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ')));
+                    // let result = data?.ResponsibleTeam?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ')));
+                    let result = data?.ResponsibleTeam?.some((elem: any) => teamMembers.some((filter: any) => filter?.Id === elem?.Id));
+
                     if (result === true) {
                         return true;
                     }
@@ -1059,7 +1063,8 @@ const TeamSmartFilter = (item: any) => {
             }
             if (isTeamMember === true) {
                 if (data?.TeamMembers?.length > 0) {
-                    let result = data?.TeamMembers?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ')));
+                    // let result = data?.TeamMembers?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ')));
+                    let result = data?.TeamMembers?.some((elem1: any) => teamMembers.some((filter: any) => filter?.Id === elem1?.Id));
                     if (result === true) {
                         return true;
                     }
@@ -1067,14 +1072,15 @@ const TeamSmartFilter = (item: any) => {
             }
             if (isTodaysTask === true && isAssignedto === true || isTodaysTask === true && isAssignedto === false) {
                 if (data?.IsTodaysTask === true) {
-                    let result = data?.AssignedTo?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ') && data?.IsTodaysTask === true));
+                    // let result = data?.AssignedTo?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ') && data?.IsTodaysTask === true));
+                    let result = data?.AssignedTo?.some((elem2: any) => teamMembers.some((filter: any) => filter?.Id === elem2?.Id && data?.IsTodaysTask === true));
                     if (result === true) {
                         return true;
                     }
                 }
             }
             if (isCreatedBy === false && isModifiedby === false && isAssignedto === false && isTeamMember === false && isTeamLead === false && isTodaysTask === false) {
-                let result = data?.TeamLeaderUser?.some((item: any) => teamMembers.some((filter: any) => filter?.Title === item?.Title?.replace(/\s+/g, ' ')));
+                let result = data?.TeamLeaderUser?.some((elem3: any) => teamMembers.some((filter: any) => filter?.Id === elem3?.Id));
                 if (result === true) {
                     return true;
                 }
@@ -1876,7 +1882,7 @@ const TeamSmartFilter = (item: any) => {
                             <div className='alignCenter justify-content-between col-sm-12'>
                                 <div className='alignCenter col-sm-8'>
                                     <div className='' style={{ color: `${portfolioColor}` }} onClick={() => { toggleIcon(); toggleAllExpendCloseUpDown(iconIndex) }}>
-                                        {icons[iconIndex]} <span className="f-16 fw-semibold hreflink ms-1 pe-2 allfilter ">All Filters</span>
+                                        {icons[iconIndex]} <span className="f-16 fw-semibold hreflink ms-1 pe-2 allfilter ">SmartFilters</span>
                                     </div>
                                     {/* <div className="ms-1 f-16" style={{ color: "#333" }}>{filterInfo}</div> */}
                                 </div>
