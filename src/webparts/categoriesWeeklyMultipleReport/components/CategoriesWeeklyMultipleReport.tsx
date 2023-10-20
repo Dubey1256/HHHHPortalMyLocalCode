@@ -20,7 +20,7 @@ import * as XLSX from "xlsx";
 import FileSaver from 'file-saver';
 import PreSetDatePikerPannel from "../../../globalComponents/SmartFilterGolobalBomponents/PreSetDatePiker"
 //import alasql from 'alasql';
-
+let AllMasterTasks: any = [];
 let portfolioColor: any = '';
 export interface ICategoriesWeeklyMultipleReportState {
   Result: any;
@@ -39,7 +39,6 @@ export interface ICategoriesWeeklyMultipleReportState {
   IsTimeEntry: any;
   SharewebTimeComponent: any;
   SelecteddateChoice: any;
-  AllPortfolioType: any;
   PresetData: any;
   AllTimeEntryItem: any;
   PresetPopup: any;
@@ -52,11 +51,12 @@ export interface ICategoriesWeeklyMultipleReportState {
   AllTimeEntryBackup: any;
   QuickEditItem: any;
   defaultValuequick: any;
-  ParentItem: any;
   IsCheckedComponent: boolean;
   IsCheckedService: boolean;
-  StartDatePicker:any;
-  StartEndPicker:any;
+  StartDatePicker: any;
+  StartEndPicker: any;
+  isFocused: any;
+  checkedAll: boolean;
 
 }
 
@@ -84,7 +84,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       IsTimeEntry: false,
       SharewebTimeComponent: [],
       SelecteddateChoice: 'Last3Month',
-      AllPortfolioType: [{ 'Title': 'Component', 'Selected': true, 'SortOrder': 1 }, { 'Title': 'Service', 'Selected': true, 'SortOrder': 2 }],
+
       PresetData: {},
       AllTimeEntryItem: [],
       PresetPopup: false,
@@ -93,15 +93,16 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       AdjustedTimeArray: [{ 'Title': 'Percentage', 'rank': 1 }, { 'Title': 'Divide', 'rank': 2 }],
       AdjustedTimeType: 'Divide',
       filledeDays: '',
-      AdjustedTimeCalcuValue: 0,
+      AdjustedTimeCalcuValue: 1,
       AllTimeEntryBackup: [],
       QuickEditItem: {},
       defaultValuequick: 0,
-      ParentItem: {},
       IsCheckedComponent: true,
-      IsCheckedService:true,
-      StartDatePicker:new Date(),
-      StartEndPicker:new Date(),
+      IsCheckedService: true,
+      StartDatePicker: new Date(),
+      StartEndPicker: new Date(),
+      isFocused: false,
+      checkedAll: false,
     }
     //this.GetResult();   
     this.columns = [
@@ -110,7 +111,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       {
         accessorKey: "",
         placeholder: "",
-        hasCheckbox: true,
+        hasCheckbox: false,
         hasCustomExpanded: true,
         hasExpanded: true,
         size: 55,
@@ -247,16 +248,15 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
               {row?.original?.RoundAdjustedTime !== undefined ? (
 
                 <span  >
-                  {/* onMouseMove={(e) => this.hideItems(e, this.state.ParentItem)} */}
                   {row?.original?.RoundAdjustedTime}
                 </span>
 
 
               ) : (
                 <span>
-                  {row?.original?.QuickEditItem != undefined && row?.original?.QuickEditItem === false && <span id="txtRountfiguretime{child.row?.original?.Id}" onDoubleClick={(e) => this.InlineUpdate(e, row?.original, row)}>{row?.original?.Rountfiguretime}</span>}
+                  {row?.original?.QuickEditItem != undefined && row?.original?.QuickEditItem === false && <span className={row?.original?.IsColor === true ? "NumberchangeGreen" : ""} onDoubleClick={(e) => this.InlineUpdate(e, row?.original, row)}>{row?.original?.Rountfiguretime}</span>}
                   {row?.original?.QuickEditItem != undefined && row?.original?.QuickEditItem === true && <span>
-                    <input type="text" defaultValue={row?.original?.Rountfiguretime} onMouseOut={(e) => this.hideItems(e, row)} onChange={(e) => { this.changeRoutfigureTime(e, row?.original) }}></input>
+                    <input type="text" className="width-75" defaultValue={row?.original?.Rountfiguretime} onMouseOut={(e) => this.hideItems(e, row)} onChange={(e) => { this.changeRoutfigureTime(e, row?.original) }}></input>
                   </span>}
                 </span>
               )}
@@ -272,16 +272,18 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       },
 
     ]
-
+    this.GetComponents();
     this.GetTaskUsers();
     this.LoadAllMetaDataFilter();
     this.SelectedPortfolioItem = this.SelectedPortfolioItem.bind(this);
+    this.GetAllSiteTaskData = this.GetAllSiteTaskData.bind(this);
     this.callBackData = this.callBackData.bind(this);
   }
   rerender = () => {
     this.setState({});
   };
   private renderData: any = [];
+  // private inputClassName = this?.state?.isFocused ? 'NumberchangeGreen' : '';
   private changeRoutfigureTime = (e: any, item: any) => {
     this.setState({ defaultValuequick: item.Rountfiguretime });
     item.Rountfiguretime = e.target.value;
@@ -300,10 +302,11 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
     console.log(item);
     item.QuickEditItem = item.QuickEditItem === false ? true : item.QuickEditItem;
-    // Item.ParentItem =parent.getParentRows()[0].original;
+    item.IsColor = true;
     this.setState({ QuickEditItem: JSON.stringify(item) })
-    this.setState({ ParentItem: parent.getParentRows()[0].original })
-    this.rerender();
+    this.setState({
+      isFocused: true,
+    })
 
   }
   private hideItems = function (e: any, item: any) {
@@ -316,34 +319,54 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         this.RoundAdjustedTimeTimeEntry = (parseFloat(this.RoundAdjustedTimeTimeEntry || 0) - parseFloat(QuickEditItem?.Rountfiguretime || 0))
         this.RoundAdjustedTimeTimeEntry = (parseFloat(this.RoundAdjustedTimeTimeEntry || 0) + parseFloat(obj.Rountfiguretime || 0))
         obj.QuickEditItem = false;
-        $('#txtAdjustedHoursRound').addClass("NumberchangeGreen");
-        $('#txtAdjustedHoursRound' + obj.Id).addClass("NumberchangeGreen");
+        obj.IsColor = true;
+
       }
     })
     this.setState({
       showDateTime: (
-        <div>
-          <label> | Time: {this?.TotalTimeEntry} | Days: ({this?.TotalTimeEntry / 8})</label>
-          <label className="pl-5">|</label>
-          <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({this?.SmartTotalTimeEntry / 8} days)</div>
-          <div className="">Smart Hours (Roundup): {this?.RoundSmartTotalTimeEntry} ({this?.RoundSmartTotalTimeEntry / 8} days)</div>
-          <label className="pl-5">|</label>
-          <label className="pl-5">
-            <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({this?.AdjustedimeEntry / 8} days)</div>
-            <div className="" id='txtAdjustedHoursRound'>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({this?.RoundAdjustedTimeTimeEntry / 8} days)</div>
+        <span className='alignCenter'>
+          <label className='ms-1'> | Time: {this?.TotalTimeEntry} | Days: ({this?.TotalTimeEntry / 8})</label>
+          <label className="mx-1">|</label>
+          <label>
+            <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({this?.SmartTotalTimeEntry / 8} days)</div>
+            <div className="">Smart Hours (Roundup): {this?.RoundSmartTotalTimeEntry} ({this?.RoundSmartTotalTimeEntry / 8} days)</div>
           </label>
-        </div>
+          <label className="mx-1">|</label>
+          <label>
+            <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({this?.AdjustedimeEntry / 8} days)</div>
+            <div className={this?.state?.isFocused === true ? 'NumberchangeGreen' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({this?.RoundAdjustedTimeTimeEntry / 8} days)</div>
+          </label>
+        </span>
       ),
     });
     this.renderData = [];
     this.renderData = this.renderData.concat(this.state.showDateTime)
     this.refreshData();
-    this.rerender();
   }
   private ShowAllTask(e: any, item: any) {
     console.log(item);
     this.setState({ openTaggedTaskArray: item });
     this.setState({ opentaggedtask: true });
+  }
+  private async GetComponents() {
+    let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
+    let componentDetails = [];
+    componentDetails = await web.lists
+      .getByTitle('Master Tasks')
+      .items
+      .select("ID", "Id", "Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title",
+      )
+      .expand(
+        "PortfolioType"
+      )
+      .top(4999)
+      .get();
+
+    console.log(componentDetails);
+
+    AllMasterTasks = componentDetails
+
   }
   private async GetTaskUsers() {
     let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
@@ -430,6 +453,23 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     }, () => this.loadSmartFilters(ccResults))
 
   }
+   private  removeEmptyChildren = (items:any) => {
+    return items.map((obj:any) => {
+      if (obj.children && obj.children.length === 0) {
+        // If 'children' array is empty, remove the 'children' property
+        const { children, ...rest } = obj;
+        return rest;
+      }
+      if (obj.children && obj.children.length > 0) {
+        // If 'children' array is not empty, recursively process the children
+        return {
+          ...obj,
+          children: this.removeEmptyChildren(obj.children),
+        };
+      }
+      return obj;
+    });
+  };
 
   private loadSmartFilters(items: any) {
     let filterGroups = [];
@@ -466,8 +506,9 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
     console.log(filterGroups);
     console.log(filterItems);
+    const updatedItems = this.removeEmptyChildren(filterItems);
     this.setState({
-      filterItems: filterItems
+      filterItems: updatedItems
     })
   }
 
@@ -678,16 +719,16 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
   private setStartDate(dt: any) {
     this.setState({
-      startdate: dt
+      startdate: dt,
+      SelecteddateChoice: 'Custom',
     });
-    this.selectDate('Custom');
   }
 
   private setEndDate(dt: any) {
     this.setState({
-      enddate: dt
+      enddate: dt,
+      SelecteddateChoice: 'Custom',
     });
-    this.selectDate('Custom');
   }
 
   private selectDate(type: string) {
@@ -755,6 +796,9 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         break;
 
       case 'Presettime':
+        startdt = new Date(this.state?.StartDatePicker);
+        enddt = new Date(this.state?.StartEndPicker);
+        break;
       case 'Presettime1':
         break;
     }
@@ -965,7 +1009,13 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     }
     return '';
   }
-
+  private setStateAsync(state: any) {
+    return new Promise<void>((resolve) => {
+      this.setState(state, () => {
+        resolve();
+      });
+    });
+  }
   private async GetAllSiteTaskData(filterItemTimeTab: any, getAllTimeEntry: any) {
     let callcount = 0;
     let AllSharewebSiteTasks: any = [];
@@ -988,21 +1038,38 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             .orderBy('Id', false)
             .getAll(4999);
           console.log(results);
+          await this.setStateAsync(this.state);
+
+          // Now you can safely access this.state.IsCheckedComponent
+          const isCheckedComponent = this?.state?.IsCheckedComponent;
+          const IsCheckedService = this?.state?.IsCheckedService;
           results.forEach(function (Item) {
-            Item.siteName = itemtype.ListName;
-            Item.siteImage = itemtype.siteImage;
-            Item.TaskID = globalCommon.GetTaskId(Item);
-            Item.PercentComplete = Item.PercentComplete <= 1 ? Item.PercentComplete * 100 : Item.PercentComplete;
-            if (Item.PercentComplete != undefined) {
-              Item.PercentComplete = parseInt((Item.PercentComplete).toFixed(0));
+            if (Item?.Portfolio?.Title !== undefined) {
+              Item.ComponentTitle = Item?.Portfolio?.Title;
+              Item.ComponentIDs = Item?.Portfolio?.Id;
+              let ProtFolioData = AllMasterTasks?.filter((comp: any) => comp?.Id === Item?.Portfolio?.Id);
+              Item.Portfoliotype = ProtFolioData[0]?.PortfolioType.Title;;
+              if (Item.Portfoliotype === 'Component')
+                Item.IsCheckedComponent = true;
+              else if (Item.Portfoliotype === 'Service') Item.IsCheckedService = true
+              if (Item.IsCheckedComponent === isCheckedComponent || Item.IsCheckedService === IsCheckedService) {
+                Item.siteName = itemtype.ListName;
+                Item.siteImage = itemtype.siteImage;
+                Item.TaskID = globalCommon.GetTaskId(Item);
+                Item.PercentComplete = Item.PercentComplete <= 1 ? Item.PercentComplete * 100 : Item.PercentComplete;
+                if (Item.PercentComplete != undefined) {
+                  Item.PercentComplete = parseInt((Item.PercentComplete).toFixed(0));
+                }
+                Item.NewCompletedDate = Item.CompletedDate;
+                Item.NewCreated = Item.Created;
+                if (Item.Created != undefined)
+                  Item.FiltercreatedDate = ''//SharewebCommonFactoryService.ConvertLocalTOServerDate(Item.Created, "DD/MM/YYYY");
+                if (Item.CompletedDate != undefined)
+                  Item.FilterCompletedDate = ''//SharewebCommonFactoryService.ConvertLocalTOServerDate(Item.CompletedDate, "DD/MM/YYYY");
+                AllSharewebSiteTasks.push(Item);
+              }
             }
-            Item.NewCompletedDate = Item.CompletedDate;
-            Item.NewCreated = Item.Created;
-            if (Item.Created != undefined)
-              Item.FiltercreatedDate = ''//SharewebCommonFactoryService.ConvertLocalTOServerDate(Item.Created, "DD/MM/YYYY");
-            if (Item.CompletedDate != undefined)
-              Item.FilterCompletedDate = ''//SharewebCommonFactoryService.ConvertLocalTOServerDate(Item.CompletedDate, "DD/MM/YYYY");
-            AllSharewebSiteTasks.push(Item);
+
           })
         }
       }
@@ -1013,8 +1080,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       let filterItems = this.state.filterItems;
       getAllTimeEntry.forEach(function (filterItem: any) {
         AllSharewebSiteTasks.forEach(function (getItem: any) {
-          if (filterItem.TaskItemID == '3018')
-            debugger;
+          // if (filterItem.TaskItemID == '4090')
+          //   debugger;
           if (filterItem.TaskItemID == getItem.Id && filterItem.selectedSiteType == getItem.siteName) {
             filterItem.clientCategory = '';
             filterItem.clientCategoryIds = '';
@@ -1044,8 +1111,6 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                   }
 
                 })
-                //     filterItem.clientCategory += client.Title + ';';
-                // filterItem.clientCategoryIds += client.Id + ';';
               }
             })
 
@@ -1060,11 +1125,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             filterItem.Portfolio_x0020_Type = getItem.Portfolio_x0020_Type;
             filterItem.Created = getItem.Created;
             filterItem.siteImage = getItem.siteImage;
-            if (filterItem?.Portfolio?.Title !== undefined) {
-              filterItem.ComponentTitle = filterItem?.Portfolio?.Title;
-              filterItem.ComponentIDs = filterItem?.Portfolio?.Id;
-              filterItem.Portfoliotype = filterItem?.Portfolio?.ItemType;;
-            }
+
           }
         })
       })
@@ -1239,7 +1300,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       console.log(commonItems);
 
       let commonItemsbackup = commonItems;
-      this.CategoryItemsArray =[];
+      this.CategoryItemsArray = [];
       this.DynamicSortitems(commonItemsbackup, 'TimeEntrykDateNew', 'DateTime', 'Ascending');
       console.log('Sorted items based on time');
       console.log(commonItemsbackup);
@@ -1261,7 +1322,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       }
 
       let AdjustedimeEntry: any;
-      
+
       if (this.CategoryItemsArray != undefined && this.CategoryItemsArray.length > 0) {
         let smattime = 0;
         let roudfigersmattime = 0;
@@ -1287,8 +1348,6 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                         totalnew += ((time.Effort * client.ClienTimeDescription) / 100)
                       if (client.SiteName != undefined && client.SiteName == 'Education' && time.First?.indexOf('Education') > -1)
                         totalnew += ((time.Effort * client.ClienTimeDescription) / 100)
-
-                      //  child.TotalValue = child.TotalSmartTime.toFixed(2)
                     })
                   } else totalnew += time.Effort;
                 })
@@ -1349,13 +1408,13 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           AdjustedimeEntry += filte.AdjustedTime;
         })
 
-        this.AdjustedimeEntry = 0; 
-        this.SmartTotalTimeEntry = 0; 
-        this.RoundSmartTotalTimeEntry = 0; 
-        this.SmartHoursTimetotalTimeEntry = 0; 
-        this.RoundAdjustedTimeTimeEntry = 0; 
-        this.TotalTimeEntry = 0; 
-        this.AllTimeEntry = 0; 
+        this.AdjustedimeEntry = 0;
+        this.SmartTotalTimeEntry = 0;
+        this.RoundSmartTotalTimeEntry = 0;
+        this.SmartHoursTimetotalTimeEntry = 0;
+        this.RoundAdjustedTimeTimeEntry = 0;
+        this.TotalTimeEntry = 0;
+        this.AllTimeEntry = 0;
 
         this.SmartTotalTimeEntry = 0; this.RoundSmartTotalTimeEntry = 0; this.SmartHoursTimetotalTimeEntry = 0; this.RoundAdjustedTimeTimeEntry = 0;
         this.AdjustedimeEntry = 0; this.TotalTimeEntry = 0; this.AllTimeEntry = 0;
@@ -1395,17 +1454,19 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       this.AllTimeEntry = this.CategoryItemsArray;
       this.setState({
         showDateTime: (
-          <div>
-            <label> | Time: {this?.TotalTimeEntry} | Days: ({this?.TotalTimeEntry / 8})</label>
-            <label className="pl-5">|</label>
-            <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({this?.SmartTotalTimeEntry / 8} days)</div>
-            <div className="">Smart Hours (Roundup): {this?.RoundSmartTotalTimeEntry} ({this?.RoundSmartTotalTimeEntry / 8} days)</div>
-            <label className="pl-5">|</label>
-            <label className="pl-5">
-              <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({this?.AdjustedimeEntry / 8} days)</div>
-              <div className="">Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({this?.RoundAdjustedTimeTimeEntry / 8} days)</div>
+          <span className='alignCenter'>
+            <label className='ms-1'> | Time: {this?.TotalTimeEntry} | Days: ({this?.TotalTimeEntry / 8})</label>
+            <label className="mx-1">|</label>
+            <label>
+              <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({this?.SmartTotalTimeEntry / 8} days)</div>
+              <div className="">Smart Hours (Roundup): {this?.RoundSmartTotalTimeEntry} ({this?.RoundSmartTotalTimeEntry / 8} days)</div>
             </label>
-          </div>
+            <label className="mx-1">|</label>
+            <label>
+              <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({this?.AdjustedimeEntry / 8} days)</div>
+              <div className={this?.state?.isFocused === true ? 'NumberchangeGreen' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({this?.RoundAdjustedTimeTimeEntry / 8} days)</div>
+            </label>
+          </span>
         ),
       });
       console.log('All Time Entry');
@@ -1780,68 +1841,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.setState({ IsTimeEntry: true });
     this.setState({ SharewebTimeComponent: item });
   };
-  // private TimeEntryCallBack = React.useCallback((item1) => {
-  //   this.setState({ IsTimeEntry: false });;
-  // }, []);
-  private SelectedPortfolio = (item: any) => {
-    // $scope.Portfolio = item;
-    // console.log($scope.Portfolio);
-    // $scope.TotalTimeEntry = 0;
 
-    this.state.AllPortfolioType.forEach((item: any) => {
-      this.state.AllTimeEntry.forEach((timeTab: any) => {
-        if (timeTab.Portfoliotype == item.Title) {
-          // $scope.TotalTimeEntry += timeTab.Effort;
-          timeTab.flag = item.Selected;
-
-        }
-
-      })
-
-    })
-  }
-
-  private loadAdminConfigurations = async function () {
-    let web = new Web(this.props.Context.pageContext._site.absoluteUrl);
-    let results = [];
-    results = await web.lists
-      .getById('44C8F826-33AC-4A83-8B6E-8EEBAF64D745')
-      .items
-      .select('Id', 'Value', 'Key', 'Description', 'Configurations', 'DisplayTitle')
-      .filter("Key eq 'PreSetCategoriesWeeklyMultipleReportDetails'")
-      .get();
-    if (results?.length > 0 && results != undefined) {
-      let Item: any = {};
-      //PresetData
-      Item.PresetItemId = results[0].Id;
-      Item.PresetItem = JSON.parse(results[0].Configurations);
-      if (Item.PresetItem != undefined && Item?.PresetItem[0].Title == 'Presettime') {
-        Item.PresetStartDatePicker = Item.SelectRadioButtonItem == true ? Item.PresetStartDatePicker : Item.PresetItem[0].PreStartDate
-        Item.PresetStartEndPicker = Item.SelectRadioButtonItem == true ? Item.PresetStartEndPicker : Item.PresetItem[0].PreStartEnd
-        // if (this.state.SelectRadioButton == 'Presettime') {
-        // Item.StartDatePicker =  new Date(Item.PresetItem[0].PreStartDate);
-        // Item.StartEndPicker = new Date( Item.PresetItem[0].PreStartEnd);
-        const [day, month, year] = Item?.PresetItem[0]?.PreStartDate.split('/').map(Number);
-        Item.StartDatePicker = new Date(Date.UTC(year, month - 1, day))
-        const [day1, month1, year1] = Item?.PresetItem[0]?.PreStartEnd.split('/').map(Number);
-        Item.StartEndPicker = new Date(Date.UTC(year1, month1 - 1, day1))
-        //  }
-      }
-      if (Item.PresetItem != undefined && Item.PresetItem[1].Title == 'Presettime1') {
-        Item.PresetStartDatePicker1 = Item.SelectRadioButtonItem == true ? Item.PresetStartDatePicker1 : Item.PresetItem[1].PreStartDate
-        Item.PresetStartEndPicker1 = Item.SelectRadioButtonItem == true ? Item.PresetStartEndPicker1 : Item.PresetItem[1].PreStartEnd
-        // if (this.state.SelectRadioButton == 'Presettime1') {
-        //  Item.StartDatePicker = new Date(Item.PresetItem[1].PreStartDate);
-        const [day, month, year] = Item?.PresetItem[1]?.PreStartDate.split('/').map(Number);
-        Item.StartDatePicker = new Date(Date.UTC(year, month - 1, day))
-        const [day1, month1, year1] = Item?.PresetItem[1]?.PreStartEnd.split('/').map(Number);
-        Item.StartEndPicker = new Date(Date.UTC(year1, month1 - 1, day1))
-        //  Item.StartEndPicker =  new Date(Item.PresetItem[1].PreStartEnd);
-        // }
-      }
-      this.setState({ PresetData: Item });
-    }
-  }
   private cancelPresetPopup = (type: any) => {
     this.setState({ PresetPopup: false });
   }
@@ -1849,7 +1849,6 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.setState({ AdjustedTimePopup: false });
   }
   private OpenPresetDatePopup = async (type: any) => {
-    await this.loadAdminConfigurations();
     this.setState({ PresetPopup: true });
   }
   private OpenAdjustedTimePopup = async () => {
@@ -1966,17 +1965,19 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
   private rerenderEntire = (array: any) => {
     this.setState({
       showDateTime: (
-        <div>
-          <label> | Time: {this?.TotalTimeEntry} | Days: ({this?.TotalTimeEntry / 8})</label>
-          <label className="pl-5">|</label>
-          <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({this?.SmartTotalTimeEntry / 8} days)</div>
-          <div className="">Smart Hours (Roundup): {this?.RoundSmartTotalTimeEntry} ({this?.RoundSmartTotalTimeEntry / 8} days)</div>
-          <label className="pl-5">|</label>
-          <label className="pl-5">
-            <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({this?.AdjustedimeEntry / 8} days)</div>
-            <div className="">Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({this?.RoundAdjustedTimeTimeEntry / 8} days)</div>
+        <span className='alignCenter'>
+          <label className='ms-1'> | Time: {this?.TotalTimeEntry} | Days: ({this?.TotalTimeEntry / 8})</label>
+          <label className="mx-1">|</label>
+          <label>
+            <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({this?.SmartTotalTimeEntry / 8} days)</div>
+            <div className="">Smart Hours (Roundup): {this?.RoundSmartTotalTimeEntry} ({this?.RoundSmartTotalTimeEntry / 8} days)</div>
           </label>
-        </div>
+          <label className="mx-1">|</label>
+          <label>
+            <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({this?.AdjustedimeEntry / 8} days)</div>
+            <div className={this?.state?.isFocused === true ? 'NumberchangeGreen' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({this?.RoundAdjustedTimeTimeEntry / 8} days)</div>
+          </label>
+        </span>
       ),
     });
     this.renderData = [];
@@ -2550,7 +2551,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     const fileType =
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
 
-   
+
     if (this?.sheetsItems?.length > 0) {
       var fileName = 'Time Entry';
       const ws = XLSX.utils.json_to_sheet(this.sheetsItems);
@@ -2576,74 +2577,71 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         IsCheckedService: data?.target?.checked,
       })
     }
-    setTimeout(() => {
-      if (this.state?.IsCheckedComponent == true) {
-        if (this.state.AllTimeEntryBackup != undefined && this.state.AllTimeEntryBackup?.length > 0) {
-          let result = this.state.AllTimeEntryBackup.filter((type: any) => type.PortfolioTypeTitle != undefined && Type != undefined && type.PortfolioTypeTitle.toLowerCase() == 'component');
-          this.setState({
-            AllTimeEntry: result,
-          })
-        }
-      }
-      if (this.state?.IsCheckedService == true) {
-        if (this.state.AllTimeEntryBackup != undefined && this.state.AllTimeEntryBackup?.length > 0) {
-          let result = this.state.AllTimeEntryBackup.filter((type: any) => type.PortfolioTypeTitle != undefined && Type != undefined && type.PortfolioTypeTitle.toLowerCase() == 'service');
-          this.setState({
-            AllTimeEntry: result,
-          })
-        }
-      }
-      if (this.state?.IsCheckedComponent == true && this.state?.IsCheckedService == true) {
-        this.setState({
-          AllTimeEntry: this.state.AllTimeEntryBackup,
-        })
-      }
-      this.AllTimeEntry = this.state?.AllTimeEntry;
-      this.TotalTimeEntry = 0;
-      for (let index = 0; index < this.AllTimeEntry.length; index++) {
-        let timeitem = this.AllTimeEntry[index];
-        this.TotalTimeEntry += timeitem.Effort;
 
-      }
-      this.TotalTimeEntry = (this.TotalTimeEntry).toFixed(2);
-      // this.TotalDays = this.TotalTimeEntry / 8;
-      // this.TotalDays = (this.TotalDays).toFixed(2);
-      let resultSummary = {}
-      let TotalValue = 0, SmartHoursTotal = 0, AdjustedTime = 0, RoundAdjustedTime = 0, totalEntries = 0;
-      if (this.AllTimeEntry.length > 0) {
-        for (let index = 0; index < this.AllTimeEntry.length; index++) {
-          let element = this.AllTimeEntry[index];
-          TotalValue += parseFloat(element.TotalValue);
-          SmartHoursTotal += parseFloat(element.SmartHoursTotal);
-          AdjustedTime += parseFloat(element.AdjustedTime);
-          RoundAdjustedTime += parseFloat(element.RoundAdjustedTime);
-        }
-        resultSummary = {
-          totalTime: this.TotalTimeEntry,
-          // totalDays: this.TotalDays,
-          totalEntries: this.AllTimeEntry.length
-        }
-        // this.setState({
-        //   AllTimeEntry: this.AllTimeEntry,
-        //   // resultSummary,
-        // }, () => this.createTableColumns())
-      }
-    }, 700);
   }
   private PreSetPikerCallBack = (preSetStartDate: any, preSetEndDate: any) => {
     if (preSetStartDate != undefined) {
       this.setState({
-        StartDatePicker: preSetStartDate,
+        SelecteddateChoice: 'Preset',
+        startdate: preSetStartDate,
       })
     }
     if (preSetEndDate != undefined) {
       this.setState({
-        StartEndPicker: preSetEndDate,
+        enddate: preSetEndDate,
+        SelecteddateChoice: 'Preset',
       })
     }
+
     this.setState({
       PresetPopup: false,
     })
+
+  };
+  private SelectAllCategories(ev: any) {
+    let filterItem = this.state.filterItems;
+    let checked: any = [];
+    let select = ev.currentTarget.checked;
+    if (select) {
+      if (filterItem != undefined && filterItem.length > 0) {
+        filterItem.forEach((child: any) => {
+          child.isExpand = false;
+          child.checked =select;
+          checked.push(child.ID);
+          if (child.children != undefined && child.children.length > 0) {
+            child.children.forEach((subchild: any) => {
+              subchild.checked =select;
+              checked.push(subchild.Id);
+              if (subchild.children != undefined && subchild.children.length > 0) {
+                subchild.children.forEach((subchild2: any) => {
+                  subchild2.checked =select;
+                  checked.push(subchild2.Id);
+                  if (subchild2.children != undefined && subchild2.children.length > 0) {
+                    subchild2.children.forEach((subchild3: any) => {
+                      subchild3.checked =select;
+                      checked.push(subchild3.Id);
+                    });
+                  }
+                });
+              }
+            });
+          }
+        });
+      }
+    }
+    else {
+    }
+    this.setState({
+      checked,
+      checkedAll: select
+    });
+  }
+  private onRenderCustomHeaderMains = () => {
+    return (
+      <div className="subheading siteColor">
+        Select Adjusted Time
+      </div>
+    );
   };
   public render(): React.ReactElement<ICategoriesWeeklyMultipleReportProps> {
     const { AllTimeEntry } = this?.state;
@@ -2661,21 +2659,21 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     return (
       <div>
         <div className="col-sm-12 padL-0">
-          <div className="heading">Timesheet</div>
+          <h2 className="heading">Timesheet</h2>
         </div>
 
         <div className="smartFilter bg-light border mb-3 col row">
-          <div className="report-taskuser ps-0 pe-1">
-            <details className='pt-1 m-0' open>
+          <div className="report-taskuser ps-0 pe-1" id="TimeSheet-Section">
+            <details className='pt-1 m-0 allfilter' open>
               <summary>
-                <a className="hreflink pull-left mr-5">All filters :<span className='text-dark'>Task User :</span><span>
+                <a className="fw-semibold hreflink mr-5 pe-2 pull-left">All filters :<span className='text-dark'>Task User :</span><span>
                   {this.state.SelectGroupName}
                 </span> </a>
                 {this.state.ImageSelectedUsers.length <= 3 ? (
                   this.state.ImageSelectedUsers.map(function (obj: any) {
                     return (<span className="marginR41">
                       <img
-                        className="icon-sites-img me-1 ml20"
+                        className="AssignUserPhoto"
                         src={obj.Item_x0020_Cover.Url}
                       ></img>
                     </span>
@@ -2687,7 +2685,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
 
               </summary>
-              <div className="BdrBoxBlue ps-30 mb-3">
+              <div className="subfilters BdrBoxBlue mb-3">
                 <div className="taskTeamBox mt-10">
                   <details className='p-0 m-0' open>
                     <summary>
@@ -2718,7 +2716,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                                           title={item?.AssingedToUser?.Title}
                                           src={item?.Item_x0020_Cover?.Url !== undefined ? item?.Item_x0020_Cover?.Url : 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg'} />
                                       </span> : <span>
-                                        <img id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg seclected-Image suffix_Usericon' : 'suffix_Usericon'} onClick={(e) => this.SelectUserImage(e, item, user)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
+                                        <img id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg seclected-Image ProirityAssignedUserPhoto' : 'ProirityAssignedUserPhoto'} onClick={(e) => this.SelectUserImage(e, item, user)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
                                           title={item?.AssingedToUser?.Title}
                                           src={'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg'} />
                                       </span>
@@ -2740,80 +2738,87 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                       <a>Date</a>
                       <hr></hr>
                     </summary>
-                    <div className=" BdrBoxBlue ps-30 mb-3">
+
+                    <div className="BdrBoxBlue ps-30 mb-3">
                       <div className="taskTeamBox mt-10">
-                        <div className="Weekly-TimeReportDays alignCenter">
-                          <span className='SpfxCheckRadio me-2'>
+                        <div className="Weekly-TimeReportDays">
+                          <span className='SpfxCheckRadio'>
                             <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'Custom'} id="selectedCustom" value="Custom" onClick={() => this.selectDate('Custom')} className="radio" />
                             <label>Custom</label>
                           </span>
-                          <span className='SpfxCheckRadio me-2'>
+                          <span className='SpfxCheckRadio'>
                             <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'today'} id="selectedToday" value="today" onClick={() => this.selectDate('today')} className="radio" />
                             <label>Today</label>
                           </span>
-                          <span className='SpfxCheckRadio me-2'>
+                          <span className='SpfxCheckRadio'>
                             <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'yesterday'} id="selectedYesterday" value="yesterday" onClick={() => this.selectDate('yesterday')} className="radio" />
                             <label> Yesterday </label>
                           </span>
-                          <span className='SpfxCheckRadio me-2'>
+                          <span className='SpfxCheckRadio'>
                             <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'ThisWeek'} id="selectedAll" value="ThisWeek" onClick={() => this.selectDate('ThisWeek')} className="radio" />
                             <label> This Week</label>
                           </span>
-                          <span className='SpfxCheckRadio me-2'>
+                          <span className='SpfxCheckRadio'>
                             <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'LastWeek'} id="selectedAll" value="LastWeek" onClick={() => this.selectDate('LastWeek')} className="radio" />
                             <label> Last Week</label>
                           </span>
-                          <span className='SpfxCheckRadio me-2'>
+                          <span className='SpfxCheckRadio'>
                             <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'EntrieMonth'} id="selectedAll" value="EntrieMonth" onClick={() => this.selectDate('EntrieMonth')} className="radio" />
                             <label>This Month</label>
                           </span>
-                          <span className='SpfxCheckRadio me-2'>
+                          <span className='SpfxCheckRadio'>
                             <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'LastMonth'} id="selectedAll" value="LastMonth" onClick={() => this.selectDate('LastMonth')} className="radio" />
                             <label>Last Month</label>
                           </span>
-                          <span className='SpfxCheckRadio me-2'>
+                          <span className='SpfxCheckRadio'>
                             <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'Last3Month'} value="Last3Month" onClick={() => this.selectDate('Last3Month')} className="radio" />
                             <label>Last 3 Months</label>
                           </span>
-                          <span className='SpfxCheckRadio me-2'>
+                          <span className='SpfxCheckRadio'>
                             <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'EntrieYear'} value="EntrieYear" onClick={() => this.selectDate('EntrieYear')} className="radio" />
                             <label>This Year</label>
                           </span>
-                          <span className='SpfxCheckRadio me-2'>
+                          <span className='SpfxCheckRadio'>
                             <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'LastYear'} value="LastYear" onClick={() => this.selectDate('LastYear')} className="radio" />
                             <label>Last Year</label>
                           </span>
-                          <span className='SpfxCheckRadio me-2'>
+                          <span className='SpfxCheckRadio'>
                             <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'AllTime'} value="AllTime" onClick={() => this.selectDate('AllTime')} className="radio" />
                             <label>All Time</label>
                           </span>
-                          <span className='SpfxCheckRadio me-2 alignCenter'>
+                          <span className='SpfxCheckRadio'>
                             <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'Presettime'} value="Presettime" onClick={() => this.selectDate('Presettime')} className="radio" />
                             <label>Pre-set I</label>
-                            <img className="hreflink wid11 mr-5" onClick={(e) => this.OpenPresetDatePopup('Presettime')} title="open" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" />
-                            <span title="open" className='svg__iconbox svg__icon--editBox light'></span>
+                            {/* <img className="hreflink wid11 mr-5"  title="open" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" /> */}
+                            <span title="open" onClick={(e) => this.OpenPresetDatePopup('Presettime')} className='hreflink alignIcon ms-1 svg__iconbox svg__icon--editBox'></span>
                           </span>
-                          <span className='SpfxCheckRadio me-2 alignCenter'>
+                          {/* <span className='SpfxCheckRadio'>
                             <input type="radio" id="Presettime1" checked={this.state.SelecteddateChoice === 'Presettime1'} name="dateSelection" value="Presettime1" onClick={() => this.selectDate('Presettime1')} className="radio" />
                             <label>Pre-set II</label>
-                            <img className="hreflink wid11 mr-5" onClick={(e) => this.OpenPresetDatePopup('Presettime1')} title="open" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" />
-                            <span title="open" className='svg__iconbox svg__icon--editBox light'></span>
-                          </span>
+                           
+                            <span title="open" onClick={(e) => this.OpenPresetDatePopup('Presettime1')} className='hreflink alignIcon ms-1 svg__iconbox svg__icon--editBox'></span>
+                          </span> */}
                         </div>
                         <div className='row mt-2'>
-                          <div className='col-sm-3'>
-                            <label className="full_width">Start Date</label>
-                            <DatePicker selected={this.state.startdate} dateFormat="dd/MM/yyyy" onChange={(date) => this.setStartDate(date)} className="form-control" />
+                          <div className='col-2 ps-0'>
+                            <div className='input-group'>
+                              <label className="full_width form-label">Start Date</label>
+                              <DatePicker selected={this.state.startdate} dateFormat="dd/MM/yyyy" onChange={(date) => this.setStartDate(date)} className="form-control" />
+                            </div>
                           </div>
-                          <div className='col-sm-3'>
-                            <label className="full_width">End Date</label>
-                            <DatePicker selected={this.state.enddate} dateFormat="dd/MM/yyyy" onChange={(date) => this.setEndDate(date)} className="form-control" />
+                          <div className='col-2'>
+                            <div className='input-group'>
+                              <label className="full_width form-label">End Date</label>
+                              <DatePicker selected={this.state.enddate} dateFormat="dd/MM/yyyy" onChange={(date) => this.setEndDate(date)} className="form-control" />
+                            </div>
                           </div>
                           <div className='col'>
                             <div className='mt-1'>
                               <label className='full_width'>Portfolio Item</label>
-                              <label> <input type="checkbox" checked={this.state?.IsCheckedComponent} className="form-check-input" onClick={(e) => this.SelectedPortfolioItem(e, 'Component')} /> Component</label>
-                              <label><input type="checkbox" checked={this.state?.IsCheckedService} className="form-check-input ml-12" onClick={(e) => this.SelectedPortfolioItem(e, 'Service')} /> Service</label>
+                              <div className='alignCenter'>
+                                <label className='SpfxCheckRadio alignCenter'><input type="checkbox" checked={this.state?.IsCheckedComponent} className="form-check-input me-1" onClick={(e) => this.SelectedPortfolioItem(e, 'Component')} /> Component</label>
+                                <label className='SpfxCheckRadio alignCenter'><input type="checkbox" checked={this.state?.IsCheckedService} className="form-check-input ms-2 me-1" onClick={(e) => this.SelectedPortfolioItem(e, 'Service')} /> Service </label>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -2823,25 +2828,19 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                   <details className='p-0 m-0' open>
                     <summary>
                       <label className="toggler full_width">
-                        <span className="pull-left">
-                          {/* <img className="hreflink wid22" title="Filter" style={{ width: '22px' }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Filter-12-WF.png" /> */}
+                        <a className="pull-left">
                           SmartSearch - Filters
-                        </span>
-
-                        {/* <span className="ml20">
-                        </span>
-
-                        <span className="pull-right">
-                          <span className="hreflink">
-                            <img className="hreflink wid10" style={{ width: '10px' }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/sub_icon.png" />
-                          </span>
-                        </span> */}
+                        </a>
                       </label>
-                      <hr></hr>
+                      <hr className='m-0'></hr>
                     </summary>
                     <div className=" BdrBoxBlue ps-30 mb-3">
                       <div className="taskTeamBox mt-10">
-                        <div className="container p0 mt-10 smartSearch-Filter-Section">
+                        <div className="p-0 mt-10 smartSearch-Filter-Section">
+                          <label className='border-bottom full-width alignCenter pb-1'>
+                            <input defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} id='chkAllCategory' type="checkbox" className="form-check-input me-1 mt-1" />
+                            Client Category
+                          </label>
                           <CheckboxTree
                             nodes={this.state.filterItems}
                             checked={this.state.checked}
@@ -2883,31 +2882,19 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         </div>
 
 
-        <div id="showSearchBox" className="col-sm-12 padL-0 PadR0 mb-10">
-          <div className='Alltable mt-5'>
-            <div className='tbl-headings'>
-
-            </div>
-
+        <div id="showSearchBox" className="col-sm-12 p-0 mb-10">
+          <div className='Alltable'>
             {this.state.AllTimeEntry == undefined && this.state.AllTimeEntry.length == 0 &&
-              <div id="contact" className="col-sm-12 padL-0 PadR0">
+              <div id="contact" className="col-sm-12 p-0">
                 <div className="current_commnet">No entries available</div>
               </div>
             }
 
             {this.state.AllTimeEntry != undefined && this.state.AllTimeEntry.length > 0 &&
 
-              <div id="contact" className="col-sm-12 padL-0 PadR0">
-                {/* <a onClick={this.OpenAdjustedTimePopup} title="Open Adjusted Time Popup">
-                  <i className="fa fa-cog" aria-hidden="true"></i>
-                </a>
-                <a onClick={this.exportToExcel}>
-                  <img className="excal hreflink" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/24/small_excel.png" data-themekey="#"></img>
-                </a> */}
+              <div id="contact" className="col-sm-12 p-0">
                 <div className='table-responsive fortablee'>
-                  <GlobalCommanTable columns={this.columns} data={this.state.AllTimeEntry} showHeader={true} showCatIcon={true} exportToExcelCategoryReport={this.exportToExcel} OpenAdjustedTimePopupCategory={this.OpenAdjustedTimePopup} callBackData={this?.callBackData} showDateTime={this.state.showDateTime} fixedWidth={true} />
-
-                </div>
+                  <GlobalCommanTable columns={this.columns} data={this.state.AllTimeEntry} showHeader={true} showCatIcon={true} exportToExcelCategoryReport={this.exportToExcel} OpenAdjustedTimePopupCategory={this.OpenAdjustedTimePopup} callBackData={this?.callBackData} showDateTime={this.state.showDateTime} fixedWidth={true} /> </div>
               </div>
             }
 
@@ -3049,90 +3036,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             Context={this.context}
           ></TimeEntryPopup>
         )}
-
-        {/* <Panel
-          headerText={'Select Pre-Set Date I'}
-          type={PanelType.custom}
-          customWidth="600px"
-          isOpen={this.state?.PresetPopup}
-          onDismiss={this.cancelPresetPopup}
-          isBlocking={false}
-        >
-
-          <div className="modal-body bg-f5f5 clearfix">
-            <div className="col-sm-12 pad0 form-group">
-              <div className="col-sm-6 padL-0">
-                <div className="date-div">
-                  <div className="Date-Div-BAR">
-                    <span className="href" id="selectedYear"
-                      ng-click="changeDatetodayQuickly('firstOfMonth','PresetStartDatePicker','StartDatePresetPicker','popupOne','newEntry')">1st</span>
-                    | <span className="href" id="selectedYear"
-                      ng-click="changeDatetodayQuickly('fifteenthOfMonth','PresetStartDatePicker','StartDatePresetPicker','popupOne','newEntry')">15th</span>
-                    | <span className="href" id="selectedYear"
-                      ng-click="changeDatetodayQuickly('year','PresetStartDatePicker','StartDatePresetPicker','popupOne','newEntry')">1
-                      Jan</span>
-                    |
-                    <span className="href" id="selectedToday1"
-                      ng-click="changeDatetodayQuickly('today','PresetStartDatePicker','StartDatePresetPicker','popupOne','newEntry')">Today</span>
-                  </div>
-
-                  <div className="col-sm-6 padL-0 mt-2">
-                    <label ng-required="true" className="full_width"></label>
-                    <DatePicker selected={this?.state?.PresetData?.StartDatePicker} dateFormat="dd/MM/yyyy" onChange={(date) => this.setState(prevState => ({ PresetData: { ...prevState.PresetData, StartDatePicker: date } }))} className="form-control" />
-                  </div>
-                  <div className="col-sm-6 padL-0 mt-2">
-                    <label ng-required="true" className="full_width"></label>
-
-                    <DatePicker selected={this?.state?.PresetData?.StartEndPicker} dateFormat="dd/MM/yyyy" onChange={(date) => this.setState(prevState => ({ PresetData: { ...prevState.PresetData, StartEndPicker: date } }))} className="form-control" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-sm-6 pad0 session-control-buttons">
-                <div className="">
-                  <button type="button" id="DayPlus" className="top-container plus-button plus-minus"
-                    ng-click="changeDateQuickly(PresetStartDatePicker,'Increase','PresetStartDatePicker','StartDatePresetPicker',undefined, 'Day', 'newEntry')">
-                    <i className="fa fa-plus" aria-hidden="true"></i></button>
-                  <span className="min-input">Day</span>
-                  <button type="button" id="DayMinus" className="top-container minus-button plus-minus"
-                    ng-click="changeDateQuickly(PresetStartDatePicker,'Decrease','PresetStartDatePicker','StartDatePresetPicker',undefined, 'Day', 'newEntry')">
-                    <i className="fa fa-minus" aria-hidden="true"></i></button>
-                </div>
-
-                <div className="">
-                  <button type="button" id="MonthPlus" className="top-container plus-button plus-minus"
-                    ng-click="changeDateQuickly(PresetStartDatePicker,'Increase','PresetStartDatePicker','StartDatePresetPicker',undefined, 'Month', 'newEntry')"><i
-                      className="fa fa-plus" aria-hidden="true"></i></button>
-                  <span className="min-input">Month</span>
-                  <button type="button" id="MonthMinus" className="top-container minus-button plus-minus"
-                    ng-click="changeDateQuickly(PresetStartDatePicker,'Decrease','PresetStartDatePicker','StartDatePresetPicker',undefined, 'Month', 'newEntry')">
-                    <i className="fa fa-minus" aria-hidden="true"></i></button>
-                </div>
-
-                <div className="">
-                  <button type="button" id="YearPlus" className="top-container plus-button plus-minus"
-                    ng-click="changeDateQuickly(PresetStartDatePicker,'Increase','PresetStartDatePicker','StartDatePresetPicker',undefined, 'Year', 'newEntry')"><i
-                      className="fa fa-plus" aria-hidden="true"></i></button>
-                  <span className="min-input">Year</span>
-                  <button type="button" id="YearMinus" className="top-container minus-button plus-minus"
-                    ng-click="changeDateQuickly(PresetStartDatePicker,'Decrease','PresetStartDatePicker','StartDatePresetPicker',undefined, 'Year', 'newEntry')">
-                    <i className="fa fa-minus" aria-hidden="true"></i></button>
-                </div>
-
-              </div>
-            </div>
-          </div>
-
-          <div className="modal-footer">
-            <button type="button" className="btn btn-primary pull-right" ng-click="SavePresetDate()"
-              title="Save changes & exit">
-              Save
-            </button>
-          </div>
-
-        </Panel> */}
-        <Panel
-          headerText={'Select Adjusted Time'}
+        <Panel onRenderHeader={this.onRenderCustomHeaderMains}
           type={PanelType.custom}
           customWidth="600px"
           isOpen={this.state?.AdjustedTimePopup}
@@ -3141,14 +3045,14 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         >
 
           <div className="modal-body  clearfix">
-            <div className="bg-f5f5 bdrbox allsites clearfix">
-              <div className="col-sm-12" >
+            <div className="bdrbox allsites clearfix p-2">
+              <div className="row" >
                 <div className="col-sm-3">
                   {/* <select className="searchbox_height" name="AdjustedTime" id="cars" onSelect={AdjustedTimeType}>
                     <option value="Percentage">Percentage</option>
                     <option value="Divide">Divide</option>
                   </select> */}
-                  <select className="form-select" defaultValue={this?.state?.AdjustedTimeType} onChange={(e) => this.setState({ AdjustedTimeType: e.target.value })}>
+                  <select className="form-select form-control p-1" defaultValue={this?.state?.AdjustedTimeType} onChange={(e) => this.setState({ AdjustedTimeType: e.target.value })}>
                     {this.state.AdjustedTimeArray.map(function (h: any, i: any) {
                       return (
                         <option key={i} selected={this?.state?.AdjustedTimeType == h.Title} value={h.Title} >{h.Title}</option>
@@ -3157,8 +3061,10 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                   </select>
                 </div>
                 <div className="col-sm-6">
-                  <input id="AdjustedTime" type="search" defaultValue={this?.state?.AdjustedTimeCalcuValue}
-                    placeholder="Adjusted Time" className="form-control" onChange={(e) => this.setState({ AdjustedTimeCalcuValue: e.target.value })} autoComplete="off"></input>
+                  <div className='input-group'>
+                    <input id="AdjustedTime" type="search" defaultValue={this?.state?.AdjustedTimeCalcuValue}
+                      placeholder="Adjusted Time" className="form-control" onChange={(e) => this.setState({ AdjustedTimeCalcuValue: e.target.value })} autoComplete="off"></input>
+                  </div>
                 </div>
                 <div className="col-sm-3">
                   <button type="button" className="btn btn-primary pull-right" onClick={this.SaveAdjustedTime}
@@ -3167,13 +3073,17 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                   </button>
                 </div>
               </div>
-              <div className="col-sm-12">
+              <div className="row mt-1">
                 <div className="col-sm-3">
-                  <label className="form-control">Target</label>
+                  <div className='input-group'>
+                    <label className="form-control">Target</label>
+                  </div>
                 </div>
                 <div className="col-sm-6">
-                  <input type="search" defaultValue={this.state.filledeDays} onChange={(e) => this.setState({ filledeDays: e.target.value })} placeholder="days" className="form-control"
-                    autoComplete="off"></input>
+                  <div className='input-group'>
+                    <input type="search" defaultValue={this.state.filledeDays} onChange={(e) => this.setState({ filledeDays: e.target.value })} placeholder="days" className="form-control"
+                      autoComplete="off"></input>
+                  </div>
                 </div>
                 <div className="col-sm-3">
                   <button type="button" className="btn btn-primary pull-right"
