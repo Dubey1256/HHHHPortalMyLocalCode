@@ -1377,7 +1377,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     <span className='ms-1'>{row?.original?.DisplayDueDate} </span>
 
                 ),
-                filterFn: (row: any, filterValue: any) => {
+                filterFn: (row: any, columnName: any, filterValue: any) => {
                     if (row?.original?.DisplayDueDate?.includes(filterValue)) {
                         return true
                     } else {
@@ -1414,7 +1414,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 resetColumnFilters: false,
                 resetSorting: false,
                 placeholder: "Created",
-                filterFn: (row: any, filterValue: any) => {
+                filterFn: (row: any, columnName: any, filterValue: any) => {
                     if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
                         return true
                     } else {
