@@ -19,7 +19,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 import Loader from "react-loader";
-// import { Bars } from 'react-loader-spinner'
+import { Bars } from 'react-loader-spinner'
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 import SmartFilterSearchGlobal from "../../../globalComponents/SmartFilterGolobalBomponents/SmartFilterGlobalComponents";
@@ -250,6 +250,16 @@ function TeamPortlioTable(SelectedProp: any) {
             console.error("Error fetching portfolio icons:", error);
         }
     };
+
+    function removeHtmlAndNewline(text: any) {
+        if (text) {
+            return text.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
+        } else {
+            return ''; // or any other default value you prefer
+        }
+    }
+
+
     const LoadAllSiteTasks = function () {
         let AllTasksData: any = [];
         let Counter = 0;
@@ -320,19 +330,19 @@ function TeamPortlioTable(SelectedProp: any) {
                             }
 
                             result.chekbox = false;
-                            // if (result?.Body != undefined) {
-                            //     result.descriptionsSearch = result?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
-                            // }
                             if (result?.FeedBack != undefined) {
-                                let feedbackdata: any = JSON.parse(result?.FeedBack);
-                                feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
-                                    let copyTitle = child?.Title?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, "");
-                                    if (copyTitle != undefined && copyTitle != null && copyTitle != "") {
-                                        result.descriptionsSearch = copyTitle
-                                    }
-                                }
-                                )
+                                let DiscriptionSearchData: any = '';
+                                let feedbackdata: any = JSON.parse(result?.FeedBack)
+                                DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
+                                    const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '');
+                                    const subtextText = (child?.Subtext || [])?.map((elem: any) =>
+                                        elem.Title?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '')
+                                    ).join('');
+                                    return childText + subtextText;
+                                }).join('');
+                                result.descriptionsSearch = DiscriptionSearchData
                             }
+
                             try {
                                 if (result?.Comments != null && result?.Comments != undefined) {
                                     const cleanedComments = result?.Comments?.replace(/[^\x20-\x7E]/g, '');
@@ -444,7 +454,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 "DueDate", "Body", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
                 "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete",
                 "ResponsibleTeam/Id", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
-                "Created", "Modified", "Deliverables", "TechnicalExplanations", "Short_x0020_Description_x0020_On", "Help_x0020_Information", "AdminNotes",
+                "Created", "Modified", "Deliverables", "TechnicalExplanations", "Help_x0020_Information", "AdminNotes", "Background", "Idea", "ValueAdded",
             )
             .expand(
                 "Parent", "PortfolioType", "AssignedTo", "ClientCategory", "TeamMembers", "ResponsibleTeam", "Editor", "Author"
@@ -490,13 +500,12 @@ function TeamPortlioTable(SelectedProp: any) {
                 result.DueDate = result?.DueDate.replaceAll("Invalid date", "");
             }
             result.PercentComplete = (result?.PercentComplete * 100).toFixed(0) === "0" ? "" : (result?.PercentComplete * 100).toFixed(0);
-
             if (result.PercentComplete != undefined && result.PercentComplete != '' && result.PercentComplete != null) {
                 result.percentCompleteValue = parseInt(result?.PercentComplete);
             }
-
-            if (result?.Short_x0020_Description_x0020_On != undefined) {
-                result.descriptionsSearch = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
+            if (result?.Deliverables != undefined || result.Short_x0020_Description_x0020_On != undefined || result.TechnicalExplanations != undefined || result.Body != undefined || result.AdminNotes != undefined || result.ValueAdded != undefined
+                || result.Idea != undefined || result.Background != undefined) {
+                result.descriptionsSearch = `${removeHtmlAndNewline(result.Deliverables)} ${removeHtmlAndNewline(result.Short_x0020_Description_x0020_On)} ${removeHtmlAndNewline(result.TechnicalExplanations)} ${removeHtmlAndNewline(result.Body)} ${removeHtmlAndNewline(result.AdminNotes)} ${removeHtmlAndNewline(result.ValueAdded)} ${removeHtmlAndNewline(result.Idea)} ${removeHtmlAndNewline(result.Background)}`;
             }
             try {
                 if (result?.Comments != null && result?.Comments != undefined) {
@@ -1123,18 +1132,6 @@ function TeamPortlioTable(SelectedProp: any) {
         setclickFlatView(false);
         setData(groupByButtonClickData);
     }
-
-
-
-
-
-
-
-
-
-
-
-
     const setTableHeight = () => {
         const table = document.getElementById('runtimeTable');
         const screenHeight = window.innerHeight;
@@ -1674,7 +1671,7 @@ function TeamPortlioTable(SelectedProp: any) {
             setIsOpenActivity(false)
             setIsOpenWorkstream(false)
             setActivityPopup(false)
-        } else {
+        } else if (res?.data) {
             childRef?.current?.setRowSelection({});
             setIsComponent(false);
             setIsTask(false);
@@ -1734,6 +1731,7 @@ function TeamPortlioTable(SelectedProp: any) {
             refreshData();
         }
     }
+
     // new change////
     const CreateActivityPopup = (type: any) => {
         if (checkedList?.TaskType === undefined) {
@@ -1794,6 +1792,8 @@ function TeamPortlioTable(SelectedProp: any) {
         );
     };
     //-------------------------------------------------------------End---------------------------------------------------------------------------------
+
+
     return (
         <div id="ExandTableIds" style={{}}>
             <section className="ContentSection smartFilterSection">
@@ -2002,7 +2002,6 @@ function TeamPortlioTable(SelectedProp: any) {
                 <CreateActivity
                     Call={Call}
                     AllListId={ContextValue}
-                    context={ContextValue.Context}
                     TaskUsers={AllUsers}
                     AllClientCategory={AllClientCategory}
                     LoadAllSiteTasks={LoadAllSiteTasks}
@@ -2025,16 +2024,14 @@ function TeamPortlioTable(SelectedProp: any) {
                     portfolioTypeData={portfolioTypeData}
                 ></CreateWS>
             )} */}
-
             {isOpenWorkstream && (
                 <CreateWS
                     selectedItem={checkedList}
                     Call={Call}
                     AllListId={ContextValue}
                     TaskUsers={AllUsers}
-                    data={data}
-                    context={ContextValue.Context}
-                ></CreateWS>)}
+                    data={data}>
+                </CreateWS>)}
             {IsTask && (
                 <EditTaskPopup
                     Items={SharewebTask}
