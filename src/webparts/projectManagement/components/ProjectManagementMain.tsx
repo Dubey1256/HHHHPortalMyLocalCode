@@ -200,7 +200,7 @@ const ProjectManagementMain = (props: any) => {
     return taskUser;
   }
 
-  const GetMasterData = async () => {
+  const GetMasterData = async (loadtask: any) => {
     if (AllListId?.MasterTaskListID != undefined) {
       try {
         let web = new Web(props?.siteUrl);
@@ -270,7 +270,10 @@ const ProjectManagementMain = (props: any) => {
             if (fetchedProject?.taggedPortfolios != undefined) {
               smartPortfoliosData = fetchedProject.taggedPortfolios
             }
-            LoadAllSiteTasks();
+            if (loadtask == true) {
+              LoadAllSiteTasks();
+            }
+
             setMasterdata((prev: any) => fetchedProject);
           })
 
@@ -313,7 +316,7 @@ const ProjectManagementMain = (props: any) => {
               siteConfig.push(site)
             }
           })
-          GetMasterData();
+          GetMasterData(true);
           LoadAllSiteAllTasks()
         } else {
           siteConfig = smartmeta;
@@ -383,6 +386,7 @@ const ProjectManagementMain = (props: any) => {
     });
   }, []);
 
+
   const LoadAllSiteTasks = async function () {
     let taskComponent: any = TaggedPortfoliosToProject;
 
@@ -425,9 +429,17 @@ const ProjectManagementMain = (props: any) => {
             items.HierarchyData = [];
             items.descriptionsSearch = '';
             items.siteType = config.Title;
-            items.bodys = items.Body != null && items.Body.split('<p><br></p>').join('');
-            if (items?.Body != undefined && items?.Body != null) {
-              items.descriptionsSearch = items?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
+            if (items?.FeedBack != undefined) {
+              let DiscriptionSearchData: any = '';
+              let feedbackdata: any = JSON.parse(items?.FeedBack)
+              DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
+                const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
+                const subtextText = (child?.Subtext || [])?.map((elem: any) =>
+                  elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')
+                ).join('');
+                return childText + subtextText;
+              }).join('');
+              items.descriptionsSearch = DiscriptionSearchData
             }
             items.commentsSearch = items?.Comments != null && items?.Comments != undefined ? items.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
             items.listId = config.listId;
@@ -596,7 +608,7 @@ const ProjectManagementMain = (props: any) => {
   };
   const Call = (propsItems: any, type: any) => {
     if (type === "EditPopup") {
-      GetMasterData();
+      GetMasterData(false);
     }
   };
 
@@ -680,7 +692,7 @@ const ProjectManagementMain = (props: any) => {
 
         })
         .then((res: any) => {
-          GetMasterData();
+          GetMasterData(false);
           smartPortfoliosData = []
           console.log(res);
         });
@@ -748,14 +760,12 @@ const ProjectManagementMain = (props: any) => {
               >
                 {row?.original?.Title}
               </a>
-              {row?.original?.Body !== null &&
-                row?.original?.Body != undefined ? (
+              {row?.original?.descriptionsSearch?.length > 0 ? (
                 <span className="alignIcon">
-                  {" "}
                   <InfoIconsToolTip
                     Discription={row?.original?.bodys}
                     row={row?.original}
-                  />{" "}
+                  />
                 </span>
               ) : (
                 ""
@@ -835,6 +845,9 @@ const ProjectManagementMain = (props: any) => {
         id: 'Priority',
         header: "",
         resetColumnFilters: false,
+        filterFn: (row: any, columnId: any, filterValue: any) => {
+          return row?.original?.PriorityRank == filterValue
+        },
         resetSorting: false,
         size: 75
       },
@@ -894,6 +907,9 @@ const ProjectManagementMain = (props: any) => {
         id: 'PercentComplete',
         placeholder: "% Complete",
         resetColumnFilters: false,
+        filterFn: (row: any, columnId: any, filterValue: any) => {
+          return row?.original?.PercentComplete == filterValue
+        },
         resetSorting: false,
         header: "",
         size: 55
@@ -1123,22 +1139,21 @@ const ProjectManagementMain = (props: any) => {
                         <section>
                           <div>
                             <div className="align-items-center d-flex justify-content-between">
-                              <div className="align-items-center d-flex">
-                                <h2 className="heading">
-                                  <img
-                                    className="circularImage rounded-circle "
-                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Icon_Project.png"
-                                  />
-                                  <>
-                                    <a>{`${Masterdata?.PortfolioStructureID} - ${Masterdata?.Title}`} </a>
-                                  </>
-                                </h2>
+                              <h2 className="heading alignCenter">
+                                <img
+                                  className="circularImage rounded-circle "
+                                  src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Icon_Project.png"
+                                />
+                                <span>
+                                {`${Masterdata?.PortfolioStructureID} - ${Masterdata?.Title}`}
                                 <span
                                   onClick={() => EditComponentPopup(Masterdata)}
-                                  className="mx-2 svg__iconbox svg__icon--edit"
+                                  className="mx-1 svg__iconbox svg__icon--edit alignIcon hreflink"
                                   title="Edit Project"
                                 ></span>
-                              </div>
+                                </span>
+                                
+                              </h2>
                               <div>
                                 <div className="d-flex">
                                   {projectId && (
