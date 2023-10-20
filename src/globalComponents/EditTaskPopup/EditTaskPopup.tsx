@@ -1568,7 +1568,7 @@ const EditTaskPopup = (Items: any) => {
                     setApproverData(finalData);
                     setCheckApproverData(finalData)
                     setApprovalStatus(true);
-                   // setApprovalTaskStatus(true)
+                    // setApprovalTaskStatus(true)
                     // if(isApprovalByStatus == false){
                     //     setApproverData(TaskApproverBackupArray);
                     // }
@@ -2198,8 +2198,8 @@ const EditTaskPopup = (Items: any) => {
                             })
 
                         }
-                        if(ApproverData[0].Id == currentUserId){
-                            EditData.TaskApprovers=[]
+                        if (ApproverData[0].Id == currentUserId) {
+                            EditData.TaskApprovers = []
                         }
 
 
@@ -2364,8 +2364,8 @@ const EditTaskPopup = (Items: any) => {
             if (ApproverData[0].Company != undefined) {
                 EditData.TaskApprovers = ApproverData
                 ApproverData?.map((ApproverInfo) => {
-                    if(ApproverInfo.Id ==  undefined){
-                        ApproverInfo.Id =  ApproverInfo.AssignedToUserId
+                    if (ApproverInfo.Id == undefined) {
+                        ApproverInfo.Id = ApproverInfo.AssignedToUserId
                     }
                 })
                 ApprovalData = ApproverData
@@ -2463,8 +2463,8 @@ const EditTaskPopup = (Items: any) => {
 
         if (ApproverData != undefined && ApproverData?.length > 0) {
             ApproverData?.map((ApproverInfo) => {
-                if(ApproverInfo.Id ==  undefined){
-                    ApproverInfo.Id =  ApproverInfo.ID
+                if (ApproverInfo.Id == undefined) {
+                    ApproverInfo.Id = ApproverInfo.ID
                 }
                 ApproverIds.push(ApproverInfo.Id);
             })
@@ -2916,6 +2916,11 @@ const EditTaskPopup = (Items: any) => {
         let fileName: any = '';
         let tempArray: any = [];
         let SiteUrl = siteUrls;
+
+        if (Items.Items.siteType == "Offshore Tasks") {
+            Items.Items.siteType = "SharewebQA";
+        }
+
         imageList?.map(async (imgItem: any, index: number) => {
             if (imgItem.data_url != undefined && imgItem.file != undefined) {
                 let date = new Date()
