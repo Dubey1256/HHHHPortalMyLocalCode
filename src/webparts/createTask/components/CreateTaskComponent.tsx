@@ -672,7 +672,7 @@ function CreateTaskComponent(props: any) {
         let currentUserId = loggedInUser?.AssingedToUserId
         var AssignedToIds: any[] = [];
         let MailArrayTitle: any[] = [];
-        let AssignedIds: any = [];
+        let ResponsibleIds: any = [];
         let Tasks: any = []
         if (save.taskName.length <= 0) {
             alert("Please Enter The Task Name")
@@ -700,7 +700,7 @@ function CreateTaskComponent(props: any) {
                     if (cat.toLowerCase() === 'design') {
                         AssignedToIds.push(298)
                         TeamMembersIds.push(298);
-                        TeamMembersIds.push(49);
+                        ResponsibleIds.push(49);
                         taskUsers?.map((User: any) => {
                             if (User.Title === 'Design' && burgerMenuTaskDetails.TaskType != "Design" && TeamMembersIds.length === 0 && User.AssingedToUserId != null && User.AssingedToUserId != '' && User.AssingedToUserId != undefined) {
                                 TeamMembersIds.push(User.AssingedToUserId);
@@ -846,7 +846,7 @@ function CreateTaskComponent(props: any) {
                         "DueDate": save.DueDate,
                         "Mileage": save.Mileage,
                         PercentComplete: 0,
-                        ResponsibleTeamId: { "results": AssignedIds },
+                        ResponsibleTeamId: { "results": ResponsibleIds },
                         PortfolioId: portfolioId,
                         TeamMembersId: { "results": TeamMembersIds },
                         // SharewebComponentId: { "results": $scope.SharewebComponent },
@@ -869,8 +869,8 @@ function CreateTaskComponent(props: any) {
                     };
                     if (CategoryTitle?.toLowerCase().indexOf('approval') > -1)
                         item.PercentComplete = 0;
-                    if (AssignedIds.length > 0) {
-                        var ResponsibleTeam = AssignedIds;
+                    if (ResponsibleIds.length > 0) {
+                        var ResponsibleTeam = ResponsibleIds;
                         if (!(CategoryTitle?.toLowerCase().indexOf('bug') > -1)) {
                             if (currentUserId == 23 || currentUserId == 41) {
                                 ResponsibleTeam.push(14);

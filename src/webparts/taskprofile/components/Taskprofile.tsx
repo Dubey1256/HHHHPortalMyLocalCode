@@ -476,7 +476,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
   }
   private GetAllImages(BasicImageInfo: any, AttachmentFiles: any, Attachments: any) {
     let ImagesInfo: any = [];
-
+    let arrangedArray:any=[]
     if (Attachments) {
 
       AttachmentFiles?.map((items: any) => {
@@ -484,8 +484,13 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         items.newFileName = regex;
       })
       // AttachmentFiles?.sort(this.sortAlphaNumericAscending)
-
-      AttachmentFiles?.forEach(function (Attach: any) {
+      if(AttachmentFiles.length>9){
+         arrangedArray = AttachmentFiles.slice(AttachmentFiles?.length-9).concat(AttachmentFiles.slice(0, AttachmentFiles?.length-9));
+      }else{
+        arrangedArray=AttachmentFiles
+      }
+     
+      arrangedArray?.forEach(function (Attach: any) {
         let attachdata: any = [];
         if (BasicImageInfo != null || BasicImageInfo != undefined) {
           attachdata = BasicImageInfo?.filter(function (ingInfo: any, i: any) {
