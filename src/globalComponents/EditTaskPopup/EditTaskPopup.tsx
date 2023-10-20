@@ -2678,7 +2678,7 @@ const EditTaskPopup = (Items: any) => {
         var link = "mailTo:"
             + "?cc:"
             + "&subject=" + " [" + Items.Items.siteType + "-Task ] " + EmailData.Title
-            + "&body=" + `${siteUrls}/SitePages/Task-Profile-spfx.aspx?taskId=${EmailData.ID}` + `%26Site%3D${Items.Items.siteType}`;
+            + "&body=" + `${siteUrls}/SitePages/Task-Profile.aspx?taskId=${EmailData.ID}` + `%26Site%3D${Items.Items.siteType}`;
         window.location.href = link;
     }
 
