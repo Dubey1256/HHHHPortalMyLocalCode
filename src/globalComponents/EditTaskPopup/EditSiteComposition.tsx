@@ -14,10 +14,7 @@ const EditSiteComposition = (Props: any) => {
     const callBack = Props.Call;
     const SmartTotalTimeData = Props.SmartTotalTimeData;
     const selectedClientCategory: any = [];
-    const ComponentTaskCheck = Props.ComponentTaskCheck;
-    const SitesTaggingData = Props.SitesTaggingData;
     const EditData = Props.EditData;
-
     React.useEffect(() => {
         getAllSitesData();
         if (EditData.ClientCategory?.length > 0) {
@@ -147,7 +144,7 @@ const EditSiteComposition = (Props: any) => {
                 <div className="subheading siteColor">
                     Edit Site Composition
                 </div>
-                <Tooltip ComponentId="1268" />
+                <Tooltip ComponentId="1626" />
             </div>
         )
     }
@@ -187,8 +184,8 @@ const EditSiteComposition = (Props: any) => {
                                 callBack={SiteCompositionCallBack}
                                 isServiceTask={ServicesTaskCheck}
                                 // SelectedClientCategory={EditData.ClientCategory}
-                                isPortfolioConncted={ComponentTaskCheck || ServicesTaskCheck ? true : false}
-                                SitesTaggingData={SitesTaggingData}
+                                // isPortfolioConncted={ComponentTaskCheck || ServicesTaskCheck ? true : false}
+                                // SitesTaggingData={EditData}
                                 usedFor={"Task-Profile"}
                                 // ItemId={EditData.Id}
                                 // ListId={EditData.listId}

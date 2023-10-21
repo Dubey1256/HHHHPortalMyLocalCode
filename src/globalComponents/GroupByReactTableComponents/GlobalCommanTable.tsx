@@ -938,8 +938,11 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 <tbody>
                     {table?.getRowModel()?.rows?.map((row: any) => {
                         return (
-                            <tr className={row?.original?.lableColor}
-                                key={row.id}>
+                            <tr
+                                // className={row?.original?.lableColor}
+                                className={row?.original?.IsSCProtected != undefined && row?.original?.IsSCProtected == true ? `Disabled-Link opacity-75 ${row?.original?.lableColor}` : row?.original?.lableColor}
+                                key={row.id}
+                            >
                                 {row.getVisibleCells().map((cell: any) => {
                                     return (
                                         <td className={row?.original?.boldRow} key={cell.id} style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}>

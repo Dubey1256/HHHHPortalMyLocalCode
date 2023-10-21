@@ -133,7 +133,8 @@ const SiteCompositionComponent = (Props: any) => {
 
     useEffect(() => {
         ClientTimeDataBackup = Props.ClientTime != undefined ? JSON.parse(JSON.stringify(Props.ClientTime)) : [];
-        setSiteTypes(SiteData);
+        const ShortedData = getSmartMetadataItemsByTaxType(SiteData, 'Sites');
+        setSiteTypes(ShortedData);
         let tempData: any = [];
         let tempData2: any = [];
         BackupSiteTypeData = []
@@ -208,10 +209,24 @@ const SiteCompositionComponent = (Props: any) => {
                     setProportionalStatus(false);
                 }
             }
+            if (SiteCompositionSettings[0].Protected) {
+                setIsSCProtected(true);
+            }
         }
         getChildDataForSelectedTask()
-    }, [SelectedClientCategoryFromProps])
+    }, [])
 
+    const getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
+        let Items: any = [];
+        metadataItems.map((taxItem: any) => {
+            if (taxItem.TaxType === taxType)
+                Items.push(taxItem);
+        });
+        Items.sort((a: any, b: any) => {
+            return a.SortOrder - b.SortOrder;
+        });
+        return Items;
+    }
 
 
 
@@ -220,8 +235,10 @@ const SiteCompositionComponent = (Props: any) => {
         if (SiteTypes != undefined && SiteTypes.length > 0) {
             SiteTypes.map((DataItem: any, DataIndex: any) => {
                 if (DataIndex == Index) {
+
                     if (DataItem.BtnStatus) {
                         DataItem.BtnStatus = false
+                        DataItem.ClienTimeDescription = 0;
                         setSelectedSiteCount(selectedSiteCount - 1);
                         let TempArray: any = [];
                         if (ClientTimeData != undefined && ClientTimeData.length > 0) {
@@ -232,10 +249,18 @@ const SiteCompositionComponent = (Props: any) => {
                             })
                         }
                         let tempDataForRemove: any = [];
-                        TempArray?.map((dataItem: any) => {
-                            dataItem.ClienTimeDescription = (100 / (selectedSiteCount - 1)).toFixed(1);
-                            tempDataForRemove.push(dataItem);
-                        })
+                        if (ProportionalStatus) {
+                            TempArray?.map((dataItem: any) => {
+                                dataItem.ClienTimeDescription = (100 / (selectedSiteCount - 1)).toFixed(1);
+                                tempDataForRemove.push(dataItem);
+                            })
+                        }
+                        // else {
+                        //     TempArray?.map((dataItem: any) => {
+                        //         dataItem.ClienTimeDescription = 0;
+                        //         tempDataForRemove.push(dataItem);
+                        //     })
+                        // }
                         setClientTimeData(tempDataForRemove);
                         SiteCompositionObject.ClientTime = tempDataForRemove;
                         SiteCompositionObject.selectedClientCategory = SelectedClientCategoryBackupArray;
@@ -248,30 +273,35 @@ const SiteCompositionComponent = (Props: any) => {
                         }
 
                     } else {
-                        DataItem.BtnStatus = true
-                        DataItem.Date = Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY")
-                        DataItem.readOnly = true
-                        setSelectedSiteCount(selectedSiteCount + 1);
-                        const object = {
-                            Title: DataItem.Title,
-                            ClienTimeDescription: (100 / (selectedSiteCount + 1)).toFixed(1),
-                            localSiteComposition: true,
-                            SiteImages: DataItem.Item_x005F_x0020_Cover?.Url,
-                            Date: DataItem.Date
+                        if (DataItem.StartEndDateValidation) {
+                            alert("This site has an end date so you cannot add it to Site Composition.")
+                        } else {
+                            DataItem.BtnStatus = true
+                            DataItem.Date = Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY")
+                            DataItem.readOnly = true
+                            setSelectedSiteCount(selectedSiteCount + 1);
+                            const object = {
+                                Title: DataItem.Title,
+                                ClienTimeDescription: (100 / (selectedSiteCount + 1)).toFixed(1),
+                                localSiteComposition: true,
+                                SiteImages: DataItem.Item_x005F_x0020_Cover?.Url,
+                                Date: DataItem.Date
+                            }
+                            ClientTimeData.push(object);
+                            let tempData: any = [];
+                            ClientTimeData?.map((TimeData: any) => {
+                                TimeData.ClienTimeDescription = (100 / (selectedSiteCount + 1)).toFixed(1);
+                                tempData.push(TimeData);
+                            })
+                            setClientTimeData(tempData);
+                            SiteTaggingFinalData = tempData;
+                            SiteCompositionObject.ClientTime = tempData;
+                            SiteCompositionObject.selectedClientCategory = SelectedClientCategoryBackupArray;
+                            SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
+                            // callBack(SiteCompositionObject, "dataExits");
+                            // callBack(SiteCompositionObject);
+
                         }
-                        ClientTimeData.push(object);
-                        let tempData: any = [];
-                        ClientTimeData?.map((TimeData: any) => {
-                            TimeData.ClienTimeDescription = (100 / (selectedSiteCount + 1)).toFixed(1);
-                            tempData.push(TimeData);
-                        })
-                        setClientTimeData(tempData);
-                        SiteTaggingFinalData = tempData;
-                        SiteCompositionObject.ClientTime = tempData;
-                        SiteCompositionObject.selectedClientCategory = SelectedClientCategoryBackupArray;
-                        SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
-                        // callBack(SiteCompositionObject, "dataExits");
-                        // callBack(SiteCompositionObject);
                     }
                 }
                 TempArray.push(DataItem)
@@ -280,6 +310,7 @@ const SiteCompositionComponent = (Props: any) => {
         setSiteTypes(TempArray);
     }
     // ########### this is used for changing the Client Time Descriptions of slected Site Composition ######################
+
     const ChangeTimeManuallyFunction = (e: any, SiteName: any) => {
         let TempArray: any = [];
         if (SiteTypes != undefined && SiteTypes) {
@@ -401,6 +432,7 @@ const SiteCompositionComponent = (Props: any) => {
             setCheckBoxStatus(false);
             setIsSCProtected(false);
             SiteTaggingFinalData = ClientTimeDataBackup;
+            setSelectedSiteCount(ClientTimeDataBackup?.length > 0 ? ClientTimeDataBackup?.length : 0);
             refreshSiteCompositionConfigurations();
             ChangeSiteCompositionInstant("Manual");
         }
@@ -786,10 +818,6 @@ const SiteCompositionComponent = (Props: any) => {
     }
 
     const UpdateSiteTaggingAndClientCategory = async () => {
-        if (ComponentChildExist) {
-            setComponentChildrenPopupStatus(true);
-        }
-
         let SitesTaggingData: any = [];
         let ClientCategoryIDs: any = [];
         let ClientCategoryData: any = [];
@@ -867,6 +895,9 @@ const SiteCompositionComponent = (Props: any) => {
             }
         }
         if (TaskShuoldBeUpdate) {
+            if (ComponentChildExist) {
+                setComponentChildrenPopupStatus(true);
+            }
             let UpdateSiteInSMD: any = [];
             if (SiteTypes?.length > 0) {
                 SiteTypes.map((siteData: any) => {
@@ -943,7 +974,9 @@ const SiteCompositionComponent = (Props: any) => {
     // ************************ this is for the auto Suggestion fuction for all Client Category ******************
     const closeComponentChildrenPopup = () => {
         setComponentChildrenPopupStatus(false);
-        Props.closePopupCallBack();
+        setTimeout(() => {
+            Props.closePopupCallBack();
+        }, 1000);
     }
 
     const autoSuggestionsForClientCategoryIdividual = (e: any, siteType: any, SiteId: any) => {
@@ -1308,7 +1341,9 @@ const SiteCompositionComponent = (Props: any) => {
                 </span>
             </div>
             <div className="my-2 ">
-                <table className={IsSCProtected == true ? "Disabled-Link table table-bordered mb-1 opacity-75" : "table table-bordered mb-1"}>
+                <table
+                    className="table table-bordered mb-1"
+                >
                     {SiteTypes != undefined && SiteTypes.length > 0 ?
                         <tbody>
                             {SiteTypes?.map((siteData: any, index: any) => {
@@ -1319,9 +1354,15 @@ const SiteCompositionComponent = (Props: any) => {
                                     }
                                     return (
                                         <tr
-                                            className={siteData?.StartEndDateValidation ? "Disabled-Link border-1 bg-th" : 'hreflink border-1'}
+                                            // className={siteData?.StartEndDateValidation ? "Disabled-Link border-1 bg-th" : 'hreflink border-1'}
+                                            className={'hreflink border-1'}
                                         >
-                                            <td scope="row" className="m-0 p-1 align-middle" style={{ width: "3%" }}>
+                                            <td
+                                                scope="row"
+                                                className={IsSCProtected == true ? "Disabled-Link m-0 p-1 align-middle opacity-75" : "m-0 p-1 align-middle"}
+                                                // className="m-0 p-1 align-middle"
+                                                style={{ width: "3%" }}
+                                            >
                                                 {checkBoxStatus ? <input
                                                     className="form-check-input rounded-0 hreflink" type="checkbox"
                                                     checked={siteData.BtnStatus}
@@ -1341,7 +1382,11 @@ const SiteCompositionComponent = (Props: any) => {
                                                 <img src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} style={{ width: '25px' }} className="mx-2" />
                                                 {siteData.Title}
                                             </td>
-                                            <td className="m-0 p-1" style={{ width: "10%" }}>
+                                            <td
+                                                // className="m-0 p-1"
+                                                className={IsSCProtected == true ? "Disabled-Link m-0 p-1 opacity-75" : "m-0 p-1"}
+                                                style={{ width: "10%" }}
+                                            >
                                                 {ProportionalStatus ?
                                                     <>{isPortfolioComposition && siteData.BtnStatus ? <input
                                                         type="number" min="1"
@@ -1367,7 +1412,11 @@ const SiteCompositionComponent = (Props: any) => {
                                             <td className="m-0 p-1 align-middle" style={{ width: "3%" }}>
                                                 <span>{siteData.BtnStatus ? "%" : ''}</span>
                                             </td>
-                                            <td className="m-0 p-1 align-middle" style={checkBoxStatus ? { width: "35%", cursor: "not-allowed", pointerEvents: "none" } : { width: "35%" }}>
+                                            <td
+                                                // className="m-0 p-1 align-middle"
+                                                className={IsSCProtected == true ? "Disabled-Link m-0 p-1 align-middle opacity-75" : "m-0 p-1 align-middle"}
+
+                                                style={checkBoxStatus ? { width: "35%", cursor: "not-allowed", pointerEvents: "none" } : { width: "35%" }}>
                                                 <div>
                                                     {siteData?.StartEndDateValidation ?
                                                         <div>
