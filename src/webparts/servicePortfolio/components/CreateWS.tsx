@@ -460,9 +460,10 @@ const CreateWS = (props: any) => {
                             TeamLeader: inputValue?.ResponsibleTeam,
                             FeedBack:
                                 inputValue?.Description?.length > 0
-                                    ? [FeedBackItem]
+                                    ? JSON.stringify([FeedBackItem])
                                     : null,
                             Item_x0020_Type: 'Task',
+                            descriptionsSearch:"",
                             Author: {
                                 Id: props?.context?.pageContext?.legacyPageContext?.userId
                             },
@@ -473,6 +474,19 @@ const CreateWS = (props: any) => {
                             }
                         }
                     }
+                    if (item?.FeedBack != undefined) {
+                        let DiscriptionSearchData: any = '';
+                        let feedbackdata: any =JSON.parse(item?.FeedBack);
+                        DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
+                            const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
+                            const subtextText = (child?.Subtext || [])?.map((elem: any) =>
+                                elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')
+                            ).join('');
+                            return childText + subtextText;
+                        }).join('');
+                        item.descriptionsSearch = DiscriptionSearchData
+                    }
+    
                     item.TaskID = globalCommon.GetTaskId(item);
                     if (item.DisplayDueDate == "Invalid date" || "") {
                         item.DisplayDueDate = item.DisplayDueDate.replaceAll(

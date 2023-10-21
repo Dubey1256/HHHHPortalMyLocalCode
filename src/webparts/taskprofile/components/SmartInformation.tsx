@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Tooltip from '../../../globalComponents/Tooltip';
-import { useState, useEffect,forwardRef,useImperativeHandle } from 'react';
+import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { Button, Tabs, Tab, Col, Nav, Row } from 'react-bootstrap';
 import EditDocument from './EditDocunentPanel'
@@ -19,10 +19,10 @@ import { Mention } from 'react-mentions';
 let AllTasktagsmartinfo: any = [];
 let hhhsmartinfoId: any = [];
 let taskUser: any = [];
-let mastertaskdetails: any=[];
+let mastertaskdetails: any = [];
 let MovefolderItemUrl2 = "";
-let addSmartInfoPopupAddlinkDoc2=false;
-const SmartInformation = (props: any,ref:any) => {
+let addSmartInfoPopupAddlinkDoc2 = false;
+const SmartInformation = (props: any, ref: any) => {
   const [show, setShow] = useState(false);
   const [popupEdit, setpopupEdit] = useState(false);
   const [smartInformationArrow, setsmartInformationArrow] = useState(true);
@@ -32,7 +32,7 @@ const SmartInformation = (props: any,ref:any) => {
   const [addSmartInfoPopupAddlinkDoc, setaddSmartInfoPopupAddlinkDoc] = useState(false)
   // const [imageTabOpen, setImageTabOpen] = useState(false);
   const [filterSmartinfo, setFiltersmartinfo] = useState([]);
- 
+
   const [isopencomonentservicepopup, setisopencomonentservicepopup] = useState(false);
   // const [componentpopup, setcomponentpopup] = useState(false);
   // const [servicespopup, setservicespopup] = useState(false);
@@ -55,19 +55,19 @@ const SmartInformation = (props: any,ref:any) => {
   const [folderCreated, setFolderCreated] = useState(true)
   // const [taskUser,setTaskUser]=useState([]);
   const handleClose = () => {
-    if(addSmartInfoPopupAddlinkDoc2==false){
+    if (addSmartInfoPopupAddlinkDoc2 == false) {
 
-   
-    setpopupEdit(false);
-    setshowAdddocument(false);
-    setSelectedTilesTitle("")
-    setShow(false);
-    seteditvalue(null);
-    setallSetValue({ ...allValue, Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [] });
-    if(props.showHide==="projectManagement"||props.showHide ==="ANCTaskProfile"){
-      console.log(props.remarkData)
-      props.setRemark(false)
-     }
+
+      setpopupEdit(false);
+      setshowAdddocument(false);
+      setSelectedTilesTitle("")
+      setShow(false);
+      seteditvalue(null);
+      setallSetValue({ ...allValue, Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [] });
+      if (props.showHide === "projectManagement" || props.showHide === "ANCTaskProfile") {
+        console.log(props.remarkData)
+        props.setRemark(false)
+      }
     }
   }
   const handleClosedoc = () => {
@@ -86,36 +86,36 @@ const SmartInformation = (props: any,ref:any) => {
       setShow(true);
     } else {
       setallSetValue({ ...allValue, Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [] });
-      if(props.showHide==="projectManagement"){
-        setallSetValue({...allValue,InfoType:"Remarks"})
+      if (props.showHide === "projectManagement") {
+        setallSetValue({ ...allValue, InfoType: "Remarks" })
         // props.setRemark(false)
-       }else{
+      } else {
         setallSetValue({ ...allValue, Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [] });
-       }
-     
+      }
+
       setShow(true);
     }
 
   }
 
   useEffect(() => {
-    if((props?.showHide=="projectManagement")&&props.editSmartInfo){
-      handleShow(props.RemarkData.SmartInformation[0],"edit")
-    }if((props?.showHide=="projectManagement")&&props.editSmartInfo==false){
-      handleShow(null,"add")
+    if ((props?.showHide == "projectManagement") && props.editSmartInfo) {
+      handleShow(props.RemarkData.SmartInformation[0], "edit")
+    } if ((props?.showHide == "projectManagement") && props.editSmartInfo == false) {
+      handleShow(null, "add")
     }
-    LoadMasterTaskList().then((data:any)=>{
+    LoadMasterTaskList().then((data: any) => {
       console.log(data)
       GetTaskUsers()
       GetResult();
     })
- 
+
     // GetResult();
-  
+
   }, [show])
-  useImperativeHandle(ref,()=>({
+  useImperativeHandle(ref, () => ({
     GetResult
-}))
+  }))
 
   //=========== TaskUser Management=====================
   const GetTaskUsers = async () => {
@@ -128,7 +128,7 @@ const SmartInformation = (props: any,ref:any) => {
       .filter("ItemType eq 'User'")
       .expand('AssingedToUser')
       .get();
- 
+
     if (taskUsers.length > 0) {
       taskUser = taskUser.concat(taskUsers);
     }
@@ -142,14 +142,19 @@ const SmartInformation = (props: any,ref:any) => {
     AllTasktagsmartinfo = [];
     let web = new Web(props.AllListId?.siteUrl);
     let taskDetails: any = [];
-
+    let query = '';
+    if (props?.listName == 'Master Tasks') {
+      query = "Id,Title,SmartInformation/Id,SmartInformation/Title&$expand=SmartInformation"
+    }else {
+      query = "Id,Title,Portfolio/Id,Portfolio/Title,SmartInformation/Id,SmartInformation/Title&$expand=SmartInformation,Portfolio"
+      
+    }
     taskDetails = await web.lists
       .getByTitle(props?.listName)
       // .getById(props.AllListId.SiteTaskListID)
       .items
       .getById(props?.Id)
-      .select("Id", "Title", "Portfolio/Id", "Portfolio/Title", "SmartInformation/Id", "SmartInformation/Title")
-      .expand("SmartInformation", "Portfolio")
+      .select(query)
       .get()
     console.log(taskDetails);
     if (taskDetails != undefined) {
@@ -164,34 +169,34 @@ const SmartInformation = (props: any,ref:any) => {
 
   }
   // ============master task list  to find the serice or component tag in the documents  ============
-  const LoadMasterTaskList = ()=> {
-    return new Promise(function(resolve, reject) {
+  const LoadMasterTaskList = () => {
+    return new Promise(function (resolve, reject) {
 
-    let web = new Web(props.AllListId?.siteUrl);
-     web.lists
-      .getById(props?.AllListId.MasterTaskListID).items
-      .select(
-        "Id",
-        "Title",
-        "Mileage",
-        "TaskListId",
-        "TaskListName",
-        "PortfolioType/Id",
-        "PortfolioType/Title",
-        "PortfolioType/Color",
-      ).expand("PortfolioType").top(4999).get()
-      .then((dataserviccomponent: any) => {
-        console.log(dataserviccomponent)
-        mastertaskdetails = mastertaskdetails.concat(dataserviccomponent);
-    
-        setallSetValue({ ...allValue, masterTaskdetails: mastertaskdetails })
-        // return dataserviccomponent
-        resolve(dataserviccomponent)
-  
-      }).catch((error: any) => {
-        console.log(error)
-        reject(error)
-      })
+      let web = new Web(props.AllListId?.siteUrl);
+      web.lists
+        .getById(props?.AllListId.MasterTaskListID).items
+        .select(
+          "Id",
+          "Title",
+          "Mileage",
+          "TaskListId",
+          "TaskListName",
+          "PortfolioType/Id",
+          "PortfolioType/Title",
+          "PortfolioType/Color",
+        ).expand("PortfolioType").top(4999).get()
+        .then((dataserviccomponent: any) => {
+          console.log(dataserviccomponent)
+          mastertaskdetails = mastertaskdetails.concat(dataserviccomponent);
+
+          setallSetValue({ ...allValue, masterTaskdetails: mastertaskdetails })
+          // return dataserviccomponent
+          resolve(dataserviccomponent)
+
+        }).catch((error: any) => {
+          console.log(error)
+          reject(error)
+        })
     })
   }
 
@@ -246,7 +251,7 @@ const SmartInformation = (props: any,ref:any) => {
 
   const TagDocument = (allSmartInformationglobal: any) => {
     console.log(mastertaskdetails)
- 
+
     var allSmartInformationglobaltagdocuments: any = [];
     console.log(AllTasktagsmartinfo)
     if (allSmartInformationglobal != undefined && allSmartInformationglobal?.length > 0) {
@@ -261,8 +266,8 @@ const SmartInformation = (props: any,ref:any) => {
           .then(async (result: any[]) => {
             console.log(result);
             result?.map((servicecomponent: any) => {
-              servicecomponent.Title=servicecomponent.Title.replace('.',"")
-              servicecomponent.Description=servicecomponent?.Body
+              servicecomponent.Title = servicecomponent.Title.replace('.', "")
+              servicecomponent.Description = servicecomponent?.Body
               if (servicecomponent.Portfolios != undefined && servicecomponent.Portfolios.length > 0) {
                 mastertaskdetails.map((mastertask: any) => {
                   if (mastertask.Id == servicecomponent.Portfolios[0].Id) {
@@ -443,7 +448,7 @@ const SmartInformation = (props: any,ref:any) => {
 
   const saveSharewebItem = async () => {
     var movefolderurl = `${props?.Context?._pageContext?._web.serverRelativeUrl}/Lists/SmartInformation`
-     let infotypeSelectedData:any
+    let infotypeSelectedData: any
     console.log(movefolderurl);
     console.log(allValue);
     if ((allValue?.Title == "" && allValue?.Description != "") || (allValue?.Title != "" && allValue?.Description == "") || (allValue?.Title != "" && allValue?.Description != "")) {
@@ -452,7 +457,7 @@ const SmartInformation = (props: any,ref:any) => {
         SmartMetaData?.map((item: any) => {
           if (item?.Title == allValue?.InfoType) {
             metaDataId = item?.Id;
-            infotypeSelectedData=item
+            infotypeSelectedData = item
           }
         })
       }
@@ -481,33 +486,33 @@ const SmartInformation = (props: any,ref:any) => {
           .items.getById(editvalue?.Id).update(postdata)
           .then(async (editData: any) => {
             console.log(editData)
-            if(props.showHide==="projectManagement"){
+            if (props.showHide === "projectManagement") {
               console.log(props.RemarkData)
-              let restdata=editData
-              let urlcallback:any={
+              let restdata = editData
+              let urlcallback: any = {
                 Url: postdata?.URL?.Url,
-                Description:postdata?.URL?.Description
+                Description: postdata?.URL?.Description
               }
               // urlcallback.
-              let backupremarkdata=props.RemarkData
-              restdata.Created=postdata.Created;
-              restdata.Description=postdata.Description;
-              restdata.URL=urlcallback;
-              restdata.Id=editvalue?.Id
-              restdata.ID=editvalue?.Id
-              restdata.InfoType=infotypeSelectedData;
-              restdata.SelectedFolder=postdata.SelectedFolder;
-              restdata.Title=postdata.Title;
-              restdata.Acronym=postdata.Acronym;
+              let backupremarkdata = props.RemarkData
+              restdata.Created = postdata.Created;
+              restdata.Description = postdata.Description;
+              restdata.URL = urlcallback;
+              restdata.Id = editvalue?.Id
+              restdata.ID = editvalue?.Id
+              restdata.InfoType = infotypeSelectedData;
+              restdata.SelectedFolder = postdata.SelectedFolder;
+              restdata.Title = postdata.Title;
+              restdata.Acronym = postdata.Acronym;
               // backupremarkdata?.SmartInformation[0]?.push(res?.data)
-              backupremarkdata?.SmartInformation.splice(0, 1,restdata);
-              if(props?.setRemark!=undefined){
+              backupremarkdata?.SmartInformation.splice(0, 1, restdata);
+              if (props?.setRemark != undefined) {
                 props.setRemark(false)
               }
-              
-   
-             }
-            
+
+
+            }
+
             GetResult();
             handleClose();
           })
@@ -522,9 +527,9 @@ const SmartInformation = (props: any,ref:any) => {
           .items.add(postdata)
           .then(async (res: any) => {
             console.log(res);
-            
+
             setPostSmartInfo(res)
-            
+
             hhhsmartinfoId.push(res?.data?.ID)
             await web.lists.getByTitle(props?.listName)
               // await web.lists.getById(props.AllListId.SiteTaskListID)
@@ -536,31 +541,31 @@ const SmartInformation = (props: any,ref:any) => {
                 }
               ).then(async (data: any) => {
                 console.log(data);
-               if(props.showHide==="projectManagement"&& addSmartInfoPopupAddlinkDoc2==false){
-                console.log(props.RemarkData)
-                let backupremarkdata=props?.RemarkData
-               res.data.InfoType={}
-               res.data.InfoType=infotypeSelectedData;
-               if(backupremarkdata?.SmartInformation!=undefined){
-                backupremarkdata?.SmartInformation?.push(res?.data)
-               }
-               if(props?.callback!=undefined||null){
-                props?.callback()
-              }
-                if(  props.setRemark!=undefined||null){
-                  props.setRemark(false)
+                if (props.showHide === "projectManagement" && addSmartInfoPopupAddlinkDoc2 == false) {
+                  console.log(props.RemarkData)
+                  let backupremarkdata = props?.RemarkData
+                  res.data.InfoType = {}
+                  res.data.InfoType = infotypeSelectedData;
+                  if (backupremarkdata?.SmartInformation != undefined) {
+                    backupremarkdata?.SmartInformation?.push(res?.data)
+                  }
+                  if (props?.callback != undefined || null) {
+                    props?.callback()
+                  }
+                  if (props.setRemark != undefined || null) {
+                    props.setRemark(false)
+                  }
+
+
+
                 }
-             
-               
-             
-               }
-               
-                if(addSmartInfoPopupAddlinkDoc2==false){
-                   GetResult();
+
+                if (addSmartInfoPopupAddlinkDoc2 == false) {
+                  GetResult();
                   handleClose();
                 }
-               
-               
+
+
 
               }).catch((err) => {
                 console.log(err.message);
@@ -576,7 +581,7 @@ const SmartInformation = (props: any,ref:any) => {
       alert("plese fill the Title")
       // setallSetValue({...allValue,AstricMesaage:true})
       setaddSmartInfoPopupAddlinkDoc(false)
-      addSmartInfoPopupAddlinkDoc2=false;
+      addSmartInfoPopupAddlinkDoc2 = false;
     }
 
 
@@ -606,30 +611,30 @@ const SmartInformation = (props: any,ref:any) => {
         .items.getById(DeletItemId).recycle()
         .then((res: any) => {
           console.log(res);
-          if(props.showHide==="projectManagement"){
+          if (props.showHide === "projectManagement") {
             console.log(props.RemarkData)
-            let backupremarkdata=props?.RemarkData
-            if(backupremarkdata.SmartInformation!==undefined||null){
-              backupremarkdata.SmartInformation=[];
+            let backupremarkdata = props?.RemarkData
+            if (backupremarkdata.SmartInformation !== undefined || null) {
+              backupremarkdata.SmartInformation = [];
             }
-             if(props.setRemark!=undefined||null){
+            if (props.setRemark != undefined || null) {
               props.setRemark(false)
-             }
-          
-           }
+            }
+
+          }
           handleClose();
-  
+
         })
         .catch((err) => {
           console.log(err.message);
         });
     }
-   
+
   };
 
   //========delete function documents  list items ==================
 
- 
+
   //======== add document when i click to add document in profile page =========.
 
   const addDocument = async (Status: any, items: any) => {
@@ -639,11 +644,11 @@ const SmartInformation = (props: any,ref:any) => {
     }
     else {
       setaddSmartInfoPopupAddlinkDoc(true);
-      addSmartInfoPopupAddlinkDoc2=true;
+      addSmartInfoPopupAddlinkDoc2 = true;
       await saveSharewebItem();
       // if (addSmartInfoPopupAddlinkDoc) {
-        alert('Information saved now items can be attached.');
-        setshowAdddocument(true)
+      alert('Information saved now items can be attached.');
+      setshowAdddocument(true)
       // }
 
     }
@@ -745,7 +750,7 @@ const SmartInformation = (props: any,ref:any) => {
         var tagcomponetServicesId: any;
 
 
-        if (taskInfo.Portfolio != undefined ) {
+        if (taskInfo?.Portfolio != undefined) {
           tagcomponetServicesId = taskInfo.Portfolio.Id;
 
         }
@@ -764,7 +769,7 @@ const SmartInformation = (props: any,ref:any) => {
             SmartInformationId: { "results": smartDocumentpostData != undefined ? [smartDocumentpostData?.Id] : [smartinfoData?.Id] },
             Title: fileName.split(".")[0],
             PortfoliosId: { "results": tagcomponetServicesId != undefined ? [tagcomponetServicesId] : [] },
-            Body:allValue?.Description,
+            Body: allValue?.Description,
             Url: {
               "__metadata": { type: 'SP.FieldUrlValue' },
               'Description': allValue?.LinkUrl != "" ? allValue?.LinkUrl : "",
@@ -779,13 +784,13 @@ const SmartInformation = (props: any,ref:any) => {
         } else {
           alert("Document(s) upload successfully");
         }
-        addSmartInfoPopupAddlinkDoc2=false;
+        addSmartInfoPopupAddlinkDoc2 = false;
         handleClose();
-        if(props.showHide==="projectManagement"){
-        if(props?.callback!=undefined||null){
-                props?.callback()
-              }
-            }
+        if (props.showHide === "projectManagement") {
+          if (props?.callback != undefined || null) {
+            props?.callback()
+          }
+        }
         GetResult();
         setshowAdddocument(false)
       })
@@ -809,7 +814,7 @@ const SmartInformation = (props: any,ref:any) => {
         .then((res: any) => {
           console.log(res);
           alert("task created")
-          addSmartInfoPopupAddlinkDoc2=false;
+          addSmartInfoPopupAddlinkDoc2 = false;
           GetResult();
           handleClose();
           setshowAdddocument(false)
@@ -828,13 +833,13 @@ const SmartInformation = (props: any,ref:any) => {
     setEditdocpanel(true);
     console.log(editData)
     if (editData?.Portfolios != undefined && editData?.Portfolios?.length > 0) {
-        
+
       // if (editData?.Portfolio?.Portfolio_x0020_Type == "Component") {
-        if (editData?.Portfolio!=undefined) {
+      if (editData?.Portfolio != undefined) {
         setallSetValue({ ...allValue, componentservicesetdataTag: editData?.Portfolio })
         // setservicespopup(false);
         // setcomponentpopup(true);
-      } 
+      }
       // else {
       //   setallSetValue({ ...allValue, componentservicesetdataTag: editData?.SharewebTask[0] })
 
@@ -844,7 +849,7 @@ const SmartInformation = (props: any,ref:any) => {
     }
     setEditdocumentsData(editData);
   }
-  const callbackeditpopup=()=>{
+  const callbackeditpopup = () => {
     GetResult();
     setEditdocpanel(false);
   }
@@ -939,10 +944,10 @@ const SmartInformation = (props: any,ref:any) => {
       //   setallSetValue({ ...allValue, componentservicesetdataTag: DataItem[0] })
       // }
       // if (Type == "Service") {
-        setallSetValue({ ...allValue, componentservicesetdataTag: DataItem[0] })
-      }
-      setisopencomonentservicepopup(false);
-    
+      setallSetValue({ ...allValue, componentservicesetdataTag: DataItem[0] })
+    }
+    setisopencomonentservicepopup(false);
+
     // else {
     //   setisopencomonentservicepopup(false);
     // }
@@ -1021,44 +1026,44 @@ const SmartInformation = (props: any,ref:any) => {
     console.log(data)
     setEditdocumentsData(data);
   }, [])
-const closeDoc=()=>{
-  addSmartInfoPopupAddlinkDoc2=false;
-  handleClose()
-}
+  const closeDoc = () => {
+    addSmartInfoPopupAddlinkDoc2 = false;
+    handleClose()
+  }
   return (
     <div>
-      
-     { (props?.showHide!="projectManagement" && SmartInformation?.length > 0) &&<div className='mb-3 card commentsection'>
+
+      {(props?.showHide != "projectManagement" && SmartInformation?.length > 0) && <div className='mb-3 card commentsection'>
         <div className='card-header'>
           <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">SmartInformation
-          <span className='alignCenter'>
-         <span onClick={() => handleShow(null, "add")} className='svg__iconbox svg__icon--Plus mini hreflink' title="Add SmartInformation"></span>
-            <Tooltip ComponentId='993' /></span></div>
+            <span className='alignCenter'>
+              <span onClick={() => handleShow(null, "add")} className='svg__iconbox svg__icon--Plus mini hreflink' title="Add SmartInformation"></span>
+              <Tooltip ComponentId='993' /></span></div>
         </div>
 
         {SmartInformation != null && SmartInformation.length > 0 && <div className="Sitecomposition p-2">{SmartInformation?.map((SmartInformation: any, i: any) => {
-          if((props?.Context?.pageContext?.legacyPageContext?.userId==SmartInformation?.Author?.Id && SmartInformation?.SelectedFolder=="Only For Me")||SmartInformation.SelectedFolder=="Public"){
+          if ((props?.Context?.pageContext?.legacyPageContext?.userId == SmartInformation?.Author?.Id && SmartInformation?.SelectedFolder == "Only For Me") || SmartInformation.SelectedFolder == "Public") {
             return (
               <>
-               <div className='border dropdown mt-2 '>
+                <div className='border dropdown mt-2 '>
                   <div className='bg-ee d-flex py-1 '>
                     <span className='full-width'>
                       <a onClick={() => showhideComposition(SmartInformation)}>
                         <span >{smartInformationArrow ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span >
                         <span className="pe-3">{SmartInformation?.Title != undefined ? SmartInformation?.Title : ""}</span>
                       </a>
-  
+
                     </span>
                     <span className='alignCenter'>
                       <a style={{ cursor: "pointer" }}
                         onClick={() => handleShow(SmartInformation, "edit")}>
-                          <span className='svg__iconbox svg__icon--editBox hreflink' title="Edit SmartInformation"></span></a>
+                        <span className='svg__iconbox svg__icon--editBox hreflink' title="Edit SmartInformation"></span></a>
                       <a style={{ cursor: "pointer" }} onClick={() => addDocument("AddDocument", SmartInformation)}>
                         <span className='svg__iconbox svg__icon--Plus mini hreflink' title="Add Document"></span>
                       </a>
                     </span>
                   </div>
-  
+
                   <div className="border-0 border-bottom m-0 spxdropdown-menu" style={{ display: smartInformationArrow ? 'block' : 'none', fontSize: "small" }}>
                     <div className="p-1 px-2" style={{ fontSize: "small" }} dangerouslySetInnerHTML={{ __html: SmartInformation?.Description != null ? SmartInformation?.Description : "No description available" }}></div>
                     {SmartInformation?.TagDocument != undefined && SmartInformation?.TagDocument?.length > 0 && SmartInformation?.TagDocument?.map((item: any, index: any) => {
@@ -1087,7 +1092,7 @@ const closeDoc=()=>{
                             <li className='d-end'>
                               <span title="Edit" className="svg__iconbox svg__icon--edit hreflink" onClick={() => editDocumentsLink(item)}></span>
                             </li>
-  
+
                           </ul>
                         </div>
                       )
@@ -1116,7 +1121,7 @@ const closeDoc=()=>{
                 <div></div>
               </>)
           }
-          
+
         })}
 
         </div>}
@@ -1141,7 +1146,7 @@ const closeDoc=()=>{
                 Select Permission:
               </dt>
               <dt className='SpfxCheckRadio '><input type="radio" className='radio' checked={allValue?.SelectedFolder == "Public"} value="Public" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>Global</label></dt>
-              <dt className='SpfxCheckRadio '><input type="radio" className='radio'   checked={allValue?.SelectedFolder == "Only For Me"} value="Only For Me" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>Only for me</label></dt>
+              <dt className='SpfxCheckRadio '><input type="radio" className='radio' checked={allValue?.SelectedFolder == "Only For Me"} value="Only For Me" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>Only for me</label></dt>
 
               {/* <dt><input type="radio" checked={allValue?.SelectedFolder == "Memberarea"} value="Memberarea" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>Memberarea</label></dt> */}
               {/* <dt><input type="radio" checked={allValue?.SelectedFolder == "EDA"} value="EDA" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>EDA Only</label></dt>
@@ -1207,8 +1212,8 @@ const closeDoc=()=>{
               <Button className='btn btn-default mx-1' onClick={() => handleClose()}>
                 Cancel
               </Button>
-              
-              
+
+
             </div>
           </div>
         </footer>
@@ -1298,7 +1303,7 @@ const closeDoc=()=>{
                 <span>{allValue?.emailDragdrop != "" ? allValue?.emailDragdrop : ""}</span>
               </div>
             </DragDropFiles>
-            <div className='text-lg-end mt-2'><Button className='btn btn-default text-end  btn btn-primary' onClick={() =>closeDoc()}>Cancel</Button></div>
+            <div className='text-lg-end mt-2'><Button className='btn btn-default text-end  btn btn-primary' onClick={() => closeDoc()}>Cancel</Button></div>
           </div>}
           {SelectedTilesTitle === "CreateLink" && <div><div className="card mt-3 ">
             <div className="card-header">
@@ -1327,11 +1332,11 @@ const closeDoc=()=>{
       </Panel>
 
       {/* ===============edit  uploaded documents and link both  data panel============== */}
-      {Editdocpanel&&<EditDocument  editData={EditdocumentsData} AllListId={props.AllListId}Context={props.Context}editdocpanel={Editdocpanel}callbackeditpopup={callbackeditpopup}/>}
-     {allValue.EditTaskpopupstatus && <EditTaskPopup Items={EditTaskdata} context={props?.Context} AllListId={props?.AllListId} Call={() => { CallBack() }} />}
+      {Editdocpanel && <EditDocument editData={EditdocumentsData} AllListId={props.AllListId} Context={props.Context} editdocpanel={Editdocpanel} callbackeditpopup={callbackeditpopup} />}
+      {allValue.EditTaskpopupstatus && <EditTaskPopup Items={EditTaskdata} context={props?.Context} AllListId={props?.AllListId} Call={() => { CallBack() }} />}
       {/* {isopencomonentservicepopup && componentpopup && <ComponentPortPolioPopup props={allValue?.componentservicesetdata} Call={ServiceComponentCallBack} Dynamic={props.AllListId}></ComponentPortPolioPopup>}
       {isopencomonentservicepopup && servicespopup && <LinkedComponent props={allValue?.componentservicesetdata} Call={ServiceComponentCallBack} Dynamic={props.AllListId}></LinkedComponent>} */}
-      {isopencomonentservicepopup  &&
+      {isopencomonentservicepopup &&
         <ServiceComponentPortfolioPopup
 
           props={allValue?.componentservicesetdata}
