@@ -823,11 +823,14 @@ const EditTaskPopup = (Items: any) => {
                         TempData?.map((itemdata: any) => {
                             ShareWebCompositionStatus = itemdata.ClienTimeDescription;
                         })
-                        if ((ShareWebConfigData != undefined || ShareWebCompositionStatus == 100) && item.ClientTime?.length == 1) {
+                        let SCDataTemp: any = item.ClientTime?.length > 0 ? JSON.parse(item.ClientTime) : [];
+                        if ((ShareWebConfigData != undefined || ShareWebCompositionStatus == 100) && SCDataTemp?.length == 1) {
                             let siteConfigData = JSON.parse(ShareWebConfigData != undefined ? ShareWebConfigData : [{}]);
                             tempData = siteConfigData[0].SiteComposition;
                             let siteSeetingJSON = [{ "Manual": true, "Proportional": false, "Portfolio": false }]
                             item.SiteCompositionSettings = JSON.stringify(siteSeetingJSON);
+                        } else {
+                            tempData = JSON.parse(item.ClientTime)
                         }
                     } else {
                         tempData = JSON.parse(item.ClientTime)

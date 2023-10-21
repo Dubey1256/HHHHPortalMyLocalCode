@@ -194,6 +194,10 @@ const SiteCompositionComponent = (Props: any) => {
                 setIsPortfolioComposition(true);
                 setCheckBoxStatus(true)
             }
+            if (SiteCompositionSettings[0].Protected) {
+                setIsProtectedSiteComposition(true);
+
+            }
         }
 
         if (SelectedTaskDetails.Portfolio?.length > 0) {
@@ -241,25 +245,29 @@ const SiteCompositionComponent = (Props: any) => {
                         // }
 
                     } else {
-                        DataItem.BtnStatus = true
-                        setSelectedSiteCount(selectedSiteCount + 1);
-                        const object = {
-                            SiteName: DataItem.Title,
-                            ClienTimeDescription: (100 / (selectedSiteCount + 1)).toFixed(1),
-                            localSiteComposition: true,
-                            siteIcons: DataItem.Item_x005F_x0020_Cover
+                        if (DataItem.StartEndDateValidation) {
+                            alert("This site has an end date so you cannot add it to Site Composition.")
+                        } else {
+                            DataItem.BtnStatus = true
+                            setSelectedSiteCount(selectedSiteCount + 1);
+                            const object = {
+                                SiteName: DataItem.Title,
+                                ClienTimeDescription: (100 / (selectedSiteCount + 1)).toFixed(1),
+                                localSiteComposition: true,
+                                siteIcons: DataItem.Item_x005F_x0020_Cover
+                            }
+                            ClientTimeData.push(object);
+                            let tempData: any = [];
+                            ClientTimeData?.map((TimeData: any) => {
+                                TimeData.ClienTimeDescription = (100 / (selectedSiteCount + 1)).toFixed(1);
+                                tempData.push(TimeData);
+                            })
+                            setClientTimeData(tempData);
+                            SiteCompositionObject.ClientTime = tempData;
+                            SiteTaggingFinalData = tempData;
+                            SiteCompositionObject.selectedClientCategory = SelectedClientCategoryBackupArray;
+                            // callBack(SiteCompositionObject, "dataExits");
                         }
-                        ClientTimeData.push(object);
-                        let tempData: any = [];
-                        ClientTimeData?.map((TimeData: any) => {
-                            TimeData.ClienTimeDescription = (100 / (selectedSiteCount + 1)).toFixed(1);
-                            tempData.push(TimeData);
-                        })
-                        setClientTimeData(tempData);
-                        SiteCompositionObject.ClientTime = tempData;
-                        SiteTaggingFinalData = tempData;
-                        SiteCompositionObject.selectedClientCategory = SelectedClientCategoryBackupArray;
-                        // callBack(SiteCompositionObject, "dataExits");
                     }
                 }
                 TempArray.push(DataItem)
@@ -1118,7 +1126,7 @@ const SiteCompositionComponent = (Props: any) => {
                                     }
                                     return (
                                         <tr
-                                            className={siteData?.StartEndDateValidation ? "Disabled-Link bg-th" : 'hreflink border-1'}
+                                        // className={siteData?.StartEndDateValidation ? "Disabled-Link bg-th" : 'hreflink border-1'}
                                         >
                                             <th
                                                 scope="row"
