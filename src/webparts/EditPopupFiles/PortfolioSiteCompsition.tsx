@@ -443,7 +443,7 @@ const SiteCompositionComponent = (Props: any) => {
                 setIsSCProtected(false);
             } else {
                 SiteCompositionSettings[0].Protected = true;
-                SiteTaggingFinalData = ClientTimeData;
+                // SiteTaggingFinalData = ClientTimeData;
                 setIsSCProtected(true);
             }
         }
@@ -1107,7 +1107,9 @@ const SiteCompositionComponent = (Props: any) => {
                 ClientCategoryIds = TempArray.filter((val: any, id: any, array: any) => {
                     return array.indexOf(val) == id;
                 })
-                UpdateOnBackendSide(web, ItemData.listId, ClientCategoryIds, ItemData.Id, "MasterTask");
+                if (ItemData.IsSCProtected == false || ItemData.IsSCProtected == undefined || ItemData.IsSCProtected == null) {
+                    UpdateOnBackendSide(web, ItemData.listId, ClientCategoryIds, ItemData.Id, "SiteTasks");
+                }
             })
         }
         if (SiteTaskListData?.length > 0) {
@@ -1123,7 +1125,9 @@ const SiteCompositionComponent = (Props: any) => {
                 ClientCategoryIds = TempArray.filter((val: any, id: any, array: any) => {
                     return array.indexOf(val) == id;
                 })
-                UpdateOnBackendSide(web, ItemData.listId, ClientCategoryIds, ItemData.Id, "SiteTasks");
+                if (ItemData.IsSCProtected == false || ItemData.IsSCProtected == undefined || ItemData.IsSCProtected == null) {
+                    UpdateOnBackendSide(web, ItemData.listId, ClientCategoryIds, ItemData.Id, "SiteTasks");
+                }
             })
         }
         closeComponentChildrenPopup();
