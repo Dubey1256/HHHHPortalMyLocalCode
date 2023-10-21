@@ -823,7 +823,7 @@ const EditTaskPopup = (Items: any) => {
                         TempData?.map((itemdata: any) => {
                             ShareWebCompositionStatus = itemdata.ClienTimeDescription;
                         })
-                        if (ShareWebConfigData != undefined || ShareWebCompositionStatus == 100) {
+                        if ((ShareWebConfigData != undefined || ShareWebCompositionStatus == 100) && item.ClientTime?.length == 1) {
                             let siteConfigData = JSON.parse(ShareWebConfigData != undefined ? ShareWebConfigData : [{}]);
                             tempData = siteConfigData[0].SiteComposition;
                             let siteSeetingJSON = [{ "Manual": true, "Proportional": false, "Portfolio": false }]
@@ -2917,6 +2917,11 @@ const EditTaskPopup = (Items: any) => {
         let fileName: any = '';
         let tempArray: any = [];
         let SiteUrl = siteUrls;
+
+        if (Items.Items.siteType == "Offshore Tasks") {
+            Items.Items.siteType = "SharewebQA";
+        }
+
         imageList?.map(async (imgItem: any, index: number) => {
             if (imgItem.data_url != undefined && imgItem.file != undefined) {
                 let date = new Date()
