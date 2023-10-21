@@ -1105,7 +1105,9 @@ const SiteCompositionComponent = (Props: any) => {
                 </span>
             </div>
             <div className="my-2">
-                <table className={IsProtectedSiteComposition == true ? "Disabled-Link table table-bordered mb-1 opacity-75" : "table table-bordered mb-1"}>
+                <table
+                    className={"table table-bordered mb-1"}
+                >
                     {SiteTypes != undefined && SiteTypes.length > 0 ?
                         <tbody>
                             {SiteTypes?.map((siteData: any, index: any) => {
@@ -1118,7 +1120,11 @@ const SiteCompositionComponent = (Props: any) => {
                                         <tr
                                             className={siteData?.StartEndDateValidation ? "Disabled-Link bg-th" : 'hreflink border-1'}
                                         >
-                                            <th scope="row" style={{ width: "3%" }}>
+                                            <th
+                                                scope="row"
+                                                className={IsProtectedSiteComposition == true ? "Disabled-Link opacity-75" : ""}
+                                                style={{ width: "3%" }}
+                                            >
                                                 <div className="m-0 p-1 align-middle">
                                                     {checkBoxStatus ? <input
                                                         className="form-check-input" type="checkbox"
@@ -1135,13 +1141,19 @@ const SiteCompositionComponent = (Props: any) => {
                                                     />}
                                                 </div>
                                             </th>
-                                            <td className="m-0 p-1 align-middle" style={{ width: "30%" }}>
+                                            <td
+                                                className={IsProtectedSiteComposition == true ? "Disabled-Link m-0 p-1 align-middle opacity-75" : "m-0 p-1 align-middle"}
+                                                // className="m-0 p-1 align-middle" 
+                                                style={{ width: "30%" }}>
                                                 <div className="alignCenter">
                                                     <img src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} style={{ width: '25px' }} className="mx-2" />
                                                     {siteData.Title}
                                                 </div>
                                             </td>
-                                            <td style={{ width: "12%" }}>
+                                            <td
+                                                style={{ width: "12%" }}
+                                                className={IsProtectedSiteComposition == true ? "Disabled-Link opacity-75" : ""}
+                                            >
                                                 <div className="alignCenter">
                                                     {ProportionalStatus ?
                                                         <>{isPortfolioComposition && siteData.BtnStatus ? <input
