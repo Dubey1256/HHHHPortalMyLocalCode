@@ -223,24 +223,20 @@ export default function Sitecomposition(datas: any) {
   }, [])
   return (
     <>
-      {!isDirectPopup && (<dl key={key} className="Sitecomposition">
-        <div className='dropdown'>
-          <a className="sitebutton bg-fxdark d-flex"
-          >
-            <span onClick={() => showhideComposition()} >
-              {showComposition ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}
-            </span>
-            <div className="d-flex justify-content-between full-width">
-              <p className="pb-0 mb-0">Site Composition</p>
-              <p className="input-group-text mb-0 pb-0" title="Edit Site Composition" onClick={() => setEditSiteCompositionStatus(true)}>
+      {!isDirectPopup && (<dl key={key} className="Sitecomposition PortfioP">
+      <details open>
+                          <summary className="alignCenter">
+                            <label className="toggler full_width">
+                              <a className="pull-left">
+                              Site Composition
+                              </a>
+                              <p className="input-group-text mb-0 pb-0" title="Edit Site Composition" onClick={() => setEditSiteCompositionStatus(true)}>
                 <span className="svg__iconbox svg__icon--editBox"></span>
               </p>
-            </div>
-          </a>
-          <div className="spxdropdown-menu"
-            style={{ display: showComposition ? 'block' : 'none' }}
-          >
-            <ul>
+                            </label>
+                          </summary>
+                          <div className="border border-top-0 p-2">
+                          <ul className="p-0 m-0">
               {ClientTimeArray?.map((cltime: any, i: any) => {
                 if (cltime.Title != "CompositionHistoryArray") {
                   return (
@@ -265,9 +261,10 @@ export default function Sitecomposition(datas: any) {
                 }
               })}
             </ul>
-          </div>
-        </div>
-      </dl>)}
+                          </div>
+                        </details>
+      </dl>
+      )}
 
       <Panel
         onRenderHeader={onRenderCustomCalculateSC}

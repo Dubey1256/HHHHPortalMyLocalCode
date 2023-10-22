@@ -132,7 +132,7 @@ const App = (props: any) => {
   const [m, setm]: any = React.useState(false);
   const [events, setEvents]: any = React.useState([]);
   let compareData: any = [];
-  // const [isOpsetIsOpen]:any = React.useState(false);
+  // const [isOpen, setIsOpen]:any = React.useState(false);
   // const [name, setName]:any = React.useState('');
   const [startDate, setStartDate]: any = React.useState(null);
   const [endDate, setEndDate]: any = React.useState(null);
@@ -209,7 +209,6 @@ const App = (props: any) => {
             fontSize: "20px",
             fontWeight: "600",
             marginLeft: "20px"
-            
           }}
         >
           <span>
@@ -310,9 +309,9 @@ const App = (props: any) => {
             /* tslint:disable:no-unused-expression */
             (await mapEvents())
               ? window.localStorage.setItem(
-                  "calendarEventsWithLocalTime",
-                  JSON.stringify(events)
-                )
+                "calendarEventsWithLocalTime",
+                JSON.stringify(events)
+              )
               : null;
           }
         } else {
@@ -321,9 +320,9 @@ const App = (props: any) => {
           //we also needs to map through the events the first time and save the mapped version to local storage
           (await mapEvents())
             ? window.localStorage.setItem(
-                "calendarEventsWithLocalTime",
-                JSON.stringify(events)
-              )
+              "calendarEventsWithLocalTime",
+              JSON.stringify(events)
+            )
             : null;
         }
       }
@@ -426,18 +425,15 @@ const App = (props: any) => {
   const openm = () => {
     setm(true);
   };
-  const closem = (e:any) => {    
-    if( e != undefined && e?.type === 'mousedown' )
-     setm(true);
-    else
-     setm(false);
-
+  const closem = () => {
+    setm(false);
     setInputValueName("");
     setStartDate(null);
     setEndDate(null);
     // setType("");
     sedType("");
     setInputValueReason("");
+    setDisableTime(false);
   };
 
   const handleInputChangeName = (
@@ -624,7 +620,7 @@ const App = (props: any) => {
         .then((i: any) => {
           //console.log(i);
           void getData();
-           closem(undefined);
+          closem();
           closeModal();
           void getData();
         });
@@ -642,7 +638,7 @@ const App = (props: any) => {
           if (newRecurrenceEvent) {
             await saveRecurrenceEvent();
             void getData();
-             closem(undefined);
+            closem();
             setIsChecked(false);
             setSelectedTime(selectedTime);
             setSelectedTimeEnd(selectedTimeEnd);
@@ -714,7 +710,7 @@ const App = (props: any) => {
             .then((res: any) => {
               //console.log(res);
               void getData();
-               closem(undefined);
+              closem();
               setIsChecked(false);
               setSelectedTime(selectedTime);
               setSelectedTimeEnd(selectedTimeEnd);
@@ -1154,7 +1150,7 @@ const App = (props: any) => {
     if (editRecurrenceEvent) {
       await saveRecurrenceEvent();
       void getData();
-      closem(undefined);
+      closem();
       setIsChecked(false);
       setSelectedTime(selectedTime);
       setSelectedTimeEnd(selectedTimeEnd);
@@ -1180,7 +1176,7 @@ const App = (props: any) => {
       const date = moment(startDate);
       date.tz("Asia/Kolkata");
       const time = date.format();
-      
+
       const dateend = moment(endDate);
       dateend.tz("Asia/Kolkata");
       const timeend = date.format();
@@ -1225,7 +1221,7 @@ const App = (props: any) => {
       .then((i: any) => {
         //console.log(i);
         void getData();
-        closem(undefined);
+        closem();
         setSelectedTime(startTime);
         setSelectedTimeEnd(endTime);
       });
@@ -1249,7 +1245,7 @@ const App = (props: any) => {
       //setEndDate(event.end);
       setdisabl(false);
       setIsChecked(event.alldayevent);
-      if (event.alldayevent == true) {
+      if (event?.alldayevent === true) {
         setDisableTime(true);
       }
       setLocation(event.location);
@@ -1297,7 +1293,7 @@ const App = (props: any) => {
         MDate = moment(item.mTime).format("DD-MM-YYYY");
         MTime = moment(item.mTime).tz("Asia/Kolkata").format("HH:mm")
         CDate = moment(item.cTime).format("DD-MM-YYYY");
-        CTime =moment(item.cTime).tz("Asia/Kolkata").format("HH:mm")
+        CTime = moment(item.cTime).tz("Asia/Kolkata").format("HH:mm")
         setSelectedTime(moment(item.start).tz("Asia/Kolkata").format("HH:mm"));
         setSelectedTimeEnd(moment(item.end).tz("Asia/Kolkata").format("HH:mm"));
         setType(item.eventType);
@@ -1465,7 +1461,7 @@ const App = (props: any) => {
   };
 
   const closeModal = () => {
-    setIsOpen(false);    
+    setIsOpen(false);
   };
   const emailCallback = React.useCallback(() => {
     getData();
@@ -1559,7 +1555,7 @@ const App = (props: any) => {
           headerText={`Leaves of ${dt}`}
           isOpen={isOpen}
           onDismiss={closeModal}
-          /// isFooterAtBottom={true}
+          // isFooterAtBottom={true}
           type={PanelType.medium}
           closeButtonAriaLabel="Close"
         >
@@ -1600,7 +1596,7 @@ const App = (props: any) => {
       <Panel
         onRenderHeader={onRenderCustomHeader}
         isOpen={m}
-        onDismiss={(e:any)=>closem(e)}
+        onDismiss={closem}
         // isFooterAtBottom={true}
         type={PanelType.medium}
         closeButtonAriaLabel="Close"
@@ -1636,7 +1632,7 @@ const App = (props: any) => {
                 label="Start Date"
                 minDate={minDate}
                 value={startDate}
-                onSelectDate={(date) => setStartDatefunction(date)}
+                onSelectDate={(date: any) => setStartDatefunction(date)}
                 hidden={showRecurrenceSeriesInfo}
               />
             </div>
@@ -1664,7 +1660,7 @@ const App = (props: any) => {
                 value={endDate}
                 minDate={startDate}
                 maxDate={maxD}
-                onSelectDate={(date) => setEndDate(date)}
+                onSelectDate={(date: any) => setEndDate(date)}
               />
             </div>
           )}
@@ -1740,7 +1736,7 @@ const App = (props: any) => {
             options={leaveTypes}
             selectedKey={type}
             // defaultSelectedKey="Un-Planned" // Set the defaultSelectedKey to the key of "Planned Leave"
-            onChange={(e, option) => setType(option.key)}
+            onChange={(e: any, option: any) => setType(option.key)}
             required // Add the "required" attribute
             errorMessage={type ? "" : "Please select a leave type"} // Display an error message if no type is selected
           />
@@ -1748,7 +1744,7 @@ const App = (props: any) => {
             label="Team"
             options={Designation}
             selectedKey={dType}
-            onChange={(e, option) => sedType(option.key)}
+            onChange={(e: any, option: any) => sedType(option.key)}
             required
           />
           <div className="col-md-12">
@@ -1855,7 +1851,6 @@ const App = (props: any) => {
               type="button"
               className="btn btn-default  px-3"
               onClick={closem}
-              
             >
               Cancel
             </button>
@@ -1866,7 +1861,6 @@ const App = (props: any) => {
         ) : (
           ""
         )}
-        
       </Panel>
     </div>
   );

@@ -98,7 +98,8 @@ const EditTaskPopup = (Items: any) => {
     const Context = Items?.context;
     const AllListIdData = Items?.AllListId;
     AllListIdData.listId = Items?.Items?.listId;
-    Items.Items.Id = Items?.Items?.ID;
+    // Items.Items.Id = Items?.Items?.ID;
+    Items.Items.Id = Items.Items.Id !=undefined ?Items.Items.Id :Items.Items.ID;
     let ShareWebConfigData: any = [];
     const [TaskImages, setTaskImages] = useState([]);
     const [SmartMetaDataAllItems, setSmartMetaDataAllItems] = useState<any>([]);
