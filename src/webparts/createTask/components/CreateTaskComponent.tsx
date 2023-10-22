@@ -331,20 +331,19 @@ function CreateTaskComponent(props: any) {
                     SitesTypes?.map(async (site: any) => {
                         if (site?.Title?.toLowerCase() == SDCSiteType?.toLowerCase()) {
                             const lists = web.lists.getById(site?.listId)
-                            await lists.items.select('Id,Title,ComponentLink').getAll().then((data: any) => {
+                            await lists.items.select('Id,Title,ComponentLink,component_x0020_link').getAll().then((data: any) => {
                                 data?.map((task: any, index: any) => {
                                     if (task?.ComponentLink?.Url == SDCTaskUrl) {
                                         window.open(base_Url + "/SitePages/Task-Profile.aspx?taskId=" + task?.Id + "&Site=" + site?.Title, "_self")
                                         isTaskFound = true;
-                                    }else if(task?.component_x0020_link?.Url == SDCTaskUrl){
+                                    } else if (task?.component_x0020_link?.Url == SDCTaskUrl) {
                                         window.open(base_Url + "/SitePages/Task-Profile.aspx?taskId=" + task?.Id + "&Site=" + site?.Title, "_self")
                                         isTaskFound = true;
-                                    }
-                                    if (index == data?.length - 1 && !isTaskFound) {
+                                    } else if (index == data?.length - 1 && !isTaskFound) {
                                         creatSDCTas();
                                     }
                                 })
-                                if (data?.length > 0 && !isTaskFound) {
+                                if (data?.length == 0 && !isTaskFound) {
                                     creatSDCTas();
                                 }
                             })
@@ -752,7 +751,7 @@ function CreateTaskComponent(props: any) {
                             if (MailName?.Title == 'Design' && loggedInUser?.AssingedToUserId != 49 && User?.Title == 'Robert Ungethuem') {
                                 RecipientMail.push(User);
                             }
-                            
+
                         });
                     }
                 });
@@ -924,17 +923,17 @@ function CreateTaskComponent(props: any) {
                         }
                         let SDCRecipientMail: any = []
                         if (burgerMenuTaskDetails?.SDCTaskId?.length > 0) {
-                            if(data?.data!=undefined){
+                            if (data?.data != undefined) {
                                 data.data.SDCAuthor = burgerMenuTaskDetails?.SDCCreatedBy;
                                 taskUsers?.map((User: any) => {
-                                    if (User?.Title?.toLowerCase() == 'abhishek tiwari') {
+                                    if (User?.Title?.toLowerCase() == 'robert ungethuem' || User?.Title?.toLowerCase() == 'stefan hochhuth') {
                                         SDCRecipientMail.push(User);
                                     }
                                 });
-                                // globalCommon.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, SDCRecipientMail, 'Client Task', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
-                                //     console.log(response);
-                                // });
-                            }   
+                                globalCommon.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, SDCRecipientMail, 'Client Task', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
+                                    console.log(response);
+                                });
+                            }
                         }
                         if (CategoryTitle?.indexOf("Design") > -1) {
                             setSendApproverMail(true);
