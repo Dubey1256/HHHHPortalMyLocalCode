@@ -27,6 +27,7 @@ import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIco
 import PageLoader from "../../../globalComponents/pageLoader";
 import CreateActivity from "../../servicePortfolio/components/CreateActivity";
 import CreateWS from '../../servicePortfolio/components/CreateWS';
+import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 //import RestructuringCom from "../../../globalComponents/Restructuring/RestructuringCom";
 var filt: any = "";
 var ContextValue: any = {};
@@ -113,7 +114,13 @@ function PortfolioTable(SelectedProp: any) {
   // Load all time entry for smart time 
 
 
-
+  function removeHtmlAndNewline(text:any) {
+    if (text) {
+        return text.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
+    } else {
+        return ''; // or any other default value you prefer
+    }
+}
 
   // load all time entry end  
 
@@ -686,19 +693,17 @@ function PortfolioTable(SelectedProp: any) {
       result.DisplayCreateDate = Moment(result.Created).format("DD/MM/YYYY");
 
       result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
-      if (result?.Short_x0020_Description_x0020_On != undefined) {
-        result.descriptionsSearch =
-          result.Short_x0020_Description_x0020_On.replace(
-            /(<([^>]+)>)/gi,
-            ""
-          ).replace(/\n/g, "");
-      }
+      if (result?.Deliverables != undefined || result.Short_x0020_Description_x0020_On != undefined || result.TechnicalExplanations != undefined || result.Body != undefined || result.AdminNotes != undefined || result.ValueAdded != undefined
+        || result.Idea != undefined || result.Background != undefined) {
+        result.descriptionsSearch = `${removeHtmlAndNewline(result.Deliverables)} ${removeHtmlAndNewline(result.Short_x0020_Description_x0020_On)} ${removeHtmlAndNewline(result.TechnicalExplanations)} ${removeHtmlAndNewline(result.Body)} ${removeHtmlAndNewline(result.AdminNotes)} ${removeHtmlAndNewline(result.ValueAdded)} ${removeHtmlAndNewline(result.Idea)} ${removeHtmlAndNewline(result.Background)}`;
+    }
       if (result?.Comments != null) {
         result.commentsSearch = result?.Comments.replace(
           /(<([^>]+)>)/gi,
           ""
         ).replace(/\n/g, "");
       }
+
       result.Id = result.Id != undefined ? result.Id : result.ID;
       if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
         map(result.AssignedTo, (Assig: any) => {
@@ -1098,17 +1103,17 @@ function PortfolioTable(SelectedProp: any) {
                   title={row?.original?.TaskType?.Title}
                   className={
                     row?.original?.Item_x0020_Type == "SubComponent"
-                      ? "ml-12 workmember ml20 me-1"
+                      ? "workmember ml20 me-1"
                       : row?.original?.Item_x0020_Type == "Feature"
-                        ? "ml-24 workmember ml20 me-1"
+                        ? "ml-12 workmember ml20 me-1"
                         : row?.original?.TaskType?.Title == "Activities"
-                          ? "ml-36 workmember ml20 me-1"
+                          ? "ml-24 workmember ml20 me-1"
                           : row?.original?.TaskType?.Title == "Workstream"
-                            ? "ml-48 workmember ml20 me-1"
+                            ? "ml-36 workmember ml20 me-1"
                             : row?.original?.TaskType?.Title == "Task" ||
                               (row?.original?.Item_x0020_Type === "Task" &&
                                 row?.original?.TaskType == undefined)
-                              ? "ml-60 workmember ml20 me-1"
+                              ? "ml-48 workmember ml20 me-1"
                               : "workmember ml20 me-1"
                   }
                   src={row?.original?.SiteIcon}
@@ -1124,15 +1129,15 @@ function PortfolioTable(SelectedProp: any) {
                     }}
                     className={
                       row?.original?.Item_x0020_Type == "SubComponent"
-                        ? "ml-12 Dyicons"
+                        ? "Dyicons"
                         : row?.original?.Item_x0020_Type == "Feature"
-                          ? "ml-24 Dyicons"
+                          ? "ml-12 Dyicons"
                           : row?.original?.TaskType?.Title == "Activities"
-                            ? "ml-36 Dyicons"
+                            ? "ml-24 Dyicons"
                             : row?.original?.TaskType?.Title == "Workstream"
-                              ? "ml-48 Dyicons"
+                              ? "ml-36 Dyicons"
                               : row?.original?.TaskType?.Title == "Task"
-                                ? "ml-60 Dyicons"
+                                ? "ml-48 Dyicons"
                                 : "Dyicons"
                     }
                   >
@@ -1156,7 +1161,9 @@ function PortfolioTable(SelectedProp: any) {
         accessorFn: (row) => row?.TaskID,
         cell: ({ row, getValue }) => (
           <>
-            <ReactPopperTooltip ShareWebId={getValue()} row={row} />
+            {/* <ReactPopperTooltip ShareWebId={getValue()} row={row} /> */}
+            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTasksData} AllSitesTaskData={AllSiteTasksData} AllListId={SelectedProp?.NextProp} />
+          
           </>
         ),
         id: "TaskID",
