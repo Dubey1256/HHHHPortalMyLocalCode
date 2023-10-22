@@ -1414,14 +1414,6 @@ function ComponentChildDataTable(SelectedProp: any) {
         size: 131
       },
       {
-        accessorKey: "PercentComplete",
-        placeholder: "Status",
-        header: "",
-        resetColumnFilters: false,
-        size: 42,
-        id: "PercentComplete"
-      },
-      {
         accessorFn: (row) => row?.IsSCProtected,
         cell: ({ row }) => (
           <span>{row?.original?.IsSCProtected == true ? "Protected" : ""}</span>
@@ -1433,6 +1425,15 @@ function ComponentChildDataTable(SelectedProp: any) {
         resetSorting: false,
         size: 100,
       },
+      {
+        accessorKey: "PercentComplete",
+        placeholder: "Status",
+        header: "",
+        resetColumnFilters: false,
+        size: 42,
+        id: "PercentComplete"
+      },
+
       {
         accessorFn: (row) => row?.compositionType,
         cell: ({ row }) => (
