@@ -409,18 +409,6 @@ function Portfolio({ SelectedProp,TaskUser }: any) {
   const   relevantDocRef:any = React.createRef();
   const   smartInfoRef :any= React.createRef();
   const [data, setTaskData] = React.useState([]);
-  const [isActive, setIsActive] = React.useState(false);
-  const [array, setArray] = React.useState([]);
-  const [datas, setdatas] = React.useState([]);
-  const [datam, setdatam] = React.useState([]);
-  const [datak, setdatak] = React.useState([]);
-  const [dataj, setdataj] = React.useState([]);
-  const [datams, setdatams] = React.useState([]);
-  const [datamb, setdatamb] = React.useState([]);
-  const [datahelp, setdatahelp] = React.useState([]);
-  const [datatech, setdatatech] = React.useState([]);
-  const [dataQues, setdataQues] = React.useState([]);
-  const [dataHelp, setdataHelp] = React.useState([]);
   const [Projecto, setProjecto] = React.useState(true);
   const [FolderData, SetFolderData] = React.useState([]);
   const [keydoc, Setkeydoc] = React.useState([]);
@@ -452,71 +440,7 @@ function Portfolio({ SelectedProp,TaskUser }: any) {
     setPortfolioTypeData(PortFolioType);
   };
   ID = getQueryVariable("taskId");
-  const handleOpen = (item: any) => {
-    setIsActive((current) => !current);
-    item.show = !item.show;
-    setArray((array) => [...array]);
-  };
-
-  const handleOpen1 = (item: any) => {
-    item.showl = !item.showl;
-    setdatam((datam) => [...datam]);
-  };
-  const handleOpen2 = (item: any) => {
-    item.shows = !item.shows;
-    setdatas((datas) => [...datas]);
-  };
-
-  const handleOpen4 = (item: any) => {
-    setIsActive((current) => !current);
-    setIsActive(true);
-    item.showj = !item.showj;
-    setdataj((dataj) => [...dataj]);
-  };
-  const handleOpen5 = (item: any) => {
-    setIsActive((current) => !current);
-    setIsActive(true);
-    item.showm = !item.showm;
-    setdatams((datams) => [...datams]);
-  };
-  const handleOpen6 = (item: any) => {
-    setIsActive((current) => !current);
-    setIsActive(true);
-    item.showb = !item.showb;
-    setdatamb((datamb) => [...datamb]);
-  };
-  const handleOpen7 = (item: any) => {
-    setIsActive((current) => !current);
-    setIsActive(true);
-    item.showhelp = !item.showhelp;
-    setdatahelp((datahelp) => [...datahelp]);
-  };
-  const handleOpen8 = (item: any) => {
-    setIsActive((current) => !current);
-    setIsActive(true);
-    item.showQues = !item.showQues;
-    setdataQues((dataQues) => [...dataQues]);
-  };
-  const handleOpen9 = (item: any) => {
-    setIsActive((current) => !current);
-    setIsActive(true);
-    item.showtech = !item.showtech;
-    setdatatech((datatech) => [...datatech]);
-  };
-  const handleOpen10 = (item: any) => {
-    setIsActive((current) => !current);
-    setIsActive(true);
-    item.showHelp = !item.showHelp;
-    setdataHelp((dataHelp) => [...dataHelp]);
-  };
-  const showhideprojects = () => {
-    if (Projecto) {
-      setProjecto(false);
-    } else {
-      setProjecto(true);
-    }
-  };
-  React.useEffect(() => {
+    React.useEffect(() => {
     
     let folderId: any = "";
 
@@ -714,16 +638,7 @@ function Portfolio({ SelectedProp,TaskUser }: any) {
   }, []);
   // Get All User
   
-  function open() {
-    data.map((item: any) => {
-      handleOpen(item);
-      handleOpen1(item);
-      handleOpen2(item);
-
-      handleOpen4(item);
-    });
-  }
-
+ 
   data.map((item) => {
     if (item?.PortfolioType?.Title != undefined) {
       TypeSite = item?.PortfolioType?.Title;
@@ -954,15 +869,17 @@ const  contextCall = (data: any, path: any, component: any) => {
             <div className="d-flex justify-content-between p-0">
               <ul className="spfxbreadcrumb m-0 p-0">
                 <li>
-                  <a href="#">
-                    <FaHome />{" "}
+                <a target="_blank" 
+                  rel="noopener" 
+                  data-interception="off"
+                  href={SelectedProp.siteUrl + "/SitePages/Team-Portfolio.aspx"}>
+                  <FaHome />{" "}
                   </a>
                 </li>
                 {data.map((item: any) => {
                   return (
                     <>
                       <li>
-                        {/* if="Task.PortfolioType=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
                         {item?.PortfolioType?.Title != undefined && (
                           <a
                             target="_blank"
@@ -1117,30 +1034,13 @@ const  contextCall = (data: any, path: any, component: any) => {
                 <div className="col-md-8">
                   <div className="row mb-2">
                     <div className="col-md-6 pe-0">
-                      <dl>
-                        <dt className="bg-fxdark">Due Date</dt>
+                    <dl>
+                        <dt className="bg-fxdark">ID</dt>
                         <dd className="bg-light">
                           <span>
                             {data.map((item, index) => (
-                              <a>
-                                <EditableField
-                                  key={index}
-                                  listName="Master Tasks"
-                                  itemId={item?.Id}
-                                  fieldName="DueDate"
-                                  value={
-                                    item?.DueDate != undefined
-                                      ? Moment(item?.DueDate).format(
-                                        "DD/MM/YYYY"
-                                      )
-                                      : ""
-                                  }
-                                  onChange={handleFieldChange("DueDate")}
-                                  type="Date"
-                                  web={ContextValue?.siteUrl}
-                                />
-                              </a>
-                            ))}
+                             <a>{item?.PortfolioStructureID}</a>
+                             ))}
                           </span>
                         </dd>
                       </dl>
@@ -1169,6 +1069,10 @@ const  contextCall = (data: any, path: any, component: any) => {
                           ))}
                         </dd>
                       </dl>
+                   
+                     
+
+                      
                       <dl>
                         <dt className="bg-fxdark">Status</dt>
                         <dd className="bg-light">
@@ -1177,7 +1081,121 @@ const  contextCall = (data: any, path: any, component: any) => {
                           ))}
                         </dd>
                       </dl>
-
+                      <dl>
+                    <dt className="bg-fxdark">Team Members</dt>
+                    <dd className="bg-light d-flex">
+                      {AllTaskuser?.length > 0 && (
+                        <ShowTaskTeamMembers
+                          key={data[0]?.Id}
+                          props={data[0]}
+                          TaskUsers={AllTaskuser}
+                          Context={SelectedProp}
+                        />
+                      )}
+                    </dd>
+                  </dl>
+                
+                      </div>
+                    <div className="col-md-6 p-0">
+                    {data.map((item: any) => {
+                        return (
+                          <><dl>
+                                <dt className="bg-fxdark">Parent</dt>
+                                <dd className="bg-light">
+                                {item?.Parent?.Title != undefined && (
+                                  <>
+                                  <a
+                                    target="_blank"
+                                    data-interception="off"
+                                    href={
+                                      SelectedProp.siteUrl +
+                                      "/SitePages/Portfolio-Profile.aspx?taskId=" +
+                                      item?.Parent?.Id
+                                    }
+                                  >
+                                    {item?.Parent?.Title}
+                                  </a>
+                                  <span className="pull-right">
+                                    <span className="pencil_icon">
+                                      <span className="hreflink">
+                                        {item?.PortfolioType?.Title ==
+                                          "Component" && (
+                                            <>
+                                              <a
+                                                target="_blank"
+                                                data-interception="off"
+                                                href={
+                                                  SelectedProp.siteUrl +
+                                                  "/SitePages/Team-Portfolio.aspx?ComponentID=" +
+                                                  item?.Parent?.Id
+                                                }
+                                              >
+                                                <img
+                                                  src={require("../../../Assets/ICON/edit_page.svg")}
+                                                  width="20"
+                                                  height="25"
+                                                />{" "}
+                                              </a>
+                                            </>
+                                          )}
+                                        {item?.PortfolioType?.Title ==
+                                          "Service" && (
+                                            <>
+                                              <a
+                                                target="_blank"
+                                                data-interception="off"
+                                                href={
+                                                  SelectedProp.siteUrl +
+                                                  "/SitePages/Team-Portfolio.aspx?ComponentID=" +
+                                                  item?.Parent?.Id
+                                                }
+                                              >
+                                                {" "}
+                                                <img
+                                                  src={require("../../../Assets/ICON/edit_page.svg")}
+                                                  width="30"
+                                                  height="25"
+                                                />{" "}
+                                              </a>
+                                            </>
+                                          )}
+                                      </span>
+                                    </span>
+                                  </span>
+                                  </>
+                                   )}
+                                </dd>
+                              </dl>
+                          </>
+                        );
+                      })}
+                      <dl>
+                        <dt className="bg-fxdark">Due Date</dt>
+                        <dd className="bg-light">
+                          <span>
+                            {data.map((item, index) => (
+                              <a>
+                                <EditableField
+                                  key={index}
+                                  listName="Master Tasks"
+                                  itemId={item?.Id}
+                                  fieldName="DueDate"
+                                  value={
+                                    item?.DueDate != undefined
+                                      ? Moment(item?.DueDate).format(
+                                        "DD/MM/YYYY"
+                                      )
+                                      : ""
+                                  }
+                                  onChange={handleFieldChange("DueDate")}
+                                  type="Date"
+                                  web={ContextValue?.siteUrl}
+                                />
+                              </a>
+                            ))}
+                          </span>
+                        </dd>
+                      </dl>
                       <dl>
                         <dt className="bg-fxdark">Item Rank</dt>
                         <dd className="bg-light">
@@ -1199,9 +1217,49 @@ const  contextCall = (data: any, path: any, component: any) => {
                           ))}
                         </dd>
                       </dl>
+                  {data.map((item: any) => {
+                    return (
+                      <>
+                        {item?.PortfolioType?.Title && (
+                          <dl>
+                            <dt className="bg-fxdark">Portfolio Item</dt>
+                            <dd className={`bg-light `}>
+                              <div
+                                className="ps-1"
+                                style={{
+                                  backgroundColor: `${item?.PortfolioType?.Color}`,
+                                  boxSizing: "border-box"
+                                }}
+                              >
+                                <a
+                                  className="text-light"
+                                  style={{ border: "0px" }}
+                                  target="_blank"
+                                  data-interception="off"
+                                  href={
+                                    SelectedProp.siteUrl +
+                                    `/SitePages/Portfolio-Profile.aspx?taskId=${item?.Portfolios?.results === undefined
+                                      ? item?.Portfolios?.Id
+                                      : item?.Portfolios?.results[0]?.Id
+                                    }`
+                                  }
+                                >
+                                  {item?.Portfolios?.results === undefined
+                                    ? item?.Portfolios?.Title
+                                    : item?.Portfolios?.results[0]?.Title}
+                                </a>
+                              </div>
+                            </dd>
+                          </dl>
+                        )}
+                      </>
+                    );
+                  })}
                     </div>
-                    <div className="col-md-6 p-0">
-                      <dl>
+                  </div>
+                  </div>
+                <div className="col-md-4 p-0">    
+                     <dl>
                         <dt className="bg-fxdark">Priority</dt>
                         <dd className="bg-light">
                           {data.map((item, index) => (
@@ -1256,120 +1314,6 @@ const  contextCall = (data: any, path: any, component: any) => {
                         </dd>
                       </dl>
 
-                      {data.map((item: any) => {
-                        return (
-                          <>
-                            {item?.Parent?.Title != undefined && (
-                              <dl>
-                                <dt className="bg-fxdark">Parent</dt>
-                                <dd className="bg-light">
-                                  <a
-                                    target="_blank"
-                                    data-interception="off"
-                                    href={
-                                      SelectedProp.siteUrl +
-                                      "/SitePages/Portfolio-Profile.aspx?taskId=" +
-                                      item?.Parent?.Id
-                                    }
-                                  >
-                                    {item?.Parent?.Title}
-                                  </a>
-                                  <span className="pull-right">
-                                    <span className="pencil_icon">
-                                      <span className="hreflink">
-                                        {item?.PortfolioType?.Title ==
-                                          "Component" && (
-                                            <>
-                                              <a
-                                                target="_blank"
-                                                data-interception="off"
-                                                href={
-                                                  SelectedProp.siteUrl +
-                                                  "/SitePages/Component-Portfolio.aspx?ComponentID=" +
-                                                  item?.Parent?.Id
-                                                }
-                                              >
-                                                <img
-                                                  src={require("../../../Assets/ICON/edit_page.svg")}
-                                                  width="30"
-                                                  height="25"
-                                                />{" "}
-                                              </a>
-                                            </>
-                                          )}
-                                        {item?.PortfolioType?.Title ==
-                                          "Service" && (
-                                            <>
-                                              <a
-                                                target="_blank"
-                                                data-interception="off"
-                                                href={
-                                                  SelectedProp.siteUrl +
-                                                  "/SitePages/Service-Portfolio.aspx?ComponentID=" +
-                                                  item?.Parent?.Id
-                                                }
-                                              >
-                                                {" "}
-                                                <img
-                                                  src={require("../../../Assets/ICON/edit_page.svg")}
-                                                  width="30"
-                                                  height="25"
-                                                />{" "}
-                                              </a>
-                                            </>
-                                          )}
-                                      </span>
-                                    </span>
-                                  </span>
-                                </dd>
-                              </dl>
-                            )}
-                          </>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                </div>
-                <div className="col-md-4 p-0">
-                  {data.map((item: any) => {
-                    return (
-                      <>
-                        {item?.PortfolioType?.Title && (
-                          <dl>
-                            <dt className="bg-fxdark">Portfolio Item</dt>
-                            <dd className={`bg-light `}>
-                              <div
-                                className="ps-1"
-                                style={{
-                                  backgroundColor: `${item?.PortfolioType?.Color}`,
-                                  boxSizing: "border-box"
-                                }}
-                              >
-                                <a
-                                  className="text-light"
-                                  style={{ border: "0px" }}
-                                  target="_blank"
-                                  data-interception="off"
-                                  href={
-                                    SelectedProp.siteUrl +
-                                    `/SitePages/Portfolio-Profile.aspx?taskId=${item?.Portfolios?.results === undefined
-                                      ? item?.Portfolios?.Id
-                                      : item?.Portfolios?.results[0]?.Id
-                                    }`
-                                  }
-                                >
-                                  {item?.Portfolios?.results === undefined
-                                    ? item?.Portfolios?.Title
-                                    : item?.Portfolios?.results[0]?.Title}
-                                </a>
-                              </div>
-                            </dd>
-                          </dl>
-                        )}
-                      </>
-                    );
-                  })}
                   <dl>
                     <dt className="bg-fxdark">% Complete</dt>
                     <dd className="bg-light">
@@ -1391,20 +1335,7 @@ const  contextCall = (data: any, path: any, component: any) => {
                       ))}
                     </dd>
                   </dl>
-                  <dl>
-                    <dt className="bg-fxdark">Team Members</dt>
-                    <dd className="bg-light d-flex">
-                      {AllTaskuser?.length > 0 && (
-                        <ShowTaskTeamMembers
-                          key={data[0]?.Id}
-                          props={data[0]}
-                          TaskUsers={AllTaskuser}
-                          Context={SelectedProp}
-                        />
-                      )}
-                    </dd>
-                  </dl>
-                </div>
+                  </div>
                 <div className="col-md-12">
                   <section className="row  accordionbox">
                     <div className="accordion  pe-1 overflow-hidden">

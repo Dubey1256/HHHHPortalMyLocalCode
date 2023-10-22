@@ -1103,17 +1103,17 @@ function PortfolioTable(SelectedProp: any) {
                   title={row?.original?.TaskType?.Title}
                   className={
                     row?.original?.Item_x0020_Type == "SubComponent"
-                      ? "ml-12 workmember ml20 me-1"
+                      ? "workmember ml20 me-1"
                       : row?.original?.Item_x0020_Type == "Feature"
-                        ? "ml-24 workmember ml20 me-1"
+                        ? "ml-12 workmember ml20 me-1"
                         : row?.original?.TaskType?.Title == "Activities"
-                          ? "ml-36 workmember ml20 me-1"
+                          ? "ml-24 workmember ml20 me-1"
                           : row?.original?.TaskType?.Title == "Workstream"
-                            ? "ml-48 workmember ml20 me-1"
+                            ? "ml-36 workmember ml20 me-1"
                             : row?.original?.TaskType?.Title == "Task" ||
                               (row?.original?.Item_x0020_Type === "Task" &&
                                 row?.original?.TaskType == undefined)
-                              ? "ml-60 workmember ml20 me-1"
+                              ? "ml-48 workmember ml20 me-1"
                               : "workmember ml20 me-1"
                   }
                   src={row?.original?.SiteIcon}
@@ -1129,15 +1129,15 @@ function PortfolioTable(SelectedProp: any) {
                     }}
                     className={
                       row?.original?.Item_x0020_Type == "SubComponent"
-                        ? "ml-12 Dyicons"
+                        ? "Dyicons"
                         : row?.original?.Item_x0020_Type == "Feature"
-                          ? "ml-24 Dyicons"
+                          ? "ml-12 Dyicons"
                           : row?.original?.TaskType?.Title == "Activities"
-                            ? "ml-36 Dyicons"
+                            ? "ml-24 Dyicons"
                             : row?.original?.TaskType?.Title == "Workstream"
-                              ? "ml-48 Dyicons"
+                              ? "ml-36 Dyicons"
                               : row?.original?.TaskType?.Title == "Task"
-                                ? "ml-60 Dyicons"
+                                ? "ml-48 Dyicons"
                                 : "Dyicons"
                     }
                   >
