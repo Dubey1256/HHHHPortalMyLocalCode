@@ -238,7 +238,6 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     } catch (error: any) {
       console.log(error)
     }
-
     let web = new Web(this.props.siteUrl);
     let taskDetails: any = [];
     let listInfo = await web.lists.getByTitle(this.state?.listName).get();
@@ -249,7 +248,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       .getByTitle(this.state?.listName)
       .items
       .getById(this.state?.itemID)
-      .select("ID", "Title", "Comments", "ApproverHistory", "EstimatedTime", "TaskID", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "PortfolioType/Id", "DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/TaskID", "Project/Id", "Project/Title", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
+      .select("ID", "Title", "Comments", "ApproverHistory", "EstimatedTime", "TaskID", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "PortfolioType/Id", "DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/TaskID", "Project/Id", "Project/Title", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Editor/Title", "Modified", "Attachments", "AttachmentFiles","SiteCompositionSettings")
       .expand("TeamMembers", "Project", "Approver", "ParentTask", "Portfolio", "PortfolioType", "SmartInformation", "AssignedTo", "TaskCategories", "Author", "ClientCategory", "ResponsibleTeam", "TaskType", "Editor", "AttachmentFiles")
       .get()
     AllListId = {
@@ -389,6 +388,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       siteUrl: taskDetails["siteUrl"],
       TaskId: taskDetails["TaskId"],
       TaskID: taskDetails["TaskID"],
+      SiteCompositionSettings: taskDetails["SiteCompositionSettings"],
       Title: taskDetails["Title"],
       Item_x0020_Type: 'Task',
       DueDate: taskDetails["DueDate"],
