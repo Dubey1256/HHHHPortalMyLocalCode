@@ -302,24 +302,11 @@ function CreateTaskComponent(props: any) {
                     }
                 })
                 if (SDCCreatedBy != undefined && SDCCreatedDate != undefined && SDCTaskUrl != undefined) {
+
                     let saveValue = save;
                     SDCTaskUrl = `https://www.shareweb.ch/site/${SDCSiteType}/Team/Pages/Manage/TaskProfile.aspx?TaskId=${SDCTaskId}`
                     let isTaskFound = false;
-                    const web = new Web(AllListId?.siteUrl);
-                    SitesTypes?.map((site: any) => {
-                        if (site?.Title?.toLowerCase() == SDCSiteType?.toLowerCase()) {
-                            const lists = web.lists.getById(site?.listId)
-                            lists.items.select('Id,Title,ComponentLink').getAll().then((data: any) => {
-                                data?.map((task: any) => {
-                                    if (task?.ComponentLink?.Url == SDCTaskUrl) {
-                                        window.open(base_Url + "/SitePages/Task-Profile.aspx?taskId=" + task?.Id + "&Site=" + site?.Title, "_self")
-                                        isTaskFound = true;
-                                    }
-                                })
-                            })
-                        }
-                    })
-                    if (!isTaskFound) {
+                    const creatSDCTas = () => {
                         let e = {
                             target: {
                                 value: SDCTaskUrl
@@ -339,8 +326,31 @@ function CreateTaskComponent(props: any) {
                             setActiveTile("rank", "rank", SDCPriority)
                         }
                         createTask()
-
                     }
+                    const web = new Web(AllListId?.siteUrl);
+                    SitesTypes?.map(async (site: any) => {
+                        if (site?.Title?.toLowerCase() == SDCSiteType?.toLowerCase()) {
+                            const lists = web.lists.getById(site?.listId)
+                            await lists.items.select('Id,Title,ComponentLink').getAll().then((data: any) => {
+                                data?.map((task: any, index: any) => {
+                                    if (task?.ComponentLink?.Url == SDCTaskUrl) {
+                                        window.open(base_Url + "/SitePages/Task-Profile.aspx?taskId=" + task?.Id + "&Site=" + site?.Title, "_self")
+                                        isTaskFound = true;
+                                    }else if(task?.component_x0020_link?.Url == SDCTaskUrl){
+                                        window.open(base_Url + "/SitePages/Task-Profile.aspx?taskId=" + task?.Id + "&Site=" + site?.Title, "_self")
+                                        isTaskFound = true;
+                                    }
+                                    if (index == data?.length - 1 && !isTaskFound) {
+                                        creatSDCTas();
+                                    }
+                                })
+                                if (data?.length > 0 && !isTaskFound) {
+                                    creatSDCTas();
+                                }
+                            })
+                        }
+                    })
+
                 }
                 else if (paramTaskType == 'Bug') {
                     DirectTask = true;
@@ -742,9 +752,7 @@ function CreateTaskComponent(props: any) {
                             if (MailName?.Title == 'Design' && loggedInUser?.AssingedToUserId != 49 && User?.Title == 'Robert Ungethuem') {
                                 RecipientMail.push(User);
                             }
-                            if (burgerMenuTaskDetails?.SDCTaskId?.length > 0 && (User?.Title == 'Stefan Hochhuth' || User?.Title == 'Robert Ungethuem')) {
-                                RecipientMail.push(User);
-                            }
+                            
                         });
                     }
                 });
@@ -915,16 +923,19 @@ function CreateTaskComponent(props: any) {
                             setSendApproverMail(true);
                         }
                         let SDCRecipientMail: any = []
-                        // if (burgerMenuTaskDetails?.SDCTaskId?.length > 0) {
-                        //     taskUsers?.map((User: any) => {
-                        //         if (User?.Title == 'Stefan Hochhuth' || User?.Title == 'Robert Ungethuem') {
-                        //             SDCRecipientMail.push(User);
-                        //         }
-                        //     });
-                        //     globalCommon.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, SDCRecipientMail, 'Client Task', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
-                        //         console.log(response);
-                        //     });
-                        // }
+                        if (burgerMenuTaskDetails?.SDCTaskId?.length > 0) {
+                            if(data?.data!=undefined){
+                                data.data.SDCAuthor = burgerMenuTaskDetails?.SDCCreatedBy;
+                                taskUsers?.map((User: any) => {
+                                    if (User?.Title?.toLowerCase() == 'abhishek tiwari') {
+                                        SDCRecipientMail.push(User);
+                                    }
+                                });
+                                // globalCommon.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, SDCRecipientMail, 'Client Task', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
+                                //     console.log(response);
+                                // });
+                            }   
+                        }
                         if (CategoryTitle?.indexOf("Design") > -1) {
                             setSendApproverMail(true);
                             globalCommon.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, RecipientMail, 'DesignMail', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
