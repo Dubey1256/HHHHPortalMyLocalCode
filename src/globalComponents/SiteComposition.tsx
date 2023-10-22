@@ -20,6 +20,7 @@ export default function Sitecomposition(datas: any) {
   const [AllSitesData, setAllSitesData] = React.useState([]);
   const [renderCount, setRenderCount] = React.useState(0);
   const [key, setKey] = React.useState(0); // Add a key state
+  const Callback: any = datas.callback;
 
 
   let BackupSiteTaggingData: any = [];
@@ -208,19 +209,20 @@ export default function Sitecomposition(datas: any) {
 
   const ClosePopupCallBack = React.useCallback(() => {
     setEditSiteCompositionStatus(false);
+    Callback();
   }, [])
 
-  const SiteCompositionCallBack = React.useCallback((Data: any, Type: any) => {
-    datas.props.Sitestagging = Data.ClientTime?.length > 0 ? JSON.stringify(Data.ClientTime) : [];
-    datas.props.ClientCategory.results = Data.selectedClientCategory;
-    // if (datas?.props.Sitestagging != undefined) {
-    //   if (datas?.props?.ClientCategory?.length > 0 || datas?.props.Sitestagging != undefined) {
-    //     GetSmartMetaData(datas?.props?.ClientCategory, datas?.props?.Sitestagging);
-    //   } else if (datas?.props?.ClientCategory?.results?.length > 0 || datas?.props.Sitestagging != undefined)
-    //     GetSmartMetaData(datas?.props?.ClientCategory?.results, datas?.props?.Sitestagging);
-    // }
-    setKey((prevKey) => prevKey + 1);
-  }, [])
+  // const SiteCompositionCallBack = React.useCallback((Data: any, Type: any) => {
+  //   datas.props.Sitestagging = Data.ClientTime?.length > 0 ? JSON.stringify(Data.ClientTime) : [];
+  //   datas.props.ClientCategory.results = Data.selectedClientCategory;
+  //   // if (datas?.props.Sitestagging != undefined) {
+  //   //   if (datas?.props?.ClientCategory?.length > 0 || datas?.props.Sitestagging != undefined) {
+  //   //     GetSmartMetaData(datas?.props?.ClientCategory, datas?.props?.Sitestagging);
+  //   //   } else if (datas?.props?.ClientCategory?.results?.length > 0 || datas?.props.Sitestagging != undefined)
+  //   //     GetSmartMetaData(datas?.props?.ClientCategory?.results, datas?.props?.Sitestagging);
+  //   // }
+  //   setKey((prevKey) => prevKey + 1);
+  // }, [])
   return (
     <>
       {!isDirectPopup && (<dl key={key} className="Sitecomposition">
