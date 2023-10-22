@@ -214,7 +214,7 @@ const SiteCompositionComponent = (Props: any) => {
             }
         }
         getChildDataForSelectedTask()
-    }, [])
+    }, [SelectedClientCategoryFromProps])
 
     const getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
         let Items: any = [];
