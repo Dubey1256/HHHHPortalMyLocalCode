@@ -970,12 +970,36 @@ function ComponentChildDataTable(SelectedProp: any) {
       } else {
         ItemDataCheckSC.IsSCProtected = false;
       }
+      if (ItemDataCheckSC?.SiteCompositionSettings != undefined) {
+        ItemDataCheckSC.compositionType = siteCompositionType(ItemDataCheckSC?.SiteCompositionSettings);
+
+      } else {
+        ItemDataCheckSC.compositionType = '';
+
+      }
+
     })
     setData(componentDataGlobal);
     console.log(countAllTasksDataGlobal);
   };
 
   // ComponentWS
+  function siteCompositionType(jsonStr: any) {
+    var data = JSON.parse(jsonStr);
+    try {
+      data = data[0];
+      for (var key in data) {
+        if (data?.hasOwnProperty(key) && data[key] === true) {
+          return key;
+        }
+      }
+
+      return '';
+    } catch (error) {
+      console.log(error)
+      return '';
+    }
+  }
 
   const componentWsT = (levelType: any, items: any) => {
     let findws = AllSiteTasksDataGlobal.filter(
@@ -1390,6 +1414,18 @@ function ComponentChildDataTable(SelectedProp: any) {
         size: 131
       },
       {
+        accessorFn: (row) => row?.IsSCProtected,
+        cell: ({ row }) => (
+          <span>{row?.original?.IsSCProtected == true ? "Protected" : ""}</span>
+        ),
+        id: 'Type',
+        placeholder: "Protected",
+        header: "",
+        resetColumnFilters: false,
+        resetSorting: false,
+        size: 100,
+      },
+      {
         accessorKey: "PercentComplete",
         placeholder: "Status",
         header: "",
@@ -1397,15 +1433,19 @@ function ComponentChildDataTable(SelectedProp: any) {
         size: 42,
         id: "PercentComplete"
       },
+
       {
-        accessorKey: "ItemRank",
-        placeholder: "Item Rank",
+        accessorFn: (row) => row?.compositionType,
+        cell: ({ row }) => (
+          <span>{row?.original?.compositionType}</span>
+        ),
+        id: 'Type',
+        placeholder: "Composition Type",
         header: "",
         resetColumnFilters: false,
-        size: 42,
-        id: "ItemRank"
+        resetSorting: false,
+        size: 100,
       },
-
       {
         accessorFn: (row) => row?.DueDate,
         cell: ({ row }) => (
@@ -1466,22 +1506,6 @@ function ComponentChildDataTable(SelectedProp: any) {
         },
         header: "",
         size: 134
-      },
-      {
-        accessorKey: "descriptionsSearch",
-        placeholder: "descriptionsSearch",
-        header: "",
-        resetColumnFilters: false,
-        size: 100,
-        id: "descriptionsSearch"
-      },
-      {
-        accessorKey: "commentsSearch",
-        placeholder: "commentsSearch",
-        header: "",
-        resetColumnFilters: false,
-        size: 100,
-        id: "commentsSearch"
       },
 
 
