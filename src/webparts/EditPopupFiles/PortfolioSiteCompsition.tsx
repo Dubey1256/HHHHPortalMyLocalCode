@@ -43,8 +43,8 @@ const SiteCompositionComponent = (Props: any) => {
     const callBack = Props.callBack;
     const currentListName = Props.currentListName;
     const ServicesTaskCheck = Props.isServiceTask;
-    const [SiteCompositionSettings, setSiteCompositionSettings] = useState<any>(Props.SiteCompositionSettings != undefined ? JSON.parse(Props.SiteCompositionSettings) : [{ Proportional: false, Manual: true, Protected: false, Deluxe: false, Standard: false }]);
-    const SiteCompositionSettingsBackup: any = Props.SiteCompositionSettings != undefined ? JSON.parse(Props.SiteCompositionSettings) : [{ Proportional: false, Manual: true, Protected: false, Deluxe: false, Standard: false }]
+    const [SiteCompositionSettings, setSiteCompositionSettings] = useState<any>(Props.SiteCompositionSettings != undefined ? JSON.parse(Props.SiteCompositionSettings) : [{ Proportional: false, Manual: true, Protected: false, Delux: false, Standard: false }]);
+    const SiteCompositionSettingsBackup: any = Props.SiteCompositionSettings != undefined ? JSON.parse(Props.SiteCompositionSettings) : [{ Proportional: false, Manual: true, Protected: false, Delux: false, Standard: false }]
     const SelectedClientCategoryFromProps = Props.SelectedClientCategory;
     const [SiteTypes, setSiteTypes] = useState<any>([]);
     const [selectedSiteCount, setSelectedSiteCount] = useState(Props.ClientTime?.length ? Props.ClientTime.length : 0);
@@ -109,7 +109,7 @@ const SiteCompositionComponent = (Props: any) => {
             }
         ]
 
-    const DeluxeComposition = [
+    const DeluxComposition = [
         {
             ClienTimeDescription: "50",
             Title: "EI",
@@ -200,8 +200,8 @@ const SiteCompositionComponent = (Props: any) => {
             if (SiteCompositionSettings[0].Proportional) {
                 setProportionalStatus(true);
             }
-            if (SiteCompositionSettings[0].Manual || SiteCompositionSettings[0].Deluxe || SiteCompositionSettings[0].Standard) {
-                if (SiteCompositionSettings[0].Deluxe || SiteCompositionSettings[0].Standard) {
+            if (SiteCompositionSettings[0].Manual || SiteCompositionSettings[0].Delux || SiteCompositionSettings[0].Standard) {
+                if (SiteCompositionSettings[0].Delux || SiteCompositionSettings[0].Standard) {
                     setProportionalStatus(true);
                     setIsPortfolioComposition(true);
                     setIsSCProtected(true);
@@ -419,7 +419,7 @@ const SiteCompositionComponent = (Props: any) => {
             SiteCompositionSettings[0].Proportional = true;
             SiteCompositionSettings[0].Manual = false;
             SiteCompositionSettings[0].Standard = false;
-            SiteCompositionSettings[0].Deluxe = false;
+            SiteCompositionSettings[0].Delux = false;
             // setSiteCompositionSettings();
             // makeSiteCompositionConfigurations();
             setProportionalStatus(true);
@@ -447,7 +447,7 @@ const SiteCompositionComponent = (Props: any) => {
             SiteCompositionSettings[0].Manual = true;
             SiteCompositionSettings[0].Proportional = false;
             SiteCompositionSettings[0].Standard = false;
-            SiteCompositionSettings[0].Deluxe = false;
+            SiteCompositionSettings[0].Delux = false;
             setProportionalStatus(false);
             setIsPortfolioComposition(false);
             setCheckBoxStatus(false);
@@ -470,7 +470,7 @@ const SiteCompositionComponent = (Props: any) => {
 
         if (Type == "Protected") {
             if (SiteCompositionSettings[0]?.Protected == true) {
-                if (SiteCompositionSettings[0].Deluxe == true || SiteCompositionSettings[0].Standard == true) {
+                if (SiteCompositionSettings[0].Delux == true || SiteCompositionSettings[0].Standard == true) {
                     // setIsSCProtected(true);
                 } else {
                     SiteCompositionSettings[0].Protected = false;
@@ -483,18 +483,18 @@ const SiteCompositionComponent = (Props: any) => {
                 setIsSCProtected(true);
             }
         }
-        if (Type == "Deluxe") {
-            if (SiteCompositionSettings[0]?.Deluxe == true) {
-                SiteCompositionSettings[0].Deluxe = false;
+        if (Type == "Delux") {
+            if (SiteCompositionSettings[0]?.Delux == true) {
+                SiteCompositionSettings[0].Delux = false;
                 setIsSCProtected(false);
             } else {
-                SiteCompositionSettings[0].Deluxe = true;
+                SiteCompositionSettings[0].Delux = true;
                 SiteCompositionSettings[0].Standard = false;
                 SiteCompositionSettings[0].Proportional = false;
                 SiteCompositionSettings[0].Manual = false;
                 refreshSiteCompositionConfigurations();
-                ChangeSiteCompositionInstant("Deluxe");
-                SiteTaggingFinalData = DeluxeComposition;
+                ChangeSiteCompositionInstant("Delux");
+                SiteTaggingFinalData = DeluxComposition;
                 setProportionalStatus(true);
                 setIsPortfolioComposition(true);
                 setIsSCProtected(true);
@@ -506,7 +506,7 @@ const SiteCompositionComponent = (Props: any) => {
                 setIsSCProtected(false);
             } else {
                 SiteCompositionSettings[0].Standard = true;
-                SiteCompositionSettings[0].Deluxe = false;
+                SiteCompositionSettings[0].Delux = false;
                 SiteCompositionSettings[0].Proportional = false;
                 SiteCompositionSettings[0].Manual = false;
                 refreshSiteCompositionConfigurations();
@@ -575,9 +575,9 @@ const SiteCompositionComponent = (Props: any) => {
                 TempSiteCompsotion.push(SiteData)
             })
         }
-        if (UsedFor == "Deluxe") {
+        if (UsedFor == "Delux") {
             SiteTypes?.map((SiteData: any) => {
-                DeluxeComposition?.map((STItems: any) => {
+                DeluxComposition?.map((STItems: any) => {
                     if (SiteData.Title == STItems.Title || (SiteData.Title ==
                         "DA E+E" && STItems.Title == "ALAKDigital")) {
                         SiteData.ClienTimeDescription = STItems.ClienTimeDescription;
@@ -1362,13 +1362,13 @@ const SiteCompositionComponent = (Props: any) => {
                 <label className="SpfxCheckRadio me-2">
                     <input
                         type="radio"
-                        id="Deluxe"
+                        id="Delux"
                         name="SiteCompositions"
-                        defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.Deluxe : false}
-                        title="add Deluxe Time"
+                        defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.Delux : false}
+                        title="add Delux Time"
                         className="radio"
-                        value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Deluxe : false}
-                        onChange={() => ChangeSiteCompositionSettings("Deluxe")}
+                        value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Delux : false}
+                        onChange={() => ChangeSiteCompositionSettings("Delux")}
                     />
                     Deluxe</label>
                 <label className="SpfxCheckRadio">

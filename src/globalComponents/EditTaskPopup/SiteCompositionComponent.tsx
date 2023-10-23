@@ -1086,7 +1086,7 @@ const SiteCompositionComponent = (Props: any) => {
                         value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Delux : false}
                         onChange={() => ChangeSiteCompositionSettings("Delux")}
                     />
-                    Delux</label>
+                    Deluxe</label>
                 <label className="SpfxCheckRadio">
                     <input
                         type="radio"
