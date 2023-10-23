@@ -293,9 +293,14 @@ const SiteCompositionComponent = (Props: any) => {
             callBack(SiteCompositionObject, "dataExits");
             setIsPortfolioComposition(false);
             setCheckBoxStatus(false);
-            setIsProtectedSiteComposition(false);
+           
             refreshSiteCompositionConfigurations();
             ChangeSiteCompositionInstant("Proportional");
+            if(IsProtectedSiteComposition){
+                setIsProtectedSiteComposition(true);
+            }else{
+                setIsProtectedSiteComposition(false);
+            }
         }
         if (Type == "Manual") {
             SiteCompositionSettings[0].Delux = false;
@@ -311,6 +316,11 @@ const SiteCompositionComponent = (Props: any) => {
             refreshSiteCompositionConfigurations();
             ChangeSiteCompositionInstant("Manual");
             setSelectedSiteCount(ClientTimeDataBackup?.length > 0 ? ClientTimeDataBackup?.length : 0);
+            if(IsProtectedSiteComposition){
+                setIsProtectedSiteComposition(true);
+            }else{
+                setIsProtectedSiteComposition(false);
+            }
         }
         if (Type == "Portfolio") {
             SiteCompositionSettings[0].Delux = false;
@@ -828,7 +838,7 @@ const SiteCompositionComponent = (Props: any) => {
             SiteCompositionObject.selectedClientCategory = SelectedClientCategoryBackupArray;
             SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
         }
-        callBack(SiteCompositionObject, "dataExits");
+        // callBack(SiteCompositionObject, "dataExits");
     }
 
     // ************************ this is for the auto Suggestion fuction for all Client Category ******************
@@ -1127,10 +1137,11 @@ const SiteCompositionComponent = (Props: any) => {
                                     return (
                                         <tr
                                         // className={siteData?.StartEndDateValidation ? "Disabled-Link bg-th" : 'hreflink border-1'}
+                                        className="hreflink border-1"
                                         >
                                             <th
                                                 scope="row"
-                                                className={IsProtectedSiteComposition == true ? "Disabled-Link opacity-75" : ""}
+                                                className={IsProtectedSiteComposition == true ? "Disabled-Link opacity-75 m-0 p-1 align-middle" : "m-0 p-1 align-middle"}
                                                 style={{ width: "3%" }}
                                             >
                                                 <div className="m-0 p-1 align-middle">
@@ -1160,7 +1171,7 @@ const SiteCompositionComponent = (Props: any) => {
                                             </td>
                                             <td
                                                 style={{ width: "12%" }}
-                                                className={IsProtectedSiteComposition == true ? "Disabled-Link opacity-75" : ""}
+                                                className={IsProtectedSiteComposition == true ? "Disabled-Link opacity-75 m-0 p-1 align-middle" : "m-0 p-1 align-middle"}
                                             >
                                                 <div className="alignCenter">
                                                     {ProportionalStatus ?
