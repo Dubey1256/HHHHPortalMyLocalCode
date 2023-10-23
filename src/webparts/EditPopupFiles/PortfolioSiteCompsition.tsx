@@ -80,7 +80,7 @@ const SiteCompositionComponent = (Props: any) => {
     const StandardComposition =
         [
             {
-                ClienTimeDescription: "40",
+                ClienTimeDescription: "60",
                 Title: "EI",
                 localSiteComposition: true,
                 SiteImages: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_ei.png",
@@ -94,14 +94,14 @@ const SiteCompositionComponent = (Props: any) => {
                 Date: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY")
             },
             {
-                ClienTimeDescription: "15",
+                ClienTimeDescription: "5",
                 Title: "Migration",
                 localSiteComposition: true,
                 SiteImages: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_migration.png",
                 Date: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY")
             },
             {
-                ClienTimeDescription: "15",
+                ClienTimeDescription: "5",
                 Title: "Education",
                 localSiteComposition: true,
                 SiteImages: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_education.png",
@@ -1370,7 +1370,7 @@ const SiteCompositionComponent = (Props: any) => {
                         value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Delux : false}
                         onChange={() => ChangeSiteCompositionSettings("Delux")}
                     />
-                    Delux</label>
+                    Deluxe</label>
                 <label className="SpfxCheckRadio">
                     <input
                         type="radio"
