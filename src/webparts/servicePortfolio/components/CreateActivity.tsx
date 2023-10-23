@@ -491,6 +491,11 @@ const CreateActivity = (props: any) => {
                     if (selectedItem?.Sitestagging != undefined) {
                         if (typeof selectedItem?.Sitestagging == "object") {
                             if (site?.Title?.toLowerCase() == "shareweb") {
+                                selectedItem?. Sitestagging((sitecomp:any)=>{
+                                    if(sitecomp.Title!=undefined && sitecomp.Title!=""&& sitecomp.SiteName==undefined){
+                                        sitecomp.SiteName=sitecomp.Title
+                                    }   
+                                })
                                 Sitestagging = JSON.stringify(selectedItem?.Sitestagging);
                             } else {
                                 var siteComp: any = {};
@@ -504,7 +509,14 @@ const CreateActivity = (props: any) => {
                             // clientTime = JSON.stringify(selectedItem?.ClientTime);
                         } else {
                             if (site?.Title?.toLowerCase() == "shareweb") {
-                                Sitestagging = selectedItem?.Sitestagging
+                                var sitetag=JSON.parse(selectedItem?.Sitestagging)
+                                sitetag?.map((sitecomp:any)=>{
+                                    if(sitecomp.Title!=undefined && sitecomp.Title!=""&& sitecomp.SiteName==undefined){
+                                        sitecomp.SiteName=sitecomp.Title
+                                    }
+                                   
+                                }) 
+                                 Sitestagging = JSON.stringify(sitetag)
                             } else {
                                 var siteComp: any = {};
                                 siteComp.SiteName = site?.Title,
@@ -527,7 +539,7 @@ const CreateActivity = (props: any) => {
                         .getById(site.listId)
                         .items.select("Id,Title,TaskType/Id,TaskType/Title,TaskLevel")
                         .expand("TaskType")
-                        .orderBy("Id", false)
+                        .orderBy("TaskLevel", false)
                         .filter("TaskType/Title eq 'Activities'")
                         .top(1)
                         .get();
