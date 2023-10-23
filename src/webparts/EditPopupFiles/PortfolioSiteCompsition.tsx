@@ -209,9 +209,9 @@ const SiteCompositionComponent = (Props: any) => {
                     setProportionalStatus(false);
                 }
             }
-            if (SiteCompositionSettings[0].Protected) {
-                setIsSCProtected(true);
-            }
+            // if (SiteCompositionSettings[0].Protected) {
+            //     setIsSCProtected(true);
+            // }
         }
         getChildDataForSelectedTask()
     }, [SiteCompositionSettings])
@@ -228,6 +228,22 @@ const SiteCompositionComponent = (Props: any) => {
         return Items;
     }
 
+    const makeAllGlobalVariableAsDefault = () => {
+        AutoCompleteItemsArray = [];
+        SelectedClientCategoryBackupArray = [];
+        BackupSiteTypeData = [];
+        SiteTaggingFinalData = [];
+        SiteSettingsFinalData = [];
+        SiteClientCatgeoryFinalData = [];
+        SelectedClieantCategoryGlobal = [];
+        ClientCategoryPopupSiteNameGlobal = '';
+        FinalAllDataList = [];
+        MasterTaskListData = [];
+        SiteTaskListData = [];
+        MasterTaskListId = '';
+        SelectedFromTable = [];
+        ClientTimeDataBackup = [];
+    }
 
 
     const selectSiteCompositionFunction = (e: any, Index: any) => {
@@ -417,11 +433,11 @@ const SiteCompositionComponent = (Props: any) => {
             // CallBack(SiteCompositionObject, "dataExits");
             setIsPortfolioComposition(false);
             setCheckBoxStatus(false);
-            if (IsSCProtected) {
-                setIsSCProtected(true);
-            } else {
-                setIsSCProtected(false);
-            }
+            // if (IsSCProtected) {
+            //     setIsSCProtected(true);
+            // } else {
+            //     setIsSCProtected(false);
+            // }
 
             refreshSiteCompositionConfigurations();
             ChangeSiteCompositionInstant("Proportional");
@@ -437,23 +453,28 @@ const SiteCompositionComponent = (Props: any) => {
             setCheckBoxStatus(false);
             setIsSCProtected(false);
             SiteTaggingFinalData = ClientTimeDataBackup;
-            setSelectedSiteCount(ClientTimeDataBackup?.length > 0 ? ClientTimeDataBackup?.length : 0);
+            if (ClientTimeDataBackup?.length > 0) {
+                setSelectedSiteCount(ClientTimeDataBackup?.length > 0 ? ClientTimeDataBackup?.length : 0);
+            } else {
+                setSelectedSiteCount(ClientTimeData?.length > 0 ? ClientTimeData?.length : 0);
+            }
+
             refreshSiteCompositionConfigurations();
             ChangeSiteCompositionInstant("Manual");
-            if (IsSCProtected) {
-                setIsSCProtected(true);
-            } else {
-                setIsSCProtected(false);
-            }
+            // if (IsSCProtected) {
+            //     setIsSCProtected(true);
+            // } else {
+            //     setIsSCProtected(false);
+            // }
         }
 
         if (Type == "Protected") {
             if (SiteCompositionSettings[0]?.Protected == true) {
                 if (SiteCompositionSettings[0].Delux == true || SiteCompositionSettings[0].Standard == true) {
-                    setIsSCProtected(true);
+                    // setIsSCProtected(true);
                 } else {
                     SiteCompositionSettings[0].Protected = false;
-                    setIsSCProtected(false);
+                    // setIsSCProtected(false);
                 }
 
             } else {
@@ -462,7 +483,6 @@ const SiteCompositionComponent = (Props: any) => {
                 setIsSCProtected(true);
             }
         }
-
         if (Type == "Delux") {
             if (SiteCompositionSettings[0]?.Delux == true) {
                 SiteCompositionSettings[0].Delux = false;
@@ -583,15 +603,28 @@ const SiteCompositionComponent = (Props: any) => {
         }
         if (UsedFor == "Manual") {
             SiteTypes?.map((SiteData: any) => {
-                ClientTimeDataBackup?.map((STItems: any) => {
-                    if (SiteData.Title == STItems.Title || (SiteData.Title ==
-                        "DA E+E" && STItems.Title == "ALAKDigital")) {
-                        SiteData.ClienTimeDescription = STItems.ClienTimeDescription;
-                        SiteData.BtnStatus = true;
-                        SiteData.Date = STItems.Date;
-                    }
-                })
-                TempSiteCompsotion.push(SiteData)
+                if (ClientTimeDataBackup?.length > 0) {
+                    ClientTimeDataBackup?.map((STItems: any) => {
+                        if (SiteData.Title == STItems.Title || (SiteData.Title ==
+                            "DA E+E" && STItems.Title == "ALAKDigital")) {
+                            SiteData.ClienTimeDescription = STItems.ClienTimeDescription;
+                            SiteData.BtnStatus = true;
+                            SiteData.Date = STItems.Date;
+                        }
+                    })
+                    TempSiteCompsotion.push(SiteData)
+                } else {
+                    ClientTimeData?.map((STItems: any) => {
+                        if (SiteData.Title == STItems.Title || (SiteData.Title ==
+                            "DA E+E" && STItems.Title == "ALAKDigital")) {
+                            SiteData.ClienTimeDescription = STItems.ClienTimeDescription;
+                            SiteData.BtnStatus = true;
+                            SiteData.Date = STItems.Date;
+                        }
+                    })
+                    TempSiteCompsotion.push(SiteData)
+                }
+
             })
         }
         setSiteTypes([...TempSiteCompsotion]);
@@ -937,7 +970,8 @@ const SiteCompositionComponent = (Props: any) => {
                 }).then(() => {
                     console.log("Site Composition Updated !!!");
                     if (!ComponentChildExist) {
-                        Props.closePopupCallBack();
+                        // Props.closePopupCallBack();
+                        closeComponentChildrenPopup();
                         callBack(SiteCompositionObject, "dataExits");
                     }
                 })
@@ -993,6 +1027,8 @@ const SiteCompositionComponent = (Props: any) => {
         setComponentChildrenPopupStatus(false);
         setTimeout(() => {
             Props.closePopupCallBack();
+            callBack(SiteCompositionObject, "dataExits");
+            makeAllGlobalVariableAsDefault();
         }, 2000);
     }
 
@@ -1025,12 +1061,7 @@ const SiteCompositionComponent = (Props: any) => {
 
     // ******************* this is used for Childern Table section functions ****************
     const getChildDataForSelectedTask = async () => {
-        let countFirst = 0;
-        let countSecond = 0;
-        let countThird = 0;
         let GroupByData: any = [];
-        let ChildData: any = []
-        let ParentChild: any = [];
         let PropsObject: any = {
             MasterTaskListID: AllListIdData.MasterTaskListID,
             siteUrl: AllListIdData.siteUrl,
@@ -1042,19 +1073,26 @@ const SiteCompositionComponent = (Props: any) => {
             GroupByData = CallBackData.GroupByData
         }
         if (GroupByData?.length > 0) {
-            GroupByData.map((dataItem: any) => {
-                if (dataItem.Id == ItemId) {
-                    ChildData.push(dataItem);
-                    countFirst++;
-                    if (dataItem.subRows?.length > 0) {
-                        setComponentChildExist(true);
-                    }
-                }
-
-            })
+            recursiveLog(GroupByData, ItemId);
         }
-
     }
+
+    function recursiveLog(data: any, itemId: any) {
+        data.forEach((dataItem: any) => {
+            if (dataItem.Id === itemId) {
+                console.log(`Item with ID ${itemId} found.`, dataItem);
+                if (dataItem.subRows?.length > 0) {
+                    setComponentChildExist(true);
+                }
+            }
+            if (dataItem.subRows?.length > 0) {
+                recursiveLog(dataItem.subRows, itemId);
+            }
+        });
+    }
+
+
+
 
     //    ************* this is Custom Header For Client Category Popup *****************
     const onRenderCustomClientCategoryHeader = () => {
@@ -1076,37 +1114,41 @@ const SiteCompositionComponent = (Props: any) => {
 
 
     const SaveClientCategoryFunction = () => {
-        let AllChildData: any = [];
         if (SelectedFromTable?.length > 0) {
-            SelectedFromTable?.map((itemData: any) => {
-                AllChildData.push(itemData.original)
-            })
-        }
-        let MasterTaskTempArray: any = []
-        let SiteTaskTempArray: any = []
-        if (AllChildData?.length > 0) {
-            if (AllChildData?.length > 0) {
-                AllChildData?.map((finalItems: any) => {
-                    if (finalItems.Item_x0020_Type == "SubComponent" || finalItems.Item_x0020_Type == "Feature" || finalItems.Item_x0020_Type == "Component") {
-                        finalItems.listId = AllListIdData.MasterTaskListID;
-                        MasterTaskTempArray.push(finalItems);
-                    }
-                    if (finalItems.TaskType?.Title == "Task" || finalItems.TaskType?.Title == "Activities" || finalItems.TaskType?.Title == "Workstream") {
-                        SiteTaskTempArray.push(finalItems);
-                    }
+            let AllChildData: any = [];
+            if (SelectedFromTable?.length > 0) {
+                SelectedFromTable?.map((itemData: any) => {
+                    AllChildData.push(itemData.original)
                 })
             }
-            if (MasterTaskTempArray?.length > 0) {
-                MasterTaskListData = MasterTaskTempArray;
+            let MasterTaskTempArray: any = []
+            let SiteTaskTempArray: any = []
+            if (AllChildData?.length > 0) {
+                if (AllChildData?.length > 0) {
+                    AllChildData?.map((finalItems: any) => {
+                        if (finalItems.Item_x0020_Type == "SubComponent" || finalItems.Item_x0020_Type == "Feature" || finalItems.Item_x0020_Type == "Component") {
+                            finalItems.listId = AllListIdData.MasterTaskListID;
+                            MasterTaskTempArray.push(finalItems);
+                        }
+                        if (finalItems.TaskType?.Title == "Task" || finalItems.TaskType?.Title == "Activities" || finalItems.TaskType?.Title == "Workstream") {
+                            SiteTaskTempArray.push(finalItems);
+                        }
+                    })
+                }
+                if (MasterTaskTempArray?.length > 0) {
+                    MasterTaskListData = MasterTaskTempArray;
+                }
+                if (SiteTaskTempArray?.length > 0) {
+                    SiteTaskListData = SiteTaskTempArray;
+                }
             }
-            if (SiteTaskTempArray?.length > 0) {
-                SiteTaskListData = SiteTaskTempArray;
+            if (MasterTaskListData?.length > 0) {
+                CommonFunctionForUpdateCC(MasterTaskListData, SiteTaskListData)
             }
+        } else {
+            closeComponentChildrenPopup();
+            // Props.closePopupCallBack();
         }
-        if (MasterTaskListData?.length > 0) {
-            CommonFunctionForUpdateCC(MasterTaskListData, SiteTaskListData)
-        }
-
     }
 
     const CommonFunctionForUpdateCC = (AllTaskListData: any, SiteTaskListData: any) => {
@@ -1115,7 +1157,6 @@ const SiteCompositionComponent = (Props: any) => {
             AllTaskListData?.map(async (ItemData: any) => {
                 let TempArray: any = [];
                 let ClientCategoryIds: any = [];
-
                 if (ItemData.ClientCategory?.length > 0) {
                     ItemData.ClientCategory?.map((CCItems: any) => {
                         TempArray.push(CCItems.Id);
@@ -1433,15 +1474,15 @@ const SiteCompositionComponent = (Props: any) => {
                                             <td className="m-0 p-1 align-middle" style={{ width: "3%" }}>
                                                 <span>{siteData.BtnStatus ? "%" : ''}</span>
                                             </td>
-                                            <td
-                                                // className="m-0 p-1 align-middle"
+                                            {/* <td
+                                                sclassName="m-0 p-1 align-middle"
                                                 className={IsSCProtected == true ? "Disabled-Link m-0 p-1 align-middle opacity-75" : "m-0 p-1 align-middle"}
 
                                                 style={checkBoxStatus ? { width: "35%", cursor: "not-allowed", pointerEvents: "none" } : { width: "35%" }}>
                                                 <div>
                                                     {siteData?.StartEndDateValidation ?
                                                         <div>
-                                                            {/* <span>{`${siteData?.ConfigurationsData[0]?.StartDate?.length > 3 ? siteData?.ConfigurationsData[0]?.StartDate : "NA"} To ${siteData?.ConfigurationsData[0]?.EndDate?.length > 3 ? siteData?.ConfigurationsData[0]?.EndDate : "NA"}`}</span> */}
+                                                            s<span>{`${siteData?.ConfigurationsData[0]?.StartDate?.length > 3 ? siteData?.ConfigurationsData[0]?.StartDate : "NA"} To ${siteData?.ConfigurationsData[0]?.EndDate?.length > 3 ? siteData?.ConfigurationsData[0]?.EndDate : "NA"}`}</span>
                                                             <span>Start Date - {siteData?.ConfigurationsData[0]?.StartDate?.length > 3 ? siteData?.ConfigurationsData[0]?.StartDate : "NA"}</span>
                                                             <span className="mx-1"></span>
                                                             <span>End Date - {siteData?.ConfigurationsData[0]?.EndDate?.length > 3 ? siteData?.ConfigurationsData[0]?.EndDate : "NA"}</span>
@@ -1450,7 +1491,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                             {
                                                                 siteData.BtnStatus ?
                                                                     <div className="d-flex">
-                                                                        {/* <span>{`${siteData.Date?.length > 3 ? siteData.Date : "NA"} ${siteData.EndDate?.length > 3 ? siteData.EndDate : "NA"}`}</span> */}
+                                                                        s<span>{`${siteData.Date?.length > 3 ? siteData.Date : "NA"} ${siteData.EndDate?.length > 3 ? siteData.EndDate : "NA"}`}</span>
                                                                         <span className="mt-1">
                                                                             <span>Start Date - {siteData.Date?.length > 3 ? siteData.Date : "NA"}</span>
                                                                             <span className="mx-1"></span>
@@ -1470,8 +1511,7 @@ const SiteCompositionComponent = (Props: any) => {
 
                                                     }
                                                 </div>
-
-                                            </td>
+                                            </td> */}
                                             <td className="m-0 p-1 align-middle" style={{ width: "35%" }}>
                                                 {siteData.Title == "EI" ?
                                                     <>
@@ -1687,8 +1727,6 @@ const SiteCompositionComponent = (Props: any) => {
                                                                     }
                                                                 </>
                                                             }
-
-
                                                         </div>
                                                         {SearchedClientCategoryDataForInput?.length > 0 && ClientCategoryPopupSiteName == "Education" ? (
                                                             <div className="SearchTableClientCategoryComponent">
@@ -1702,7 +1740,8 @@ const SiteCompositionComponent = (Props: any) => {
                                                                     }
                                                                     )}
                                                                 </ul>
-                                                            </div>) : null}
+                                                            </div>) :
+                                                            null}
                                                     </>
                                                     : null}
                                                 {siteData.Title == "Migration" ?
