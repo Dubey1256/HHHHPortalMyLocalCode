@@ -1029,7 +1029,7 @@ const SiteCompositionComponent = (Props: any) => {
             Props.closePopupCallBack();
             callBack(SiteCompositionObject, "dataExits");
             makeAllGlobalVariableAsDefault();
-        }, 2000);
+        }, 1500);
     }
 
     const autoSuggestionsForClientCategoryIdividual = (e: any, siteType: any, SiteId: any) => {
@@ -1189,7 +1189,7 @@ const SiteCompositionComponent = (Props: any) => {
             })
         }
         closeComponentChildrenPopup();
-        Props.closePopupCallBack();
+        // Props.closePopupCallBack();
     }
 
     const UpdateOnBackendSide = async (siteUrl: any, ListId: any, ClientCategoryIds: any, ItemId: any, TaskType: any) => {
