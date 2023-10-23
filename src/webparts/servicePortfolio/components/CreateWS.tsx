@@ -395,11 +395,23 @@ const CreateWS = (props: any) => {
             let clientTime: any;
             if (selectedItem?.ClientTime != undefined) {
                 if (typeof selectedItem?.ClientTime == "object") {
-
+                    selectedItem?.ClientTime?.map((sitecomp:any)=>{
+                        if(sitecomp.Title!=undefined && sitecomp.Title!=""&& sitecomp.SiteName==undefined){
+                            sitecomp.SiteName=sitecomp.Title
+                        }
+                    })
                     clientTime = JSON.stringify(selectedItem?.ClientTime);
                 } else {
+                    var sitetag=JSON.parse(selectedItem?.ClientTime)
+                                sitetag?.map((sitecomp:any)=>{
+                                    if(sitecomp.Title!=undefined && sitecomp.Title!=""&& sitecomp.SiteName==undefined){
+                                        sitecomp.SiteName=sitecomp.Title
+                                    }
+                                   
+                                }) 
+                                
 
-                    clientTime = selectedItem?.ClientTime
+                    clientTime = JSON.stringify(sitetag)
                 }
             }
 
