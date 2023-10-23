@@ -43,8 +43,8 @@ const SiteCompositionComponent = (Props: any) => {
     const callBack = Props.callBack;
     const currentListName = Props.currentListName;
     const ServicesTaskCheck = Props.isServiceTask;
-    const [SiteCompositionSettings, setSiteCompositionSettings] = useState<any>(Props.SiteCompositionSettings != undefined ? JSON.parse(Props.SiteCompositionSettings) : [{ Proportional: false, Manual: true, Protected: false, Delux: false, Standard: false }]);
-    const SiteCompositionSettingsBackup: any = Props.SiteCompositionSettings != undefined ? JSON.parse(Props.SiteCompositionSettings) : [{ Proportional: false, Manual: true, Protected: false, Delux: false, Standard: false }]
+    const [SiteCompositionSettings, setSiteCompositionSettings] = useState<any>(Props.SiteCompositionSettings != undefined ? JSON.parse(Props.SiteCompositionSettings) : [{ Proportional: false, Manual: true, Protected: false, Deluxe: false, Standard: false }]);
+    const SiteCompositionSettingsBackup: any = Props.SiteCompositionSettings != undefined ? JSON.parse(Props.SiteCompositionSettings) : [{ Proportional: false, Manual: true, Protected: false, Deluxe: false, Standard: false }]
     const SelectedClientCategoryFromProps = Props.SelectedClientCategory;
     const [SiteTypes, setSiteTypes] = useState<any>([]);
     const [selectedSiteCount, setSelectedSiteCount] = useState(Props.ClientTime?.length ? Props.ClientTime.length : 0);
@@ -80,7 +80,7 @@ const SiteCompositionComponent = (Props: any) => {
     const StandardComposition =
         [
             {
-                ClienTimeDescription: "40",
+                ClienTimeDescription: "60",
                 Title: "EI",
                 localSiteComposition: true,
                 SiteImages: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_ei.png",
@@ -94,14 +94,14 @@ const SiteCompositionComponent = (Props: any) => {
                 Date: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY")
             },
             {
-                ClienTimeDescription: "15",
+                ClienTimeDescription: "5",
                 Title: "Migration",
                 localSiteComposition: true,
                 SiteImages: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_migration.png",
                 Date: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY")
             },
             {
-                ClienTimeDescription: "15",
+                ClienTimeDescription: "5",
                 Title: "Education",
                 localSiteComposition: true,
                 SiteImages: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_education.png",
@@ -109,7 +109,7 @@ const SiteCompositionComponent = (Props: any) => {
             }
         ]
 
-    const DeluxComposition = [
+    const DeluxeComposition = [
         {
             ClienTimeDescription: "50",
             Title: "EI",
@@ -200,8 +200,8 @@ const SiteCompositionComponent = (Props: any) => {
             if (SiteCompositionSettings[0].Proportional) {
                 setProportionalStatus(true);
             }
-            if (SiteCompositionSettings[0].Manual || SiteCompositionSettings[0].Delux || SiteCompositionSettings[0].Standard) {
-                if (SiteCompositionSettings[0].Delux || SiteCompositionSettings[0].Standard) {
+            if (SiteCompositionSettings[0].Manual || SiteCompositionSettings[0].Deluxe || SiteCompositionSettings[0].Standard) {
+                if (SiteCompositionSettings[0].Deluxe || SiteCompositionSettings[0].Standard) {
                     setProportionalStatus(true);
                     setIsPortfolioComposition(true);
                     setIsSCProtected(true);
@@ -419,7 +419,7 @@ const SiteCompositionComponent = (Props: any) => {
             SiteCompositionSettings[0].Proportional = true;
             SiteCompositionSettings[0].Manual = false;
             SiteCompositionSettings[0].Standard = false;
-            SiteCompositionSettings[0].Delux = false;
+            SiteCompositionSettings[0].Deluxe = false;
             // setSiteCompositionSettings();
             // makeSiteCompositionConfigurations();
             setProportionalStatus(true);
@@ -447,7 +447,7 @@ const SiteCompositionComponent = (Props: any) => {
             SiteCompositionSettings[0].Manual = true;
             SiteCompositionSettings[0].Proportional = false;
             SiteCompositionSettings[0].Standard = false;
-            SiteCompositionSettings[0].Delux = false;
+            SiteCompositionSettings[0].Deluxe = false;
             setProportionalStatus(false);
             setIsPortfolioComposition(false);
             setCheckBoxStatus(false);
@@ -470,7 +470,7 @@ const SiteCompositionComponent = (Props: any) => {
 
         if (Type == "Protected") {
             if (SiteCompositionSettings[0]?.Protected == true) {
-                if (SiteCompositionSettings[0].Delux == true || SiteCompositionSettings[0].Standard == true) {
+                if (SiteCompositionSettings[0].Deluxe == true || SiteCompositionSettings[0].Standard == true) {
                     // setIsSCProtected(true);
                 } else {
                     SiteCompositionSettings[0].Protected = false;
@@ -483,18 +483,18 @@ const SiteCompositionComponent = (Props: any) => {
                 setIsSCProtected(true);
             }
         }
-        if (Type == "Delux") {
-            if (SiteCompositionSettings[0]?.Delux == true) {
-                SiteCompositionSettings[0].Delux = false;
+        if (Type == "Deluxe") {
+            if (SiteCompositionSettings[0]?.Deluxe == true) {
+                SiteCompositionSettings[0].Deluxe = false;
                 setIsSCProtected(false);
             } else {
-                SiteCompositionSettings[0].Delux = true;
+                SiteCompositionSettings[0].Deluxe = true;
                 SiteCompositionSettings[0].Standard = false;
                 SiteCompositionSettings[0].Proportional = false;
                 SiteCompositionSettings[0].Manual = false;
                 refreshSiteCompositionConfigurations();
-                ChangeSiteCompositionInstant("Delux");
-                SiteTaggingFinalData = DeluxComposition;
+                ChangeSiteCompositionInstant("Deluxe");
+                SiteTaggingFinalData = DeluxeComposition;
                 setProportionalStatus(true);
                 setIsPortfolioComposition(true);
                 setIsSCProtected(true);
@@ -506,7 +506,7 @@ const SiteCompositionComponent = (Props: any) => {
                 setIsSCProtected(false);
             } else {
                 SiteCompositionSettings[0].Standard = true;
-                SiteCompositionSettings[0].Delux = false;
+                SiteCompositionSettings[0].Deluxe = false;
                 SiteCompositionSettings[0].Proportional = false;
                 SiteCompositionSettings[0].Manual = false;
                 refreshSiteCompositionConfigurations();
@@ -575,9 +575,9 @@ const SiteCompositionComponent = (Props: any) => {
                 TempSiteCompsotion.push(SiteData)
             })
         }
-        if (UsedFor == "Delux") {
+        if (UsedFor == "Deluxe") {
             SiteTypes?.map((SiteData: any) => {
-                DeluxComposition?.map((STItems: any) => {
+                DeluxeComposition?.map((STItems: any) => {
                     if (SiteData.Title == STItems.Title || (SiteData.Title ==
                         "DA E+E" && STItems.Title == "ALAKDigital")) {
                         SiteData.ClienTimeDescription = STItems.ClienTimeDescription;
@@ -1362,15 +1362,15 @@ const SiteCompositionComponent = (Props: any) => {
                 <label className="SpfxCheckRadio me-2">
                     <input
                         type="radio"
-                        id="Delux"
+                        id="Deluxe"
                         name="SiteCompositions"
-                        defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.Delux : false}
-                        title="add Delux Time"
+                        defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.Deluxe : false}
+                        title="add Deluxe Time"
                         className="radio"
-                        value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Delux : false}
-                        onChange={() => ChangeSiteCompositionSettings("Delux")}
+                        value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Deluxe : false}
+                        onChange={() => ChangeSiteCompositionSettings("Deluxe")}
                     />
-                    Delux</label>
+                    Deluxe</label>
                 <label className="SpfxCheckRadio">
                     <input
                         type="radio"
