@@ -993,8 +993,7 @@ const SiteCompositionComponent = (Props: any) => {
         setComponentChildrenPopupStatus(false);
         setTimeout(() => {
             Props.closePopupCallBack();
-            callBack(SiteCompositionObject, "dataExits")
-        }, 1000);
+        }, 2000);
     }
 
     const autoSuggestionsForClientCategoryIdividual = (e: any, siteType: any, SiteId: any) => {
